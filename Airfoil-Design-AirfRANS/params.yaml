@@ -61,3 +61,12 @@ GUNet:
   max_neighbors: 64
   subsampling: 32000
   r: 0.05
+
+# CDLNO inherits the current Transolver training/data hyperparameters.
+CDLNO:
+  batch_size: 1
+  nb_epochs: 398
+  lr: 0.001
+  max_neighbors: 64
+  subsampling: 32000
+  r: 0.05

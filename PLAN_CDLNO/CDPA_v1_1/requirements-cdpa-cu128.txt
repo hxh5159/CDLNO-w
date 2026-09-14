@@ -1,0 +1,45 @@
+# CDPA v1.1: candidate dependencies for a NEW environment only.
+# Target: CPython 3.11, Linux x86_64, glibc >= 2.28, CUDA 12.8.
+# Do not force these versions into the user's working ShapeNet-Car environment.
+# First capture that environment with `python -m pip freeze`; preserve its
+# working torch, torch-geometric, and pyg-lib versions unless a concrete failure
+# requires a change. Do not use an unpinned `pip install -U`.
+#
+# Static evidence: exact releases, Python 3.11 wheels and direct dependency
+# metadata were checked against PyPI and the official PyTorch/PyG wheel indexes.
+# This is NOT a fully resolved transitive lockfile and has NOT passed combined
+# eight-task GPU validation or real-dataset validation.
+#
+# NEW environment installation order (run from this file's directory):
+# 1. python -m pip install --only-binary=:all: \
+#      "torch==2.11.0+cu128" "torchvision==0.26.0+cu128" \
+#      --index-url https://download.pytorch.org/whl/cu128
+# 2. python -m pip install --no-index --only-binary=:all: --no-deps \
+#      "pyg_lib==0.6.0+pt211cu128" \
+#      -f https://data.pyg.org/whl/torch-2.11.0+cu128.html
+# 3. python -m pip install --only-binary=:all: -r requirements-cdpa-cu128.txt
+# 4. python -m pip check
+# 5. Run the no-data import/operator/model checks described in the plan, then
+#    export the successful environment to a separate resolved lockfile.
+#
+# PyTorch, torchvision and pyg-lib are installed separately from their official
+# CUDA-specific indexes; constraints below prevent a dependency from silently
+# replacing their versions. With PyG >= 2.8, radius/knn/fps use pyg-lib >= 0.6.0.
+# Do not add the legacy torch-cluster/scatter/sparse packages unless an actual
+# selected module directly imports or uses them.
+-c constraints-cdpa-cu128.txt
+
+numpy==1.26.4
+scipy==1.13.1
+matplotlib==3.9.4
+scikit-learn==1.5.2
+timm==1.0.22
+einops==0.8.1
+tqdm==4.67.1
+PyYAML==6.0.2
+seaborn==0.13.2
+pandas==2.2.3
+pyvista==0.46.4
+vtk==9.3.1
+torch-geometric==2.8.0.post1
+pytest==8.3.5

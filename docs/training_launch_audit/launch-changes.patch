@@ -1,0 +1,611 @@
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -1,6 +1,8 @@
+ # AGENTS.md
+ 
+ ## Current phase and reading order
++
++Latest scope (2026-09-14): the user requested a final logic check and Car/NS launch scripts in `tran_evaluate/`, without authorizing real training. This launch-preparation review is complete: see [the launch review](docs/CDLNO_TRAINING_LAUNCH_REVIEW.md) and [commands/protocols](tran_evaluate/README.md). 120 final regressions and four real-parser dry-run commands passed. Keep confirmed CDLNO M64/ratios2/2+6; the new NS preset's accidental clip0.1 was corrected to null/None to match the original NS launcher. Original entry/data/train/model/metric files were not changed. Car's frozen drag evaluator hardcodes the canonical raw root and param0; the new full-eval launcher checks/requires fold0 and that same raw dataset path. Car's inherited outer log-summary pressure/velocity swap does not affect its correct internal backward loss; report it rather than silently fixing the frozen train file. No real data, convergence, remote-new-model or full metrics acceptance has occurred.
+ 
+ The user requires **one explicitly assigned implementation phase per turn**. Complete necessary changes and verification autonomously within that phase, then stop for user review and an explicit instruction for the next phase. Never proceed through the entire plan automatically. This user instruction replaces the all-at-once authorization model in v1.2 §11. **Phases 0–9 were reviewed and approved. Phase10 final audit and delivery are complete, awaiting user review. No real-data training, sampling evaluation, additional research or next phase is authorized.** All eight task interfaces/configurations are integrated; no real-data training or sampling evaluation has run. Read [the final implementation report](docs/CDLNO_IMPLEMENTATION_REPORT.md) and [requirements matrix](docs/CDLNO_REQUIREMENTS_MATRIX.md), then [the phase-9 performance report](docs/CDLNO_PHASE9_PERFORMANCE.md) and [tool usage](docs/CDLNO_PERFORMANCE_TOOLS.md), then [the phase-8 AirfRANS report](docs/CDLNO_PHASE8_AIRFRANS.md), [the eight-task launch inventory](docs/CDLNO_TASK_LAUNCHERS.md), [the phase-7 ShapeNet-Car report](docs/CDLNO_PHASE7_SHAPENET_CAR.md), [the phase-6 temporal-task report](docs/CDLNO_PHASE6_TEMPORAL_TASKS.md), [the phase-5 static-task report](docs/CDLNO_PHASE5_STATIC_TASKS.md), [the phase-4 core report](docs/CDLNO_PHASE4_CORE.md), [the phase-3 CDPA report](docs/CDLNO_PHASE3_CDPA.md), and [the phase-2 module report](docs/CDLNO_PHASE2_MODULES.md) before continuing; further integration requires a new explicit instruction.
+ 
+--- a/PDE-Solving-StandardBenchmark/configs/CDLNO/ns.json
++++ b/PDE-Solving-StandardBenchmark/configs/CDLNO/ns.json
+@@ -19,6 +19,6 @@
+     "epochs": 500,
+     "batch_size": 2,
+     "weight_decay": 1e-05,
+-    "max_grad_norm": 0.1
++    "max_grad_norm": null
+   }
+ }
+--- a/PDE-Solving-StandardBenchmark/scripts/CDLNO_NS.sh
++++ b/PDE-Solving-StandardBenchmark/scripts/CDLNO_NS.sh
+@@ -3,4 +3,4 @@
+ project_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+ export PYTHONPATH="${project_dir}/..${PYTHONPATH:+:${PYTHONPATH}}"
+ cd "$project_dir"
+-python exp_ns.py --model CDLNO --gpu 0 --n-hidden 256 --n-layers 8 --n-heads 8 --slice_num 64 --mlp_ratio 2 --front-blocks 2 --latent-ffn-ratio 2 --cdpa-mode entry --cdpa-source-chunk-size 0 --dropout 0.0 --unified_pos 1 --ref 8 --lr 0.001 --epochs 500 --batch-size 2 --weight_decay 1e-5 --max_grad_norm 0.1 --downsample 1 --eval 0 "$@"
++python exp_ns.py --model CDLNO --gpu 0 --n-hidden 256 --n-layers 8 --n-heads 8 --slice_num 64 --mlp_ratio 2 --front-blocks 2 --latent-ffn-ratio 2 --cdpa-mode entry --cdpa-source-chunk-size 0 --dropout 0.0 --unified_pos 1 --ref 8 --lr 0.001 --epochs 500 --batch-size 2 --weight_decay 1e-5 --downsample 1 --eval 0 "$@"
+--- a/PDE-Solving-StandardBenchmark/scripts/CDLNO_NS_Eval.sh
++++ b/PDE-Solving-StandardBenchmark/scripts/CDLNO_NS_Eval.sh
+@@ -3,4 +3,4 @@
+ project_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+ export PYTHONPATH="${project_dir}/..${PYTHONPATH:+:${PYTHONPATH}}"
+ cd "$project_dir"
+-python exp_ns.py --model CDLNO --gpu 0 --n-hidden 256 --n-layers 8 --n-heads 8 --slice_num 64 --mlp_ratio 2 --front-blocks 2 --latent-ffn-ratio 2 --cdpa-mode entry --cdpa-source-chunk-size 0 --dropout 0.0 --unified_pos 1 --ref 8 --lr 0.001 --epochs 500 --batch-size 2 --weight_decay 1e-5 --max_grad_norm 0.1 --downsample 1 --eval 1 "$@"
++python exp_ns.py --model CDLNO --gpu 0 --n-hidden 256 --n-layers 8 --n-heads 8 --slice_num 64 --mlp_ratio 2 --front-blocks 2 --latent-ffn-ratio 2 --cdpa-mode entry --cdpa-source-chunk-size 0 --dropout 0.0 --unified_pos 1 --ref 8 --lr 0.001 --epochs 500 --batch-size 2 --weight_decay 1e-5 --downsample 1 --eval 1 "$@"
+--- a/docs/CDLNO_IMPLEMENTATION_STATUS.md
++++ b/docs/CDLNO_IMPLEMENTATION_STATUS.md
+@@ -1,6 +1,10 @@
+ # CDLNO 实施状态
+ 
+ 更新日期：2026-09-14。
++
++**最新工作：用户要求的Car/NS最终逻辑核查和`tran_evaluate/`启动准备已完成，未启动真实训练/评价。最终120项回归通过（0失败/错误/跳过），四条脚本命令经真实parser AST解析检查通过。保持CDLNO M64/ratio2/2+6，纠正新NS preset额外clip0.1为原入口None。原数据/训练/模型/评价文件均未改。Car完整阻力评价固定路径/param0及原日志汇总问题已在[启动审查](CDLNO_TRAINING_LAUNCH_REVIEW.md)和[脚本说明](../tran_evaluate/README.md)记录；不能将既有AST冻结等同于原先所有生效默认值一致。真实数据、远端新模型兼容、精度、收敛与epoch效率仍未验收。**
++
++以下保留阶段0–10的历史记录；关于NS clip的最终状态以上述启动核查为准。
+ 
+ **当前状态：阶段0–9已获用户审查通过；阶段10最终综合审查与交付已完成，等待用户审查。最终119项回归通过，无失败/错误/跳过；本轮仅补时间验收测试及文档，生产代码与依赖未改。真实数据训练/完整抽样评价与远端新模型环境仍未验证。**
+ 
+--- /dev/null
++++ b/docs/CDLNO_TRAINING_LAUNCH_REVIEW.md
+@@ -0,0 +1,95 @@
++# CDLNO Car / NS 训练启动前审查
++
++日期：2026-09-14。用户本轮授权：最终逻辑核查、整理Car/NS训练评价命令到 `tran_evaluate/`；没有授权本机真实训练或后续研究功能。分支 `main`，基线HEAD `75e0f67643806a81cd1d3f6adc88dd8c02416fe7`。本轮前已有阶段0–10未提交实现，全部保护。
++
++**结论：已确认的CDLNO模型架构未发现新缺陷，最终120项无数据回归通过。发现并纠正了新模型NS默认裁剪偏离原入口的问题；Car原评价硬编码路径/fold及日志汇总问题已明确记录，并在新评价脚本添加路径/fold检查。不能据此断言真实训练流程已经全部无误。**
++
++## A. 完成范围与设计依据
++
++重新从 `core.py`、`cdpa.py`、模块、Car/NS适配器、实际入口/helper、原Car train/loader/drag evaluator和NS真实时间循环核对，复跑约定完整验收。独立核查新命令进入原parser后的实际参数，而不只阅读旧报告。
++
++本轮实际获取并阅读 [Transolver论文v2](https://arxiv.org/pdf/2402.02366v2) 第15–17页（B.1/B.2/B.3、Table8），文本证据为 [paper-excerpts.json](training_launch_audit/paper-excerpts.json)。NS的64×64/10→10/1000+200、Car的789+100/输入xyz-sdf-normal和200epoch等与原代码核对。论文中的Car/NS M32是原Transolver配置；本轮保留已确认CDLNO的M64、2+6和FFN ratio2，明确区分模型配置与训练协议。
++
++曾发出配置对齐澄清；截至交付未收到另选配置回复。本轮采用当前明确要求“训练评估逻辑与原仓库一致”及v1.2 §4.5“clip按原代码保持”，将NS默认恢复无裁剪；保留既有明确确认的CDLNO架构。不将未回复当作改M/FFN架构的授权。
++
++## B. 文件、理由和diff
++
++| 文件 | 改动与理由 |
++|---|---|
++| [tran_evaluate/car.sh](../tran_evaluate/car.sh)、[ns.sh](../tran_evaluate/ns.sh) | 填充用户已有空文件，各支持train/eval/help；显式CDLNO配置，参数在末尾可覆盖，不自动连续运行 |
++| [tran_evaluate/_common.sh](../tran_evaluate/_common.sh) | 仅转发命令、设置原cwd/根PYTHONPATH、处理含空格/相对数据与run路径、dry-run；不含模型/训练逻辑 |
++| [tran_evaluate/check_car_eval.py](../tran_evaluate/check_car_eval.py) | 标准库预检已知原阻力评价固定root/param0限制；从真实entry仅提取parser定义，不导入/运行entry；不改指标，不伪造数据 |
++| [tran_evaluate/README.md](../tran_evaluate/README.md) | 四条完整命令、数据目录、原协议、CDLNO与Transolver配置差别、checkpoint和实际限制 |
++| [NS JSON](../PDE-Solving-StandardBenchmark/configs/CDLNO/ns.json)及两份CDLNO NS launcher | `max_grad_norm:0.1→null`，两脚本移除显式clip0.1；原Transolver默认/脚本与exp循环保持 |
++| [tests/test_temporal_standard.py](../tests/test_temporal_standard.py) | 新增1个针对实际缺陷的回归：旧分支None/ratio1/M32；新分支None/ratio2/M64；执行真实clip AST，默认零次调用、自选0.1一次 |
++| AGENTS、STATUS、memory、本报告、[证据目录](training_launch_audit/) | 记录本轮边界、实际发现、验证、冻结证据和可审查patch |
++
++修改的既有文件共9个；相对本轮起点173文件，164字节不变，无删除/意外改动。细目见 [freeze-check.json](training_launch_audit/freeze-check.json)。[launch-changes.patch](training_launch_audit/launch-changes.patch) 包含本轮变化；构建patch前按起点SHA验证修改前文本，不执行git add/commit。
++
++## C. 公式、形状和执行协议核对
++
++| 范围 | 源码与实际合同 |
++|---|---|
++| 核心 | `cdlno/core.py::CDLNO.forward`：`H0[B,N,256] → F=2完整LRSA(HF,Ti[B,64,256]) → bridge Z0[B,64,256] → entry CDPA → P=6独立后段 → readout(HF,ZP)`。NS每次真实时间调用重新走此图 |
++| CDPA | `cdlno/cdpa.py`：每历史独立softmax_M，完整O+b，无额外Cross残差；R0=Z。`alpha=softmax_sources(w·RMSdepth(Rs))`，RAW候选加权；w零初始化、FP32 depth、chunk0/1/分块同权重同数学定义 |
++| 历史/初始化 | raw Z0保留，every的历史在当前身份使用后追加；局部list不跨forward；off/F0entry无闲置融合参数。子模块各自初始化一次，wrapper不递归重置 |
++| 最终readout | `LRSAFeatureReadout` query及点残差为HF；NS有groups1 dense3×3 ConvFFN；Car point FFN。无latent卷积或coordinate-query decoder |
++| Car输入/输出 | `models/CDLNO.py::Model`只读cfd.x7及单图batch/ptr，忽略geom/y；`[N,7]→[N,4]`，velocity3/pressure1，不原地改字段；支持可变N、拒绝多图 |
++| Car反向 | 原 `train.py::train`：`total_loss=MSE(out[:,:3],y[:,:3])+0.5*MSE(out[surf,3],y[surf,3])`；每图一次backward/Adam/OneCycle更新；fold0、200epoch/batch1、val_iter10 |
++| NS接口 | `TemporalStandardModel`：reference64替换xy再拼fx10，stem74；`x[B,4096,2],fx[B,4096,10]→[B,4096,1]`。无placeholder、无time_fc、无跨物理时间latent缓存 |
++| NS时间和loss | 原 `exp_ns.py`：10次真值回填、10个单步TestLoss累加后一次backward/AdamW/OneCycle；每epoch验证和独立eval均预测回填。eval以全10帧relativeL2计量；500epoch/batch2/lr1e-3/weight_decay1e-5/无clip |
++| checkpoint | 原保存频率：Car末轮整模型model_200.pth；NS每100epoch及末轮state_dict model.pt。CarRun/StaticRun先读sidecar后比较、strict权重；chunk变化可载入；新训练目录隔离，eval写新结果目录 |
++
++NS原脚本未传 `--mlp_ratio`，因此原exp的ratio1生效；此前CDLNO ratio2是已确认架构设置而非协议回归。NS原脚本也未传 `--max_grad_norm`，原exp为None；此前CDLNO把0.1写入preset属于训练配置偏差，本次纠正。**旧报告“冻结循环”等AST证据仍有效，但不能由此推导当时有效clip默认也一致；本报告修正该过强结论。**
++
++## D. 实际验证和边界
++
++在仓库根实际执行：
++
++```bash
++# 修正前完整检查：119项通过，50.796秒。
++CDLNO_LRSA_ROOT=/home/hwz/LRSA-Operator python -B -m unittest discover -s tests -p 'test_*.py' -v
++# 修正后的定向时间组：10项通过，10.356秒。
++python -B -m unittest discover -s tests -p 'test_temporal_standard.py' -v
++# 修正后的完整套件：120项通过，52.764秒；0失败/错误/跳过。
++CDLNO_LRSA_ROOT=/home/hwz/LRSA-Operator python -B -m unittest discover -s tests -p 'test_*.py' -v
++# 含空格、相对路径、flag=value、真实parser与负向检查；不运行数据入口。
++python -B docs/training_launch_audit/verify_launchers.py
++bash -n tran_evaluate/car.sh tran_evaluate/ns.sh tran_evaluate/_common.sh
++git diff --check
++```
++
++实际日志：[最终120项](training_launch_audit/regression-final.log)、[原119项](training_launch_audit/regression.log)、[定向10项](training_launch_audit/temporal-focused.log)、[脚本检查](training_launch_audit/launcher-checks.json)。启动检查分别对Car/NS的train/eval共4条命令执行dry-run，再在各原cwd新进程只执行AST提取的真实parser定义/helper；检验最终超参数、参数覆盖、cwd/PYTHONPATH、空格/相对路径和dry-run无写入。不import exp/main，不创建假数据文件，不调用实际train/eval。
++
++| 项目 | 本轮状态 |
++|---|---|
++| 基础模块、LRSA原码参考、CDPA数学/FP32/chunk梯度、21种核心+扩展深度 | 通过（完整套件） |
++| 八wrapper合成；NS两路完整10步及更新频率；原损失连接 | 通过 |
++| 真实PyG Data/Batch：Car/Air单图/可变N/无标签泄漏/多图拒绝 | 通过；合成对象，不是真实数据读取 |
++| 三原cwd新进程导入/整模型或state_dict加载；strict负向/sidecar不覆写/chunk兼容 | 通过（完整套件既有用例） |
++| 本地GPU：模块、CDPA、point/grid小核心、静态wrapper精度检查 | 通过，6个GPU测试方法实际执行；本轮未追加完整规模Car/NS训练 |
++| NS默认无clip与自选clip，四条脚本真实参数解析，Car错误fold/缺run拒绝 | 通过；含`--fold=1`缩写不绕过guard |
++| 最终测试失败/错误/跳过 | 0 / 0 / 0 |
++| 真实Car guard正向、VTK/缓存/NS MAT内容完整性、实际读取及完整指标流程 | **未运行** |
++| 远端Python3.10/torch2.11/cu128的新CDLNO训练/评价、Python3.11 | **未运行**；用户已有原Car成功证据保留 |
++| 收敛、论文精度、实际默认规模显存/epoch耗时、种子方差 | **未验证** |
++
++套件在现有本地Python3.13.9/torch2.13.0+cu130/PyG2.3.1/RTX5090 Laptop执行（版本依据既有环境记录和本轮日志），不作为改变远端依赖的理由。没有安装/替换任何依赖，不强制把本地版本写入启动脚本。远端兼容权威仍是用户已有Python3.10/torch2.11/cu128环境；脚本支持 `CDLNO_PYTHON` 指向该解释器。
++
++## E. 冻结范围与证据
++
++相对本轮起点，所有原71个跟踪文件字节不变，包括此前有限模型接入分支与用户已有改动。本轮没有改核心、CDPA、wrapper、数据文件/loader、exp/main入口、normalizer、loss、optimizer、scheduler、时间循环、指标、依赖或原Transolver模型/脚本。唯一生效训练默认变化是新CDLNO NS的clip纠偏（JSON+新脚本），不是悄悄改变冻结循环。
++
++相对阶段0 HEAD仍是此前已批准的12个有限接入文件及README不同，其余58个原跟踪文件字节相同；本轮无新增旧源码变化。完整套件再次通过6个exp和工业入口的原AST投影、原模型/脚本/数据/指标字节检查。证据见 [start.json](training_launch_audit/start.json) 与 [freeze-check.json](training_launch_audit/freeze-check.json)。
++
++## F. 已完成自审、剩余问题
++
++1. **配置不被旧默认覆盖：已自审。** 四条最终argv进入真实parser，均d256/h8/L8/F2/M64/ratio2/entry；Car200/1，NS500/2/无clip。用户选择架构override后评价仍需匹配sidecar。
++2. **历史/两级融合/readout/初始化：已自审。** 源码与独立数学、历史时序、梯度和参数独立用例一致，未发现待修复模型问题。默认entry历史2来源，chunk0一次CDPA历史SDPA；这不等于全模型只有一次SDPA。
++3. **原训练与时间路径：已自审。** 原AST仍一致；补测并修复原AST检查看不到的NS参数默认偏差。原Car日志loss名称/汇总颠倒为继承问题，实际反向目标正确，冻结旧train文件未改。
++4. **checkpoint/目录/加载：已自审。** 既有严格加载与sidecar规则通过；新脚本只转发并规范路径，支持含空格和不同cwd，dry-run不执行任何入口。
++5. **真实Car评价存在限制：仍需用户按实际数据环境处理。** 原阻力函数固定`/data/PDE_data/mlcfd_data/training_data/param0`，新完整eval脚本据此限制fold0及同数据路径。其他fold训练本身合法，但原完整阻力评估不能直接推广到其他fold；若要可移植root/多fold评价，需要以后明确授权最小指标路径修复，不能声称本轮已支持。未读取真实VTK/缓存验证节点对应。
++
++没有因性能或训练准备改变CDPA公式、最终decoder、损失或数据协议。训练指令和具体继承限制均在 [tran_evaluate/README.md](../tran_evaluate/README.md)。本轮没有下载数据、运行真实训练/评价或commit/push。
++
++**本阶段结束，未执行下一阶段。**
+--- /dev/null
++++ b/docs/training_launch_audit/verify_launchers.py
+@@ -0,0 +1,108 @@
++"""Data-free launch audit: shell dry-run plus only real argument-parser AST nodes."""
++import ast
++import json
++import os
++from pathlib import Path
++import shlex
++import subprocess
++import sys
++import tempfile
++
++ROOT = Path(__file__).resolve().parents[2]
++EVIDENCE = Path(__file__).resolve().parent
++records = []
++PARSER = r'''
++import argparse, ast, json, sys
++from pathlib import Path
++entry, *tokens = sys.argv[1:]
++nodes = []
++for n in ast.parse(Path(entry).read_text()).body:
++    if isinstance(n, ast.Assign) and isinstance(n.targets[0], ast.Name) and n.targets[0].id == 'parser':
++        nodes.append(n)
++    elif isinstance(n, ast.Expr) and isinstance(n.value, ast.Call) and isinstance(n.value.func, ast.Attribute) and ast.unparse(n.value.func.value) == 'parser' and n.value.func.attr == 'add_argument':
++        nodes.append(n)
++scope = {'argparse': argparse}
++exec(compile(ast.Module(body=nodes, type_ignores=[]), '<argument-definitions-only>', 'exec'), scope)
++if entry == 'exp_ns.py':
++    from cdlno_entry import parse_args
++    args = parse_args(scope['parser'], 'ns', tokens)
++else:
++    from models.cdlno_run import parse_args
++    args = parse_args(scope['parser'], evaluation=entry == 'main_evaluation.py', argv=tokens)
++print(json.dumps(vars(args), default=str))
++'''
++
++
++def call(argv, cwd, env=None, success=True):
++    result = subprocess.run(argv, cwd=cwd, env=env, text=True, capture_output=True, timeout=45)
++    if success and result.returncode != 0:
++        raise AssertionError(result.stderr + result.stdout)
++    if not success:
++        assert result.returncode != 0, result.stdout
++    return result
++
++
++def check_launch(task, mode, cwd, overrides):
++    project = ROOT / ('Car-Design-ShapeNetCar' if task == 'car' else 'PDE-Solving-StandardBenchmark')
++    env = {**os.environ, 'CDLNO_PYTHON': sys.executable, 'PYTHONPATH': str(ROOT)}
++    result = call(['bash', str(ROOT/'tran_evaluate'/f'{task}.sh'), mode, *overrides, '--dry-run'], cwd, env)
++    command = next(line.removeprefix('Command:') for line in result.stdout.splitlines() if line.startswith('Command:'))
++    parts = shlex.split(command)
++    assert parts[:2] == [sys.executable, '-u']
++    expected_entry = ('main.py' if mode == 'train' else 'main_evaluation.py') if task == 'car' else 'exp_ns.py'
++    assert parts[2] == expected_entry
++    assert str(project) in result.stdout
++    args = json.loads(call([sys.executable, '-B', '-c', PARSER, *parts[2:]], project, env).stdout)
++    assert (args['n_hidden'], args['n_layers'], args['n_heads'], args['slice_num'], args['front_blocks']) == (256, 8, 8, 64, 2)
++    assert args['mlp_ratio'] == args['latent_ffn_ratio'] == 2
++    assert args['cdpa_mode'] == 'entry'
++    if task == 'ns':
++        assert args['max_grad_norm'] is None
++        assert (args['epochs'], args['batch_size'], args['lr'], args['weight_decay'], args['downsample']) == (500, 2, .001, 1e-5, 1)
++        assert args['eval'] == int(mode == 'eval')
++        assert args['data_path'] == str(cwd/'data with spaces')
++        assert args['cdlno_run_dir'] == str(cwd/'run with spaces')
++    else:
++        assert (args['nb_epochs'], args['fold_id'], args['weight'], args['r']) == (200, 0, .5, .2)
++        if mode == 'train':
++            assert (args['batch_size'], args['lr'], args['preprocessed'], args['val_iter']) == (1, .001, 1, 10)
++        assert args['data_dir'] == str(cwd/'data with spaces')
++        assert args['save_dir'] == str(cwd/'preprocessed with spaces')
++        assert args['run_dir'] == str(cwd/'run with spaces')
++    # Re-parse a real last-option override: does not construct or execute a model.
++    chunk_flag = '--cdpa_source_chunk_size' if task == 'car' else '--cdpa-source-chunk-size'
++    override = json.loads(call([sys.executable, '-B', '-c', PARSER, *parts[2:], chunk_flag+'=2', '--gpu', '3'], project, env).stdout)
++    assert override['cdpa_source_chunk_size'] == 2 and str(override['gpu']) == '3'
++    records.append(dict(task=task, mode=mode, command=parts, resolved_arguments=args,
++                        override_chunk=2, override_gpu=3, status='passed'))
++
++
++for script in sorted((ROOT/'tran_evaluate').glob('*.sh')):
++    call(['bash', '-n', str(script)], ROOT)
++ast.parse((ROOT/'tran_evaluate/check_car_eval.py').read_text(), feature_version=(3, 10))
++with tempfile.TemporaryDirectory(prefix='cdlno launch audit ') as tmp:
++    cwd = Path(tmp)
++    for task in ('car', 'ns'):
++        help_text = call(['bash', str(ROOT/'tran_evaluate'/f'{task}.sh'), 'help'], cwd).stdout
++        assert '--dry-run' in help_text
++        for mode in ('train', 'eval'):
++            flags = (['--data_dir', 'data with spaces', '--save_dir=preprocessed with spaces', '--run_dir', 'run with spaces']
++                     if task == 'car' else ['--data_path=data with spaces', '--cdlno-run-dir', 'run with spaces'])
++            check_launch(task, mode, cwd, flags)
++    assert list(cwd.iterdir()) == [], 'Dry-run must not create data or run directories'
++    for flags in (['--data_path'], ['--data_path='], ['--data_path', '--dry-run']):
++        call(['bash', str(ROOT/'tran_evaluate/ns.sh'), 'train', *flags, '--dry-run'], cwd, success=False)
++    guard = call([sys.executable, '-B', str(ROOT/'tran_evaluate/check_car_eval.py'), '--fold_id', '1', '--run_dir', str(cwd/'missing')], cwd, success=False)
++    assert 'hardcodes param0' in guard.stderr
++    abbreviated = call([sys.executable, '-B', str(ROOT/'tran_evaluate/check_car_eval.py'), '--fold=1', '--run_dir', str(cwd/'missing')], cwd, success=False)
++    assert 'hardcodes param0' in abbreviated.stderr
++    missing = call([sys.executable, '-B', str(ROOT/'tran_evaluate/check_car_eval.py')], cwd, success=False)
++    assert '--run_dir' in missing.stderr
++    assert list(cwd.iterdir()) == []
++
++payload = dict(status='passed', launches=records, shell_syntax='passed', help='passed',
++               path_spaces_equals_and_relative='passed', dry_run_no_writes='passed',
++               missing_path_rejected='passed', car_guard_fold_and_missing_run='passed',
++               car_guard_with_real_dataset='not run', real_entry_execution='not run')
++(EVIDENCE/'launcher-checks.json').write_text(json.dumps(payload, ensure_ascii=False, indent=2)+'\n')
++print('PASS: four dry-run commands and actual AST-only parsers; overrides, path quoting, no writes, Car negative guards.')
+--- a/memory/current-state.md
++++ b/memory/current-state.md
+@@ -1,6 +1,14 @@
+ # Current project state
+ 
+ Last reviewed: 2026-09-14
++
++## Latest launch preparation
++
++User requested a final logic review and Car/NS training/evaluation commands in `tran_evaluate/`; preparation is complete, actual training remains unauthorized. Read [the launch review](../docs/CDLNO_TRAINING_LAUNCH_REVIEW.md) and [launcher README](../tran_evaluate/README.md). Final120 regressions passed (52.764s; no failures/errors/skips); four shell dry-runs parsed through actual AST-only entry parsers in original working directories passed. Paper v2 pp15–17/B.1–B.3/Table8 reread; extraction in docs/training_launch_audit/paper-excerpts.json.
++
++Keep confirmed CDLNO d256/h8/L8/F2/M64/FFN ratios2 for Car and NS. Transolver M32 and NS ratio1 are model differences, not overwritten defaults. Corrected new NS JSON max_grad_norm0.1 to null and removed clip from both CDLNO NS scripts: original Transolver_NS.sh omits clipping and exp_ns.py defaults None. The current requirement to preserve original training authorizes this default correction; no model architecture or frozen loop was changed. Added one regression testing original clip branch and explicit override. Previous reports overstated matching training defaults based on frozen ASTs; loop equality alone did not verify effective clipping.
++
++Car original cal_coefficient hardcodes /data/PDE_data/mlcfd_data/training_data/param0, while evaluation passes basename only. New full evaluation script checks fold0 plus same canonical raw root and existing artifacts; no automatic link/data changes. Other folds can train but original full drag evaluation is not generally portable across folds/roots. Car train/test return pressure then velocity while outer main assigns opposite names; logged train_loss/val_loss aggregates are misleading, but internal backward uses correct velocity+0.5pressure. Frozen train/metric files unchanged. All71 original tracked files unchanged from this task's start, preserving existing integration changes;9 of173 snapshotted files changed only as documented. Real data IO/VTK/full metrics, remote new CDLNO execution, convergence/accuracy/epoch time remain unverified. No install, data download, training, commit/push, or new stage.
+ 
+ ## Phase authorization
+ 
+--- a/tests/test_temporal_standard.py
++++ b/tests/test_temporal_standard.py
+@@ -52,6 +52,23 @@
+         self.assertEqual((ns.preprocess[0].in_features,ns.config.output_dim,ns.config.grid_shape),(74,1,(64,64)))
+         self.assertEqual((pl.preprocess[0].in_features,pl.config.output_dim,pl.config.grid_shape),(3,4,(101,31)))
+         self.assertIsNone(ns.time_fc); self.assertIsNotNone(pl.time_fc)
++    def test_ns_original_no_clip_default_and_explicit_override(self):
++        legacy=parse_args(parser('ns'),'ns',['--model','Transolver_Structured_Mesh_2D'])
++        self.assertIsNone(legacy.max_grad_norm)
++        self.assertEqual((legacy.mlp_ratio,legacy.slice_num),(1,32))
++        default=args('ns')
++        self.assertIsNone(default.max_grad_norm)
++        self.assertEqual((default.mlp_ratio,default.slice_num),(2,64))
++        source=ast.parse((PROJECT/'exp_ns.py').read_text())
++        branch=next(n for n in ast.walk(source) if isinstance(n,ast.If)
++                    and ast.unparse(n.test)=='args.max_grad_norm is not None')
++        code=compile(ast.Module(body=[branch],type_ignores=[]),'<original-clip-branch>','exec')
++        model=nn.Linear(1,1)
++        for value,expected in ((default,0),(args('ns',['--max_grad_norm','0.1']),1)):
++            with patch('torch.nn.utils.clip_grad_norm_') as clip:
++                exec(code,dict(args=value,torch=torch,model=model))
++                self.assertEqual(clip.call_count,expected)
++                if expected: self.assertEqual(clip.call_args.args[1],.1)
+     def test_ns_teacher_forcing_and_prediction_windows_batched(self):
+         model,_=build('ns', ['--n-hidden','16','--n-heads','4','--slice_num','4'])
+         x,initial=data(model); truth=torch.randn(2,model.H*model.W,10)
+--- /dev/null
++++ b/tran_evaluate/README.md
+@@ -0,0 +1,106 @@
++# CDLNO：ShapeNet-Car 与 Navier–Stokes 训练/评估
++
++这两个脚本调用原任务入口，保留原数据、损失、优化器、时间循环和评价处理。本轮只准备脚本和做无数据验收，没有启动真实训练或评估。
++
++**默认采用已确认的 CDLNO 架构，训练协议对齐原 Transolver。** CDLNO 与 Transolver 的模型超参数并非全部相同，区别如下。依据为 Transolver [论文 v2](https://arxiv.org/pdf/2402.02366v2) 附录 B.1/B.3、Table 8，以及原仓库 commit `75e0f67643806a81cd1d3f6adc88dd8c02416fe7`。
++
++| 配置 | Car 原 Transolver | Car 本脚本 CDLNO | NS 原 Transolver | NS 本脚本 CDLNO |
++|---|---|---|---|---|
++| d / heads / L | 256 / 8 / 8 | 相同 | 256 / 8 / 8 | 相同 |
++| 模型结构 | 8层 Transolver | 2完整LRSA + bridge + entry CDPA + 6后段 + readout | 8层 Transolver | 同左侧 CDLNO |
++| M | 32 | **64（已确认计划）** | 32 | **64（已确认计划）** |
++| 原MLP / CDLNO前段与点FFN ratio | 2 | 2 | 1（原exp默认） | **2（已确认计划）** |
++| CDLNO后段 GEGLU ratio | 不适用 | 2 | 不适用 | 2 |
++| epochs / batch | 200 / 1 | 相同 | 500 / 2 | 相同 |
++| optimizer / max_lr | Adam / 0.001 | 相同 | AdamW / 0.001 | 相同 |
++| weight_decay | Adam默认0 | 相同 | 1e-5 | 相同 |
++| 梯度裁剪 | 无 | 无 | 无 | **无** |
++| scheduler | 原OneCycleLR | 相同 | 原OneCycleLR | 相同 |
++| 条件 | x7，原placeholder | 相同语义 | reference8×8 + fx10 | 相同语义，stem74 |
++
++NS 之前的 CDLNO JSON/脚本额外设置了 `max_grad_norm=0.1`，与原 `Transolver_NS.sh → exp_ns.py` 的 `None` 不一致。本次将 **CDLNO NS** 默认纠正为 `null/None`，移除其启动脚本的显式0.1；原exp与Transolver脚本未改。需要自选裁剪时仍可追加 `--max_grad_norm 0.1`，但那属于改变默认训练配置。**不要用0表示关闭裁剪，0会清零有限梯度。**
++
++## 使用已有环境
++
++沿用你已成功运行 Car 的 Python3.10 / torch2.11 / CUDA12.8 / PyG 环境，不重新安装旧 requirements，也不升级/降级依赖。Python3.11仍属于未在远端验证的候选。NS还使用 NumPy、SciPy、Matplotlib、einops、tqdm；Car完整评价还需要原 VTK、SciPy、PyYAML 等依赖。
++
++激活环境后，脚本默认调用 `python`。也可选择现有解释器：
++
++```bash
++export CDLNO_PYTHON=/absolute/path/to/existing/environment/bin/python
++```
++
++脚本自动加入仓库根目录到 `PYTHONPATH`，并切到原任务工作目录，所以无须为这些命令重装共享包。默认 `MPLBACKEND=Agg` 用于远端无显示绘图；不改变计算精度，不自动开启AMP/TF32/compile。`--gpu` 原样转发：Car按设备索引选择，NS沿用原入口的 `CUDA_VISIBLE_DEVICES` 设置。
++
++## 四条启动命令
++
++在远端仓库根目录执行。数据路径按实际情况修改；训练目录必须尚不存在，评估使用同一个已有目录。下面 Car 数据路径同时满足原完整阻力评价的固定路径要求。
++
++```bash
++cd /home/hwz/CDLNO
++
++# 1. Car训练：一个run、fold0、200epochs、batch1。
++bash tran_evaluate/car.sh train \
++  --data_dir /data/PDE_data/mlcfd_data/training_data \
++  --save_dir /data/PDE_data/mlcfd_data/preprocessed_data \
++  --run_dir /home/hwz/CDLNO/runs/CDLNO/car_entry_fold0 --gpu 0
++
++# 2. Car完整评价：训练完成后单独执行。
++bash tran_evaluate/car.sh eval \
++  --data_dir /data/PDE_data/mlcfd_data/training_data \
++  --save_dir /data/PDE_data/mlcfd_data/preprocessed_data \
++  --run_dir /home/hwz/CDLNO/runs/CDLNO/car_entry_fold0 --gpu 0
++
++# 3. NS训练：500epochs、batch2、10→10。
++bash tran_evaluate/ns.sh train \
++  --data_path /data/fno \
++  --cdlno-run-dir /home/hwz/CDLNO/runs/CDLNO/ns_entry --gpu 0
++
++# 4. NS评价：训练完成后单独执行。
++bash tran_evaluate/ns.sh eval \
++  --data_path /data/fno \
++  --cdlno-run-dir /home/hwz/CDLNO/runs/CDLNO/ns_entry --gpu 0
++```
++
++任何一条追加 `--dry-run` 只显示完整命令，**不会调用Python、读取数据、创建训练目录或加载模型**。`bash tran_evaluate/car.sh help` / `bash tran_evaluate/ns.sh help` 显示简要说明。支持从其他目录调用绝对脚本路径；数据/运行目录的相对路径按调用时工作目录解释，含空格的路径要加引号。
++
++## 数据和评价合同
++
++**Car：** `--data_dir` 是包含 `param0`…`param8` 的原始数据根目录；即使使用缓存，原loader仍要遍历这些目录。`--save_dir` 是**预处理数据目录**，不是checkpoint目录。默认 `--preprocessed 1` 使用你已有的缓存；只有实际没有缓存、且你要运行原预处理时才在训练命令追加 `--preprocessed 0`。评价仍沿用原入口 `preprocessed=True`。不要混用不同数据版本/归一化缓存。
++
++按完整官方数据，fold0为789训练、100测试；实际数量由原目录内容决定，本次未查验真实文件。x7（xyz3、sdf1、normal3）→ `[N,velocity3+pressure1]`，保持表面mask与节点顺序。反向目标是 `MSE(全部节点速度3) + 0.5*MSE(表面压力)`；每图更新一次，无多图batch。每10epoch及最后一轮验证。OneCycle保留原 `total_steps=(len(train_dataset)//batch_size+1)*epochs`、`final_div_factor=1000`，不擅自修正其步数。lr0.001是OneCycle的max_lr，不是全程恒定学习率。
++
++**Car原代码有两项已确认的限制，原文件保持：**
++
++1. `utils/drag_coefficient.py::cal_coefficient` 固定读取 `/data/PDE_data/mlcfd_data/training_data/param0/<sample>/...vtk`。单改 `--data_dir` **不能**重定向阻力几何；完整评价必须用fold0，原始数据必须在该固定路径可访问，且与传入 `--data_dir` 是同一份数据。已存在的同数据目录符号链接可用，脚本不自动建立链接或搬移数据。`check_car_eval.py` 在调用入口前检查此限制，避免混用几何算错指标；此检查不替代真实文件完整性校验。其他fold可以训练，**当前完整阻力评估脚本明确拒绝其他fold**。
++2. `train.py` 返回压力/速度损失，但外层按速度/压力接收，导致进度条和最终JSON的 `train_loss/val_loss` 汇总实际为 `pressure + 0.5*velocity`。内部 `total_loss.backward()` 正确使用 `velocity + 0.5*pressure`，训练目标没有颠倒。不要把日志汇总当成实际优化目标；评价指标由原 `main_evaluation.py` 单独计算。此继承问题本轮没有改动。
++
++Car评价保留反归一化、表面压力与体积速度相对L2/RMSE、阻力误差及Spearman；保留原系数实现与计时。原模型forward计时未做CUDA同步，不能把它当作严格GPU性能基准。训练/评价仍会构造原图/geom，不能将模型不用它解释为可以删除数据处理。
++
++**NS：** `--data_path /data/fno` 对应文件：
++
++```text
++/data/fno/NavierStokes_V1e-5_N1200_T20/NavierStokes_V1e-5_N1200_T20.mat
++```
++
++MAT字段 `u`，原协议 `[1200,64,64,20]`，前1000训练、后200测试，前10帧输入、后10帧标签。每次模型调用 `x[B,4096,2], fx[B,4096,10] → [B,4096,1]`；规则索引reference64替换xy再拼fx10，stem74，不新增时间编码或normalizer。
++
++训练每步回填真值，10个单步relative L2累加后一次backward/optimizer/scheduler更新；每epoch验证和独立eval均回填预测。每个物理时间步重新执行完整模型和建立局部历史，无跨时间latent缓存。独立eval输出全10帧relative L2。保持 `downsample=1`；原评价绘图硬编码64×64，自选下采样不能声称完整绘图仍兼容。
++
++## checkpoint、覆盖参数与验收范围
++
++Car在最后一轮保存整模型 `run/model_200.pth` 和 `log_200.json`；非默认epochs对应文件名改变。NS按原每100epoch（含ep0）及末轮频率写 `run/model.pt`，最终文件为最后保存的权重，不自动选“best”。两者都有 `architecture.json`；不是包含optimizer状态的resume协议。
++
++训练拒绝复用已有run目录，避免覆盖。eval先读已有sidecar再比较，随后严格加载，结果写入新的 `eval_*` 子目录，不覆盖sidecar/权重。Car整模型仅使用项目已有的局部可信 `weights_only=False` 加载；必须来自你信任的训练产物。
++
++用户参数位于默认参数后。改变d/h/L/F/M/FFN/mode时在新run训练，评价重复相同架构；Car还必须匹配fold/epochs/weight/r/cfd_mesh。`chunk`属于运行参数，可在同一checkpoint上改变；CDPA off/entry/every_block属于架构配置，不能只在eval临时换模式。
++
++```bash
++# 例：只核查chunk=1的加载命令，不实际评价。
++bash tran_evaluate/car.sh eval --run_dir runs/CDLNO/car_entry_fold0 \
++  --cdpa_source_chunk_size 1 --dry-run
++bash tran_evaluate/ns.sh eval --cdlno-run-dir runs/CDLNO/ns_entry \
++  --cdpa-source-chunk-size 1 --dry-run
++```
++
++本轮已运行的无数据回归、脚本实参检查和冻结证据见 [训练启动审查报告](../docs/CDLNO_TRAINING_LAUNCH_REVIEW.md)。合成前反向、真实PyG对象接口、checkpoint及本地小张量GPU成功，不证明真实文件读取完整、远端新模型环境兼容、收敛、论文精度或真实epoch耗时；这些需要你接下来运行实际实验得到。
+--- /dev/null
++++ b/tran_evaluate/_common.sh
+@@ -0,0 +1,55 @@
++#!/usr/bin/env bash
++# Shared command dispatch only; no model, loader, optimizer or time-loop code.
++
++cdlno_dispatch() {
++    local task_project="$1" task_entry="$2"
++    shift 2
++    local task_arg task_flag task_value task_dry_run=0
++    local -a task_args=()
++    # Resolve user paths before changing to the original project working directory.
++    while (($#)); do
++        task_arg="$1"
++        shift
++        case "$task_arg" in
++            --dry-run) task_dry_run=1 ;;
++            --data_dir|--save_dir|--run_dir|--data_path|--cdlno-run-dir)
++                if (($# == 0)) || [[ -z "$1" || "$1" == --* ]]; then
++                    printf 'Missing value for %s\n' "$task_arg" >&2
++                    return 2
++                fi
++                task_value="$1"
++                shift
++                [[ "$task_value" = /* ]] || task_value="$PWD/$task_value"
++                task_args+=("$task_arg" "$task_value")
++                ;;
++            --data_dir=*|--save_dir=*|--run_dir=*|--data_path=*|--cdlno-run-dir=*)
++                task_flag="${task_arg%%=*}"
++                task_value="${task_arg#*=}"
++                if [[ -z "$task_value" ]]; then
++                    printf 'Missing value for %s\n' "$task_flag" >&2
++                    return 2
++                fi
++                [[ "$task_value" = /* ]] || task_value="$PWD/$task_value"
++                task_args+=("$task_flag=$task_value")
++                ;;
++            *) task_args+=("$task_arg") ;;
++        esac
++    done
++    local task_python="${CDLNO_PYTHON:-python}"
++    export PYTHONPATH="${cdlno_repo_root}${PYTHONPATH:+:${PYTHONPATH}}"
++    # -u preserves prompt progress/log output; plotting still uses original code.
++    export MPLBACKEND="${MPLBACKEND:-Agg}"
++    printf 'Working directory: %s\n' "$cdlno_repo_root/$task_project"
++    printf 'Command:'
++    printf ' %q' "$task_python" -u "$task_entry" "${task_args[@]}"
++    printf '\n'
++    if ((task_dry_run)); then
++        printf 'DRY RUN: command only; no Python entry, data, training or evaluation executed.\n'
++        return 0
++    fi
++    if [[ "$task_project" == Car-Design-ShapeNetCar && "$task_entry" == main_evaluation.py ]]; then
++        "$task_python" -B "$cdlno_repo_root/tran_evaluate/check_car_eval.py" "${task_args[@]}" || return $?
++    fi
++    cd "$cdlno_repo_root/$task_project"
++    exec "$task_python" -u "$task_entry" "${task_args[@]}"
++}
+--- a/tran_evaluate/car.sh
++++ b/tran_evaluate/car.sh
+@@ -0,0 +1,45 @@
++#!/usr/bin/env bash
++set -euo pipefail
++
++cdlno_script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++cdlno_repo_root="$(cd -- "$cdlno_script_dir/.." && pwd)"
++source "$cdlno_script_dir/_common.sh"
++
++case "${1:-help}" in
++    train) cdlno_entry=main.py ;;
++    eval) cdlno_entry=main_evaluation.py ;;
++    help|-h|--help)
++        cat <<'USAGE'
++Usage: bash tran_evaluate/car.sh train|eval [original entry options] [--dry-run]
++
++CDLNO: d256/h8/L8/F2/M64, FFN ratios2, entry CDPA, chunk0.
++Original Car protocol: fold0, epochs200, batch1, Adam/OneCycleLR, reg0.5.
++
++Train: --data_dir RAW_ROOT --save_dir PREPROCESSED_ROOT --run_dir NEW_RUN
++Eval:  --data_dir RAW_ROOT --save_dir PREPROCESSED_ROOT --run_dir EXISTING_RUN
++--save_dir means the preprocessed dataset, NOT the model checkpoint directory.
++Training uses existing preprocessed data by default (--preprocessed 1).
++
++Full original drag evaluation requires fold0 and raw data accessible at
++/data/PDE_data/mlcfd_data/training_data/param0 (hardcoded upstream path).
++Repeat any custom model/fold/epoch settings during eval; chunk may change.
++Arguments supplied last override defaults. --dry-run executes no Python/data.
++Use CDLNO_PYTHON=/absolute/path/to/python to select your existing environment.
++See tran_evaluate/README.md for paths, metrics and inherited limitations.
++USAGE
++        exit 0 ;;
++    *) printf 'Expected train, eval or help; see %s help\n' "$0" >&2; exit 2 ;;
++esac
++shift
++
++cdlno_args=(
++    --cfd_model CDLNO
++    --n_hidden 256 --n_layers 8 --n_heads 8 --slice_num 64
++    --front_blocks 2 --mlp_ratio 2 --latent_ffn_ratio 2 --dropout 0
++    --cdpa_mode entry --cdpa_source_chunk_size 0
++    --fold_id 0 --nb_epochs 200 --weight 0.5 --r 0.2 --gpu 0
++)
++if [[ "$cdlno_entry" == main.py ]]; then
++    cdlno_args+=(--batch_size 1 --lr 0.001 --val_iter 10 --preprocessed 1)
++fi
++cdlno_dispatch Car-Design-ShapeNetCar "$cdlno_entry" "${cdlno_args[@]}" "$@"
+--- /dev/null
++++ b/tran_evaluate/check_car_eval.py
+@@ -0,0 +1,45 @@
++"""Reject unsupported original Car drag-evaluation paths before dataset loading.
++
++The frozen upstream cal_coefficient reads a fixed raw root and param0. This
++check does not read data contents, rewrite paths, create links, or load models.
++"""
++import argparse
++import ast
++from pathlib import Path
++
++
++def main():
++    # Use only the real parser definitions, never import/execute the entry. This
++    # also prevents argparse abbreviations (--fold, --nb_epochs=...) bypassing
++    # the guard. Model-specific arguments are irrelevant to this path check.
++    entry = Path(__file__).resolve().parents[1] / 'Car-Design-ShapeNetCar/main_evaluation.py'
++    nodes = []
++    for node in ast.parse(entry.read_text()).body:
++        if (isinstance(node, ast.Assign) and isinstance(node.targets[0], ast.Name)
++                and node.targets[0].id == 'parser'):
++            nodes.append(node)
++        elif (isinstance(node, ast.Expr) and isinstance(node.value, ast.Call)
++              and isinstance(node.value.func, ast.Attribute)
++              and ast.unparse(node.value.func.value) == 'parser'
++              and node.value.func.attr == 'add_argument'):
++            nodes.append(node)
++    scope = {'argparse': argparse}
++    exec(compile(ast.Module(body=nodes, type_ignores=[]), '<car-eval-arguments-only>', 'exec'), scope)
++    parser = scope['parser']
++    parser.add_argument('--run_dir', type=Path, required=True)
++    args, _ = parser.parse_known_args()
++    if args.fold_id != 0:
++        parser.error('Original drag evaluator hardcodes param0: full evaluation currently requires --fold_id 0. No metrics were changed.')
++    original_root = Path('/data/PDE_data/mlcfd_data/training_data')
++    if not (original_root / 'param0').is_dir():
++        parser.error(f'Original drag evaluator requires {original_root}/param0. Make the same raw dataset accessible at that path before full evaluation; --data_dir alone does not redirect drag geometry.')
++    if args.data_dir and Path(args.data_dir).resolve() != original_root.resolve():
++        parser.error('--data_dir and the original hardcoded drag root must resolve to the same raw dataset; otherwise field/geometry evaluation can disagree.')
++    for name in ('architecture.json', f'model_{args.nb_epochs}.pth'):
++        if not (args.run_dir / name).is_file():
++            parser.error(f'Missing existing checkpoint artifact: {args.run_dir / name}')
++    print('Car evaluation path/fold check passed; model sidecar validation remains in CarRun.')
++
++
++if __name__ == '__main__':
++    main()
+--- a/tran_evaluate/ns.sh
++++ b/tran_evaluate/ns.sh
+@@ -0,0 +1,43 @@
++#!/usr/bin/env bash
++set -euo pipefail
++
++cdlno_script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++cdlno_repo_root="$(cd -- "$cdlno_script_dir/.." && pwd)"
++source "$cdlno_script_dir/_common.sh"
++
++case "${1:-help}" in
++    train) cdlno_eval=0 ;;
++    eval) cdlno_eval=1 ;;
++    help|-h|--help)
++        cat <<'USAGE'
++Usage: bash tran_evaluate/ns.sh train|eval [original exp options] [--dry-run]
++
++CDLNO: d256/h8/L8/F2/M64, FFN ratios2, entry CDPA, chunk0, ref8.
++Original NS protocol: 64x64, 10->10, epochs500, batch2, AdamW/OneCycleLR,
++lr0.001, weight_decay1e-5, NO gradient clipping by default.
++Training feeds back truth; evaluation feeds back predictions.
++
++Train: --data_path DATA_ROOT --cdlno-run-dir NEW_RUN
++Eval:  --data_path DATA_ROOT --cdlno-run-dir EXISTING_RUN
++Required MAT: DATA_ROOT/NavierStokes_V1e-5_N1200_T20/NavierStokes_V1e-5_N1200_T20.mat
++Repeat custom architecture settings during eval; chunk may change.
++Arguments supplied last override defaults. --dry-run executes no Python/data.
++Use CDLNO_PYTHON=/absolute/path/to/python to select your existing environment.
++--gpu is forwarded unchanged to the original CUDA_VISIBLE_DEVICES handling.
++See tran_evaluate/README.md for losses, checkpoints and validation limits.
++USAGE
++        exit 0 ;;
++    *) printf 'Expected train, eval or help; see %s help\n' "$0" >&2; exit 2 ;;
++esac
++shift
++
++# Omit --max_grad_norm: the CDLNO NS preset uses null, matching original None.
++# Passing 0 would zero finite gradients; it is NOT a way to disable clipping.
++cdlno_dispatch PDE-Solving-StandardBenchmark exp_ns.py \
++    --model CDLNO --gpu 0 \
++    --n-hidden 256 --n-layers 8 --n-heads 8 --slice_num 64 \
++    --mlp_ratio 2 --front-blocks 2 --latent-ffn-ratio 2 \
++    --cdpa-mode entry --cdpa-source-chunk-size 0 --dropout 0 \
++    --unified_pos 1 --ref 8 --downsample 1 \
++    --lr 0.001 --epochs 500 --batch-size 2 --weight_decay 1e-5 \
++    --eval "$cdlno_eval" "$@"

@@ -1,0 +1,24 @@
+{
+  "task": "shapenet-car",
+  "model": {
+    "n_hidden": 256,
+    "n_layers": 8,
+    "n_heads": 8,
+    "slice_num": 64,
+    "front_blocks": 2,
+    "mlp_ratio": 2,
+    "latent_ffn_ratio": 2,
+    "dropout": 0.0,
+    "cdpa_mode": "entry",
+    "cdpa_source_chunk_size": 0
+  },
+  "training": {
+    "nb_epochs": 200,
+    "batch_size": 1,
+    "lr": 0.001,
+    "weight": 0.5,
+    "fold_id": 0,
+    "val_iter": 10,
+    "preprocessed": 1
+  }
+}

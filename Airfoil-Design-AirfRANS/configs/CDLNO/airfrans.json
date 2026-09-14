@@ -1,0 +1,24 @@
+{
+  "task": "airfrans",
+  "model": {
+    "n_hidden": 256,
+    "n_layers": 8,
+    "n_heads": 8,
+    "slice_num": 64,
+    "front_blocks": 2,
+    "mlp_ratio": 2,
+    "latent_ffn_ratio": 2,
+    "dropout": 0.0,
+    "cdpa_mode": "entry",
+    "cdpa_source_chunk_size": 0
+  },
+  "training_source": "params.yaml:CDLNO (copied from current Transolver)",
+  "initial_training": {
+    "batch_size": 1,
+    "nb_epochs": 398,
+    "lr": 0.001,
+    "max_neighbors": 64,
+    "subsampling": 32000,
+    "r": 0.05
+  }
+}

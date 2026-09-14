@@ -5,11 +5,12 @@ from dataset.dataset import Dataset
 import os.path as osp
 import argparse
 import numpy as np
+from cdlno_entry import parse_args as parse_cdlno_args, resolve_hparams, AirRun
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--my_path', default='/data/path', type=str)  # data save path
 parser.add_argument('--save_path', default='./', type=str)  # model save path
-args = parser.parse_args()
+args = parse_cdlno_args(parser, evaluation=True)
 
 # Compute the normalization used for the training
 
@@ -23,7 +24,7 @@ else:
 data_root_dir = args.my_path
 ckpt_root_dir = args.save_path
 
-tasks = ['full']
+tasks = [args.task]
 
 for task in tasks:
     print('Generating results for task ' + task + '...')
@@ -43,22 +44,31 @@ for task in tasks:
 
     # Compute the scores on the test set
 
-    model_names = ['Transolver']
+    model_names = [args.model]
     models = []
     hparams = []
 
     for model in model_names:
-        model_path = osp.join(ckpt_root_dir, 'metrics', task, model, model)
-        mod = torch.load(model_path)
+        if model == 'CDLNO':
+            with open('params.yaml', 'r') as f:
+                requested_hparams = resolve_hparams(args, yaml.safe_load(f)[model])
+            cdlno_run = AirRun(args, requested_hparams, device=device, evaluation=True)
+            mod = cdlno_run.load()
+        else:
+            model_path = osp.join(ckpt_root_dir, 'metrics', task, model, model)
+            # Existing local model lists are trusted whole-object checkpoints.
+            mod = torch.load(model_path, map_location=device, weights_only=False)
         print(mod)
         mod = [m.to(device) for m in mod]
         models.append(mod)
 
         with open('params.yaml', 'r') as f:
             hparam = yaml.safe_load(f)[model]
+            if model == 'CDLNO':
+                hparam = cdlno_run.hparams
             hparams.append(hparam)
 
-    results_dir = osp.join(ckpt_root_dir, 'scores', task)
+    results_dir = cdlno_run.result_dir if args.model == 'CDLNO' else osp.join(ckpt_root_dir, 'scores', task)
     coefs = metrics.Results_test(device, models, hparams, coef_norm, data_dir, results_dir, n_test=3, criterion='MSE',
                                  s=s)
     # models can be a stack of the same model (for example MLP) on the task s, if you have another stack of another model (for example GraphSAGE)

@@ -6,6 +6,7 @@ import argparse
 from dataset.load_dataset import load_train_val_fold
 from dataset.dataset import GraphDataset
 from models.Transolver import Model
+from models.cdlno_run import parse_args as parse_cdlno_args, model_kwargs as cdlno_model_kwargs, CarRun
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--data_dir', default='/data/PDE_data/mlcfd_data/training_data')
@@ -22,7 +23,7 @@ parser.add_argument('--lr', default=0.001, type=float)
 parser.add_argument('--batch_size', default=1, type=int)
 parser.add_argument('--nb_epochs', default=200, type=int)
 parser.add_argument('--preprocessed', default=1, type=int)
-args = parser.parse_args()
+args = parse_cdlno_args(parser)
 print(args)
 
 hparams = {'lr': args.lr, 'batch_size': args.batch_size, 'nb_epochs': args.nb_epochs}
@@ -35,6 +36,7 @@ train_data, val_data, coef_norm = load_train_val_fold(args, preprocessed=args.pr
 train_ds = GraphDataset(train_data, use_cfd_mesh=args.cfd_mesh, r=args.r)
 val_ds = GraphDataset(val_data, use_cfd_mesh=args.cfd_mesh, r=args.r)
 
+cdlno_run = None
 if args.cfd_model == 'Transolver':
     model = Model(n_hidden=256, n_layers=8, space_dim=7,
                   fun_dim=0,
@@ -42,8 +44,12 @@ if args.cfd_model == 'Transolver':
                   mlp_ratio=2, out_dim=4,
                   slice_num=32,
                   unified_pos=0).cuda()
+elif args.cfd_model == 'CDLNO':
+    from models.CDLNO import Model as CDLNOModel
+    model = CDLNOModel(**cdlno_model_kwargs(args)).to(device)
+    cdlno_run = CarRun(args, device=device, model=model)
 
-path = f'metrics/{args.cfd_model}/{args.fold_id}/{args.nb_epochs}_{args.weight}'
+path = str(cdlno_run.directory) if cdlno_run is not None else f'metrics/{args.cfd_model}/{args.fold_id}/{args.nb_epochs}_{args.weight}'
 if not os.path.exists(path):
     os.makedirs(path)
 

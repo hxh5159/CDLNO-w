@@ -10,6 +10,7 @@ from utils.drag_coefficient import cal_coefficient
 from dataset.load_dataset import load_train_val_fold_file
 from dataset.dataset import GraphDataset
 import scipy as sc
+from models.cdlno_run import parse_args as parse_cdlno_args, CarRun
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--data_dir', default='/data/PDE_data/mlcfd_data/training_data')
@@ -20,8 +21,8 @@ parser.add_argument('--cfd_model')
 parser.add_argument('--cfd_mesh', action='store_true')
 parser.add_argument('--r', default=0.2, type=float)
 parser.add_argument('--weight', default=0.5, type=float)
-parser.add_argument('--nb_epochs', default=200, type=float)
-args = parser.parse_args()
+parser.add_argument('--nb_epochs', default=200, type=int)
+args = parse_cdlno_args(parser, evaluation=True)
 print(args)
 
 
@@ -32,13 +33,22 @@ device = torch.device(f'cuda:{args.gpu}' if use_cuda else 'cpu')
 train_data, val_data, coef_norm, vallst = load_train_val_fold_file(args, preprocessed=True)
 val_ds = GraphDataset(val_data, use_cfd_mesh=args.cfd_mesh, r=args.r)
 
-path = f'metrics/{args.cfd_model}/{args.fold_id}/{args.nb_epochs}_{args.weight}'
-model = torch.load(os.path.join(path, f'model_{args.nb_epochs}.pth')).to(device)
+if args.cfd_model == 'CDLNO':
+    cdlno_run = CarRun(args, device=device, evaluation=True)
+    path = str(cdlno_run.directory)
+    model = cdlno_run.load()
+    results_dir = cdlno_run.result_dir
+else:
+    path = f'metrics/{args.cfd_model}/{args.fold_id}/{args.nb_epochs}_{args.weight}'
+    # Original checkpoints are trusted full-model files saved by this project.
+    model = torch.load(os.path.join(path, f'model_{args.nb_epochs}.pth'),
+                       map_location=device, weights_only=False).to(device)
+    results_dir = './results/' + args.cfd_model + '/'
 
 test_loader = DataLoader(val_ds, batch_size=1)
 
-if not os.path.exists('./results/' + args.cfd_model + '/'):
-    os.makedirs('./results/' + args.cfd_model + '/')
+if not os.path.exists(results_dir):
+    os.makedirs(results_dir)
 
 with torch.no_grad():
     model.eval()
@@ -73,8 +83,8 @@ with torch.no_grad():
             out_denorm = out * std + mean
             y_denorm = targets * std + mean
 
-        np.save('./results/' + args.cfd_model + '/' + str(index) + '_pred.npy', out_denorm.detach().cpu().numpy())
-        np.save('./results/' + args.cfd_model + '/' + str(index) + '_gt.npy', y_denorm.detach().cpu().numpy())
+        np.save(results_dir + str(index) + '_pred.npy', out_denorm.detach().cpu().numpy())
+        np.save(results_dir + str(index) + '_gt.npy', y_denorm.detach().cpu().numpy())
 
         pred_coef = cal_coefficient(vallst[index].split('/')[1], pred_press[:, None].detach().cpu().numpy(),
                                     pred_surf_velo.detach().cpu().numpy())

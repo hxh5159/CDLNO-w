@@ -1,6 +1,7 @@
 import os
 import matplotlib.pyplot as plt
 import argparse
+from cdlno_entry import parse_args as parse_cdlno_args, model_kwargs as cdlno_model_kwargs, StaticRun
 import scipy.io as scio
 import numpy as np
 import torch
@@ -29,7 +30,7 @@ parser.add_argument('--slice_num', type=int, default=32)
 parser.add_argument('--eval', type=int, default=0)
 parser.add_argument('--save_name', type=str, default='ns_2d_UniPDE')
 parser.add_argument('--data_path', type=str, default='/data/fno')
-args = parser.parse_args()
+args = parse_cdlno_args(parser, 'ns')
 
 os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
 
@@ -89,19 +90,37 @@ def main():
 
     print("Dataloading is over.")
 
-    model = get_model(args).Model(space_dim=2,
-                                  n_layers=args.n_layers,
-                                  n_hidden=args.n_hidden,
-                                  dropout=args.dropout,
-                                  n_head=args.n_heads,
-                                  Time_Input=False,
-                                  mlp_ratio=args.mlp_ratio,
-                                  fun_dim=T_in,
-                                  out_dim=1,
-                                  slice_num=args.slice_num,
-                                  ref=args.ref,
-                                  unified_pos=args.unified_pos,
-                                  H=h, W=h).cuda()
+    cdlno_run = None
+    if args.model == 'CDLNO':
+        model = get_model(args).Model(space_dim=2,
+                                      n_layers=args.n_layers,
+                                      n_hidden=args.n_hidden,
+                                      dropout=args.dropout,
+                                      n_head=args.n_heads,
+                                      Time_Input=False,
+                                      mlp_ratio=args.mlp_ratio,
+                                      fun_dim=T_in,
+                                      out_dim=1,
+                                      slice_num=args.slice_num,
+                                      ref=args.ref,
+                                      unified_pos=args.unified_pos,
+                                      H=h, W=h, **cdlno_model_kwargs(args)).cuda()
+        cdlno_run = StaticRun(args, model)
+    else:
+        model = get_model(args).Model(space_dim=2,
+                                      n_layers=args.n_layers,
+                                      n_hidden=args.n_hidden,
+                                      dropout=args.dropout,
+                                      n_head=args.n_heads,
+                                      Time_Input=False,
+                                      mlp_ratio=args.mlp_ratio,
+                                      fun_dim=T_in,
+                                      out_dim=1,
+                                      slice_num=args.slice_num,
+                                      ref=args.ref,
+                                      unified_pos=args.unified_pos,
+                                      H=h, W=h).cuda()
+    results_dir = cdlno_run.result_dir if cdlno_run is not None else './results/' + save_name + '/'
 
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 
@@ -114,13 +133,16 @@ def main():
     myloss = TestLoss(size_average=False)
 
     if eval:
-        model.load_state_dict(torch.load("./checkpoints/" + save_name + ".pt"), strict=False)
+        if cdlno_run is not None:
+            cdlno_run.load(model)
+        else:
+            model.load_state_dict(torch.load("./checkpoints/" + save_name + ".pt"), strict=False)
         model.eval()
         showcase = 10
         id = 0
 
-        if not os.path.exists('./results/' + save_name + '/'):
-            os.makedirs('./results/' + save_name + '/')
+        if not os.path.exists(results_dir):
+            os.makedirs(results_dir)
 
         test_l2_full = 0
         with torch.no_grad():
@@ -145,7 +167,7 @@ def main():
                     plt.colorbar()
                     plt.clim(-3, 3)
                     plt.savefig(
-                        os.path.join('./results/' + save_name + '/',
+                        os.path.join(results_dir,
                                      "case_" + str(id) + "_pred_" + str(20) + ".pdf"))
                     plt.close()
                     # ============ #
@@ -155,7 +177,7 @@ def main():
                     plt.colorbar()
                     plt.clim(-3, 3)
                     plt.savefig(
-                        os.path.join('./results/' + save_name + '/', "case_" + str(id) + "_gt_" + str(20) + ".pdf"))
+                        os.path.join(results_dir, "case_" + str(id) + "_gt_" + str(20) + ".pdf"))
                     plt.close()
                     # ============ #
                     plt.figure()
@@ -165,7 +187,7 @@ def main():
                     plt.colorbar()
                     plt.clim(-2, 2)
                     plt.savefig(
-                        os.path.join('./results/' + save_name + '/', "case_" + str(id) + "_error_" + str(20) + ".pdf"))
+                        os.path.join(results_dir, "case_" + str(id) + "_error_" + str(20) + ".pdf"))
                     plt.close()
                 test_l2_full += myloss(pred.reshape(bsz, -1), yy.reshape(bsz, -1)).item()
             print(test_l2_full / ntest)
@@ -229,15 +251,24 @@ def main():
                         test_l2_full / ntest))
 
             if ep % 100 == 0:
-                if not os.path.exists('./checkpoints'):
-                    os.makedirs('./checkpoints')
-                print('save model')
-                torch.save(model.state_dict(), os.path.join('./checkpoints', save_name + '.pt'))
+                if cdlno_run is not None:
+                    cdlno_run.save(model)
+                else:
+                    if not os.path.exists('./checkpoints'):
+                        os.makedirs('./checkpoints')
+                    print('save model')
+                    torch.save(model.state_dict(), os.path.join('./checkpoints', save_name + '.pt'))
 
-        if not os.path.exists('./checkpoints'):
-            os.makedirs('./checkpoints')
-        print('save model')
-        torch.save(model.state_dict(), os.path.join('./checkpoints', save_name + '.pt'))
+        if cdlno_run is not None:
+
+            cdlno_run.save(model)
+
+        else:
+
+            if not os.path.exists('./checkpoints'):
+                os.makedirs('./checkpoints')
+            print('save model')
+            torch.save(model.state_dict(), os.path.join('./checkpoints', save_name + '.pt'))
 
 
 if __name__ == "__main__":

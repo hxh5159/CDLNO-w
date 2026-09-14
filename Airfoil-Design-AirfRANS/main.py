@@ -5,6 +5,7 @@ import utils.metrics as metrics
 from dataset.dataset import Dataset
 import os.path as osp
 import numpy as np
+from cdlno_entry import parse_args as parse_cdlno_args, model_kwargs as cdlno_model_kwargs, resolve_hparams, AirRun
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--model', help='The model you want to train, choose between MLP, GraphSAGE, PointNet, GUNet',
@@ -22,7 +23,7 @@ parser.add_argument('--my_path',
                     default='/data/path', type=str)
 parser.add_argument('--save_path',
                     default='metrics', type=str)
-args = parser.parse_args()
+args = parse_cdlno_args(parser)
 
 with open(args.my_path + '/manifest.json', 'r') as f:
     manifest = json.load(f)
@@ -47,6 +48,11 @@ else:
 with open('params.yaml', 'r') as f:  # hyperparameters of the model
     hparams = yaml.safe_load(f)[args.model]
 
+cdlno_run = None
+if args.model == 'CDLNO':
+    hparams = resolve_hparams(args, hparams)
+    cdlno_run = AirRun(args, hparams, device=device)
+
 from models.MLP import MLP
 
 models = []
@@ -64,6 +70,10 @@ for i in range(args.nmodel):
                            out_dim=4,
                            slice_num=32,
                            unified_pos=1).cuda()
+    elif args.model == 'CDLNO':
+        from models.CDLNO import Model
+
+        model = Model(**cdlno_model_kwargs(args)).to(device)
     else:
         encoder = MLP(hparams['encoder'], batch_norm=False)
         decoder = MLP(hparams['decoder'], batch_norm=False)
@@ -87,28 +97,30 @@ for i in range(args.nmodel):
 
             model = GUNet(hparams, encoder, decoder)
 
-    log_path = osp.join(args.save_path, args.task, args.model)  # path where you want to save log and figures
+    log_path = cdlno_run.member_dir(i) if cdlno_run is not None else osp.join(args.save_path, args.task, args.model)
     print('start training')
     model = train.main(device, train_dataset, val_dataset, model, hparams, log_path,
                        criterion='MSE_weighted', val_iter=10, reg=args.weight, name_mod=args.model, val_sample=True)
     print('end training')
     models.append(model)
-torch.save(models, osp.join(args.save_path, args.task, args.model, args.model))
+torch.save(models, cdlno_run.checkpoint if cdlno_run is not None else osp.join(args.save_path, args.task, args.model, args.model))
 
+score_path = cdlno_run.result_dir if cdlno_run is not None else 'scores'
+score_array_path = score_path if cdlno_run is not None else osp.join('scores', args.task)
 if bool(args.score):
     print('start score')
     s = args.task + '_test' if args.task != 'scarce' else 'full_test'
-    coefs = metrics.Results_test(device, [models], [hparams], coef_norm, args.my_path, path_out='scores', n_test=3,
+    coefs = metrics.Results_test(device, [models], [hparams], coef_norm, args.my_path, path_out=score_path, n_test=3,
                                  criterion='MSE', s=s)
     # models can be a stack of the same model (for example MLP) on the task s, if you have another stack of another model (for example GraphSAGE)
     # you can put in model argument [models_MLP, models_GraphSAGE] and it will output the results for both models (mean and std) in an ordered array.
-    np.save(osp.join('scores', args.task, 'true_coefs'), coefs[0])
-    np.save(osp.join('scores', args.task, 'pred_coefs_mean'), coefs[1])
-    np.save(osp.join('scores', args.task, 'pred_coefs_std'), coefs[2])
+    np.save(osp.join(score_array_path, 'true_coefs'), coefs[0])
+    np.save(osp.join(score_array_path, 'pred_coefs_mean'), coefs[1])
+    np.save(osp.join(score_array_path, 'pred_coefs_std'), coefs[2])
     for n, file in enumerate(coefs[3]):
-        np.save(osp.join('scores', args.task, 'true_surf_coefs_' + str(n)), file)
+        np.save(osp.join(score_array_path, 'true_surf_coefs_' + str(n)), file)
     for n, file in enumerate(coefs[4]):
-        np.save(osp.join('scores', args.task, 'surf_coefs_' + str(n)), file)
-    np.save(osp.join('scores', args.task, 'true_bls'), coefs[5])
-    np.save(osp.join('scores', args.task, 'bls'), coefs[6])
+        np.save(osp.join(score_array_path, 'surf_coefs_' + str(n)), file)
+    np.save(osp.join(score_array_path, 'true_bls'), coefs[5])
+    np.save(osp.join(score_array_path, 'bls'), coefs[6])
     print('end score')

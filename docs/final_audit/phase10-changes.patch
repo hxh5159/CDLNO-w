@@ -1,0 +1,776 @@
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -2,7 +2,7 @@
+ 
+ ## Current phase and reading order
+ 
+-The user requires **one explicitly assigned implementation phase per turn**. Complete necessary changes and verification autonomously within that phase, then stop for user review and an explicit instruction for the next phase. Never proceed through the entire plan automatically. This user instruction replaces the all-at-once authorization model in v1.2 §11. **Phases 0–8 were reviewed and approved. Phase9 is complete, awaiting review: data-free performance tools and thin matched LRSA only. Phase10 is not authorized.** All eight task interfaces/configurations are integrated; no real-data training or sampling evaluation has run. Read [the phase-9 performance report](docs/CDLNO_PHASE9_PERFORMANCE.md) and [tool usage](docs/CDLNO_PERFORMANCE_TOOLS.md), then [the phase-8 AirfRANS report](docs/CDLNO_PHASE8_AIRFRANS.md), [the eight-task launch inventory](docs/CDLNO_TASK_LAUNCHERS.md), [the phase-7 ShapeNet-Car report](docs/CDLNO_PHASE7_SHAPENET_CAR.md), [the phase-6 temporal-task report](docs/CDLNO_PHASE6_TEMPORAL_TASKS.md), [the phase-5 static-task report](docs/CDLNO_PHASE5_STATIC_TASKS.md), [the phase-4 core report](docs/CDLNO_PHASE4_CORE.md), [the phase-3 CDPA report](docs/CDLNO_PHASE3_CDPA.md), and [the phase-2 module report](docs/CDLNO_PHASE2_MODULES.md) before continuing; further integration requires a new explicit instruction.
++The user requires **one explicitly assigned implementation phase per turn**. Complete necessary changes and verification autonomously within that phase, then stop for user review and an explicit instruction for the next phase. Never proceed through the entire plan automatically. This user instruction replaces the all-at-once authorization model in v1.2 §11. **Phases 0–9 were reviewed and approved. Phase10 final audit and delivery are complete, awaiting user review. No real-data training, sampling evaluation, additional research or next phase is authorized.** All eight task interfaces/configurations are integrated; no real-data training or sampling evaluation has run. Read [the final implementation report](docs/CDLNO_IMPLEMENTATION_REPORT.md) and [requirements matrix](docs/CDLNO_REQUIREMENTS_MATRIX.md), then [the phase-9 performance report](docs/CDLNO_PHASE9_PERFORMANCE.md) and [tool usage](docs/CDLNO_PERFORMANCE_TOOLS.md), then [the phase-8 AirfRANS report](docs/CDLNO_PHASE8_AIRFRANS.md), [the eight-task launch inventory](docs/CDLNO_TASK_LAUNCHERS.md), [the phase-7 ShapeNet-Car report](docs/CDLNO_PHASE7_SHAPENET_CAR.md), [the phase-6 temporal-task report](docs/CDLNO_PHASE6_TEMPORAL_TASKS.md), [the phase-5 static-task report](docs/CDLNO_PHASE5_STATIC_TASKS.md), [the phase-4 core report](docs/CDLNO_PHASE4_CORE.md), [the phase-3 CDPA report](docs/CDLNO_PHASE3_CDPA.md), and [the phase-2 module report](docs/CDLNO_PHASE2_MODULES.md) before continuing; further integration requires a new explicit instruction.
+ 
+ Before future CDLNO work, read [docs/CDLNO_IMPLEMENTATION_STATUS.md](docs/CDLNO_IMPLEMENTATION_STATUS.md), [memory/current-state.md](memory/current-state.md), the [v1.2 plan](PLAN_CDLNO/CDPA_Transolver_Implementation_Plan_v1_2.md), and the [full-conversation review](memory/2026-09-13-exported-conversation-review.md). The [151-page conversation export](PLAN_CDLNO/比较模型架构.pdf) explains the design's evolution; it was read from start to finish on 2026-09-13. Design precedence is: **current/subsequent explicit user decisions → later confirmed conversation decisions → v1.2 complete plan → v1.1 historical supplement**. Distinguish confirmed choices from historical proposals and abandoned branches. Mathematical attachments explain/check the design; they do not authorize additional structures, losses, or research features.
+ 
+@@ -28,7 +28,7 @@
+ - `Car-Design-ShapeNetCar/`: ShapeNet car CFD surrogate. It preprocesses VTK data into PyTorch Geometric graphs, predicts velocity and pressure, and evaluates drag coefficient and rank correlation.
+ - `Airfoil-Design-AirfRANS/`: AirfRANS CFD surrogate. It reads the AirfRANS manifest and VTK/NumPy data, supports full/scarce/OOD Reynolds/OOD angle-of-attack splits, and evaluates flow fields and lift-related metrics.
+ 
+-The checked-out Git remote is `https://github.com/thuml/Transolver.git`. Keep the upstream citation and dataset attributions in place when modifying the repository.
++The repository is `https://github.com/thuml/Transolver.git`; the actual checked-out origin uses `git@github.com:thuml/Transolver.git` (same repository). Keep the upstream citation and dataset attributions in place when modifying the repository.
+ 
+ ## Scientific model contract
+ 
+@@ -176,7 +176,7 @@
+ 
+ AirRun preserves full-model saves (member_000/model etc) and the original models list (run-root CDLNO). Eval reads sidecar before local trusted weights_only=False/map_location loading, checks architecture/wrapper/task/nmodel/training and sampling settings, exact class/list length and strict state keys/shapes. Runtime chunk may change. Run/member/eval paths are isolated; no new resume.
+ 
+-Phase8: 13 focused tests and107 full regressions passed, no failures/errors/skips. Actual CUDA FP32 PyG checks for three modes passed separately. Two independent Air-cwd processes execute extracted real construction/save/evaluation-load branches without data loading. The complete entry ASTs, YAML old keys and21 frozen original Air files are checked. No actual sampling evaluation/VTK/radius_graph/metrics workflow, remote target or training has run. See phase8 report for evidence limits; phases9–10 require explicit authorization.
++Phase8: 13 focused tests and107 full regressions passed, no failures/errors/skips. Actual CUDA FP32 PyG checks for three modes passed separately. Two independent Air-cwd processes execute extracted real construction/save/evaluation-load branches without data loading. The complete entry ASTs, YAML old keys and21 frozen original Air files are checked. No actual sampling evaluation/VTK/radius_graph/metrics workflow, remote target or training has run. See phase8 report for its historical evidence limits; phase9 is now approved and phase10 delivery is complete.
+ 
+ 
+ ## Phase9 synthetic performance boundary (2026-09-14)
+@@ -188,3 +188,16 @@
+ Final 118/118 regressions passed (59.769s, no failures/errors/skips). Three sequential finite FP32 GPU cases produced 27 successful rows, preserving same-weight chunk0/1/2 outputs/all gradients: Elasticity matched at N972, Airfoil task presets at221x51/B4, and Airfoil matched at17x23/B2. Actual backend was efficient SDPA, not flash; all use TF32/AMP/compile off,5warmup/20samples, synchronized median/p90 and initialized AdamW state. Reports/logs are persistent under docs/performance/phase9. Earlier /tmp results disappeared at continuation and are not final evidence.
+ 
+ Elasticity entry reduces MACs but its synthetic train step was slower than original Transolver; additional small operators/launches and optimizer tensors are reported. Airfoil task presets differ in heads and must remain distinct from matched comparisons. Do not infer epoch speed, universal superiority or an optimal chunk from these finite noisy timings. Remote torch2.11/cu128, AMP/TF32-on/forced-other-backend/compile performance paths and true training remain unverified. No production package, task, dependency, data or training changes in this phase. See phase9 report for self-review and freeze evidence; stop for explicit phase10 authorization.
++
++
++## Phase10 final audit and delivery (2026-09-14)
++
++Read docs/CDLNO_IMPLEMENTATION_REPORT.md, docs/CDLNO_REQUIREMENTS_MATRIX.md and docs/final_audit/regression.log for the final evidence. All 119 tests passed in49.871s, zero failures/errors/skips; CPU mathematical/adapter/loss tests, real PyG2.3.1 Data/Batch integration, three original-cwd fresh-process loading, and six local GPU test methods actually ran. Local Python3.13.9/torch2.13+cu130/RTX5090 Laptop remains separate from the unrun remote Python3.10/3.11+torch2.11/cu128 target. No install or real training.
++
++A final test audit found that the old NS synthetic test ran only3 steps and the temporal AST test only checked selected strings. Do not describe those old checks as full10-step/whole-AST evidence. Phase10 changed only tests/test_temporal_standard.py: now both feedback paths run10 steps with window assertions and one training backward/step; Plasticity uses distinct per-sample times with time_fc gradients; both complete temporal exp ASTs project exactly to baseline. The final focused9 and full119 tests pass. No production/model/task/dependency changes were needed.
++
++README retains the original upstream text and adds CDLNO environment/eight-task/ablation/checkpoint/performance instructions. New provenance notices preserve Transolver MIT and IPOT MIT, retain Air ODbL, and explicitly record no license found in the audited LRSA snapshot. IPOT fixed-commit sources were re-read through GitHub raw; source SHA/URLs persist in docs/final_audit. Independent mathematical attachment files remain unlocated, so their full-text/proof-script validation is incomplete; this never authorizes additional structures.
++
++Baseline71 tracked files:58 byte-identical,12 previously approved integration files unchanged this phase,1 README addition retaining all original text. Phase10-start162-file manifest:156 unchanged, only6 approved test/document files changed; no unexpected deletions/changes. Freeze evidence and cumulative/current-phase patches persist in docs/final_audit. Full exp/main AST comparisons preserve data/loss/time/optimizer/evaluation semantics. Existing Car epoch/load compatibility exceptions and inherited baseline limitations are distinguished in the final report.
++
++No remaining known production defect was found after self-review. Unverified: real-data parsing/completeness, VTK/neighbor graphs/full sampling and coefficient evaluation, convergence/accuracy, real epoch efficiency, remote environment/editable install, full default GPU task matrix, theory attachments. Do not silently upgrade any of these from synthetic results. Any subsequent action requires an explicit user instruction; do not start training, commit/push or add research features.
+--- a/docs/CDLNO_IMPLEMENTATION_STATUS.md
++++ b/docs/CDLNO_IMPLEMENTATION_STATUS.md
+@@ -2,7 +2,7 @@
+ 
+ 更新日期：2026-09-14。
+ 
+-**当前状态：阶段0–8已获用户审查通过；阶段9无数据性能工具/matched LRSA、有限合成计时与自审已完成，等待审查。118项回归及27行GPU结果通过；八任务代码保持，未运行真实训练或实际抽样评价，未执行阶段10。**
++**当前状态：阶段0–9已获用户审查通过；阶段10最终综合审查与交付已完成，等待用户审查。最终119项回归通过，无失败/错误/跳过；本轮仅补时间验收测试及文档，生产代码与依赖未改。真实数据训练/完整抽样评价与远端新模型环境仍未验证。**
+ 
+ ## 持续有效的执行规则
+ 
+@@ -34,8 +34,8 @@
+ | 6 | **完成，已审查通过** | NS/Plasticity时间wrapper、循环语义、配置、脚本、严格checkpoint；8项定向测试，81项全回归 |
+ | 7 | **完成，已审查通过** | 仅ShapeNet-Car；PyG合成接口、mask损失、checkpoint/sidecar通过；未运行真实数据训练 |
+ | 8 | **完成，已审查通过** | AirfRANS接口/reference71/YAML398/整模型与列表加载；13项定向、107项全回归通过，实际抽样评价未运行 |
+-| 9 | **完成，待审查** | v1.2 §9性能工具/薄matched LRSA；118项回归、3组配置27行GPU结果通过；仅合成模型性能 |
+-| 10 | 待授权，未执行 | 以用户下一阶段明确指令为准 |
++| 9 | **完成，已审查通过** | v1.2 §9性能工具/薄matched LRSA；118项回归、3组配置27行GPU结果通过；仅合成模型性能 |
++| 10 | **完成，待用户审查** | 最终需求矩阵、三仓/冻结核查、README/报告；补齐时间测试，119项通过；无真实训练 |
+ 
+ 详细报告见 [CDLNO_REFERENCE_AUDIT.md](CDLNO_REFERENCE_AUDIT.md)。用户已补充远端实证：Python 3.10 环境按 cu128 对应的 PyTorch 2.11 安装方式部署后，`Car-Design-ShapeNetCar` 原训练程序已经跑通。该远端环境作为当前最可靠的兼容性依据；Python 3.11 作为同一依赖族的待确认兼容目标。本地工具环境只作为非权威观察，不用于兼容性决策。
+ 
+@@ -256,3 +256,16 @@
+ F. 五项优先自审完成，没有遗留架构/接口缺陷。效率并非一致提升：Elasticity entry0.627GMAC却训练34.96ms，高于原Transolver24.30ms；小算子/launch/AdamWtensor开销有诊断证据，未改模型。Airfoil原任务preset中entry77.64ms对原Transolver135.96ms，但heads4/8不同，不能混成同结构比较或epoch收益。运行波动/远端外推边界保留在报告。
+ 
+ 本阶段结束，未执行下一阶段。
++
++
++## 阶段10：最终综合审查与交付
++
++- 用户明确批准阶段9并授权最终审查。交付 [最终报告](CDLNO_IMPLEMENTATION_REPORT.md)、[逐项需求矩阵](CDLNO_REQUIREMENTS_MATRIX.md)、[来源许可](CDLNO_THIRD_PARTY_NOTICES.md)、README使用说明及更新的八任务清单；证据与可审查patch保存在 [final_audit](final_audit/)。
++- 需求反查发现测试证据缺口：既有NS合成只跑3步，既有时间AST仅查关键字符串。仅修改test_temporal_standard.py，补齐两路10步窗口/单次backward与step、Plasticity同batch不同T/time_fc梯度、两份完整exp AST基线比较。没有发现或修改生产架构/数据/训练缺陷。
++- 修改前118/118（58.082s），补充定向9/9（10.114s），最终119/119（49.871s）全通过，无失败/错误/skip。实际命令CDLNO_LRSA_ROOT=/home/hwz/LRSA-Operator python -B -m unittest discover -s tests -p 'test_*.py' -v；最终日志docs/final_audit/regression.log。
++- CPU包括point/grid各21配置、扩展L/非法值、原N布局、原loss/时间与checkpoint；真实PyG Data/Batch两工业集成通过；三原cwd独立进程import与严格load通过；六个本地GPU测试方法实际执行。环境Python3.13.9/torch2.13+cu130/PyG2.3.1/RTX5090 Laptop。目标Python3.10/3.11+torch2.11/cu128及editable安装未运行，未更换依赖。
++- 阶段0全部71 tracked files核查：58字节不变，12既有授权模型分支/YAML，本轮仅README追加。阶段10起点162文件：156不变，6个test/docs变化，无意外删除/修改。全时间/静态/工业入口AST恢复基线；原Transolver模型/脚本、data/train/normalizer/metrics/requirements字节不变。
++- 三仓快照与许可已重新核对：Transolver根MIT、IPOT MIT，Air ODbL保留；LRSA无明确许可文件/metadata，不作MIT假定。数学附件独立文件仍未定位，全文/证明/8项理论检查未复验，不增加任何结构或损失。
++- 五项重点已自行复查，未留下新的已知生产缺陷。剩余未验证是：真实数据读取完整性、图构建/采样/全评价、真实训练收敛与精度、epoch效率、远端环境、全默认GPU任务矩阵及理论附件。未commit/push、安装、下载数据或启动训练。
++
++**本阶段结束，未执行下一阶段**。
+--- a/memory/current-state.md
++++ b/memory/current-state.md
+@@ -5,7 +5,7 @@
+ ## Phase authorization
+ 
+ - Latest user instruction establishes **one explicitly assigned phase per turn**. Complete that phase and its checks, then stop for review and the user's next explicit instruction. This replaces v1.2 §11's all-at-once execution model.
+-- **Phases 0–8 are approved. Phase9 is complete, awaiting review: synthetic performance tools and thin matched LRSA only. All eight task interfaces/configurations remain integrated.** Read [the phase9 report](../docs/CDLNO_PHASE9_PERFORMANCE.md) and [performance usage](../docs/CDLNO_PERFORMANCE_TOOLS.md), then [the phase8 report](../docs/CDLNO_PHASE8_AIRFRANS.md) and [eight-task inventory](../docs/CDLNO_TASK_LAUNCHERS.md) first. No real training/sampling evaluation or phase10 is authorized.
++- **Phases 0–9 are approved. Phase10 final audit and delivery are complete, awaiting review. All eight task interfaces/configurations remain integrated.** Read [the final report](../docs/CDLNO_IMPLEMENTATION_REPORT.md) and [requirements matrix](../docs/CDLNO_REQUIREMENTS_MATRIX.md), then [the phase9 report](../docs/CDLNO_PHASE9_PERFORMANCE.md) and [performance usage](../docs/CDLNO_PERFORMANCE_TOOLS.md), then [the phase8 report](../docs/CDLNO_PHASE8_AIRFRANS.md) and [eight-task inventory](../docs/CDLNO_TASK_LAUNCHERS.md) first. No real training/sampling evaluation or further work is authorized.
+ - Every assigned phase must update that status file and report A–F (scope; files/reasons/diff; formulas/shapes/code; actual commands/environment/results; frozen-region evidence; issues and 3–5 review points), ending with “本阶段结束，未执行下一阶段”.
+ - No automatic commit/push, PR, training, reset, or unrelated refactor. Material architecture/protocol conflicts must be reported with sources and a recommendation.
+ 
+@@ -23,7 +23,7 @@
+ - Existing root `AGENTS.md` documents the original Transolver architecture and three experiment families.
+ - No real datasets were downloaded or used during this review.
+ - Phase 1 added the shared `cdlno` package, `pyproject.toml`, configuration/sidecar protocol and preflight. Its import checks used PYTHONPATH; editable installation itself was not executed.
+-- Phase 2 added individual modules and two test files. Phase 3 added standalone fusion, an explicit reference and its tests. Phase 4 added the data-free core and core tests. This was the phase4 boundary; phase5 now connects four static task adapters and limited existing-entry branches. No new training framework or benchmark tool exists. Configuration imports stay independent of torch; `CDLNO` is lazily imported from `cdlno.core`.
++- Phase 2 added individual modules and two test files. Phase 3 added standalone fusion, an explicit reference and its tests. Phase 4 added the data-free core and core tests. This was the phase4 boundary; phase5 now connects four static task adapters and limited existing-entry branches. No new training framework exists; phase9 later added isolated synthetic performance tools. Configuration imports stay independent of torch; `CDLNO` is lazily imported from `cdlno.core`.
+ 
+ ## Model and mechanism names
+ 
+@@ -34,7 +34,7 @@
+ ## Reference snapshots reviewed
+ 
+ - LRSA-Operator: `47b03f8c8c8da30bbcc0737b008dc4548f9cb98e`; phase-2 same-configuration tests read `/home/hwz/LRSA-Operator`.
+-- IPOT: `18c177846267505ee9503445a146dfd7dee34c41` (`/tmp/IPOT-remote`).
++- IPOT: `18c177846267505ee9503445a146dfd7dee34c41`; historical /tmp checkout unavailable, re-read fixed GitHub raw files in phase10, URLs/SHA persist in docs/final_audit/ipot-source.json.
+ - Transolver paper: arXiv `2402.02366`; the base implementation is already documented in root `AGENTS.md`.
+ 
+ ## Planned CDLNO architecture
+@@ -196,3 +196,13 @@
+ - Elasticity entry0.627GMAC versus Transolver1.127G, but train34.96ms versus24.30ms; profiler counts169/200activeAdamWtensors and7234/8218ATencalls identify additional small-operation/launch/optimizer work. Airfoil taskentry77.64ms versusTransolver135.96ms, withdifferentheads4/8. These are finite local model-only samples, not epoch estimates or guaranteed speed claims. Entrychunk0/2equivalent organization still has timing noise; no chosen-optimalchunk conclusion.
+ - During continuation old/tmp logs/sessions were unavailable. Earlier timing numbers were excluded from final acceptance; final checks/results persisted under docs/performance/phase9. New152-filecontinuationbaselineSHA256=288568f43d659168d9acf52e5523931ea01ef3a8191ceb0a4bd7a4b03400699d. Final continuation comparison:149unchanged, onlyAGENTS/STATUS/memorychanged,0unexpected (docs/performance/phase9/freeze-check.json). Initial145-filechecks had shown no existing modifications before3statusdocedits; do not fabricate the lost initial manifest.
+ - Five priority points self-reviewed against source/formulas/tests: no remaining new architecture/interface defect. Unrun: remotePython3.10/3.11+torch2.11/cu128, realdata/graphs/metrics/timeepochs, fulltaskgrid/sweeps, AMP/TF32on/forcedbackend/compile tool paths. No realtraining, dependencies, commit/push/PR. Phase10 requires explicit authorization.
++
++
++## Phase10 completed: final audit and delivery (2026-09-14)
++
++- User approved phase9 and explicitly authorized final review only. Reviewed actual modules/core/CDPA/wrappers/run helpers, every existing entry diff and baseline/source licenses. Produced README CDLNO instructions, docs/CDLNO_IMPLEMENTATION_REPORT.md, exhaustive §§0/8/13/14 requirements matrix, third-party notices, eight-task position/time/checkpoint inventory, and persistent final_audit evidence/patches. No production or dependency changes.
++- Found evidence gaps, not a production defect: previous NS synthetic test ran3 steps; previous temporal AST test checked strings, not whole modules. Changed only tests/test_temporal_standard.py to full10 training/eval feedback steps with explicit window/one-backward-step checks, distinct Plasticity per-sampleT/time_fc gradients, and complete NS/Plasticity AST projection to phase0. Supersedes earlier reports' overbroad temporal validation claims.
++- Initial118/11858.082s; focused9/9 10.114s; final119/11949.871s, no failures/errors/skips. Final command CDLNO_LRSA_ROOT=/home/hwz/LRSA-Operator python -B -m unittest discover -s tests -p 'test_*.py' -v; log docs/final_audit/regression.log. Core21cases×point/grid, expandedL/F, independent parameters/raw-history/gradient/counts, CPU real-N/originalloss, truePyG2.3.1 industrial and threecwd independent-process strict loading all pass. SixGPU test methods actually execute on localRTX5090Laptop, Python3.13.9/torch2.13+cu130. Remote3.10/3.11+torch2.11/cu128 and editableinstall unrun.
++- LRSA fixed47b03f8 clean checkout direct same-weightFP64 block reference2 tests gives output/history/grad maxdiff0; no LICENSE/COPYING/projectlicense metadata found. Transolver rootLICENSE is MIT(Copyright2024THUML), IPOT MIT(Copyright2023SeungjunLee) re-fetched from pinned18c1778; original Air ODbL preserved. Do not repeat an erroneous impression that Transolver has no rootlicense. No vendored LRSA/framework/kernel. Missing standalone theory attachments remain unlocated; no proofscript/PDF reproduction claim.
++- Baseline71files:58identical+12prior approved integration changes+README original-text-preserving addition. Phase10start162manifestSHA aaeefa892951c977ad1336392964a11eca1562fe22749d0ba15a6f99e03a2085;156unchanged,6test/docchanges,0unexpected. Existing phase9code/rawperformance, core/wrappers/entry/dependencies unchanged this phase. Final freeze and reviewpatches in docs/final_audit; no staging/commit/push/reset.
++- Self-reviewed architecture/init, two-levelCDPA/FP32/chunks, history/independence, adapters/checkpoints, freeze/performance口径; no remaining known production defect. Still unverified realdata/VTK/graphs/fullsampling/CFDmetrics, true training/convergence/accuracy, realepoch speed, remotetarget/install, fullGPUdefaulttaskmatrix and independent mathattachments. Phase9limited GPU performance is historical measured evidence, not repeated timing here. No further work authorized until explicit instruction.
+--- a/docs/CDLNO_TASK_LAUNCHERS.md
++++ b/docs/CDLNO_TASK_LAUNCHERS.md
+@@ -1,6 +1,6 @@
+ # CDLNO 八任务配置与启动清单
+ 
+-更新：2026-09-14，阶段8。八任务均已具备新模型接口、配置和训练/评估脚本；仅完成合成验证，未完成真实数据训练或实际抽样评价。原 Transolver 配置、模型和脚本保留。
++更新：2026-09-14，阶段10最终核对。八任务均已具备新模型接口、配置和训练/评估脚本；仅完成合成验证，未完成真实数据训练或实际抽样评价。原 Transolver 配置、模型和脚本保留。
+ 
+ ## 配置与入口
+ 
+@@ -42,3 +42,19 @@
+ 六标准任务已完成各阶段合成接口/原损失/时间语义与state_dict检查。ShapeNet-Car和AirfRANS已完成真PyG单图接口、可变N、多图拒绝、原损失反向及整模型checkpoint检查；AirfRANS额外覆盖模型列表与保留原ptr的抽样单图接口。
+ 
+ 这份清单不宣称真实轨迹、VTK/manifest/图构造/反复抽样/边界后处理已端到端验证，也不授权自动执行后续阶段。实际运行记录见 [STATUS](CDLNO_IMPLEMENTATION_STATUS.md) 及对应阶段报告。
++
++
++## 最终位置、时间和保存合同
++
++| 任务 | 位置/字段提升与条件 | 单次点域FFN | checkpoint |
++|---|---|---|---|
++| Darcy | 原索引grid到8×8 reference的64距离替换xy，拼fx1；无placeholder/时间投影 | dense ConvFFN；85×85 | 标准run/model.pt严格state_dict |
++| Elasticity | 原xy2，fx=None的active placeholder；无time_fc | point FFN；972点 | 同上 |
++| Airfoil | 原弯曲xy2和221×51索引顺序；placeholder；不重排 | dense ConvFFN | 同上 |
++| Pipe | 原exp归一化后的xy2和129×129索引；placeholder | dense ConvFFN | 同上 |
++| NS | 原64×64索引reference距离64+窗口fx10；无time_fc/placeholder；训练真值、测试预测回填，每次重新进入core | dense ConvFFN | 同上 |
++| Plasticity | xy2+fx1，原sincos时间embedding与time_fc，只在Time_Input=True注册；T[B,1]，每batch20个时刻独立更新，无反馈 | dense ConvFFN；101×31 | 同上 |
++| ShapeNet-Car | cfd.x7=xyz3/sdf1/normal3；active placeholder；不读geom/y；out velocity3/pressure1 | point FFN；单图可变N | run/model_200.pth（或指定epochs），原整模型协议 |
++| AirfRANS | x7追加pos到ref8×8的64距离，domain x[-2,4]/y[-1.5,1.5]；placeholder；out vx/vy/p/nut | point FFN；单图可变N | run/member_000/model等整模型，run/CDLNO原模型列表 |
++
++所有run均配architecture.json；标准使用StaticRun，Car使用CarRun，Air使用AirRun。三原cwd新进程的导入/保存/加载和chunk0→1输出一致已在最终119项套件中通过。环境和完整负向检查见 [最终报告](CDLNO_IMPLEMENTATION_REPORT.md)。工业整模型使用局部trusted weights_only=False，标准weights_only=True；mode/F/L/M及wrapper语义不兼容时拒绝，运行chunk变化允许。Air抽样后保留原单图ptr的合同已覆盖，不等于真实抽样/图构建工作流已执行。
+--- a/README.md
++++ b/README.md
+@@ -1,3 +1,123 @@
++# CDLNO — Cross-Depth Latent Neural Operator
++
++基于 [Transolver（ICML 2024）](https://arxiv.org/abs/2402.02366) 的八任务模型扩展。共享包/核心为 `cdlno` / `CDLNO`，跨深度机制仍称 **CDPA**。默认计算图为：
++
++```text
++原任务 stem → H0[B,N,d]
++→ 2 × 完整 LRSA block（down → FFN1 → latent SA → FFN2 → up → 点FFN）
++→ HF[B,N,d] → IPOT bridge → Z0[B,M,d]
++→ entry CDPA(Z0, [T1,T2]) → 6 × 独立 latent SA+GEGLU
++→ HF 查询最终 latent、保留 HF 点残差 → 点FFN → LN/head → 原任务输出
++```
++
++T 在 FFN2 后、up 前取得。规则网格点 FFN 为普通 `groups=1` 的 3×3 ConvFFN；潜空间无卷积。完整规格及最终核对见 [实施报告](docs/CDLNO_IMPLEMENTATION_REPORT.md)、[需求矩阵](docs/CDLNO_REQUIREMENTS_MATRIX.md)、[八任务清单](docs/CDLNO_TASK_LAUNCHERS.md) 和 [来源/许可](docs/CDLNO_THIRD_PARTY_NOTICES.md)。旧 Transolver 模型与脚本保留，下方原论文结果仅属于原 Transolver。
++
++交付通过静态、合成张量、原损失连接、真实 PyG 接口、checkpoint 和本地 GPU 检查。**尚未运行真实数据训练或完整抽样评价，未验证收敛、预测精度、真实 epoch 效率或远端目标环境。**
++
++## CDLNO 环境与共享包
++
++目标为用户已工作的 **Python 3.10、torch 2.11 / CUDA 12.8**，Python 3.11 是候选。原 ShapeNet-Car 在该远端栈的训练成功由用户报告；尚无新 CDLNO 远端验收。保留现有 torch/PyG/pyg-lib，不执行旧 requirements 中的 torch 1.10.1 降级。核心只用 PyTorch SDPA，不依赖自定义 CUDA/Triton、xFormers 或 LRSA/IPOT 的训练框架。
++
++下面是供远端执行的安装/只读预检命令，本次未执行安装：
++
++```bash
++# 在仓库根，用已有 Python 3.10/3.11 环境；不安装/替换依赖。
++python -m pip install -e . --no-deps --no-build-isolation
++python -B tools/cdlno_environment_preflight.py
++```
++
++安装使用已有 setuptools>=68。`pyproject.toml` 限定 Python>=3.10,<3.12，并不自动解析任务依赖。模型核心需要 torch；任务侧继续需要原 numpy/scipy/einops/timm/matplotlib，工业任务还需 PyG、PyYAML，以及原读图/VTK/指标路径的依赖；具体路径见 [环境审查](docs/CDLNO_REFERENCE_AUDIT.md)。预检只检查基础导入/SDPA，不代表 VTK、邻居图或八任务端到端可用。依赖不足时应针对实际错误处理，不整套重装。
++
++无需安装的源码导入可在仓库根使用 `export PYTHONPATH="$PWD${PYTHONPATH:+:$PYTHONPATH}"` 后进入原工作目录。最终本地检查使用 Python3.13.9/torch2.13+cu130/PyG2.3.1 与此导入方式，**没有**把该环境当成目标 editable 安装验证。
++
++## 八任务训练与评价示例
++
++以下为用户准备好真实数据后手动运行的命令，交付过程未执行这些入口。数据路径按原项目 README 的文件布局准备，不更改字段/划分/采样。所有新脚本显式列出模型与训练初值，末尾用户参数优先；打印的新 run 路径须保留。评价需要已有 run，并重复训练时非默认的架构、fold/task/nmodel、预算等参数。
++
++六标准任务从 `PDE-Solving-StandardBenchmark` 目录运行（`--data_path` 保持原入口语义；Plasticity 为 MAT 文件）：
++
++```bash
++cd PDE-Solving-StandardBenchmark
++# Darcy
++bash scripts/CDLNO_Darcy.sh --data_path /data/fno
++bash scripts/CDLNO_Darcy_Eval.sh --data_path /data/fno --cdlno-run-dir /runs/darcy
++# Elasticity
++bash scripts/CDLNO_Elas.sh --data_path /data/fno
++bash scripts/CDLNO_Elas_Eval.sh --data_path /data/fno --cdlno-run-dir /runs/elasticity
++# Airfoil
++bash scripts/CDLNO_Airfoil.sh --data_path /data/fno/airfoil/naca
++bash scripts/CDLNO_Airfoil_Eval.sh --data_path /data/fno/airfoil/naca --cdlno-run-dir /runs/airfoil
++# Pipe
++bash scripts/CDLNO_Pipe.sh --data_path /data/fno/pipe
++bash scripts/CDLNO_Pipe_Eval.sh --data_path /data/fno/pipe --cdlno-run-dir /runs/pipe
++# Navier–Stokes：保持10→10，训练真值回填、评价预测回填。
++bash scripts/CDLNO_NS.sh --data_path /data/fno
++bash scripts/CDLNO_NS_Eval.sh --data_path /data/fno --cdlno-run-dir /runs/ns
++# Plasticity：空间101×31，每个时间点独立输出4通道并按原节奏更新。
++bash scripts/CDLNO_Plasticity.sh --data_path /data/fno/plas_N987_T20.mat
++bash scripts/CDLNO_Plasticity_Eval.sh --data_path /data/fno/plas_N987_T20.mat --cdlno-run-dir /runs/plasticity
++```
++
++ShapeNet-Car 从 `Car-Design-ShapeNetCar` 目录运行；一次 run 只对应一个 fold。`--data_dir/--save_dir` 继续分别沿用原始数据/预处理数据路径语义，`--run_dir` 是新增的模型运行目录。
++
++```bash
++cd Car-Design-ShapeNetCar  # 相对于仓库根
++bash scripts/CDLNO.sh --data_dir /data/car/training_data --save_dir /data/car/preprocessed --fold_id 0
++bash scripts/CDLNO_Evaluation.sh --data_dir /data/car/training_data --save_dir /data/car/preprocessed --fold_id 0 --run_dir /runs/car
++```
++
++AirfRANS 从 `Airfoil-Design-AirfRANS` 目录运行。**训练 `--my_path` 是 Dataset 本身；评价 `--my_path` 是它的父目录**。`--task full|scarce|reynolds|aoa` 与 `--nmodel` 保持原协议；默认398 epochs。原图构造、每 epoch/重复验证抽样、scatter/平均与边界后处理仍执行。
++
++```bash
++cd Airfoil-Design-AirfRANS  # 相对于仓库根
++bash scripts/CDLNO.sh --my_path /data/naca/Dataset --task full --nmodel 1
++bash scripts/CDLNO_Evaluation.sh --my_path /data/naca --task full --nmodel 1 --run_dir /runs/airfrans
++```
++
++工业任务只支持单图（原 batch=1、可变N），多图明确报错。AirfRANS 默认训练脚本 `--score 0`；如用户显式选择 `--score 1`，会进入原完整评价流程。新任务的所有16个脚本和8个 JSON 初值见 [清单](docs/CDLNO_TASK_LAUNCHERS.md)。
++
++## 配置、消融与 checkpoint
++
++默认 `L=8,F=2,P=L-F=6,cdpa_mode=entry`。Pipe M32，其余 M64；d/h/epoch/batch 以任务清单为准。旧 parser 的 L3/M32/宽度默认仅属旧分支；CDLNO 专用默认和显式脚本覆盖新分支，未改写旧模型默认。
++
++| 含义 | 标准任务参数 | 工业任务参数 |
++|---|---|---|
++| 总深度L / 前段F | `--n-layers` / `--front-blocks` | `--n_layers` / `--front_blocks` |
++| d / heads / M | `--n-hidden` / `--n-heads` / `--slice_num` | `--n_hidden` / `--n_heads` / `--slice_num` |
++| 模式 | `--cdpa-mode off|entry|every_block` | `--cdpa_mode off|entry|every_block` |
++| 来源分块 | `--cdpa-source-chunk-size 0` | `--cdpa_source_chunk_size 0` |
++| 前段/点FFN ratio | `--mlp_ratio 2` | `--mlp_ratio 2` |
++| 后段GEGLU ratio | `--latent-ffn-ratio 2` | `--latent_ffn_ratio 2` |
++| 已有评价/新的训练目录 | `--cdlno-run-dir` | `--run_dir` |
++
++`0≤F<L`；P仅派生，不接受第二个 rear-depth。`L12/F2` 得到2+10，支持 F>6。M在全阶段一致。`off` 不收集历史；`entry` 只融合前段T；`every_block` 逐后段访问前段T和更早完整Z（包含raw bridge Z0，但不重复当前）。F0/entry不建CDPA参数，计算路径与同权重off一致；配置模式仍是严格比较字段。所有历史每次 forward 重建，不能跨真实时间复用。
++
++chunk0把来源折叠进batch，chunk1逐来源，正整数k分块；每份历史内部仍在M个token上softmax，最后一次统一来源融合。它仅改变执行组织，不减少来源份数或数学MAC。默认entry是2份来源/1次历史SDPA；every是27份/6次（chunk0）。不同chunk可加载相同架构权重。
++
++每个新训练使用独立目录并保存 `architecture.json`。标准任务保存严格 state_dict（weights_only）；Car保留 `model_<epochs>.pth` 整模型；Air保留 `member_000/model` 等整模型及run根 `CDLNO` 模型列表。工业整模型仅按原受信任本地checkpoint协议使用局部 `weights_only=False`，不接受来源不明文件。
++
++评价**先读既有 sidecar，再核对架构、wrapper语义及相应任务条件，最后加载**；不覆盖sidecar或训练权重，结果写入独立子目录。M/F/L/d/h/mode/网格或错误权重键形状不匹配会拒绝；chunk/device/dtype属于运行字段。运行目录不自动复用，不新增训练resume。
++
++## 无数据验收与性能工具
++
++在仓库根运行已约定套件；直接LRSA对照需要用户自己的指定快照（缺少则明确skip）：
++
++```bash
++CDLNO_LRSA_ROOT=/path/to/LRSA-Operator python -B -m unittest discover -s tests -p 'test_*.py' -v
++# 无数据CPU成本检查
++python -B tools/cdlno_benchmark.py --task airfoil --grid 5 7 --B 2 --d 16 --h 4 --M 4 --audit-only --output /tmp/cdlno-cost.json
++# 远端GPU有限代表配置；输出文件必须不存在
++python -B tools/cdlno_benchmark.py --task elasticity --comparison matched --device cuda:0 --chunks 0 1 2 --warmup 5 --iterations 20 --output /tmp/cdlno-elasticity.json
++```
++
++工具比较原 Transolver、连续L个完整LRSA的 `lrsa_matched` 和 CDLNO off/entry/every_block。`--comparison task` 使用原任务各自配置；`matched` 使用同一d/h/M/L/点FFN设置。matched LRSA仅是结构性能对照，没有注册进训练器，也不是LRSA论文复现。
++
++矩阵成本采用1 MAC=1乘加、2 FLOPs/MAC；额外norm/softmax/depth/临时stack与历史/点特征存储单列，SDPA不会按0计。实测报告forward及合成MSE/AdamW步的median/p90、GPU同步、峰值allocated显存、初始化optimizer state和精度/backend/warmup。所有模型用相同AMP/TF32/compile条件。详细口径、原始数据和限制见 [工具说明](docs/CDLNO_PERFORMANCE_TOOLS.md) 与 [阶段9报告](docs/CDLNO_PHASE9_PERFORMANCE.md)。模型计时不能换算真实epoch；已有结果也不构成普遍加速保证。
++
++---
++
++以下保留原 Transolver README、论文结果与引用：
++
+ # Transolver (ICML 2024 Spotlight)
+ 
+ :triangular_flag_on_post:**News** (2026.02) We present a new member of the Transolver Family, named [Transolver-3](https://arxiv.org/pdf/2602.04940), which can handle **100-million-scale** geometries with SOTA results in full-size DrivAerML.
+--- a/tests/test_temporal_standard.py
++++ b/tests/test_temporal_standard.py
+@@ -7,6 +7,7 @@
+ 
+ import torch
+ from torch import nn
++from unittest.mock import patch
+ from einops import rearrange
+ 
+ ROOT=Path(__file__).resolve().parents[1]
+@@ -52,30 +53,47 @@
+         self.assertEqual((pl.preprocess[0].in_features,pl.config.output_dim,pl.config.grid_shape),(3,4,(101,31)))
+         self.assertIsNone(ns.time_fc); self.assertIsNotNone(pl.time_fc)
+     def test_ns_teacher_forcing_and_prediction_windows_batched(self):
+-        model,_=build('ns'); x,fx=data(model); truth=torch.randn(2,model.H*model.W,10)
++        model,_=build('ns', ['--n-hidden','16','--n-heads','4','--slice_num','4'])
++        x,initial=data(model); truth=torch.randn(2,model.H*model.W,10)
+         # Each call is a fresh core; training feeds truth and evaluation feeds prediction.
+         calls=[]
+         original=model.core.forward
+         model.core.forward=lambda h: (calls.append(h.detach().clone()), original(h))[1]
+-        preds=[]; train_loss=0
+-        for t in range(3):
++        preds=[]; train_loss=0; fx=initial
++        optimizer=torch.optim.AdamW(model.parameters(),lr=1e-4)
++        optimizer.zero_grad()
++        for t in range(10):
++            torch.testing.assert_close(fx,torch.cat((initial[...,t:],truth[...,:t]),-1))
+             im=model(x,fx); preds.append(im)
+             train_loss=train_loss+TestLoss(size_average=False)(im.reshape(2,-1),truth[...,t:t+1].reshape(2,-1))
+             fx=torch.cat((fx[...,1:],truth[...,t:t+1]),-1)
+-        train_loss.backward()
+-        self.assertEqual(len(calls),3); self.assertEqual(len(preds),3); self.assertEqual(preds[0].shape,(2,4096,1))
++        with patch.object(train_loss,'backward',wraps=train_loss.backward) as backward, patch.object(optimizer,'step',wraps=optimizer.step) as step:
++            train_loss.backward(); optimizer.step()
++            self.assertEqual(backward.call_count,1); self.assertEqual(step.call_count,1)
++        self.assertEqual(len(calls),10); self.assertEqual(torch.cat(preds,-1).shape,(2,4096,10))
++        torch.testing.assert_close(fx,truth)
+         for p in model.parameters(): self.assertIsNotNone(p.grad); self.assertTrue(torch.isfinite(p.grad).all())
+-        model.zero_grad(set_to_none=True); x2,fx2=data(model); pred=[]
+-        for t in range(3):
+-            im=model(x2,fx2); pred.append(im); fx2=torch.cat((fx2[...,1:],im),-1)
+-        self.assertEqual(torch.cat(pred,-1).shape,(2,4096,3)); self.assertFalse(torch.equal(calls[0],calls[-1]))
++        model.zero_grad(set_to_none=True); model.eval(); pred=[]; fx2=initial.detach()
++        with torch.no_grad():
++            for t in range(10):
++                expected=torch.cat((initial[...,t:],*pred),-1)
++                torch.testing.assert_close(fx2,expected)
++                im=model(x.detach(),fx2); pred.append(im); fx2=torch.cat((fx2[...,1:],im),-1)
++        self.assertEqual(len(calls),20)
++        self.assertEqual(torch.cat(pred,-1).shape,(2,4096,10))
++        torch.testing.assert_close(fx2,torch.cat(pred,-1))
++        self.assertFalse(torch.equal(calls[0],calls[-1]))
+     def test_plasticity_time_changes_output_and_time_gradients(self):
+-        model,_=build('plasticity'); x,fx=data(model); t=torch.tensor([[.1],[.1]],requires_grad=True); t2=t.detach().clone().add_(.4).requires_grad_()
++        model,_=build('plasticity'); x,fx=data(model); t=torch.tensor([[.1],[.3]],requires_grad=True); t2=t.detach().clone().add_(.4).requires_grad_()
+         y=model(x,fx,t); y2=model(x,fx,t2)
+         self.assertEqual(y.shape,(2,3131,4)); self.assertGreater((y-y2).abs().max().item(),0)
+         loss=TestLoss(size_average=False)(y.reshape(2,-1),torch.randn_like(y).reshape(2,-1)); loss.backward()
+         self.assertIsNotNone(t.grad); self.assertTrue(torch.isfinite(t.grad).all()); self.assertGreater(t.grad.abs().max().item(),0)
+         self.assertTrue(torch.isfinite(x.grad).all()); self.assertTrue(torch.isfinite(fx.grad).all())
++        for name,p in model.time_fc.named_parameters():
++            self.assertIsNotNone(p.grad,name)
++            self.assertTrue(torch.isfinite(p.grad).all(),name)
++            self.assertGreater(p.grad.abs().max().item(),0,name)
+     def test_plasticity_twenty_independent_time_steps_and_loss(self):
+         model,_=build('plasticity'); x,fx=data(model); times=torch.linspace(0,1,20).repeat(2,1); target=torch.randn(2,3131,4,20)
+         optimizer=torch.optim.AdamW(model.parameters(),lr=1e-4); count=0
+@@ -105,6 +123,32 @@
+         with self.assertRaises(ValueError): get_model(Namespace(model='CDLNO',cdlno_task='car'))
+ 
+ class StaticTemporalFreeze(unittest.TestCase):
++    def test_complete_temporal_entries_project_to_baseline_ast(self):
++        # Remove only authorized model/checkpoint/path branches. Everything
++        # else, including the full nested time loops, must equal phase0 HEAD.
++        class LegacyProjection(ast.NodeTransformer):
++            def visit_ImportFrom(self,node):
++                return None if node.module=='cdlno_entry' else node
++            def visit_Assign(self,node):
++                if isinstance(node.targets[0],ast.Name) and node.targets[0].id in ('cdlno_run','results_dir'):
++                    return None
++                if isinstance(node.value,ast.Call) and isinstance(node.value.func,ast.Name) and node.value.func.id=='parse_cdlno_args':
++                    node.value=ast.parse('parser.parse_args()',mode='eval').body
++                return self.generic_visit(node)
++            def visit_If(self,node):
++                if ast.unparse(node.test) in ("args.model == 'CDLNO'",'cdlno_run is not None'):
++                    return [self.visit(n) for n in node.orelse]
++                return self.generic_visit(node)
++            def visit_Name(self,node):
++                if node.id=='results_dir':
++                    return ast.parse("'./results/' + save_name + '/'",mode='eval').body
++                return node
++        for task in ('ns','plas'):
++            relative=f'PDE-Solving-StandardBenchmark/exp_{task}.py'
++            original=subprocess.check_output(['git','show','75e0f67643806a81cd1d3f6adc88dd8c02416fe7:'+relative],cwd=ROOT,text=True)
++            projected=LegacyProjection().visit(ast.parse((ROOT/relative).read_text()))
++            self.assertEqual(ast.dump(projected),ast.dump(ast.parse(original)),task)
++
+     def test_scripts_and_python_syntax(self):
+         for p in sorted((PROJECT/'scripts').glob('CDLNO_NS*.sh'))+sorted((PROJECT/'scripts').glob('CDLNO_Plasticity*.sh')):
+             subprocess.run(['bash','-n',str(p)],check=True)
+--- /dev/null
++++ b/docs/CDLNO_IMPLEMENTATION_REPORT.md
+@@ -0,0 +1,163 @@
++# CDLNO 最终实施与综合审查报告
++
++日期：2026-09-14；阶段10，等待用户审查。基线分支 `main`，commit `75e0f67643806a81cd1d3f6adc88dd8c02416fe7`，origin `git@github.com:thuml/Transolver.git`。阶段0没有已跟踪代码修改；阶段0–9的未提交成果是本阶段必须保留的工作，不是应恢复的上游差异。
++
++**结论：在已确认设计和无数据验收范围内，CDLNO架构、八任务接口、checkpoint与性能工具按计划实现。最终119项测试实际全部通过，无失败/错误/跳过；本轮没有发现需要修改生产模型或训练代码的缺陷。发现并补齐了时间任务的测试证据缺口。真实数据读取完整性、收敛、精度、真实epoch效率及远端目标环境仍未验证。**
++
++逐项追溯见 [v1.2 §§0/8/13/14矩阵](CDLNO_REQUIREMENTS_MATRIX.md)，每行列要求、实际代码符号、测试证据和状态。矩阵中理论未复验/可选全配置GPU未运行不会被总测试通过数掩盖。
++
++## A. 完成范围
++
++本阶段从生产源码与测试断言反查需求：重新读核心、模块、CDPA、三套wrapper和checkpoint帮助代码，逐个读六exp及两工业训练/评价入口的diff；核对LRSA真实固定checkout，重新只读获取IPOT固定commit的3份源码与LICENSE；核对三方归属、配置、训练脚本与原基线。没有只引用旧报告作验收。
++
++交付包括README的环境/八任务训练评价示例、消融/checkpoint与性能使用说明；需求矩阵；来源许可说明；补充八任务位置/时间/checkpoint清单；本报告；持久日志、快照、冻结清单和可审查diff。更新AGENTS、STATUS和memory。没有修改依赖、下载数据、创建假数据文件、导入会读取数据的exp/main入口、执行真实训练/抽样评价、commit/push/PR/reset。
++
++名称映射：旧包 `cdpa_operator` → **`cdlno`**；旧核心 `CDPAOperator` → **`CDLNO`**；旧整网注册名 `CDPA` → **`CDLNO — Cross-Depth Latent Neural Operator`**。机制仍为 **CDPA — Cross-Depth Physics Attention**，`cdpa_mode` 等字段保持。原入口wrapper可导出 `Model`；Car稳定类为 `models.CDLNO.Model`，Air为 `cdlno.airfrans.AirfRANSModel`（本地模块导出别名），避免整模型加载歧义。
++
++## B. 修改文件、原因和diff
++
++| 本阶段文件 | 修改与理由 |
++|---|---|
++| [tests/test_temporal_standard.py](../tests/test_temporal_standard.py) | NS原测试只有3次调用，改成每种回填各10次并逐步检查窗口、累计loss后一次backward/step；Plasticity同批样本改为不同T并检查time_fc各参数梯度；新增两时间exp完整AST投影比较。只是补验收，不修改训练实现 |
++| [README.md](../README.md) | 前置CDLNO使用说明，保留原README全文及结果/引用；区分远端命令示例与本次实际执行 |
++| [CDLNO_REQUIREMENTS_MATRIX.md](CDLNO_REQUIREMENTS_MATRIX.md) | §§0、8、13、14逐项追溯，不遗漏未运行/理论边界 |
++| [CDLNO_THIRD_PARTY_NOTICES.md](CDLNO_THIRD_PARTY_NOTICES.md) | 三仓固定版本/文件指纹、许可归属和实际源码差异；保留IPOT MIT全文，不推断LRSA许可 |
++| [CDLNO_TASK_LAUNCHERS.md](CDLNO_TASK_LAUNCHERS.md) | 核对8配置/16脚本，补齐位置/时间/FFN/checkpoint表 |
++| 本报告、[STATUS](CDLNO_IMPLEMENTATION_STATUS.md)、[AGENTS](../AGENTS.md)、[memory](../memory/current-state.md) | 阶段9已批准；阶段10已完成待审查；纠正过强的历史时间验收表述，记录限制 |
++| [final_audit/](final_audit/) | 起点快照、来源与环境JSON、实际测试日志、冻结结果及两份patch |
++
++[phase10-changes.patch](final_audit/phase10-changes.patch) 供审查本阶段已有文件变化和新增交付文档；原内容均对阶段10起点SHA核验后生成，未使用git add/commit。该patch不重复嵌入日志/生成patch本身。
++
++[implementation-vs-baseline.patch](final_audit/implementation-vs-baseline.patch) 汇集相对阶段0基线的12个原代码/YAML有限分支，以及新共享包、wrapper、配置、脚本、测试和工具；可检查整个实现而不只看本轮小diff。README/文档在本阶段patch中。原baseline源码累计12文件 +435/−204，本轮没有再改这些文件。
++
++**本轮修复的是验收缺口**：旧NS测试运行3步，不应说成10步实测；旧时间AST测试仅查关键字符串，不足以证明整入口冻结。现在NS两路完整10步与NS/Plasticity整AST比较实际通过。保留历史日志，最终结果以本报告为准。
++
++## C. 公式、张量和代码对应
++
++| 计算阶段 | 确认公式/顺序 | 实际实现与形状 |
++|---|---|---|
++| stem | 原任务位置/字段/时间语义提升 | wrappers生成 `H0[B,N,d]`；core不加新位置/时间编码 |
++| 完整前段 | down → `z+=FFN1(RMS(z))` → `z+=SA(RMS(z))` → `T=z+FFN2(RMS(z))` → up/点残差/点FFN | [LRSAFrontBlock.forward](../cdlno/modules.py)：H为[B,N,d]，T为[B,M,d]；显式返回(Hnext,T)，T在up前，down无query残差 |
++| bridge | `Z0=Q0+Cross(LN(Q0),LN(HF))` | [IPOTBridge](../cdlno/modules.py)：独立learned Q0[M,d]，输出[B,M,d]；不注册encoder_ff |
++| 单历史对齐 | `Q=LNq(Z)WQ`，`Ks/Vs=LNkv(Ts)WK/WV`；`Rs=ConcatHeads(softmax_M(QKsᵀ/√dh)Vs)WO+bO` | [CDPA.forward](../cdlno/cdpa.py)：每源M keys；同位置共享norm/K/V/O；Q一次。折叠[B,k,M,d]→[B*k,h,M,dh]，无S*M softmax |
++| depth融合 | `R0=Z`；`es[b,m]=wᵀRMSdepth(Rs[b,m])`；`α=softmax_sources(e)`；`Zf=Σs αs RAW(Rs)` | [CDPA._depth_fusion](../cdlno/cdpa.py)：raw[B,M,S+1,d]，α[B,M,S+1]；FP32均方/评分/softmax/累加、autocast关闭，末尾转回Z.dtype；不detach |
++| 后段 | `A=Z+SA(LN(Z))`，`Znext=A+GEGLU(LN(A))` | [PersistentLatentBlock](../cdlno/modules.py)：Q/K/V来自同一LN(Z)；P个独立实例，均[B,M,d] |
++| 最终读出 | `HD=HF+Up(RMS(HF),RMS(ZP))`；`Hout=HD+PointFFN(RMS(HD))`；`y=Linear(LNout(Hout))` | [LRSAFeatureReadout](../cdlno/modules.py)：HF是query与点残差；输出[B,N,Cout]，工业去掉仅有的batch轴 |
++| 规则点FFN | 原索引reshape → dense3×3Conv → 内层LN → Linear无bias → GELU → Linear有bias → flatten | [ConvFFN](../cdlno/modules.py)：groups=1，N=H×W；五结构任务保留原索引，非结构三任务用plain point FFN |
++
++norm/bias/初始化再核对：LRSA前段/读出外层RMS及独立per-head Q/K RMS，eps1e-6、scale1/no bias；bridge/后段/CDPA分支是affine LN，eps1e-6且无QK norm；输出LN、ConvFFN内部LN含bias。Q/K/V投影无bias，O有bias；LRSA down没有Q投影。plain FFN两个Linear有bias、ratio2；后段GEGLU ratio2。普通Linear仅一次trunc_normal(std=.02)/bias0；dense Conv保持原生初始化；down query矩阵orthogonal、bridge query normal(.02)、depth w严格0。wrapper不递归apply重置核心；placeholder只在真实fx=None路径存在，time_fc只在Plasticity时间路径存在。
++
++零w时输出为候选均值，默认两历史是 `(Z+R1+R2)/3`；不是identity，不另加Z/gate/当前来源偏置。depth scale首步梯度可以为0，更新w后路径梯度已验证。历史浮点dtype不同则在Cross前转Z.dtype并保持梯度；FP32 depth没有被外层AMP再次降精度。
++
++### 三种模式、历史时序与计数
++
++`0≤F<L`，P仅由L−F派生；全阶段M一致，F不硬限6。`off`不收集T；`entry`只在第一个后段前读T1…TF，F0完全不建CDPA参数，且同权重与off计算完全一致。`every_block`第j个后段前当前为Z(j−1)，历史为 `[T1…TF,Z0…Z(j−2)]`，raw bridge Z0保留。每次forward局部重建；仅把完整后段输出作为后续历史，不记录融合中间值/SA/FFN增量，不跨真实时间缓存，不detach。不同活跃CDPA位置参数/storage独立，无跨位置投影K/V缓存。
++
++| 默认L8/F2/P6 | down/bridge | up/readout | latent SA | 结构ConvFFN | 逻辑历史来源总数 | chunk0历史SDPA | 全模型SDPA |
++|---|---:|---:|---:|---:|---:|---:|---:|
++| off | 3 | 3 | 8 | 3 | 0 | 0 | 14 |
++| entry | 3 | 3 | 8 | 3 | 2 | 1 | 15 |
++| every_block | 3 | 3 | 8 | 3 | 27 | 6 | 20 |
++
++以上为真实forward spies验证，不只公式估计。entry逻辑总F，every总PF+P(P−1)/2；chunk1每份来源一次，chunkk为各位置ceil(s/k)之和。chunk减少调用不减少数学来源/MAC。正常core只返回Tensor，不无条件保存注意力矩阵或调试梯度/CPU统计。
++
++### 八任务合同与接入
++
++[完整8配置/16脚本清单](CDLNO_TASK_LAUNCHERS.md) 列出具体路径；[README](../README.md) 包含逐任务训练/评价命令。下表所有任务L8/F2/entry/ratios2，默认M按任务值而非旧parser默认。
++
++| 任务 | N/输出 | stem与条件 | d/h/M；epoch/batch | 关键保持项 |
++|---|---|---|---|---|
++| Darcy | 85×85；[B,N,1] | reference64替换xy+fx1=65；无时间 | 128/8/64；500/4 | 原normalizer encode/decode、边界和梯度loss |
++| Elasticity | 972；[B,N,1] | xy2+active placeholder；point FFN | 128/8/64；500/1 | 原不规则点序/应力目标 |
++| Airfoil | 221×51；[B,N,1] | 原xy2+placeholder；ConvFFN | 128/4/64；500/4 | 弯曲坐标和索引顺序，不重新采样/排序 |
++| Pipe | 129×129；[B,N,1] | 原exp已归一化xy2+placeholder；ConvFFN | 128/4/32；500/8 | 原坐标normalizer/输出decode |
++| NS | 64×64；单次[B,N,1] | reference64+fx10=74，无time_fc | 256/8/64；500/2 | 10→10；训练真值回填、10loss一次更新；测试预测回填 |
++| Plasticity | 101×31；单次[B,N,4] | xy2+fx1=3，T[B,1]与原time embedding | 128/8/64；500/8 | 空间/通道/时间标签轴不变；每batch20次独立更新，无反馈 |
++| ShapeNet-Car | 单图可变N；[N,4] | x7，placeholder；不读geom/y，无time | 256/8/64；200/1 | velocity3/pressure1；surf及速度/压力loss；一次run一fold |
++| AirfRANS | 单图可变N；[N,4] | x7追加reference64=71，域[-2,4]×[-1.5,1.5] | 256/8/64；398/1 | vx/vy/p/nut；抽样、图、scatter平均、mask和边界后处理 |
++
++标准用 `run/model.pt` state_dict/weights_only/strict=True；Car保留 `model_<epochs>.pth` 整模型；Air保留成员整模型及run根模型列表 `CDLNO`。eval先load sidecar、比较架构与wrapper/任务合同，再load权重；错误对象、键或形状拒绝。chunk/device/dtype属运行项不当成架构冲突；工业加载后应用请求chunk。读取过程不更新sidecar，结果目录隔离，已有训练目录拒绝复用，无新resume。标准checkpoint不额外强制学习率/epoch相同；工业按其run合同校验fold/task/nmodel/预算/采样参数，不能笼统声称三者完全一样。
++
++## D. 实际执行与通过/失败/未运行
++
++本次环境：Python **3.13.9**，torch **2.13.0+cu130**，CUDA runtime **13.0**，真实PyG **2.3.1**，numpy2.2.6、scipy1.16.3、einops0.8.2、timm1.0.28、PyYAML6.0.3；GPU **RTX5090 Laptop**、driver591.86、24463MiB、支持BF16。详情见 [environment.json](final_audit/environment.json)。本地没有pyg-lib/torch-cluster，不影响已经运行的无邻居构图合成检查；真实邻居图/读取流程不据此算通过。未安装/更改任何依赖。
++
++目标环境仍为用户已工作的Python3.10/torch2.11/CUDA12.8；Python3.11候选，最终远端PyG版本未查询。当前本地Python不满足pyproject目标版本范围，使用源码PYTHONPATH进行验收；本次没有执行editable安装，不用本地成功替代目标环境验证。
++
++实际命令（在仓库根执行）：
++
++```bash
++# 在发现测试覆盖缺口前：118项通过，58.082秒，保留原日志。
++CDLNO_LRSA_ROOT=/home/hwz/LRSA-Operator python -B -m unittest discover -s tests -p 'test_*.py' -v
++# 补齐NS完整十步、Plasticity不同T、整时间入口AST后的定向检查：9项通过，10.114秒。
++python -B -m unittest discover -s tests -p 'test_temporal_standard.py' -v
++# 因测试内容有具体变更，重新完成一次最终套件：119项通过，49.871秒。
++CDLNO_LRSA_ROOT=/home/hwz/LRSA-Operator python -B -m unittest discover -s tests -p 'test_*.py' -v
++# 静态检查与基线取证：
++git rev-parse HEAD
++git status --short
++git remote -v
++git ls-tree -r --name-only HEAD
++git diff --check
++git diff --stat
++```
++
++原始输出：[最终119项](final_audit/regression.log)、[时间定向9项](final_audit/temporal-focused.log)、[修改测试前118项](final_audit/regression-before-temporal-coverage.log)。此外执行只读Python采集环境/逐文件SHA256与AST语法、Bash语法及文档链接检查，结果见 [delivery-checks.json](final_audit/delivery-checks.json)、[freeze-check.json](final_audit/freeze-check.json)。IPOT通过固定URL的urllib只读获取；URL/字节/SHA保存在来源JSON，无数据下载。
++
++| 测试组 | 数量 | 实际验证 |
++|---|---:|---|
++| modules | 18 | norm/SDPA/FFN/GEGLU/ConvFFN、完整前段/bridge/rear/readout、bias/init/独立参数、5×7；CPU及GPU |
++| 原LRSA同配置参考 | 2 | 原checkout实际类、同权重FP64 output/T/全参数与输入梯度；本轮打印最大差均0 |
++| CDPA数学 | 21 | 独立显式reference、两softmax轴、RAW/O+b/恒等R0、置换/batch/chunk、极端值/FP32子图、GPU |
++| core | 13 | point/grid各21种L8 F0..6×三模式；扩展12/2、16/6、1/0、8/7、10/8；历史时序/梯度/计数/同权重F0等价 |
++| core/config/checkpoint | 6 | 非法值/派生P/往返、sidecar先读、不覆盖、三cwd新进程导入、strict加载 |
++| 四静态任务 | 13 | 实际接口和原N减小宽度/latent、Darcy原loss连接、checkpoint及四exp全AST；GPUFP32/FP16AMP/BF16AMP |
++| 两时间任务 | 9 | NS每路完整10步、训练一次更新；Plasticity不同T/时间参数梯度/20更新；整时间exp AST、checkpoint |
++| ShapeNet-Car | 13 | 真实PyG Data/Batch、可变N/多图拒绝、无y/geom泄漏/无mutation、原mask损失、独立cwd整模型加载/冻结 |
++| AirfRANS | 13 | 真实PyG、stale单图ptr/多图拒绝、32000小宽度、原loss、独立cwd成员整模型/模型列表加载、冻结 |
++| 性能工具 | 11 | matched LRSA完整L块、全投影/Conv/GEGLU/CDPA成本、来源/chunk、八task factory、合成计时与优化器state |
++| 合计 | **119** | **全部通过；0失败/错误/跳过** |
++
++CPU CDPA reference为48个dtype/S/w/chunk子case，比较输出与所有参数/输入梯度，atol3e-6/rtol3e-5；本轮最大绝对梯度差2.17e-5在联合相对/绝对容差内。depth即使输入FP64仍按协议FP32，不能要求FP64最终逐位精度。LRSA FP64输出容差1e-10/1e-8、梯度2e-9/2e-7；GPU CDPA FP32 math/reference/fused为5e-6/1e-4。半精度测试使用各自容差/有限性检查，不把FP16称为FP32精度。
++
++日志的 `ImportError: No module named xformers/liger_kernel` 是外部LRSA可选内核导入的原fallback输出；其真实参考测试随后成功，没有伪造模块或skip。CPU BF16模块测试局部关闭MKLDNN规避既有oneDNN backward限制，GPU精度测试局部禁用TF32并恢复；这些测试设置没有写进生产默认。
++
++**实际GPU范围**：最终套件中6个GPU测试方法实际执行，覆盖基础模块、CDPA FP32与FP16/BF16（含直接半精度/AMP/FP32 depth）、三模式point/grid小核心、四静态wrapper；不等于八任务完整默认规模GPU训练。两工业真PyG接口/原损失本轮为CPU；阶段7/8另有已报告的三模式GPU FP32检查，本轮未追加重复工业GPU扫描。阶段9持久27行合成GPU性能结果保留，本轮只回归工具功能/成本，不重做性能扫描。
++
++**失败项**：本阶段上述套件无失败，无待修复生产缺陷。测试覆盖不足已按B项补齐，不将旧118项成功当作此前已完成完整十步的证据。
++
++**未运行**：远端Python3.10/3.11+torch2.11/cu128上的CDLNO与editable安装；真实文件解析/字段覆盖/manifest/VTK/完整采样图构建；真实10帧轨迹与Plasticity实际标签训练；工业全评价/重复采样/散射平均/边界与系数指标；训练收敛、精度或种子重复实验；真实epoch/数据加载效率；八任务全默认GPU矩阵及大扫描。阶段9AMP/TF32开启/强制backend/compile的整套性能对照未运行。数学附件未定位，历史8项理论检查及PDF编译未复现。
++
++## E. 冻结区域与原有问题
++
++[冻结清单](final_audit/freeze-check.json) 对阶段0 commit全部71个跟踪文件比较：**58字节不变**；另12个是此前已批准的模型接入文件（本阶段字节不变），README仅新增前置说明、原全文完整保留。所有原Transolver模型、Physics-Attention副本、原脚本、dataset、train、normalizer/metrics和requirements保持原字节。六exp、Car两个main、Air两个main的完整AST，经仅消去已授权模型分支/路径别名/兼容项后等于基线；Air原YAML所有key及其前缀保留，CDLNO仅新增key，仍398 epochs。
++
++阶段10起点快照 [phase10-start.json](final_audit/phase10-start.json) 记录162个既有文件，SHA256 `aaeefa892951c977ad1336392964a11eca1562fe22749d0ba15a6f99e03a2085`；最终156不变，仅B表列出的6个既有文件变化，无意外变化/删除。新增文档/证据单列；既有PLAN、阶段报告、性能原始数据及全部生产代码保持。没有恢复、覆盖或丢弃先前未提交修改。
++
++原入口保留的已知边界与本次回归区别：
++
++| 项目 | 来源/处理 | 是否本次新回归 |
++|---|---|---|
++| Car显式epoch曾由float产生model_200.0.pth路径 | 上游类型问题；阶段7授权最小改int，与原保存model_200.pth一致 | 否，已修复的有限兼容项 |
++| 工业整模型在新torch的weights_only默认变化 | 阶段7/8仅对应受信任本地load加weights_only=False/map_location，原保存协议不变 | 否，无全局放开 |
++| 原Transolver `.cuda()`及未注册位置tensor | 新wrapper按输入device/buffer保持数值语义；原模型本身未改 | 继承限制；真实旧入口CPU不作承诺 |
++| 部分标准eval strict=False；Pipe旧resave | 旧分支保持；新模型strict+sidecar且eval不resave | 继承行为，不顺手重构 |
++| 原绘图硬编码85×85/221×51/129×129等 | 冻结；改变下采样后可视化不新承诺 | 继承限制 |
++| Air抽样时保留原单图ptr，图构造/散射路径复杂 | wrapper兼容有效单图stale ptr且拒绝多图；原图/抽样代码不动 | 接口合成通过，真实流程未运行 |
++| Air原Transolver未使用mlp_new参数 | 原模型及性能参数统计保留，工具列missing-grad | 继承事实，不制造删图/删参收益 |
++
++当前源码与确认设计没有实质冲突。LRSA/IPOT源码差异按v1.2明确处理（完整双FFN、dense卷积、后段独立且QKV同LN、bridge无闲置FFN）；与参考原默认配置不同不等于本实现违反计划。目标环境与本地环境不同是验证边界，没有通过改依赖消除它。
++
++## F. 交付前自审与剩余限制
++
++五项自审均已亲自对照源码和最终证据完成：完整block/norm/bias/init；CDPA两softmax/RAW/FP32/chunk；every历史对象/同权重F0/参数独立；八wrapper提升与checkpoint拒绝/不覆盖；基线冻结与计数/性能口径。通过依据均落在需求矩阵及最终日志中，没有把未审查的清单留给用户。
++
++没有仍待修复的已知生产实现缺陷。仍需明确保留三类不确定性：
++
++1. **实验有效性**：尚无真实数据端到端、收敛/预测精度、真实epoch速度或远端新模型运行结果。合成成功不升级这些状态。
++2. **理论材料**：独立数学附件路径仍未定位；本轮只核对可读的v1.2/导出摘要与代码，不声称复核了附件全文或新证明，不因此增加结构或损失。
++3. **参考许可**：Transolver根MIT与IPOT MIT已核实，Air原ODbL保留；LRSA快照没有找到明确许可，不声称获得整份源码的MIT授权。本工程未vendor其源码，按确认公式实现，并在外部checkout做同配置参考测试。
++
++效率报告保留阶段9的反例：Elasticity局部GPU样本中entry虽较少MAC，合成训练步仍可能更慢；Airfoil原任务比较头数不同，不能作为严格同配置优势。`lrsa_matched`只用于结构性能比较，不是论文复现实验，未注册新训练模型。没有从forward估算epoch或按理想复杂度宣称稳定加速。
++
++**本阶段结束，未执行下一阶段**。
+--- /dev/null
++++ b/docs/CDLNO_REQUIREMENTS_MATRIX.md
+@@ -0,0 +1,173 @@
++# CDLNO 最终需求追溯矩阵
++
++日期：2026-09-14，阶段10。按实际生产源码、测试断言及本轮执行日志反查 v1.2 §§0、8、13、14；不是把历史阶段报告当作测试结果。用户当前决定优先于计划：正式名称CDLNO、分阶段授权、保留已工作远端依赖。数学附件不授权新增结构。
++
++**状态口径**：通过=该行代码/静态或合成门槛实际满足；未运行=不能从其他成功推导；边界=只约束实现/论述，不是已证明的数学或实验结论。最终 [regression.log](final_audit/regression.log) 为119项通过、0失败/错误/跳过，49.871秒；[temporal-focused.log](final_audit/temporal-focused.log) 为补齐时间验收后的9项通过。最终环境见 [environment.json](final_audit/environment.json)。
++
++## 代码与证据索引
++
++表内符号指下列实际文件中的类/方法，测试缩写后跟**精确test方法名**（无参数扫描省略号）。
++
++| 索引 | 文件与具体定位 |
++|---|---|
++| M | [modules.py](../cdlno/modules.py)：LRSAFrontBlock.forward、IPOTBridge.forward、PersistentLatentBlock.forward、LRSAFeatureReadout.forward_features、ConvFFN、RMSNorm、_init_linear |
++| C | [core.py](../cdlno/core.py)：CDLNO.__init__/forward，活跃CDPA注册及局部history |
++| D | [cdpa.py](../cdlno/cdpa.py)：CDPA.forward/_depth_fusion |
++| Q | [config.py](../cdlno/config.py)：CDLNOArchitectureConfig/RuntimeConfig；[checkpoint.py](../cdlno/checkpoint.py)：save/load/validate_sidecar |
++| W | [standard.py](../cdlno/standard.py)：StaticStandardModel/TemporalStandardModel；[Car Model](../Car-Design-ShapeNetCar/models/CDLNO.py)；[AirfRANSModel](../cdlno/airfrans.py) |
++| E | [标准StaticRun](../PDE-Solving-StandardBenchmark/cdlno_entry.py)、[CarRun](../Car-Design-ShapeNetCar/models/cdlno_run.py)、[AirRun](../Airfoil-Design-AirfRANS/cdlno_entry.py)，各parse_args/model_kwargs/load/validate |
++| P | [性能models](../tools/cdlno_perf/models.py)：LRSAMatched/build；[costs](../tools/cdlno_perf/costs.py)：audit；[measure](../tools/cdlno_perf/measure.py)：benchmark |
++| TM / TL | [test_modules.py](../tests/test_modules.py) / [test_lrsa_reference.py](../tests/test_lrsa_reference.py) |
++| TD / TC / TQ | [test_cdpa.py](../tests/test_cdpa.py) / [test_core.py](../tests/test_core.py) / [test_core_config.py](../tests/test_core_config.py) |
++| TS / TT | [test_static_standard.py](../tests/test_static_standard.py) / [test_temporal_standard.py](../tests/test_temporal_standard.py) |
++| TG / TA / TP | [test_shapenet_car.py](../tests/test_shapenet_car.py) / [test_airfrans.py](../tests/test_airfrans.py) / [test_performance.py](../tests/test_performance.py) |
++| Freeze | [freeze-check.json](final_audit/freeze-check.json)：逐文件基线/阶段10起点SHA256；整入口AST回归由TS、TT、TG、TA执行 |
++| Provenance | [三仓来源与许可核对](CDLNO_THIRD_PARTY_NOTICES.md)：固定commit/source SHA、继承差异 |
++
++## §0.1 必须遵守的14项
++
++| 要求 | 代码位置 | 验证证据 | 状态 |
++|---|---|---|---|
++| 1 Transolver基仓库，旧模型脚本保留，新名称/配置/目录/checkpoint | E；各configs/CDLNO和scripts/CDLNO；Q.model_name | Freeze；TS.test_defaults_and_explicit_overrides_leave_legacy_parser_unchanged；各run隔离测试 | 通过；旧真实训练未重跑 |
++| 2 仅架构和必要选择/参数/checkpoint接入，冻结任务协议 | E+六exp/两组main的有限分支 | TS.test_legacy_ast_recovered_exactly_from_limited_branches；TT.test_complete_temporal_entries_project_to_baseline_ast；TG.test_original_entries_project_to_baseline_ast；TA.test_complete_entry_ast_preserves_original_protocol；Freeze | 通过；数据运行完整性未测 |
++| 3 八任务且不统称PDEBench数据库 | W+model_dict；8份任务JSON | TP.test_all_eight_task_wrapper_and_original_baseline_synthetic_calls；README/任务清单逐名列出 | 通过 |
++| 4 默认完整2+6、独立bridge、入口CDPA、feature readout | C.__init__/forward；M | TC.test_default_and_42_depth_mode_point_grid_forward_backward_cases；test_operation_counts_and_constant_m_all_front_depths | 通过 |
++| 5 规则后置dense ConvFFN；不规则point；无slice/latent卷积 | M.ConvFFN/LRSAFrontBlock/LRSAFeatureReadout；C | TM.test_conv_5_by_7_row_major_channel_mixing；TC.test_registration_storage_independence_and_single_initialization | 通过 |
++| 6 T在FFN2后/up前 | M.LRSAFrontBlock.forward | TM.test_front_order_history_object_and_live_gradients；TC.test_history_objects_timing_readout_and_two_forward_graph_isolation | 通过 |
++| 7 CDPA Cross；无Slice/Gram | D；Q.cdpa_mode | TD数学reference；Q只接受三模式；生产源码审查无校正分支 | 通过；整网正式名改CDLNO |
++| 8 全阶段M相同，按任务设置M | C统一m；W/Q | TC.test_operation_counts_and_constant_m_all_front_depths；TP.test_task_preset_comparison_matches_current_sources | 通过 |
++| 9 F/L可配置，不动态删增层 | Q.validate/P；C构造 | TC.test_extended_boundary_and_front_above_six_all_modes；TQ.test_illegal_architecture_and_core_policy_rejected | 通过，含F7/F8 |
++| 10 entry默认，off/every可验收不启动扫描 | C/D；P仅合成CLI | TC三模式；阶段9持久结果；执行日志无真实训练 | 通过 |
++| 11 稀疏Darcy/递增M仅记录 | Q固定feature/标量M；W八任务接口 | TQ.test_illegal_architecture_and_core_policy_rejected；源码审查无额外loader/decoder | 通过（排除项） |
++| 12 无数据，数学/合成/损失/checkpoint验收 | tests及P.synthetic_inputs | 最终119项日志；无exp直接导入；无下载数据命令 | 通过；不等于训练成功 |
++| 13 PyTorch SDPA，无自定义核/新训练框架 | M._ProjectedAttention/_DownAttention；D.forward；pyproject | TM.test_sdpa_matches_explicit_attention_and_gradients；生产import及依赖diff审查 | 通过 |
++| 14 明确确认决定和实现默认区别 | Q/W/任务JSON；README/报告 | M的norm/bias/init测试；规格与来源差异表 | 通过；不称原论文统一preset |
++
++## §0.2 六对实现/排除边界
++
++| 要求 | 代码位置 | 验证证据 | 状态 |
++|---|---|---|---|
++| 八原任务接入；稀疏Darcy不接 | W/E | TS/TT/TG/TA接口与TP八任务factory | 通过 |
++| 配置L/F；不递增latent数 | Q/C | TC配置矩阵/constant M | 通过 |
++| off/entry/every；无CDPA-Slice | D/C | TD、TC数学与模式检查 | 通过 |
++| 无数据工具；无物理残差损失/校正层 | P/tools；原loss冻结 | TP成本/CLI，Freeze与原loss AST | 通过 |
++| NS10→10；不做无长标签20/40 | W.TemporalStandardModel；exp_ns原循环 | TT.test_ns_teacher_forcing_and_prediction_windows_batched（本轮完整10步）及整AST | 通过 |
++| Plasticity独立条件调用；不展平时空/跨时间latent推进 | W.TemporalStandardModel；exp_plas原循环 | TT.test_plasticity_twenty_independent_time_steps_and_loss；TC两forward隔离 | 通过 |
++
++## §8.1 静态合同（逐项）
++
++| 要求 | 代码位置 | 验证证据 | 状态 |
++|---|---|---|---|
++| 文件/字段/轴交换/采样/点序/fold/split冻结 | 六exp、两工业main、dataset | Freeze+TS/TT/TG/TA完整AST投影 | 通过（静态） |
++| normalizer/decode/通道/loss/权重/mask/梯度项冻结 | 原utils/train/exp；W输出 | TS.test_darcy_exact_training_decode_and_gradient_loss_ast；TG.test_original_train_mask_loss_backward_optimizer_scheduler；TA.test_original_weighted_loss_train_and_test；Freeze | 通过（静态+合成连接） |
++| NS真值/预测回填，Plasticity更新节奏 | 两时间exp原loop | TT完整10步及20次更新；test_complete_temporal_entries_project_to_baseline_ast | 通过 |
++| optimizer/scheduler/clip/预算/指标/边界后处理 | E新默认；原优化器/指标区段 | 各AST投影+Freeze；TP.test_task_preset_comparison_matches_current_sources | 通过；真实指标值未测 |
++| 不import exp触发真实I/O，不重写训练器 | tests的AST抽取；E辅助模块 | TQ.test_three_task_cwd_fresh_imports_without_entry_or_install；TS/TT/TG/TA测试源码审查 | 通过 |
++
++## §8.2 十三类合成输入
++
++| 要求 | 代码位置 | 验证证据 | 状态 |
++|---|---|---|---|
++| CPU小模型形状/有限前反向 | M/C | TM各公式测试；TC.test_default_and_42_depth_mode_point_grid_forward_backward_cases | 通过 |
++| 六adapter：fxNone/fx1/fx10/T/out1/out4 | W | TS.test_four_interfaces_three_modes_backward_placeholder_and_no_time；TT.test_defaults_dimensions_and_time_registration及条件/窗口测试 | 通过 |
++| 5×7点序、错误N报错 | M.ConvFFN；Q/grid | TM.test_conv_5_by_7_row_major_channel_mixing；TQ.test_invalid_input_and_chunk_rejected_before_computation | 通过 |
++| 原N布局（减小d/M），全配置GPU可选 | W | TS.test_real_n_with_smaller_width_latents_preserves_layout；TT实际4096/3131；TG.test_large_synthetic_point_count_and_input_gradients；TA.test_32000_synthetic_points_small_width_backward | CPU通过；八任务默认完整配置GPU矩阵未运行 |
++| NS10次调用、两种回填 | W/exp_ns | TT.test_ns_teacher_forcing_and_prediction_windows_batched：B2、每路10步、窗口逐步检查、训练一次backward/step | 通过；本轮补齐原3步缺口 |
++| Plasticity B>1/不同T/时间梯度/无反馈 | W/exp_plas | TT.test_plasticity_time_changes_output_and_time_gradients：T=[[.1],[.3]]与+0.4、time_fc梯度；20次独立更新测试 | 通过 |
++| Darcy原normalizer/TestLoss/边界与梯度项 | exp_darcy原表达/W | TS.test_darcy_exact_training_decode_and_gradient_loss_ast | 通过 |
++| 工业原surf true/false mask损失backward | 原train.train/test；W | TG.test_original_train_mask_loss_backward_optimizer_scheduler；TA.test_original_weighted_loss_train_and_test（真实PyG） | 通过 |
++| 改y无影响、输入无原地改动 | Car/Air W | TG.test_variable_n_single_batch_no_mutation_no_label_geometry_read；TA.test_variable_nodes_batch_and_immutable_fields_no_y_leak | 通过 |
++| 工业单图可变N/多图拒绝/通道点序 | Car/Air W | TG.test_multigraph_batch_ptr_and_malformed_inputs_rejected；TA.test_sampled_single_graph_ptr_and_multiple_graph_rejection；前一行可变N测试 | 通过 |
++| point版置换等变，grid不要求任意置换 | M/C/W | TM.test_point_permutation_latent_permutation_and_batch_isolation；TC.test_point_order_batch_independence_and_variable_n；工业可变节点测试 | 通过 |
++| 三原cwd新进程导入wrapper | W/E | TQ.test_three_task_cwd_fresh_imports_without_entry_or_install；TS.test_fresh_process_wrapper_checkpoint_restore；TG/TA独立进程测试 | 通过；PYTHONPATH导入，未执行editable安装 |
++| 同配置/独立进程checkpoint；M/F/L/错误权重拒绝 | Q/E | TQ.test_strict_weights_and_existing_sidecar_in_fresh_process；TS.test_strict_roundtrip_sidecar_no_overwrite_and_separate_outputs；TG.test_checkpoint_rejects_wrong_object_and_missing_weights；TA.test_checkpoint_list_type_length_and_strict_keys | 通过（键/形状/架构语义校验，非密码学完整性） |
++
++## §8.3 CDPA十四项及正常forward约束
++
++| 要求 | 代码位置 | 验证证据 | 状态 |
++|---|---|---|---|
++| 1 空历史恒等；F0/entry无参数 | D空sources/C.cdpa_at | TD.test_empty_history_is_exact_identity_without_computation；TC.test_f0_entry_off_same_weights_exact_outputs_gradients_and_calls | 通过 |
++| 2 w0=RAW候选均值，无外残差 | D.__init__/_depth_fusion | TD.test_uniform_initialization_raw_values_and_no_outer_residual | 通过 |
++| 3 token与source两独立softmax轴 | D.forward/_depth_fusion | TD.test_two_softmax_axes_and_tokenwise_weights，含错误concat反例 | 通过 |
++| 4 独立显式reference输出/关键梯度 | D；[cdpa_reference.py](../tests/cdpa_reference.py) | TD.test_reference_does_not_call_production_or_sdpa；test_sdpa_reference_output_and_all_gradients_matrix（48case） | 通过；浮点容差，非逐位等同 |
++| 5 来源交换不变 | D共享投影/scorer | TD.test_source_reorder_and_historical_token_permutations | 通过 |
++| 6 历史token重排不变 | D每源独立M | 同上 | 通过 |
++| 7 当前token重排等变 | D | TD.test_current_token_permutation_equivariance | 通过 |
++| 8 B>1样本独立 | D的[B*k,h,M,d_h]折叠 | TD.test_batch_isolation_forward_and_gradient；test_chunk_layout_counts_q_once_and_single_global_fusion | 通过 |
++| 9 T/bridge/后段/readout/depth路径梯度可达 | C局部活history；M/D | TC.test_direct_history_readout_gradients_zero_w_then_updated_w；test_explicit_raw_state_schedule_output_and_all_gradient_parity | 通过；非仅单次CDPA测试 |
++| 10 零w不误判norm零梯度 | D.depth_norm/w | TD.test_zero_w_gradient_then_updated_w；TC同项 | 通过；首步scale可0，更新w后检查 |
++| 11 raw Z0/过去完整Z时序，不含当前/未来/跨forward | C.forward | TC.test_history_objects_timing_readout_and_two_forward_graph_isolation；test_explicit_raw_state_schedule_output_and_all_gradient_parity | 通过；检查对象ID与图隔离 |
++| 12 极端值/FP32 depth/autocast/GPU半精度 | D._depth_fusion | TD.test_extreme_magnitudes_and_all_gradients_finite；test_depth_fp32_dispatch_under_cpu_autocast；3项test_gpu_* | 通过；实际本地GPU，远端未运行 |
++| 13 chunk0/1/2/>S，B>1/S1,2,5/非整除、Q一次、统一融合 | D.forward | TD.test_sdpa_reference_output_and_all_gradients_matrix；test_chunk_layout_counts_q_once_and_single_global_fusion；TC.test_actual_history_sdpa_counts_chunks_and_each_location_projections | 通过；mixed dtype另有test_mixed_history_dtypes_preserve_cast_gradients |
++| 14 chunk可载；mode/F/L拒绝；eval不覆盖 | Q/E | TQ.test_sidecar_runtime_allowed_architecture_rejected_bytes_preserved；TS/TG/TA实际checkpoint同chunk0→1和错误配置测试 | 通过 |
++| 正常forward只回Tensor、不保存巨大注意力/retain_grad/CPU统计 | C.forward；M/D SDPA | TC输出类型和两forward隔离；源码审查；仅D显式return_weights=True可返回小depth权重 | 通过 |
++
++## §8.4 配置与计数八项
++
++| 要求 | 代码位置 | 验证证据 | 状态 |
++|---|---|---|---|
++| L8 F0..6×三模式 | Q/C | TC.test_default_and_42_depth_mode_point_grid_forward_backward_cases：point和grid各21种 | 通过 |
++| L12/F2、L16/F6、L1/F0 | Q/C | TC.test_extended_boundary_and_front_above_six_all_modes，另含L8/F7、L10/F8 | 通过 |
++| 非法F/dh/N清楚报错 | Q.validate；C/M检查 | TQ.test_illegal_architecture_and_core_policy_rejected；test_invalid_input_and_chunk_rejected_before_computation | 通过 |
++| P=L−F独立对象/storage | C.latent_blocks/cdpa_at | TC.test_registration_storage_independence_and_single_initialization；TM.test_parameter_identity_and_storage_are_independent | 通过 |
++| down/up各F+1；latentSA=L | C/M | TC.test_operation_counts_and_constant_m_all_front_depths；TP.test_live_counts_formulas_and_chunk_invariant_matrix_cost | 通过；默认3/3/8 |
++| ConvFFN=F+1；后段/CDPA无卷积 | C/M | TC计数及模块类型检查；TP.test_projection_ffn_and_dense_conv_all_counted_against_closed_form | 通过；默认3 |
++| entry总F；every PF+P(P−1)/2；次数与份数分开 | C/D/P | TC.test_actual_history_sdpa_counts_chunks_and_each_location_projections；TP计数测试 | 通过；默认entry2/1、every27/6（chunk0） |
++| off不存T；entry无后段历史；every只存待消费状态 | C.forward局部列表 | TC.test_off_discards_t_and_entry_releases_history_after_only_use；test_history_objects_timing_readout_and_two_forward_graph_isolation | 通过 |
++
++## §8.5 工具、执行与证据约束
++
++| 要求 | 代码位置 | 验证证据 | 状态 |
++|---|---|---|---|
++| 建议测试分类、数学/布局/adapter/时间/checkpoint/无I/O | 实际10个test文件及cdpa_reference | 最终119项，采用unittest并覆盖对应类别；文件名为建议而非固定API | 通过 |
++| 建议editable安装与环境候选文件 | pyproject、tools/cdlno_environment_preflight.py、README | 可安装最小包已建；用户已确认保留现有依赖，未新增锁定/重装文件；本次未运行pip | 实现可用；目标安装未验证 |
++| 工业真PyG，不伪造模块 | TG/TA Data/Batch | 最终PyG2.3.1测试均运行无skip；CPU原mask损失连接 | 通过 |
++| 预检不访问数据，不等于模型验收 | tools/cdlno_environment_preflight.py | 源码审查；本轮只读environment.json不调用训练入口 | 通过（范围声明） |
++| 不从CPU/理论升级为真实训练/收敛 | README/最终报告 | 将真实I/O、远端与精度、epoch明确列未运行 | 边界已落实 |
++
++## §13 全对话20行逐项复核
++
++| 要求 | 代码位置 | 验证证据 | 状态 |
++|---|---|---|---|
++| Transolver基仓、LRSA/IPOT参考 | M/W及固定来源 | Provenance+TL两项实际外部参考对照 | 通过 |
++| 只改模型，原数据处理不变 | E有限分支、原dataset/train/utils | Freeze+§8.1 | 通过（静态） |
++| 不依靠真实数据验收 | tests/P | 最终日志；§8.2 | 通过 |
++| 完整2个LRSA+6个persistent | M/C | TC默认矩阵、TM完整顺序 | 通过 |
++| F0..6及扩展L、P派生 | Q/C | TC扩展、TQ非法配置 | 通过 |
++| 历史来自latent而非点 | M.LRSAFrontBlock.forward | TM history对象；TC historyID | 通过 |
++| bridge后entry一次，F0无闲置参数 | C/D | TC同权重F0路径/计数 | 通过 |
++| every读前段与更早完整Z，不跨forward | C.forward | TC完整时序/两图隔离 | 通过 |
++| 逐历史Cross，再tokenwise RAW depth融合 | D.forward/_depth_fusion | TD reference、两softmax轴 | 通过 |
++| 机制CDPA，无Slice | Q/D；整网CDLNO | 模式白名单+生产源码审查 | 通过；遵守后续正式命名 |
++| feature H_F query/残差，非任意输出网格 | M.LRSAFeatureReadout | TM.test_readout_query_context_residual_and_output_norm；TC history-readout | 通过；不声称超分辨率 |
++| 规则dense3×3后置卷积，无latent卷积 | M.ConvFFN/点分支 | TM5×7与TP独立MAC公式 | 通过 |
++| 全阶段M固定，Pipe32其余64 | Q/C/任务JSON | TC constantM；TP presets | 通过 |
++| 原epoch/训练/评价，Pipe batch8/Air398 | E defaults/YAML/scripts | TP presets；TS/TT/TG/TA冻结 | 通过 |
++| NS10→10 rollout，不无标签20/40 | W/exp_ns | TT完整两种10步+全AST | 通过 |
++| 稀疏Darcy仅未来记录 | Q.feature/W白名单 | 源码无loader/decoder扩展；§0.2 | 排除正确 |
++| 争取效率，完整成本、matched LRSA实测 | P；独立性能CLI | TP11项及阶段9持久27行GPU结果 | 工具/有限实测通过；收益不保证 |
++| every额外成本；Q一次/来源批处理 | D/P | TD chunk布局spy；TC counts；TP MAC | 通过 |
++| 不跨位置KV缓存/不detach/不省来源 | C/D | TC参数/storage、完整历史梯度及SDPA次数 | 通过 |
++| 远端CUDA12.8/torch2.11保留，不盲重装 | pyproject无运行依赖；预检/README | 原requirements未动；本轮无安装；远端Car证据仅用户报告 | 保留通过；CDLNO远端未运行 |
++
++## §14 数学支持与边界
++
++文件核查：本轮以计划列出的5个精确文件名在PLAN_CDLNO及/home/hwz下复查，仍未定位独立中文理论、英文tex/pdf、NumPy脚本及结果JSON。现有聊天导出末尾理论摘要和v1.2第14节可读，但**不是附件全文或附件检查复现**。因此下列数学主张只映射计算图、记录适用边界；不标作新证明通过。
++
++| §14要求/主张 | 代码位置 | 本轮证据与边界 | 状态 |
++|---|---|---|---|
++| 附件正文、编译PDF、8项NumPy核查 | 无对应实现文件要求 | 历史文本报告这些产物；本地未定位，未编译/执行；[阶段0记录](CDLNO_REFERENCE_AUDIT.md)一致 | 附件全文核验未完成 |
++| 14.1 少数点域往返/latent可压缩性 | C前段/bridge/rear | TC计数通过；未测POD谱，不保证任意PDE/M64充分 | 实现对应已核；理论未复验 |
++| 完整独立LRSA可累积不同方向 | M/C | TM/TL完整block、TC参数独立；不称后层天然容量更大 | 同上 |
++| down/up解耦 | M.down/up独立 | TM参数/storage；未强制双正交/求逆/inf-sup | 实现对应已核 |
++| feature decoder局部H_F/全局latent依赖 | M.LRSAFeatureReadout | TM/readout+TC对象检查；point本地点或最终3×3邻域，不声称访问全部HF | 实现对应已核；理论未复验 |
++| 逐历史对齐的token重编号性质 | D | TD历史置换/当前等变；不保证物理对应或最优传输 | 合成性质通过；强结论不宣称 |
++| 来源共享/评分置换性质和初始化路径 | D | TD来源换序/梯度；没有depth embedding，不识别绝对来源编号 | 合成性质通过 |
++| 历史复用的条件用途/盲方向 | C/D | raw历史梯度可达；冻结前端理论不等于重训练函数类严格包含 | 实现对应已核；未做JVP诊断 |
++| w0/RAW融合：均匀与凸组合 | D._depth_fusion | TD均值/FP32/source和为1；不称完整网络非扩张/守恒稳定 | 合成性质通过；理论未复验 |
++| every扩展状态与成本 | C/P | TC每层ID/来源数，TP成本；无新观测，不保证多历史必增精度 | 实现/计数通过 |
++| 14.2 不为理论增删norm/decoder/正交/quadrature/gate | M/C/D/Q | 源码核对固定公式；未出现上述新增结构，FFN内GEGLU不等于外加融合gate | 排除正确 |
++| 不宣称固定M普适逼近、普适低秩/无损、误差必降、守恒/网格一致、严格类包含、GPU必加速 | README/报告 | 明确保留条件性；阶段9还有变慢的实测，不包装为普遍优势 | 边界已落实 |
++| 14.3 历史理论审阅/数值/编译不升级工程状态 | 全报告证据分类 | 只把本轮119项与已持久阶段9结果标实测；缺附件项未完成 | 通过（记录准确） |
++| POD/JVP/VJP等未来可选，不加研究/损失；CFD全局后处理冻结 | 生产core/原metrics | 无新研究诊断/损失；Freeze原指标字节相同 | 排除/静态冻结通过 |
++
+--- /dev/null
++++ b/docs/CDLNO_THIRD_PARTY_NOTICES.md
+@@ -0,0 +1,46 @@
++# CDLNO 来源、归属与许可核对
++
++最终审查：2026-09-14。以下为实际快照事实，不按论文名推断代码或许可。
++
++| 来源 | 固定版本与链接 | 实际归属/许可 | 本工程使用范围 |
++|---|---|---|---|
++| thuml/Transolver | [75e0f67643806a81cd1d3f6adc88dd8c02416fe7](https://github.com/thuml/Transolver/tree/75e0f67643806a81cd1d3f6adc88dd8c02416fe7) | 根 [LICENSE](../LICENSE)：MIT，Copyright 2024 THUML @ Tsinghua University | 当前基仓库，保留原模型、数据/训练/指标、输入提升语义与原README引用 |
++| Adversarr/LRSA-Operator | [47b03f8c8c8da30bbcc0737b008dc4548f9cb98e](https://github.com/Adversarr/LRSA-Operator/tree/47b03f8c8c8da30bbcc0737b008dc4548f9cb98e) | 作者信息 Zherui Yang/Adversarr；审查快照未找到LICENSE/COPYING，pyproject无license声明；不推断MIT | 按确认公式重新实现完整block/ConvFFN；未vendor上游源码或训练框架。外部checkout仅供可选同权重对照测试 |
++| 7tl7qns7ch/IPOT | [18c177846267505ee9503445a146dfd7dee34c41](https://github.com/7tl7qns7ch/IPOT/tree/18c177846267505ee9503445a146dfd7dee34c41) | MIT，Copyright2023 Seungjun Lee；原声明全文保留在本文件末尾 | bridge/query残差、pre-LN processor与GEGLU参考；使用本工程独立SDPA实现，不复制原数据/训练框架 |
++| 原AirfRANS数据/派生项目 | [已有LICENSE](../Airfoil-Design-AirfRANS/LICENSE) 与原子项目README | Open Database License（ODbL），是数据库条款；未改写为全仓代码MIT | 保留原数据归属、读取、指标、边界处理及引用；本次未下载或再分发数据 |
++
++Transolver当前origin使用SSH `git@github.com:thuml/Transolver.git`，与用户给的HTTPS地址指向同一仓库。分支main/HEAD与阶段0一致，无reset/commit/push。LRSA本地 `/home/hwz/LRSA-Operator` HEAD吻合且工作区干净。历史IPOT临时checkout已不可用，本次通过固定commit的GitHub raw只读重取LICENSE及3个相关源码文件，记录URL/字节数/SHA256于 [ipot-source.json](final_audit/ipot-source.json)；没有引入运行依赖。LRSA文件指纹见 [lrsa-source.json](final_audit/lrsa-source.json)。
++
++LRSA相关源码为 `modeling/layers/attn.py`、`layers/mlp.py`、`perceiver.py`、`perceiver_structured.py`。实际顺序是down→latent FFN1→latent SA→latent FFN2→up，外层点残差/点FFN也保留。`dwconv`虽然命名如此，实际构造未传groups，故groups=1。本实现未采用其RoPE/gate、不同latent width、环境/训练presets及自定义核；参考测试显式固定同配置后比较输出、T及参数梯度。
++
++IPOT `ipot_encoder.py` 在forward使用learned query residual，但未调用所声明encoder_ff；本实现只保留实际约定bridge。`ipot_processor.py` 重复追加同一attention/FFN对象，本实现改为每层独立实例；其 `layers.PreNorm` 可能只归一化query而保留传入context，本实现按确认公式令Q/K/V来自同一LN(Z)。这些是有依据的移植差异，不声称与原processor逐行或默认preset相同。
++
++对应生产代码：[modules.py](../cdlno/modules.py)、[core.py](../cdlno/core.py)、[cdpa.py](../cdlno/cdpa.py)。最终原LRSA同配置对照2项通过，bridge/rear用显式数学reference核对；具体测试映射见 [需求矩阵](CDLNO_REQUIREMENTS_MATRIX.md)。
++
++论文归属保留：[Transolver, ICML2024](https://arxiv.org/abs/2402.02366)、[LRSA](https://arxiv.org/abs/2604.03582)、[IPOT](https://arxiv.org/abs/2312.10975)。CDPA的depth评分借鉴所提供Kimi/AttnRes文献，但加入逐历史Cross对齐，未照搬其residual replacement。理论来源不是新增gate、quadrature、正交约束、损失或坐标decoder的授权。
++
++## IPOT原MIT声明
++
++```text
++MIT License
++
++Copyright (c) 2023 Seungjun Lee
++
++Permission is hereby granted, free of charge, to any person obtaining a copy
++of this software and associated documentation files (the "Software"), to deal
++in the Software without restriction, including without limitation the rights
++to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++copies of the Software, and to permit persons to whom the Software is
++furnished to do so, subject to the following conditions:
++
++The above copyright notice and this permission notice shall be included in all
++copies or substantial portions of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++SOFTWARE.
++```

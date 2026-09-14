@@ -1,0 +1,146 @@
+{
+  "python310_syntax": {
+    "Airfoil-Design-AirfRANS/cdlno_entry.py": "passed",
+    "Airfoil-Design-AirfRANS/main.py": "passed",
+    "Airfoil-Design-AirfRANS/main_evaluation.py": "passed",
+    "Airfoil-Design-AirfRANS/models/CDLNO.py": "passed",
+    "Airfoil-Design-AirfRANS/train.py": "passed",
+    "Car-Design-ShapeNetCar/main.py": "passed",
+    "Car-Design-ShapeNetCar/main_evaluation.py": "passed",
+    "Car-Design-ShapeNetCar/models/CDLNO.py": "passed",
+    "Car-Design-ShapeNetCar/models/cdlno_run.py": "passed",
+    "Car-Design-ShapeNetCar/train.py": "passed",
+    "PDE-Solving-StandardBenchmark/cdlno_entry.py": "passed",
+    "PDE-Solving-StandardBenchmark/exp_airfoil.py": "passed",
+    "PDE-Solving-StandardBenchmark/exp_darcy.py": "passed",
+    "PDE-Solving-StandardBenchmark/exp_elas.py": "passed",
+    "PDE-Solving-StandardBenchmark/exp_ns.py": "passed",
+    "PDE-Solving-StandardBenchmark/exp_pipe.py": "passed",
+    "PDE-Solving-StandardBenchmark/exp_plas.py": "passed",
+    "PDE-Solving-StandardBenchmark/model/CDLNO_Irregular_Mesh.py": "passed",
+    "PDE-Solving-StandardBenchmark/model/CDLNO_Structured_Mesh_2D.py": "passed",
+    "PDE-Solving-StandardBenchmark/model/CDLNO_Temporal_Structured_Mesh_2D.py": "passed",
+    "PDE-Solving-StandardBenchmark/model_dict.py": "passed",
+    "cdlno/__init__.py": "passed",
+    "cdlno/airfrans.py": "passed",
+    "cdlno/cdpa.py": "passed",
+    "cdlno/checkpoint.py": "passed",
+    "cdlno/config.py": "passed",
+    "cdlno/core.py": "passed",
+    "cdlno/modules.py": "passed",
+    "cdlno/standard.py": "passed",
+    "tests/cdpa_reference.py": "passed",
+    "tests/test_airfrans.py": "passed",
+    "tests/test_cdpa.py": "passed",
+    "tests/test_core.py": "passed",
+    "tests/test_core_config.py": "passed",
+    "tests/test_lrsa_reference.py": "passed",
+    "tests/test_modules.py": "passed",
+    "tests/test_performance.py": "passed",
+    "tests/test_shapenet_car.py": "passed",
+    "tests/test_static_standard.py": "passed",
+    "tests/test_temporal_standard.py": "passed",
+    "tools/cdlno_benchmark.py": "passed",
+    "tools/cdlno_environment_preflight.py": "passed",
+    "tools/cdlno_perf/__init__.py": "passed",
+    "tools/cdlno_perf/costs.py": "passed",
+    "tools/cdlno_perf/measure.py": "passed",
+    "tools/cdlno_perf/models.py": "passed"
+  },
+  "bash_syntax": {
+    "Airfoil-Design-AirfRANS/scripts/CDLNO.sh": {
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "Airfoil-Design-AirfRANS/scripts/CDLNO_Evaluation.sh": {
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "Car-Design-ShapeNetCar/scripts/CDLNO.sh": {
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "Car-Design-ShapeNetCar/scripts/CDLNO_Evaluation.sh": {
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Airfoil.sh": {
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Airfoil_Eval.sh": {
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Darcy.sh": {
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Darcy_Eval.sh": {
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Elas.sh": {
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Elas_Eval.sh": {
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_NS.sh": {
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_NS_Eval.sh": {
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Pipe.sh": {
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Pipe_Eval.sh": {
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Plasticity.sh": {
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Plasticity_Eval.sh": {
+      "exit_code": 0,
+      "stderr": ""
+    }
+  },
+  "document_links": {
+    "README.md": {
+      "missing": []
+    },
+    "docs/CDLNO_IMPLEMENTATION_REPORT.md": {
+      "missing": []
+    },
+    "docs/CDLNO_REQUIREMENTS_MATRIX.md": {
+      "missing": []
+    },
+    "docs/CDLNO_THIRD_PARTY_NOTICES.md": {
+      "missing": []
+    },
+    "docs/CDLNO_TASK_LAUNCHERS.md": {
+      "missing": []
+    }
+  },
+  "test_reference_names": {
+    "docs/CDLNO_IMPLEMENTATION_REPORT.md": {
+      "missing": []
+    },
+    "docs/CDLNO_REQUIREMENTS_MATRIX.md": {
+      "missing": []
+    }
+  },
+  "git_diff_check": {
+    "exit_code": 0,
+    "output": ""
+  },
+  "all_passed": true
+}
