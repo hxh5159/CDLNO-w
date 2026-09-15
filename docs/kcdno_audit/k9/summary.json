@@ -1,0 +1,326 @@
+{
+  "results": [
+    {
+      "case": "Elasticity/task",
+      "model": "transolver",
+      "parameters": {
+        "registered": 976833,
+        "requires_grad": 976833,
+        "missing_grad_names": [],
+        "nonfinite_grad_names": [],
+        "by_component": {
+          "front_bridge_readout_projections": 4480,
+          "stem_and_time": 33664,
+          "transolver_attention_projections": 411200,
+          "transolver_point_mlp": 527360,
+          "output_head": 129
+        },
+        "core": null,
+        "stem_head_other": null
+      },
+      "matrix_macs": 1126923776,
+      "counts": {
+        "down_bridge": 0,
+        "up_readout": 0,
+        "latent_sa": 0,
+        "structured_convffn": 0,
+        "front_sa": 0,
+        "front_latent_ffn": 0,
+        "rear_sa": 0,
+        "rear_ffn": 0,
+        "kernel_writers": 0,
+        "kernel_queries": 0,
+        "kernel_reads": 0,
+        "kernel_reader_calls": 0,
+        "point_modules": 0,
+        "cdpa_logical_sources": 0,
+        "cdpa_locations": 0,
+        "history_sdpa_calls": 0,
+        "all_sdpa_calls": 0,
+        "transolver_physics_attention": 8
+      }
+    },
+    {
+      "case": "Elasticity/task",
+      "model": "lrsa_matched_trainable",
+      "parameters": {
+        "registered": 3133569,
+        "requires_grad": 3133569,
+        "missing_grad_names": [],
+        "nonfinite_grad_names": [],
+        "by_component": {
+          "front_bridge_readout_projections": 1516416,
+          "stem_and_time": 33664,
+          "front_two_latent_ffns": 1054720,
+          "point_ffn_linears": 528384,
+          "output_head": 385
+        },
+        "core": 3099392,
+        "stem_head_other": 34177
+      },
+      "matrix_macs": 1440710144,
+      "counts": {
+        "down_bridge": 8,
+        "up_readout": 8,
+        "latent_sa": 8,
+        "structured_convffn": 0,
+        "front_sa": 8,
+        "front_latent_ffn": 16,
+        "rear_sa": 0,
+        "rear_ffn": 0,
+        "kernel_writers": 0,
+        "kernel_queries": 0,
+        "kernel_reads": 0,
+        "kernel_reader_calls": 0,
+        "point_modules": 8,
+        "cdpa_logical_sources": 0,
+        "cdpa_locations": 0,
+        "history_sdpa_calls": 0,
+        "all_sdpa_calls": 24
+      }
+    },
+    {
+      "case": "Elasticity/task",
+      "model": "kcdno_off",
+      "parameters": {
+        "registered": 2606977,
+        "requires_grad": 2606977,
+        "missing_grad_names": [],
+        "nonfinite_grad_names": [],
+        "by_component": {
+          "front_bridge_readout_projections": 989824,
+          "stem_and_time": 33664,
+          "front_two_latent_ffns": 1054720,
+          "point_ffn_linears": 528384,
+          "output_head": 385
+        },
+        "core": 2572800,
+        "stem_head_other": 34177
+      },
+      "matrix_macs": 1398767104,
+      "counts": {
+        "down_bridge": 8,
+        "up_readout": 8,
+        "latent_sa": 0,
+        "structured_convffn": 0,
+        "front_sa": 0,
+        "front_latent_ffn": 16,
+        "rear_sa": 0,
+        "rear_ffn": 0,
+        "kernel_writers": 0,
+        "kernel_queries": 0,
+        "kernel_reads": 0,
+        "kernel_reader_calls": 0,
+        "point_modules": 8,
+        "cdpa_logical_sources": 0,
+        "cdpa_locations": 0,
+        "history_sdpa_calls": 0,
+        "all_sdpa_calls": 16
+      }
+    },
+    {
+      "case": "Elasticity/task",
+      "model": "kcdno_all",
+      "parameters": {
+        "registered": 2639240,
+        "requires_grad": 2639240,
+        "missing_grad_names": [],
+        "nonfinite_grad_names": [],
+        "by_component": {
+          "front_bridge_readout_projections": 990727,
+          "stem_and_time": 33664,
+          "front_two_latent_ffns": 1054720,
+          "point_ffn_linears": 528384,
+          "kernel_history": 31360,
+          "output_head": 385
+        },
+        "core": 2605063,
+        "stem_head_other": 34177
+      },
+      "matrix_macs": 1405218304,
+      "counts": {
+        "down_bridge": 8,
+        "up_readout": 8,
+        "latent_sa": 0,
+        "structured_convffn": 0,
+        "front_sa": 0,
+        "front_latent_ffn": 16,
+        "rear_sa": 0,
+        "rear_ffn": 0,
+        "kernel_writers": 7,
+        "kernel_queries": 7,
+        "kernel_reads": 28,
+        "kernel_reader_calls": 7,
+        "point_modules": 8,
+        "cdpa_logical_sources": 0,
+        "cdpa_locations": 0,
+        "history_sdpa_calls": 0,
+        "all_sdpa_calls": 16
+      }
+    },
+    {
+      "case": "Darcy/matched B1",
+      "model": "transolver",
+      "parameters": {
+        "registered": 3090113,
+        "requires_grad": 3090113,
+        "missing_grad_names": [
+          "placeholder"
+        ],
+        "nonfinite_grad_names": [],
+        "by_component": {
+          "front_bridge_readout_projections": 4480,
+          "stem_and_time": 49792,
+          "transolver_attention_projections": 2508352,
+          "transolver_point_mlp": 527360,
+          "output_head": 129
+        },
+        "core": null,
+        "stem_head_other": null
+      },
+      "matrix_macs": 23570814336,
+      "counts": {
+        "down_bridge": 0,
+        "up_readout": 0,
+        "latent_sa": 0,
+        "structured_convffn": 0,
+        "front_sa": 0,
+        "front_latent_ffn": 0,
+        "rear_sa": 0,
+        "rear_ffn": 0,
+        "kernel_writers": 0,
+        "kernel_queries": 0,
+        "kernel_reads": 0,
+        "kernel_reader_calls": 0,
+        "point_modules": 0,
+        "cdpa_logical_sources": 0,
+        "cdpa_locations": 0,
+        "history_sdpa_calls": 0,
+        "all_sdpa_calls": 0,
+        "transolver_physics_attention": 8
+      }
+    },
+    {
+      "case": "Darcy/matched B1",
+      "model": "lrsa_matched_trainable",
+      "parameters": {
+        "registered": 4330241,
+        "requires_grad": 4330241,
+        "missing_grad_names": [],
+        "nonfinite_grad_names": [],
+        "by_component": {
+          "stem_and_time": 49792,
+          "front_bridge_readout_projections": 1516288,
+          "front_two_latent_ffns": 1054720,
+          "point_ffn_linears": 528384,
+          "point_ffn_dense_conv": 1180672,
+          "output_head": 385
+        },
+        "core": 4280064,
+        "stem_head_other": 50177
+      },
+      "matrix_macs": 18485024128,
+      "counts": {
+        "down_bridge": 8,
+        "up_readout": 8,
+        "latent_sa": 8,
+        "structured_convffn": 8,
+        "front_sa": 8,
+        "front_latent_ffn": 16,
+        "rear_sa": 0,
+        "rear_ffn": 0,
+        "kernel_writers": 0,
+        "kernel_queries": 0,
+        "kernel_reads": 0,
+        "kernel_reader_calls": 0,
+        "point_modules": 8,
+        "cdpa_logical_sources": 0,
+        "cdpa_locations": 0,
+        "history_sdpa_calls": 0,
+        "all_sdpa_calls": 24
+      }
+    },
+    {
+      "case": "Darcy/matched B1",
+      "model": "kcdno_off",
+      "parameters": {
+        "registered": 3803649,
+        "requires_grad": 3803649,
+        "missing_grad_names": [],
+        "nonfinite_grad_names": [],
+        "by_component": {
+          "stem_and_time": 49792,
+          "front_bridge_readout_projections": 989696,
+          "front_two_latent_ffns": 1054720,
+          "point_ffn_linears": 528384,
+          "point_ffn_dense_conv": 1180672,
+          "output_head": 385
+        },
+        "core": 3753472,
+        "stem_head_other": 50177
+      },
+      "matrix_macs": 18443081088,
+      "counts": {
+        "down_bridge": 8,
+        "up_readout": 8,
+        "latent_sa": 0,
+        "structured_convffn": 8,
+        "front_sa": 0,
+        "front_latent_ffn": 16,
+        "rear_sa": 0,
+        "rear_ffn": 0,
+        "kernel_writers": 0,
+        "kernel_queries": 0,
+        "kernel_reads": 0,
+        "kernel_reader_calls": 0,
+        "point_modules": 8,
+        "cdpa_logical_sources": 0,
+        "cdpa_locations": 0,
+        "history_sdpa_calls": 0,
+        "all_sdpa_calls": 16
+      }
+    },
+    {
+      "case": "Darcy/matched B1",
+      "model": "kcdno_all",
+      "parameters": {
+        "registered": 3835912,
+        "requires_grad": 3835912,
+        "missing_grad_names": [],
+        "nonfinite_grad_names": [],
+        "by_component": {
+          "stem_and_time": 49792,
+          "front_bridge_readout_projections": 990599,
+          "front_two_latent_ffns": 1054720,
+          "point_ffn_linears": 528384,
+          "point_ffn_dense_conv": 1180672,
+          "kernel_history": 31360,
+          "output_head": 385
+        },
+        "core": 3785735,
+        "stem_head_other": 50177
+      },
+      "matrix_macs": 18449532288,
+      "counts": {
+        "down_bridge": 8,
+        "up_readout": 8,
+        "latent_sa": 0,
+        "structured_convffn": 8,
+        "front_sa": 0,
+        "front_latent_ffn": 16,
+        "rear_sa": 0,
+        "rear_ffn": 0,
+        "kernel_writers": 7,
+        "kernel_queries": 7,
+        "kernel_reads": 28,
+        "kernel_reader_calls": 7,
+        "point_modules": 8,
+        "cdpa_logical_sources": 0,
+        "cdpa_locations": 0,
+        "history_sdpa_calls": 0,
+        "all_sdpa_calls": 16
+      }
+    }
+  ],
+  "excluded_timing": "gpu-point.json overlapped a CPU unittest process; only gpu-point-final.json and gpu-darcy.json are timing evidence. Same finite case rerun alone; no sweep."
+}

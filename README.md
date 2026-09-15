@@ -125,7 +125,7 @@ python -B tools/cdlno_benchmark.py --task elasticity --comparison matched --devi
 python -B tools/cdlno_benchmark.py --task elasticity --models cdlno_entry --front-latent-mode identity --chunks 0 --device cuda:0 --precision fp32 --backend math --output /tmp/cdlno-identity.json
 ```
 
-工具比较原 Transolver、连续L个完整LRSA的 `lrsa_matched` 和 CDLNO off/entry/every_block。`--comparison task` 使用原任务各自配置；`matched` 使用同一d/h/M/L/点FFN设置。matched LRSA仅是结构性能对照，没有注册进训练器，也不是LRSA论文复现。
+工具比较原 Transolver、连续L个完整LRSA的 `lrsa_matched` 和 CDLNO off/entry/every_block。`--comparison task` 使用原任务各自配置；`matched` 使用同一d/h/M/L/点FFN设置。这里的旧性能类仍用于结构计时；K8另将同结构的生产 `lrsa_matched` 接入八任务训练/评估，性能工具用 `lrsa_matched_trainable` 明确选择该生产类。二者都不是LRSA论文复现实验。
 
 矩阵成本采用1 MAC=1乘加、2 FLOPs/MAC；额外norm/softmax/depth/临时stack与历史/点特征存储单列，SDPA不会按0计。实测报告forward及合成MSE/AdamW步的median/p90、GPU同步、峰值allocated显存、初始化optimizer state和精度/backend/warmup。所有模型用相同AMP/TF32/compile条件。详细口径、原始数据和限制见 [工具说明](docs/CDLNO_PERFORMANCE_TOOLS.md) 与 [阶段9报告](docs/CDLNO_PHASE9_PERFORMANCE.md)。模型计时不能换算真实epoch；已有结果也不构成普遍加速保证。
 
@@ -239,3 +239,35 @@ https://github.com/neuraloperator/Geo-FNO
 https://github.com/thuml/Latent-Spectral-Models
 
 https://github.com/Extrality/AirfRANS
+
+
+## KCDNO：独立核化跨深度模型
+
+新模型家族 `kcdno` 已接入八任务，原 Transolver、CDLNO full/no_sa/identity 和 CDPA 模式保留。KCDNO默认L8个完整点域block，每层重新压缩、重建；两个latent FFN间读取此前所有层的核摘要。没有Bridge、persistent后段或额外final Up。Down/Up仍是标准SDPA Cross。
+
+```text
+任务原输入/坐标/时间 → 相同任务lift → X0[B,N,d]
+每层：Point RMS → Down → FFN1残差
+    → 核历史读取/逐token来源融合/标量gate → FFN2残差 → T
+    → Up(H, RMS_up(T)) → 输入点残差 → point FFN或dense ConvFFN残差
+非末层：Writer(raw T) 只写一次摘要，供后层读取
+最后层点特征 → LN/head → 原任务输出
+```
+
+`--history-mode all` 为主版；`off` 不注册历史参数，作为matched LRSA-noSA对照。`--model lrsa_matched`（Car为 `--cfd_model`）为同lift/head及公共配置的L层完整LRSA-full对照。两种新家族从头训练、严格同架构加载；不能将旧CDLNO/full权重直接当作新模型权重。
+
+[八任务命令](docs/KCDNO_COMMANDS.md)包含单独训练/评价、三计算图和两profile；[最终报告](docs/KCDNO_IMPLEMENTATION_REPORT.md)、[需求矩阵](docs/KCDNO_REQUIREMENTS_MATRIX.md)、[性能实测](docs/KCDNO_K9_PERFORMANCE.md)记录具体范围。例如在根目录运行：
+
+```bash
+# 顺序训练，成功后评价同run；加 --dry-run 仅预览，以下未自动执行。
+bash tran_evaluate/kcdno/train_eval.sh darcy all --gpu 0
+bash tran_evaluate/kcdno/train_eval.sh darcy off --gpu 0
+bash tran_evaluate/kcdno/train_eval.sh darcy lrsa_matched --gpu 0
+# 其他TASK：elasticity、airfoil、pipe、ns、plasticity、car、airfrans。
+```
+
+新run默认在 `output/<task>/<family>/<profile>/<timestamp+structure>`；顺序包装使用唯一时间run并在配置文件内记录profile。启动即记录配置，构造后更新实际参数量，训练/每次评价结果分别保存。eval先读sidecar恢复省略结构，再核对显式覆盖，不能覆写原配置；`--kcdno-run-dir` 指向已有run评价。保存格式仍是标准state_dict、Car整对象、Air列表/整对象，**不新增精确断点续训**。已有V1归档基础不等于V2–V5任务resume接入。
+
+环境沿用现有共享包，不增加attention框架或改依赖；根脚本自动设置PYTHONPATH并切换原子项目工作目录。目标仍是Python3.10/Torch2.11/cu128，尚未远端验收。本机Python3.13.9/Torch2.13+cu130/PyG2.3.1通过源码路径验证，未在不满足pyproject Python范围的本机强行editable安装。
+
+验收运行257项检查，整体通过、1项Air完整抽样epoch因缺torch_cluster跳过；41份K0旧权重精确回放通过。真实PyG合成接口/原loss连接、工业checkpoint以及有限本机GPU FP32/AMP和两配置性能已测。KCDNO all的有限测量未显示普遍提速；参数与MAC减少不能推算真实epoch。未下载或训练真实数据，完整数据读取、收敛、预测精度和实际任务效率仍未验证。

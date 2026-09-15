@@ -1,0 +1,838 @@
+--- a/Airfoil-Design-AirfRANS/cdlno_entry.py
++++ b/Airfoil-Design-AirfRANS/cdlno_entry.py
+@@ -35,8 +35,10 @@
+         parser.add_argument('--task', choices=('full', 'scarce', 'reynolds', 'aoa'), default='full')
+         parser.add_argument('--nmodel', type=int, default=1)
+         parser.add_argument('--weight', type=float, default=1.)
+-    from cdlno.kcdno.entry import add_arguments
+-    add_arguments(parser)
++    parser.add_argument('--profile', choices=('kcdno_v1', 'transolver_shape_match'), default='kcdno_v1')
++    parser.add_argument('--kernel-rank', '--kernel_rank', type=int, default=16)
++    parser.add_argument('--history-mode', '--history_mode', choices=('all', 'off'), default='all')
++    parser.add_argument('--kcdno-run-dir', type=Path, default=None)
+     args = parser.parse_args(argv)
+     if args.model in ('kcdno', 'lrsa_matched'):
+         from cdlno.kcdno.air_entry import resolve_air
+--- a/Airfoil-Design-AirfRANS/main.py
++++ b/Airfoil-Design-AirfRANS/main.py
+@@ -1,4 +1,3 @@
+-from kcdno_entry import AirRun as KCDNOAirRun, model_kwargs as kcdno_model_kwargs, resolve_hparams as kcdno_resolve_hparams
+ import argparse, yaml, json
+ import torch
+ import train
+@@ -31,6 +30,7 @@
+         recording_hparams = resolve_hparams(args, yaml.safe_load(config_file)['CDLNO'])
+     start_experiment(args, 'airfrans', evaluation=False, hparams=recording_hparams)
+ elif args.model in ('kcdno', 'lrsa_matched'):
++    from kcdno_entry import AirRun as KCDNOAirRun, model_kwargs as kcdno_model_kwargs, resolve_hparams as kcdno_resolve_hparams
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     with open('params.yaml', 'r') as config_file:
+         recording_hparams = kcdno_resolve_hparams(args, yaml.safe_load(config_file)['kcdno'])
+--- a/Airfoil-Design-AirfRANS/main_evaluation.py
++++ b/Airfoil-Design-AirfRANS/main_evaluation.py
+@@ -1,4 +1,3 @@
+-from kcdno_entry import AirRun as KCDNOAirRun, model_kwargs as kcdno_model_kwargs, resolve_hparams as kcdno_resolve_hparams
+ import yaml, json
+ import torch
+ import utils.metrics as metrics
+@@ -18,6 +17,7 @@
+         recording_hparams = resolve_hparams(args, yaml.safe_load(config_file)['CDLNO'])
+     start_experiment(args, 'airfrans', evaluation=True, hparams=recording_hparams)
+ elif args.model in ('kcdno', 'lrsa_matched'):
++    from kcdno_entry import AirRun as KCDNOAirRun, model_kwargs as kcdno_model_kwargs, resolve_hparams as kcdno_resolve_hparams
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     with open('params.yaml', 'r') as config_file:
+         recording_hparams = kcdno_resolve_hparams(args, yaml.safe_load(config_file)['kcdno'])
+--- a/Car-Design-ShapeNetCar/main.py
++++ b/Car-Design-ShapeNetCar/main.py
+@@ -1,4 +1,3 @@
+-from kcdno_entry import CarRun as KCDNORun, model_kwargs as kcdno_model_kwargs
+ import train
+ import os
+ import torch
+@@ -29,6 +28,7 @@
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     start_experiment(args, 'car', evaluation=False)
+ if args.cfd_model in ('kcdno', 'lrsa_matched'):
++    from kcdno_entry import CarRun as KCDNORun, model_kwargs as kcdno_model_kwargs
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     start_experiment(args, 'car', evaluation=False)
+ print(args)
+--- a/Car-Design-ShapeNetCar/main_evaluation.py
++++ b/Car-Design-ShapeNetCar/main_evaluation.py
+@@ -1,4 +1,3 @@
+-from kcdno_entry import CarRun as KCDNORun, model_kwargs as kcdno_model_kwargs
+ import os
+ import torch
+ import argparse
+@@ -28,6 +27,7 @@
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     start_experiment(args, 'car', evaluation=True)
+ if args.cfd_model in ('kcdno', 'lrsa_matched'):
++    from kcdno_entry import CarRun as KCDNORun, model_kwargs as kcdno_model_kwargs
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     start_experiment(args, 'car', evaluation=True)
+ print(args)
+--- a/Car-Design-ShapeNetCar/models/cdlno_run.py
++++ b/Car-Design-ShapeNetCar/models/cdlno_run.py
+@@ -19,8 +19,10 @@
+ 
+ 
+ def parse_args(parser, *, evaluation=False, argv=None):
+-    from cdlno.kcdno.entry import add_arguments
+-    add_arguments(parser)
++    parser.add_argument('--profile', choices=('kcdno_v1', 'transolver_shape_match'), default='kcdno_v1')
++    parser.add_argument('--kernel-rank', '--kernel_rank', type=int, default=16)
++    parser.add_argument('--history-mode', '--history_mode', choices=('all', 'off'), default='all')
++    parser.add_argument('--kcdno-run-dir', type=Path, default=None)
+     parser.add_argument('--front_latent_mode', '--front-latent-mode',
+                         choices=('full', 'no_sa', 'identity'), default=None)
+     for name, kind in MODEL_OPTIONS.items():
+--- a/PDE-Solving-StandardBenchmark/cdlno_entry.py
++++ b/PDE-Solving-StandardBenchmark/cdlno_entry.py
+@@ -16,8 +16,10 @@
+ 
+ 
+ def parse_args(parser, task, argv=None):
+-    from cdlno.kcdno.entry import add_arguments, resolve_args
+-    add_arguments(parser)
++    parser.add_argument('--profile', choices=('kcdno_v1', 'transolver_shape_match'), default='kcdno_v1')
++    parser.add_argument('--kernel-rank', '--kernel_rank', type=int, default=16)
++    parser.add_argument('--history-mode', '--history_mode', choices=('all', 'off'), default='all')
++    parser.add_argument('--kcdno-run-dir', type=Path, default=None)
+     parser.add_argument('--front-latent-mode', '--front_latent_mode',
+                         choices=('full', 'no_sa', 'identity'), default=None)
+     parser.add_argument('--front-blocks', type=int, default=2)
+@@ -29,6 +31,7 @@
+     tokens = sys.argv[1:] if argv is None else list(argv)
+     args = parser.parse_args(tokens)
+     if args.model in ('kcdno', 'lrsa_matched'):
++        from cdlno.kcdno.entry import resolve_args
+         return resolve_args(parser, args, task, tokens)
+     if args.model != 'CDLNO':
+         return args
+--- a/PDE-Solving-StandardBenchmark/exp_airfoil.py
++++ b/PDE-Solving-StandardBenchmark/exp_airfoil.py
+@@ -2,7 +2,6 @@
+ import argparse
+ from cdlno_entry import parse_args as parse_cdlno_args, model_kwargs as cdlno_model_kwargs, StaticRun
+ import matplotlib.pyplot as plt
+-from kcdno_entry import model_kwargs as kcdno_model_kwargs, StandardRun as KCDNORun
+ import numpy as np
+ import torch
+ from tqdm import *
+@@ -39,6 +38,7 @@
+ save_name = args.save_name
+ 
+ if args.model in ('kcdno', 'lrsa_matched'):
++    from kcdno_entry import model_kwargs as kcdno_model_kwargs, StandardRun as KCDNORun
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     start_experiment(args, args.kcdno_task, evaluation=bool(args.eval))
+ 
+--- a/PDE-Solving-StandardBenchmark/exp_darcy.py
++++ b/PDE-Solving-StandardBenchmark/exp_darcy.py
+@@ -1,7 +1,6 @@
+ import os
+ import argparse
+ from cdlno_entry import parse_args as parse_cdlno_args, model_kwargs as cdlno_model_kwargs, StaticRun
+-from kcdno_entry import model_kwargs as kcdno_model_kwargs, StandardRun as KCDNORun
+ import numpy as np
+ import scipy.io as scio
+ import torch
+@@ -41,6 +40,7 @@
+     start_experiment(args, args.cdlno_task, evaluation=bool(args.eval))
+ 
+ if args.model in ('kcdno', 'lrsa_matched'):
++    from kcdno_entry import model_kwargs as kcdno_model_kwargs, StandardRun as KCDNORun
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     start_experiment(args, args.kcdno_task, evaluation=bool(args.eval))
+ 
+--- a/PDE-Solving-StandardBenchmark/exp_elas.py
++++ b/PDE-Solving-StandardBenchmark/exp_elas.py
+@@ -2,7 +2,6 @@
+ import argparse
+ from cdlno_entry import parse_args as parse_cdlno_args, model_kwargs as cdlno_model_kwargs, StaticRun
+ import matplotlib.pyplot as plt
+-from kcdno_entry import model_kwargs as kcdno_model_kwargs, StandardRun as KCDNORun
+ import numpy as np
+ import torch
+ from tqdm import *
+@@ -40,6 +39,7 @@
+ save_name = args.save_name
+ 
+ if args.model in ('kcdno', 'lrsa_matched'):
++    from kcdno_entry import model_kwargs as kcdno_model_kwargs, StandardRun as KCDNORun
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     start_experiment(args, args.kcdno_task, evaluation=bool(args.eval))
+ 
+--- a/PDE-Solving-StandardBenchmark/exp_ns.py
++++ b/PDE-Solving-StandardBenchmark/exp_ns.py
+@@ -3,7 +3,6 @@
+ import argparse
+ from cdlno_entry import parse_args as parse_cdlno_args, model_kwargs as cdlno_model_kwargs, StaticRun
+ import scipy.io as scio
+-from kcdno_entry import model_kwargs as kcdno_model_kwargs, StandardRun as KCDNORun
+ import numpy as np
+ import torch
+ from tqdm import *
+@@ -37,6 +36,7 @@
+     start_experiment(args, args.cdlno_task, evaluation=bool(args.eval))
+ 
+ if args.model in ('kcdno', 'lrsa_matched'):
++    from kcdno_entry import model_kwargs as kcdno_model_kwargs, StandardRun as KCDNORun
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     start_experiment(args, args.kcdno_task, evaluation=bool(args.eval))
+ 
+--- a/PDE-Solving-StandardBenchmark/exp_pipe.py
++++ b/PDE-Solving-StandardBenchmark/exp_pipe.py
+@@ -33,12 +33,12 @@
+ save_name = args.save_name
+ 
+ if args.model in ('kcdno', 'lrsa_matched'):
++    from kcdno_entry import model_kwargs as kcdno_model_kwargs, StandardRun as KCDNORun
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     start_experiment(args, args.kcdno_task, evaluation=bool(args.eval))
+ 
+ os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
+ 
+-from kcdno_entry import model_kwargs as kcdno_model_kwargs, StandardRun as KCDNORun
+ import numpy as np
+ import torch
+ from tqdm import *
+--- a/PDE-Solving-StandardBenchmark/exp_plas.py
++++ b/PDE-Solving-StandardBenchmark/exp_plas.py
+@@ -32,12 +32,12 @@
+ eval = args.eval
+ save_name = args.save_name
+ if args.model in ('kcdno', 'lrsa_matched'):
++    from kcdno_entry import model_kwargs as kcdno_model_kwargs, StandardRun as KCDNORun
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     start_experiment(args, args.kcdno_task, evaluation=bool(args.eval))
+ 
+ os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
+ 
+-from kcdno_entry import model_kwargs as kcdno_model_kwargs, StandardRun as KCDNORun
+ import numpy as np
+ import scipy.io as scio
+ import torch
+--- a/README.md
++++ b/README.md
+@@ -125,7 +125,7 @@
+ python -B tools/cdlno_benchmark.py --task elasticity --models cdlno_entry --front-latent-mode identity --chunks 0 --device cuda:0 --precision fp32 --backend math --output /tmp/cdlno-identity.json
+ ```
+ 
+-工具比较原 Transolver、连续L个完整LRSA的 `lrsa_matched` 和 CDLNO off/entry/every_block。`--comparison task` 使用原任务各自配置；`matched` 使用同一d/h/M/L/点FFN设置。matched LRSA仅是结构性能对照，没有注册进训练器，也不是LRSA论文复现。
++工具比较原 Transolver、连续L个完整LRSA的 `lrsa_matched` 和 CDLNO off/entry/every_block。`--comparison task` 使用原任务各自配置；`matched` 使用同一d/h/M/L/点FFN设置。这里的旧性能类仍用于结构计时；K8另将同结构的生产 `lrsa_matched` 接入八任务训练/评估，性能工具用 `lrsa_matched_trainable` 明确选择该生产类。二者都不是LRSA论文复现实验。
+ 
+ 矩阵成本采用1 MAC=1乘加、2 FLOPs/MAC；额外norm/softmax/depth/临时stack与历史/点特征存储单列，SDPA不会按0计。实测报告forward及合成MSE/AdamW步的median/p90、GPU同步、峰值allocated显存、初始化optimizer state和精度/backend/warmup。所有模型用相同AMP/TF32/compile条件。详细口径、原始数据和限制见 [工具说明](docs/CDLNO_PERFORMANCE_TOOLS.md) 与 [阶段9报告](docs/CDLNO_PHASE9_PERFORMANCE.md)。模型计时不能换算真实epoch；已有结果也不构成普遍加速保证。
+ 
+@@ -239,3 +239,35 @@
+ https://github.com/thuml/Latent-Spectral-Models
+ 
+ https://github.com/Extrality/AirfRANS
++
++
++## KCDNO：独立核化跨深度模型
++
++新模型家族 `kcdno` 已接入八任务，原 Transolver、CDLNO full/no_sa/identity 和 CDPA 模式保留。KCDNO默认L8个完整点域block，每层重新压缩、重建；两个latent FFN间读取此前所有层的核摘要。没有Bridge、persistent后段或额外final Up。Down/Up仍是标准SDPA Cross。
++
++```text
++任务原输入/坐标/时间 → 相同任务lift → X0[B,N,d]
++每层：Point RMS → Down → FFN1残差
++    → 核历史读取/逐token来源融合/标量gate → FFN2残差 → T
++    → Up(H, RMS_up(T)) → 输入点残差 → point FFN或dense ConvFFN残差
++非末层：Writer(raw T) 只写一次摘要，供后层读取
++最后层点特征 → LN/head → 原任务输出
++```
++
++`--history-mode all` 为主版；`off` 不注册历史参数，作为matched LRSA-noSA对照。`--model lrsa_matched`（Car为 `--cfd_model`）为同lift/head及公共配置的L层完整LRSA-full对照。两种新家族从头训练、严格同架构加载；不能将旧CDLNO/full权重直接当作新模型权重。
++
++[八任务命令](docs/KCDNO_COMMANDS.md)包含单独训练/评价、三计算图和两profile；[最终报告](docs/KCDNO_IMPLEMENTATION_REPORT.md)、[需求矩阵](docs/KCDNO_REQUIREMENTS_MATRIX.md)、[性能实测](docs/KCDNO_K9_PERFORMANCE.md)记录具体范围。例如在根目录运行：
++
++```bash
++# 顺序训练，成功后评价同run；加 --dry-run 仅预览，以下未自动执行。
++bash tran_evaluate/kcdno/train_eval.sh darcy all --gpu 0
++bash tran_evaluate/kcdno/train_eval.sh darcy off --gpu 0
++bash tran_evaluate/kcdno/train_eval.sh darcy lrsa_matched --gpu 0
++# 其他TASK：elasticity、airfoil、pipe、ns、plasticity、car、airfrans。
++```
++
++新run默认在 `output/<task>/<family>/<profile>/<timestamp+structure>`；顺序包装使用唯一时间run并在配置文件内记录profile。启动即记录配置，构造后更新实际参数量，训练/每次评价结果分别保存。eval先读sidecar恢复省略结构，再核对显式覆盖，不能覆写原配置；`--kcdno-run-dir` 指向已有run评价。保存格式仍是标准state_dict、Car整对象、Air列表/整对象，**不新增精确断点续训**。已有V1归档基础不等于V2–V5任务resume接入。
++
++环境沿用现有共享包，不增加attention框架或改依赖；根脚本自动设置PYTHONPATH并切换原子项目工作目录。目标仍是Python3.10/Torch2.11/cu128，尚未远端验收。本机Python3.13.9/Torch2.13+cu130/PyG2.3.1通过源码路径验证，未在不满足pyproject Python范围的本机强行editable安装。
++
++验收运行257项检查，整体通过、1项Air完整抽样epoch因缺torch_cluster跳过；41份K0旧权重精确回放通过。真实PyG合成接口/原loss连接、工业checkpoint以及有限本机GPU FP32/AMP和两配置性能已测。KCDNO all的有限测量未显示普遍提速；参数与MAC减少不能推算真实epoch。未下载或训练真实数据，完整数据读取、收敛、预测精度和实际任务效率仍未验证。
+--- a/cdlno/kcdno/__init__.py
++++ b/cdlno/kcdno/__init__.py
+@@ -1,4 +1,4 @@
+-"""KCDNO configuration protocol; no model constructor is registered yet."""
++"""Torch-independent KCDNO configuration exports; core/adapters import explicitly."""
+ 
+ from .config import FAMILY, MODEL_NAME, KCDNOArchitectureConfig, KCDNOInitializationConfig, KCDNORuntimeConfig
+ from .profiles import PROFILE_NAMES, TASKS, resolve_profile
+--- a/cdlno/kcdno/air_entry.py
++++ b/cdlno/kcdno/air_entry.py
+@@ -4,10 +4,10 @@
+ import os
+ from pathlib import Path
+ 
+-from .config import KCDNOArchitectureConfig, KCDNORuntimeConfig
++from .config import KCDNORuntimeConfig
+ from .entry import ROOT, task_record
+-from .metadata import KCDNOMetadata, KCDNOMetadataMismatch, load_metadata, save_metadata, resolve_evaluation, new_run_path
+-from .options import explicit_arguments, resolve_training
++from .metadata import KCDNOMetadataMismatch, save_metadata
++from .options import explicit_arguments
+ from .airfrans import AirfRANSModel
+ 
+ from .families import (architecture_from_dict, make_metadata, load_metadata,
+@@ -129,7 +129,8 @@
+             try: validate_core(model.core,self.architecture)
+             except ValueError as e: raise KCDNOMetadataMismatch(str(e)) from e
+             with torch.random.fork_rng(devices=[]):expected = AirfRANSModel(**self.kwargs)
+-            expected.load_state_dict(model.state_dict(),strict=True)
++            from .loading import validate_whole_model
++            validate_whole_model(model,expected)
+             if model.adapter_architecture() != task_record(self.directory)['adapter']:
+                 raise KCDNOMetadataMismatch('AirfRANS adapter mismatch')
+             models[index] = model.to(self.device)
+--- a/cdlno/kcdno/config.py
++++ b/cdlno/kcdno/config.py
+@@ -46,7 +46,7 @@
+     There is no CDLNO F/P/front/CDPA field. Hidden widths resolve after d.
+     Version v1 also fixes sum summaries, raw values, source-owned keys,
+     receiver-owned queries, FP32 history arithmetic, and no latent SA.
+-    Task lift/grid/output semantics will be checked by future task adapters.
++    Task lift/grid/output semantics are checked separately by task adapters and task.json.
+     """
+ 
+     family: str = FAMILY
+--- a/cdlno/kcdno/entry.py
++++ b/cdlno/kcdno/entry.py
+@@ -7,10 +7,9 @@
+ from pathlib import Path
+ import re
+ 
+-from .config import KCDNOArchitectureConfig, KCDNORuntimeConfig
+-from .metadata import (KCDNOMetadata, KCDNOMetadataMismatch, load_metadata,
+-                       new_run_path, resolve_evaluation, save_metadata)
+-from .options import explicit_arguments, resolve_training
++from .config import KCDNORuntimeConfig
++from .metadata import KCDNOMetadataMismatch, save_metadata
++from .options import explicit_arguments
+ 
+ from .families import (architecture_from_dict, make_metadata, load_metadata,
+                        resolve_training, resolve_evaluation, new_run_path)
+--- a/cdlno/kcdno/history.py
++++ b/cdlno/kcdno/history.py
+@@ -1,7 +1,7 @@
+ """KCDNO v1 single-source writer and single-location history reader.
+ 
+ Source ownership, active layer allocation, and tuple history lifetime belong
+-to the future core. These modules keep no inputs, caches, or debug tensors.
++to core.py. These modules keep no inputs, caches, or debug tensors.
+ All M latent tokens are valid; there is no padding/mask or graph-batch policy.
+ """
+ 
+--- a/cdlno/kcdno/industrial_entry.py
++++ b/cdlno/kcdno/industrial_entry.py
+@@ -5,10 +5,10 @@
+ import os
+ from pathlib import Path
+ 
+-from .config import KCDNOArchitectureConfig, KCDNORuntimeConfig
++from .config import KCDNORuntimeConfig
+ from .entry import ROOT, task_record
+-from .metadata import KCDNOMetadata, KCDNOMetadataMismatch, new_run_path, save_metadata, load_metadata, resolve_evaluation
+-from .options import explicit_arguments, resolve_training
++from .metadata import KCDNOMetadataMismatch, save_metadata
++from .options import explicit_arguments
+ 
+ from .families import (architecture_from_dict, make_metadata, load_metadata,
+                        resolve_training, resolve_evaluation, new_run_path)
+@@ -117,7 +117,8 @@
+         self._check_model(model)
+         with torch.random.fork_rng(devices=[]):
+             expected=Model(**car_model_kwargs(self.args))
+-        expected.load_state_dict(model.state_dict(),strict=True)
++        from .loading import validate_whole_model
++        validate_whole_model(model,expected)
+         if model.adapter_architecture()!=task_record(self.directory)['adapter']:
+             raise KCDNOMetadataMismatch('whole-model wrapper contract mismatch')
+         model=model.to(self.device)
+--- /dev/null
++++ b/cdlno/kcdno/loading.py
+@@ -0,0 +1,29 @@
++"""Strict behavior/layout check inside already trusted industrial load boundaries."""
++import torch
++from .metadata import KCDNOMetadataMismatch
++
++# Attributes affecting forward but absent from a state_dict. No learned tensor
++# is compared with its initialization; these checks never modify the loaded model.
++_BEHAVIOR = ('dim','heads','head_dim','num_latents','kernel_rank','eps','normalized_shape',
++             'dropout','output_dropout','p','approximate','in_features','out_features',
++             'in_channels','out_channels','kernel_size','stride','padding','dilation','groups',
++             'padding_mode','structured','grid_shape','front_latent_mode')
++
++
++def validate_whole_model(actual, expected):
++    left,right=dict(actual.named_modules()),dict(expected.named_modules())
++    if left.keys()!=right.keys():raise KCDNOMetadataMismatch('whole-model module paths differ')
++    for path,wanted in right.items():
++        saved=left[path]
++        if type(saved) is not type(wanted):raise KCDNOMetadataMismatch('whole-model class mismatch: '+path)
++        for name in _BEHAVIOR:
++            if hasattr(wanted,name) and getattr(saved,name,None)!=getattr(wanted,name):
++                raise KCDNOMetadataMismatch(f'whole-model behavior mismatch: {path}.{name}')
++    # reference/pos are fixed, nonpersistent buffers; strict state_dict alone
++    # cannot detect a stale or mutated reference grid in a pickle.
++    a,b=dict(actual.named_buffers()),dict(expected.named_buffers())
++    if a.keys()!=b.keys():raise KCDNOMetadataMismatch('whole-model buffer paths differ')
++    for name,value in b.items():
++        if a[name].shape!=value.shape or not torch.equal(a[name],value.to(a[name].device,a[name].dtype)):
++            raise KCDNOMetadataMismatch('whole-model fixed buffer mismatch: '+name)
++    expected.load_state_dict(actual.state_dict(),strict=True)
+--- a/cdlno/kcdno/metadata.py
++++ b/cdlno/kcdno/metadata.py
+@@ -1,8 +1,8 @@
+ """KCDNO JSON metadata only; no torch.load/save, model, or resume implementation.
+ 
+ The envelope records the existing task's weight format without changing it.
+-K1 describes core architecture; future adapters must add their lift/grid/output
+-contracts before this protocol is used to load real task model weights.
++K1 describes core architecture; task adapters additionally validate task.json lift/grid/output
++contracts before loading task model weights.
+ """
+ 
+ from __future__ import annotations
+--- a/cdlno/kcdno/standard.py
++++ b/cdlno/kcdno/standard.py
+@@ -41,6 +41,8 @@
+         self.H, self.W, self.ref = H, W, ref
+         self.unified_pos, self.fun_dim = bool(unified_pos), task['fun_dim']
+         self.Time_Input = task.get('time_input', False)
++        if self.Time_Input and config.d < 2:
++            raise ValueError('Plasticity time embedding requires d>=2')
+         self.out_dim, self.n_hidden = task.get('out_dim', 1), config.d
+         stem = (ref * ref if self.unified_pos else 2) + self.fun_dim
+         self.preprocess = nn.Sequential(nn.Linear(stem, 2*config.d), nn.GELU(), nn.Linear(2*config.d, config.d))
+--- a/docs/CDLNO_IMPLEMENTATION_STATUS.md
++++ b/docs/CDLNO_IMPLEMENTATION_STATUS.md
+@@ -420,3 +420,7 @@
+ - 五项重点已自行复查，未留下新的已知生产缺陷。剩余未验证是：真实数据读取完整性、图构建/采样/全评价、真实训练收敛与精度、epoch效率、远端环境、全默认GPU任务矩阵及理论附件。未commit/push、安装、下载数据或启动训练。
+ 
+ **本阶段结束，未执行下一阶段**。
++
++## 独立KCDNO交付关联（2026-09-16）
++
++独立K4–K10按用户连续授权完成，详见[KCDNO最终报告](KCDNO_IMPLEMENTATION_REPORT.md)。旧CDLNO/A阶段图与checkpoint规则保留，41份K0原权重回放精确一致；新家族接入不改变原数据/loss/时间循环。旧V2–V5任务resume未因此补齐，未启动真实训练。
+--- /dev/null
++++ b/docs/KCDNO_IMPLEMENTATION_REPORT.md
+@@ -0,0 +1,122 @@
++# KCDNO 最终实施与综合审查报告
++
++2026-09-16。用户已明确将原逐阶段等待改为连续执行K4–K10，每阶段完成后自行审查再继续。本轮从已接受的K1配置、K2独立数学模块和K3核心开始，完成K4–K10。没有启动真实数据训练、下载数据、安装依赖、commit/push、PR、reset或修改AGENTS。
++
++## A. 架构结果
++
++已按确认的v1规格实现独立`family=kcdno`，八任务可选择主版`history_mode=all`或对照`off`。新增可训练`family=lrsa_matched`，保持完整LRSA processor作为结构对照。旧Transolver、CDLNO full/no_sa/identity、CDPA off/entry/every_block和chunk规则保留。
++
++```text
++任务原输入/位置/时间合同 → lift → X0[B,N,d]
++for l=1..L:
++  H    = RMS_point(X)
++  S    = Down(H)                       # learned projected Q，softmax沿N
++  U    = S + FFN1(RMS1(S))
++  Uhat = Reader(U, tuple(past))         # 第一层/历史off直接U
++  T    = Uhat + FFN2(RMS2(Uhat))         # raw history，Up norm之前
++  V    = X + Up(H, RMS_up(T))           # Up latent norm一次，softmax沿M
++  X    = V + PointModule(RMS_out(V))
++  if l<L and history=all: past.append(Writer(T))
++任务 LN/head(X) → 原任务输出
++```
++
++Writer源层拥有RMS_k/Wk；`K=clamp(ELU(RMS_k(T)Wk)+1,1e-6)`，`memory=KᵀT[B,r,d]`、`mass=sum_token K[B,r]`。每个源摘要在一次forward只写一次，不detach。Reader接收层一次产生Q，对每份历史独立计算`R=(Q memory)/(Q mass+1e-6)`。当前候选为RAW U，按`w·RMS_depth(R)`沿来源softmax，每样本/当前token一套权重；RAW候选加权为C，再`Uhat=U+gamma(C−U)`。w0、gamma为无约束标量初值.1；新Q/K biasFalse/Xavier gain1。关键核计算关闭autocast并用FP32，返回U.dtype，独立oracle保留double。
++
++默认L8没有latent SA/Bridge/persistent processor/额外final Up：Down8/Up8/两latent FFN16/PointModule8，all7写/7Q/28逻辑读取、7次Reader API；首层无Reader、末层无Writer，L1/off无历史参数。Down/Up仍是标准多头SDPA，不能称整个模型无attention。point任务保留GELU FFN，规则任务保留dense3×3ConvFFN、内部LN/外部RMS和原网格点序。
++
++逐条代码、公式轴与测试映射见 [需求矩阵](KCDNO_REQUIREMENTS_MATRIX.md)。矩阵覆盖规格§§1–13与用户总控，数学附件没有被解释成添加结构或物理损失的授权。
++
++## B. 真实文件、接入和diff
++
++| 文件/符号 | 本轮变更及作用 |
++|---|---|
++| `cdlno/kcdno/standard.py:StandardModel` | 六标准任务共用lift/坐标/时间/输出wrapper，core只接已提升特征 |
++| `cdlno/kcdno/airfrans.py:AirfRANSModel` | 稳定shared pickle类，复用旧reference/single-graph/字段校验，独立core/head |
++| `Car-Design-ShapeNetCar/models/KCDNO.py:Model` | 原tuple/x7/单图合同的新家族wrapper，稳定`models.KCDNO.Model` |
++| `entry.py/industrial_entry.py/air_entry.py` | 各实际parser风格、profile优先级、独立目录、完整core+task sidecar和原保存协议 |
++| `families.py/matched_config.py/matched.py` | 独立matched-full配置/元数据与L个原LRSAFrontBlock组合，共用八任务wrapper |
++| `loading.py:validate_whole_model` | 可信对象加载内检查类/模块、影响forward的非权重属性、固定reference buffer，随后strict state keys |
++| 六`exp_*.py`、model_dict、两工业main/evaluation | 只增加新模型构造、记录/加载有限分支；旧数据/loss/时间/指标正文保持 |
++| 标准/Car新JSON、Air `params.yaml` | 前两只新增新任务配置，Air仅追加kcdno和lrsa_matched key，旧key字节内容保留 |
++| `tran_evaluate/kcdno/` | 八任务train/eval脚本、公共路径转发、Car只读评价guard及顺序`train_eval.sh` |
++| `cdlno/experiment.py` | 现有记录器仅新增可选family/run_dir选择；旧默认仍CDLNO，loss/optimizer不变 |
++| `tools/cdlno_benchmark.py`与`cdlno_perf/` | 复用计时，增加生产模型选择、真实kernel完整MAC/来源/内存统计和独立闭式核对 |
++| 新`test_kcdno_*`、已有冻结投影少量更新 | 数学/接口/strict加载/模式对照与原AST投影；没有为了import改变训练器 |
++
++本轮开始commit：`222647fef343e9fe929e65412f5c7449ced5517b`（main），已有未提交K1–K3与用户提示词文件保留。K0固定模型夹具来自`9f72946e0adbfe27ba0b75b1646fa697ae16d3df`；原Transolver基线`75e0f67643806a81cd1d3f6adc88dd8c02416fe7`。本报告不创建新commit。
++
++本轮K4前快照：`/home/hwz/CDLNO-artifacts/k4-before-lxbxc_wh/source`；各阶段还有独立before.json和patch。最终 [累计K4–K10 diff](kcdno_audit/k10/integration-changes.patch) 包含新文件，避免只看git diff遗漏未跟踪源码。全部当前修改见 [git status](kcdno_audit/k10/git-status.txt)，已有K1–K3不会误报为本轮新写。
++
++阶段报告：[K4](KCDNO_K4_STATIC.md)、[K5](KCDNO_K5_TEMPORAL.md)、[K6](KCDNO_K6_CAR.md)、[K7](KCDNO_K7_AIRFRANS.md)、[K8](KCDNO_K8_MATCHED.md)、[K9](KCDNO_K9_PERFORMANCE.md)。旧CDLNO/A阶段文档与夹具保留。
++
++## C. 八任务×三个计算图覆盖
++
++表中“三图”=kcdno all / kcdno off / lrsa_matched full。**S**为静态/真实parser；**M**为真实wrapper合成forward、backward、optimizer step；**E**为eval输出；**C**为同架构严格保存/加载和错误架构拒绝。M均为合成数据，不是实际数据集。原loss列区分直接原函数/原AST与诊断loss。
++
++| 任务 | 三图S/M/E/C | 原loss及条件连接的实际证据 | PyG | checkpoint | 新模型GPU范围 |
++|---|---|---|---|---|---|
++| Darcy | 全部通过 | all/off原TestLoss；原normalizer/decode与central_diff梯度项AST直接连接 | 不适用 | strict model.pt | L8/d128/M64/r16/N7225/B1三图FP32计时/step |
++| Elasticity | 全部通过 | all/off原TestLoss/normalizer；972点PointFFN | 不适用 | strict model.pt | L8/d128/M64/r16/N972/B1三图FP32计时/step |
++| Airfoil | 全部通过 | all/off原loss/坐标；真实N11271减宽与5×7 | 不适用 | strict model.pt | 任务专属GPU未执行；共享core FP32/AMP已测 |
++| Pipe | 全部通过 | all/off原loss/decode；真实N16641减宽，主M32 | 不适用 | strict model.pt | 任务专属GPU未执行 |
++| NS | 全部通过 | all直接执行原10步真值回填/一次backward+step/scheduler；eval预测回填；off/matched另有诊断step | 不适用 | strict model.pt | 新时间任务GPU未执行 |
++| Plasticity | 全部通过 | all直接执行原20时间前向/backward/step，batch末scheduler1次；T梯度/输出影响；off/matched诊断step | 不适用 | strict model.pt | 新时间任务GPU未执行 |
++| Car | 全部通过 | all/off直接原train.train/test，velocity全点与surface pressure加权loss；matched诊断step复用相同冻结入口 | 真实Data/Batch通过 | 整模型 model_epoch.pth | 新工业任务GPU未执行 |
++| AirfRANS | 全部通过 | all/off直接原train.train/test MSE_weighted surface/volume；matched诊断step复用同入口 | 真实Data/Batch通过 | 列表+member整对象 | 新工业任务GPU未执行 |
++
++八任务32组family/profile默认解析、24组三图真实脚本train/eval预览及实际parser、启动记录/参数量/sidecar只读通过。六标准任务有唯一共享wrapper数学，无八份新训练器。Industrial支持原single-graph/N可变/全0batch，明确拒绝多图；Air原sampled ptr规则保留。没有执行完整radius_graph/scatter物理评价；该代码通过静态冻结核查，不能把字段接口检查等同完整评价。
++
++原时间循环测试明确保留NS10→10，训练每步真值反馈、10步loss累加后一次更新；Plasticity N3131、标签[B,N,4,20]，20次独立时间条件更新，随后原一次scheduler，无预测反馈。不同真实时间每次重新执行L层core/history。
++
++checkpoint原格式未统一：标准state_dict使用weights_only=True/strict=True；工业在已批准的局部可信范围用weights_only=False加载原整对象/列表，保留稳定类导入路径。所有新路径先读完整已有配置再比较显式覆盖，缺family不猜成新模型；旧CDLNO缺front字段的历史兼容仍走旧逻辑。同family的L/d/h/M/r/history/activation/adapter冲突拒绝，不实现跨模式自动权重迁移。
++
++## D. 实际命令、环境与结果
++
++实际完整命令见 [commands.txt](kcdno_audit/k10/commands.txt)。本轮最终套件：
++
++```bash
++CDLNO_LRSA_ROOT=/home/hwz/LRSA-Operator PYTHONPATH=tests:. python -B -m unittest test_kcdno_config test_kernel_history test_kcdno_core test_kcdno_tasks test_kcdno_temporal test_kcdno_car test_kcdno_airfrans test_kcdno_matched test_kcdno_performance test_kcdno_delivery test_modules test_cdpa test_core_config test_core test_front_ablation test_front_task_modes test_front_training test_static_standard test_temporal_standard test_shapenet_car test_airfrans test_performance test_experiment_records test_lrsa_reference -v
++PYTHONPATH=. python -B docs/kcdno_audit/make_regression_fixtures.py replay --artifacts /home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures --result docs/kcdno_audit/k10/old-replay.json
++python -B docs/kcdno_audit/final_static.py
++```
++
++- 最终套件**257项运行，OK(skipped=1)，263.562s**。唯一skip是原AirfRANS完整抽样epoch观察器测试需要torch_cluster，本地缺失；未安装或伪造模块。日志末LRSA可选xformers/liger ImportError是参考源码自身打印并走原fallback，实际point/conv参考前向与梯度误差均0；不是新模型依赖失败。
++- 最终覆盖表复核发现NS/Plasticity off之前只有forward/checkpoint，随后仅补一个针对性合成optimizer step测试，两任务通过，不重跑无关全矩阵。此项1测试通过0.525s，命令/日志另列`temporal-off-step.txt`；原257项日志保留，当前同一套测试枚举会多此1项。
++- K0固定输入/同一权重**41/41回放精确一致**：33旧CDLNO CPU与8原Transolver GPU，含九个旧core front×CDPA组合、24个八任务三front模式及原工业pickle/list。输出/输入梯度/参数梯度atol=rtol=0，None梯度参与也比较。不是重新随机初始化作比较。
++- [冻结证据](kcdno_audit/k10/freeze.json)：119个旧生产/数据/模型/脚本/依赖文件字节相同；15个入口、参数辅助文件、registry或YAML移除明确新增分支后完整AST/内容一致。旧modules/core/CDPA/checkpoint数学不变。
++- 本机GPU：K2 FP32和FP16/BF16 AMP核子图实际autocast-off/梯度，K3 point/conv FP32及AMP前反向，本次最终套件已重跑；K9两个有限完整任务形状×4模型FP32实际性能。旧A阶段GPU任务回归属于旧模型证据，未算作新八任务GPU矩阵。
++- 三个原工作目录的新进程共享配置/权重加载通过。标准state_dict、Car整对象、Air整对象+列表，matched工业加载也在两个原cwd新进程完成。D另在`python -I`进程验证旧parser不需要新shared包；没有import顶层读数据的exp/main。
++
++环境：Python3.13.9、Torch2.13.0+cu130/CUDA13.0、PyG2.3.1、RTX5090 Laptop/driver591.86、cuDNN92000。用户目标Python3.10/Torch2.11/cu128及已可训练Car环境保留，尚无远端新模型验收。本机通过PYTHONPATH加载源码，未强行在pyproject指定Python>=3.10,<3.12范围外editable安装；无依赖安装/替换。
++
++远端可先运行不依赖本机历史夹具的无数据核心套件（命令供用户执行，本轮未在远端运行）：
++
++```bash
++PYTHONPATH=tests:. python -B -m unittest test_kcdno_config test_kernel_history test_kcdno_core test_kcdno_performance -v
++```
++
++完整冻结/旧回放及部分任务测试需要保留本机K0/K4–K7与pre-A1外部源码/数值夹具；这些文件没有冒充仓库内正式数据，也没有自动提交大二进制。远端没有对应夹具时，应同步审计产物并配置实际路径，或只运行上面独立核心套件及K9工具，不能重建随机权重后声称旧基准回放。
++
++K9有限FP32/TF32off/compileoff/autoSDPA对照，warmup3/10次同步计时、报告median/p90和peak allocated、AdamW state已初始化。点任务all较matched更慢；Darcy也未形成明显提速。完整MAC只下降约0.196%（Darcy核心主项），大量N点投影/卷积保留；实际全表、方差与热点见K9报告。不能用MAC/参数比例推断真实epoch或其他GPU速度。
++
++## E. 最终自审与必要缺陷修复
++
++已独立检查以下重点并完成相应检查，没有未裁定的结构冲突：
++
++1. 两FFN间Reader、raw T/一次Up norm、7写7Q28读与首末/L1/off参数：源码、独立double oracle、手工core reference和live计数互相一致。
++2. 配置/选择/旧默认：显式CLI>profile>家族默认；两family strict隔离；full对照固定full，KCDNO没有接入旧front/CDPA。最后修复旧入口无条件导入新增共享工具的依赖回归：新parser选项留在轻量本地helper，新包仅在选中family后导入。三个原cwd隔离旧parser检查通过。
++3. 工业pickle的非权重结构：strict state_dict无法发现被修改的attention heads、norm eps或nonpersistent reference。新增局部行为/buffer校验，篡改heads/eps/reference/激活均明确拒绝；已学习gamma正常加载且不重置。
++4. 时间及数据边界：Plasticity原time embedding需要d>=2，新增明确构造错误，避免合法core小d1落入任务维度错误；保持公式和正式d128。Air实际parse_args(argv=None)在K8修复为sys.argv解析，增加真实调用方式测试。所有数据/loss/时间/原指标区段通过冻结投影。
++5. 完整成本/归因/命令：补计K2 F.linear绕过Linear hook的Q/K成本，分子/分母/score/stack/保存张量均不漏报；脚本只提供profile默认、不固定覆盖尺寸。GPU慢于预期时只报告热点，没有减少来源/共享参数/detach/改变公式。
++
++初次测试命令类名错误、测试输出投影路径错误与近似数值舍入错误均保留失败日志并修正测试；不标成生产结构缺陷。K9初轮point计时与CPU测试重叠，明确排除并对相同有限配置单独复测；正式表只使用复测JSON与随后Darcy单独运行结果。
++
++旧缺项继续独立记录：Car原拖曳评价固定raw param0路径/fold0、旧外层压力/速度日志标签交换、Air旧MAE条件分支及原baseline宽松加载等，不趁本轮重构旧分支。V1归档/可视化基础已存在，但任务V2–V5完整resume尚未接入；本次保留模型checkpoint协议，**没有优化器/scheduler/RNG状态的精确断点续训承诺**。
++
++## F. 交付、命令和未验证项
++
++[八任务三图训练/评价命令](KCDNO_COMMANDS.md)均使用实际`tran_evaluate/kcdno/*.sh`。`train_eval.sh TASK all|off|lrsa_matched`只在用户调用后顺序执行，训练失败不会开始评价；加`--dry-run`只预览。每次训练使用新run目录，已有路径拒绝覆盖；eval指定原run。工业路径语义与原物理指标限制在命令文档明确说明。
++
++本轮交付的是源码可执行性、合成训练/数学与接口/加载正确性，以及有限本机性能证据。**仍未验证**：真实文件完整读取和split内容、真实工业抽样/图/scatter全链物理评价、实际数据集训练、收敛/泛化/精度、长轨迹误差、达到同误差的时间、完整任务epoch效率、远端2.11cu128和新八任务全GPU矩阵。没有从随机张量推断真实准确率，也不把两配置性能外推为整体架构优势。
++
++本轮K4–K10均完成并自审，交付后停止。没有启动真实训练或额外模型实验。
+--- a/docs/KCDNO_IMPLEMENTATION_STATUS.md
++++ b/docs/KCDNO_IMPLEMENTATION_STATUS.md
+@@ -1,4 +1,28 @@
+ # KCDNO 实施状态
++
++## K4–K10 全部完成并自审（2026-09-16，当前状态）
++
++最新用户授权为连续执行K4至K10，各阶段自审后继续；已完成最终交付，现在停止。下列旧“等待单独授权/待审查”等状态为当时历史，不代表当前进度。
++
++- 八任务均接入KCDNO all/off及可训练matched LRSA-full，旧Transolver/CDLNO三front模式和CDPA规则保留。
++- 最终257项检查运行，OK(skipped=1)，263.562s；另补NS/Plasticity off合成优化器步1测试通过0.525s。唯一未执行子项为缺torch_cluster的Air完整抽样epoch观察器，真实PyG接口/原mask loss及加载已执行。
++- K0固定同权重41/41精确回放，atol=rtol=0；119旧文件字节相同、15完整入口/helper/registry/YAML的冻结投影相同。三个原cwd新进程strict加载通过。
++- K2/K3本机GPU FP32/AMP重新验收；K9两代表配置×四模型FP32同步性能已测。all未显示普遍提速，不将参数/MAC下降外推epoch；远端2.11/cu128、真实数据读取/抽样评价/训练/收敛/精度未验证。
++- K10修复新入口不应使旧parser提前依赖shared包、工业pickle非权重属性/固定reference校验、Plasticity d1时间边界；模型核心数学与旧冻结数据协议未改。K8修复新Air argv=None；失败与通过日志均保留。
++- 保存协议仍为标准state_dict/Car整对象/Air列表和整对象，不新增resume；旧V2–V5任务级完整优化器/RNG续训仍未接入。
++
++交付：[最终报告](KCDNO_IMPLEMENTATION_REPORT.md)、[需求矩阵](KCDNO_REQUIREMENTS_MATRIX.md)、[八任务三图命令](KCDNO_COMMANDS.md)、[性能结果](KCDNO_K9_PERFORMANCE.md)、[累计diff](kcdno_audit/k10/integration-changes.patch)、[最终日志](kcdno_audit/k10/final-suite.txt)。保留K0–K3及全部旧CDLNO/A/V证据、用户已有修改；未commit/push/PR/安装依赖/下载或启动真实训练。
++
++| 当前阶段 | 状态 |
++|---|---|
++| K0–K3 | 用户此前已接受，保留同权重回归证据 |
++| K4–K7 | 八任务主模型/历史off接入完成并自审 |
++| K8 | 可训练matched-full独立配置/模型/八任务加载完成并自审 |
++| K9 | 完整参数/MAC、有限CPU/GPU性能核查完成 |
++| K10 | 逐项需求反查、必要接入缺陷修复、最终回归与交付完成 |
++
++本K阶段结束，未执行下一阶段。
++
+ 
+ ## K9 完成并自审，继续 K10（2026-09-16）
+ 
+--- a/docs/KCDNO_K9_PERFORMANCE.md
++++ b/docs/KCDNO_K9_PERFORMANCE.md
+@@ -18,7 +18,7 @@
+ 
+ ## 实际验证和计时
+ 
+-15/15 CPU功能/成本测试通过15.760s（新2+原性能13）；旧完整MAC/21核心相关边界与chunk相同权重检查继续通过。测试曾把0.196%的近似常量写得过细，修正测试舍入到文档实际3位小数后通过；公式和实现没有为常量改动。所有失败/成功日志保留。
++15/15 CPU功能/成本测试通过15.760s（新2+原性能13）；旧完整MAC/核心相关边界与chunk相同权重检查继续通过。测试曾把0.196%的近似常量写得过细，修正测试舍入到文档实际3位小数后通过；公式和实现没有为常量改动。所有失败/成功日志保留。
+ 
+ 本机Python3.13.9、Torch2.13+cu130、RTX5090 Laptop/driver591.86；非远端2.11/cu128。仅两个代表性合成配置，均L8/d128/h8/M64/r16/B1，point N972，conv N7225。Elasticity按task preset；Darcy按同尺寸结构比较、B减至1（原训练B4）。FP32、TF32关、AMP关、compile关、auto SDPA，实测为efficient attention；原Transolver使用原手工attention。每模型warmup3/测10次，CUDA同步perf_counter，包含主机launch；AdamW .001/wd1e-5/foreachFalse，优化器state已热身，合成FP32 MSE+backward+step。无数据、scheduler、NS rollout或真实epoch。
+ 
+--- /dev/null
++++ b/docs/KCDNO_REQUIREMENTS_MATRIX.md
+@@ -0,0 +1,55 @@
++# KCDNO 最终需求反查矩阵（K10）
++
++依据为 `PLAN_KCDNO/KCDNO_Model_Specification_v1.md` 与用户确认的总控、K0–K10提示。后续用户明确授权连续K4–K10优先于旧逐阶段停顿要求。本矩阵依据真实源码与独立检查；数学讨论不授权额外网络、训练实验或物理损失。K0历史表保留，不将当时“待实现”误当当前状态。
++
++证据缩写：**M**=`tests/test_kernel_history.py` + `tests/kernel_history_reference.py`；**C**=`tests/test_kcdno_core.py`；**T4/T5/T6/T7/T8**=对应`test_kcdno_tasks/temporal/car/airfrans/matched.py`；**D**=`tests/test_kcdno_delivery.py`；**P**=`tests/test_kcdno_performance.py`和K9原始JSON；**F**=`docs/kcdno_audit/k10/freeze.json`；**R**=同目录`old-replay.json`。最终执行日志见`final-suite.txt`，先前阶段有效证据继续保留。
++
++| 规格/总控要求 | 实际文件与符号 | 独立验证证据 | 状态及边界 |
++|---|---|---|---|
++| §1/11 新family独立，旧模型不变 | `cdlno/kcdno/config.py`、`families.py`；三个原项目有限分支 | K1 family负向、F/R、D旧parser隔离 | 已实现；原Transolver/CDLNO键、pickle路径不改 |
++| §2 L正整数、d/h/M/r固定等宽 | `KCDNOArchitectureConfig.validate`、`core._check_config` | K1合法/非法，C L1/2/4/8/12 | 已验证；hidden2d固定、无F/P继承 |
++| §3.1 PointNorm→Down | `KCDNOBlock.forward`、原`modules._DownAttention` | C手工原语reference/残差、P live计数 | 已验证；learned Q直接参数，无多余Wq/query residual |
++| §3.1/3.5 Down/Up QK RMS及缩放/投影 | 原`_DownAttention/_UpAttention/_ProjectedAttention` | C与旧modules/LRSA参考；F原语字节一致 | Down/Up标准SDPA，QKV无bias/O有bias，d_h^-1/2 |
++| §3.2 FFN1 pre-RMS残差 | `latent_norm_1/latent_ffn_1` | C手工公式/公共权重 | Linear(d,2d) GELU Linear(2d,d)，bias保留 |
++| §3.3 history恰在两个FFN之间 | `KCDNOBlock.forward: u→reader→aligned→FFN2` | C手工两层reference/钩子顺序 | 已验证；未调用完整旧no_sa block再补历史 |
++| §3.3 删除整个SA子层 | KCDNOBlock只实例化两FFN与核模块 | C模块/参数枚举；P SA计数0 | 专属SA norm/QKVO全无；Down/Up仍有attention |
++| §3.4 T在FFN2后、Up norm前 | `t = aligned + latent_ffn_2(...)`、`writer(t)` | C对象/数值/梯度钩子 | live raw T，不detach，不用norm(T)/点特征代替 |
++| §3.5 一次Up latent norm及点残差 | `up(h,up_latent_norm(t));v=x+...` | C独立公式/一次norm计数 | 已验证；最终层自己的Up后直接任务head |
++| §3.5 point/ConvFFN及点序 | 原`PlainFFN/ConvFFN`、各wrapper H/W | C 5×7和非法N，T4真实N、F | dense3×3 groups1，内部LN/外部RMS，无latent卷积/重排 |
++| §4.1 源层Wk/raw value/sum摘要 | `KernelHistoryWriter.forward` | M double cache vs显式正核QKᵀ的输出/输入/Wk梯度 | 已验证；无Wv/Wo/mean/token softmax |
++| §4.2 接收层Wq一次/单组rank | `KernelHistoryReader.forward` | M实际投影计数、M轴/B隔离，C/P | 摘要按来源保留，不重投影历史K，不与Down头数绑定 |
++| §4.2 分子/分母逐来源 | `einsum bmr,bsrd→bsmd`和`bmr,bsr→bsm` | M逐来源double oracle、B1/B2/S0/1/3 | 无B广播混样、无生产M×M矩阵 |
++| §4.3 当前候选恒等、per-token depth softmax | `candidates/scores/alpha/fused` | M uniform/置换/逐token权重 | [B,M,S+1]；RMS只评分，RAW候选融合 |
++| §4.4 unconstrained gamma .1/w0 | Reader.__init__/forward | M系数、w0/首步梯度、C特殊初始化 | U+gamma(C−U)；无sigmoid、正当前bias或双残差 |
++| §4.5 来源/轴例子 | K2 Cache[B,r,d]/mass[B,r]，Reader stack[B,S,...] | M不同M/r/B/S及explicit reference | 第4层3份历史+当前，独立来源读后统一融合 |
++| §5 因果tuple/一次forward缓存 | `KCDNO.forward`局部list→tuple→append | C先读后写、A→B→A、NS T5十次完整core | 不跨batch/真实时间、不保存future/cache、不detach |
++| §5 首末/L1/off边界 | block条件reader/writer注册 | C/P存在性与计数 | 第一无reader，最后无writer；L1/off无历史参数 |
++| §5 L8 7写7Q28读 | 实际Writer/Reader钩子与P | K3 core-evidence、K9 JSON counts | 28逻辑来源，7批量Reader API；非28次API |
++| §6 phi/eps/FP32 | `_phi`与writer/reader autocast disabled | M FP32/double、真实GPU FP16/BF16算子探针 | ELU+1/clamp1e-6/deneps1e-6；oracle不强转float |
++| §6 参数初始化与无共享 | 原公共原语构造、K2 Xavier/w/gamma | C初始化次数/storage、M独立参数 | query正交，Linear截断正态，Conv native；无wrapper递归apply |
++| §6 有限梯度/极端幅值 | M隔离Reader loss与C causal链 | M earliest T/Wk有效梯度、极端1e15/小分母 | 首步depth norm零梯度正常；不保证任意有限FP32均不溢出 |
++| §7 八任务主profile | `profiles.profile_values`与各JSON/YAML训练字段 | K1两profile×八任务；D真实parser | 结构L8/r16，PipeM32其余64；h等见命令表 |
++| §7 shape-match公平尺寸 | `profiles._MATCH`、matched独立配置 | D两family/profile默认值；K8 | 仅L/d/h/M匹配，非等参数/FLOPs/官方LRSA复现 |
++| §8 Darcy | StandardModel + exp_darcy有限分支 | T4原decode/梯度loss AST、真实N7225/小网格 | ref64替换xy+fx1，stem65；原数据与loss保留 |
++| §8 Elasticity/Airfoil/Pipe | StandardModel + 各exp | T4原loss/normalizer、安全合成 | Elasticity点FFN/N972；另两Conv/原物理xy和网格索引 |
++| §8 NS | StandardModel与exp_ns有限分支 | T5直接原十步训练/eval语句、cache对象隔离 | fx10/stem74/output1，训练真值回填/测试预测回填 |
++| §8 Plasticity | StandardModel.time_fc与exp_plas | T5原20个时间点更新/一次batch scheduler | N3131/fx1/T[B,1]/output4，不扁平时间；d>=2清晰校验 |
++| §8 Car | `models.KCDNO.Model`、CarRun | T6真实PyG/原train.train/test及mask、D | x7/tuple/velocity3,p；单图可变N，全0batch合法，多图拒绝 |
++| §8 AirfRANS | `cdlno.kcdno.airfrans.AirfRANSModel`/AirRun | T7真实PyG原MSE_weighted/采样ptr、F | x7+reference64/stem71；原域/输出/抽样/图/scatter流程保持 |
++| §9.1/9.2 结合律/置换数学 | 独立double oracle逐来源显式QKᵀ | M前向及梯度/gradcheck | 核归一化等价，不与softmax attention等价 |
++| §9.3/9.5/9.6 表达边界 | 规格及交付说明 | 源码/文档反查 | 只声明单来源读取秩≤r；eps下非严格凸组合，不外推整网秩/精度 |
++| §9.4 gamma0与off | C all gamma0与off复制同公共权重 | C输出等价，P成本区分 | 数学对照成立；gamma0的all仍有核计算 |
++| §10 完整参数/MAC/内存/计时 | 原perf工具+`kernel_costs.py` | P闭式vslive，K9 2配置×4 GPU | 大N全计；MAC非实测，推理cache非训练峰值；无epoch外推 |
++| §11 显式CLI > profile > defaults | `options`/`families`与各parse | K1、D32默认/24真实脚本对 | 旧默认不覆盖新尺寸；旧front/rear/CDPA显式参数拒绝 |
++| §11 eval先读/严格family | K1 metadata + families + 各Run | T4–T8/D冲突/sidecar字节 | 先重建已有架构再核对；不默认覆盖no-history等已存设置 |
++| §11 checkpoint原格式 | StandardRun/CarRun/AirRun | T4/T6/T7/T8工业新cwd进程 | state_dict/整对象/列表，稳定路径；局部可信加载不扩权 |
++| §11 整对象非权重属性 | `loading.validate_whole_model` | D篡改heads/eps/reference/激活拒绝 | strict keys之外核对行为；已学习gamma不重置 |
++| §11 输出隔离/配置/日志 | `new_run_path`、原Experiment新family分支 | D启动先建目录/config、实际参数、eval只读 | 默认output/task/family/profile/时间结构；显式已有run拒绝 |
++| §12 matched LRSA-full/noSA | `MatchedLRSA`；KCDNO history=off | T8六标准+两工业step/checkpoint，SAzero共同权重等价 | full固定完整L层；noSA不另复制第三core |
++| §12 旧三mode/CDPA/原Transolver | 原文件不改、K0固定权重夹具 | R 41份精确回放；旧核心/任务/模块最终回归 | 相同权重/输入/输出/梯度，不用独立seed假证明 |
++| §13 来源/归属 | 原LICENSE、THIRD_PARTY与K0审计 | F原文件、原语来源核对 | 保留THUML MIT；LRSA参考缺LICENSE不虚构授权，不vendor其框架 |
++| 总控 禁止新增机制/训练框架 | 新package全源/最终diff | F、C模块枚举、需求逐行审查 | 无Bridge/AttnRes/Slice/新loss/多图扩展/自定义CUDA/真实时间cache |
++| 总控 环境/真实数据边界 | K0/K9环境，最终报告 | 实际CPU/PyG/GPU日志分开 | 无下载/真实训练；远端2.11cu128、完整读数/收敛/精度/epoch未验 |
++| 总控 保存既有修改/连续阶段 | K4–K10阶段快照与最终patch | 各before.json/changes.patch、git-status | 不commit/push/reset/改AGENTS；最新连续授权执行至K10后停止 |
++
++“已验证”仅指该行列明的源码、合成或设备范围。没有真实轨迹或完整工业抽样评价证据；不将模型checkpoint当作完整optimizer/RNG断点。
+--- a/memory/current-state.md
++++ b/memory/current-state.md
+@@ -1,3 +1,7 @@
++# 最新KCDNO交付状态（2026-09-16）
++
++用户连续授权K4–K10已全部完成并自审，现停止。八任务kcdno all/off与lrsa_matched可选择并保留原协议；257最终检查OK/1个Air缺torch_cluster子项skip，补1时间off步测试通过；41旧同权重回放精确、119冻结文件和15完整AST/YAML投影通过。有限两配置本机GPU性能all未显示普遍提速。报告docs/KCDNO_IMPLEMENTATION_REPORT.md、需求矩阵、KCDNO_COMMANDS.md和docs/kcdno_audit/k10。没有真实数据读取验收/训练/精度/远端2.11cu128/精确resume；未commit/push/安装依赖。旧状态历史保留如下。
++
+ # Current project state
+ 
+ ## Latest: K5 complete, next K6 under continuous K4–K10 authorization
+--- /dev/null
++++ b/tests/test_kcdno_delivery.py
+@@ -0,0 +1,155 @@
++"""Final integration boundaries: actual CLI scripts, logging, legacy and pickle behavior."""
++import ast
++import copy
++import io
++import json
++import os
++from pathlib import Path
++import shlex
++import subprocess
++import sys
++import tempfile
++import unittest
++from contextlib import redirect_stdout
++from unittest.mock import patch
++
++import torch
++from cdlno.kcdno.loading import validate_whole_model
++from cdlno.kcdno.metadata import KCDNOMetadataMismatch
++from cdlno.kcdno.profiles import profile_values
++from cdlno.kcdno.standard import StandardModel
++from cdlno.kcdno.config import KCDNOArchitectureConfig
++from cdlno.experiment import start,finish
++from test_kcdno_tasks import ROOT,TASKS,TEMPORAL,arguments as standard_args,construct,StandardRun
++from test_kcdno_car import arguments as car_args,Model as CarModel,car_model_kwargs,CarRun,HAS_PYG
++from test_kcdno_airfrans import arguments as air_args,AirfRANSModel,AirRun,model_kwargs as air_kwargs,hparams
++
++
++def args_for(task,flags=(),evaluation=False):
++    if task=='car':return car_args(flags,evaluation)
++    if task=='airfrans':return air_args(flags,evaluation)
++    return standard_args(task,[*flags,'--eval',str(int(evaluation))])
++
++
++def model_run(task,args,evaluation=False):
++    if task=='car':
++        model=None if evaluation else CarModel(**car_model_kwargs(args))
++        run=CarRun(args,device='cpu',evaluation=evaluation,model=model)
++    elif task=='airfrans':
++        model=None if evaluation else AirfRANSModel(**air_kwargs(args))
++        run=AirRun(args,hparams(),device='cpu',evaluation=evaluation)
++    else:
++        model=construct(task,args);run=StandardRun(args,model)
++    return model,run
++
++
++class DeliveryChecks(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):cls.threads=torch.get_num_threads();torch.set_num_threads(1)
++    @classmethod
++    def tearDownClass(cls):torch.set_num_threads(cls.threads)
++
++    def test_legacy_parser_imports_without_shared_package(self):
++        code='''
++import ast,argparse,importlib.util,sys
++from pathlib import Path
++project=Path(sys.argv[1]);kind=sys.argv[2]
++name='exp_darcy.py' if kind=='standard' else 'main.py'
++tree=ast.parse((project/name).read_text())
++nodes=[n for n in tree.body if (isinstance(n,ast.Assign) and ast.unparse(n.targets[0])=='parser') or (isinstance(n,ast.Expr) and isinstance(n.value,ast.Call) and ast.unparse(n.value.func)=='parser.add_argument')]
++scope={'argparse':argparse};exec(compile(ast.Module(body=nodes,type_ignores=[]),'<parser>','exec'),scope)
++path=project/('models/cdlno_run.py' if kind=='car' else 'cdlno_entry.py')
++spec=importlib.util.spec_from_file_location('original_entry_helper',path);mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
++a=mod.parse_args(scope['parser'],'darcy',argv=['--model','Transolver_Structured_Mesh_2D']) if kind=='standard' else mod.parse_args(scope['parser'],argv=['--cfd_model' if kind=='car' else '--model','Transolver'])
++assert not any(k=='cdlno' or k.startswith('cdlno.') for k in sys.modules)
++print('legacy parser independent:',kind)
++'''
++        for kind,project in (('standard','PDE-Solving-StandardBenchmark'),('car','Car-Design-ShapeNetCar'),('air','Airfoil-Design-AirfRANS')):
++            r=subprocess.run([sys.executable,'-I','-c',code,str(ROOT/project),kind],cwd=ROOT/project,capture_output=True,text=True,timeout=30)
++            self.assertEqual(r.returncode,0,r.stdout+r.stderr)
++        # New-package imports also occur only inside the new-model branch.
++        for project,names in [('PDE-Solving-StandardBenchmark',[f'exp_{x[0]}.py' for x in (TASKS|TEMPORAL).values()]),('Car-Design-ShapeNetCar',['main.py','main_evaluation.py']),('Airfoil-Design-AirfRANS',['main.py','main_evaluation.py'])]:
++            for name in names:
++                tree=ast.parse((ROOT/project/name).read_text())
++                self.assertFalse(any(isinstance(n,ast.ImportFrom) and n.module=='kcdno_entry' for n in tree.body))
++
++    def test_temporal_off_model_optimizer_step(self):
++        # Close the specific coverage gap: K5 all ran original time loops,
++        # while off previously had forward/strict-checkpoint checks only.
++        from test_kcdno_tasks import sample, SMALL
++        for task in ('ns','plasticity'):
++            a=standard_args(task,[*SMALL,'--history-mode','off'])
++            model=construct(task,a);x,fx=sample(model)
++            inputs=(x,fx,torch.tensor([[.2],[.8]])) if task=='plasticity' else (x,fx)
++            optimizer=torch.optim.AdamW(model.parameters(),lr=.001)
++            before=model.output.weight.detach().clone()
++            out=model(*inputs);out.square().mean().backward();optimizer.step()
++            self.assertFalse(torch.equal(before,model.output.weight))
++            self.assertTrue(all(p.grad is not None and torch.isfinite(p.grad).all() for p in model.parameters()))
++            self.assertFalse(any('reader' in n or 'writer' in n for n,_ in model.named_parameters()))
++
++    def test_fixed_pickle_behavior_and_reference_rejected(self):
++        config=KCDNOArchitectureConfig(L=2,d=8,h=2,M=3)
++        good=AirfRANSModel(config=config)
++        mutations=[lambda m:setattr(m.core.blocks[0].down,'heads',1),
++                   lambda m:setattr(m.core.blocks[0].up_latent_norm,'eps',1e-3),
++                   lambda m:m.reference.add_(.1),
++                   lambda m:setattr(m.preprocess, '1', torch.nn.SiLU())]
++        for mutate in mutations:
++            bad=copy.deepcopy(good);mutate(bad)
++            with self.assertRaises(KCDNOMetadataMismatch):validate_whole_model(bad,good)
++        # A learned gamma is deliberately NOT compared with its initialization.
++        learned=copy.deepcopy(good);learned.core.blocks[1].reader.gamma.data.fill_(.7)
++        validate_whole_model(learned,good)
++        with self.assertRaisesRegex(ValueError,'d>=2'):
++            StandardModel(config=KCDNOArchitectureConfig(d=1,h=1,L=1,M=1,point_module='conv_ffn'),task_name='plasticity',H=101,W=31)
++
++    def test_real_scripts_profiles_train_eval_and_early_records(self):
++        count=0
++        for task in (*TASKS,*TEMPORAL,'car','airfrans'):
++            selection='--cfd_model' if task=='car' else '--model'
++            for profile in ('kcdno_v1','transolver_shape_match'):
++                for family in ('kcdno','lrsa_matched'):
++                    a=args_for(task,[selection,family,'--profile',profile]);v=profile_values(task,profile)
++                    self.assertEqual((a.n_hidden,a.n_heads,a.slice_num,a.n_layers),(v['d'],v['h'],v['M'],v['L']))
++            for variant in ('all','off','lrsa_matched'):
++                family='lrsa_matched' if variant=='lrsa_matched' else 'kcdno'
++                with tempfile.TemporaryDirectory() as tmp,redirect_stdout(io.StringIO()):
++                    runpath=Path(tmp)/task
++                    widths=['--n_hidden','8','--n_heads','2','--n_layers','2','--slice_num','3'] if task in ('car','airfrans') else ['--n-hidden','8','--n-heads','2','--n-layers','2','--slice_num','3']
++                    flags=[selection,family,*widths,'--kcdno-run-dir',str(runpath)]
++                    if family=='kcdno':flags+=['--history-mode',variant,'--kernel-rank','5']
++                    script=ROOT/'tran_evaluate/kcdno'/f'{task}.sh'
++                    preview=subprocess.run(['bash',str(script),'train',*flags,'--dry-run'],cwd=ROOT,text=True,capture_output=True,timeout=30)
++                    self.assertEqual(preview.returncode,0,preview.stderr)
++                    tokens=shlex.split(next(line.removeprefix('Command:') for line in preview.stdout.splitlines() if line.startswith('Command:')))[3:]
++                    a=args_for(task,tokens)
++                    record=start(a,task,hparams=hparams() if task=='airfrans' else None)
++                    try:
++                        pending=json.loads((runpath/'config.json').read_text())
++                        self.assertEqual(pending['model'],family);self.assertIsNone(pending['parameters'])
++                        m,r=model_run(task,a)
++                        if task=='airfrans':record.attach_model(m,hparams=r.hparams,protocol=r.contract)
++                        ready=json.loads((runpath/'config.json').read_text())
++                        self.assertEqual(ready['parameters']['total'],sum(p.numel() for p in m.parameters()))
++                        finish(a)
++                    finally:
++                        if not record.closed:record.finish(status='failed')
++                    before={name:(runpath/name).read_bytes() for name in ('architecture.json','task.json','config.json')}
++                    evpreview=subprocess.run(['bash',str(script),'eval',selection,family,'--kcdno-run-dir',str(runpath),'--dry-run'],cwd=ROOT,text=True,capture_output=True,timeout=30)
++                    self.assertEqual(evpreview.returncode,0,evpreview.stderr)
++                    evtokens=shlex.split(next(line.removeprefix('Command:') for line in evpreview.stdout.splitlines() if line.startswith('Command:')))[3:]
++                    ev=args_for(task,evtokens,True)
++                    er=start(ev,task,evaluation=True)
++                    try:
++                        loaded,run=model_run(task,ev,True)
++                        self.assertEqual(ev.kcdno_architecture,a.kcdno_architecture)
++                        er.record_metrics({'synthetic_cli_only':True});finish(ev)
++                    finally:
++                        if not er.closed:er.finish(status='failed')
++                    self.assertEqual(before,{name:(runpath/name).read_bytes() for name in before})
++                    count+=1
++        self.assertEqual(count,24)
++        print('24 real-script train/eval pairs + 32 profile/family defaults + early records passed; no dataset entry executed')
++
++if __name__=='__main__':unittest.main(verbosity=2)
+--- a/tests/test_kcdno_matched.py
++++ b/tests/test_kcdno_matched.py
+@@ -1,5 +1,6 @@
+ """Finite eight-task coverage of the trainable matched-full control."""
+ import io
++import importlib.util
+ import json
+ import tempfile
+ import os
+@@ -64,6 +65,7 @@
+                 self.assertEqual(before,r.sidecar.read_bytes())
+                 self.assertEqual(json.loads(before)['family'],'lrsa_matched')
+ 
++    @unittest.skipUnless(importlib.util.find_spec("torch_geometric") is not None, "real PyG unavailable")
+     def test_industrial_matched_protocols(self):
+         from torch_geometric.data import Data,Batch
+         from test_kcdno_car import arguments as car_args,Model,CarRun,car_model_kwargs

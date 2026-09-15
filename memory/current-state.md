@@ -1,4 +1,47 @@
+# 最新KCDNO交付状态（2026-09-16）
+
+新增 `tran_evaluate/kcdlno/` 八个数据集薄启动脚本，复用现有 `kcdno` 入口并支持
+train/eval/train_eval、all/off/lrsa_matched 和 dry-run；最终9语法+120保护性分发检查
+通过（112条命令预览），173已有源码/脚本hash不变。帮助解析初次误入Darcy数据入口、
+因缺数据而失败，已修复且清理本次失败目录；最终检查禁止Python调用，全部通过。
+未运行真实训练。说明/证据见 `tran_evaluate/kcdlno/README.md` 和 verification.json。
+实际模型 family 仍为 `kcdno`，没有改动模型或训练协议。
+
+用户连续授权K4–K10已全部完成并自审，现停止。八任务kcdno all/off与lrsa_matched可选择并保留原协议；257最终检查OK/1个Air缺torch_cluster子项skip，补1时间off步测试通过；41旧同权重回放精确、119冻结文件和15完整AST/YAML投影通过。有限两配置本机GPU性能all未显示普遍提速。报告docs/KCDNO_IMPLEMENTATION_REPORT.md、需求矩阵、KCDNO_COMMANDS.md和docs/kcdno_audit/k10。没有真实数据读取验收/训练/精度/远端2.11cu128/精确resume；未commit/push/安装依赖。旧状态历史保留如下。
+
 # Current project state
+
+## Latest: K5 complete, next K6 under continuous K4–K10 authorization
+
+Report docs/KCDNO_K5_TEMPORAL.md.12tests/8oldtimefixturespassed; original NS10step/Plasticity20step AST executed with synthetic inputs, schedules1/batch preserved, no cacheacrosstime. Sixstandardwrapper/profile/CLI/checkpoint done; no productionindustry yet. K5 snapshot /home/hwz/CDLNO-artifacts/k5-before-u6632u10/source. Original test scheduler expectation corrected from0to1, productionloops unchanged.
+
+
+## Latest: K4 static integration complete; user authorized sequential K4–K10
+
+Read docs/KCDNO_K4_STATIC.md. Current explicit user instruction overrides earlier stop-after-one-stage policy: implement/review each K4..K10 in order, then final stop; no real training/download/commit. K4 fourstatic completed6tests/16old same-weight fixtures/freeze. New wrapper/core-head, entry resolution/factory/task sidecar/scripts; old math/data/loss loops unchanged. K4 snapshot /home/hwz/CDLNO-artifacts/k4-before-lxbxc_wh/source. K5 temporal is next, not yet done.
+
+
+## Latest: K2 approved; K3 feature core complete (2026-09-15)
+
+Only K3 authorized. New cdlno/kcdno/core.py exports explicit KCDNO/KCDNOBlock. Independent L complete point blocks: point RMS/Down/FFN1 residual/K2Reader/FFN2 residual/one Up latent RMS/Up point residual/point FFN or dense Conv residual. Source T is exact pre-Up FFN2 residual; Writer(T) after point work, first no reader/last no writer/L1-off no history params. Core creates local growing list, passes immutable tuple snapshots, returns only features[B,N,d]; internal new block returns points/optionalsummary. No lift/head/bridge/rear/finalextraUp, no oldSA or norm, no KCDNO task registry yet. Explicit grid tuple for Conv, variableN forpoint. Threehidden fixed2d per K3, other K1-resolved widths rejected atcore construction. No production changes except newcore; no initializer recursion.
+
+Report docs/KCDNO_K3_CORE.md, independentSTATUS/evidence docs/kcdno_audit/k3.57/57tests9.912s(new10,K2 16,K1 13,modules18);9/9K0 oldCDLNOfrontxCDPAcore same-weight/input/output+gradient exact replay. L1/2/4/8/12 all/off,5x7conv,independence/initialization/rawT/Upnorm/tuplecausality/isolatedwritergradient/A-B-A/offgamma0/strictstate passed. Independent primitives + double explicit K2 kernel oracle one/two layers point/conv: outputmax3.652e-7 at2e-6/3e-5,gradientmax1.959e-6 at2e-5/3e-4. LimitedlocalGPUcore2FP32+4AMPcasespassed,MathSDPA TF32off; AMP output tolerance plusfinitegrad,notfullgradientparity. K2 original AMPactualFP32ops/gradientchecks rerunpassed. L8defaultactualDown8Up8latentSA0latentFFN16Point8writer7Q7read28ReaderAPI7num/deneinsum7eachsourcesoftmax7SDPA16. Allparameters featurecore only:d128h8M64r16pointall2605063/off2572800;convall3785735/off3753472. No latency/performance claims.
+
+Startmain222647f with approvedK1/K2dirtywork preserved.422filesnapshot /home/hwz/CDLNO-artifacts/k3-before-bd2pluhq/source;420unchangedonlySTATUS/memoryincremental. No existingmodels/modules/CDPA/K1/K2/config/entry/training/data/script/tests/depsmodified. LocalPython3.13.9torch2.13cu130RTX5090;remote2.11cu128unrun,noinstall. No newtaskloss/PyGindustrial/wrapper/head/checkpointbinding/resume/datareading/realtraining. ExistingK0/K2unaffectedfulltaskevidence retained,notrerunorclaimednew. Current K3 awaitreview; noK4+,V2–V5orotherworkauthorized. End “本K阶段结束，未执行下一阶段。”
+
+## Latest: K1 approved; K2 kernel history modules complete (2026-09-15)
+
+Only K2: cdlno/kcdno/history.py KernelHistoryCache/Writer/Reader, independent tests/kernel_history_reference.py and16targeted tests. Source Wk/RMS makes FP32 sum(K^T rawT),sumK; receiver one Wq/RMS reads stacked per-source summaries, unified tokenwise source softmax, raw fusion and U+gamma(C-U). No Wv/Wo/sqrt/token-softmax/current-kernel-read/mask/cached module state. NewQK biasFalse/Xavier1,norm1,w0,gamma scalar.1. Entire production norm/projection/phi/cache/read/depth/gate region disables autocast/FP32; output U.dtype. Double oracle preserves double, separate cached/explicit QK^T and2gradchecks. Empty exact U, no parameter computation. Shared-old RMSNorm untouched.
+
+Report docs/KCDNO_K2_KERNEL_HISTORY.md; STATUS/evidence docs/kcdno_audit/k2.68/68 tests4.169s(new16,K1config13,oldCDPA/modules39),7frozen0.444s,41K0same-weight oldfixtures replay passed. Double12cases maxgrad2.66e-15; FP32/double24cases1.43e-6 at5e-6/1e-4. CPU BF16 and4GPU AMP FP16/BF16 cases observed actualFP32 math/autocastoff andgradient parity. Extreme CPU inputscales0..1e15/clampedden1.5e-11+eps passed, not arbitrary-range guarantee. Selfreview repaired untested emptyoracle new_ones tuple call and added coverage; no production math fix/FP32 tolerance loosening. Source-owned onecache reused by2independent readers gradientchecked; parameter/storage andcache/input immutability passed.
+
+K2start main222647f alreadydirtyK1,403files snapshot /home/hwz/CDLNO-artifacts/k2-before-98ze33eu/source.Only oldSTATUS/memory updated;401others includingK1config/evidence,oldCDPA/entries/train/data/deps/tests/scripts byte-identical. LocalPython3.13.9torch2.13cu130RTX5090,remote2.11cu128unrun,noinstall. No fullKCDNO/core/wrappers/taskcheckpoint/training/performance yet. K3owns nofirstreader/nolastwriter/L1-offinactiveallocation,7write7Q28read,FFN1-reader-FFN2/preUpT,tuplehistory/activationcheckpoint/timeisolation. Do not implement K3 until authorized; oldV2–V5remain pending.
+
+## Latest: K0 approved; K1 independent configuration complete (2026-09-15)
+
+Only K1 authorized. New cdlno/kcdno config/profiles/options/metadata, no model class or task registration. family=kcdno, standalone L/d/h/M/r/history all/off and FFN/norm/kernel/gate fields; no CDLNO F/P/front/CDPA inheritance. Eight-task kcdno_v1 and transolver_shape_match; explicit argparse SUPPRESS probe > profile > new defaults. Car uses cfd_model, PDE/Air model. Eval reads complete saved resolved config first, compares explicit structure, records runtime differences, never reinitializes or rewrites sidecar; profile/init are provenance. Missing checkpoint family stays legacy. Whole-object/list/state_dict recorded without any new weight loader or resume mechanism.
+
+Report docs/KCDNO_K1_CONFIGURATION.md, independent STATUS and docs/kcdno_audit/k1 evidence.13 new tests +6old config +7frozen =26/26 passed7.201s. K0 same41 fixtures replayed before/after exactly (33old CDLNO CPU,8original Transolver GPU, realPyG old industrial objects/list).136fixture hashes verified,none missing,no recapture.371file source snapshot /home/hwz/CDLNO-artifacts/k1-before-khe93ugp/source; start main222647f clean. Only KCDNO STATUS/memory oldtracked files changed; all oldproduction/entries/data/config/tests/scripts/deps unchanged. Python3.13.9torch2.13+cu130PyG2.3.1; target remote2.11cu128 not run/reinstalled. New config pure imports from threecwd passed; existing package discovery includes subpackage, no editable installation. KCDNO math/model/task/GPU acceptance pending. Future adapters must extend metadata for grid/reference/time/output and strict actual weights. Do not execute K2+ or V2–V5. Preserve all K0/A1 artifacts and completed Darcy ablation launchers.
 
 ## Latest interruption: Darcy ablation launchers complete (2026-09-15)
 
@@ -300,3 +343,11 @@ The v1.2 plan mentions `CDPA_Mathematical_Foundations.md`, `CDPA_Theory_Manuscri
 - LRSA fixed47b03f8 clean checkout direct same-weightFP64 block reference2 tests gives output/history/grad maxdiff0; no LICENSE/COPYING/projectlicense metadata found. Transolver rootLICENSE is MIT(Copyright2024THUML), IPOT MIT(Copyright2023SeungjunLee) re-fetched from pinned18c1778; original Air ODbL preserved. Do not repeat an erroneous impression that Transolver has no rootlicense. No vendored LRSA/framework/kernel. Missing standalone theory attachments remain unlocated; no proofscript/PDF reproduction claim.
 - Baseline71files:58identical+12prior approved integration changes+README original-text-preserving addition. Phase10start162manifestSHA aaeefa892951c977ad1336392964a11eca1562fe22749d0ba15a6f99e03a2085;156unchanged,6test/docchanges,0unexpected. Existing phase9code/rawperformance, core/wrappers/entry/dependencies unchanged this phase. Final freeze and reviewpatches in docs/final_audit; no staging/commit/push/reset.
 - Self-reviewed architecture/init, two-levelCDPA/FP32/chunks, history/independence, adapters/checkpoints, freeze/performance口径; no remaining known production defect. Still unverified realdata/VTK/graphs/fullsampling/CFDmetrics, true training/convergence/accuracy, realepoch speed, remotetarget/install, fullGPUdefaulttaskmatrix and independent mathattachments. Phase9limited GPU performance is historical measured evidence, not repeated timing here. No further work authorized until explicit instruction.
+
+2026-09-16 K6完成并自审：Car新family/原整对象协议与真实PyG原loss合成训练、5测试和4旧同权重回放通过；继续用户连续授权K7–K10，未运行真实数据。
+
+2026-09-16 K7完成并自审：八任务KCDNO all/off入口齐备，Air真实PyG/原loss/整对象列表/原cwd加载通过；继续已授权K8–K10。
+
+2026-09-16 K8完成并自审：trainable lrsa_matched/full独立family与八任务共享接入，18测试通过；修复Air新增parser argv=None，继续K9–K10。
+
+2026-09-16 K9完成：15 CPU测试、两有限GPU结构配置通过；all较matched未显示提速，完整成本/热点已报告。继续K10最终审查，无真实数据。

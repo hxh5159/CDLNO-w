@@ -1,0 +1,113 @@
+{
+  "environment": {
+    "python": "3.13.9",
+    "torch": "2.13.0+cu130",
+    "cuda_build": "13.0",
+    "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+    "sdpa": "MATH forced",
+    "dtype": "float32",
+    "threads": 1,
+    "tf32": false,
+    "amp": false,
+    "compile": false,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": true,
+    "cwd": "/home/hwz/CDLNO/Car-Design-ShapeNetCar",
+    "package": "/home/hwz/CDLNO/cdlno/__init__.py"
+  },
+  "action": "replay",
+  "rows": [
+    {
+      "name": "cdlno_car_full",
+      "status": "passed",
+      "device": "cpu",
+      "tolerance": {
+        "atol": 0.0,
+        "rtol": 0.0
+      },
+      "max_output_abs": 0.0,
+      "input_and_parameter_gradients": "compared including None",
+      "roundtrips": [
+        {
+          "chunk": 0,
+          "classname": "models.CDLNO.Model"
+        },
+        {
+          "chunk": 1,
+          "classname": "models.CDLNO.Model"
+        }
+      ],
+      "explicit_mode_conflicts_rejected": [
+        "no_sa",
+        "identity"
+      ]
+    },
+    {
+      "name": "cdlno_car_no_sa",
+      "status": "passed",
+      "device": "cpu",
+      "tolerance": {
+        "atol": 0.0,
+        "rtol": 0.0
+      },
+      "max_output_abs": 0.0,
+      "input_and_parameter_gradients": "compared including None",
+      "roundtrips": [
+        {
+          "chunk": 0,
+          "classname": "models.CDLNO.Model"
+        },
+        {
+          "chunk": 1,
+          "classname": "models.CDLNO.Model"
+        }
+      ],
+      "explicit_mode_conflicts_rejected": [
+        "full",
+        "identity"
+      ]
+    },
+    {
+      "name": "cdlno_car_identity",
+      "status": "passed",
+      "device": "cpu",
+      "tolerance": {
+        "atol": 0.0,
+        "rtol": 0.0
+      },
+      "max_output_abs": 0.0,
+      "input_and_parameter_gradients": "compared including None",
+      "roundtrips": [
+        {
+          "chunk": 0,
+          "classname": "models.CDLNO.Model"
+        },
+        {
+          "chunk": 1,
+          "classname": "models.CDLNO.Model"
+        }
+      ],
+      "explicit_mode_conflicts_rejected": [
+        "full",
+        "no_sa"
+      ]
+    },
+    {
+      "name": "transolver_car_original",
+      "status": "passed",
+      "device": "cuda:0",
+      "tolerance": {
+        "atol": 0.0,
+        "rtol": 0.0
+      },
+      "max_output_abs": 0.0,
+      "input_and_parameter_gradients": "compared including None",
+      "roundtrips": [
+        {
+          "kind": "trusted original whole object"
+        }
+      ],
+      "explicit_mode_conflicts_rejected": []
+    }
+  ]
+}

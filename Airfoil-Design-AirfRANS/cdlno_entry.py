@@ -31,11 +31,19 @@ def parse_args(parser, *, evaluation=False, argv=None):
     for name, kind in dict(nb_epochs=int, batch_size=int, lr=float).items():
         parser.add_argument('--' + name, type=kind, default=None)
     if evaluation:
-        parser.add_argument('--model', choices=('Transolver', 'CDLNO'), default='Transolver')
+        parser.add_argument('--model', choices=('Transolver', 'CDLNO', 'kcdno', 'lrsa_matched'), default='Transolver')
         parser.add_argument('--task', choices=('full', 'scarce', 'reynolds', 'aoa'), default='full')
         parser.add_argument('--nmodel', type=int, default=1)
         parser.add_argument('--weight', type=float, default=1.)
+    parser.add_argument('--profile', choices=('kcdno_v1', 'transolver_shape_match'), default='kcdno_v1')
+    parser.add_argument('--kernel-rank', '--kernel_rank', type=int, default=16)
+    parser.add_argument('--history-mode', '--history_mode', choices=('all', 'off'), default='all')
+    parser.add_argument('--kcdno-run-dir', type=Path, default=None)
     args = parser.parse_args(argv)
+    if args.model in ('kcdno', 'lrsa_matched'):
+        from cdlno.kcdno.air_entry import resolve_air
+        import sys
+        return resolve_air(parser, args, sys.argv[1:] if argv is None else argv, evaluation=evaluation)
     if args.model != 'CDLNO':
         return args
     if evaluation:

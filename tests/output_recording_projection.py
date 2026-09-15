@@ -4,7 +4,7 @@ import ast
 
 class WithoutRecording(ast.NodeTransformer):
     def visit_ImportFrom(self, node):
-        if node.module == 'cdlno.experiment':
+        if node.module in ('cdlno.experiment', 'kcdno_entry'):
             return None
         return node
 
@@ -34,6 +34,17 @@ class WithoutRecording(ast.NodeTransformer):
         return self.generic_visit(node)
 
     def visit_If(self, node):
+        # Remove only the independent new-family selection; its own complete
+        # projection to the pre-K4 entries is separately tested.
+        if ast.unparse(node.test) in ("args.model == 'kcdno'", "args.model in ('kcdno', 'lrsa_matched')", "args.cfd_model == 'kcdno'", "args.cfd_model in ('kcdno', 'lrsa_matched')", "model == 'kcdno'", "model in ('kcdno', 'lrsa_matched')"):
+            result = []
+            for item in node.orelse:
+                value = self.visit(item)
+                if isinstance(value, list):
+                    result.extend(value)
+                elif value is not None:
+                    result.append(value)
+            return result
         if ast.unparse(node.test) == 'record is not None':
             return None
         node = self.generic_visit(node)

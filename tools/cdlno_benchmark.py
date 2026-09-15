@@ -19,7 +19,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 import torch
-from tools.cdlno_perf.models import Case, MODELS, TASKS, build, synthetic_inputs
+from tools.cdlno_perf.models import Case, MODELS, KERNEL_MODELS, TASKS, build, synthetic_inputs
 from tools.cdlno_perf.costs import audit
 from tools.cdlno_perf.measure import (backend_probe, benchmark, compare, contexts, environment,
                                      fingerprint, output_gradients, precision_settings)
@@ -30,12 +30,13 @@ def parser():
     p.add_argument('--task', choices=TASKS, default='elasticity')
     p.add_argument('--comparison', choices=('task', 'matched'), default='matched',
                    help='task: original/new task presets; matched: common dimensions, architecture overrides allowed')
-    p.add_argument('--models', nargs='+', choices=MODELS, default=list(MODELS))
+    p.add_argument('--models', nargs='+', choices=MODELS + KERNEL_MODELS, default=list(MODELS))
     p.add_argument('--chunks', nargs='+', type=int, default=[0, 1, 2])
     p.add_argument('--front-latent-mode', '--front_latent_mode', choices=('full', 'no_sa', 'identity'), default='full',
                    help='CDLNO front processor only; matched LRSA always remains full')
     for name in ('B', 'N', 'd', 'h', 'M', 'L', 'F', 'ratio'):
         p.add_argument('--' + name, type=int)
+    p.add_argument('--kernel-rank', type=int, default=16, help='new kernel models only; shared total rank')
     p.add_argument('--grid', nargs=2, type=int, metavar=('H', 'W'))
     p.add_argument('--device', default='cpu')
     p.add_argument('--precision', choices=('fp32', 'amp-fp16', 'amp-bf16'), default='fp32',
@@ -58,6 +59,7 @@ def run(a):
     if a.threads < 1 or a.warmup < 1 or a.iterations < 2 or not a.chunks or min(a.chunks) < 0:
         raise ValueError('threads/warmup>=1, iterations>=2 and nonnegative chunks required')
     overrides = {k: getattr(a, k) for k in ('B','N','d','h','M','L','F','ratio','grid') if getattr(a, k) is not None}
+    overrides['kernel_rank'] = a.kernel_rank
     overrides['front_latent_mode'] = a.front_latent_mode
     if a.grid is not None and a.N is not None and a.N != a.grid[0] * a.grid[1]:
         raise ValueError('--N disagrees with --grid')
@@ -76,7 +78,7 @@ def run(a):
                   case=case.description(), environment=environment(device),
                   git_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
                   source_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest()
-                                 for p in [Path(__file__),*(ROOT/'tools/cdlno_perf').glob('*.py'),*(ROOT/'cdlno').glob('*.py')]},
+                                 for p in [Path(__file__),*(ROOT/'tools/cdlno_perf').glob('*.py'),*(ROOT/'cdlno').rglob('*.py')]},
                   settings=dict(parameter_dtype='float32', input_dtype='float32', precision=a.precision,
                                 requested_sdpa_backend=a.backend, tf32=a.tf32, compile=a.compile_model,
                                 warmup=a.warmup, measured_iterations=a.iterations, seed=a.seed,
@@ -113,7 +115,13 @@ def run(a):
                         dict(front_blocks=actual_case.F, front_latent_mode=actual_case.front_latent_mode,
                              full_lrsa_blocks=actual_case.F if actual_case.front_latent_mode=='full' else 0,
                              persistent_blocks=actual_case.L-actual_case.F, bridge=True, extra_readout=True))
+                    if name in KERNEL_MODELS:
+                        row['effective_structure']=dict(full_point_blocks=actual_case.L,latent_sa=actual_case.L if name=='lrsa_matched_trainable' else 0,
+                            history_mode=getattr(model.config,'history_mode',None),bridge=False,persistent_blocks=0,extra_readout=False)
                     row['cost'] = audit(model, args, target, context)
+                    if name in KERNEL_MODELS:
+                        from tools.cdlno_perf.kernel_costs import check_cost
+                        row['cost']['closed_form'] = check_cost(model,actual_case,row['cost'])
                     if not row['cost']['finite_output'] or row['cost']['parameters']['nonfinite_grad_names']:
                         raise RuntimeError('nonfinite synthetic audit')
                     if name != 'transolver' and row['cost']['parameters']['missing_grad_names']:

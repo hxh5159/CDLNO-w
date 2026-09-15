@@ -1,0 +1,34 @@
+test_default_L8_counts_and_history_boundaries (test_kcdno_core.KCDNOCoreTests.test_default_L8_counts_and_history_boundaries) ... ok
+test_depths_shapes_and_all_active_gradients (test_kcdno_core.KCDNOCoreTests.test_depths_shapes_and_all_active_gradients) ... ok
+test_forward_isolation_variable_N_and_no_persistent_state (test_kcdno_core.KCDNOCoreTests.test_forward_isolation_variable_N_and_no_persistent_state) ... ok
+test_gamma_zero_all_equals_off_same_common_weights_and_cost_differs (test_kcdno_core.KCDNOCoreTests.test_gamma_zero_all_equals_off_same_common_weights_and_cost_differs) ... ok
+test_initialization_projection_contract_and_parameter_independence (test_kcdno_core.KCDNOCoreTests.test_initialization_projection_contract_and_parameter_independence) ... ok
+test_limited_gpu_fp32_and_amp_backward (test_kcdno_core.KCDNOCoreTests.test_limited_gpu_fp32_and_amp_backward) ... In file included from /home/hwz/anaconda3/include/python3.13/Python.h:14,
+                 from /tmp/tmpmf4vfldq/cuda_utils.c:9:
+/home/hwz/anaconda3/include/python3.13/pyconfig.h:1964:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1964 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/hwz/anaconda3/lib/python3.13/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmpmf4vfldq/cuda_utils.c:1:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+ok
+test_manual_one_two_layer_equations_and_gradients (test_kcdno_core.KCDNOCoreTests.test_manual_one_two_layer_equations_and_gradients) ... ok
+test_raw_T_up_norm_and_causal_tuple_schedule (test_kcdno_core.KCDNOCoreTests.test_raw_T_up_norm_and_causal_tuple_schedule) ... ok
+test_strict_config_weight_roundtrip (test_kcdno_core.KCDNOCoreTests.test_strict_config_weight_roundtrip) ... ok
+test_validation_and_grid_contract (test_kcdno_core.KCDNOCoreTests.test_validation_and_grid_contract) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 10.326s
+
+OK
+L8 observed all {'sdpa': 16, 'down': 8, 'latent_ffn_1': 8, 'latent_ffn_2': 8, 'up_latent_norm': 8, 'up': 8, 'point_ffn': 8, 'writer': 7, 'reader_calls': 7, 'logical_reads': 28, 'query_norm': 7, 'query_projection': 7, 'einsum:bmr,bsrd->bsmd': 7, 'einsum:bmr,bsr->bsm': 7}
+L8 observed off {'sdpa': 16, 'down': 8, 'latent_ffn_1': 8, 'latent_ffn_2': 8, 'up_latent_norm': 8, 'up': 8, 'point_ffn': 8}
+GPU core finite forward/backward point_ffn torch.float16
+GPU core finite forward/backward point_ffn torch.bfloat16
+GPU core finite forward/backward conv_ffn torch.float16
+GPU core finite forward/backward conv_ffn torch.bfloat16
+Hand composition FP32/double: output maxabs=3.65225202e-07; gradient maxabs=1.95877881e-06

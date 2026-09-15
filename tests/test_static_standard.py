@@ -429,7 +429,7 @@ class StaticFrozenChecks(unittest.TestCase):
             original = subprocess.check_output(['git','show',f'{UPSTREAM}:{relative}'], cwd=ROOT, text=True)
             projected = LegacyProjection().visit(strip_recording(tree(task)))
             self.assertEqual(ast.dump(projected), ast.dump(ast.parse(original)), task)
-        current = ast.parse((PROJECT / 'model_dict.py').read_text())
+        current = strip_recording(ast.parse((PROJECT / 'model_dict.py').read_text()))
         original = subprocess.check_output(['git','show',f'{UPSTREAM}:PDE-Solving-StandardBenchmark/model_dict.py'], cwd=ROOT, text=True)
         self.assertEqual(ast.dump(LegacyProjection().visit(current)), ast.dump(ast.parse(original)))
 

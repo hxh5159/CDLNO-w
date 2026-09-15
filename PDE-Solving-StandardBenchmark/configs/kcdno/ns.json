@@ -1,0 +1,16 @@
+{
+  "family": "kcdno",
+  "task": "ns",
+  "profile": "kcdno_v1",
+  "training": {
+    "lr": 0.001,
+    "epochs": 500,
+    "batch_size": 2,
+    "weight_decay": 1e-05,
+    "max_grad_norm": null
+  },
+  "adapter": {
+    "ref": 8,
+    "unified_pos": 1
+  }
+}

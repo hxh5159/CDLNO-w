@@ -2,6 +2,9 @@ from model import Transolver_Irregular_Mesh, Transolver_Structured_Mesh_2D, Tran
 
 
 def get_model(args):
+    if args.model in ('kcdno', 'lrsa_matched'):
+        from model import KCDNO
+        return KCDNO
     if args.model == 'CDLNO':
         task = getattr(args, 'cdlno_task', None)
         if task == 'elasticity':

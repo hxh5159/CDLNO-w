@@ -34,6 +34,7 @@ TASKS = {
     'shapenet-car': (None, 32186, 256, 8, 64, 32, 1, 0, 4),
     'airfrans': (None, 32000, 256, 8, 64, 32, 1, 0, 4),
 }
+KERNEL_MODELS = ('kcdno_all', 'kcdno_off', 'lrsa_matched_trainable')
 MODELS = ('transolver', 'lrsa_matched', 'cdlno_off', 'cdlno_entry', 'cdlno_every_block')
 
 
@@ -51,6 +52,7 @@ class Case:
     ratio: int = 2
     grid: tuple[int, int] | None = None
     front_latent_mode: str = 'full'
+    kernel_rank: int = 16
 
     @classmethod
     def preset(cls, task, comparison='matched', **overrides):
@@ -72,7 +74,7 @@ class Case:
             raise ValueError('unknown task/comparison')
         if self.front_latent_mode not in ('full', 'no_sa', 'identity'):
             raise ValueError('front_latent_mode must be full, no_sa or identity')
-        if any(type(v) is not int or v < 1 for v in (self.B, self.N, self.d, self.h, self.M, self.L, self.ratio)):
+        if any(type(v) is not int or v < 1 for v in (self.B, self.N, self.d, self.h, self.M, self.L, self.ratio, self.kernel_rank)):
             raise ValueError('B/N/d/h/M/L/ratio must be positive integers')
         if type(self.F) is not int or not 0 <= self.F < self.L or self.d % self.h:
             raise ValueError('require 0<=F<L and d divisible by h')
@@ -89,7 +91,7 @@ class Case:
         return self
 
     def for_model(self, name):
-        if name not in MODELS:
+        if name not in MODELS + KERNEL_MODELS:
             raise ValueError(name)
         # A requested CDLNO ablation never modifies either reference model.
         if name in ('transolver', 'lrsa_matched'):
@@ -198,7 +200,28 @@ def build(case, name, device='cpu', chunk=0, seed=20260914):
         if case.grid:
             kwargs.update(H=case.grid[0], W=case.grid[1])
     provenance = {}
-    if name == 'transolver':
+    if name in KERNEL_MODELS:
+        from cdlno.kcdno.families import resolve_training
+        from cdlno.kcdno.standard import StandardModel
+        from cdlno.kcdno.airfrans import AirfRANSModel as KernelAir
+        task = 'car' if case.task=='shapenet-car' else case.task
+        family = 'lrsa_matched' if name=='lrsa_matched_trainable' else 'kcdno'
+        explicit = dict(model=family,L=case.L,d=case.d,h=case.h,M=case.M)
+        if family=='kcdno':explicit.update(history_mode=name.removeprefix('kcdno_'),kernel_rank=case.kernel_rank)
+        if case.ratio!=2:raise ValueError('KCDNO/matched controls require hidden2d')
+        cfg=resolve_training(task,explicit)
+        if case.task=='airfrans':model=KernelAir(config=cfg)
+        elif case.task=='shapenet-car':
+            import sys
+            project=str(ROOT/'Car-Design-ShapeNetCar')
+            sys.path.insert(0,project)
+            try:model=load_file(Path(project)/'models/KCDNO.py','_perf_kcdno_car').Model(config=cfg)
+            finally:sys.path.remove(project)
+        else:
+            model=StandardModel(config=cfg,task_name=task,H=case.grid[0] if case.grid else None,W=case.grid[1] if case.grid else None)
+        provenance=dict(production_family=family,production_core=type(model.core).__module__+'.'+type(model.core).__name__,
+                        architecture=cfg.to_dict(),note='F/front/CDPA/chunk do not apply to this independent full point-block family')
+    elif name == 'transolver':
         cls, provenance = baseline_class(case, device)
         if industrial:
             kwargs.update(space_dim=7, fun_dim=0, out_dim=4, unified_pos=case.task == 'airfrans')

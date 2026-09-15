@@ -29,6 +29,12 @@ if args.model == 'CDLNO':
     with open('params.yaml', 'r') as config_file:
         recording_hparams = resolve_hparams(args, yaml.safe_load(config_file)['CDLNO'])
     start_experiment(args, 'airfrans', evaluation=False, hparams=recording_hparams)
+elif args.model in ('kcdno', 'lrsa_matched'):
+    from kcdno_entry import AirRun as KCDNOAirRun, model_kwargs as kcdno_model_kwargs, resolve_hparams as kcdno_resolve_hparams
+    from cdlno.experiment import start as start_experiment, finish as finish_experiment
+    with open('params.yaml', 'r') as config_file:
+        recording_hparams = kcdno_resolve_hparams(args, yaml.safe_load(config_file)['kcdno'])
+    start_experiment(args, 'airfrans', evaluation=False, hparams=recording_hparams)
 
 with open(args.my_path + '/manifest.json', 'r') as f:
     manifest = json.load(f)
@@ -59,6 +65,11 @@ if args.model == 'CDLNO':
     cdlno_run = AirRun(args, hparams, device=device)
     cdlno_run.recorder.update_protocol(dict(train_graphs=len(train_dataset), validation_graphs=len(val_dataset),
                                          val_iter=10, val_sample=True, criterion="MSE_weighted"))
+elif args.model in ('kcdno', 'lrsa_matched'):
+    hparams = kcdno_resolve_hparams(args, hparams)
+    cdlno_run = KCDNOAirRun(args, hparams, device=device)
+    cdlno_run.recorder.update_protocol(dict(train_graphs=len(train_dataset), validation_graphs=len(val_dataset),
+                                         val_iter=10, val_sample=True, criterion="MSE_weighted"))
 
 from models.MLP import MLP
 
@@ -81,6 +92,10 @@ for i in range(args.nmodel):
         from models.CDLNO import Model
 
         model = Model(**cdlno_model_kwargs(args)).to(device)
+    elif args.model in ('kcdno', 'lrsa_matched'):
+        from models.KCDNO import Model
+
+        model = Model(**kcdno_model_kwargs(args)).to(device)
     else:
         encoder = MLP(hparams['encoder'], batch_norm=False)
         decoder = MLP(hparams['decoder'], batch_norm=False)
@@ -119,9 +134,15 @@ score_path = cdlno_run.result_dir if cdlno_run is not None else 'scores'
 score_array_path = score_path if cdlno_run is not None else osp.join('scores', args.task)
 if args.model == 'CDLNO':
     finish_experiment(args)
+elif args.model in ('kcdno', 'lrsa_matched'):
+    finish_experiment(args)
 
 if bool(args.score):
     if args.model == 'CDLNO':
+        cdlno_run.recorder = start_experiment(args, 'airfrans', evaluation=True, hparams=hparams)
+        score_path = cdlno_run.recorder.result_dir
+        score_array_path = score_path
+    elif args.model in ('kcdno', 'lrsa_matched'):
         cdlno_run.recorder = start_experiment(args, 'airfrans', evaluation=True, hparams=hparams)
         score_path = cdlno_run.recorder.result_dir
         score_array_path = score_path
@@ -143,5 +164,8 @@ if bool(args.score):
     print('end score')
 
     if args.model == 'CDLNO':
+        cdlno_run.recorder.record_air_scores(score_path)
+        finish_experiment(args)
+    elif args.model in ('kcdno', 'lrsa_matched'):
         cdlno_run.recorder.record_air_scores(score_path)
         finish_experiment(args)

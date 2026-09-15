@@ -1,0 +1,506 @@
+--- /dev/null
++++ b/Car-Design-ShapeNetCar/configs/kcdno/shapenet_car.json
+@@ -0,0 +1,14 @@
++{
++  "family": "kcdno",
++  "profile": "kcdno_v1",
++  "task": "car",
++  "training": {
++    "nb_epochs": 200,
++    "batch_size": 1,
++    "lr": 0.001,
++    "weight": 0.5,
++    "fold_id": 0,
++    "val_iter": 10,
++    "preprocessed": 1
++  }
++}
+--- /dev/null
++++ b/Car-Design-ShapeNetCar/kcdno_entry.py
+@@ -0,0 +1,2 @@
++"""Local industrial bridge, with no dataset/training imports."""
++from cdlno.kcdno.industrial_entry import CarRun, car_model_kwargs as model_kwargs
+--- a/Car-Design-ShapeNetCar/main.py
++++ b/Car-Design-ShapeNetCar/main.py
+@@ -1,3 +1,4 @@
++from kcdno_entry import CarRun as KCDNORun, model_kwargs as kcdno_model_kwargs
+ import train
+ import os
+ import torch
+@@ -27,6 +28,9 @@
+ if args.cfd_model == 'CDLNO':
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     start_experiment(args, 'car', evaluation=False)
++if args.cfd_model == 'kcdno':
++    from cdlno.experiment import start as start_experiment, finish as finish_experiment
++    start_experiment(args, 'car', evaluation=False)
+ print(args)
+ 
+ hparams = {'lr': args.lr, 'batch_size': args.batch_size, 'nb_epochs': args.nb_epochs}
+@@ -54,6 +58,12 @@
+     cdlno_run.recorder.update_protocol(dict(train_graphs=len(train_ds), validation_graphs=len(val_ds),
+                                          val_iter=args.val_iter, loss="velocity_mse + weight * surface_pressure_mse"))
+ 
++elif args.cfd_model == 'kcdno':
++    from models.KCDNO import Model as KCDNOModel
++    model = KCDNOModel(**kcdno_model_kwargs(args)).to(device)
++    cdlno_run = KCDNORun(args, device=device, model=model)
++    cdlno_run.recorder.update_protocol(dict(train_graphs=len(train_ds), validation_graphs=len(val_ds), val_iter=args.val_iter, loss='velocity_mse + weight * surface_pressure_mse'))
++
+ path = str(cdlno_run.directory) if cdlno_run is not None else f'metrics/{args.cfd_model}/{args.fold_id}/{args.nb_epochs}_{args.weight}'
+ if not os.path.exists(path):
+     os.makedirs(path)
+@@ -64,3 +74,6 @@
+ 
+ if args.cfd_model == 'CDLNO':
+     finish_experiment(args)
++
++if args.cfd_model == 'kcdno':
++    finish_experiment(args)
+--- a/Car-Design-ShapeNetCar/main_evaluation.py
++++ b/Car-Design-ShapeNetCar/main_evaluation.py
+@@ -1,3 +1,4 @@
++from kcdno_entry import CarRun as KCDNORun, model_kwargs as kcdno_model_kwargs
+ import os
+ import torch
+ import argparse
+@@ -26,6 +27,9 @@
+ if args.cfd_model == 'CDLNO':
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     start_experiment(args, 'car', evaluation=True)
++if args.cfd_model == 'kcdno':
++    from cdlno.experiment import start as start_experiment, finish as finish_experiment
++    start_experiment(args, 'car', evaluation=True)
+ print(args)
+ 
+ 
+@@ -38,6 +42,11 @@
+ 
+ if args.cfd_model == 'CDLNO':
+     cdlno_run = CarRun(args, device=device, evaluation=True)
++    path = str(cdlno_run.directory)
++    model = cdlno_run.load()
++    results_dir = cdlno_run.result_dir
++elif args.cfd_model == 'kcdno':
++    cdlno_run = KCDNORun(args, device=device, evaluation=True)
+     path = str(cdlno_run.directory)
+     model = cdlno_run.load()
+     results_dir = cdlno_run.result_dir
+@@ -137,3 +146,11 @@
+         rmse_velocity=np.sqrt(np.mean(np.square(rmse_velo_var))),
+         upstream_unsynchronized_mean_forward_seconds=np.mean(times), evaluated_graphs=index))
+     finish_experiment(args)
++
++if args.cfd_model == 'kcdno':
++    cdlno_run.recorder.record_metrics(dict(
++        rho_d=spear, c_d=coef_error / index, relative_l2_pressure=l2err_press,
++        relative_l2_velocity=l2err_velo, rmse_pressure=rmse_press, rmse_velocity_components=rmse_velo_var,
++        rmse_velocity=np.sqrt(np.mean(np.square(rmse_velo_var))),
++        upstream_unsynchronized_mean_forward_seconds=np.mean(times), evaluated_graphs=index))
++    finish_experiment(args)
+--- /dev/null
++++ b/Car-Design-ShapeNetCar/models/KCDNO.py
+@@ -0,0 +1,36 @@
++"""Stable ShapeNet-Car KCDNO class; reuse the accepted single-graph validator."""
++import torch
++from torch import Tensor, nn
++from models.CDLNO import Model as CDLNOModel, adapter_architecture
++from cdlno.kcdno.core import KCDNO
++from cdlno.modules import _init_linear
++
++
++class Model(CDLNOModel):
++    def __init__(self, *, config):
++        nn.Module.__init__(self)  # Do not construct/reinitialize an old core.
++        config.validate()
++        if config.point_module != 'point_ffn':
++            raise ValueError('ShapeNet-Car requires point_ffn')
++        self.config = config
++        self.preprocess = nn.Sequential(nn.Linear(7, 2*config.d), nn.GELU(), nn.Linear(2*config.d, config.d))
++        _init_linear(self.preprocess[0]); _init_linear(self.preprocess[2])
++        self.placeholder = nn.Parameter(torch.rand(config.d) / config.d)
++        self.core = KCDNO(config)
++        self.output_norm = nn.LayerNorm(config.d, eps=config.norm_eps)
++        self.output = nn.Linear(config.d, 4)
++        _init_linear(self.output)
++
++    def adapter_architecture(self):
++        return adapter_architecture() | {'version':'kcdno-shapenet-car-v1', 'output_head':'layernorm-linear-v1'}
++
++    def forward(self, data):
++        if not isinstance(data, (tuple, list)) or len(data) != 2:
++            raise TypeError('ShapeNet-Car requires (cfd_data, geom_data)')
++        cfd, _ = data
++        x = getattr(cfd, 'x', None)
++        if not isinstance(x, Tensor) or x.ndim != 2 or x.shape[-1] != 7 or x.shape[0] < 1 or not x.is_floating_point():
++            raise ValueError('cfd_data.x must be nonempty floating [N,7]')
++        self._single_graph(cfd, x.shape[0])
++        h = self.preprocess(x.unsqueeze(0)) + self.placeholder[None, None]
++        return self.output(self.output_norm(self.core(h))).squeeze(0)
+--- a/Car-Design-ShapeNetCar/models/cdlno_run.py
++++ b/Car-Design-ShapeNetCar/models/cdlno_run.py
+@@ -19,6 +19,8 @@
+ 
+ 
+ def parse_args(parser, *, evaluation=False, argv=None):
++    from cdlno.kcdno.entry import add_arguments
++    add_arguments(parser)
+     parser.add_argument('--front_latent_mode', '--front-latent-mode',
+                         choices=('full', 'no_sa', 'identity'), default=None)
+     for name, kind in MODEL_OPTIONS.items():
+@@ -30,6 +32,10 @@
+     parser.add_argument('--run_dir', type=Path, default=None,
+                         help='new CDLNO training directory, or existing run for evaluation')
+     args = parser.parse_args(argv)
++    if args.cfd_model == 'kcdno':
++        import sys
++        from cdlno.kcdno.industrial_entry import resolve_car
++        return resolve_car(parser, args, sys.argv[1:] if argv is None else argv, evaluation=evaluation)
+     if args.cfd_model != 'CDLNO':
+         return args
+     if evaluation:
+--- /dev/null
++++ b/cdlno/kcdno/car_preflight.py
+@@ -0,0 +1,25 @@
++"""Read actual parser + saved config, then reuse the existing Car path guard."""
++import argparse
++import ast
++from pathlib import Path
++import subprocess
++import sys
++
++
++def main():
++    root=Path(__file__).resolve().parents[2]
++    project=root/'Car-Design-ShapeNetCar'
++    nodes=[n for n in ast.parse((project/'main_evaluation.py').read_text()).body if
++           (isinstance(n,ast.Assign) and ast.unparse(n.targets[0])=='parser') or
++           (isinstance(n,ast.Expr) and isinstance(n.value,ast.Call) and ast.unparse(n.value.func)=='parser.add_argument')]
++    scope={'argparse':argparse}
++    exec(compile(ast.Module(body=nodes,type_ignores=[]),'<parser-only>','exec'),scope)
++    sys.path.insert(0,str(project))
++    from models.cdlno_run import parse_args
++    args=parse_args(scope['parser'],evaluation=True)
++    subprocess.run([sys.executable,'-B',str(root/'tran_evaluate/check_car_eval.py'),
++                    '--data_dir',args.data_dir,'--run_dir',str(args.kcdno_run_dir),
++                    '--fold_id',str(args.fold_id),'--nb_epochs',str(args.nb_epochs)],check=True)
++
++
++if __name__=='__main__':main()
+--- /dev/null
++++ b/cdlno/kcdno/industrial_entry.py
+@@ -0,0 +1,125 @@
++"""Industrial new-family selection and LOCAL trusted whole-object loading."""
++from __future__ import annotations
++import hashlib
++import json
++import os
++from pathlib import Path
++
++from .config import KCDNOArchitectureConfig, KCDNORuntimeConfig
++from .entry import ROOT, task_record
++from .metadata import KCDNOMetadata, KCDNOMetadataMismatch, new_run_path, save_metadata, load_metadata, resolve_evaluation
++from .options import explicit_arguments, resolve_training
++
++CAR_CONTRACT = ('fold_id', 'nb_epochs', 'weight', 'cfd_mesh', 'r')
++
++
++def resolve_car(parser, args, tokens, *, evaluation):
++    explicit = explicit_arguments(parser, tokens)
++    if args.kcdno_run_dir is None and args.run_dir is not None:
++        args.kcdno_run_dir = args.run_dir
++    elif args.run_dir is not None and args.kcdno_run_dir != args.run_dir:
++        raise ValueError('conflicting --run_dir and --kcdno-run-dir')
++    args.kcdno_task, args.kcdno_family, args.kcdno_evaluation = 'car', 'kcdno', evaluation
++    if evaluation:
++        if args.kcdno_run_dir is None:
++            parser.error('kcdno evaluation requires --kcdno-run-dir')
++        saved = resolve_evaluation(args.kcdno_run_dir/'architecture.json', explicit, task='car').saved
++        cfg = saved.architecture;args.profile = saved.profile
++        task = task_record(args.kcdno_run_dir)
++        if task['task'] != 'car' or set(task['protocol']) != set(CAR_CONTRACT):
++            raise KCDNOMetadataMismatch('missing Car run contract')
++        for name in CAR_CONTRACT:
++            if name in explicit and explicit[name] != task['protocol'][name]:
++                raise KCDNOMetadataMismatch('Car run contract mismatch: ' + name)
++            setattr(args, name, task['protocol'][name])
++    else:
++        cfg = resolve_training('car', explicit)
++        preset=json.loads((ROOT/'Car-Design-ShapeNetCar/configs/kcdno/shapenet_car.json').read_text())
++        for name,value in preset['training'].items():
++            if name not in explicit:setattr(args,name,value)
++    if cfg.point_module != 'point_ffn' or not 0 <= args.fold_id <= 8 or args.nb_epochs < 1:
++        raise ValueError('invalid Car point module/fold/epoch configuration')
++    if not evaluation and args.batch_size != 1:
++        raise ValueError('Car supports single-graph batch_size=1')
++    args.batch_size = getattr(args, 'batch_size', 1)
++    args.kcdno_architecture = cfg.to_dict()
++    for name, value in dict(n_hidden=cfg.d,n_layers=cfg.L,n_heads=cfg.h,slice_num=cfg.M,
++                            kernel_rank=cfg.kernel_rank,history_mode=cfg.history_mode,dropout=0.).items():
++        setattr(args,name,value)
++    if not evaluation and args.kcdno_run_dir is None:
++        proposed=new_run_path(Path(os.environ.get('CDLNO_RUNS_ROOT',ROOT/'output')),'car',cfg)
++        digest=hashlib.sha256(json.dumps(cfg.to_dict(),sort_keys=True).encode()).hexdigest()[:10]
++        args.kcdno_run_dir=proposed.parent/args.profile/(proposed.name+'_'+digest)
++    return args
++
++
++def car_model_kwargs(args):
++    return dict(config=KCDNOArchitectureConfig.from_dict(args.kcdno_architecture))
++
++
++class CarRun:
++    def __init__(self, args, *, device, model=None, evaluation=False):
++        from ..experiment import session, reserve_directory, timestamp
++        self.args,self.device,self.evaluation=args,device,evaluation
++        self.directory=Path(args.kcdno_run_dir).resolve()
++        self.architecture=KCDNOArchitectureConfig.from_dict(args.kcdno_architecture)
++        self.contract={key:getattr(args,key) for key in CAR_CONTRACT}
++        self.recorder=session(args)
++        self.metadata=KCDNOMetadata(task='car',architecture=self.architecture,checkpoint_format='whole_model',
++            profile=args.profile,runtime=KCDNORuntimeConfig(device=str(device),batch_size=1))
++        if evaluation:
++            self.validate()
++        else:
++            self._check_model(model)
++            reserve_directory(args,self.directory)
++            save_metadata(self.sidecar,self.metadata)
++            self.adapter=model.adapter_architecture()
++            with (self.directory/'task.json').open('x') as stream:
++                json.dump(dict(schema_version=1,family='kcdno',task='car',adapter=self.adapter,
++                    protocol=self.contract,arguments={k:str(v) if isinstance(v,Path) else v for k,v in vars(args).items()}),stream,indent=2)
++        self.result_dir=str(self.directory/('eval_'+timestamp()))+'/'
++        if self.recorder is not None:
++            self.result_dir=self.recorder.result_dir
++            if model is not None:self.recorder.attach_model(model,protocol=self.contract)
++        print('kcdno Car run:',self.directory,self.architecture.to_dict())
++
++    @property
++    def sidecar(self):return self.directory/'architecture.json'
++    @property
++    def checkpoint(self):return self.directory/f'model_{self.contract["nb_epochs"]}.pth'
++
++    def validate(self):
++        from models.KCDNO import Model
++        from models.CDLNO import adapter_architecture
++        saved=load_metadata(self.sidecar);record=task_record(self.directory)
++        expected=adapter_architecture() | {'version':'kcdno-shapenet-car-v1','output_head':'layernorm-linear-v1'}
++        if (saved.architecture!=self.architecture or saved.task!='car' or saved.checkpoint_format!='whole_model'
++                or record['task']!='car' or record['adapter']!=expected or record['protocol']!=self.contract):
++            raise KCDNOMetadataMismatch('Car model/task/run architecture mismatch')
++
++    def _check_model(self,model):
++        from models.KCDNO import Model
++        from .core import KCDNO, KCDNOBlock
++        if (type(model) is not Model or type(model.core) is not KCDNO
++                or model.config!=self.architecture or model.core.config!=self.architecture
++                or len(model.core.blocks)!=self.architecture.L):
++            raise KCDNOMetadataMismatch('expected the configured models.KCDNO.Model')
++        for i,block in enumerate(model.core.blocks):
++            if type(block) is not KCDNOBlock or block.config!=self.architecture or block.layer_index!=i:
++                raise KCDNOMetadataMismatch('whole-model block configuration mismatch')
++
++    def load(self):
++        import torch
++        from models.KCDNO import Model
++        if not self.evaluation:raise RuntimeError('load is for evaluation of a trusted run')
++        self.validate()  # Always before deserializing the trusted project object.
++        model=torch.load(self.checkpoint,map_location=self.device,weights_only=False)
++        self._check_model(model)
++        with torch.random.fork_rng(devices=[]):
++            expected=Model(**car_model_kwargs(self.args))
++        expected.load_state_dict(model.state_dict(),strict=True)
++        if model.adapter_architecture()!=task_record(self.directory)['adapter']:
++            raise KCDNOMetadataMismatch('whole-model wrapper contract mismatch')
++        model=model.to(self.device)
++        if self.recorder is not None:self.recorder.attach_model(model,protocol=self.contract)
++        return model
+--- a/docs/KCDNO_IMPLEMENTATION_STATUS.md
++++ b/docs/KCDNO_IMPLEMENTATION_STATUS.md
+@@ -1,4 +1,8 @@
+ # KCDNO 实施状态
++
++## K6 完成并自审，继续 K7（2026-09-16）
++
++Car新模型、原整对象协议和原mask训练步已接通；5/5检查、4/4 K0原权重回放通过。真实PyG单图/多图拒绝、旧工业冻结、新进程加载已核查。详见 [K6报告](KCDNO_K6_CAR.md)。无真实训练/拖曳评价，原路径/fold限制保留。
+ 
+ ## K5 完成并自审，继续 K6（2026-09-15）
+ 
+--- /dev/null
++++ b/docs/KCDNO_K6_CAR.md
+@@ -0,0 +1,18 @@
++# K6 ShapeNet-Car（2026-09-16）
++
++新 `models.KCDNO.Model` 位于 Car 稳定模块，独立 KCDNO core，复用原单图校验；x7→stem→L个block→LN/head→[velocity3,pressure1]，不读取 y/geom，不改变原 tuple、surf、点序或图处理。默认 L8/d256/h8/M64/r16、PointFFN，200epochs/batch1/Adam lr.001/reg.5/fold0；原 train.py 与评价计算保持。
++
++新增 `cdlno/kcdno/industrial_entry.py` 的 CarRun、Car 配置/选择/有限入口分支、`tran_evaluate/kcdno/car.sh`。保留原整模型 `model_<nb_epochs>.pth`，局部可信 weights_only=False，先读 architecture/task sidecar，再严格检查类、core/block配置与state_dict；eval恢复省略的结构和fold/epoch等运行合同，显式冲突拒绝。没有新增resume。脚本读取checkpoint合同后运行原Car拖曳评价前置检查，原固定param0路径与fold0限制仍存在。
++
++实际命令：
++
++```bash
++PYTHONPATH=tests:. python -B -m unittest test_kcdno_car test_shapenet_car.FrozenSourceAndScripts -v
++PYTHONPATH=. python -B docs/kcdno_audit/replay_subset.py car --result docs/kcdno_audit/k6/old-replay.json
++bash tran_evaluate/kcdno/car.sh train --kcdno-run-dir /absolute/new/run --dry-run
++bash tran_evaluate/kcdno/car.sh eval --kcdno-run-dir /absolute/existing/run
++```
++
++5/5检查通过5.557s：真实PyG Data/Batch N11/19、all/off原train.train/train.test函数及mask损失、Adam/OneCycle一步、反传有限、无y泄漏/无原地修改、多图拒绝；整模型严格往返、架构冲突、sidecar字节不变，以及Car原cwd新进程加载输出相同。全main/eval AST移除新有限分支后与K6前一致，34个旧工业冻结文件字节相同。K0旧Car Transolver和CDLNO三模式4份同权重输出/梯度完全回放，atol=rtol=0。证据 `docs/kcdno_audit/k6/`，含最终日志、旧回放和阶段diff。
++
++自审已核对单图和通道、原mask损失、原200epoch文件名、先验后加载/稳定类路径、原工作目录与新旧隔离。没有待裁定结构差异。新Car为CPU合成/PyG验证，旧Transolver基准使用本机GPU；不代表新Car GPU全宽/远端2.11cu128/真实fold训练或拖曳评价已通过。继续已授权K7。
+--- a/memory/current-state.md
++++ b/memory/current-state.md
+@@ -332,3 +332,5 @@
+ - LRSA fixed47b03f8 clean checkout direct same-weightFP64 block reference2 tests gives output/history/grad maxdiff0; no LICENSE/COPYING/projectlicense metadata found. Transolver rootLICENSE is MIT(Copyright2024THUML), IPOT MIT(Copyright2023SeungjunLee) re-fetched from pinned18c1778; original Air ODbL preserved. Do not repeat an erroneous impression that Transolver has no rootlicense. No vendored LRSA/framework/kernel. Missing standalone theory attachments remain unlocated; no proofscript/PDF reproduction claim.
+ - Baseline71files:58identical+12prior approved integration changes+README original-text-preserving addition. Phase10start162manifestSHA aaeefa892951c977ad1336392964a11eca1562fe22749d0ba15a6f99e03a2085;156unchanged,6test/docchanges,0unexpected. Existing phase9code/rawperformance, core/wrappers/entry/dependencies unchanged this phase. Final freeze and reviewpatches in docs/final_audit; no staging/commit/push/reset.
+ - Self-reviewed architecture/init, two-levelCDPA/FP32/chunks, history/independence, adapters/checkpoints, freeze/performance口径; no remaining known production defect. Still unverified realdata/VTK/graphs/fullsampling/CFDmetrics, true training/convergence/accuracy, realepoch speed, remotetarget/install, fullGPUdefaulttaskmatrix and independent mathattachments. Phase9limited GPU performance is historical measured evidence, not repeated timing here. No further work authorized until explicit instruction.
++
++2026-09-16 K6完成并自审：Car新family/原整对象协议与真实PyG原loss合成训练、5测试和4旧同权重回放通过；继续用户连续授权K7–K10，未运行真实数据。
+--- /dev/null
++++ b/tests/test_kcdno_car.py
+@@ -0,0 +1,97 @@
++"""Real PyG and original safe Car train/test functions, synthetic graphs only."""
++import ast
++import copy
++import io
++import json
++import os
++from pathlib import Path
++import subprocess
++import sys
++import tempfile
++import unittest
++from contextlib import redirect_stdout
++
++import torch
++from test_shapenet_car import CAR, ROOT, entry_parser, HAS_PYG
++from models.cdlno_run import parse_args
++from models.KCDNO import Model
++from cdlno.kcdno.industrial_entry import CarRun, car_model_kwargs
++from cdlno.kcdno.metadata import KCDNOMetadataMismatch
++from output_recording_projection import strip_recording
++from test_kcdno_tasks import strip_new
++
++
++def arguments(flags=(),evaluation=False):
++    return parse_args(entry_parser(evaluation),evaluation=evaluation,argv=['--cfd_model','kcdno',*flags])
++SMALL=['--n_hidden','8','--n_heads','2','--n_layers','2','--slice_num','3','--kernel-rank','5']
++
++
++class CarKCDNO(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):cls.threads=torch.get_num_threads();torch.set_num_threads(1)
++    @classmethod
++    def tearDownClass(cls):torch.set_num_threads(cls.threads)
++
++    def test_factory_defaults_and_frozen_sources(self):
++        args=arguments();self.assertEqual((args.n_hidden,args.n_heads,args.slice_num,args.nb_epochs,args.batch_size),(256,8,64,200,1))
++        a=arguments(['--profile','transolver_shape_match']);self.assertEqual(a.slice_num,32)
++        before=json.loads((ROOT/'docs/kcdno_audit/k6/before.json').read_text());snap=Path(before['source_snapshot'])
++        for name in ('main.py','main_evaluation.py'):
++            self.assertEqual(ast.dump(strip_new(ast.parse((CAR/name).read_text()))),ast.dump(ast.parse((snap/'Car-Design-ShapeNetCar'/name).read_text())))
++        self.assertEqual((CAR/'train.py').read_bytes(),(snap/'Car-Design-ShapeNetCar/train.py').read_bytes())
++        with self.assertRaises(ValueError):arguments(['--batch_size','2'])
++        with self.assertRaises(ValueError):arguments(['--front_latent_mode','no_sa'])
++
++    @unittest.skipUnless(HAS_PYG,'real PyG unavailable')
++    def test_real_PyG_original_loss_step_and_checkpoints(self):
++        from torch_geometric.data import Data,Batch
++        import importlib.util
++        spec=importlib.util.spec_from_file_location('_kcdno_car_train',CAR/'train.py');train=importlib.util.module_from_spec(spec);spec.loader.exec_module(train)
++        for mode in ('all','off'):
++            with tempfile.TemporaryDirectory() as tmp,redirect_stdout(io.StringIO()):
++                path=Path(tmp)/'run';args=arguments([*SMALL,'--history-mode',mode,'--nb_epochs','3','--kcdno-run-dir',str(path)])
++                model=Model(**car_model_kwargs(args));run=CarRun(args,device='cpu',model=model)
++                graphs=[]
++                for n in (11,19):
++                    data=Data(x=torch.randn(n,7),y=torch.randn(n,4),surf=torch.arange(n)%2==0)
++                    data=Batch.from_data_list([data]);geom=Data(x=torch.randn(5,3))
++                    before=data.clone();model.eval();out=model((data,geom));self.assertEqual(out.shape,(n,4))
++                    data.y+=100
++                    torch.testing.assert_close(model((data,geom)),out,atol=0,rtol=0)
++                    data.y=before.y
++                    for key in before.to_dict():torch.testing.assert_close(data[key],before[key],atol=0,rtol=0)
++                    graphs.append((data,geom))
++                opt=torch.optim.Adam(model.parameters(),lr=.001);scheduler=torch.optim.lr_scheduler.OneCycleLR(opt,max_lr=.001,total_steps=20)
++                # Real original velocity-all + surface-pressure weighted loss.
++                train.train('cpu',model,graphs,opt,scheduler,reg=.5)
++                self.assertTrue(all(p.grad is not None and torch.isfinite(p.grad).all() for p in model.parameters()))
++                train.test('cpu',model,graphs);model.eval();expected=model(graphs[0])
++                with self.assertRaises(ValueError):model((Batch.from_data_list([graphs[0][0].to_data_list()[0],graphs[1][0].to_data_list()[0]]),None))
++                torch.save(model,run.checkpoint)  # original whole-model protocol
++                files={p.name:p.read_bytes() for p in (run.sidecar,path/'task.json')}
++                ev=arguments(['--kcdno-run-dir',str(path)],True)
++                self.assertEqual((ev.nb_epochs,ev.history_mode),(3,mode))
++                loaded=CarRun(ev,device='cpu',evaluation=True).load().eval()
++                torch.testing.assert_close(loaded(graphs[0]),expected,atol=0,rtol=0)
++                for flag,value in (('--kernel-rank','7'),('--history-mode','off' if mode=='all' else 'all'),('--fold_id','1')):
++                    with self.assertRaises(KCDNOMetadataMismatch):arguments(['--kcdno-run-dir',str(path),flag,value],True)
++                self.assertEqual(files,{p.name:p.read_bytes() for p in (run.sidecar,path/'task.json')})
++                torch.save(dict(x=graphs[0][0].x,expected=expected),Path(tmp)/'probe.pt')
++                code='''
++import sys, torch
++from pathlib import Path
++from types import SimpleNamespace
++from test_kcdno_car import arguments
++from cdlno.kcdno.industrial_entry import CarRun
++torch.set_num_threads(1)
++path=Path(sys.argv[1]);a=arguments(['--kcdno-run-dir',str(path/'run')],True)
++m=CarRun(a,device='cpu',evaluation=True).load().eval()
++probe=torch.load(path/'probe.pt',weights_only=True)
++torch.testing.assert_close(m((SimpleNamespace(x=probe['x']),None)),probe['expected'],atol=0,rtol=0)
++assert 'main' not in sys.modules and 'main_evaluation' not in sys.modules
++'''
++                result=subprocess.run([sys.executable,'-B','-c',code,tmp],cwd=CAR,env=dict(os.environ,PYTHONPATH=str(ROOT)+os.pathsep+str(ROOT/'tests')),capture_output=True,text=True,timeout=60)
++                self.assertEqual(result.returncode,0,result.stdout+result.stderr)
++
++
++if __name__=='__main__':unittest.main(verbosity=2)
+--- /dev/null
++++ b/tran_evaluate/kcdno/_dispatch.sh
+@@ -0,0 +1,31 @@
++#!/usr/bin/env bash
++# New-family path flags, using the same installed Python and original cwd.
++set -euo pipefail
++launcher="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++source "$launcher/../_common.sh"
++project="$1"; entry="$2"; shift 2
++dry=0; args=()
++while (($#)); do
++    arg="$1"; shift
++    case "$arg" in
++        --dry-run) dry=1 ;;
++        --kcdno-run-dir|--run_dir|--data_dir|--save_dir|--my_path|--save_path)
++            value="${1:?missing path}"; shift
++            [[ "$value" = /* ]] || value="$PWD/$value"
++            args+=("$arg" "$value") ;;
++        --kcdno-run-dir=*|--run_dir=*|--data_dir=*|--save_dir=*|--my_path=*|--save_path=*)
++            value="${arg#*=}"; [[ "$value" = /* ]] || value="$PWD/$value"
++            args+=("${arg%%=*}" "$value") ;;
++        *) args+=("$arg") ;;
++    esac
++done
++export PYTHONPATH="$cdlno_repo_root${PYTHONPATH:+:$PYTHONPATH}"
++export MPLBACKEND="${MPLBACKEND:-Agg}"
++printf 'Working directory: %s\n' "$cdlno_repo_root/$project"
++printf 'Command:'; printf ' %q' "$CDLNO_PYTHON" -u "$entry" "${args[@]}"; printf '\n'
++((dry)) && { printf 'DRY RUN: no Python/data/training/evaluation.\n'; exit 0; }
++cd "$cdlno_repo_root/$project"
++if [[ "$project" == Car-Design-ShapeNetCar && "$entry" == main_evaluation.py ]]; then
++    "$CDLNO_PYTHON" -B -m cdlno.kcdno.car_preflight "${args[@]}"
++fi
++exec "$CDLNO_PYTHON" -u "$entry" "${args[@]}"
+--- /dev/null
++++ b/tran_evaluate/kcdno/car.sh
+@@ -0,0 +1,12 @@
++#!/usr/bin/env bash
++set -euo pipefail
++launcher="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++source "$launcher/../_common.sh"
++action="${1:?train or eval required}"; shift
++case "$action" in train) entry=main.py ;; eval) entry=main_evaluation.py ;; *) exit 2 ;; esac
++args=(--cfd_model kcdno --profile kcdno_v1)
++[[ -z "${CDLNO_CAR_RAW_ROOT:-}" ]] || args+=(--data_dir "$CDLNO_CAR_RAW_ROOT")
++[[ -z "${CDLNO_CAR_CACHE_ROOT:-}" ]] || args+=(--save_dir "$CDLNO_CAR_CACHE_ROOT")
++# save_dir is preprocessed data. A run is exactly one fold. Full drag evaluation
++# retains the original fixed param0 path; the preflight checks it without data IO.
++exec bash "$launcher/_dispatch.sh" Car-Design-ShapeNetCar "$entry" "${args[@]}" "$@"

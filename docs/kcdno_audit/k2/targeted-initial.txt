@@ -1,0 +1,30 @@
+test_batch_isolation_values_and_cross_sample_gradients (test_kernel_history.KernelHistoryTests.test_batch_isolation_values_and_cross_sample_gradients) ... ok
+test_cpu_autocast_fp32_operations (test_kernel_history.KernelHistoryTests.test_cpu_autocast_fp32_operations) ... ok
+test_double_cached_equals_explicit_kernel_and_all_gradients (test_kernel_history.KernelHistoryTests.test_double_cached_equals_explicit_kernel_and_all_gradients) ... ok
+test_dtype_casts_noncontiguous_and_half_parameter_storage (test_kernel_history.KernelHistoryTests.test_dtype_casts_noncontiguous_and_half_parameter_storage) ... ok
+test_empty_history_is_exact_identity_without_parameter_work (test_kernel_history.KernelHistoryTests.test_empty_history_is_exact_identity_without_parameter_work) ... ok
+test_finite_extremes_clamp_and_denominator (test_kernel_history.KernelHistoryTests.test_finite_extremes_clamp_and_denominator) ... ok
+test_gpu_autocast_fp32_operations (test_kernel_history.KernelHistoryTests.test_gpu_autocast_fp32_operations) ... ok
+test_independent_oracle_and_double_gradcheck_away_from_boundaries (test_kernel_history.KernelHistoryTests.test_independent_oracle_and_double_gradcheck_away_from_boundaries) ... ok
+test_initialization_uniform_depth_raw_values_and_unconstrained_gate (test_kernel_history.KernelHistoryTests.test_initialization_uniform_depth_raw_values_and_unconstrained_gate) ... ok
+test_invalid_shapes_cache_contract_and_no_padding_api (test_kernel_history.KernelHistoryTests.test_invalid_shapes_cache_contract_and_no_padding_api) ... ok
+test_isolated_reader_loss_reaches_earliest_writer_and_zero_scorer_norm (test_kernel_history.KernelHistoryTests.test_isolated_reader_loss_reaches_earliest_writer_and_zero_scorer_norm) ... ok
+test_no_inplace_no_cache_attributes_and_parameters_independent (test_kernel_history.KernelHistoryTests.test_no_inplace_no_cache_attributes_and_parameters_independent) ... ok
+test_one_query_no_rekey_no_token_matrix_and_single_source_softmax (test_kernel_history.KernelHistoryTests.test_one_query_no_rekey_no_token_matrix_and_single_source_softmax) ... ok
+test_production_fp32_against_double_oracle (test_kernel_history.KernelHistoryTests.test_production_fp32_against_double_oracle) ... ok
+test_source_order_and_token_permutations (test_kernel_history.KernelHistoryTests.test_source_order_and_token_permutations) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 1.846s
+
+OK
+K2 environment: torch=2.13.0+cu130, cuda=13.0, gpu=NVIDIA GeForce RTX 5090 Laptop GPU; TF32 off, compile off
+autocast cpu/torch.bfloat16/low_inputs=False: observed FP32 ops, output+gradient parity passed
+autocast cpu/torch.bfloat16/low_inputs=True: observed FP32 ops, output+gradient parity passed
+double cached/explicit: 12 cases, max gradient abs=2.66453526e-15
+finite input amplitudes 0..1e15 passed; clamped kernel denominator=1.5e-11 + eps1e-6
+autocast cuda/torch.float16/low_inputs=False: observed FP32 ops, output+gradient parity passed
+autocast cuda/torch.float16/low_inputs=True: observed FP32 ops, output+gradient parity passed
+autocast cuda/torch.bfloat16/low_inputs=False: observed FP32 ops, output+gradient parity passed
+autocast cuda/torch.bfloat16/low_inputs=True: observed FP32 ops, output+gradient parity passed
+FP32/double: 24 cases, max gradient abs=1.43051147e-06; atol5e-6 rtol1e-4

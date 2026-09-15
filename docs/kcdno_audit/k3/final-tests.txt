@@ -1,0 +1,83 @@
+test_default_L8_counts_and_history_boundaries (test_kcdno_core.KCDNOCoreTests.test_default_L8_counts_and_history_boundaries) ... ok
+test_depths_shapes_and_all_active_gradients (test_kcdno_core.KCDNOCoreTests.test_depths_shapes_and_all_active_gradients) ... ok
+test_forward_isolation_variable_N_and_no_persistent_state (test_kcdno_core.KCDNOCoreTests.test_forward_isolation_variable_N_and_no_persistent_state) ... ok
+test_gamma_zero_all_equals_off_same_common_weights_and_cost_differs (test_kcdno_core.KCDNOCoreTests.test_gamma_zero_all_equals_off_same_common_weights_and_cost_differs) ... ok
+test_initialization_projection_contract_and_parameter_independence (test_kcdno_core.KCDNOCoreTests.test_initialization_projection_contract_and_parameter_independence) ... ok
+test_limited_gpu_fp32_and_amp_backward (test_kcdno_core.KCDNOCoreTests.test_limited_gpu_fp32_and_amp_backward) ... ok
+test_manual_one_two_layer_equations_and_gradients (test_kcdno_core.KCDNOCoreTests.test_manual_one_two_layer_equations_and_gradients) ... ok
+test_raw_T_up_norm_and_causal_tuple_schedule (test_kcdno_core.KCDNOCoreTests.test_raw_T_up_norm_and_causal_tuple_schedule) ... ok
+test_strict_config_weight_roundtrip (test_kcdno_core.KCDNOCoreTests.test_strict_config_weight_roundtrip) ... ok
+test_validation_and_grid_contract (test_kcdno_core.KCDNOCoreTests.test_validation_and_grid_contract) ... ok
+test_batch_isolation_values_and_cross_sample_gradients (test_kernel_history.KernelHistoryTests.test_batch_isolation_values_and_cross_sample_gradients) ... ok
+test_cpu_autocast_fp32_operations (test_kernel_history.KernelHistoryTests.test_cpu_autocast_fp32_operations) ... ok
+test_double_cached_equals_explicit_kernel_and_all_gradients (test_kernel_history.KernelHistoryTests.test_double_cached_equals_explicit_kernel_and_all_gradients) ... ok
+test_dtype_casts_noncontiguous_and_half_parameter_storage (test_kernel_history.KernelHistoryTests.test_dtype_casts_noncontiguous_and_half_parameter_storage) ... ok
+test_empty_history_is_exact_identity_without_parameter_work (test_kernel_history.KernelHistoryTests.test_empty_history_is_exact_identity_without_parameter_work) ... ok
+test_finite_extremes_clamp_and_denominator (test_kernel_history.KernelHistoryTests.test_finite_extremes_clamp_and_denominator) ... ok
+test_gpu_autocast_fp32_operations (test_kernel_history.KernelHistoryTests.test_gpu_autocast_fp32_operations) ... ok
+test_independent_oracle_and_double_gradcheck_away_from_boundaries (test_kernel_history.KernelHistoryTests.test_independent_oracle_and_double_gradcheck_away_from_boundaries) ... ok
+test_initialization_uniform_depth_raw_values_and_unconstrained_gate (test_kernel_history.KernelHistoryTests.test_initialization_uniform_depth_raw_values_and_unconstrained_gate) ... ok
+test_invalid_shapes_cache_contract_and_no_padding_api (test_kernel_history.KernelHistoryTests.test_invalid_shapes_cache_contract_and_no_padding_api) ... ok
+test_isolated_reader_loss_reaches_earliest_writer_and_zero_scorer_norm (test_kernel_history.KernelHistoryTests.test_isolated_reader_loss_reaches_earliest_writer_and_zero_scorer_norm) ... ok
+test_no_inplace_no_cache_attributes_and_parameters_independent (test_kernel_history.KernelHistoryTests.test_no_inplace_no_cache_attributes_and_parameters_independent) ... ok
+test_one_query_no_rekey_no_token_matrix_and_single_source_softmax (test_kernel_history.KernelHistoryTests.test_one_query_no_rekey_no_token_matrix_and_single_source_softmax) ... ok
+test_one_source_write_can_feed_independent_readers_with_live_gradients (test_kernel_history.KernelHistoryTests.test_one_source_write_can_feed_independent_readers_with_live_gradients) ... ok
+test_production_fp32_against_double_oracle (test_kernel_history.KernelHistoryTests.test_production_fp32_against_double_oracle) ... ok
+test_source_order_and_token_permutations (test_kernel_history.KernelHistoryTests.test_source_order_and_token_permutations) ... ok
+test_complete_configuration_roundtrips_and_rejects_missing_fields (test_kcdno_config.KCDNOConfigTests.test_complete_configuration_roundtrips_and_rejects_missing_fields) ... ok
+test_default_and_no_cdlno_fields (test_kcdno_config.KCDNOConfigTests.test_default_and_no_cdlno_fields) ... ok
+test_eval_reconstructs_saved_config_before_explicit_compare (test_kcdno_config.KCDNOConfigTests.test_eval_reconstructs_saved_config_before_explicit_compare) ... ok
+test_explicit_cli_uses_argparse_and_keeps_original_parser (test_kcdno_config.KCDNOConfigTests.test_explicit_cli_uses_argparse_and_keeps_original_parser) ... ok
+test_integers_and_unsupported_behaviors (test_kcdno_config.KCDNOConfigTests.test_integers_and_unsupported_behaviors) ... ok
+test_metadata_formats_roundtrip_for_all_profiles_and_tasks (test_kcdno_config.KCDNOConfigTests.test_metadata_formats_roundtrip_for_all_profiles_and_tasks) ... ok
+test_missing_family_stays_legacy_and_never_guessed (test_kcdno_config.KCDNOConfigTests.test_missing_family_stays_legacy_and_never_guessed) ... ok
+test_paths_are_new_family_only_and_no_constructor_placeholder (test_kcdno_config.KCDNOConfigTests.test_paths_are_new_family_only_and_no_constructor_placeholder) ... ok
+test_reproduction_and_runtime_are_not_structure (test_kcdno_config.KCDNOConfigTests.test_reproduction_and_runtime_are_not_structure) ... ok
+test_tampered_new_sidecar_fields_rejected (test_kcdno_config.KCDNOConfigTests.test_tampered_new_sidecar_fields_rejected) ... ok
+test_three_fresh_cwd_config_imports_and_schema_loading_without_torch (test_kcdno_config.KCDNOConfigTests.test_three_fresh_cwd_config_imports_and_schema_loading_without_torch) ... ok
+test_three_original_parser_styles_and_forbidden_explicit_options (test_kcdno_config.KCDNOConfigTests.test_three_original_parser_styles_and_forbidden_explicit_options) ... ok
+test_two_profiles_all_eight_tasks (test_kcdno_config.KCDNOConfigTests.test_two_profiles_all_eight_tasks) ... ok
+test_small_cuda_fp32_and_amp (test_modules.CUDAModuleChecks.test_small_cuda_fp32_and_amp) ... ok
+test_bridge_formula_and_gradients (test_modules.ModuleChecks.test_bridge_formula_and_gradients) ... ok
+test_conv_5_by_7_row_major_channel_mixing (test_modules.ModuleChecks.test_conv_5_by_7_row_major_channel_mixing) ... ok
+test_cpu_autocast_bfloat16_individual_modules (test_modules.ModuleChecks.test_cpu_autocast_bfloat16_individual_modules) ... /home/hwz/anaconda3/lib/python3.13/site-packages/torch/backends/mkldnn/__init__.py:96: UserWarning: TF32 acceleration on top of oneDNN is available for Intel GPUs. The current Torch version does not have Intel GPU Support. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/Context.cpp:265.)
+  torch._C._set_onednn_allow_tf32(_allow_tf32)
+ok
+test_front_down_zero_and_bridge_query_residual (test_modules.ModuleChecks.test_front_down_zero_and_bridge_query_residual) ... ok
+test_front_order_history_object_and_live_gradients (test_modules.ModuleChecks.test_front_order_history_object_and_live_gradients) ... ok
+test_initialization_once_queries_and_default_conv (test_modules.ModuleChecks.test_initialization_once_queries_and_default_conv) ... ok
+test_invalid_dimensions_ratios_and_grid_fail_early (test_modules.ModuleChecks.test_invalid_dimensions_ratios_and_grid_fail_early) ... ok
+test_norm_bias_and_ffn_default_policies (test_modules.ModuleChecks.test_norm_bias_and_ffn_default_policies) ... ok
+test_norm_formula_outputs_and_gradients (test_modules.ModuleChecks.test_norm_formula_outputs_and_gradients) ... ok
+test_parameter_identity_and_storage_are_independent (test_modules.ModuleChecks.test_parameter_identity_and_storage_are_independent) ... ok
+test_persistent_same_normalized_qkv_and_formula (test_modules.ModuleChecks.test_persistent_same_normalized_qkv_and_formula) ... ok
+test_plain_and_geglu_formula (test_modules.ModuleChecks.test_plain_and_geglu_formula) ... ok
+test_point_permutation_latent_permutation_and_batch_isolation (test_modules.ModuleChecks.test_point_permutation_latent_permutation_and_batch_isolation) ... ok
+test_readout_formula_and_gradients (test_modules.ModuleChecks.test_readout_formula_and_gradients) ... ok
+test_readout_query_context_residual_and_output_norm (test_modules.ModuleChecks.test_readout_query_context_residual_and_output_norm) ... ok
+test_rms_small_large_zero_and_low_precision (test_modules.ModuleChecks.test_rms_small_large_zero_and_low_precision) ... ok
+test_sdpa_matches_explicit_attention_and_gradients (test_modules.ModuleChecks.test_sdpa_matches_explicit_attention_and_gradients) ... ok
+
+----------------------------------------------------------------------
+Ran 57 tests in 9.912s
+
+OK
+L8 observed all {'sdpa': 16, 'down': 8, 'latent_ffn_1': 8, 'latent_ffn_2': 8, 'up_latent_norm': 8, 'up': 8, 'point_ffn': 8, 'writer': 7, 'reader_calls': 7, 'logical_reads': 28, 'query_norm': 7, 'query_projection': 7, 'einsum:bmr,bsrd->bsmd': 7, 'einsum:bmr,bsr->bsm': 7, 'source_softmax': 7}
+L8 observed off {'sdpa': 16, 'down': 8, 'latent_ffn_1': 8, 'latent_ffn_2': 8, 'up_latent_norm': 8, 'up': 8, 'point_ffn': 8}
+GPU core finite forward/backward point_ffn torch.float16
+GPU core finite forward/backward point_ffn torch.bfloat16
+GPU core finite forward/backward conv_ffn torch.float16
+GPU core finite forward/backward conv_ffn torch.bfloat16
+Hand composition FP32/double: output maxabs=3.65225202e-07; gradient maxabs=1.95877881e-06
+K2 environment: torch=2.13.0+cu130, cuda=13.0, gpu=NVIDIA GeForce RTX 5090 Laptop GPU; TF32 off, compile off
+autocast cpu/torch.bfloat16/low_inputs=False: observed FP32 ops, output+gradient parity passed
+autocast cpu/torch.bfloat16/low_inputs=True: observed FP32 ops, output+gradient parity passed
+double cached/explicit: 12 cases, max gradient abs=2.66453526e-15
+finite input amplitudes 0..1e15 passed; clamped kernel denominator=1.5e-11 + eps1e-6
+autocast cuda/torch.float16/low_inputs=False: observed FP32 ops, output+gradient parity passed
+autocast cuda/torch.float16/low_inputs=True: observed FP32 ops, output+gradient parity passed
+autocast cuda/torch.bfloat16/low_inputs=False: observed FP32 ops, output+gradient parity passed
+autocast cuda/torch.bfloat16/low_inputs=True: observed FP32 ops, output+gradient parity passed
+FP32/double: 24 cases, max gradient abs=1.43051147e-06; atol5e-6 rtol1e-4
+phase-2 tests: torch=2.13.0+cu130, runtime=13.0
+phase-2 GPU: NVIDIA GeForce RTX 5090 Laptop GPU

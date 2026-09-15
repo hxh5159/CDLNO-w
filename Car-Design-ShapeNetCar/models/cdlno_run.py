@@ -19,6 +19,10 @@ MODEL_OPTIONS = {
 
 
 def parse_args(parser, *, evaluation=False, argv=None):
+    parser.add_argument('--profile', choices=('kcdno_v1', 'transolver_shape_match'), default='kcdno_v1')
+    parser.add_argument('--kernel-rank', '--kernel_rank', type=int, default=16)
+    parser.add_argument('--history-mode', '--history_mode', choices=('all', 'off'), default='all')
+    parser.add_argument('--kcdno-run-dir', type=Path, default=None)
     parser.add_argument('--front_latent_mode', '--front-latent-mode',
                         choices=('full', 'no_sa', 'identity'), default=None)
     for name, kind in MODEL_OPTIONS.items():
@@ -30,6 +34,10 @@ def parse_args(parser, *, evaluation=False, argv=None):
     parser.add_argument('--run_dir', type=Path, default=None,
                         help='new CDLNO training directory, or existing run for evaluation')
     args = parser.parse_args(argv)
+    if args.cfd_model in ('kcdno', 'lrsa_matched'):
+        import sys
+        from cdlno.kcdno.industrial_entry import resolve_car
+        return resolve_car(parser, args, sys.argv[1:] if argv is None else argv, evaluation=evaluation)
     if args.cfd_model != 'CDLNO':
         return args
     if evaluation:

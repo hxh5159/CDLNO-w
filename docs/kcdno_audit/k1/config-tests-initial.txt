@@ -1,0 +1,53 @@
+test_complete_configuration_roundtrips_and_rejects_missing_fields (test_kcdno_config.KCDNOConfigTests.test_complete_configuration_roundtrips_and_rejects_missing_fields) ... ok
+test_default_and_no_cdlno_fields (test_kcdno_config.KCDNOConfigTests.test_default_and_no_cdlno_fields) ... ok
+test_eval_reconstructs_saved_config_before_explicit_compare (test_kcdno_config.KCDNOConfigTests.test_eval_reconstructs_saved_config_before_explicit_compare) ... ok
+test_explicit_cli_uses_argparse_and_keeps_original_parser (test_kcdno_config.KCDNOConfigTests.test_explicit_cli_uses_argparse_and_keeps_original_parser) ... ok
+test_integers_and_unsupported_behaviors (test_kcdno_config.KCDNOConfigTests.test_integers_and_unsupported_behaviors) ... ok
+test_metadata_formats_roundtrip_for_all_profiles_and_tasks (test_kcdno_config.KCDNOConfigTests.test_metadata_formats_roundtrip_for_all_profiles_and_tasks) ... ok
+test_missing_family_stays_legacy_and_never_guessed (test_kcdno_config.KCDNOConfigTests.test_missing_family_stays_legacy_and_never_guessed) ... ok
+test_paths_are_new_family_only_and_no_constructor_placeholder (test_kcdno_config.KCDNOConfigTests.test_paths_are_new_family_only_and_no_constructor_placeholder) ... ok
+test_reproduction_and_runtime_are_not_structure (test_kcdno_config.KCDNOConfigTests.test_reproduction_and_runtime_are_not_structure) ... ok
+test_tampered_new_sidecar_fields_rejected (test_kcdno_config.KCDNOConfigTests.test_tampered_new_sidecar_fields_rejected) ... ok
+test_three_fresh_cwd_config_imports_and_schema_loading_without_torch (test_kcdno_config.KCDNOConfigTests.test_three_fresh_cwd_config_imports_and_schema_loading_without_torch) ... ok
+test_three_original_parser_styles_and_forbidden_explicit_options (test_kcdno_config.KCDNOConfigTests.test_three_original_parser_styles_and_forbidden_explicit_options) ... usage: python -m unittest [-h] [--data_dir DATA_DIR] [--save_dir SAVE_DIR]
+                          [--fold_id FOLD_ID] [--gpu GPU]
+                          [--val_iter VAL_ITER]
+                          [--cfd_config_dir CFD_CONFIG_DIR]
+                          [--cfd_model CFD_MODEL] [--cfd_mesh] [--r R]
+                          [--weight WEIGHT] [--lr LR]
+                          [--batch_size BATCH_SIZE] [--nb_epochs NB_EPOCHS]
+                          [--preprocessed PREPROCESSED]
+                          [--profile {kcdno_v1,transolver_shape_match}]
+                          [--kernel-rank KERNEL_RANK]
+                          [--history-mode {all,off}]
+                          [--front-blocks FRONT_BLOCKS]
+python -m unittest: error: unrecognized arguments: --model kcdno
+
+  test_three_original_parser_styles_and_forbidden_explicit_options (test_kcdno_config.KCDNOConfigTests.test_three_original_parser_styles_and_forbidden_explicit_options) (entry='Car-Design-ShapeNetCar/main.py') ... ERROR
+test_two_profiles_all_eight_tasks (test_kcdno_config.KCDNOConfigTests.test_two_profiles_all_eight_tasks) ... ok
+
+======================================================================
+ERROR: test_three_original_parser_styles_and_forbidden_explicit_options (test_kcdno_config.KCDNOConfigTests.test_three_original_parser_styles_and_forbidden_explicit_options) (entry='Car-Design-ShapeNetCar/main.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_kcdno_config.py", line 131, in test_three_original_parser_styles_and_forbidden_explicit_options
+    cfg = resolve_training('car', explicit_arguments(parser, ['--model','kcdno']))
+                                  ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/CDLNO/cdlno/kcdno/options.py", line 34, in explicit_arguments
+    return vars(probe.parse_args(list(argv)))
+                ~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/argparse.py", line 1902, in parse_args
+    self.error(msg)
+    ~~~~~~~~~~^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/argparse.py", line 2658, in error
+    self.exit(2, _('%(prog)s: error: %(message)s\n') % args)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/argparse.py", line 2645, in exit
+    _sys.exit(status)
+    ~~~~~~~~~^^^^^^^^
+SystemExit: 2
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.137s
+
+FAILED (errors=1)

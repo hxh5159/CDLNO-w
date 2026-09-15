@@ -1,0 +1,15 @@
+# Executed at /home/hwz/CDLNO, K2 only. Preserve existing K1 modifications.
+git status --short
+git branch --show-current
+git rev-parse HEAD
+# Snapshot403 files and versions using read-only Python; before.json records exact hashes/path.
+# Initial15 new module tests passed; review then added empty-oracle and dual-reader coverage:
+PYTHONPATH=tests:. python -B -m unittest test_kernel_history -v > docs/kcdno_audit/k2/targeted-initial.txt 2>&1
+# Final16 new +13 K1 +39 existing CDPA/modules:
+PYTHONPATH=tests:. python -B -m unittest test_kernel_history test_kcdno_config test_cdpa test_modules -v > docs/kcdno_audit/k2/final-tests.txt 2>&1
+# Old source/entry protocol checks, unchanged test logic:
+PYTHONPATH=tests:. python -B -m unittest test_static_standard.StaticFrozenChecks.test_legacy_ast_recovered_exactly_from_limited_branches test_temporal_standard.StaticTemporalFreeze.test_complete_temporal_entries_project_to_baseline_ast test_shapenet_car.FrozenSourceAndScripts.test_original_entries_project_to_baseline_ast test_shapenet_car.FrozenSourceAndScripts.test_frozen_car_and_airfrans_original_files test_airfrans.AirFrozenChecks.test_complete_entry_ast_preserves_original_protocol test_airfrans.AirFrozenChecks.test_frozen_training_sampling_metrics_and_original_models test_experiment_records.ExperimentRecords.test_entries_early_lifecycle_and_complete_observation_only_ast -v > docs/kcdno_audit/k2/frozen-tests.txt 2>&1
+# Same K0 weights/inputs, no recapture:
+python -B docs/kcdno_audit/make_regression_fixtures.py replay --artifacts /home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures --result docs/kcdno_audit/k2/old-model-replay.json
+# New3Python files AST feature_version=(3,10), all403 prior source SHA256s and136 externalfixture hashes checked.
+git diff --check

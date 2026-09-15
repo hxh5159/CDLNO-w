@@ -1,0 +1,764 @@
+diff --git a/cdlno/kcdno/__init__.py b/cdlno/kcdno/__init__.py
+new file mode 100644
+index 0000000..beeff73
+--- /dev/null
++++ b/cdlno/kcdno/__init__.py
+@@ -0,0 +1,7 @@
++"""KCDNO configuration protocol; no model constructor is registered yet."""
++
++from .config import FAMILY, MODEL_NAME, KCDNOArchitectureConfig, KCDNOInitializationConfig, KCDNORuntimeConfig
++from .profiles import PROFILE_NAMES, TASKS, resolve_profile
++
++__all__ = ["FAMILY", "MODEL_NAME", "KCDNOArchitectureConfig", "KCDNOInitializationConfig",
++           "KCDNORuntimeConfig", "PROFILE_NAMES", "TASKS", "resolve_profile"]
+diff --git a/cdlno/kcdno/config.py b/cdlno/kcdno/config.py
+new file mode 100644
+index 0000000..ffc842e
+--- /dev/null
++++ b/cdlno/kcdno/config.py
+@@ -0,0 +1,171 @@
++"""Independent KCDNO v1 contracts. No torch, task, or CDLNO config imports."""
++
++from __future__ import annotations
++
++from dataclasses import asdict, dataclass, fields
++import math
++from typing import Any
++
++
++FAMILY = "kcdno"
++MODEL_NAME = "KCDNO"
++
++
++def _positive_int(name: str, value: Any) -> None:
++    if type(value) is not int or value < 1:
++        raise ValueError(f"{name} must be a positive integer (not bool/float), got {value!r}")
++
++
++def _finite(name: str, value: Any) -> None:
++    if type(value) not in (int, float) or not math.isfinite(value):
++        raise ValueError(f"{name} must be a finite number, got {value!r}")
++
++
++class _Record:
++    def to_dict(self) -> dict[str, Any]:
++        self.validate()
++        return asdict(self)
++
++    @classmethod
++    def from_dict(cls, data: dict[str, Any]):
++        # Saved records must be complete. Constructor defaults are for NEW runs.
++        if type(data) is not dict:
++            raise ValueError(f"{cls.__name__} must be an object")
++        names = {field.name for field in fields(cls)}
++        missing, extra = names - data.keys(), data.keys() - names
++        if missing or extra:
++            raise ValueError(f"{cls.__name__}: missing={sorted(missing)}, unknown={sorted(extra)}")
++        return cls(**data)
++
++
++@dataclass(frozen=True, slots=True)
++class KCDNOArchitectureConfig(_Record):
++    """Resolved core structure/behavior; all these fields affect compatibility.
++
++    There is ONE width d and ONE token count M, common to all L blocks.
++    There is no CDLNO F/P/front/CDPA field. Hidden widths resolve after d.
++    Version v1 also fixes sum summaries, raw values, source-owned keys,
++    receiver-owned queries, FP32 history arithmetic, and no latent SA.
++    Task lift/grid/output semantics will be checked by future task adapters.
++    """
++
++    family: str = FAMILY
++    architecture_version: str = "kcdno-core-v1"
++    L: int = 8
++    d: int = 128
++    h: int = 8
++    M: int = 64
++    kernel_rank: int = 16
++    history_mode: str = "all"
++    ffn1_hidden: int | None = None
++    ffn2_hidden: int | None = None
++    point_hidden: int | None = None
++    latent_activation: str = "gelu"
++    point_activation: str = "gelu"
++    point_module: str = "point_ffn"
++    norm: str = "rmsnorm"
++    qk_norm: str = "per_head_rmsnorm"
++    output_norm: str = "layernorm"
++    norm_eps: float = 1e-6
++    kernel_phi: str = "elu_plus_one"
++    kernel_clamp: float = 1e-6
++    kernel_denominator_eps: float = 1e-6
++    kernel_projection_bias: bool = False
++    gate_parameterization: str = "unconstrained_scalar"
++    attention_dropout: float = 0.0
++
++    def __post_init__(self) -> None:
++        _positive_int("d", self.d)
++        for name in ("ffn1_hidden", "ffn2_hidden", "point_hidden"):
++            if getattr(self, name) is None:
++                object.__setattr__(self, name, 2 * self.d)
++        self.validate()
++
++    def validate(self) -> KCDNOArchitectureConfig:
++        for name in ("L", "d", "h", "M", "kernel_rank", "ffn1_hidden", "ffn2_hidden", "point_hidden"):
++            _positive_int(name, getattr(self, name))
++        if self.d % self.h:
++            raise ValueError("d must be divisible by h; kernel_rank is independent of h")
++        if self.history_mode not in ("all", "off"):
++            raise ValueError("history_mode must be 'all' or 'off'")
++        if self.point_module not in ("point_ffn", "conv_ffn"):
++            raise ValueError("point_module must be 'point_ffn' or 'conv_ffn'")
++        fixed = dict(family=FAMILY, architecture_version="kcdno-core-v1",
++                     latent_activation="gelu", point_activation="gelu", norm="rmsnorm",
++                     qk_norm="per_head_rmsnorm", output_norm="layernorm", norm_eps=1e-6,
++                     kernel_phi="elu_plus_one", kernel_clamp=1e-6, kernel_denominator_eps=1e-6,
++                     kernel_projection_bias=False, gate_parameterization="unconstrained_scalar",
++                     attention_dropout=0.0)
++        for name, expected in fixed.items():
++            value = getattr(self, name)
++            if type(expected) is float:
++                _finite(name, value)
++            if value != expected or (type(expected) is bool and type(value) is not bool):
++                raise ValueError(f"KCDNO v1 requires {name}={expected!r}, got {value!r}")
++        return self
++
++    @classmethod
++    def from_dict(cls, data: dict[str, Any]) -> KCDNOArchitectureConfig:
++        # Null is a constructor convenience, never a resolved saved width.
++        if isinstance(data, dict):
++            for name in ("ffn1_hidden", "ffn2_hidden", "point_hidden"):
++                if name in data:
++                    _positive_int(name, data[name])
++        return super(KCDNOArchitectureConfig, cls).from_dict(data)
++
++
++@dataclass(frozen=True, slots=True)
++class KCDNOInitializationConfig(_Record):
++    """Training origin only. Reading this record NEVER initializes model weights.
++
++    public_init='cdlno-front-v1': Linear trunc_normal(.02)/bias0,
++    Down query orthogonal on [M,d], native Conv, norm scale1/bias0.
++    Kernel Q/K use Xavier uniform gain1 and the architecture's bias=False.
++    """
++
++    initialization_version: str = "kcdno-init-v1"
++    public_init: str = "cdlno-front-v1"
++    kernel_init: str = "xavier_uniform_gain1"
++    gamma_init: float = 0.1
++    scorer_init: float = 0.0
++    norm_scale_init: float = 1.0
++    seed: int | None = None
++
++    def __post_init__(self) -> None:
++        self.validate()
++
++    def validate(self) -> KCDNOInitializationConfig:
++        for name in ("initialization_version", "public_init", "kernel_init"):
++            if type(getattr(self, name)) is not str or not getattr(self, name):
++                raise ValueError(f"{name} must be a nonempty provenance string")
++        for name in ("gamma_init", "scorer_init", "norm_scale_init"):
++            _finite(name, getattr(self, name))
++        if self.seed is not None and (type(self.seed) is not int or self.seed < 0):
++            raise ValueError("seed must be a nonnegative integer or None")
++        return self
++
++
++@dataclass(frozen=True, slots=True)
++class KCDNORuntimeConfig(_Record):
++    """Recorded execution choices; differences may change numerical results."""
++
++    device: str = "cuda"
++    dtype: str = "float32"
++    batch_size: int = 1
++    sdpa_backend: str = "automatic"
++    amp: bool = False
++    tf32: bool = False
++    compile: bool = False
++
++    def __post_init__(self) -> None:
++        self.validate()
++
++    def validate(self) -> KCDNORuntimeConfig:
++        _positive_int("batch_size", self.batch_size)
++        for name in ("device", "dtype", "sdpa_backend"):
++            if type(getattr(self, name)) is not str or not getattr(self, name):
++                raise ValueError(f"{name} must be a nonempty string")
++        for name in ("amp", "tf32", "compile"):
++            if type(getattr(self, name)) is not bool:
++                raise ValueError(f"{name} must be bool")
++        return self
+diff --git a/cdlno/kcdno/metadata.py b/cdlno/kcdno/metadata.py
+new file mode 100644
+index 0000000..51a3c5c
+--- /dev/null
++++ b/cdlno/kcdno/metadata.py
+@@ -0,0 +1,170 @@
++"""KCDNO JSON metadata only; no torch.load/save, model, or resume implementation.
++
++The envelope records the existing task's weight format without changing it.
++K1 describes core architecture; future adapters must add their lift/grid/output
++contracts before this protocol is used to load real task model weights.
++"""
++
++from __future__ import annotations
++
++from dataclasses import dataclass, field
++from datetime import datetime, timezone
++import json
++from pathlib import Path
++from typing import Any
++
++from .config import FAMILY, KCDNOArchitectureConfig, KCDNOInitializationConfig, KCDNORuntimeConfig
++from .options import architecture_overrides
++from .profiles import PROFILE_NAMES, TASKS
++
++
++SCHEMA_VERSION = 1
++
++
++class KCDNOMetadataMismatch(ValueError):
++    """A checkpoint cannot supply the requested new-family configuration."""
++
++
++def family_for_model_key(key: str) -> str | None:
++    """Only 'kcdno' is the new registry key. None delegates to the OLD selector.
++
++    This is a dispatch contract, not a factory registration or constructor.
++    Old selectors retain their own accepted names and errors for unknown names.
++    """
++    return FAMILY if key == FAMILY else None
++
++
++def checkpoint_family(payload: dict[str, Any]) -> str | None:
++    """Missing family means legacy routing; never infer kcdno from shapes/names."""
++    if type(payload) is not dict:
++        raise KCDNOMetadataMismatch("checkpoint metadata must be an object")
++    if "family" not in payload:
++        return None
++    family = payload["family"]
++    if type(family) is not str or not family:
++        raise KCDNOMetadataMismatch("explicit checkpoint family must be a nonempty string")
++    return family
++
++
++def compare_architecture(expected: KCDNOArchitectureConfig, actual: KCDNOArchitectureConfig) -> list[str]:
++    left, right = expected.to_dict(), actual.to_dict()
++    return sorted(key for key in left if left[key] != right[key])
++
++
++@dataclass(frozen=True, slots=True)
++class KCDNOMetadata:
++    task: str
++    architecture: KCDNOArchitectureConfig
++    checkpoint_format: str
++    profile: str = "kcdno_v1"
++    initialization: KCDNOInitializationConfig = field(default_factory=KCDNOInitializationConfig)
++    runtime: KCDNORuntimeConfig = field(default_factory=KCDNORuntimeConfig)
++
++    def __post_init__(self) -> None:
++        self.validate()
++
++    def validate(self) -> KCDNOMetadata:
++        if self.task not in TASKS:
++            raise KCDNOMetadataMismatch(f"unknown task: {self.task!r}")
++        if self.profile not in PROFILE_NAMES:
++            raise KCDNOMetadataMismatch(f"unknown profile: {self.profile!r}")
++        formats = ("whole_model",) if self.task == "car" else (
++            ("model_list", "whole_model") if self.task == "airfrans" else ("state_dict",))
++        if self.checkpoint_format not in formats:
++            raise KCDNOMetadataMismatch(f"{self.task} keeps checkpoint format {formats}, got {self.checkpoint_format!r}")
++        for name, kind in (("architecture", KCDNOArchitectureConfig),
++                           ("initialization", KCDNOInitializationConfig), ("runtime", KCDNORuntimeConfig)):
++            value = getattr(self, name)
++            if type(value) is not kind:
++                raise KCDNOMetadataMismatch(f"{name} must be {kind.__name__}")
++            value.validate()
++        return self
++
++    def to_dict(self) -> dict[str, Any]:
++        self.validate()
++        return dict(schema_version=SCHEMA_VERSION, family=FAMILY, task=self.task,
++                    profile=self.profile, checkpoint_format=self.checkpoint_format,
++                    architecture=self.architecture.to_dict(), initialization=self.initialization.to_dict(),
++                    runtime=self.runtime.to_dict())
++
++    @classmethod
++    def from_dict(cls, payload: dict[str, Any]) -> KCDNOMetadata:
++        family = checkpoint_family(payload)
++        if family != FAMILY:
++            raise KCDNOMetadataMismatch(
++                f"expected explicit family='kcdno', got {family!r}; missing family uses existing legacy rules")
++        required = {"schema_version", "family", "task", "profile", "checkpoint_format",
++                    "architecture", "initialization", "runtime"}
++        if payload.keys() != required:
++            raise KCDNOMetadataMismatch(
++                f"metadata fields: missing={sorted(required - payload.keys())}, unknown={sorted(payload.keys() - required)}")
++        if type(payload["schema_version"]) is not int or payload["schema_version"] != SCHEMA_VERSION:
++            raise KCDNOMetadataMismatch("unsupported KCDNO metadata schema_version")
++        return cls(task=payload["task"], profile=payload["profile"], checkpoint_format=payload["checkpoint_format"],
++                   architecture=KCDNOArchitectureConfig.from_dict(payload["architecture"]),
++                   initialization=KCDNOInitializationConfig.from_dict(payload["initialization"]),
++                   runtime=KCDNORuntimeConfig.from_dict(payload["runtime"]))
++
++
++def save_metadata(path: str | Path, metadata: KCDNOMetadata) -> Path:
++    """Exclusive creation, never overwrite an existing sidecar, including legacy."""
++    text = json.dumps(metadata.to_dict(), sort_keys=True, indent=2, allow_nan=False) + "\n"
++    target = Path(path)
++    target.parent.mkdir(parents=True, exist_ok=True)
++    with target.open("x", encoding="utf-8") as stream:
++        stream.write(text)
++    return target
++
++
++def load_metadata(path: str | Path) -> KCDNOMetadata:
++    """Read only; fully resolved fields required. No defaults for saved records."""
++    return KCDNOMetadata.from_dict(json.loads(Path(path).read_text(encoding="utf-8")))
++
++
++@dataclass(frozen=True, slots=True)
++class EvaluationResolution:
++    saved: KCDNOMetadata
++    runtime: KCDNORuntimeConfig
++    runtime_differences: tuple[str, ...]
++    requested_profile: str | None
++
++
++def resolve_evaluation(path: str | Path, explicit: dict[str, Any], *, task: str,
++                       runtime: KCDNORuntimeConfig | None = None) -> EvaluationResolution:
++    """Read FIRST, reconstruct saved config, then check explicit architecture.
++
++    Profile names are training provenance: even an explicit eval profile never
++    expands its defaults over saved resolved values. Initialization is returned
++    as provenance, never reapplied. Runtime changes are reported, not rejected
++    as weight incompatibilities. Callers must log runtime_differences.
++    """
++    saved = load_metadata(path)
++    if task != saved.task:
++        raise KCDNOMetadataMismatch(f"task mismatch: checkpoint={saved.task!r}, requested={task!r}")
++    requested_profile = explicit.get("profile")
++    if requested_profile is not None and requested_profile not in PROFILE_NAMES:
++        raise KCDNOMetadataMismatch(f"unknown requested profile: {requested_profile!r}")
++    requested = KCDNOArchitectureConfig.from_dict(saved.architecture.to_dict() | architecture_overrides(explicit))
++    differences = compare_architecture(saved.architecture, requested)
++    if differences:
++        details = "; ".join(f"{key}: checkpoint={getattr(saved.architecture, key)!r}, requested={getattr(requested, key)!r}"
++                            for key in differences)
++        raise KCDNOMetadataMismatch("KCDNO architecture mismatch: " + details)
++    actual_runtime = saved.runtime if runtime is None else runtime
++    old, new = saved.runtime.to_dict(), actual_runtime.to_dict()
++    return EvaluationResolution(saved, actual_runtime, tuple(sorted(k for k in old if old[k] != new[k])), requested_profile)
++
++
++def new_run_path(output_root: str | Path, task: str, architecture: KCDNOArchitectureConfig) -> Path:
++    """Propose output/<task>/kcdno/<timestamp>_<structure>, without creating it.
++
++    Later entry integration must reserve the new directory exclusively, using
++    the existing no-overwrite rule. Does not change old output default paths.
++    """
++    if task not in TASKS:
++        raise ValueError(f"unknown KCDNO task: {task!r}")
++    architecture.validate()
++    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
++    tag = (f"{stamp}_L{architecture.L}_d{architecture.d}_h{architecture.h}"
++           f"_M{architecture.M}_r{architecture.kernel_rank}_{architecture.history_mode}")
++    return Path(output_root) / task / FAMILY / tag
+diff --git a/cdlno/kcdno/options.py b/cdlno/kcdno/options.py
+new file mode 100644
+index 0000000..92e2424
+--- /dev/null
++++ b/cdlno/kcdno/options.py
+@@ -0,0 +1,59 @@
++"""Pure argument-resolution protocol, not attached to any task entry in K1."""
++
++from __future__ import annotations
++
++import argparse
++import copy
++from dataclasses import fields
++from typing import Any, Sequence
++
++from .config import FAMILY, KCDNOArchitectureConfig
++from .profiles import resolve_profile
++
++
++# Actual existing parser destinations map to ONE canonical resolved field.
++_ALIASES = {"n_layers": "L", "n_hidden": "d", "n_heads": "h", "n_head": "h",
++            "slice_num": "M", "dropout": "attention_dropout"}
++_INAPPLICABLE = {"F", "P", "front_blocks", "front_latent_mode", "rear_depth", "rear_blocks",
++                 "latent_blocks", "latent_ffn_ratio", "ffn_ratio", "mlp_ratio", "cdpa_mode",
++                 "cdpa_source_chunk_size", "source_chunk_size", "decoder_mode"}
++
++
++def explicit_arguments(parser: argparse.ArgumentParser, argv: Sequence[str]) -> dict[str, Any]:
++    """Use argparse's own aliases/types/last-wins behavior, suppressing defaults.
++
++    Call with the original parser plus new options added in a future entry stage.
++    The original parser is not mutated. Only supplied option destinations appear.
++    Do not pass vars(original_parser.parse_args(...)) to a resolver: that would
++    promote legacy defaults (L3/d64/M32) to explicit architecture choices.
++    """
++    probe = copy.deepcopy(parser)
++    probe._defaults.clear()
++    for action in probe._actions:
++        action.default = argparse.SUPPRESS
++    return vars(probe.parse_args(list(argv)))
++
++
++def architecture_overrides(explicit: dict[str, Any]) -> dict[str, Any]:
++    """Normalize explicit argparse destinations; keep unrelated task fields out."""
++    result = {}
++    names = {field.name for field in fields(KCDNOArchitectureConfig)}
++    for name, value in explicit.items():
++        if name in _INAPPLICABLE or name.startswith(("front_", "rear_", "cdpa_")):
++            raise ValueError(f"{name} is not applicable to KCDNO; it has L complete point blocks, no front/rear/CDPA")
++        if name in ("model", "cfd_model"):
++            if value != FAMILY:
++                raise ValueError(f"KCDNO registry key must be {FAMILY!r}, got {value!r}")
++            continue
++        target = _ALIASES.get(name, name)
++        if target not in names:
++            continue  # data, optimizer, runtime and path arguments belong to the task.
++        if target in result and result[target] != value:
++            raise ValueError(f"conflicting explicit aliases for {target}: {result[target]!r} vs {value!r}")
++        result[target] = value
++    return result
++
++
++def resolve_training(task: str, explicit: dict[str, Any]) -> KCDNOArchitectureConfig:
++    """Explicit CLI > chosen profile > KCDNO defaults. No legacy Namespace."""
++    return resolve_profile(task, explicit.get("profile", "kcdno_v1"), **architecture_overrides(explicit))
+diff --git a/cdlno/kcdno/profiles.py b/cdlno/kcdno/profiles.py
+new file mode 100644
+index 0000000..887cc6f
+--- /dev/null
++++ b/cdlno/kcdno/profiles.py
+@@ -0,0 +1,36 @@
++"""New-family architecture defaults only, never task training defaults."""
++
++from .config import KCDNOArchitectureConfig
++
++
++PROFILE_NAMES = ("kcdno_v1", "transolver_shape_match")
++TASKS = ("darcy", "elasticity", "airfoil", "pipe", "ns", "plasticity", "car", "airfrans")
++_MAIN = {
++    "darcy": (128, 8, 64, "conv_ffn"),
++    "elasticity": (128, 8, 64, "point_ffn"),
++    "airfoil": (128, 4, 64, "conv_ffn"),
++    "pipe": (128, 4, 32, "conv_ffn"),
++    "ns": (256, 8, 64, "conv_ffn"),
++    "plasticity": (128, 8, 64, "conv_ffn"),
++    "car": (256, 8, 64, "point_ffn"),
++    "airfrans": (256, 8, 64, "point_ffn"),
++}
++_MATCH = {"airfoil": dict(h=8), "pipe": dict(h=8, M=64),
++          "ns": dict(M=32), "car": dict(M=32), "airfrans": dict(M=32)}
++
++
++def profile_values(task: str, profile: str = "kcdno_v1") -> dict:
++    if task not in TASKS:
++        raise ValueError(f"unknown KCDNO task: {task!r}; expected one of {TASKS}")
++    if profile not in PROFILE_NAMES:
++        raise ValueError(f"unknown KCDNO profile: {profile!r}")
++    d, h, tokens, point = _MAIN[task]
++    values = dict(L=8, d=d, h=h, M=tokens, kernel_rank=16, history_mode="all", point_module=point)
++    if profile == "transolver_shape_match":
++        values.update(_MATCH.get(task, {}))
++    # Hidden widths are resolved from the FINAL d, after explicit CLI overrides.
++    return values
++
++
++def resolve_profile(task: str, profile: str = "kcdno_v1", **overrides) -> KCDNOArchitectureConfig:
++    return KCDNOArchitectureConfig(**(profile_values(task, profile) | overrides))
+diff --git a/tests/test_kcdno_config.py b/tests/test_kcdno_config.py
+new file mode 100644
+index 0000000..dcdb89a
+--- /dev/null
++++ b/tests/test_kcdno_config.py
+@@ -0,0 +1,285 @@
++"""K1 config/provenance checks only. No exp/main imports or new-model math."""
++
++import argparse
++import ast
++import copy
++from dataclasses import fields, replace
++import json
++import os
++from pathlib import Path
++import subprocess
++import sys
++import tempfile
++import unittest
++
++from cdlno.config import CDLNOArchitectureConfig
++from cdlno.checkpoint import load_sidecar, save_sidecar
++from cdlno.kcdno import KCDNOArchitectureConfig, KCDNOInitializationConfig, KCDNORuntimeConfig
++from cdlno.kcdno.metadata import (KCDNOMetadata, KCDNOMetadataMismatch, checkpoint_family,
++                                 compare_architecture, family_for_model_key, load_metadata,
++                                 new_run_path, resolve_evaluation, save_metadata)
++from cdlno.kcdno.options import architecture_overrides, explicit_arguments, resolve_training
++from cdlno.kcdno.profiles import PROFILE_NAMES, TASKS, resolve_profile
++
++
++ROOT = Path(__file__).resolve().parents[1]
++
++
++def original_parser(relative):
++    # Use only original argparse declarations; exp/main never get imported.
++    nodes = []
++    for node in ast.parse((ROOT / relative).read_text()).body:
++        if isinstance(node, ast.Assign) and ast.unparse(node.targets[0]) == 'parser':
++            nodes.append(node)
++        elif isinstance(node, ast.Expr) and isinstance(node.value, ast.Call) and ast.unparse(node.value.func) == 'parser.add_argument':
++            nodes.append(node)
++    scope = {'argparse': argparse}
++    exec(compile(ast.Module(body=nodes, type_ignores=[]), '<original-parser-only>', 'exec'), scope)
++    parser = scope['parser']
++    # Future integration contract, local test parser ONLY. No production entry edits.
++    parser.add_argument('--profile', choices=PROFILE_NAMES, default='kcdno_v1')
++    parser.add_argument('--kernel-rank', type=int, default=16)
++    parser.add_argument('--history-mode', choices=('all', 'off'), default='all')
++    parser.add_argument('--front-blocks', type=int, default=2)
++    return parser
++
++
++def metadata(task='darcy', profile='kcdno_v1', **changes):
++    format = 'whole_model' if task == 'car' else ('model_list' if task == 'airfrans' else 'state_dict')
++    return KCDNOMetadata(task, resolve_profile(task, profile, **changes), format, profile)
++
++
++class KCDNOConfigTests(unittest.TestCase):
++    def test_default_and_no_cdlno_fields(self):
++        cfg = KCDNOArchitectureConfig()
++        self.assertEqual((cfg.family, cfg.L, cfg.kernel_rank, cfg.history_mode), ('kcdno', 8, 16, 'all'))
++        self.assertEqual((cfg.ffn1_hidden, cfg.ffn2_hidden, cfg.point_hidden), (256, 256, 256))
++        self.assertEqual(cfg.gate_parameterization, 'unconstrained_scalar')
++        self.assertEqual(cfg.norm_eps, cfg.kernel_clamp)
++        self.assertEqual(cfg.kernel_denominator_eps, 1e-6)
++        init = KCDNOInitializationConfig()
++        self.assertEqual((init.gamma_init, init.scorer_init, init.norm_scale_init), (.1, 0, 1))
++        self.assertEqual(init.kernel_init, 'xavier_uniform_gain1')
++        self.assertFalse(cfg.kernel_projection_bias)
++        for name in ('F', 'P', 'front_latent_mode', 'cdpa_mode', 'rear_depth'):
++            self.assertNotIn(name, cfg.to_dict())
++            with self.assertRaises(TypeError):
++                KCDNOArchitectureConfig(**{name: 2})
++        self.assertEqual(CDLNOArchitectureConfig().P, 6)
++
++    def test_integers_and_unsupported_behaviors(self):
++        for name in ('L', 'd', 'h', 'M', 'kernel_rank', 'ffn1_hidden', 'ffn2_hidden', 'point_hidden'):
++            for value in (0, -1, True, 2.0, '2', float('nan'), float('inf')):
++                with self.subTest(name=name, value=value), self.assertRaises(ValueError):
++                    KCDNOArchitectureConfig(**{name: value})
++        bad = dict(family='CDLNO', architecture_version='future', history_mode='entry',
++                   latent_activation='geglu', point_activation='relu', point_module='depthwise',
++                   norm='layernorm', qk_norm='none', output_norm='rmsnorm', norm_eps=1e-5,
++                   kernel_phi='softmax', kernel_clamp=0., kernel_denominator_eps=0.,
++                   kernel_projection_bias=True, gate_parameterization='sigmoid', attention_dropout=.1)
++        for name, value in bad.items():
++            with self.subTest(name=name), self.assertRaises(ValueError):
++                KCDNOArchitectureConfig(**{name: value})
++        with self.assertRaisesRegex(ValueError, 'divisible'):
++            KCDNOArchitectureConfig(d=127)
++        # r is NOT a head dimension; no artificial rank/head or F<=6 restriction.
++        cfg = KCDNOArchitectureConfig(L=1, d=12, h=3, M=1, kernel_rank=5, history_mode='off')
++        self.assertEqual(cfg.ffn1_hidden, 24)
++        self.assertEqual(KCDNOArchitectureConfig(L=16).L, 16)
++
++    def test_two_profiles_all_eight_tasks(self):
++        main = [(128,8,64,'conv_ffn'), (128,8,64,'point_ffn'), (128,4,64,'conv_ffn'),
++                (128,4,32,'conv_ffn'), (256,8,64,'conv_ffn'), (128,8,64,'conv_ffn'),
++                (256,8,64,'point_ffn'), (256,8,64,'point_ffn')]
++        for task, (d,h,m,point) in zip(TASKS, main):
++            for profile in PROFILE_NAMES:
++                cfg = resolve_profile(task, profile)
++                want_h = 8 if profile == 'transolver_shape_match' and task in ('airfoil','pipe') else h
++                want_m = (64 if task == 'pipe' else 32) if profile == 'transolver_shape_match' and task in ('pipe','ns','car','airfrans') else m
++                self.assertEqual((cfg.d,cfg.h,cfg.M,cfg.point_module), (d,want_h,want_m,point))
++                self.assertEqual((cfg.L,cfg.kernel_rank,cfg.ffn1_hidden,cfg.ffn2_hidden,cfg.point_hidden), (8,16,2*d,2*d,2*d))
++        with self.assertRaises(ValueError): resolve_profile('unknown')
++        with self.assertRaises(ValueError): resolve_profile('darcy', 'unknown')
++
++    def test_explicit_cli_uses_argparse_and_keeps_original_parser(self):
++        parser = original_parser('PDE-Solving-StandardBenchmark/exp_darcy.py')
++        defaults = vars(parser.parse_args([])).copy()
++        parser.set_defaults(gpu='3')
++        self.assertEqual(explicit_arguments(parser, []), {})
++        default_cfg = resolve_training('darcy', explicit_arguments(parser, []))
++        self.assertEqual((default_cfg.L,default_cfg.d,default_cfg.h,default_cfg.M), (8,128,8,64))
++        explicit = explicit_arguments(parser, ['--model','kcdno','--profile','transolver_shape_match',
++                                              '--n-layers','12','--n-hidden','64','--n-heads','8',
++                                              '--slice_num=80','--slice_num','96','--kernel-rank','7','--history-mode','off'])
++        cfg = resolve_training('pipe', explicit)
++        self.assertEqual((cfg.L,cfg.d,cfg.h,cfg.M,cfg.kernel_rank,cfg.history_mode), (12,64,8,96,7,'off'))
++        self.assertEqual((cfg.ffn1_hidden,cfg.ffn2_hidden,cfg.point_hidden), (128,128,128))
++        now = vars(parser.parse_args([]))
++        self.assertEqual({k:v for k,v in now.items() if k!='gpu'}, {k:v for k,v in defaults.items() if k!='gpu'})
++        self.assertEqual(now['gpu'], '3')
++        # Profile switch is effective when dimensions were not explicitly passed.
++        for task in ('pipe','ns','car','airfrans'):
++            cfg = resolve_training(task, explicit_arguments(parser, ['--profile','transolver_shape_match']))
++            self.assertEqual(cfg.M, 64 if task=='pipe' else 32)
++
++    def test_three_original_parser_styles_and_forbidden_explicit_options(self):
++        for entry in ('PDE-Solving-StandardBenchmark/exp_darcy.py', 'Car-Design-ShapeNetCar/main.py',
++                      'Airfoil-Design-AirfRANS/main.py'):
++            with self.subTest(entry=entry):
++                parser = original_parser(entry)
++                self.assertEqual(explicit_arguments(parser, []), {})
++                flag = '--cfd_model' if entry.startswith('Car-Design') else '--model'
++                cfg = resolve_training('car', explicit_arguments(parser, [flag,'kcdno']))
++                self.assertEqual((cfg.L,cfg.d,cfg.M), (8,256,64))
++                with self.assertRaisesRegex(ValueError, 'not applicable'):
++                    resolve_training('car', explicit_arguments(parser, ['--front-blocks','2']))
++        for key in ('F','P','front_blocks','front_latent_mode','rear_depth','latent_blocks',
++                    'cdpa_mode','cdpa_source_chunk_size','latent_ffn_ratio','mlp_ratio'):
++            with self.subTest(key=key), self.assertRaisesRegex(ValueError, 'not applicable'):
++                architecture_overrides({key: 2})
++        with self.assertRaisesRegex(ValueError, 'conflicting explicit aliases'):
++            architecture_overrides({'L':8,'n_layers':3})
++        self.assertEqual(architecture_overrides({'L':8,'n_layers':8}), {'L':8})
++        with self.assertRaises(ValueError): resolve_training('car', {'model':'CDLNO'})
++        with self.assertRaises(ValueError): resolve_training('car', {'cfd_model':'CDLNO'})
++
++    def test_complete_configuration_roundtrips_and_rejects_missing_fields(self):
++        for cls in (KCDNOArchitectureConfig, KCDNOInitializationConfig, KCDNORuntimeConfig):
++            value = cls()
++            self.assertEqual(cls.from_dict(json.loads(json.dumps(value.to_dict()))), value)
++            for key in value.to_dict():
++                incomplete = value.to_dict(); del incomplete[key]
++                with self.subTest(cls=cls, key=key), self.assertRaises(ValueError):
++                    cls.from_dict(incomplete)
++            with self.assertRaises(ValueError): cls.from_dict(dict(value.to_dict(), accidental='ignored'))
++        for key in ('ffn1_hidden','ffn2_hidden','point_hidden'):
++            with self.assertRaises(ValueError):
++                KCDNOArchitectureConfig.from_dict(dict(KCDNOArchitectureConfig().to_dict(), **{key:None}))
++
++    def test_metadata_formats_roundtrip_for_all_profiles_and_tasks(self):
++        with tempfile.TemporaryDirectory() as directory:
++            for task in TASKS:
++                for profile in PROFILE_NAMES:
++                    saved = metadata(task, profile)
++                    path = Path(directory)/task/profile/'architecture.json'
++                    save_metadata(path, saved)
++                    self.assertEqual(load_metadata(path), saved)
++                    raw = json.loads(path.read_text())
++                    self.assertEqual(checkpoint_family(raw), 'kcdno')
++                    self.assertEqual(raw['architecture']['family'], 'kcdno')
++                    self.assertEqual(raw['architecture']['point_hidden'], 2*saved.architecture.d)
++            member = replace(metadata('airfrans'), checkpoint_format='whole_model')
++            self.assertEqual(KCDNOMetadata.from_dict(member.to_dict()), member)
++            with self.assertRaises(ValueError): replace(metadata('car'), checkpoint_format='state_dict')
++
++    def test_eval_reconstructs_saved_config_before_explicit_compare(self):
++        parser = original_parser('PDE-Solving-StandardBenchmark/exp_darcy.py')
++        saved = metadata('pipe', 'transolver_shape_match', L=12, kernel_rank=32, history_mode='off')
++        with tempfile.TemporaryDirectory() as directory:
++            path = Path(directory)/'architecture.json'; save_metadata(path,saved)
++            before = path.read_bytes()
++            for tokens in ([], ['--profile','kcdno_v1'], ['--kernel-rank','32','--history-mode','off']):
++                resolved = resolve_evaluation(path,explicit_arguments(parser,tokens),task='pipe')
++                self.assertEqual(resolved.saved, saved)
++                self.assertEqual(resolved.runtime_differences, ())
++                self.assertEqual(path.read_bytes(), before)
++            for name, value in (('L',8), ('M',32), ('kernel_rank',16), ('history_mode','all'), ('family','CDLNO'), ('latent_activation','relu')):
++                with self.subTest(name=name), self.assertRaises(ValueError):
++                    resolve_evaluation(path, {name:value}, task='pipe')
++                self.assertEqual(path.read_bytes(), before)
++            with self.assertRaises(KCDNOMetadataMismatch): resolve_evaluation(path,{},task='darcy')
++            with self.assertRaises(FileNotFoundError):
++                resolve_evaluation(Path(directory)/'missing.json', {'F':-1}, task='pipe')
++            with self.assertRaises(FileExistsError): save_metadata(path,metadata())
++            self.assertEqual(path.read_bytes(), before)
++
++    def test_reproduction_and_runtime_are_not_structure(self):
++        saved = metadata()
++        different = replace(saved, profile='transolver_shape_match', initialization=KCDNOInitializationConfig(
++            initialization_version='recorded-other-init', gamma_init=-.2, seed=42))
++        self.assertEqual(compare_architecture(saved.architecture,different.architecture), [])
++        runtime = KCDNORuntimeConfig(device='cpu',dtype='bfloat16',batch_size=2,sdpa_backend='math',amp=True,tf32=True,compile=True)
++        with tempfile.TemporaryDirectory() as directory:
++            path=Path(directory)/'architecture.json'; save_metadata(path,different)
++            before=path.read_bytes()
++            result=resolve_evaluation(path,{},task='darcy',runtime=runtime)
++            self.assertEqual(result.saved.initialization.gamma_init,-.2)
++            self.assertEqual(result.saved.initialization.initialization_version,'recorded-other-init')
++            self.assertEqual(set(result.runtime_differences), {f.name for f in fields(runtime)})
++            self.assertEqual(result.runtime,runtime)
++            self.assertEqual(path.read_bytes(),before)
++        for change in (dict(gamma_init=float('nan')),dict(gamma_init=True),dict(seed=-1)):
++            with self.assertRaises(ValueError): KCDNOInitializationConfig(**change)
++        for change in (dict(batch_size=True),dict(batch_size=0),dict(amp=1),dict(device='')):
++            with self.assertRaises(ValueError): KCDNORuntimeConfig(**change)
++
++    def test_missing_family_stays_legacy_and_never_guessed(self):
++        self.assertIsNone(checkpoint_family({'architecture':{'family':'kcdno'}}))
++        self.assertEqual(family_for_model_key('kcdno'),'kcdno')
++        for name in ('CDLNO','Transolver','Transolver_Structured_Mesh_2D','unknown'):
++            self.assertIsNone(family_for_model_key(name))
++        with tempfile.TemporaryDirectory() as directory:
++            path=Path(directory)/'architecture.json'
++            save_sidecar(path,CDLNOArchitectureConfig())
++            before=path.read_bytes()
++            self.assertIsNone(checkpoint_family(json.loads(before)))
++            self.assertEqual(load_sidecar(path)['architecture']['model_name'],'CDLNO')
++            with self.assertRaises(KCDNOMetadataMismatch): load_metadata(path)
++            self.assertEqual(path.read_bytes(),before)
++            # The exact existing pre-A1 JSON exception remains in the old loader.
++            legacy=json.loads(before);del legacy['architecture']['front_latent_mode']
++            legacy['architecture']['history_rule']='front-t-after-ffn2-before-up-v1'
++            path.write_text(json.dumps(legacy));before=path.read_bytes()
++            self.assertIsNone(checkpoint_family(legacy))
++            self.assertEqual(load_sidecar(path)['architecture']['front_latent_mode'],'full')
++            self.assertEqual(path.read_bytes(),before)
++
++    def test_tampered_new_sidecar_fields_rejected(self):
++        original=metadata().to_dict()
++        for key in original:
++            bad=copy.deepcopy(original);del bad[key]
++            with self.subTest(key=key), self.assertRaises(ValueError): KCDNOMetadata.from_dict(bad)
++        for family in ('CDLNO','transolver',None,'',False):
++            with self.subTest(family=family), self.assertRaises(ValueError):
++                KCDNOMetadata.from_dict(dict(original,family=family))
++        for section,key,value in (('architecture','family','CDLNO'),('architecture','kernel_rank',0),
++                                  ('architecture','history_mode','window'),('architecture','latent_activation','geglu')):
++            bad=copy.deepcopy(original);bad[section][key]=value
++            with self.assertRaises(ValueError): KCDNOMetadata.from_dict(bad)
++        bad=copy.deepcopy(original);bad['schema_version']=True
++        with self.assertRaises(ValueError): KCDNOMetadata.from_dict(bad)
++
++    def test_paths_are_new_family_only_and_no_constructor_placeholder(self):
++        import cdlno.kcdno as package
++        self.assertFalse(hasattr(package,'KCDNO'))
++        with tempfile.TemporaryDirectory() as directory:
++            for task in TASKS:
++                path=new_run_path(directory,task,resolve_profile(task))
++                self.assertEqual(path.parent,Path(directory)/task/'kcdno')
++                self.assertIn('_L8_',path.name)
++                self.assertIn('_r16_all',path.name)
++                self.assertFalse(path.exists())
++            self.assertEqual(list(Path(directory).iterdir()),[])
++
++    def test_three_fresh_cwd_config_imports_and_schema_loading_without_torch(self):
++        script='''
++import sys
++from cdlno.kcdno import KCDNOArchitectureConfig
++from cdlno.kcdno.metadata import load_metadata, resolve_evaluation
++x=load_metadata(sys.argv[1])
++assert resolve_evaluation(sys.argv[1],{},task='darcy').saved == x
++assert 'torch' not in sys.modules
++assert not any(k in sys.modules for k in ('main','main_evaluation','exp_darcy','model_dict'))
++print('new config import and metadata load passed; no model or torch imported')
++'''
++        with tempfile.TemporaryDirectory() as directory:
++            path=Path(directory)/'architecture.json'; save_metadata(path,metadata())
++            for project in ('PDE-Solving-StandardBenchmark','Car-Design-ShapeNetCar','Airfoil-Design-AirfRANS'):
++                env=dict(os.environ,PYTHONPATH=str(ROOT),PYTHONDONTWRITEBYTECODE='1')
++                result=subprocess.run([sys.executable,'-B','-c',script,str(path)],cwd=ROOT/project,
++                                      env=env,text=True,capture_output=True,timeout=30)
++                self.assertEqual(result.returncode,0,result.stdout+result.stderr)
++
++
++if __name__ == '__main__':
++    unittest.main()

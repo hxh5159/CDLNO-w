@@ -1,0 +1,51 @@
+{
+  "architecture": {
+    "L": 8,
+    "M": 64,
+    "architecture_version": "kcdno-core-v1",
+    "attention_dropout": 0.0,
+    "d": 128,
+    "family": "kcdno",
+    "ffn1_hidden": 256,
+    "ffn2_hidden": 256,
+    "gate_parameterization": "unconstrained_scalar",
+    "h": 8,
+    "history_mode": "all",
+    "kernel_clamp": 1e-06,
+    "kernel_denominator_eps": 1e-06,
+    "kernel_phi": "elu_plus_one",
+    "kernel_projection_bias": false,
+    "kernel_rank": 16,
+    "latent_activation": "gelu",
+    "norm": "rmsnorm",
+    "norm_eps": 1e-06,
+    "output_norm": "layernorm",
+    "point_activation": "gelu",
+    "point_hidden": 256,
+    "point_module": "conv_ffn",
+    "qk_norm": "per_head_rmsnorm"
+  },
+  "checkpoint_format": "state_dict",
+  "family": "kcdno",
+  "initialization": {
+    "gamma_init": 0.1,
+    "initialization_version": "kcdno-init-v1",
+    "kernel_init": "xavier_uniform_gain1",
+    "norm_scale_init": 1.0,
+    "public_init": "cdlno-front-v1",
+    "scorer_init": 0.0,
+    "seed": null
+  },
+  "profile": "kcdno_v1",
+  "runtime": {
+    "amp": false,
+    "batch_size": 1,
+    "compile": false,
+    "device": "cuda",
+    "dtype": "float32",
+    "sdpa_backend": "automatic",
+    "tf32": false
+  },
+  "schema_version": 1,
+  "task": "darcy"
+}

@@ -1,0 +1,14 @@
+# K1, from /home/hwz/CDLNO. No task entry imports or real training.
+git status --short
+git branch --show-current
+git rev-parse HEAD
+# before.json records the pre-edit source snapshot and validation of all 136 K0 fixture files.
+python -B docs/kcdno_audit/make_regression_fixtures.py replay --artifacts /home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures --result docs/kcdno_audit/k1/replay-before.json
+PYTHONPATH=tests:. python -B -m unittest test_kcdno_config -v > docs/kcdno_audit/k1/config-tests.txt 2>&1
+# Initial 1 error (wrong test Car model flag) retained in config-tests-initial.txt.
+# Final targeted regression:
+PYTHONPATH=tests:. python -B -m unittest test_kcdno_config test_core_config test_static_standard.StaticFrozenChecks.test_legacy_ast_recovered_exactly_from_limited_branches test_temporal_standard.StaticTemporalFreeze.test_complete_temporal_entries_project_to_baseline_ast test_shapenet_car.FrozenSourceAndScripts.test_original_entries_project_to_baseline_ast test_shapenet_car.FrozenSourceAndScripts.test_frozen_car_and_airfrans_original_files test_airfrans.AirFrozenChecks.test_complete_entry_ast_preserves_original_protocol test_airfrans.AirFrozenChecks.test_frozen_training_sampling_metrics_and_original_models test_experiment_records.ExperimentRecords.test_entries_early_lifecycle_and_complete_observation_only_ast -v > docs/kcdno_audit/k1/final-tests.txt 2>&1
+python -B docs/kcdno_audit/make_regression_fixtures.py replay --artifacts /home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures --result docs/kcdno_audit/k1/replay-after.json
+# Python3.10 AST syntax and setuptools.find_packages only; no editable installation.
+# Eight tasks x two resolved profile configs in profiles.json.
+git diff --check

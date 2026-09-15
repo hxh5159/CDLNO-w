@@ -1,0 +1,15 @@
+/home/hwz/anaconda3/lib/python3.13/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+test_defaults_and_exact_frozen_projection (test_kcdno_airfrans.AirKCDNO.test_defaults_and_exact_frozen_projection) ... ok
+test_real_graph_mask_loss_step_and_list_load (test_kcdno_airfrans.AirKCDNO.test_real_graph_mask_loss_step_and_list_load) ... ok
+AirFrozenSourceChecks (unittest.loader._FailedTest.AirFrozenSourceChecks) ... ERROR
+
+======================================================================
+ERROR: AirFrozenSourceChecks (unittest.loader._FailedTest.AirFrozenSourceChecks)
+----------------------------------------------------------------------
+AttributeError: module 'test_airfrans' has no attribute 'AirFrozenSourceChecks'. Did you mean: 'AirFrozenChecks'?
+
+----------------------------------------------------------------------
+Ran 3 tests in 6.912s
+
+FAILED (errors=1)

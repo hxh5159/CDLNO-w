@@ -1,0 +1,1218 @@
+{
+  "scope": "shell syntax and guarded command dispatch only",
+  "checks": 129,
+  "preview_commands": 112,
+  "existing_source_files_unchanged": 173,
+  "python_entry_invocations_during_final_checks": 0,
+  "results": [
+    {
+      "check": "syntax",
+      "script": "_task.sh"
+    },
+    {
+      "check": "syntax",
+      "script": "airfoil.sh"
+    },
+    {
+      "check": "syntax",
+      "script": "airfrans.sh"
+    },
+    {
+      "check": "syntax",
+      "script": "car.sh"
+    },
+    {
+      "check": "syntax",
+      "script": "darcy.sh"
+    },
+    {
+      "check": "syntax",
+      "script": "elasticity.sh"
+    },
+    {
+      "check": "syntax",
+      "script": "ns.sh"
+    },
+    {
+      "check": "syntax",
+      "script": "pipe.sh"
+    },
+    {
+      "check": "syntax",
+      "script": "plasticity.sh"
+    },
+    {
+      "task": "darcy",
+      "args": [],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "darcy",
+      "args": [
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "darcy",
+      "args": [
+        "-h"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "darcy",
+      "args": [
+        "train",
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "darcy",
+      "args": [
+        "eval",
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "darcy",
+      "args": [
+        "train_eval",
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "darcy",
+      "args": [
+        "wrong_action"
+      ],
+      "exit": 2,
+      "command_count": 0
+    },
+    {
+      "task": "darcy",
+      "args": [
+        "train",
+        "--dry-run",
+        "--kcdno-run-dir",
+        "run with spaces"
+      ],
+      "exit": 0,
+      "command_count": 1
+    },
+    {
+      "task": "darcy",
+      "args": [
+        "eval",
+        "--dry-run",
+        "--kcdno-run-dir",
+        "run with spaces"
+      ],
+      "exit": 0,
+      "command_count": 1
+    },
+    {
+      "task": "darcy",
+      "args": [
+        "train_eval",
+        "--dry-run"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "darcy",
+      "args": [
+        "--dry-run"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "darcy",
+      "args": [
+        "train_eval",
+        "all",
+        "--dry-run",
+        "--profile",
+        "transolver_shape_match",
+        "--kcdno-run-dir=override with spaces"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "darcy",
+      "args": [
+        "train_eval",
+        "off",
+        "--dry-run",
+        "--profile",
+        "transolver_shape_match",
+        "--kcdno-run-dir=override with spaces"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "darcy",
+      "args": [
+        "train_eval",
+        "lrsa_matched",
+        "--dry-run",
+        "--profile",
+        "transolver_shape_match",
+        "--kcdno-run-dir=override with spaces"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "darcy",
+      "args": [
+        "train_eval",
+        "--dry-run",
+        "--history-mode",
+        "off"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "elasticity",
+      "args": [],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "elasticity",
+      "args": [
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "elasticity",
+      "args": [
+        "-h"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "elasticity",
+      "args": [
+        "train",
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "elasticity",
+      "args": [
+        "eval",
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "elasticity",
+      "args": [
+        "train_eval",
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "elasticity",
+      "args": [
+        "wrong_action"
+      ],
+      "exit": 2,
+      "command_count": 0
+    },
+    {
+      "task": "elasticity",
+      "args": [
+        "train",
+        "--dry-run",
+        "--kcdno-run-dir",
+        "run with spaces"
+      ],
+      "exit": 0,
+      "command_count": 1
+    },
+    {
+      "task": "elasticity",
+      "args": [
+        "eval",
+        "--dry-run",
+        "--kcdno-run-dir",
+        "run with spaces"
+      ],
+      "exit": 0,
+      "command_count": 1
+    },
+    {
+      "task": "elasticity",
+      "args": [
+        "train_eval",
+        "--dry-run"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "elasticity",
+      "args": [
+        "--dry-run"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "elasticity",
+      "args": [
+        "train_eval",
+        "all",
+        "--dry-run",
+        "--profile",
+        "transolver_shape_match",
+        "--kcdno-run-dir=override with spaces"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "elasticity",
+      "args": [
+        "train_eval",
+        "off",
+        "--dry-run",
+        "--profile",
+        "transolver_shape_match",
+        "--kcdno-run-dir=override with spaces"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "elasticity",
+      "args": [
+        "train_eval",
+        "lrsa_matched",
+        "--dry-run",
+        "--profile",
+        "transolver_shape_match",
+        "--kcdno-run-dir=override with spaces"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "elasticity",
+      "args": [
+        "train_eval",
+        "--dry-run",
+        "--history-mode",
+        "off"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "airfoil",
+      "args": [],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "airfoil",
+      "args": [
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "airfoil",
+      "args": [
+        "-h"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "airfoil",
+      "args": [
+        "train",
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "airfoil",
+      "args": [
+        "eval",
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "airfoil",
+      "args": [
+        "train_eval",
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "airfoil",
+      "args": [
+        "wrong_action"
+      ],
+      "exit": 2,
+      "command_count": 0
+    },
+    {
+      "task": "airfoil",
+      "args": [
+        "train",
+        "--dry-run",
+        "--kcdno-run-dir",
+        "run with spaces"
+      ],
+      "exit": 0,
+      "command_count": 1
+    },
+    {
+      "task": "airfoil",
+      "args": [
+        "eval",
+        "--dry-run",
+        "--kcdno-run-dir",
+        "run with spaces"
+      ],
+      "exit": 0,
+      "command_count": 1
+    },
+    {
+      "task": "airfoil",
+      "args": [
+        "train_eval",
+        "--dry-run"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "airfoil",
+      "args": [
+        "--dry-run"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "airfoil",
+      "args": [
+        "train_eval",
+        "all",
+        "--dry-run",
+        "--profile",
+        "transolver_shape_match",
+        "--kcdno-run-dir=override with spaces"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "airfoil",
+      "args": [
+        "train_eval",
+        "off",
+        "--dry-run",
+        "--profile",
+        "transolver_shape_match",
+        "--kcdno-run-dir=override with spaces"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "airfoil",
+      "args": [
+        "train_eval",
+        "lrsa_matched",
+        "--dry-run",
+        "--profile",
+        "transolver_shape_match",
+        "--kcdno-run-dir=override with spaces"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "airfoil",
+      "args": [
+        "train_eval",
+        "--dry-run",
+        "--history-mode",
+        "off"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "pipe",
+      "args": [],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "pipe",
+      "args": [
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "pipe",
+      "args": [
+        "-h"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "pipe",
+      "args": [
+        "train",
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "pipe",
+      "args": [
+        "eval",
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "pipe",
+      "args": [
+        "train_eval",
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "pipe",
+      "args": [
+        "wrong_action"
+      ],
+      "exit": 2,
+      "command_count": 0
+    },
+    {
+      "task": "pipe",
+      "args": [
+        "train",
+        "--dry-run",
+        "--kcdno-run-dir",
+        "run with spaces"
+      ],
+      "exit": 0,
+      "command_count": 1
+    },
+    {
+      "task": "pipe",
+      "args": [
+        "eval",
+        "--dry-run",
+        "--kcdno-run-dir",
+        "run with spaces"
+      ],
+      "exit": 0,
+      "command_count": 1
+    },
+    {
+      "task": "pipe",
+      "args": [
+        "train_eval",
+        "--dry-run"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "pipe",
+      "args": [
+        "--dry-run"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "pipe",
+      "args": [
+        "train_eval",
+        "all",
+        "--dry-run",
+        "--profile",
+        "transolver_shape_match",
+        "--kcdno-run-dir=override with spaces"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "pipe",
+      "args": [
+        "train_eval",
+        "off",
+        "--dry-run",
+        "--profile",
+        "transolver_shape_match",
+        "--kcdno-run-dir=override with spaces"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "pipe",
+      "args": [
+        "train_eval",
+        "lrsa_matched",
+        "--dry-run",
+        "--profile",
+        "transolver_shape_match",
+        "--kcdno-run-dir=override with spaces"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "pipe",
+      "args": [
+        "train_eval",
+        "--dry-run",
+        "--history-mode",
+        "off"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "ns",
+      "args": [],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "ns",
+      "args": [
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "ns",
+      "args": [
+        "-h"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "ns",
+      "args": [
+        "train",
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "ns",
+      "args": [
+        "eval",
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "ns",
+      "args": [
+        "train_eval",
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "ns",
+      "args": [
+        "wrong_action"
+      ],
+      "exit": 2,
+      "command_count": 0
+    },
+    {
+      "task": "ns",
+      "args": [
+        "train",
+        "--dry-run",
+        "--kcdno-run-dir",
+        "run with spaces"
+      ],
+      "exit": 0,
+      "command_count": 1
+    },
+    {
+      "task": "ns",
+      "args": [
+        "eval",
+        "--dry-run",
+        "--kcdno-run-dir",
+        "run with spaces"
+      ],
+      "exit": 0,
+      "command_count": 1
+    },
+    {
+      "task": "ns",
+      "args": [
+        "train_eval",
+        "--dry-run"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "ns",
+      "args": [
+        "--dry-run"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "ns",
+      "args": [
+        "train_eval",
+        "all",
+        "--dry-run",
+        "--profile",
+        "transolver_shape_match",
+        "--kcdno-run-dir=override with spaces"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "ns",
+      "args": [
+        "train_eval",
+        "off",
+        "--dry-run",
+        "--profile",
+        "transolver_shape_match",
+        "--kcdno-run-dir=override with spaces"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "ns",
+      "args": [
+        "train_eval",
+        "lrsa_matched",
+        "--dry-run",
+        "--profile",
+        "transolver_shape_match",
+        "--kcdno-run-dir=override with spaces"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "ns",
+      "args": [
+        "train_eval",
+        "--dry-run",
+        "--history-mode",
+        "off"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "plasticity",
+      "args": [],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "plasticity",
+      "args": [
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "plasticity",
+      "args": [
+        "-h"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "plasticity",
+      "args": [
+        "train",
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "plasticity",
+      "args": [
+        "eval",
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "plasticity",
+      "args": [
+        "train_eval",
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "plasticity",
+      "args": [
+        "wrong_action"
+      ],
+      "exit": 2,
+      "command_count": 0
+    },
+    {
+      "task": "plasticity",
+      "args": [
+        "train",
+        "--dry-run",
+        "--kcdno-run-dir",
+        "run with spaces"
+      ],
+      "exit": 0,
+      "command_count": 1
+    },
+    {
+      "task": "plasticity",
+      "args": [
+        "eval",
+        "--dry-run",
+        "--kcdno-run-dir",
+        "run with spaces"
+      ],
+      "exit": 0,
+      "command_count": 1
+    },
+    {
+      "task": "plasticity",
+      "args": [
+        "train_eval",
+        "--dry-run"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "plasticity",
+      "args": [
+        "--dry-run"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "plasticity",
+      "args": [
+        "train_eval",
+        "all",
+        "--dry-run",
+        "--profile",
+        "transolver_shape_match",
+        "--kcdno-run-dir=override with spaces"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "plasticity",
+      "args": [
+        "train_eval",
+        "off",
+        "--dry-run",
+        "--profile",
+        "transolver_shape_match",
+        "--kcdno-run-dir=override with spaces"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "plasticity",
+      "args": [
+        "train_eval",
+        "lrsa_matched",
+        "--dry-run",
+        "--profile",
+        "transolver_shape_match",
+        "--kcdno-run-dir=override with spaces"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "plasticity",
+      "args": [
+        "train_eval",
+        "--dry-run",
+        "--history-mode",
+        "off"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "car",
+      "args": [],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "car",
+      "args": [
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "car",
+      "args": [
+        "-h"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "car",
+      "args": [
+        "train",
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "car",
+      "args": [
+        "eval",
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "car",
+      "args": [
+        "train_eval",
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "car",
+      "args": [
+        "wrong_action"
+      ],
+      "exit": 2,
+      "command_count": 0
+    },
+    {
+      "task": "car",
+      "args": [
+        "train",
+        "--dry-run",
+        "--kcdno-run-dir",
+        "run with spaces"
+      ],
+      "exit": 0,
+      "command_count": 1
+    },
+    {
+      "task": "car",
+      "args": [
+        "eval",
+        "--dry-run",
+        "--kcdno-run-dir",
+        "run with spaces"
+      ],
+      "exit": 0,
+      "command_count": 1
+    },
+    {
+      "task": "car",
+      "args": [
+        "train_eval",
+        "--dry-run"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "car",
+      "args": [
+        "--dry-run"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "car",
+      "args": [
+        "train_eval",
+        "all",
+        "--dry-run",
+        "--profile",
+        "transolver_shape_match",
+        "--kcdno-run-dir=override with spaces"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "car",
+      "args": [
+        "train_eval",
+        "off",
+        "--dry-run",
+        "--profile",
+        "transolver_shape_match",
+        "--kcdno-run-dir=override with spaces"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "car",
+      "args": [
+        "train_eval",
+        "lrsa_matched",
+        "--dry-run",
+        "--profile",
+        "transolver_shape_match",
+        "--kcdno-run-dir=override with spaces"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "car",
+      "args": [
+        "train_eval",
+        "--dry-run",
+        "--history-mode",
+        "off"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "airfrans",
+      "args": [],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "airfrans",
+      "args": [
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "airfrans",
+      "args": [
+        "-h"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "airfrans",
+      "args": [
+        "train",
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "airfrans",
+      "args": [
+        "eval",
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "airfrans",
+      "args": [
+        "train_eval",
+        "--help"
+      ],
+      "exit": 0,
+      "command_count": 0
+    },
+    {
+      "task": "airfrans",
+      "args": [
+        "wrong_action"
+      ],
+      "exit": 2,
+      "command_count": 0
+    },
+    {
+      "task": "airfrans",
+      "args": [
+        "train",
+        "--dry-run",
+        "--kcdno-run-dir",
+        "run with spaces"
+      ],
+      "exit": 0,
+      "command_count": 1
+    },
+    {
+      "task": "airfrans",
+      "args": [
+        "eval",
+        "--dry-run",
+        "--kcdno-run-dir",
+        "run with spaces"
+      ],
+      "exit": 0,
+      "command_count": 1
+    },
+    {
+      "task": "airfrans",
+      "args": [
+        "train_eval",
+        "--dry-run"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "airfrans",
+      "args": [
+        "--dry-run"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "airfrans",
+      "args": [
+        "train_eval",
+        "all",
+        "--dry-run",
+        "--profile",
+        "transolver_shape_match",
+        "--kcdno-run-dir=override with spaces"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "airfrans",
+      "args": [
+        "train_eval",
+        "off",
+        "--dry-run",
+        "--profile",
+        "transolver_shape_match",
+        "--kcdno-run-dir=override with spaces"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "airfrans",
+      "args": [
+        "train_eval",
+        "lrsa_matched",
+        "--dry-run",
+        "--profile",
+        "transolver_shape_match",
+        "--kcdno-run-dir=override with spaces"
+      ],
+      "exit": 0,
+      "command_count": 2
+    },
+    {
+      "task": "airfrans",
+      "args": [
+        "train_eval",
+        "--dry-run",
+        "--history-mode",
+        "off"
+      ],
+      "exit": 0,
+      "command_count": 2
+    }
+  ],
+  "shell": "GNU bash, version 5.3.9(1)-release (x86_64-pc-linux-gnu)",
+  "verification_method": "For each shell: bash -n SCRIPT; run dataset scripts in a temporary cwd with CDLNO_PYTHON pointing to an exit-97 marker guard; parse printed Command lines using shlex. Exact invocation args are recorded in results.",
+  "initial_issue": "Initial --help dispatch consumed the flag and invoked exp_darcy.py. It failed before training because the remote data file did not exist locally. The generated failed run was removed. Help/no-argument/option-only dispatch was corrected before all final guarded checks.",
+  "real_training_executed": false,
+  "new_model_or_gpu_tests": "not run for launcher-only change"
+}

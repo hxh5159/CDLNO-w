@@ -16,6 +16,10 @@ from uuid import uuid4
 
 
 def parse_args(parser, task, argv=None):
+    parser.add_argument('--profile', choices=('kcdno_v1', 'transolver_shape_match'), default='kcdno_v1')
+    parser.add_argument('--kernel-rank', '--kernel_rank', type=int, default=16)
+    parser.add_argument('--history-mode', '--history_mode', choices=('all', 'off'), default='all')
+    parser.add_argument('--kcdno-run-dir', type=Path, default=None)
     parser.add_argument('--front-latent-mode', '--front_latent_mode',
                         choices=('full', 'no_sa', 'identity'), default=None)
     parser.add_argument('--front-blocks', type=int, default=2)
@@ -26,6 +30,9 @@ def parse_args(parser, task, argv=None):
                         help='new training directory, or existing checkpoint directory for eval')
     tokens = sys.argv[1:] if argv is None else list(argv)
     args = parser.parse_args(tokens)
+    if args.model in ('kcdno', 'lrsa_matched'):
+        from cdlno.kcdno.entry import resolve_args
+        return resolve_args(parser, args, task, tokens)
     if args.model != 'CDLNO':
         return args
     # Discover explicit options with argparse itself, including --flag=value

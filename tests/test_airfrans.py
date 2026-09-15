@@ -146,7 +146,7 @@ class AirWrapperChecks(unittest.TestCase):
     def test_cli_yaml_inheritance_and_explicit_overrides(self):
         current = yaml.safe_load((AIR / 'params.yaml').read_text())
         base = yaml.safe_load(original('params.yaml'))
-        self.assertEqual({k:v for k,v in current.items() if k != 'CDLNO'}, base)
+        self.assertEqual({k:v for k,v in current.items() if k not in ('CDLNO', 'kcdno', 'lrsa_matched')}, base)
         self.assertEqual(current['CDLNO'], current['Transolver'])
         self.assertEqual(current['Transolver']['nb_epochs'], 398)
         a = args(['--n-layers', '12', '--front-blocks', '7', '--nb_epochs', '400'])

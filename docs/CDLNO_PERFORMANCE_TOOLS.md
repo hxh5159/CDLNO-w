@@ -81,3 +81,7 @@ untimed forward/backward/optimizer profiler仅用于定位来源，独立于正�
 可选 `--compile` 只编译模型，loss/optimizer仍eager；先计编译首调用，再warmup，编译首forward/backward耗时与稳态分开，编译输出/梯度与eager核对，额外记录编译路径的backend探针。编译后ATen可能融合，原始数学MAC仍来自eager结构审查；不能把该清单视为编译后逐kernel指令计数。未实际运行的compile/精度/backend组合必须保留未验证标记，不能由CLI支持推断已通过。
 
 输出文件必须不存在，已有报告不覆盖。单配置失败会保留失败原因，进程以非0退出；不得只挑选成功行宣称整个配置通过。远端Python3.10/3.11、torch2.11/cu128仍须在目标机器运行上述命令；本地GPU不替代远端验证。
+
+## KCDNO独立扩展（2026-09-16）
+
+现有工具可显式选择 `kcdno_all kcdno_off lrsa_matched_trainable`，旧默认列表保持。新模型完整成本与有限GPU证据见 [K9报告](KCDNO_K9_PERFORMANCE.md)，`--kernel-rank`仅适用核模型；lrsa_matched_trainable为生产对照，旧lrsa_matched临时性能类仍保留。

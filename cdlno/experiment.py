@@ -114,7 +114,9 @@ def finish(args):
 class Experiment:
     def __init__(self, args, task, *, evaluation=False, hparams=None):
         self.args, self.task, self.evaluation = args, task, evaluation
-        self.run_key = 'cdlno_run_dir' if hasattr(args, 'cdlno_run_dir') else 'run_dir'
+        self.family = getattr(args, 'kcdno_family', 'CDLNO')
+        self.run_key = ('kcdno_run_dir' if hasattr(args, 'kcdno_family') else
+                        ('cdlno_run_dir' if hasattr(args, 'cdlno_run_dir') else 'run_dir'))
         requested = getattr(args, self.run_key)
         self.directory = Path(requested).resolve() if requested is not None else default_directory(task)
         if evaluation:
@@ -131,7 +133,7 @@ class Experiment:
         self.clock = time.monotonic()
         self.result = dict(status='running', phase='startup', task=task,
                            started_at_utc=self.started, pid=os.getpid(), metrics={})
-        self.config = dict(schema_version=1, task=task, model='CDLNO', run_directory=str(self.directory),
+        self.config = dict(schema_version=1, task=task, model=self.family, run_directory=str(self.directory),
                            started_at_utc=self.started, resolved_arguments=_json(vars(args)),
                            hparams=_json(hparams), parameter_count_status='pending_model_construction',
                            parameters=None, architecture=None, environment=self._environment(),
@@ -152,8 +154,8 @@ class Experiment:
         sys.stdout, sys.stderr = _Tee(self.stdout, self.log), _Tee(self.stderr, self.log)
         sys.excepthook = self._exception
         atexit.register(self._unfinished)
-        print('CDLNO experiment:', self.directory)
-        print('CDLNO phase:', 'evaluation' if evaluation else 'training')
+        print(self.family + ' experiment:', self.directory)
+        print(self.family + ' phase:', 'evaluation' if evaluation else 'training')
 
     @staticmethod
     def _environment():

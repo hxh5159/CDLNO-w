@@ -39,6 +39,11 @@ if args.model == 'CDLNO':
     from cdlno.experiment import start as start_experiment, finish as finish_experiment
     start_experiment(args, args.cdlno_task, evaluation=bool(args.eval))
 
+if args.model in ('kcdno', 'lrsa_matched'):
+    from kcdno_entry import model_kwargs as kcdno_model_kwargs, StandardRun as KCDNORun
+    from cdlno.experiment import start as start_experiment, finish as finish_experiment
+    start_experiment(args, args.kcdno_task, evaluation=bool(args.eval))
+
 os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
 
 train_path = args.data_path + '/piececonst_r421_N1024_smooth1.mat'
@@ -135,6 +140,11 @@ def main():
                                       unified_pos=args.unified_pos,
                                       H=s, W=s, **cdlno_model_kwargs(args)).cuda()
         cdlno_run = StaticRun(args, model)
+        if cdlno_run.recorder is not None:
+            cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest))
+    elif args.model in ('kcdno', 'lrsa_matched'):
+        model = get_model(args).Model(H=s, W=s, **kcdno_model_kwargs(args)).cuda()
+        cdlno_run = KCDNORun(args, model)
         if cdlno_run.recorder is not None:
             cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest))
     else:
@@ -310,4 +320,6 @@ def main():
 if __name__ == "__main__":
     main()
     if args.model == 'CDLNO':
+        finish_experiment(args)
+    if args.model in ('kcdno', 'lrsa_matched'):
         finish_experiment(args)

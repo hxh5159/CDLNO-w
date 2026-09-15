@@ -1,0 +1,6 @@
+CDLNO_LRSA_ROOT=/home/hwz/LRSA-Operator PYTHONPATH=tests:. python -B -m unittest test_kcdno_config test_kernel_history test_kcdno_core test_kcdno_tasks test_kcdno_temporal test_kcdno_car test_kcdno_airfrans test_kcdno_matched test_kcdno_performance test_kcdno_delivery test_modules test_cdpa test_core_config test_core test_front_ablation test_front_task_modes test_front_training test_static_standard test_temporal_standard test_shapenet_car test_airfrans test_performance test_experiment_records test_lrsa_reference -v
+PYTHONPATH=. python -B docs/kcdno_audit/make_regression_fixtures.py replay --artifacts /home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures --result docs/kcdno_audit/k10/old-replay.json
+PYTHONPATH=tests:. python -B -m unittest test_kcdno_delivery -v
+python -B docs/kcdno_audit/final_static.py
+git diff --check
+PYTHONPATH=tests:. python -B -m unittest test_kcdno_delivery.DeliveryChecks.test_temporal_off_model_optimizer_step -v

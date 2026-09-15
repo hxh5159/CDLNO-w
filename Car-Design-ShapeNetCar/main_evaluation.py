@@ -26,6 +26,10 @@ args = parse_cdlno_args(parser, evaluation=True)
 if args.cfd_model == 'CDLNO':
     from cdlno.experiment import start as start_experiment, finish as finish_experiment
     start_experiment(args, 'car', evaluation=True)
+if args.cfd_model in ('kcdno', 'lrsa_matched'):
+    from kcdno_entry import CarRun as KCDNORun, model_kwargs as kcdno_model_kwargs
+    from cdlno.experiment import start as start_experiment, finish as finish_experiment
+    start_experiment(args, 'car', evaluation=True)
 print(args)
 
 
@@ -38,6 +42,11 @@ val_ds = GraphDataset(val_data, use_cfd_mesh=args.cfd_mesh, r=args.r)
 
 if args.cfd_model == 'CDLNO':
     cdlno_run = CarRun(args, device=device, evaluation=True)
+    path = str(cdlno_run.directory)
+    model = cdlno_run.load()
+    results_dir = cdlno_run.result_dir
+elif args.cfd_model in ('kcdno', 'lrsa_matched'):
+    cdlno_run = KCDNORun(args, device=device, evaluation=True)
     path = str(cdlno_run.directory)
     model = cdlno_run.load()
     results_dir = cdlno_run.result_dir
@@ -131,6 +140,14 @@ with torch.no_grad():
     print('time:', np.mean(times))
 
 if args.cfd_model == 'CDLNO':
+    cdlno_run.recorder.record_metrics(dict(
+        rho_d=spear, c_d=coef_error / index, relative_l2_pressure=l2err_press,
+        relative_l2_velocity=l2err_velo, rmse_pressure=rmse_press, rmse_velocity_components=rmse_velo_var,
+        rmse_velocity=np.sqrt(np.mean(np.square(rmse_velo_var))),
+        upstream_unsynchronized_mean_forward_seconds=np.mean(times), evaluated_graphs=index))
+    finish_experiment(args)
+
+if args.cfd_model in ('kcdno', 'lrsa_matched'):
     cdlno_run.recorder.record_metrics(dict(
         rho_d=spear, c_d=coef_error / index, relative_l2_pressure=l2err_press,
         relative_l2_velocity=l2err_velo, rmse_pressure=rmse_press, rmse_velocity_components=rmse_velo_var,

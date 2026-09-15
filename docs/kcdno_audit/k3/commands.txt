@@ -1,0 +1,17 @@
+# K3 only, executed from /home/hwz/CDLNO. No task entry/data imports.
+# Pre-edit source snapshot and environment: before.json, 422 existing files.
+git status --short
+git branch --show-current
+git rev-parse HEAD
+# First ten K3 tests (passed); then added explicit source-softmax counting:
+python -B -m unittest discover -s tests -p test_kcdno_core.py -v > docs/kcdno_audit/k3/initial-tests.txt 2>&1
+# Final 57 related tests, no old test edits:
+PYTHONPATH=tests:. python -B -m unittest test_kcdno_core test_kernel_history test_kcdno_config test_modules -v > docs/kcdno_audit/k3/final-tests.txt 2>&1
+# Actual default-width parameter/count evidence; CPU features only:
+python -B docs/kcdno_audit/k3/verify.py core > docs/kcdno_audit/k3/core-evidence.txt 2>&1
+# Replay only the nine K0 old core fixtures with the same stored weights:
+python -B docs/kcdno_audit/k3/verify.py old-core > docs/kcdno_audit/k3/old-core-replay.txt 2>&1
+# Hash preservation and Python3.10 AST syntax (not target environment runtime):
+python -B docs/kcdno_audit/k3/verify.py freeze
+git diff --check
+# Summary and review patches generated from before.json/source snapshot.

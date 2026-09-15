@@ -17,6 +17,8 @@ from torch.utils._python_dispatch import TorchDispatchMode
 from torch.utils._pytree import tree_flatten
 
 from cdlno.cdpa import CDPA
+from cdlno.kcdno.history import KernelHistoryWriter, KernelHistoryReader
+from cdlno.kcdno.core import KCDNOBlock
 from cdlno.modules import (ConvFFN, IPOTBridge, LRSAFrontBlock, LRSAFeatureReadout, RMSNorm,
                            PlainFFN, GEGLUFFN, _DownAttention, _UpAttention, _SelfAttention)
 
@@ -30,6 +32,8 @@ def storage_key(t):
 
 
 def category(path):
+    if '.reader.' in path or '.writer.' in path:
+        return 'kernel_history'
     if '.cdpa_at.' in path:
         return 'cdpa'
     if 'preprocess' in path or 'time_fc' in path:
@@ -84,12 +88,13 @@ def audit(model, args, target, precision_context):
     bias_adds = Counter()
     counts = Counter(down_bridge=0, up_readout=0, latent_sa=0, structured_convffn=0,
                      front_sa=0, front_latent_ffn=0, rear_sa=0, rear_ffn=0,
-                     cdpa_logical_sources=0, cdpa_locations=0, history_sdpa_calls=0, all_sdpa_calls=0)
+                     kernel_writers=0, kernel_queries=0, kernel_reads=0, kernel_reader_calls=0, point_modules=0, cdpa_logical_sources=0, cdpa_locations=0, history_sdpa_calls=0, all_sdpa_calls=0)
     scope, sdpa_shapes, history_sizes, norm_work = [], [], [], []
     handles = []
     excluded = {storage_key(t) for t in [*model.parameters(), *model.buffers(), *tensors(args)]}
     saved, saved_logical_bytes = {}, 0
     point_feature_payloads, history_payloads, point_block_payloads = [], [], []
+    kernel_sources, kernel_cache_bytes = [], []
 
     def pack(t):
         nonlocal saved_logical_bytes
@@ -101,7 +106,7 @@ def audit(model, args, target, precision_context):
 
     def pre(path, module, inputs):
         scope.append(path)
-        if isinstance(module, (LRSAFrontBlock, IPOTBridge)):
+        if isinstance(module, (LRSAFrontBlock, KCDNOBlock, IPOTBridge)):
             point_block_payloads.append(inputs[0].numel() * inputs[0].element_size())
         if isinstance(module, (_DownAttention, IPOTBridge)):
             counts['down_bridge'] += 1
@@ -118,6 +123,26 @@ def audit(model, args, target, precision_context):
             counts['structured_convffn'] += 1
         if isinstance(module, LRSAFeatureReadout):
             point_feature_payloads.append(inputs[0].numel() * inputs[0].element_size())
+        if isinstance(module, (PlainFFN,ConvFFN)) and path.endswith('.point_ffn'):
+            counts['point_modules'] += 1
+        if isinstance(module, KernelHistoryWriter):
+            b,m,d = inputs[0].shape; r=module.kernel_rank
+            counts['kernel_writers'] += 1
+            macs['kernel_key_projection'] += b*m*d*r  # F.linear bypasses nn.Linear hooks
+            macs['kernel_summary_matrix'] += b*m*d*r
+        if isinstance(module, KernelHistoryReader) and inputs[1]:
+            b,m,d = inputs[0].shape; r=module.kernel_rank; s=len(inputs[1])
+            counts['kernel_queries'] += 1
+            counts['kernel_reader_calls'] += 1
+            counts['kernel_reads'] += s
+            macs['kernel_query_projection'] += b*m*d*r
+            macs['kernel_read_numerator'] += b*s*m*d*r
+            macs['kernel_read_denominator'] += b*s*m*r
+            kernel_sources.append(dict(sources=s,batch=b,tokens=m,rank=r,dim=d,
+                score_elements=b*m*(s+1),score_dot_mac_separate=b*m*(s+1)*d,
+                raw_fusion_elements=b*m*(s+1)*d,gate_elements=b*m*d,
+                division_elements=b*s*m*d,phi_elements=b*m*r,
+                source_softmax_axis=s+1,fp32=True))
         if isinstance(module, CDPA):
             z, history = inputs
             s = len(history)
@@ -127,6 +152,8 @@ def audit(model, args, target, precision_context):
             history_payloads.append(sum(t.numel() * t.element_size() for t in history))
 
     def post(path, module, inputs, out):
+        if isinstance(module, KernelHistoryWriter):
+            kernel_cache_bytes.append(sum(t.numel()*t.element_size() for t in out))
         if isinstance(module, nn.Linear):
             macs[category(path)] += out.numel() * module.in_features
             module_macs[path] += out.numel() * module.in_features
@@ -188,9 +215,11 @@ def audit(model, args, target, precision_context):
     for name, parameter in model.named_parameters():
         parameter_components[category(name.rsplit('.', 1)[0])] += parameter.numel()
     parameters['by_component'] = dict(parameter_components)
+    parameters['core'] = sum(p.numel() for p in model.core.parameters()) if hasattr(model,'core') else None
+    parameters['stem_head_other'] = parameters['registered']-parameters['core'] if parameters['core'] is not None else None
     # Explicit source-fusion scalar work; this is NOT folded into matrix MACs.
     depth = []
-    d = getattr(getattr(model, 'config', None), 'd_model', 0)
+    d = getattr(getattr(model, 'config', None), 'd_model', getattr(getattr(model, 'config', None),'d',0))
     m = getattr(getattr(model, 'config', None), 'M', 0)
     b = output.shape[0] if output.ndim == 3 else 1
     for s in history_sizes:
@@ -205,13 +234,15 @@ def audit(model, args, target, precision_context):
                           source_softmax_max_comparisons=rows - b * m,
                           source_softmax_axis=s + 1))
     result = dict(parameters=parameters, finite_output=finite_output, counts=dict(counts),
-                  history_sizes=history_sizes, matrix_macs_by_component=dict(macs),
+                  history_sizes=history_sizes, kernel_history_work=kernel_sources, matrix_macs_by_component=dict(macs),
                   linear_conv_macs_by_module=dict(module_macs),
                   matrix_macs=sum(macs.values()), matrix_flops_2_per_mac=2 * sum(macs.values()),
                   bias_adds_by_component=dict(bias_adds), norm_work=norm_work,
                   sdpa=sdpa_shapes, depth_work_estimate=depth,
                   operations=dict(dispatch.ops), temporary_materializations=dict(dispatch.copies),
-                  storage=dict(largest_point_block_input_payload_bytes=max(point_block_payloads, default=0),
+                  storage=dict(kernel_inference_summaries_bytes=sum(kernel_cache_bytes),
+                               kernel_cache_note='unique FP32 summaries written once; not training activation/allocator peak',
+                               largest_point_block_input_payload_bytes=max(point_block_payloads, default=0),
                                h_f_payload_bytes=max(point_feature_payloads, default=0),
                                largest_history_list_payload_bytes=max(history_payloads, default=0),
                                current_latent_payload_bytes=b*m*d*4 if d else 0,

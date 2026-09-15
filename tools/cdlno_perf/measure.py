@@ -118,7 +118,7 @@ def backend_probe(model, args, context, device, *, regions=True):
     handles, ranges = [], []
     selected = []
     for name, module in model.named_modules():
-        if name in ('preprocess', 'time_fc', 'core.bridge', 'core.readout') or (
+        if name in ('preprocess', 'time_fc', 'core.bridge', 'core.readout') or name.endswith(('.reader','.writer')) or (
             name.startswith(('core.front_blocks.', 'core.latent_blocks.', 'core.cdpa_at.', 'core.blocks.')) and name.count('.') == 2
         ) or (name.startswith('blocks.') and name.count('.') == 1):
             selected.append((name, module))

@@ -27,6 +27,10 @@ args = parse_cdlno_args(parser)
 if args.cfd_model == 'CDLNO':
     from cdlno.experiment import start as start_experiment, finish as finish_experiment
     start_experiment(args, 'car', evaluation=False)
+if args.cfd_model in ('kcdno', 'lrsa_matched'):
+    from kcdno_entry import CarRun as KCDNORun, model_kwargs as kcdno_model_kwargs
+    from cdlno.experiment import start as start_experiment, finish as finish_experiment
+    start_experiment(args, 'car', evaluation=False)
 print(args)
 
 hparams = {'lr': args.lr, 'batch_size': args.batch_size, 'nb_epochs': args.nb_epochs}
@@ -54,6 +58,12 @@ elif args.cfd_model == 'CDLNO':
     cdlno_run.recorder.update_protocol(dict(train_graphs=len(train_ds), validation_graphs=len(val_ds),
                                          val_iter=args.val_iter, loss="velocity_mse + weight * surface_pressure_mse"))
 
+elif args.cfd_model in ('kcdno', 'lrsa_matched'):
+    from models.KCDNO import Model as KCDNOModel
+    model = KCDNOModel(**kcdno_model_kwargs(args)).to(device)
+    cdlno_run = KCDNORun(args, device=device, model=model)
+    cdlno_run.recorder.update_protocol(dict(train_graphs=len(train_ds), validation_graphs=len(val_ds), val_iter=args.val_iter, loss='velocity_mse + weight * surface_pressure_mse'))
+
 path = str(cdlno_run.directory) if cdlno_run is not None else f'metrics/{args.cfd_model}/{args.fold_id}/{args.nb_epochs}_{args.weight}'
 if not os.path.exists(path):
     os.makedirs(path)
@@ -63,4 +73,7 @@ model = train.main(device, train_ds, val_ds, model, hparams, path, val_iter=args
                    **(dict(record=cdlno_run.recorder) if cdlno_run is not None else {}))
 
 if args.cfd_model == 'CDLNO':
+    finish_experiment(args)
+
+if args.cfd_model in ('kcdno', 'lrsa_matched'):
     finish_experiment(args)

@@ -1,0 +1,542 @@
+--- a/Airfoil-Design-AirfRANS/cdlno_entry.py
++++ b/Airfoil-Design-AirfRANS/cdlno_entry.py
+@@ -31,11 +31,16 @@
+     for name, kind in dict(nb_epochs=int, batch_size=int, lr=float).items():
+         parser.add_argument('--' + name, type=kind, default=None)
+     if evaluation:
+-        parser.add_argument('--model', choices=('Transolver', 'CDLNO'), default='Transolver')
++        parser.add_argument('--model', choices=('Transolver', 'CDLNO', 'kcdno'), default='Transolver')
+         parser.add_argument('--task', choices=('full', 'scarce', 'reynolds', 'aoa'), default='full')
+         parser.add_argument('--nmodel', type=int, default=1)
+         parser.add_argument('--weight', type=float, default=1.)
++    from cdlno.kcdno.entry import add_arguments
++    add_arguments(parser)
+     args = parser.parse_args(argv)
++    if args.model == 'kcdno':
++        from cdlno.kcdno.air_entry import resolve_air
++        return resolve_air(parser, args, argv, evaluation=evaluation)
+     if args.model != 'CDLNO':
+         return args
+     if evaluation:
+--- /dev/null
++++ b/Airfoil-Design-AirfRANS/kcdno_entry.py
+@@ -0,0 +1 @@
++from cdlno.kcdno.air_entry import AirRun, model_kwargs, resolve_hparams
+--- a/Airfoil-Design-AirfRANS/main.py
++++ b/Airfoil-Design-AirfRANS/main.py
+@@ -1,3 +1,4 @@
++from kcdno_entry import AirRun as KCDNOAirRun, model_kwargs as kcdno_model_kwargs, resolve_hparams as kcdno_resolve_hparams
+ import argparse, yaml, json
+ import torch
+ import train
+@@ -29,6 +30,11 @@
+     with open('params.yaml', 'r') as config_file:
+         recording_hparams = resolve_hparams(args, yaml.safe_load(config_file)['CDLNO'])
+     start_experiment(args, 'airfrans', evaluation=False, hparams=recording_hparams)
++elif args.model == 'kcdno':
++    from cdlno.experiment import start as start_experiment, finish as finish_experiment
++    with open('params.yaml', 'r') as config_file:
++        recording_hparams = kcdno_resolve_hparams(args, yaml.safe_load(config_file)['kcdno'])
++    start_experiment(args, 'airfrans', evaluation=False, hparams=recording_hparams)
+ 
+ with open(args.my_path + '/manifest.json', 'r') as f:
+     manifest = json.load(f)
+@@ -59,6 +65,11 @@
+     cdlno_run = AirRun(args, hparams, device=device)
+     cdlno_run.recorder.update_protocol(dict(train_graphs=len(train_dataset), validation_graphs=len(val_dataset),
+                                          val_iter=10, val_sample=True, criterion="MSE_weighted"))
++elif args.model == 'kcdno':
++    hparams = kcdno_resolve_hparams(args, hparams)
++    cdlno_run = KCDNOAirRun(args, hparams, device=device)
++    cdlno_run.recorder.update_protocol(dict(train_graphs=len(train_dataset), validation_graphs=len(val_dataset),
++                                         val_iter=10, val_sample=True, criterion="MSE_weighted"))
+ 
+ from models.MLP import MLP
+ 
+@@ -81,6 +92,10 @@
+         from models.CDLNO import Model
+ 
+         model = Model(**cdlno_model_kwargs(args)).to(device)
++    elif args.model == 'kcdno':
++        from models.KCDNO import Model
++
++        model = Model(**kcdno_model_kwargs(args)).to(device)
+     else:
+         encoder = MLP(hparams['encoder'], batch_norm=False)
+         decoder = MLP(hparams['decoder'], batch_norm=False)
+@@ -119,9 +134,15 @@
+ score_array_path = score_path if cdlno_run is not None else osp.join('scores', args.task)
+ if args.model == 'CDLNO':
+     finish_experiment(args)
++elif args.model == 'kcdno':
++    finish_experiment(args)
+ 
+ if bool(args.score):
+     if args.model == 'CDLNO':
++        cdlno_run.recorder = start_experiment(args, 'airfrans', evaluation=True, hparams=hparams)
++        score_path = cdlno_run.recorder.result_dir
++        score_array_path = score_path
++    elif args.model == 'kcdno':
+         cdlno_run.recorder = start_experiment(args, 'airfrans', evaluation=True, hparams=hparams)
+         score_path = cdlno_run.recorder.result_dir
+         score_array_path = score_path
+@@ -145,3 +166,6 @@
+     if args.model == 'CDLNO':
+         cdlno_run.recorder.record_air_scores(score_path)
+         finish_experiment(args)
++    elif args.model == 'kcdno':
++        cdlno_run.recorder.record_air_scores(score_path)
++        finish_experiment(args)
+--- a/Airfoil-Design-AirfRANS/main_evaluation.py
++++ b/Airfoil-Design-AirfRANS/main_evaluation.py
+@@ -1,3 +1,4 @@
++from kcdno_entry import AirRun as KCDNOAirRun, model_kwargs as kcdno_model_kwargs, resolve_hparams as kcdno_resolve_hparams
+ import yaml, json
+ import torch
+ import utils.metrics as metrics
+@@ -15,6 +16,11 @@
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     with open('params.yaml', 'r') as config_file:
+         recording_hparams = resolve_hparams(args, yaml.safe_load(config_file)['CDLNO'])
++    start_experiment(args, 'airfrans', evaluation=True, hparams=recording_hparams)
++elif args.model == 'kcdno':
++    from cdlno.experiment import start as start_experiment, finish as finish_experiment
++    with open('params.yaml', 'r') as config_file:
++        recording_hparams = kcdno_resolve_hparams(args, yaml.safe_load(config_file)['kcdno'])
+     start_experiment(args, 'airfrans', evaluation=True, hparams=recording_hparams)
+ 
+ # Compute the normalization used for the training
+@@ -59,6 +65,11 @@
+                 requested_hparams = resolve_hparams(args, yaml.safe_load(f)[model])
+             cdlno_run = AirRun(args, requested_hparams, device=device, evaluation=True)
+             mod = cdlno_run.load()
++        elif model == 'kcdno':
++            with open('params.yaml', 'r') as f:
++                requested_hparams = kcdno_resolve_hparams(args, yaml.safe_load(f)[model])
++            cdlno_run = KCDNOAirRun(args, requested_hparams, device=device, evaluation=True)
++            mod = cdlno_run.load()
+         else:
+             model_path = osp.join(ckpt_root_dir, 'metrics', task, model, model)
+             # Existing local model lists are trusted whole-object checkpoints.
+@@ -71,9 +82,13 @@
+             hparam = yaml.safe_load(f)[model]
+             if model == 'CDLNO':
+                 hparam = cdlno_run.hparams
++            elif model == 'kcdno':
++                hparam = cdlno_run.hparams
+             hparams.append(hparam)
+ 
+     results_dir = cdlno_run.result_dir if args.model == 'CDLNO' else osp.join(ckpt_root_dir, 'scores', task)
++    if args.model == 'kcdno':
++        results_dir = cdlno_run.result_dir
+     coefs = metrics.Results_test(device, models, hparams, coef_norm, data_dir, results_dir, n_test=3, criterion='MSE',
+                                  s=s)
+     # models can be a stack of the same model (for example MLP) on the task s, if you have another stack of another model (for example GraphSAGE)
+@@ -92,3 +107,6 @@
+ if args.model == 'CDLNO':
+     cdlno_run.recorder.record_air_scores(results_dir)
+     finish_experiment(args)
++elif args.model == 'kcdno':
++    cdlno_run.recorder.record_air_scores(results_dir)
++    finish_experiment(args)
+--- /dev/null
++++ b/Airfoil-Design-AirfRANS/models/KCDNO.py
+@@ -0,0 +1,2 @@
++"""Stable shared pickle class; no local duplicate of the KCDNO mathematics."""
++from cdlno.kcdno.airfrans import AirfRANSModel as Model
+--- a/Airfoil-Design-AirfRANS/params.yaml
++++ b/Airfoil-Design-AirfRANS/params.yaml
+@@ -70,3 +70,11 @@
+   max_neighbors: 64
+   subsampling: 32000
+   r: 0.05
++
++kcdno:
++  batch_size: 1
++  nb_epochs: 398
++  lr: 0.001
++  max_neighbors: 64
++  subsampling: 32000
++  r: 0.05
+--- /dev/null
++++ b/cdlno/kcdno/air_entry.py
+@@ -0,0 +1,137 @@
++"""AirfRANS selection and local trusted model/list checkpoints; no dataset IO."""
++import hashlib
++import json
++import os
++from pathlib import Path
++
++from .config import KCDNOArchitectureConfig, KCDNORuntimeConfig
++from .entry import ROOT, task_record
++from .metadata import KCDNOMetadata, KCDNOMetadataMismatch, load_metadata, save_metadata, resolve_evaluation, new_run_path
++from .options import explicit_arguments, resolve_training
++from .airfrans import AirfRANSModel
++
++
++def resolve_air(parser, args, tokens, *, evaluation):
++    import yaml
++    explicit = explicit_arguments(parser, tokens)
++    if args.kcdno_run_dir is None:
++        args.kcdno_run_dir = args.run_dir
++    elif args.run_dir is not None and args.run_dir != args.kcdno_run_dir:
++        raise ValueError('conflicting --run_dir and --kcdno-run-dir')
++    args.kcdno_task, args.kcdno_family, args.kcdno_evaluation = 'airfrans', 'kcdno', evaluation
++    if evaluation:
++        if args.kcdno_run_dir is None:
++            parser.error('kcdno eval requires --kcdno-run-dir')
++        saved = resolve_evaluation(args.kcdno_run_dir/'architecture.json', explicit, task='airfrans').saved
++        cfg, args.profile = saved.architecture, saved.profile
++        record = task_record(args.kcdno_run_dir)
++        if record['task'] != 'airfrans' or set(record['protocol']) != {'task','nmodel','weight','hparams'}:
++            raise KCDNOMetadataMismatch('invalid AirfRANS run contract')
++        contract = record['protocol']
++        for name in ('task','nmodel','weight'):
++            if name in explicit and explicit[name] != contract[name]:
++                raise KCDNOMetadataMismatch('AirfRANS run contract mismatch: '+name)
++            setattr(args, name, contract[name])
++        hp = contract['hparams']
++        for name in ('nb_epochs','batch_size','lr'):
++            if name in explicit and explicit[name] != hp[name]:
++                raise KCDNOMetadataMismatch('AirfRANS hparams mismatch: '+name)
++    else:
++        cfg = resolve_training('airfrans', explicit)
++        hp = yaml.safe_load((ROOT/'Airfoil-Design-AirfRANS/params.yaml').read_text())['kcdno'].copy()
++        for name in ('nb_epochs','batch_size','lr'):
++            if name in explicit: hp[name] = explicit[name]
++    if cfg.point_module != 'point_ffn' or args.task not in ('full','scarce','reynolds','aoa') or args.nmodel < 1:
++        raise ValueError('invalid AirfRANS task/model configuration')
++    if hp['batch_size'] != 1 or type(hp['nb_epochs']) is not int or hp['nb_epochs'] < 1:
++        raise ValueError('AirfRANS requires batch_size=1 and positive nb_epochs')
++    args.kcdno_hparams, args.kcdno_architecture = hp, cfg.to_dict()
++    for name, value in dict(n_hidden=cfg.d,n_layers=cfg.L,n_heads=cfg.h,slice_num=cfg.M,
++                            kernel_rank=cfg.kernel_rank,history_mode=cfg.history_mode,dropout=0.,
++                            **{k: hp[k] for k in ('nb_epochs','batch_size','lr')}).items():
++        setattr(args,name,value)
++    if not evaluation and args.kcdno_run_dir is None:
++        proposed = new_run_path(Path(os.environ.get('CDLNO_RUNS_ROOT',ROOT/'output')),'airfrans',cfg)
++        digest = hashlib.sha256(json.dumps(cfg.to_dict(),sort_keys=True).encode()).hexdigest()[:10]
++        args.kcdno_run_dir = proposed.parent/args.profile/(proposed.name+'_'+digest)
++    return args
++
++
++def model_kwargs(args):
++    return dict(config=KCDNOArchitectureConfig.from_dict(args.kcdno_architecture))
++
++
++def resolve_hparams(args, hparams):
++    # Saved hparams win in eval; training already resolved explicit CLI over YAML.
++    return dict(args.kcdno_hparams)
++
++
++class AirRun:
++    def __init__(self, args, hparams, *, device, evaluation=False):
++        from ..experiment import session, reserve_directory, timestamp
++        self.args, self.device, self.evaluation = args, device, evaluation
++        self.directory = Path(args.kcdno_run_dir).resolve()
++        self.architecture = KCDNOArchitectureConfig.from_dict(args.kcdno_architecture)
++        self.kwargs, self.hparams = model_kwargs(args), resolve_hparams(args,hparams)
++        self.contract = dict(task=args.task,nmodel=args.nmodel,weight=args.weight,hparams=self.hparams)
++        self.recorder = session(args)
++        self.metadata = KCDNOMetadata(task='airfrans',architecture=self.architecture,
++            checkpoint_format='model_list',profile=args.profile,
++            runtime=KCDNORuntimeConfig(device=str(device),batch_size=1))
++        if evaluation:
++            self.validate()
++        else:
++            from ..airfrans import adapter_architecture
++            reserve_directory(args,self.directory)
++            save_metadata(self.sidecar,self.metadata)
++            adapter = adapter_architecture() | {'version':'kcdno-airfrans-v1','output_head':'layernorm-linear-v1'}
++            with (self.directory/'task.json').open('x') as f:
++                json.dump(dict(schema_version=1,family='kcdno',task='airfrans',adapter=adapter,
++                    protocol=self.contract,arguments={k:str(v) if isinstance(v,Path) else v for k,v in vars(args).items()}),f,indent=2)
++        self.result_dir = str(self.directory/('eval_'+timestamp()))
++        if self.recorder is not None:self.result_dir = self.recorder.result_dir
++        print('kcdno AirfRANS run:',self.directory,self.architecture.to_dict())
++
++    @property
++    def sidecar(self):return self.directory/'architecture.json'
++    @property
++    def checkpoint(self):return self.directory/'kcdno'
++    def member_dir(self,index):
++        if type(index) is not int or not 0 <= index < self.contract['nmodel']:
++            raise ValueError('invalid model member index')
++        return str(self.directory/f'member_{index:03d}')
++
++    def validate(self):
++        from ..airfrans import adapter_architecture
++        saved, record = load_metadata(self.sidecar), task_record(self.directory)
++        adapter = adapter_architecture() | {'version':'kcdno-airfrans-v1','output_head':'layernorm-linear-v1'}
++        if (saved.architecture != self.architecture or saved.task != 'airfrans'
++                or saved.checkpoint_format != 'model_list' or record['task'] != 'airfrans'
++                or record['adapter'] != adapter or record['protocol'] != self.contract):
++            raise KCDNOMetadataMismatch('AirfRANS model/task/run architecture mismatch')
++
++    def load(self, member=None):
++        import torch
++        from .core import KCDNO, KCDNOBlock
++        if not self.evaluation:raise RuntimeError('load is for trusted evaluation runs')
++        self.validate()
++        path = self.checkpoint if member is None else Path(self.member_dir(member))/'model'
++        result = torch.load(path,map_location=self.device,weights_only=False)
++        models = result if member is None else [result]
++        if type(models) is not list or len(models) != (self.contract['nmodel'] if member is None else 1):
++            raise KCDNOMetadataMismatch('expected AirfRANS model list/member')
++        for index,model in enumerate(models):
++            if (type(model) is not AirfRANSModel or type(model.core) is not KCDNO
++                    or model.config != self.architecture or model.core.config != self.architecture
++                    or len(model.core.blocks) != self.architecture.L):
++                raise KCDNOMetadataMismatch('AirfRANS whole-model architecture mismatch')
++            for i,block in enumerate(model.core.blocks):
++                if type(block) is not KCDNOBlock or block.layer_index != i or block.config != self.architecture:
++                    raise KCDNOMetadataMismatch('AirfRANS block mismatch')
++            with torch.random.fork_rng(devices=[]):expected = AirfRANSModel(**self.kwargs)
++            expected.load_state_dict(model.state_dict(),strict=True)
++            if model.adapter_architecture() != task_record(self.directory)['adapter']:
++                raise KCDNOMetadataMismatch('AirfRANS adapter mismatch')
++            models[index] = model.to(self.device)
++            if self.recorder is not None:self.recorder.attach_model(models[index],member=index,protocol=self.contract)
++        return models if member is None else models[0]
+--- /dev/null
++++ b/cdlno/kcdno/airfrans.py
+@@ -0,0 +1,34 @@
++"""Stable AirfRANS class, reusing the accepted x/pos/single-graph contract."""
++import numpy as np
++import torch
++from torch import nn
++from ..airfrans import AirfRANSModel as OriginalAdapter, adapter_architecture
++from ..modules import _init_linear
++from .core import KCDNO
++
++
++class AirfRANSModel(OriginalAdapter):
++    def __init__(self, *, config):
++        nn.Module.__init__(self)
++        config.validate()
++        if config.point_module != 'point_ffn':
++            raise ValueError('AirfRANS requires point_ffn')
++        self.config = config
++        d = config.d
++        self.preprocess = nn.Sequential(nn.Linear(71, 2*d), nn.GELU(), nn.Linear(2*d, d))
++        _init_linear(self.preprocess[0]); _init_linear(self.preprocess[2])
++        self.placeholder = nn.Parameter(torch.rand(d) / d)
++        gx = torch.tensor(np.linspace(-2, 4, 8), dtype=torch.float32)
++        gy = torch.tensor(np.linspace(-1.5, 1.5, 8), dtype=torch.float32)
++        grid = torch.stack(torch.meshgrid(gx, gy, indexing='ij'), -1).reshape(64, 2)
++        self.register_buffer('reference', grid, persistent=False)
++        self.core = KCDNO(config)
++        self.output_norm = nn.LayerNorm(d, eps=config.norm_eps)
++        self.output = nn.Linear(d, 4)
++        _init_linear(self.output)
++
++    def adapter_architecture(self):
++        return adapter_architecture() | {'version': 'kcdno-airfrans-v1', 'output_head': 'layernorm-linear-v1'}
++
++    def forward(self, data):
++        return self.output(self.output_norm(super().forward(data)))
+--- a/docs/KCDNO_IMPLEMENTATION_STATUS.md
++++ b/docs/KCDNO_IMPLEMENTATION_STATUS.md
+@@ -1,4 +1,8 @@
+ # KCDNO 实施状态
++
++## K7 完成并自审，继续 K8（2026-09-16）
++
++八任务KCDNO all/off接口、训练/评价选择和实际checkpoint格式已接入。Air真实PyG原损失合成步、列表/整模型新进程加载、5测试和4旧同权重回放通过；原21冻结文件不变。详见 [K7报告](KCDNO_K7_AIRFRANS.md)。未执行真实抽样评价或数据训练。
+ 
+ ## K6 完成并自审，继续 K7（2026-09-16）
+ 
+--- /dev/null
++++ b/docs/KCDNO_K7_AIRFRANS.md
+@@ -0,0 +1,16 @@
++# K7 AirfRANS（2026-09-16）
++
++八任务KCDNO接口现在均已接入。新稳定类 `cdlno.kcdno.airfrans.AirfRANSModel` 复用旧wrapper的输入校验、reference/placeholder和单图规则，只用新core及最终LN/head；x7追加64距离→stem71，reference域[-2,4]×[-1.5,1.5]，输出[vx,vy,p,nut]。新params.yaml kcdno项复制当前Transolver训练字段398epochs/batch1/lr.001，所有旧key保留。
++
++新增 `air_entry.py`、本地模型/entry再导出、`tran_evaluate/kcdno/airfrans.sh`；main/main_evaluation只增加构造、记录和可信加载有限分支。原每epoch抽样、图构造、val重复抽样、scatter/平均、mask/边界/指标完全保留。训练my_path为Dataset本身，评价为其父目录；脚本明确区分。原train保存member_000/model整对象，main保存模型列表至新家族run/kcdno。eval先读取结构和完整run合同，恢复省略的任务、模型数、epoch等；显式冲突拒绝，旧sidecar不改写。
++
++```bash
++PYTHONPATH=tests:. python -B -m unittest test_kcdno_airfrans test_airfrans.AirFrozenChecks -v
++PYTHONPATH=. python -B docs/kcdno_audit/replay_subset.py airfrans --result docs/kcdno_audit/k7/old-replay.json
++CUDA_VISIBLE_DEVICES=0 bash tran_evaluate/kcdno/airfrans.sh train --kcdno-run-dir /absolute/new/run
++CUDA_VISIBLE_DEVICES=0 bash tran_evaluate/kcdno/airfrans.sh eval --kcdno-run-dir /absolute/existing/run
++```
++
++5/5通过6.302s，真实PyG Data/Batch、N11/19及原sampled ptr合同，all/off实际原train.train/test MSE_weighted及Adam/OneCycle训练步通过；无y泄漏/原地修改、多图拒绝、两member整对象和列表严格往返、显式错误拒绝、sidecar不变、原Air cwd新进程输出一致。2个新测试加3个旧冻结检查；21旧文件字节相同，完整入口AST对K7前快照相同。第一次命令误写旧测试类名而失败（两个新测试均通过），已改为实际AirFrozenChecks后通过，失败日志保留。K0旧Air Transolver与CDLNO三模式4份同权重输出/梯度精确回放通过。
++
++自审通过：reference追加/域、stable pickle路径与列表成员检查、train/eval选择及路径、新旧YAML与冻结AST。未实际执行完整scatter物理评价、radius_graph或真实数据读取/训练。新任务为CPU/PyG合成；本机GPU旧基准与K2/K3 GPU证据单列，不宣称新Air全宽训练已测。继续已授权K8。
+--- a/memory/current-state.md
++++ b/memory/current-state.md
+@@ -334,3 +334,5 @@
+ - Self-reviewed architecture/init, two-levelCDPA/FP32/chunks, history/independence, adapters/checkpoints, freeze/performance口径; no remaining known production defect. Still unverified realdata/VTK/graphs/fullsampling/CFDmetrics, true training/convergence/accuracy, realepoch speed, remotetarget/install, fullGPUdefaulttaskmatrix and independent mathattachments. Phase9limited GPU performance is historical measured evidence, not repeated timing here. No further work authorized until explicit instruction.
+ 
+ 2026-09-16 K6完成并自审：Car新family/原整对象协议与真实PyG原loss合成训练、5测试和4旧同权重回放通过；继续用户连续授权K7–K10，未运行真实数据。
++
++2026-09-16 K7完成并自审：八任务KCDNO all/off入口齐备，Air真实PyG/原loss/整对象列表/原cwd加载通过；继续已授权K8–K10。
+--- a/tests/output_recording_projection.py
++++ b/tests/output_recording_projection.py
+@@ -36,7 +36,7 @@
+     def visit_If(self, node):
+         # Remove only the independent new-family selection; its own complete
+         # projection to the pre-K4 entries is separately tested.
+-        if ast.unparse(node.test) in ("args.model == 'kcdno'", "args.cfd_model == 'kcdno'"):
++        if ast.unparse(node.test) in ("args.model == 'kcdno'", "args.cfd_model == 'kcdno'", "model == 'kcdno'"):
+             result = []
+             for item in node.orelse:
+                 value = self.visit(item)
+--- a/tests/test_airfrans.py
++++ b/tests/test_airfrans.py
+@@ -146,7 +146,7 @@
+     def test_cli_yaml_inheritance_and_explicit_overrides(self):
+         current = yaml.safe_load((AIR / 'params.yaml').read_text())
+         base = yaml.safe_load(original('params.yaml'))
+-        self.assertEqual({k:v for k,v in current.items() if k != 'CDLNO'}, base)
++        self.assertEqual({k:v for k,v in current.items() if k not in ('CDLNO', 'kcdno')}, base)
+         self.assertEqual(current['CDLNO'], current['Transolver'])
+         self.assertEqual(current['Transolver']['nb_epochs'], 398)
+         a = args(['--n-layers', '12', '--front-blocks', '7', '--nb_epochs', '400'])
+--- /dev/null
++++ b/tests/test_kcdno_airfrans.py
+@@ -0,0 +1,107 @@
++"""Synthetic real PyG inputs and actual safe Air loss functions; no sampling."""
++import ast
++import io
++import json
++import os
++from pathlib import Path
++import subprocess
++import sys
++import tempfile
++import unittest
++from contextlib import redirect_stdout
++
++import torch
++import yaml
++from test_airfrans import AIR, ROOT, entry, parser, module, HAS_PYG
++from test_kcdno_tasks import strip_new
++from cdlno.kcdno.airfrans import AirfRANSModel
++from cdlno.kcdno.air_entry import AirRun, model_kwargs
++from cdlno.kcdno.metadata import KCDNOMetadataMismatch
++
++SMALL=['--n_hidden','8','--n_heads','2','--n_layers','2','--slice_num','3','--kernel-rank','5']
++
++def arguments(flags=(),evaluation=False):
++    return entry.parse_args(parser(evaluation),evaluation=evaluation,argv=['--model','kcdno',*flags])
++
++def hparams():return yaml.safe_load((AIR/'params.yaml').read_text())['kcdno']
++
++
++class AirKCDNO(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):cls.threads=torch.get_num_threads();torch.set_num_threads(1)
++    @classmethod
++    def tearDownClass(cls):torch.set_num_threads(cls.threads)
++
++    def test_defaults_and_exact_frozen_projection(self):
++        a=arguments();self.assertEqual((a.n_layers,a.n_hidden,a.n_heads,a.slice_num,a.nb_epochs,a.batch_size),(8,256,8,64,398,1))
++        a=arguments(['--profile','transolver_shape_match']);self.assertEqual(a.slice_num,32)
++        snapshot=Path(json.loads((ROOT/'docs/kcdno_audit/k7/before.json').read_text())['source_snapshot'])/'Airfoil-Design-AirfRANS'
++        for name in ('main.py','main_evaluation.py'):
++            self.assertEqual(ast.dump(strip_new(ast.parse((AIR/name).read_text()))),ast.dump(ast.parse((snapshot/name).read_text())))
++        for name in ('train.py','utils/metrics.py','dataset/dataset.py'):
++            self.assertEqual((AIR/name).read_bytes(),(snapshot/name).read_bytes())
++        saved=yaml.safe_load((snapshot/'params.yaml').read_text());current=yaml.safe_load((AIR/'params.yaml').read_text())
++        self.assertEqual({k:v for k,v in current.items() if k!='kcdno'},saved)
++        self.assertEqual(current['kcdno'],saved['Transolver'])
++        with self.assertRaises(ValueError):arguments(['--batch_size','2'])
++        with self.assertRaises(ValueError):arguments(['--front_latent_mode','full'])
++
++    @unittest.skipUnless(HAS_PYG,'real PyG unavailable')
++    def test_real_graph_mask_loss_step_and_list_load(self):
++        from torch_geometric.data import Data,Batch
++        from torch_geometric.loader import DataLoader
++        train=module(AIR/'train.py','_kcdno_air_train')
++        for mode in ('all','off'):
++            with tempfile.TemporaryDirectory() as tmp,redirect_stdout(io.StringIO()):
++                path=Path(tmp)/'run'
++                a=arguments([*SMALL,'--history-mode',mode,'--nmodel','2','--nb_epochs','3','--kcdno-run-dir',str(path)])
++                run=AirRun(a,hparams(),device='cpu');models=[AirfRANSModel(**model_kwargs(a)) for _ in range(2)]
++                graphs=[]
++                for n in (11,19):
++                    g=Batch.from_data_list([Data(x=torch.randn(n,7),pos=torch.randn(n,2),y=torch.randn(n,4),surf=torch.arange(n)%2==0,edge_index=torch.tensor([[0,1],[1,0]]))])
++                    old=g.clone();m=models[0].eval();y=m(g);self.assertEqual(y.shape,(n,4));g.y+=17
++                    torch.testing.assert_close(m(g),y,atol=0,rtol=0);g.y=old.y
++                    for key in old.to_dict():torch.testing.assert_close(g[key],old[key],atol=0,rtol=0)
++                    # Original sampled-ptr contract, original point order retained.
++                    part=g.clone();idx=torch.tensor([5,1,7]);part.x=g.x[idx];part.pos=g.pos[idx];part.batch=g.batch[idx]
++                    self.assertEqual(m(part).shape,(3,4))
++                    graphs.append(old)
++                with self.assertRaises(ValueError):models[0](Batch.from_data_list([g.to_data_list()[0] for g in graphs]))
++                optimizer=torch.optim.Adam(models[0].parameters(),lr=.001)
++                scheduler=torch.optim.lr_scheduler.OneCycleLR(optimizer,max_lr=.001,total_steps=20)
++                train.train('cpu',models[0],graphs,optimizer,scheduler,criterion='MSE_weighted',reg=1.)
++                train.test('cpu',models[0],graphs,criterion='MSE')
++                self.assertTrue(all(p.grad is not None and torch.isfinite(p.grad).all() for p in models[0].parameters()))
++                for m in models:m.eval()
++                torch.save(models,run.checkpoint)
++                for i,m in enumerate(models):
++                    Path(run.member_dir(i)).mkdir();torch.save(m,Path(run.member_dir(i))/'model')
++                before={f.name:f.read_bytes() for f in (run.sidecar,path/'task.json')}
++                ev=arguments(['--kcdno-run-dir',str(path)],True)
++                self.assertEqual((ev.nmodel,ev.nb_epochs,ev.history_mode),(2,3,mode))
++                er=AirRun(ev,hparams(),device='cpu',evaluation=True);loaded=er.load()
++                for i,m in enumerate(models):
++                    torch.testing.assert_close(loaded[i](graphs[0]),m(graphs[0]),atol=0,rtol=0)
++                    torch.testing.assert_close(er.load(member=i)(graphs[0]),m(graphs[0]),atol=0,rtol=0)
++                for flag,value in (('--kernel-rank','6'),('--history-mode','off' if mode=='all' else 'all'),('--nb_epochs','4'),('--task','aoa'),('--nmodel','1')):
++                    with self.assertRaises(KCDNOMetadataMismatch):arguments(['--kcdno-run-dir',str(path),flag,value],True)
++                self.assertEqual(before,{f.name:f.read_bytes() for f in (run.sidecar,path/'task.json')})
++                torch.save(dict(x=graphs[0].x,pos=graphs[0].pos,expected=models[0](graphs[0])),Path(tmp)/'probe.pt')
++                code='''
++import sys,torch
++from pathlib import Path
++from types import SimpleNamespace
++from test_kcdno_airfrans import arguments,hparams
++from cdlno.kcdno.air_entry import AirRun
++torch.set_num_threads(1)
++p=Path(sys.argv[1]);a=arguments(['--kcdno-run-dir',str(p/'run')],True)
++r=AirRun(a,hparams(),device='cpu',evaluation=True)
++d=torch.load(p/'probe.pt',weights_only=True);g=SimpleNamespace(x=d['x'],pos=d['pos'])
++for m in (r.load()[0],r.load(member=0)):
++ torch.testing.assert_close(m(g),d['expected'],atol=0,rtol=0)
++assert 'main' not in sys.modules and 'main_evaluation' not in sys.modules
++'''
++                result=subprocess.run([sys.executable,'-B','-c',code,tmp],cwd=AIR,env=dict(os.environ,PYTHONPATH=str(ROOT)+os.pathsep+str(ROOT/'tests')),capture_output=True,text=True,timeout=60)
++                self.assertEqual(result.returncode,0,result.stdout+result.stderr)
++
++if __name__=='__main__':unittest.main(verbosity=2)
+--- a/tests/test_kcdno_tasks.py
++++ b/tests/test_kcdno_tasks.py
+@@ -68,7 +68,7 @@
+         def visit_ImportFrom(self,n):
+             return None if n.module=='kcdno_entry' else n
+         def visit_If(self,n):
+-            if ast.unparse(n.test) in ("args.model == 'kcdno'", "args.cfd_model == 'kcdno'"):
++            if ast.unparse(n.test) in ("args.model == 'kcdno'", "args.cfd_model == 'kcdno'", "model == 'kcdno'"):
+                 result=[]
+                 for item in n.orelse:
+                     value=self.visit(item)
+--- /dev/null
++++ b/tran_evaluate/kcdno/airfrans.sh
+@@ -0,0 +1,21 @@
++#!/usr/bin/env bash
++set -euo pipefail
++launcher="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++source "$launcher/../_common.sh"
++action="${1:?train or eval required}"; shift
++# TRAIN my_path = Dataset (manifest.json); EVAL my_path = Dataset's PARENT.
++# No --gpu in this original project; use CUDA_VISIBLE_DEVICES.
++dataset="${CDLNO_AIRFRANS_DATASET%/}"
++case "$action" in
++ train) entry=main.py; args=(--score 0 --my_path "$dataset") ;;
++ eval)
++    entry=main_evaluation.py
++    explicit=0
++    for flag in "$@"; do case "$flag" in --my_path|--my_path=*) explicit=1 ;; esac; done
++    if [[ "${dataset##*/}" != Dataset ]] && ((explicit == 0)); then
++        printf 'AirfRANS eval expects a /Dataset path or explicit --my_path parent.\n' >&2; exit 2
++    fi
++    args=(--my_path "$(dirname -- "$dataset")") ;;
++ *) exit 2 ;;
++esac
++exec bash "$launcher/_dispatch.sh" Airfoil-Design-AirfRANS "$entry" --model kcdno --profile kcdno_v1 "${args[@]}" "$@"
