@@ -17,6 +17,8 @@ Original Car protocol: fold0, epochs200, batch1, Adam/OneCycleLR, reg0.5.
 
 Train: --data_dir RAW_ROOT --save_dir PREPROCESSED_ROOT --run_dir NEW_RUN
 Eval:  --data_dir RAW_ROOT --save_dir PREPROCESSED_ROOT --run_dir EXISTING_RUN
+Defaults come from root path.sh; industrial directories need remote inspection.
+Default: output/car/UTC_TIMESTAMP; eval needs an existing --run_dir.
 --save_dir means the preprocessed dataset, NOT the model checkpoint directory.
 Training uses existing preprocessed data by default (--preprocessed 1).
 
@@ -30,9 +32,13 @@ USAGE
         exit 0 ;;
     *) printf 'Expected train, eval or help; see %s help\n' "$0" >&2; exit 2 ;;
 esac
+cdlno_action="$1"
 shift
 
+cdlno_run="$(cdlno_run_path car "$cdlno_action" "$@")"
 cdlno_args=(
+    --data_dir "$CDLNO_CAR_RAW_ROOT" --save_dir "$CDLNO_CAR_CACHE_ROOT"
+    --run_dir "$cdlno_run"
     --cfd_model CDLNO
     --n_hidden 256 --n_layers 8 --n_heads 8 --slice_num 64
     --front_blocks 2 --mlp_ratio 2 --latent_ffn_ratio 2 --dropout 0

@@ -1,5 +1,9 @@
 # CDLNO 八任务配置与启动清单
 
+补充A2：八任务均可用 `--front-latent-mode full|no_sa|identity`；默认模型/训练配置保持，只在八份model JSON添加full字段。评估从sidecar恢复未显式指定的模式，冲突拒绝。原子项目16脚本直接追加该参数即可；根任务脚本有模式目录隔离。见 [三模式命令与配置表](CDLNO_FRONT_ABLATION_A2_COMMANDS.md)、[任务×模式×加载覆盖表](CDLNO_FRONT_ABLATION_A2.md)。性能工具的新模式接入仍未执行；下文历史启动清单保留。
+
+远端路径启动补充：八任务现另有根目录 [tran_evaluate](../tran_evaluate/README.md) 的train/eval脚本，共用 [path.sh](../path.sh)。Elasticity/NS传fno父目录，Plasticity传MAT文件，AirfRANS保持Dataset/parent差异。已通过16条真实parser命令检查；未执行远端数据/训练。原子项目脚本和配置本轮未改，详见[远端交付报告](CDLNO_REMOTE_LAUNCHERS.md)。Car完整阻力评价仍有原固定root/param0限制。
+
 更新：2026-09-14，阶段10最终核对。八任务均已具备新模型接口、配置和训练/评估脚本；仅完成合成验证，未完成真实数据训练或实际抽样评价。原 Transolver 配置、模型和脚本保留。
 
 ## 配置与入口

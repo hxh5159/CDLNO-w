@@ -5,6 +5,7 @@ our wrapper or installed dependencies remain failures; no fake PyG is provided.
 """
 from argparse import ArgumentParser
 import ast
+from output_recording_projection import strip_recording
 import copy
 from contextlib import redirect_stdout
 import importlib.util
@@ -395,11 +396,14 @@ class FrozenSourceAndScripts(unittest.TestCase):
                 return node
 
         for evaluation, filename in ((False, 'main.py'), (True, 'main_evaluation.py')):
-            restored = Project().visit(ast.parse((CAR / filename).read_text()))
+            restored = Project().visit(strip_recording(ast.parse((CAR / filename).read_text())))
             self.assertEqual(ast.dump(restored), ast.dump(ast.parse(original(filename))), filename)
 
     def test_frozen_car_and_airfrans_original_files(self):
-        names = subprocess.check_output(['git', 'ls-files', 'Car-Design-ShapeNetCar',
+        # Enumerate original files at the frozen commit, not newly tracked
+        # CDLNO additions that never existed in that commit.
+        names = subprocess.check_output(['git', 'ls-tree', '-r', '--name-only',
+                                         '75e0f67643806a81cd1d3f6adc88dd8c02416fe7', '--', 'Car-Design-ShapeNetCar',
                                          'Airfoil-Design-AirfRANS'], cwd=ROOT, text=True).splitlines()
         count = 0
         for name in names:
@@ -410,11 +414,16 @@ class FrozenSourceAndScripts(unittest.TestCase):
                         'Airfoil-Design-AirfRANS/params.yaml'):
                 continue
             before = subprocess.check_output(['git', 'show', '75e0f67643806a81cd1d3f6adc88dd8c02416fe7:' + name], cwd=ROOT)
-            self.assertEqual((ROOT / name).read_bytes(), before, name)
+            if Path(name).name == 'train.py':
+                self.assertEqual(ast.dump(strip_recording(ast.parse((ROOT/name).read_text()))), ast.dump(ast.parse(before)), name)
+            else:
+                self.assertEqual((ROOT / name).read_bytes(), before, name)
             count += 1
         print('Frozen Car/AirfRANS original files byte-identical:', count)
 
-    def test_epoch_path_fix_and_launch_arguments(self):
+    # Argument-only launch check; the placeholder paths contain no checkpoint.
+    @patch('cdlno.checkpoint.resolve_front_latent_mode', return_value='full')
+    def test_epoch_path_fix_and_launch_arguments(self, _mode):
         old = entry_parser(True, True).parse_args(['--nb_epochs', '200'])
         self.assertEqual(f'model_{old.nb_epochs}.pth', 'model_200.0.pth')
         fixed = parse_args(entry_parser(True), evaluation=True, argv=['--cfd_model', 'Transolver', '--nb_epochs', '200'])

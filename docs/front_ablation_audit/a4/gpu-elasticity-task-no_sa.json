@@ -1,0 +1,1460 @@
+{
+  "schema": "cdlno-performance-v1",
+  "phase": 9,
+  "supplement": "A4",
+  "scope": "synthetic model structure only",
+  "case": {
+    "task": "elasticity",
+    "comparison": "task",
+    "B": 1,
+    "N": 972,
+    "d": 128,
+    "h": 8,
+    "M": 64,
+    "L": 8,
+    "F": 2,
+    "ratio": 2,
+    "grid": null,
+    "front_latent_mode": "no_sa",
+    "P": 6,
+    "task_geometry_and_batch_preserved": true,
+    "preset_source": "original Transolver launchers + industrial main constructors; CDLNO configs/CDLNO/*.json (v1.2), not old parser defaults"
+  },
+  "environment": {
+    "python": "3.13.9",
+    "torch": "2.13.0+cu130",
+    "cuda_build": "13.0",
+    "pyg": "2.3.1",
+    "device": "cuda:0",
+    "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+    "driver": "NVIDIA GeForce RTX 5090 Laptop GPU, 591.86",
+    "cpu_threads": 1,
+    "cudnn": 92000
+  },
+  "git_commit": "769fa333742f73c132868cf560bce5ec21529362",
+  "source_sha256": {
+    "tools/cdlno_benchmark.py": "0eb71b8879015686ba05bc40461048b989ccde2f66e91657263a4e1470fde1b8",
+    "tools/cdlno_perf/measure.py": "83c871d50da19deddf26ca0afb128254069f998dc48353e6815da9bb63264847",
+    "tools/cdlno_perf/models.py": "fc523a6055610de25c2539099d54b8d07e865f224a1d8f66f32ca95a043feaa2",
+    "tools/cdlno_perf/__init__.py": "f37d530c1f97443000442a1c750108754095403278d9360a99ff9bc7f469289e",
+    "tools/cdlno_perf/costs.py": "c687ce303bd17391f88824fecc085473ee6001fb9f05cc5ac7bc8053d47fc7fe",
+    "cdlno/airfrans.py": "2e8bca413035807277d60cea9c64cae28f2f8067cb82d5053b4d29f2334b62b5",
+    "cdlno/config.py": "88da555b449857b96d08a721e38e229ef2274b63f66f00b9ec08dad4bb9db18d",
+    "cdlno/standard.py": "ee9a547ded0fef9a46229d88c8c90ed0b86caf57a7c0387993d0a1471610f42e",
+    "cdlno/cdpa.py": "eb6f515508479066fe2a2086b70929b93914de218aaf55347ecaa71ebe05c4fa",
+    "cdlno/checkpoint.py": "6e50e2d9e0514ba5c6beb2a289447ba8a1b171f067e44f179ce4fd955651fad9",
+    "cdlno/core.py": "0b8565fe66d90f1c2e77e2147dfeb5a249220d5fc51d9a6784d0eab4085a23be",
+    "cdlno/visualization.py": "bfebdd05728ae6aed41e03fcab9ee4d80e99305072db23c74750ba267cd5cb36",
+    "cdlno/modules.py": "ceca8a7efd17e06693905030a7cec19f3c533c2770e6458852a93089dd2de99a",
+    "cdlno/training_state.py": "4c6d83a7b5053889b5228ebfeef9149bf4d9966c5420ae0a0dc5847842496b63",
+    "cdlno/training_observer.py": "6241bbc5b9bf61813b8045e0cedb49441f518aac4b67cea0c40b39315fff7af5",
+    "cdlno/__init__.py": "aa7e4e1d615e8a74bcb17899b526e2cfe09f9080754b2e48dcf5507cdddb0d7e"
+  },
+  "settings": {
+    "parameter_dtype": "float32",
+    "input_dtype": "float32",
+    "precision": "fp32",
+    "requested_sdpa_backend": "math",
+    "tf32": false,
+    "compile": false,
+    "warmup": 5,
+    "measured_iterations": 20,
+    "seed": 20260914,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": false,
+    "deterministic_algorithms": false,
+    "fp16_reduced_precision_reduction": true,
+    "bf16_reduced_precision_reduction": true,
+    "float32_matmul_precision": "highest",
+    "audit_only": false
+  },
+  "cost_convention": "Forward dense matrix MAC: one multiply-accumulate=2 FLOPs. Conv includes padded taps. Matrix FLOPs exclude bias/norm/activation/softmax/reductions/copies; these have separate inventories. SDPA QK+AV counted from actual shapes. No claim of exact all-operation FLOPs. Storage payload/activation ledgers are not summed into measured allocator peaks.",
+  "exclusions": "No data, graphs, task loss, temporal rollout, scheduler, epoch estimate or LRSA paper reproduction.",
+  "results": [
+    {
+      "model": "cdlno_entry",
+      "chunk": 0,
+      "status": "passed",
+      "config": {
+        "task": "elasticity",
+        "comparison": "task",
+        "B": 1,
+        "N": 972,
+        "d": 128,
+        "h": 8,
+        "M": 64,
+        "L": 8,
+        "F": 2,
+        "ratio": 2,
+        "grid": null,
+        "front_latent_mode": "no_sa",
+        "P": 6,
+        "task_geometry_and_batch_preserved": true,
+        "preset_source": "original Transolver launchers + industrial main constructors; CDLNO configs/CDLNO/*.json (v1.2), not old parser defaults"
+      },
+      "source": {},
+      "initial_weights_sha256": "8452cc1320e8a34132e4f41baccd8b0ab288de10f8d03a0e337bcea9a1ade4da",
+      "effective_structure": {
+        "front_blocks": 2,
+        "front_latent_mode": "no_sa",
+        "full_lrsa_blocks": 0,
+        "persistent_blocks": 6,
+        "bridge": true,
+        "extra_readout": true
+      },
+      "cost": {
+        "parameters": {
+          "registered": 1940897,
+          "requires_grad": 1940897,
+          "missing_grad_names": [],
+          "nonfinite_grad_names": [],
+          "by_component": {
+            "front_bridge_readout_projections": 387872,
+            "stem_and_time": 33664,
+            "front_two_latent_ffns": 263680,
+            "point_ffn_linears": 198144,
+            "rear_attention": 397056,
+            "rear_geglu": 593664,
+            "output_head": 385,
+            "cdpa": 66432
+          }
+        },
+        "finite_output": true,
+        "counts": {
+          "down_bridge": 3,
+          "up_readout": 3,
+          "latent_sa": 6,
+          "structured_convffn": 0,
+          "front_sa": 0,
+          "front_latent_ffn": 4,
+          "rear_sa": 6,
+          "rear_ffn": 6,
+          "cdpa_logical_sources": 2,
+          "cdpa_locations": 1,
+          "history_sdpa_calls": 1,
+          "all_sdpa_calls": 13
+        },
+        "history_sizes": [
+          2
+        ],
+        "matrix_macs_by_component": {
+          "stem_and_time": 32348160,
+          "front_bridge_readout_projections": 201588736,
+          "non_cdpa_sdpa_qk_av": 101842944,
+          "front_two_latent_ffns": 16777216,
+          "point_ffn_linears": 191102976,
+          "cdpa": 7340032,
+          "cdpa_qk_av": 2097152,
+          "rear_attention": 25165824,
+          "rear_geglu": 37748736,
+          "output_head": 124416
+        },
+        "linear_conv_macs_by_module": {
+          "preprocess.0": 497664,
+          "preprocess.2": 31850496,
+          "core.front_blocks.0.down.to_k": 15925248,
+          "core.front_blocks.0.down.to_v": 15925248,
+          "core.front_blocks.0.down.to_out": 1048576,
+          "core.front_blocks.0.latent_ffn_1.fc1": 2097152,
+          "core.front_blocks.0.latent_ffn_1.fc2": 2097152,
+          "core.front_blocks.0.latent_ffn_2.fc1": 2097152,
+          "core.front_blocks.0.latent_ffn_2.fc2": 2097152,
+          "core.front_blocks.0.up.to_q": 15925248,
+          "core.front_blocks.0.up.to_k": 1048576,
+          "core.front_blocks.0.up.to_v": 1048576,
+          "core.front_blocks.0.up.to_out": 15925248,
+          "core.front_blocks.0.point_ffn.fc1": 31850496,
+          "core.front_blocks.0.point_ffn.fc2": 31850496,
+          "core.front_blocks.1.down.to_k": 15925248,
+          "core.front_blocks.1.down.to_v": 15925248,
+          "core.front_blocks.1.down.to_out": 1048576,
+          "core.front_blocks.1.latent_ffn_1.fc1": 2097152,
+          "core.front_blocks.1.latent_ffn_1.fc2": 2097152,
+          "core.front_blocks.1.latent_ffn_2.fc1": 2097152,
+          "core.front_blocks.1.latent_ffn_2.fc2": 2097152,
+          "core.front_blocks.1.up.to_q": 15925248,
+          "core.front_blocks.1.up.to_k": 1048576,
+          "core.front_blocks.1.up.to_v": 1048576,
+          "core.front_blocks.1.up.to_out": 15925248,
+          "core.front_blocks.1.point_ffn.fc1": 31850496,
+          "core.front_blocks.1.point_ffn.fc2": 31850496,
+          "core.bridge.cross.attn.to_q": 1048576,
+          "core.bridge.cross.attn.to_k": 15925248,
+          "core.bridge.cross.attn.to_v": 15925248,
+          "core.bridge.cross.attn.to_out": 1048576,
+          "core.cdpa_at.0.to_q": 1048576,
+          "core.cdpa_at.0.to_k": 2097152,
+          "core.cdpa_at.0.to_v": 2097152,
+          "core.cdpa_at.0.to_out": 2097152,
+          "core.latent_blocks.0.self_attention.attn.to_q": 1048576,
+          "core.latent_blocks.0.self_attention.attn.to_k": 1048576,
+          "core.latent_blocks.0.self_attention.attn.to_v": 1048576,
+          "core.latent_blocks.0.self_attention.attn.to_out": 1048576,
+          "core.latent_blocks.0.ffn.fc_in": 4194304,
+          "core.latent_blocks.0.ffn.fc_out": 2097152,
+          "core.latent_blocks.1.self_attention.attn.to_q": 1048576,
+          "core.latent_blocks.1.self_attention.attn.to_k": 1048576,
+          "core.latent_blocks.1.self_attention.attn.to_v": 1048576,
+          "core.latent_blocks.1.self_attention.attn.to_out": 1048576,
+          "core.latent_blocks.1.ffn.fc_in": 4194304,
+          "core.latent_blocks.1.ffn.fc_out": 2097152,
+          "core.latent_blocks.2.self_attention.attn.to_q": 1048576,
+          "core.latent_blocks.2.self_attention.attn.to_k": 1048576,
+          "core.latent_blocks.2.self_attention.attn.to_v": 1048576,
+          "core.latent_blocks.2.self_attention.attn.to_out": 1048576,
+          "core.latent_blocks.2.ffn.fc_in": 4194304,
+          "core.latent_blocks.2.ffn.fc_out": 2097152,
+          "core.latent_blocks.3.self_attention.attn.to_q": 1048576,
+          "core.latent_blocks.3.self_attention.attn.to_k": 1048576,
+          "core.latent_blocks.3.self_attention.attn.to_v": 1048576,
+          "core.latent_blocks.3.self_attention.attn.to_out": 1048576,
+          "core.latent_blocks.3.ffn.fc_in": 4194304,
+          "core.latent_blocks.3.ffn.fc_out": 2097152,
+          "core.latent_blocks.4.self_attention.attn.to_q": 1048576,
+          "core.latent_blocks.4.self_attention.attn.to_k": 1048576,
+          "core.latent_blocks.4.self_attention.attn.to_v": 1048576,
+          "core.latent_blocks.4.self_attention.attn.to_out": 1048576,
+          "core.latent_blocks.4.ffn.fc_in": 4194304,
+          "core.latent_blocks.4.ffn.fc_out": 2097152,
+          "core.latent_blocks.5.self_attention.attn.to_q": 1048576,
+          "core.latent_blocks.5.self_attention.attn.to_k": 1048576,
+          "core.latent_blocks.5.self_attention.attn.to_v": 1048576,
+          "core.latent_blocks.5.self_attention.attn.to_out": 1048576,
+          "core.latent_blocks.5.ffn.fc_in": 4194304,
+          "core.latent_blocks.5.ffn.fc_out": 2097152,
+          "core.readout.up.to_q": 15925248,
+          "core.readout.up.to_k": 1048576,
+          "core.readout.up.to_v": 1048576,
+          "core.readout.up.to_out": 15925248,
+          "core.readout.point_ffn.fc1": 31850496,
+          "core.readout.point_ffn.fc2": 31850496,
+          "core.readout.output": 124416
+        },
+        "matrix_macs": 616136192,
+        "matrix_flops_2_per_mac": 1232272384,
+        "bias_adds_by_component": {
+          "stem_and_time": 373248,
+          "front_bridge_readout_projections": 397824,
+          "front_two_latent_ffns": 98304,
+          "point_ffn_linears": 1119744,
+          "cdpa": 16384,
+          "rear_attention": 49152,
+          "rear_geglu": 245760,
+          "output_head": 972
+        },
+        "norm_work": [
+          {
+            "path": "core.front_blocks.0.point_norm",
+            "type": "RMSNorm",
+            "elements": 124416,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.down.q_norm",
+            "type": "RMSNorm",
+            "elements": 8192,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.down.k_norm",
+            "type": "RMSNorm",
+            "elements": 124416,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.latent_norm_1",
+            "type": "RMSNorm",
+            "elements": 8192,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.latent_norm_2",
+            "type": "RMSNorm",
+            "elements": 8192,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.up_latent_norm",
+            "type": "RMSNorm",
+            "elements": 8192,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.up.q_norm",
+            "type": "RMSNorm",
+            "elements": 124416,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.up.k_norm",
+            "type": "RMSNorm",
+            "elements": 8192,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.point_ffn_norm",
+            "type": "RMSNorm",
+            "elements": 124416,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.point_norm",
+            "type": "RMSNorm",
+            "elements": 124416,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.down.q_norm",
+            "type": "RMSNorm",
+            "elements": 8192,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.down.k_norm",
+            "type": "RMSNorm",
+            "elements": 124416,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.latent_norm_1",
+            "type": "RMSNorm",
+            "elements": 8192,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.latent_norm_2",
+            "type": "RMSNorm",
+            "elements": 8192,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.up_latent_norm",
+            "type": "RMSNorm",
+            "elements": 8192,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.up.q_norm",
+            "type": "RMSNorm",
+            "elements": 124416,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.up.k_norm",
+            "type": "RMSNorm",
+            "elements": 8192,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.point_ffn_norm",
+            "type": "RMSNorm",
+            "elements": 124416,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.bridge.query_norm",
+            "type": "LayerNorm",
+            "elements": 8192,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.bridge.context_norm",
+            "type": "LayerNorm",
+            "elements": 124416,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.0.ln_q",
+            "type": "LayerNorm",
+            "elements": 8192,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.0.ln_kv",
+            "type": "LayerNorm",
+            "elements": 16384,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.0.depth_norm",
+            "type": "RMSNorm",
+            "elements": 24576,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.0.norm_1",
+            "type": "LayerNorm",
+            "elements": 8192,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.0.norm_2",
+            "type": "LayerNorm",
+            "elements": 8192,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.1.norm_1",
+            "type": "LayerNorm",
+            "elements": 8192,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.1.norm_2",
+            "type": "LayerNorm",
+            "elements": 8192,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.2.norm_1",
+            "type": "LayerNorm",
+            "elements": 8192,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.2.norm_2",
+            "type": "LayerNorm",
+            "elements": 8192,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.3.norm_1",
+            "type": "LayerNorm",
+            "elements": 8192,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.3.norm_2",
+            "type": "LayerNorm",
+            "elements": 8192,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.4.norm_1",
+            "type": "LayerNorm",
+            "elements": 8192,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.4.norm_2",
+            "type": "LayerNorm",
+            "elements": 8192,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.5.norm_1",
+            "type": "LayerNorm",
+            "elements": 8192,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.5.norm_2",
+            "type": "LayerNorm",
+            "elements": 8192,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.query_norm",
+            "type": "RMSNorm",
+            "elements": 124416,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.latent_norm",
+            "type": "RMSNorm",
+            "elements": 8192,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.up.q_norm",
+            "type": "RMSNorm",
+            "elements": 124416,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.up.k_norm",
+            "type": "RMSNorm",
+            "elements": 8192,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.point_ffn_norm",
+            "type": "RMSNorm",
+            "elements": 124416,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.output_norm",
+            "type": "LayerNorm",
+            "elements": 124416,
+            "width": 128,
+            "dtype": "torch.float32"
+          }
+        ],
+        "sdpa": [
+          {
+            "path": "core.front_blocks.0.down",
+            "q": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "k": [
+              1,
+              8,
+              972,
+              16
+            ],
+            "v": [
+              1,
+              8,
+              972,
+              16
+            ],
+            "macs": 15925248,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 497664
+          },
+          {
+            "path": "core.front_blocks.0.up",
+            "q": [
+              1,
+              8,
+              972,
+              16
+            ],
+            "k": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "v": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "macs": 15925248,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 497664
+          },
+          {
+            "path": "core.front_blocks.1.down",
+            "q": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "k": [
+              1,
+              8,
+              972,
+              16
+            ],
+            "v": [
+              1,
+              8,
+              972,
+              16
+            ],
+            "macs": 15925248,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 497664
+          },
+          {
+            "path": "core.front_blocks.1.up",
+            "q": [
+              1,
+              8,
+              972,
+              16
+            ],
+            "k": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "v": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "macs": 15925248,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 497664
+          },
+          {
+            "path": "core.bridge.cross.attn",
+            "q": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "k": [
+              1,
+              8,
+              972,
+              16
+            ],
+            "v": [
+              1,
+              8,
+              972,
+              16
+            ],
+            "macs": 15925248,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 497664
+          },
+          {
+            "path": "core.cdpa_at.0",
+            "q": [
+              2,
+              8,
+              64,
+              16
+            ],
+            "k": [
+              2,
+              8,
+              64,
+              16
+            ],
+            "v": [
+              2,
+              8,
+              64,
+              16
+            ],
+            "macs": 2097152,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 65536
+          },
+          {
+            "path": "core.latent_blocks.0.self_attention.attn",
+            "q": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "k": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "v": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "macs": 1048576,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 32768
+          },
+          {
+            "path": "core.latent_blocks.1.self_attention.attn",
+            "q": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "k": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "v": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "macs": 1048576,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 32768
+          },
+          {
+            "path": "core.latent_blocks.2.self_attention.attn",
+            "q": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "k": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "v": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "macs": 1048576,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 32768
+          },
+          {
+            "path": "core.latent_blocks.3.self_attention.attn",
+            "q": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "k": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "v": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "macs": 1048576,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 32768
+          },
+          {
+            "path": "core.latent_blocks.4.self_attention.attn",
+            "q": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "k": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "v": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "macs": 1048576,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 32768
+          },
+          {
+            "path": "core.latent_blocks.5.self_attention.attn",
+            "q": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "k": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "v": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "macs": 1048576,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 32768
+          },
+          {
+            "path": "core.readout.up",
+            "q": [
+              1,
+              8,
+              972,
+              16
+            ],
+            "k": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "v": [
+              1,
+              8,
+              64,
+              16
+            ],
+            "macs": 15925248,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 497664
+          }
+        ],
+        "depth_work_estimate": [
+          {
+            "sources": 2,
+            "dtype": "torch.float32",
+            "raw_stack_bytes": 98304,
+            "normalized_keys_bytes": 98304,
+            "weighted_values_bytes": 98304,
+            "score_and_weight_bytes": 1536,
+            "arithmetic_ops_excluding_rsqrt_exp_comparisons": 188416,
+            "rsqrt_evaluations": 192,
+            "source_softmax_elements": 192,
+            "source_softmax_exp_evaluations": 192,
+            "source_softmax_arithmetic_ops": 512,
+            "source_softmax_max_comparisons": 128,
+            "source_softmax_axis": 3
+          }
+        ],
+        "operations": {
+          "aten.view.default": {
+            "calls": 223,
+            "output_elements": 12346212,
+            "output_payload_bytes": 49384848
+          },
+          "aten.t.default": {
+            "calls": 79,
+            "output_elements": 1901184,
+            "output_payload_bytes": 7604736
+          },
+          "aten.addmm.default": {
+            "calls": 42,
+            "output_elements": 2301388,
+            "output_payload_bytes": 9205552
+          },
+          "aten.gelu.default": {
+            "calls": 14,
+            "output_elements": 1159168,
+            "output_payload_bytes": 4636672
+          },
+          "aten.unsqueeze.default": {
+            "calls": 7,
+            "output_elements": 33216,
+            "output_payload_bytes": 132864
+          },
+          "aten.add.Tensor": {
+            "calls": 48,
+            "output_elements": 1058088,
+            "output_payload_bytes": 4232352
+          },
+          "aten.pow.Tensor_Scalar": {
+            "calls": 24,
+            "output_elements": 1491456,
+            "output_payload_bytes": 5965824
+          },
+          "aten.mean.dim": {
+            "calls": 24,
+            "output_elements": 47912,
+            "output_payload_bytes": 191648
+          },
+          "aten.rsqrt.default": {
+            "calls": 24,
+            "output_elements": 47912,
+            "output_payload_bytes": 191648
+          },
+          "aten.mul.Tensor": {
+            "calls": 55,
+            "output_elements": 3105792,
+            "output_payload_bytes": 12423168
+          },
+          "aten.expand.default": {
+            "calls": 56,
+            "output_elements": 4679168,
+            "output_payload_bytes": 18716672
+          },
+          "aten.permute.default": {
+            "calls": 2,
+            "output_elements": 16384,
+            "output_payload_bytes": 65536
+          },
+          "aten.mm.default": {
+            "calls": 37,
+            "output_elements": 1365504,
+            "output_payload_bytes": 5462016
+          },
+          "aten._unsafe_view.default": {
+            "calls": 68,
+            "output_elements": 5142720,
+            "output_payload_bytes": 20570880
+          },
+          "aten.transpose.int": {
+            "calls": 63,
+            "output_elements": 2292224,
+            "output_payload_bytes": 9168896
+          },
+          "aten.mul.Scalar": {
+            "calls": 26,
+            "output_elements": 926720,
+            "output_payload_bytes": 3706880
+          },
+          "aten.bmm.default": {
+            "calls": 26,
+            "output_elements": 3711488,
+            "output_payload_bytes": 14845952
+          },
+          "aten._safe_softmax.default": {
+            "calls": 13,
+            "output_elements": 3248128,
+            "output_payload_bytes": 12992512
+          },
+          "aten.clone.default": {
+            "calls": 16,
+            "output_elements": 512512,
+            "output_payload_bytes": 2050048
+          },
+          "aten.native_layer_norm.default": {
+            "calls": 17,
+            "output_elements": 385840,
+            "output_payload_bytes": 1543360
+          },
+          "aten.stack.default": {
+            "calls": 2,
+            "output_elements": 40960,
+            "output_payload_bytes": 163840
+          },
+          "aten.unbind.int": {
+            "calls": 1,
+            "output_elements": 16384,
+            "output_payload_bytes": 65536
+          },
+          "aten.mv.default": {
+            "calls": 1,
+            "output_elements": 192,
+            "output_payload_bytes": 768
+          },
+          "aten._softmax.default": {
+            "calls": 1,
+            "output_elements": 192,
+            "output_payload_bytes": 768
+          },
+          "aten.sum.dim_IntList": {
+            "calls": 1,
+            "output_elements": 8192,
+            "output_payload_bytes": 32768
+          },
+          "aten.split.Tensor": {
+            "calls": 6,
+            "output_elements": 196608,
+            "output_payload_bytes": 786432
+          }
+        },
+        "temporary_materializations": {
+          "core.front_blocks.0.down:aten.clone.default": {
+            "calls": 1,
+            "payload_bytes": 32768
+          },
+          "core.front_blocks.0.up:aten.clone.default": {
+            "calls": 1,
+            "payload_bytes": 497664
+          },
+          "core.front_blocks.1.down:aten.clone.default": {
+            "calls": 1,
+            "payload_bytes": 32768
+          },
+          "core.front_blocks.1.up:aten.clone.default": {
+            "calls": 1,
+            "payload_bytes": 497664
+          },
+          "core.bridge.cross.attn:aten.clone.default": {
+            "calls": 1,
+            "payload_bytes": 32768
+          },
+          "core.cdpa_at.0:aten.stack.default": {
+            "calls": 2,
+            "payload_bytes": 163840
+          },
+          "core.cdpa_at.0:aten.clone.default": {
+            "calls": 4,
+            "payload_bytes": 262144
+          },
+          "core.latent_blocks.0.self_attention.attn:aten.clone.default": {
+            "calls": 1,
+            "payload_bytes": 32768
+          },
+          "core.latent_blocks.1.self_attention.attn:aten.clone.default": {
+            "calls": 1,
+            "payload_bytes": 32768
+          },
+          "core.latent_blocks.2.self_attention.attn:aten.clone.default": {
+            "calls": 1,
+            "payload_bytes": 32768
+          },
+          "core.latent_blocks.3.self_attention.attn:aten.clone.default": {
+            "calls": 1,
+            "payload_bytes": 32768
+          },
+          "core.latent_blocks.4.self_attention.attn:aten.clone.default": {
+            "calls": 1,
+            "payload_bytes": 32768
+          },
+          "core.latent_blocks.5.self_attention.attn:aten.clone.default": {
+            "calls": 1,
+            "payload_bytes": 32768
+          },
+          "core.readout.up:aten.clone.default": {
+            "calls": 1,
+            "payload_bytes": 497664
+          }
+        },
+        "storage": {
+          "largest_point_block_input_payload_bytes": 497664,
+          "h_f_payload_bytes": 497664,
+          "largest_history_list_payload_bytes": 65536,
+          "current_latent_payload_bytes": 32768,
+          "current_latent_payload_note": "FP32 residual representation; actual mixed activation dtypes in norm/SDPA ledgers",
+          "saved_activation_unique_backing_bytes": 48374672,
+          "saved_activation_logical_bytes": 71101232,
+          "saved_storage_excludes": "parameters, buffers, input backing storage; not allocator peak"
+        }
+      },
+      "chunk_equivalence": {
+        "reference_chunk": 0,
+        "baseline": true
+      },
+      "untimed_eager_profiler": {
+        "observed_sdpa_ops": [
+          "aten::_scaled_dot_product_attention_math",
+          "aten::scaled_dot_product_attention"
+        ],
+        "profiler_partial_flops": 1237338600,
+        "partial_flops_warning": "not total FLOPs; SDPA and other unsupported ops can be omitted",
+        "regions": [
+          {
+            "op": "region::preprocess",
+            "calls": 1,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 3381.0080000000003,
+            "device_total_us": 19.905000000000655,
+            "self_device_us": 0.0
+          },
+          {
+            "op": "region::core.front_blocks.0",
+            "calls": 1,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 2454.583,
+            "device_total_us": 221.7969999999932,
+            "self_device_us": 0.0
+          },
+          {
+            "op": "region::core.front_blocks.1",
+            "calls": 1,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 2864.785,
+            "device_total_us": 219.69700000001012,
+            "self_device_us": 0.0
+          },
+          {
+            "op": "region::core.bridge",
+            "calls": 1,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 489.3780000000006,
+            "device_total_us": 81.64000000000306,
+            "self_device_us": 0.0
+          },
+          {
+            "op": "region::core.cdpa_at.0",
+            "calls": 1,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 1007.9529999999995,
+            "device_total_us": 56.13000000000102,
+            "self_device_us": 0.0
+          },
+          {
+            "op": "region::core.latent_blocks.0",
+            "calls": 1,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 665.6560000000009,
+            "device_total_us": 49.05999999999949,
+            "self_device_us": 0.0
+          },
+          {
+            "op": "region::core.latent_blocks.1",
+            "calls": 1,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 561.25,
+            "device_total_us": 48.99599999999373,
+            "self_device_us": 0.0
+          },
+          {
+            "op": "region::core.latent_blocks.2",
+            "calls": 1,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 499.04199999999946,
+            "device_total_us": 48.96499999999651,
+            "self_device_us": 0.0
+          },
+          {
+            "op": "region::core.latent_blocks.3",
+            "calls": 1,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 552.0389999999989,
+            "device_total_us": 48.705000000001746,
+            "self_device_us": 0.0
+          },
+          {
+            "op": "region::core.latent_blocks.4",
+            "calls": 1,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 643.4860000000008,
+            "device_total_us": 48.708999999997104,
+            "self_device_us": 0.0
+          },
+          {
+            "op": "region::core.latent_blocks.5",
+            "calls": 1,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 541.7270000000008,
+            "device_total_us": 48.58100000000013,
+            "self_device_us": 0.0
+          },
+          {
+            "op": "region::core.readout",
+            "calls": 1,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 888.8079999999991,
+            "device_total_us": 105.80299999999988,
+            "self_device_us": 0.0
+          }
+        ],
+        "top_self_device_ops": [
+          {
+            "op": "aten::addmm",
+            "calls": 42,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 3463.273000000003,
+            "device_total_us": 246.1929999999902,
+            "self_device_us": 241.9049999999902
+          },
+          {
+            "op": "aten::bmm",
+            "calls": 26,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 946.2949999999955,
+            "device_total_us": 193.70999999999913,
+            "self_device_us": 193.70999999999913
+          },
+          {
+            "op": "aten::mm",
+            "calls": 37,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 784.8229999999903,
+            "device_total_us": 168.2989999999927,
+            "self_device_us": 168.2989999999927
+          },
+          {
+            "op": "aten::mul",
+            "calls": 81,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 863.2089999999998,
+            "device_total_us": 85.60800000000381,
+            "self_device_us": 85.60800000000381
+          },
+          {
+            "op": "aten::add",
+            "calls": 48,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 593.1840000000002,
+            "device_total_us": 46.341999999997824,
+            "self_device_us": 46.341999999997824
+          },
+          {
+            "op": "aten::native_layer_norm",
+            "calls": 17,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 462.9790000000012,
+            "device_total_us": 37.283000000003085,
+            "self_device_us": 37.283000000003085
+          },
+          {
+            "op": "aten::mean",
+            "calls": 24,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 347.2269999999926,
+            "device_total_us": 35.746000000001004,
+            "self_device_us": 35.746000000001004
+          },
+          {
+            "op": "aten::all",
+            "calls": 13,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 163.68499999999585,
+            "device_total_us": 29.601000000000568,
+            "self_device_us": 29.601000000000568
+          },
+          {
+            "op": "aten::where",
+            "calls": 13,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 187.82500000000346,
+            "device_total_us": 24.898000000001957,
+            "self_device_us": 24.898000000001957
+          },
+          {
+            "op": "aten::rsqrt",
+            "calls": 24,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 220.75600000000486,
+            "device_total_us": 23.936000000000604,
+            "self_device_us": 23.936000000000604
+          },
+          {
+            "op": "aten::_softmax",
+            "calls": 14,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 175.46799999999985,
+            "device_total_us": 22.75300000000243,
+            "self_device_us": 22.75300000000243
+          },
+          {
+            "op": "aten::pow",
+            "calls": 24,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 460.9739999999938,
+            "device_total_us": 21.057000000003427,
+            "self_device_us": 21.057000000003427
+          }
+        ]
+      },
+      "measurement": {
+        "forward": {
+          "median_ms": 6.556652999279322,
+          "p90_ms": 7.9710732999956235,
+          "samples_ms": [
+            5.623588998787454,
+            7.025397000688827,
+            6.820684999183868,
+            6.913675000760122,
+            6.453811000028509,
+            5.66736400105583,
+            6.0821090009994805,
+            5.690683001375874,
+            7.033589999991818,
+            6.6594949985301355,
+            5.73752099990088,
+            5.714153998269467,
+            7.393310999759706,
+            6.9093380006961524,
+            6.166862000100082,
+            9.161716001472087,
+            7.970829999976559,
+            6.2158680011634715,
+            7.973263000167208,
+            6.123174000094878
+          ],
+          "allocated_before_bytes": 74889728,
+          "peak_allocated_bytes": 82062336,
+          "peak_increment_bytes": 7172608
+        },
+        "train_step": {
+          "median_ms": 36.77438849990722,
+          "p90_ms": 42.67780820027838,
+          "samples_ms": [
+            42.48768300021766,
+            34.83760500057542,
+            44.38893500082486,
+            36.71687799942447,
+            33.944734999749926,
+            33.77679199911654,
+            32.106587999805924,
+            37.58451899921056,
+            46.46894700090343,
+            41.90525299964065,
+            37.664637000489165,
+            36.83189900038997,
+            39.00763999990886,
+            34.50539900040894,
+            39.20421200018609,
+            35.07627799990587,
+            34.94830800082127,
+            34.888940999735496,
+            32.72593200017582,
+            38.12420100075542
+          ],
+          "allocated_before_bytes": 98195456,
+          "peak_allocated_bytes": 140627968,
+          "peak_increment_bytes": 42432512
+        },
+        "untimed_train_profiler": {
+          "diagnostic_extra_optimizer_steps": 1,
+          "aten_calls": 7818,
+          "top_cpu_ops": [
+            {
+              "op": "synthetic_train_step",
+              "calls": 1,
+              "self_cpu_us": 25817.593999999972,
+              "self_device_us": 0.0
+            },
+            {
+              "op": "cudaLaunchKernel",
+              "calls": 2396,
+              "self_cpu_us": 13579.572999999797,
+              "self_device_us": 0
+            },
+            {
+              "op": "Optimizer.step#AdamW.step",
+              "calls": 1,
+              "self_cpu_us": 3697.018999999884,
+              "self_device_us": 0.0
+            },
+            {
+              "op": "Activity Buffer Request",
+              "calls": 1,
+              "self_cpu_us": 2507.589,
+              "self_device_us": 4.096000000000004
+            },
+            {
+              "op": "aten::mm",
+              "calls": 194,
+              "self_cpu_us": 2425.8660000000064,
+              "self_device_us": 867.4689999999682
+            },
+            {
+              "op": "aten::bmm",
+              "calls": 78,
+              "self_cpu_us": 2094.882000000015,
+              "self_device_us": 627.568000000002
+            },
+            {
+              "op": "cuLaunchKernel",
+              "calls": 275,
+              "self_cpu_us": 1959.8929999999755,
+              "self_device_us": 0
+            },
+            {
+              "op": "aten::mul",
+              "calls": 330,
+              "self_cpu_us": 1893.007000000065,
+              "self_device_us": 355.470000000013
+            },
+            {
+              "op": "cudaLaunchKernelExC",
+              "calls": 203,
+              "self_cpu_us": 1233.3220000000083,
+              "self_device_us": 0
+            },
+            {
+              "op": "aten::add_",
+              "calls": 425,
+              "self_cpu_us": 1052.9700000002085,
+              "self_device_us": 218.68000000002212
+            },
+            {
+              "op": "aten::addmm",
+              "calls": 42,
+              "self_cpu_us": 961.5889999999886,
+              "self_device_us": 236.249999999995
+            },
+            {
+              "op": "aten::mul_",
+              "calls": 368,
+              "self_cpu_us": 947.6069999999163,
+              "self_device_us": 383.8919999998834
+            }
+          ]
+        },
+        "compiled_backend_probe": null,
+        "optimizer": {
+          "name": "AdamW",
+          "lr": 0.001,
+          "weight_decay": 1e-05,
+          "foreach": false,
+          "state_initialized_before_measured_train_steps": true,
+          "state_tensor_bytes": 15527912,
+          "cuda_state_tensor_bytes": 15527176,
+          "active_parameter_tensors": 184,
+          "successful_steps_per_active_parameter": [
+            25
+          ],
+          "grad_scaler_enabled": false
+        },
+        "timing": "synchronized perf_counter; includes host launch/wrapper overhead; no data I/O",
+        "loss": "synthetic FP32 mean squared error, one model call/update; not task loss/temporal rollout",
+        "memory_scope": "forward: model+buffers+inputs+output/temporaries, no grads/optimizer; train: also grads+initialized AdamW states",
+        "compile_cold": {}
+      }
+    }
+  ],
+  "errors": []
+}

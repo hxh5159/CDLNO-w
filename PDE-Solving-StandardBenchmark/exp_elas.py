@@ -32,6 +32,9 @@ parser.add_argument('--eval', type=int, default=0)
 parser.add_argument('--save_name', type=str, default='elas_Transolver')
 parser.add_argument('--data_path', type=str, default='/data/fno')
 args = parse_cdlno_args(parser, 'elasticity')
+if args.model == 'CDLNO':
+    from cdlno.experiment import start as start_experiment, finish as finish_experiment
+    start_experiment(args, args.cdlno_task, evaluation=bool(args.eval))
 eval = args.eval
 save_name = args.save_name
 
@@ -96,6 +99,8 @@ def main():
                                       ref=args.ref,
                                       unified_pos=args.unified_pos, **cdlno_model_kwargs(args)).cuda()
         cdlno_run = StaticRun(args, model)
+        if cdlno_run.recorder is not None:
+            cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest))
     else:
         model = get_model(args).Model(space_dim=2,
                                       n_layers=args.n_layers,
@@ -118,6 +123,8 @@ def main():
     count_parameters(model)
     
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
+    if cdlno_run is not None and cdlno_run.recorder is not None:
+        cdlno_run.recorder.record_training_setup(optimizer, scheduler)
     
     myloss = TestLoss(size_average=False)
 
@@ -175,6 +182,8 @@ def main():
 
         rel_err /= ntest
         print("rel_err : {}".format(rel_err))
+        if cdlno_run is not None and cdlno_run.recorder is not None:
+            cdlno_run.recorder.record_metrics(dict(relative_l2=rel_err))
     else:
         for ep in range(args.epochs):
 
@@ -212,6 +221,8 @@ def main():
 
             rel_err /= ntest
             print("rel_err : {}".format(rel_err))
+            if cdlno_run is not None and cdlno_run.recorder is not None:
+                cdlno_run.recorder.record_epoch(ep + 1, dict(train_loss=train_loss, validation_relative_l2=rel_err))
 
             if ep % 100 == 0:
                 if cdlno_run is not None:
@@ -233,3 +244,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+    if args.model == 'CDLNO':
+        finish_experiment(args)

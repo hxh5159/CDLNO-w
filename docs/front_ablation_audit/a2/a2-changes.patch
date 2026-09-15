@@ -1,0 +1,897 @@
+diff --git a/Airfoil-Design-AirfRANS/cdlno_entry.py b/Airfoil-Design-AirfRANS/cdlno_entry.py
+--- a/Airfoil-Design-AirfRANS/cdlno_entry.py
++++ b/Airfoil-Design-AirfRANS/cdlno_entry.py
+@@ -18,6 +18,8 @@
+ 
+ 
+ def parse_args(parser, *, evaluation=False, argv=None):
++    parser.add_argument('--front_latent_mode', '--front-latent-mode',
++                        choices=('full', 'no_sa', 'identity'), default=None)
+     for name, kind in MODEL_OPTIONS.items():
+         flags = ['--' + name]
+         if '_' in name:
+@@ -36,6 +38,12 @@
+     args = parser.parse_args(argv)
+     if args.model != 'CDLNO':
+         return args
++    if evaluation:
++        if args.run_dir is None:
++            parser.error('CDLNO evaluation requires an existing --run_dir')
++        from cdlno.checkpoint import resolve_front_latent_mode
++        args.front_latent_mode = resolve_front_latent_mode(
++            args.run_dir / 'architecture.json', args.front_latent_mode)
+     defaults = json.loads((Path(__file__).parent / 'configs/CDLNO/airfrans.json').read_text())['model']
+     for name, value in defaults.items():
+         if getattr(args, name) is None:
+@@ -55,6 +63,7 @@
+ 
+ def model_kwargs(args):
+     return dict(n_hidden=args.n_hidden, n_layers=args.n_layers, n_head=args.n_heads,
++                front_latent_mode=getattr(args, 'front_latent_mode', 'full'),
+                 slice_num=args.slice_num, front_blocks=args.front_blocks,
+                 mlp_ratio=args.mlp_ratio, latent_ffn_ratio=args.latent_ffn_ratio,
+                 dropout=args.dropout, cdpa_mode=args.cdpa_mode,
+@@ -102,7 +111,8 @@
+             self.directory = Path(args.run_dir).resolve()
+             self.validate()  # Sidecar is read before any whole-model load or write.
+         else:
+-            stem = f'L{args.n_layers}_F{args.front_blocks}_M{args.slice_num}_{args.cdpa_mode}_{_suffix()}'
++            mode_suffix = '' if self.architecture.front_latent_mode == 'full' else '_' + self.architecture.front_latent_mode
++            stem = f'L{args.n_layers}_F{args.front_blocks}_M{args.slice_num}_{args.cdpa_mode}{mode_suffix}_{_suffix()}'
+             self.directory = (Path(args.run_dir) if args.run_dir is not None else
+                               Path(args.save_path) / args.task / 'CDLNO' / stem).resolve()
+             self.directory.mkdir(parents=True, exist_ok=False)
+@@ -163,6 +173,8 @@
+         for model in models:
+             if type(model) is not AirfRANSModel:
+                 raise SidecarMismatch('checkpoint must contain cdlno.airfrans.AirfRANSModel')
++            from cdlno.checkpoint import validate_model_front_mode
++            validate_model_front_mode(model, self.architecture)
+             if (compare_architecture(self.architecture, model.config)
+                     or compare_architecture(self.architecture, model.core.config)
+                     or model.adapter_architecture() != self.adapter):
+diff --git a/Airfoil-Design-AirfRANS/configs/CDLNO/airfrans.json b/Airfoil-Design-AirfRANS/configs/CDLNO/airfrans.json
+--- a/Airfoil-Design-AirfRANS/configs/CDLNO/airfrans.json
++++ b/Airfoil-Design-AirfRANS/configs/CDLNO/airfrans.json
+@@ -1,6 +1,7 @@
+ {
+   "task": "airfrans",
+   "model": {
++    "front_latent_mode": "full",
+     "n_hidden": 256,
+     "n_layers": 8,
+     "n_heads": 8,
+diff --git a/Car-Design-ShapeNetCar/configs/CDLNO/shapenet_car.json b/Car-Design-ShapeNetCar/configs/CDLNO/shapenet_car.json
+--- a/Car-Design-ShapeNetCar/configs/CDLNO/shapenet_car.json
++++ b/Car-Design-ShapeNetCar/configs/CDLNO/shapenet_car.json
+@@ -1,6 +1,7 @@
+ {
+   "task": "shapenet-car",
+   "model": {
++    "front_latent_mode": "full",
+     "n_hidden": 256,
+     "n_layers": 8,
+     "n_heads": 8,
+diff --git a/Car-Design-ShapeNetCar/models/CDLNO.py b/Car-Design-ShapeNetCar/models/CDLNO.py
+--- a/Car-Design-ShapeNetCar/models/CDLNO.py
++++ b/Car-Design-ShapeNetCar/models/CDLNO.py
+@@ -12,14 +12,14 @@
+ 
+ def architecture(n_hidden=256, n_layers=8, n_head=8, mlp_ratio=2,
+                  dropout=0.0, slice_num=64, front_blocks=2,
+-                 latent_ffn_ratio=2.0, cdpa_mode="entry"):
++                 latent_ffn_ratio=2.0, cdpa_mode="entry", front_latent_mode="full"):
+     """Describe the fixed task input contract without constructing weights."""
+     if dropout != 0.0:
+         raise ValueError('the confirmed CDLNO core requires dropout=0')
+     return CDLNOArchitectureConfig(
+         task_name="shapenet-car", L=n_layers, F=front_blocks, M=slice_num,
+         d_model=n_hidden, num_heads=n_head, ffn_ratio=mlp_ratio,
+-        latent_ffn_ratio=latent_ffn_ratio, cdpa_mode=cdpa_mode,
++        latent_ffn_ratio=latent_ffn_ratio, cdpa_mode=cdpa_mode, front_latent_mode=front_latent_mode,
+         attention_dropout=dropout, structured=False, output_dim=4,
+     ).validate()
+ 
+@@ -45,10 +45,10 @@
+     def __init__(self, n_hidden=256, n_layers=8, n_head=8, mlp_ratio=2,
+                  dropout=0.0, slice_num=64, front_blocks=2,
+                  latent_ffn_ratio=2.0, cdpa_mode="entry",
+-                 cdpa_source_chunk_size=0):
++                 cdpa_source_chunk_size=0, front_latent_mode="full"):
+         super().__init__()
+         self.config = architecture(n_hidden, n_layers, n_head, mlp_ratio, dropout,
+-                                   slice_num, front_blocks, latent_ffn_ratio, cdpa_mode)
++                                   slice_num, front_blocks, latent_ffn_ratio, cdpa_mode, front_latent_mode)
+         self.preprocess = nn.Sequential(
+             nn.Linear(7, 2 * n_hidden), nn.GELU(), nn.Linear(2 * n_hidden, n_hidden)
+         )
+diff --git a/Car-Design-ShapeNetCar/models/cdlno_run.py b/Car-Design-ShapeNetCar/models/cdlno_run.py
+--- a/Car-Design-ShapeNetCar/models/cdlno_run.py
++++ b/Car-Design-ShapeNetCar/models/cdlno_run.py
+@@ -19,6 +19,8 @@
+ 
+ 
+ def parse_args(parser, *, evaluation=False, argv=None):
++    parser.add_argument('--front_latent_mode', '--front-latent-mode',
++                        choices=('full', 'no_sa', 'identity'), default=None)
+     for name, kind in MODEL_OPTIONS.items():
+         flags = ['--' + name]
+         if '_' in name:
+@@ -30,6 +32,12 @@
+     args = parser.parse_args(argv)
+     if args.cfd_model != 'CDLNO':
+         return args
++    if evaluation:
++        if args.run_dir is None:
++            parser.error('CDLNO evaluation requires --run_dir pointing to an existing run')
++        from cdlno.checkpoint import resolve_front_latent_mode
++        args.front_latent_mode = resolve_front_latent_mode(
++            args.run_dir / 'architecture.json', args.front_latent_mode)
+     preset_path = Path(__file__).resolve().parents[1] / 'configs' / 'CDLNO' / 'shapenet_car.json'
+     preset = json.loads(preset_path.read_text())
+     for name, value in preset['model'].items():
+@@ -55,6 +63,7 @@
+ 
+ def model_kwargs(args):
+     return dict(n_hidden=args.n_hidden, n_layers=args.n_layers, n_head=args.n_heads,
++                front_latent_mode=getattr(args, 'front_latent_mode', 'full'),
+                 slice_num=args.slice_num, front_blocks=args.front_blocks,
+                 mlp_ratio=args.mlp_ratio, latent_ffn_ratio=args.latent_ffn_ratio,
+                 dropout=args.dropout, cdpa_mode=args.cdpa_mode,
+@@ -96,8 +105,9 @@
+             self.validate()  # Read sidecar first; never write in evaluation.
+         else:
+             self._check_model(model)
++            mode_suffix = '' if self.architecture.front_latent_mode == 'full' else '_' + self.architecture.front_latent_mode
+             stem = (f'fold{args.fold_id}_L{args.n_layers}_F{args.front_blocks}'
+-                    f'_M{args.slice_num}_{args.cdpa_mode}_{_unique_suffix()}')
++                    f'_M{args.slice_num}_{args.cdpa_mode}{mode_suffix}_{_unique_suffix()}')
+             self.directory = (Path(args.run_dir) if args.run_dir is not None
+                               else Path('runs') / 'CDLNO' / 'shapenet-car' / stem).resolve()
+             self.directory.mkdir(parents=True, exist_ok=False)
+@@ -140,6 +150,8 @@
+         from cdlno.checkpoint import SidecarMismatch, compare_architecture
+         if type(model) is not Model:
+             raise SidecarMismatch('checkpoint must contain models.CDLNO.Model')
++        from cdlno.checkpoint import validate_model_front_mode
++        validate_model_front_mode(model, self.architecture)
+         if (compare_architecture(self.architecture, model.config)
+                 or compare_architecture(self.architecture, model.core.config)
+                 or model.adapter_architecture() != self.adapter):
+diff --git a/PDE-Solving-StandardBenchmark/cdlno_entry.py b/PDE-Solving-StandardBenchmark/cdlno_entry.py
+--- a/PDE-Solving-StandardBenchmark/cdlno_entry.py
++++ b/PDE-Solving-StandardBenchmark/cdlno_entry.py
+@@ -16,6 +16,8 @@
+ 
+ 
+ def parse_args(parser, task, argv=None):
++    parser.add_argument('--front-latent-mode', '--front_latent_mode',
++                        choices=('full', 'no_sa', 'identity'), default=None)
+     parser.add_argument('--front-blocks', type=int, default=2)
+     parser.add_argument('--latent-ffn-ratio', type=float, default=2.0)
+     parser.add_argument('--cdpa-mode', choices=('off', 'entry', 'every_block'), default='entry')
+@@ -33,14 +35,25 @@
+     for action in probe._actions:
+         action.default = argparse.SUPPRESS
+     explicit = vars(probe.parse_args(tokens))
++    saved_mode = None
++    if args.eval:
++        if args.cdlno_run_dir is None:
++            parser.error('CDLNO eval requires --cdlno-run-dir pointing to an existing run')
++        from cdlno.checkpoint import resolve_front_latent_mode
++        saved_mode = resolve_front_latent_mode(args.cdlno_run_dir / 'architecture.json',
++                                              explicit.get('front_latent_mode'))
+     preset = json.loads((Path(__file__).parent / 'configs' / 'CDLNO' / f'{task}.json').read_text())
+     for name, value in {**preset['model'], **preset['training']}.items():
+         if name not in explicit:
+             setattr(args, name, value)
++    if saved_mode is not None:
++        args.front_latent_mode = saved_mode
+     args.cdlno_task = task
+     if 'save_name' not in explicit:
+         args.save_name = (f'{task}_CDLNO_L{args.n_layers}_F{args.front_blocks}'
+                           f'_M{args.slice_num}_{args.cdpa_mode}')
++        if args.front_latent_mode != 'full':
++            args.save_name += '_' + args.front_latent_mode
+     if args.eval and args.cdlno_run_dir is None:
+         parser.error('CDLNO eval requires --cdlno-run-dir pointing to an existing run')
+     if not re.fullmatch(r'[A-Za-z0-9_.-]+', args.save_name) or args.save_name in ('.', '..'):
+@@ -51,6 +64,7 @@
+ def model_kwargs(args):
+     """Call only on the CDLNO branch; original constructors receive no new keys."""
+     return dict(task_name=args.cdlno_task, front_blocks=args.front_blocks,
++                front_latent_mode=getattr(args, 'front_latent_mode', 'full'),
+                 latent_ffn_ratio=args.latent_ffn_ratio, cdpa_mode=args.cdpa_mode,
+                 cdpa_source_chunk_size=args.cdpa_source_chunk_size)
+ 
+diff --git a/PDE-Solving-StandardBenchmark/configs/CDLNO/airfoil.json b/PDE-Solving-StandardBenchmark/configs/CDLNO/airfoil.json
+--- a/PDE-Solving-StandardBenchmark/configs/CDLNO/airfoil.json
++++ b/PDE-Solving-StandardBenchmark/configs/CDLNO/airfoil.json
+@@ -1,6 +1,7 @@
+ {
+   "task": "airfoil",
+   "model": {
++    "front_latent_mode": "full",
+     "n_hidden": 128,
+     "n_layers": 8,
+     "n_heads": 4,
+diff --git a/PDE-Solving-StandardBenchmark/configs/CDLNO/darcy.json b/PDE-Solving-StandardBenchmark/configs/CDLNO/darcy.json
+--- a/PDE-Solving-StandardBenchmark/configs/CDLNO/darcy.json
++++ b/PDE-Solving-StandardBenchmark/configs/CDLNO/darcy.json
+@@ -1,6 +1,7 @@
+ {
+   "task": "darcy",
+   "model": {
++    "front_latent_mode": "full",
+     "n_hidden": 128,
+     "n_layers": 8,
+     "n_heads": 8,
+diff --git a/PDE-Solving-StandardBenchmark/configs/CDLNO/elasticity.json b/PDE-Solving-StandardBenchmark/configs/CDLNO/elasticity.json
+--- a/PDE-Solving-StandardBenchmark/configs/CDLNO/elasticity.json
++++ b/PDE-Solving-StandardBenchmark/configs/CDLNO/elasticity.json
+@@ -1,6 +1,7 @@
+ {
+   "task": "elasticity",
+   "model": {
++    "front_latent_mode": "full",
+     "n_hidden": 128,
+     "n_layers": 8,
+     "n_heads": 8,
+diff --git a/PDE-Solving-StandardBenchmark/configs/CDLNO/ns.json b/PDE-Solving-StandardBenchmark/configs/CDLNO/ns.json
+--- a/PDE-Solving-StandardBenchmark/configs/CDLNO/ns.json
++++ b/PDE-Solving-StandardBenchmark/configs/CDLNO/ns.json
+@@ -1,6 +1,7 @@
+ {
+   "task": "ns",
+   "model": {
++    "front_latent_mode": "full",
+     "n_hidden": 256,
+     "n_layers": 8,
+     "n_heads": 8,
+diff --git a/PDE-Solving-StandardBenchmark/configs/CDLNO/pipe.json b/PDE-Solving-StandardBenchmark/configs/CDLNO/pipe.json
+--- a/PDE-Solving-StandardBenchmark/configs/CDLNO/pipe.json
++++ b/PDE-Solving-StandardBenchmark/configs/CDLNO/pipe.json
+@@ -1,6 +1,7 @@
+ {
+   "task": "pipe",
+   "model": {
++    "front_latent_mode": "full",
+     "n_hidden": 128,
+     "n_layers": 8,
+     "n_heads": 4,
+diff --git a/PDE-Solving-StandardBenchmark/configs/CDLNO/plasticity.json b/PDE-Solving-StandardBenchmark/configs/CDLNO/plasticity.json
+--- a/PDE-Solving-StandardBenchmark/configs/CDLNO/plasticity.json
++++ b/PDE-Solving-StandardBenchmark/configs/CDLNO/plasticity.json
+@@ -1,6 +1,7 @@
+ {
+   "task": "plasticity",
+   "model": {
++    "front_latent_mode": "full",
+     "n_hidden": 128,
+     "n_layers": 8,
+     "n_heads": 8,
+diff --git a/cdlno/airfrans.py b/cdlno/airfrans.py
+--- a/cdlno/airfrans.py
++++ b/cdlno/airfrans.py
+@@ -12,13 +12,13 @@
+ 
+ def architecture(n_hidden=256, n_layers=8, n_head=8, mlp_ratio=2,
+                  dropout=0., slice_num=64, front_blocks=2,
+-                 latent_ffn_ratio=2., cdpa_mode='entry'):
++                 latent_ffn_ratio=2., cdpa_mode='entry', front_latent_mode='full'):
+     if dropout != 0.:
+         raise ValueError('the confirmed CDLNO core requires dropout=0')
+     return CDLNOArchitectureConfig(
+         task_name='airfrans', L=n_layers, F=front_blocks, M=slice_num,
+         d_model=n_hidden, num_heads=n_head, ffn_ratio=mlp_ratio,
+-        latent_ffn_ratio=latent_ffn_ratio, cdpa_mode=cdpa_mode,
++        latent_ffn_ratio=latent_ffn_ratio, cdpa_mode=cdpa_mode, front_latent_mode=front_latent_mode,
+         attention_dropout=dropout, structured=False, output_dim=4,
+     ).validate()
+ 
+@@ -62,10 +62,11 @@
+ 
+     def __init__(self, n_hidden=256, n_layers=8, n_head=8, mlp_ratio=2,
+                  dropout=0., slice_num=64, front_blocks=2,
+-                 latent_ffn_ratio=2., cdpa_mode='entry', cdpa_source_chunk_size=0):
++                 latent_ffn_ratio=2., cdpa_mode='entry', cdpa_source_chunk_size=0,
++                 front_latent_mode='full'):
+         super().__init__()
+         self.config = architecture(n_hidden, n_layers, n_head, mlp_ratio, dropout,
+-                                   slice_num, front_blocks, latent_ffn_ratio, cdpa_mode)
++                                   slice_num, front_blocks, latent_ffn_ratio, cdpa_mode, front_latent_mode)
+         self.preprocess = nn.Sequential(nn.Linear(71, 2 * n_hidden), nn.GELU(),
+                                         nn.Linear(2 * n_hidden, n_hidden))
+         _init_linear(self.preprocess[0])
+diff --git a/cdlno/checkpoint.py b/cdlno/checkpoint.py
+--- a/cdlno/checkpoint.py
++++ b/cdlno/checkpoint.py
+@@ -3,6 +3,7 @@
+ from __future__ import annotations
+ 
+ import argparse
++from dataclasses import fields
+ import json
+ from pathlib import Path
+ from typing import Any
+@@ -66,7 +67,17 @@
+     payload = json.loads(source.read_text(encoding="utf-8"))
+     if payload.get("schema_version") != SCHEMA_VERSION:
+         raise SidecarMismatch(f"unsupported sidecar schema: {payload.get('schema_version')!r}")
+-    architecture = CDLNOArchitectureConfig.from_dict(payload["architecture"])
++    raw = payload.get("architecture")
++    if not isinstance(raw, dict):
++        raise SidecarMismatch('sidecar architecture must be a complete object')
++    missing = {field.name for field in fields(CDLNOArchitectureConfig)} - raw.keys()
++    if missing == {'front_latent_mode'} and (
++            raw.get('model_name') == 'CDLNO' and raw.get('model_version') == 'cdlno-core-v1'
++            and raw.get('history_rule') == 'front-t-after-ffn2-before-up-v1'):
++        raw = dict(raw, front_latent_mode='full')  # Known pre-A1 full only; no file rewrite.
++    elif missing:
++        raise SidecarMismatch('sidecar missing architecture fields: ' + ', '.join(sorted(missing)))
++    architecture = CDLNOArchitectureConfig.from_dict(raw)
+     derived = payload.get("derived", {})
+     if derived.get("P", architecture.P) != architecture.P:
+         raise SidecarMismatch("sidecar derived.P does not match L-F")
+@@ -74,6 +85,36 @@
+     payload["architecture"] = architecture.to_dict()
+     payload["derived"] = {"P": architecture.P}
+     return payload
++
++
++def resolve_front_latent_mode(path: str | Path, explicit: str | None) -> str:
++    """Read an eval sidecar first, then check only a user-supplied mode override."""
++    saved = load_sidecar(path)['architecture']['front_latent_mode']
++    if explicit is not None and explicit != saved:
++        raise SidecarMismatch(
++            f'architecture mismatch: front_latent_mode (checkpoint={saved!r}, requested={explicit!r})')
++    return saved
++
++
++def validate_model_front_mode(model, architecture: CDLNOArchitectureConfig) -> None:
++    """Check saved object semantics, including pre-A1 objects whose init is not run.
++
++    This does not rebuild or migrate weights. Industrial callers also compare
++    wrapper contracts and strictly validate the complete state_dict as before.
++    """
++    if not all(isinstance(value, CDLNOArchitectureConfig) for value in (model.config, model.core.config)):
++        raise SidecarMismatch('checkpoint wrapper/core require complete CDLNOArchitectureConfig objects')
++    if (compare_architecture(architecture, model.config)
++            or compare_architecture(architecture, model.core.config)):
++        raise SidecarMismatch('checkpoint wrapper/core architecture disagree (including front_latent_mode)')
++    fronts = model.core.front_blocks
++    if len(fronts) != architecture.F:
++        raise SidecarMismatch('checkpoint front block count disagrees with F')
++    for index, block in enumerate(fronts):
++        # Genuine old objects have no field: their only supported path is full.
++        mode = getattr(block, 'front_latent_mode', 'full')
++        if mode != architecture.front_latent_mode:
++            raise SidecarMismatch(f'checkpoint front_blocks.{index}.front_latent_mode disagrees with architecture')
+ 
+ 
+ def validate_sidecar(
+diff --git a/cdlno/standard.py b/cdlno/standard.py
+--- a/cdlno/standard.py
++++ b/cdlno/standard.py
+@@ -50,7 +50,7 @@
+         n_head=None, Time_Input=False, act='gelu', mlp_ratio=2,
+         fun_dim=None, out_dim=1, slice_num=None, ref=8, unified_pos=None,
+         H=None, W=None, *, task_name, front_blocks=2, latent_ffn_ratio=2,
+-        cdpa_mode='entry', cdpa_source_chunk_size=0,
++        cdpa_mode='entry', cdpa_source_chunk_size=0, front_latent_mode='full',
+     ):
+         super().__init__()
+         if task_name not in STATIC_TASKS:
+@@ -77,7 +77,7 @@
+             M=task['latents'] if slice_num is None else slice_num, d_model=n_hidden,
+             num_heads=task['heads'] if n_head is None else n_head,
+             ffn_ratio=mlp_ratio, latent_ffn_ratio=latent_ffn_ratio,
+-            cdpa_mode=cdpa_mode, attention_dropout=dropout,
++            cdpa_mode=cdpa_mode, attention_dropout=dropout, front_latent_mode=front_latent_mode,
+             structured=task['structured'], grid_shape=(H, W) if task['structured'] else None,
+             output_dim=out_dim,
+         ).validate()
+@@ -161,7 +161,7 @@
+         n_head=None, Time_Input=False, act='gelu', mlp_ratio=2,
+         fun_dim=None, out_dim=None, slice_num=None, ref=8, unified_pos=None,
+         H=None, W=None, *, task_name, front_blocks=2, latent_ffn_ratio=2,
+-        cdpa_mode='entry', cdpa_source_chunk_size=0,
++        cdpa_mode='entry', cdpa_source_chunk_size=0, front_latent_mode='full',
+     ):
+         super().__init__()
+         if task_name not in TEMPORAL_TASKS:
+@@ -183,7 +183,7 @@
+             M=task['latents'] if slice_num is None else slice_num, d_model=n_hidden,
+             num_heads=task['heads'] if n_head is None else n_head,
+             ffn_ratio=mlp_ratio, latent_ffn_ratio=latent_ffn_ratio,
+-            cdpa_mode=cdpa_mode, attention_dropout=dropout,
++            cdpa_mode=cdpa_mode, attention_dropout=dropout, front_latent_mode=front_latent_mode,
+             structured=True, grid_shape=(H, W), output_dim=out_dim,
+         ).validate()
+         self.task_name, self.space_dim, self.fun_dim = task_name, space_dim, fun_dim
+diff --git a/tests/test_airfrans.py b/tests/test_airfrans.py
+--- a/tests/test_airfrans.py
++++ b/tests/test_airfrans.py
+@@ -421,7 +421,9 @@
+         self.assertTrue((AIR/'params.yaml').read_text().startswith(original('params.yaml')))
+         print('AirfRANS original frozen files byte-identical:',count)
+ 
+-    def test_scripts_configuration_and_evaluation_model_selection(self):
++    # Argument-only launch check; actual sidecar/load tests do not mock this.
++    @patch('cdlno.checkpoint.resolve_front_latent_mode', return_value='full')
++    def test_scripts_configuration_and_evaluation_model_selection(self, _mode):
+         for evaluation,filename in ((False,'CDLNO.sh'),(True,'CDLNO_Evaluation.sh')):
+             script=AIR/'scripts'/filename
+             subprocess.run(['bash','-n',str(script)],check=True)
+diff --git a/tests/test_shapenet_car.py b/tests/test_shapenet_car.py
+--- a/tests/test_shapenet_car.py
++++ b/tests/test_shapenet_car.py
+@@ -417,7 +417,9 @@
+             count += 1
+         print('Frozen Car/AirfRANS original files byte-identical:', count)
+ 
+-    def test_epoch_path_fix_and_launch_arguments(self):
++    # Argument-only launch check; the placeholder paths contain no checkpoint.
++    @patch('cdlno.checkpoint.resolve_front_latent_mode', return_value='full')
++    def test_epoch_path_fix_and_launch_arguments(self, _mode):
+         old = entry_parser(True, True).parse_args(['--nb_epochs', '200'])
+         self.assertEqual(f'model_{old.nb_epochs}.pth', 'model_200.0.pth')
+         fixed = parse_args(entry_parser(True), evaluation=True, argv=['--cfd_model', 'Transolver', '--nb_epochs', '200'])
+diff --git a/tests/test_static_standard.py b/tests/test_static_standard.py
+--- a/tests/test_static_standard.py
++++ b/tests/test_static_standard.py
+@@ -430,7 +430,10 @@
+         original = subprocess.check_output(['git','show',f'{UPSTREAM}:PDE-Solving-StandardBenchmark/model_dict.py'], cwd=ROOT, text=True)
+         self.assertEqual(ast.dump(LegacyProjection().visit(current)), ast.dump(ast.parse(original)))
+ 
+-    def test_scripts_syntax_arguments_and_fresh_imports(self):
++    # This test captures arguments only, with a placeholder /existing-run.
++    # Real eval sidecar resolution is covered by checkpoint and A2 task tests.
++    @patch('cdlno.checkpoint.resolve_front_latent_mode', return_value='full')
++    def test_scripts_syntax_arguments_and_fresh_imports(self, _mode):
+         with tempfile.TemporaryDirectory() as folder:
+             # Capture argv with a temporary executable, never run exp scripts or
+             # manufacture datasets. This exercises shell paths and "$@" quoting.
+diff --git a/tran_evaluate/_common.sh b/tran_evaluate/_common.sh
+--- a/tran_evaluate/_common.sh
++++ b/tran_evaluate/_common.sh
+@@ -28,6 +28,26 @@
+ export CDLNO_RUNS_ROOT="${CDLNO_RUNS_ROOT:-$cdlno_repo_root/runs/CDLNO}"
+ export CDLNO_RUN_TAG="${CDLNO_RUN_TAG:-entry}"
+ export CDLNO_PYTHON="${CDLNO_PYTHON:-${PYTHON_BIN:-python}}"
++
++cdlno_front_run_suffix() {
++    # Only choose the implicit run name; explicit run paths still win last.
++    # Do not inject a mode flag: eval with an explicit run can infer its mode.
++    local selected=full
++    while (($#)); do
++        case "$1" in
++            --front-latent-mode|--front_latent_mode)
++                (($# >= 2)) || { printf 'Missing front latent mode\n' >&2; return 2; }
++                selected="$2"; shift ;;
++            --front-latent-mode=*|--front_latent_mode=*) selected="${1#*=}" ;;
++        esac
++        shift
++    done
++    case "$selected" in
++        full) ;;
++        no_sa|identity) printf '_%s' "$selected" ;;
++        *) printf 'Invalid front_latent_mode: %s\n' "$selected" >&2; return 2 ;;
++    esac
++}
+ 
+ cdlno_dispatch() {
+     local task_project="$1" task_entry="$2"
+diff --git a/tran_evaluate/_standard.sh b/tran_evaluate/_standard.sh
+--- a/tran_evaluate/_standard.sh
++++ b/tran_evaluate/_standard.sh
+@@ -24,6 +24,8 @@
+     *) printf 'Expected train, eval or help.\n' >&2; exit 2 ;;
+ esac
+ shift
++
++cdlno_mode_suffix="$(cdlno_front_run_suffix "$@")"
+ 
+ # Explicit values match the already accepted CDLNO task presets/launchers.
+ cdlno_width=128 cdlno_heads=8 cdlno_latents=64 cdlno_unified=0
+@@ -66,5 +68,5 @@
+     --unified_pos "$cdlno_unified" --ref 8 \
+     --lr 0.001 --epochs 500 --batch-size "$cdlno_batch" --weight_decay 1e-5 \
+     "${cdlno_clip[@]}" "${cdlno_extra[@]}" \
+-    --data_path "$cdlno_data" --cdlno-run-dir "$CDLNO_RUNS_ROOT/$cdlno_task/$CDLNO_RUN_TAG" \
++    --data_path "$cdlno_data" --cdlno-run-dir "$CDLNO_RUNS_ROOT/$cdlno_task/${CDLNO_RUN_TAG}${cdlno_mode_suffix}" \
+     --eval "$cdlno_eval" "$@"
+diff --git a/tran_evaluate/airfrans.sh b/tran_evaluate/airfrans.sh
+--- a/tran_evaluate/airfrans.sh
++++ b/tran_evaluate/airfrans.sh
+@@ -23,6 +23,7 @@
+     *) printf 'Expected train, eval or help.\n' >&2; exit 2 ;;
+ esac
+ shift
++cdlno_mode_suffix="$(cdlno_front_run_suffix "$@")"
+ cdlno_dataset="${CDLNO_AIRFRANS_DATASET%/}"
+ cdlno_extra=()
+ if [[ "$cdlno_entry" == main.py ]]; then
+@@ -47,5 +48,5 @@
+     --cdpa_mode entry --cdpa_source_chunk_size 0 \
+     --nb_epochs 398 --batch_size 1 --lr 0.001 \
+     --my_path "$cdlno_data_arg" --save_path "$CDLNO_RUNS_ROOT" \
+-    --run_dir "$CDLNO_RUNS_ROOT/airfrans/full_$CDLNO_RUN_TAG" \
++    --run_dir "$CDLNO_RUNS_ROOT/airfrans/full_${CDLNO_RUN_TAG}${cdlno_mode_suffix}" \
+     "${cdlno_extra[@]}" "$@"
+diff --git a/tran_evaluate/car.sh b/tran_evaluate/car.sh
+--- a/tran_evaluate/car.sh
++++ b/tran_evaluate/car.sh
+@@ -34,9 +34,10 @@
+ esac
+ shift
+ 
++cdlno_mode_suffix="$(cdlno_front_run_suffix "$@")"
+ cdlno_args=(
+     --data_dir "$CDLNO_CAR_RAW_ROOT" --save_dir "$CDLNO_CAR_CACHE_ROOT"
+-    --run_dir "$CDLNO_RUNS_ROOT/car/fold0_$CDLNO_RUN_TAG"
++    --run_dir "$CDLNO_RUNS_ROOT/car/fold0_${CDLNO_RUN_TAG}${cdlno_mode_suffix}"
+     --cfd_model CDLNO
+     --n_hidden 256 --n_layers 8 --n_heads 8 --slice_num 64
+     --front_blocks 2 --mlp_ratio 2 --latent_ffn_ratio 2 --dropout 0
+diff --git a/tests/test_front_task_modes.py b/tests/test_front_task_modes.py
+new file mode 100644
+--- /dev/null
++++ b/tests/test_front_task_modes.py
+@@ -0,0 +1,356 @@
++"""A2: actual parsers/constructors/checkpoints; synthetic tensors, never exp imports."""
++import ast
++from contextlib import redirect_stdout
++import copy
++from dataclasses import replace
++import io
++import json
++import os
++from pathlib import Path
++import shlex
++import shutil
++import subprocess
++import sys
++import tempfile
++import unittest
++from unittest.mock import patch
++
++import torch
++from torch.nn.attention import SDPBackend, sdpa_kernel
++from torch_geometric.data import Data, Batch
++
++import test_static_standard as static
++import test_temporal_standard as temporal
++import test_shapenet_car as car
++import test_airfrans as air
++from cdlno import CDLNOArchitectureConfig
++from cdlno.checkpoint import SidecarMismatch, save_sidecar, load_sidecar
++
++ROOT = Path(__file__).resolve().parents[1]
++MODES = ('full', 'no_sa', 'identity')
++STANDARD = ('darcy', 'elasticity', 'airfoil', 'pipe', 'ns', 'plasticity')
++TASKS = (*STANDARD, 'car', 'airfrans')
++SMALL = ['--n-hidden', '8', '--n-heads', '2', '--slice_num', '4']
++LEGACY = Path(os.environ.get('CDLNO_A1_BASELINE', '/home/hwz/CDLNO-artifacts/front-a1-before-_okzkms0'))
++
++
++def parse(task, options=(), evaluation=False):
++    if task in STANDARD:
++        p = static.parser_for(task) if task in static.TASKS else temporal.parser(task)
++        return static.parse_args(p, task, ['--model', 'CDLNO', '--eval', str(int(evaluation)), *options])
++    return car.args(options, evaluation) if task == 'car' else air.args(options, evaluation)
++
++
++def build(task, args):
++    if task in static.TASKS:
++        return static.construct(task, args)
++    if task in ('ns', 'plasticity'):
++        # Evaluate the actual existing model constructor AST without .cuda/data.
++        stem = 'ns' if task == 'ns' else 'plas'
++        tree = ast.parse((static.PROJECT / f'exp_{stem}.py').read_text())
++        main = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'main')
++        branch = next(n for n in main.body if isinstance(n, ast.If) and ast.unparse(n.test) == "args.model == 'CDLNO'")
++        call = branch.body[0].value.func.value
++        return eval(compile(ast.Expression(call), '<task-constructor-only>', 'eval'),
++                    dict(args=args, get_model=static.get_model, cdlno_model_kwargs=static.model_kwargs,
++                     h=64, s1=101, s2=31, T_in=10, Deformation=4))
++    return car.Model(**car.model_kwargs(args)) if task == 'car' else air.AirfRANSModel(**air.entry.model_kwargs(args))
++
++
++def make_run(task, args, model=None, evaluation=False):
++    if task in STANDARD:
++        return static.StaticRun(args, model)
++    if task == 'car':
++        return car.new_run(args, model, evaluation)
++    return air.run(args, evaluation)
++
++
++def run_option(task, path):
++    return ['--cdlno-run-dir' if task in STANDARD else '--run_dir', str(path)]
++
++
++def inputs(task, model, n=11):
++    if task in STANDARD:
++        count = model.H * model.W if model.config.structured else n
++        x = torch.randn(2, count, 2)
++        fx = torch.randn(2, count, model.fun_dim) if model.fun_dim else None
++        return (x, fx, torch.tensor([[.15], [.8]]) if task == 'plasticity' else None)
++    graph = Batch.from_data_list([Data(x=torch.randn(n, 7), pos=torch.randn(n, 2),
++                                      y=torch.randn(n, 4), surf=torch.arange(n) % 2 == 0)])
++    return ((graph, Data()),) if task == 'car' else (graph,)
++
++
++def save(task, run, model):
++    if task in STANDARD:
++        run.save(model)
++    elif task == 'car':
++        torch.save(model, run.checkpoint)
++    else:
++        torch.save([model], run.checkpoint)
++        Path(run.member_dir(0)).mkdir()
++        torch.save(model, Path(run.member_dir(0)) / 'model')
++
++
++def load(task, run, model):
++    if task in STANDARD:
++        run.load(model)
++        return model
++    saved = run.load()
++    return saved if task == 'car' else saved[0]
++
++
++class TaskFrontModes(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        cls.threads = torch.get_num_threads()
++        torch.set_num_threads(1)
++
++    @classmethod
++    def tearDownClass(cls):
++        torch.set_num_threads(cls.threads)
++
++    def setUp(self):
++        torch.manual_seed(222)
++        context = sdpa_kernel(SDPBackend.MATH)
++        context.__enter__()
++        self.addCleanup(context.__exit__, None, None, None)
++
++    def test_eight_task_three_mode_real_constructor_backward_and_roundtrip(self):
++        for task in TASKS:
++            for mode in MODES:
++                with self.subTest(task=task, mode=mode), tempfile.TemporaryDirectory() as tmp, redirect_stdout(io.StringIO()):
++                    options = [*SMALL, *run_option(task, Path(tmp) / 'run')]
++                    a = parse(task, [*options, '--front-latent-mode', mode])
++                    m = build(task, a).eval()
++                    self.assertEqual(m.config.front_latent_mode, mode)
++                    self.assertTrue(all(b.front_latent_mode == mode for b in m.core.front_blocks))
++                    args = inputs(task, m)
++                    output = m(*args)
++                    self.assertEqual(output.shape[-1], 4 if task in ('plasticity', 'car', 'airfrans') else 1)
++                    if task in STANDARD:
++                        loss = static.TestLoss(size_average=False)(output.flatten(1), torch.randn_like(output).flatten(1))
++                    else:
++                        graph = args[0][0] if task == 'car' else args[0]
++                        # Execute the original loss assignments only. Air's default
++                        # MSE backward uses total_loss; masks also supply metrics.
++                        path = (car.CAR if task == 'car' else air.AIR) / 'train.py'
++                        original = ast.parse(path.read_text())
++                        train = next(n for n in original.body if isinstance(n, ast.FunctionDef) and n.name == 'train')
++                        names = {'loss_press', 'loss_velo_var', 'loss_velo', 'total_loss'} if task == 'car' else {
++                            'loss_per_var', 'total_loss', 'loss_surf_var', 'loss_vol_var', 'loss_surf', 'loss_vol'}
++                        assignments = [n for n in ast.walk(train) if isinstance(n, ast.Assign)
++                                       and isinstance(n.targets[0], ast.Name) and n.targets[0].id in names]
++                        assignments.sort(key=lambda n: n.lineno)
++                        scope = dict(out=output, targets=graph.y, cfd_data=graph, data_clone=graph,
++                                     criterion_func=torch.nn.MSELoss(reduction='none'),
++                                     loss_criterion=torch.nn.MSELoss(reduction='none'), reg=.5)
++                        exec(compile(ast.Module(body=assignments, type_ignores=[]), '<original-mask-loss>', 'exec'), scope)
++                        loss = scope['total_loss']
++                    loss.backward()
++                    for name, p in m.named_parameters():
++                        self.assertIsNotNone(p.grad, name)
++                        self.assertTrue(torch.isfinite(p.grad).all(), name)
++                    run = make_run(task, a, m)
++                    save(task, run, m)
++                    before = run.sidecar.read_bytes()
++                    self.assertEqual(json.loads(before)['architecture']['front_latent_mode'], mode)
++                    self.assertEqual(json.loads(before)['metadata']['resolved_arguments']['front_latent_mode'], mode)
++                    if task in STANDARD and mode == 'full':
++                        legacy = json.loads(before)
++                        legacy['architecture'].pop('front_latent_mode')
++                        legacy['architecture']['history_rule'] = 'front-t-after-ffn2-before-up-v1'
++                        run.sidecar.write_text(json.dumps(legacy))
++                        before = run.sidecar.read_bytes()
++                    # OMIT mode: eval must infer it before a constructor sees defaults.
++                    ev = parse(task, [*options, '--cdpa-source-chunk-size', '1'], True)
++                    self.assertEqual(ev.front_latent_mode, mode)
++                    restored = build(task, ev)
++                    evaluation = make_run(task, ev, restored, True)
++                    restored = load(task, evaluation, restored).eval()
++                    torch.testing.assert_close(restored(*args), output, atol=1e-5, rtol=3e-4)
++                    if task == 'airfrans':
++                        torch.testing.assert_close(evaluation.load(member=0).eval()(*args), output, atol=1e-5, rtol=3e-4)
++                    for conflict in set(MODES) - {mode}:
++                        with patch('torch.load') as unpickle, self.assertRaisesRegex(SidecarMismatch, 'front_latent_mode'):
++                            parse(task, [*options, '--front-latent-mode', conflict], True)
++                        unpickle.assert_not_called()
++                    self.assertEqual(run.sidecar.read_bytes(), before)
++                    with self.assertRaises(FileExistsError):
++                        make_run(task, a, m)
++
++    def test_defaults_cli_precedence_frozen_presets_and_legacy_branches(self):
++        presets = json.loads((ROOT / 'docs/front_ablation_audit/a2/before-presets.json').read_text())
++        for task in TASKS:
++            a = parse(task)
++            self.assertEqual(a.front_latent_mode, 'full')
++            self.assertEqual(a.slice_num, 32 if task == 'pipe' else 64)
++            self.assertEqual(parse(task, ['--front-latent-mode=no_sa', '--front_latent_mode', 'identity']).front_latent_mode, 'identity')
++            with patch('sys.stderr', new=io.StringIO()), self.assertRaises(SystemExit):
++                parse(task, ['--front-latent-mode', 'invalid'])
++        for name, before in presets.items():
++            now = json.loads((ROOT / name).read_text())
++            self.assertEqual(now['model'].pop('front_latent_mode'), 'full')
++            self.assertEqual(now, before)
++        # Both legacy train and eval parsers return before sidecar resolution.
++        with patch('cdlno.checkpoint.resolve_front_latent_mode', side_effect=AssertionError('legacy read')):
++            for task in STANDARD:
++                p = static.parser_for(task) if task in static.TASKS else temporal.parser(task)
++                result = static.parse_args(p, task, ['--eval', '1'])
++                self.assertNotEqual(result.model, 'CDLNO')
++            for ev in (False, True):
++                car.parse_args(car.entry_parser(ev), evaluation=ev, argv=['--cfd_model', 'Transolver'])
++                air.entry.parse_args(air.parser(ev), evaluation=ev, argv=[] if ev else ['--model', 'Transolver'])
++
++    def test_sidecar_missing_fields_and_unknown_legacy_rejected(self):
++        cfg = CDLNOArchitectureConfig()
++        with tempfile.TemporaryDirectory() as tmp:
++            path = Path(tmp) / 'architecture.json'
++            save_sidecar(path, cfg)
++            original = json.loads(path.read_text())
++            legacy = copy.deepcopy(original)
++            legacy['architecture'].pop('front_latent_mode')
++            legacy['architecture']['history_rule'] = 'front-t-after-ffn2-before-up-v1'
++            path.write_text(json.dumps(legacy)); before = path.read_bytes()
++            self.assertEqual(load_sidecar(path)['architecture']['front_latent_mode'], 'full')
++            self.assertEqual(path.read_bytes(), before)
++            for field in cfg.to_dict():
++                bad = copy.deepcopy(legacy)
++                if field != 'front_latent_mode':
++                    bad['architecture'].pop(field)
++                else:
++                    bad['architecture']['history_rule'] = cfg.history_rule
++                path.write_text(json.dumps(bad)); before = path.read_bytes()
++                with self.assertRaises(SidecarMismatch):
++                    load_sidecar(path)
++                self.assertEqual(path.read_bytes(), before)
++
++    def test_industrial_object_modes_configs_and_weights_must_agree(self):
++        for task in ('car', 'airfrans'):
++            for mode in MODES:
++                with tempfile.TemporaryDirectory() as tmp, redirect_stdout(io.StringIO()):
++                    flags = [*SMALL, *run_option(task, Path(tmp) / 'run'), '--front-latent-mode', mode]
++                    a = parse(task, flags); m = build(task, a)
++                    run = make_run(task, a, m); save(task, run, m)
++                    ev = make_run(task, parse(task, flags, True), None, True)
++                    before = run.sidecar.read_bytes()
++                    for issue in ('block_mode', 'core_config', 'partial_config', 'missing_weight', 'missing_mode'):
++                        broken = copy.deepcopy(m)
++                        if issue == 'block_mode': broken.core.front_blocks[0].front_latent_mode = 'identity' if mode != 'identity' else 'full'
++                        if issue == 'core_config': broken.core.config = replace(m.config, front_latent_mode='identity' if mode != 'identity' else 'full')
++                        if issue == 'partial_config': broken.config = {'front_latent_mode': mode}
++                        if issue == 'missing_weight': del broken.placeholder
++                        if issue == 'missing_mode':
++                            if mode == 'full': continue  # Legitimate legacy case checked with genuine fixtures below.
++                            del broken.core.front_blocks[0].front_latent_mode
++                        torch.save(broken if task == 'car' else [broken], run.checkpoint)
++                        with self.assertRaises((SidecarMismatch, RuntimeError)):
++                            ev.load()
++                        self.assertEqual(run.sidecar.read_bytes(), before)
++
++    @unittest.skipUnless(LEGACY.is_dir(), 'supply genuine pre-A1 artifacts with CDLNO_A1_BASELINE')
++    def test_legacy_industrial_objects_through_actual_run_loaders(self):
++        for task, group in (('car', 'car'), ('airfrans', 'airfrans')):
++            with tempfile.TemporaryDirectory() as tmp, redirect_stdout(io.StringIO()):
++                flags = [*SMALL, *run_option(task, Path(tmp) / 'run')]
++                a = parse(task, flags); m = build(task, a)
++                run = make_run(task, a, m)
++                fixture_dir = LEGACY / group / '11'
++                self.assertTrue(fixture_dir.exists(), 'real pre-A1 artifacts required; do not manufacture legacy objects')
++                payload = json.loads(run.sidecar.read_text())
++                payload['architecture'] = json.loads((fixture_dir / 'architecture.json').read_text())['architecture']
++                run.sidecar.write_text(json.dumps(payload))
++                if task == 'airfrans':
++                    payload['metadata']['run_contract']['nmodel'] = 2
++                    run.sidecar.write_text(json.dumps(payload)); flags += ['--nmodel', '2']
++                shutil.copyfile(fixture_dir / ('legacy-model.pt' if task == 'car' else 'legacy-list.pt'), run.checkpoint)
++                before = run.sidecar.read_bytes()
++                ev = make_run(task, parse(task, flags, True), None, True)
++                saved = ev.load(); models = [saved] if task == 'car' else saved
++                fixture = torch.load(fixture_dir / 'fixture.pt', weights_only=True)
++                for old in models:
++                    self.assertTrue(all(not hasattr(b, 'front_latent_mode') for b in old.core.front_blocks))
++                    x = fixture['input']; graph = Batch.from_data_list([Data(x=x, pos=x[:, :2], y=torch.zeros(x.shape[0], 4))])
++                    y = old.eval()((graph, Data()) if task == 'car' else graph)
++                    torch.testing.assert_close(y, fixture['output'][0], atol=0, rtol=0)
++                self.assertEqual(run.sidecar.read_bytes(), before)
++
++    def test_root_scripts_three_modes_paths_overrides_and_parser(self):
++        for task in TASKS:
++            for mode in MODES:
++                with tempfile.TemporaryDirectory() as tmp:
++                    path = Path(tmp) / 'run'
++                    path.mkdir()
++                    save_sidecar(path / 'architecture.json', CDLNOArchitectureConfig(front_latent_mode=mode))
++                    for evaluation in (False, True):
++                        tokens = subprocess.check_output(['bash', str(ROOT / 'tran_evaluate' / f'{task}.sh'),
++                            'eval' if evaluation else 'train', '--front-latent-mode', 'identity',
++                            '--front_latent_mode=' + mode, '--dry-run'], cwd=ROOT, text=True)
++                        command = shlex.split(next(s.removeprefix('Command:') for s in tokens.splitlines() if s.startswith('Command:')))
++                        argv = command[3:]
++                        option = '--cdlno-run-dir' if task in STANDARD else '--run_dir'
++                        implicit = argv[argv.index(option) + 1]
++                        if mode != 'full': self.assertTrue(implicit.endswith('_' + mode), implicit)
++                        else: self.assertFalse(implicit.endswith(('_full', '_identity', '_no_sa')), implicit)
++                        # Actual parser with a synthetic config fixture, no task/data execution.
++                        argv += run_option(task, path)
++                        if task in STANDARD:
++                            p = static.parser_for(task) if task in static.TASKS else temporal.parser(task)
++                            a = static.parse_args(p, task, argv)
++                        elif task == 'car': a = car.parse_args(car.entry_parser(evaluation), evaluation=evaluation, argv=argv)
++                        else: a = air.entry.parse_args(air.parser(evaluation), evaluation=evaluation, argv=argv)
++                        self.assertEqual(a.front_latent_mode, mode)
++                        self.assertEqual(a.slice_num, 32 if task == 'pipe' else 64)
++
++    def test_automatic_run_names_explicit_save_name_and_missing_eval(self):
++        for task in TASKS:
++            with tempfile.TemporaryDirectory() as tmp, redirect_stdout(io.StringIO()):
++                previous = Path.cwd()
++                try:
++                    os.chdir(tmp)
++                    directories = []
++                    for mode in MODES:
++                        a = parse(task, [*SMALL, '--front-latent-mode', mode])
++                        model = build(task, a)
++                        run = make_run(task, a, model)
++                        directories.append(run.directory)
++                        if mode != 'full': self.assertIn('_' + mode, run.directory.name)
++                        else: self.assertNotIn('_full', run.directory.name)
++                        if task in STANDARD:
++                            named = parse(task, [*SMALL, '--front-latent-mode', mode, '--save_name', 'chosen'])
++                            self.assertEqual(named.save_name, 'chosen')
++                    self.assertEqual(len(set(directories)), 3)
++                    with patch('torch.load') as unpickle, self.assertRaises(FileNotFoundError):
++                        parse(task, [*SMALL, *run_option(task, Path(tmp) / 'absent')], True)
++                    unpickle.assert_not_called()
++                    self.assertFalse((Path(tmp) / 'absent').exists())
++                finally:
++                    os.chdir(previous)
++
++    def test_three_original_workdirs_new_process_import_and_all_mode_loads(self):
++        for project, tasks in (('PDE-Solving-StandardBenchmark', STANDARD),
++                               ('Car-Design-ShapeNetCar', ('car',)), ('Airfoil-Design-AirfRANS', ('airfrans',))):
++            with tempfile.TemporaryDirectory() as tmp:
++                result = subprocess.run([sys.executable, '-B', str(Path(__file__).resolve()), '--worker', tmp, *tasks],
++                    cwd=ROOT / project, env=dict(os.environ, PYTHONPATH=str(ROOT)), text=True, capture_output=True)
++                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
++
++
++def worker(directory, tasks):
++    torch.set_num_threads(1)
++    for task in tasks:
++        for mode in MODES:
++            flags = [*SMALL, *run_option(task, Path(directory) / (task + '_' + mode))]
++            a = parse(task, [*flags, '--front-latent-mode', mode]); model = build(task, a).eval()
++            run = make_run(task, a, model); save(task, run, model)
++            ev = parse(task, flags, True); target = build(task, ev)
++            restored = load(task, make_run(task, ev, target, True), target).eval()
++            x = inputs(task, model)
++            torch.testing.assert_close(model(*x), restored(*x), atol=0, rtol=0)
++            assert restored.config.front_latent_mode == mode
++    assert not any(name.startswith('exp_') for name in sys.modules)
++    print('fresh process modes/load PASS', tasks)
++
++
++if __name__ == '__main__':
++    if len(sys.argv) > 1 and sys.argv[1] == '--worker': worker(sys.argv[2], sys.argv[3:])
++    else: unittest.main()

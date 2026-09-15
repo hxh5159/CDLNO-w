@@ -1,0 +1,5228 @@
+{
+  "schema": "cdlno-performance-v1",
+  "phase": 9,
+  "scope": "synthetic model structure only",
+  "case": {
+    "task": "airfoil",
+    "comparison": "matched",
+    "B": 2,
+    "N": 35,
+    "d": 16,
+    "h": 4,
+    "M": 4,
+    "L": 8,
+    "F": 2,
+    "ratio": 2,
+    "grid": [
+      5,
+      7
+    ],
+    "P": 6,
+    "task_geometry_and_batch_preserved": false,
+    "preset_source": "original Transolver launchers + industrial main constructors; CDLNO configs/CDLNO/*.json (v1.2), not old parser defaults"
+  },
+  "environment": {
+    "python": "3.13.9",
+    "torch": "2.13.0+cu130",
+    "cuda_build": "13.0",
+    "pyg": "2.3.1",
+    "device": "cpu",
+    "gpu": null,
+    "driver": "NVIDIA GeForce RTX 5090 Laptop GPU, 591.86",
+    "cpu_threads": 1,
+    "cudnn": 92000
+  },
+  "git_commit": "769fa333742f73c132868cf560bce5ec21529362",
+  "source_sha256": {
+    "tools/cdlno_benchmark.py": "af1314ac701497cda4f5eaf9f6c245520122fd411b193da40dc819cde6408c82",
+    "tools/cdlno_perf/measure.py": "83c871d50da19deddf26ca0afb128254069f998dc48353e6815da9bb63264847",
+    "tools/cdlno_perf/models.py": "baea1e0b5615c75234659983470c19e27c35d5694669217c93dd4b18c954e080",
+    "tools/cdlno_perf/__init__.py": "f37d530c1f97443000442a1c750108754095403278d9360a99ff9bc7f469289e",
+    "tools/cdlno_perf/costs.py": "7cbfc8417eae32e95bc41ae1a44b4b1b2611c6e5a31a2a320205bb8ebddb723b",
+    "cdlno/airfrans.py": "2e8bca413035807277d60cea9c64cae28f2f8067cb82d5053b4d29f2334b62b5",
+    "cdlno/config.py": "88da555b449857b96d08a721e38e229ef2274b63f66f00b9ec08dad4bb9db18d",
+    "cdlno/standard.py": "ee9a547ded0fef9a46229d88c8c90ed0b86caf57a7c0387993d0a1471610f42e",
+    "cdlno/cdpa.py": "eb6f515508479066fe2a2086b70929b93914de218aaf55347ecaa71ebe05c4fa",
+    "cdlno/checkpoint.py": "6e50e2d9e0514ba5c6beb2a289447ba8a1b171f067e44f179ce4fd955651fad9",
+    "cdlno/core.py": "0b8565fe66d90f1c2e77e2147dfeb5a249220d5fc51d9a6784d0eab4085a23be",
+    "cdlno/visualization.py": "bfebdd05728ae6aed41e03fcab9ee4d80e99305072db23c74750ba267cd5cb36",
+    "cdlno/modules.py": "ceca8a7efd17e06693905030a7cec19f3c533c2770e6458852a93089dd2de99a",
+    "cdlno/training_state.py": "4c6d83a7b5053889b5228ebfeef9149bf4d9966c5420ae0a0dc5847842496b63",
+    "cdlno/training_observer.py": "6241bbc5b9bf61813b8045e0cedb49441f518aac4b67cea0c40b39315fff7af5",
+    "cdlno/__init__.py": "aa7e4e1d615e8a74bcb17899b526e2cfe09f9080754b2e48dcf5507cdddb0d7e"
+  },
+  "settings": {
+    "parameter_dtype": "float32",
+    "input_dtype": "float32",
+    "precision": "fp32",
+    "requested_sdpa_backend": "auto",
+    "tf32": false,
+    "compile": false,
+    "warmup": 5,
+    "measured_iterations": 20,
+    "seed": 20260914,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": false,
+    "deterministic_algorithms": false,
+    "fp16_reduced_precision_reduction": true,
+    "bf16_reduced_precision_reduction": true,
+    "float32_matmul_precision": "highest",
+    "audit_only": true
+  },
+  "cost_convention": "Forward dense matrix MAC: one multiply-accumulate=2 FLOPs. Conv includes padded taps. Matrix FLOPs exclude bias/norm/activation/softmax/reductions/copies; these have separate inventories. SDPA QK+AV counted from actual shapes. No claim of exact all-operation FLOPs. Storage payload/activation ledgers are not summed into measured allocator peaks.",
+  "exclusions": "No data, graphs, task loss, temporal rollout, scheduler, epoch estimate or LRSA paper reproduction.",
+  "results": [
+    {
+      "model": "transolver",
+      "chunk": 0,
+      "status": "passed",
+      "config": {
+        "task": "airfoil",
+        "comparison": "matched",
+        "B": 2,
+        "N": 35,
+        "d": 16,
+        "h": 4,
+        "M": 4,
+        "L": 8,
+        "F": 2,
+        "ratio": 2,
+        "grid": [
+          5,
+          7
+        ],
+        "P": 6,
+        "task_geometry_and_batch_preserved": false,
+        "preset_source": "original Transolver launchers + industrial main constructors; CDLNO configs/CDLNO/*.json (v1.2), not old parser defaults"
+      },
+      "source": {
+        "path": "PDE-Solving-StandardBenchmark/model/Transolver_Structured_Mesh_2D.py",
+        "sha256": "d4b0db8a52c26ba6433f45a232947b380dfbaa4a31eac413a5e03fbef151acfc",
+        "adaptations": [
+          "resolve model.Embedding in isolated namespace",
+          "resolve model.Physics_Attention in isolated namespace",
+          ".cuda() -> .to(device) at line 144",
+          ".cuda() -> .to(device) at line 150"
+        ]
+      },
+      "initial_weights_sha256": "893077194484942a952fb12b57dffd6a079d031ac60dfbb690998f5a12e847e7",
+      "effective_structure": {
+        "physics_blocks": 8
+      },
+      "cost": {
+        "parameters": {
+          "registered": 49649,
+          "requires_grad": 49649,
+          "missing_grad_names": [],
+          "nonfinite_grad_names": []
+        },
+        "finite_output": true,
+        "counts": {
+          "down_bridge": 0,
+          "up_readout": 0,
+          "latent_sa": 0,
+          "structured_convffn": 0,
+          "cdpa_logical_sources": 0,
+          "cdpa_locations": 0,
+          "history_sdpa_calls": 0,
+          "all_sdpa_calls": 0,
+          "transolver_physics_attention": 8
+        },
+        "history_sizes": [],
+        "matrix_macs_by_component": {
+          "stem_and_time": 40320,
+          "transolver_attention_projections": 2771968,
+          "transolver_slice_deslice": 71680,
+          "transolver_latent_qk_av": 8192,
+          "transolver_point_mlp": 573440,
+          "output_head": 1120
+        },
+        "matrix_macs": 3466720,
+        "matrix_flops_2_per_mac": 6933440,
+        "bias_adds_by_component": {
+          "stem_and_time": 3360,
+          "transolver_attention_projections": 35840,
+          "transolver_point_mlp": 26880,
+          "output_head": 70
+        },
+        "norm_work": [
+          {
+            "path": "blocks.0.ln_1",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "blocks.0.ln_2",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "blocks.1.ln_1",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "blocks.1.ln_2",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "blocks.2.ln_1",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "blocks.2.ln_2",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "blocks.3.ln_1",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "blocks.3.ln_2",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "blocks.4.ln_1",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "blocks.4.ln_2",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "blocks.5.ln_1",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "blocks.5.ln_2",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "blocks.6.ln_1",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "blocks.6.ln_2",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "blocks.7.ln_1",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "blocks.7.ln_2",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "blocks.7.ln_3",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          }
+        ],
+        "sdpa": [],
+        "depth_work_estimate": [],
+        "operations": {
+          "aten.view.default": {
+            "calls": 214,
+            "output_elements": 178450,
+            "output_payload_bytes": 713800
+          },
+          "aten.t.default": {
+            "calls": 59,
+            "output_elements": 11344,
+            "output_payload_bytes": 45376
+          },
+          "aten.addmm.default": {
+            "calls": 35,
+            "output_elements": 48230,
+            "output_payload_bytes": 192920
+          },
+          "aten.gelu.default": {
+            "calls": 9,
+            "output_elements": 20160,
+            "output_payload_bytes": 80640
+          },
+          "aten.unsqueeze.default": {
+            "calls": 42,
+            "output_elements": 28192,
+            "output_payload_bytes": 112768
+          },
+          "aten.add.Tensor": {
+            "calls": 25,
+            "output_elements": 19296,
+            "output_payload_bytes": 77184
+          },
+          "aten.native_layer_norm.default": {
+            "calls": 17,
+            "output_elements": 21420,
+            "output_payload_bytes": 85680
+          },
+          "aten.permute.default": {
+            "calls": 128,
+            "output_elements": 119552,
+            "output_payload_bytes": 478208
+          },
+          "aten.clone.default": {
+            "calls": 48,
+            "output_elements": 53760,
+            "output_payload_bytes": 215040
+          },
+          "aten.convolution.default": {
+            "calls": 16,
+            "output_elements": 17920,
+            "output_payload_bytes": 71680
+          },
+          "aten.clamp.default": {
+            "calls": 8,
+            "output_elements": 32,
+            "output_payload_bytes": 128
+          },
+          "aten.div.Tensor": {
+            "calls": 16,
+            "output_elements": 9984,
+            "output_payload_bytes": 39936
+          },
+          "aten._softmax.default": {
+            "calls": 16,
+            "output_elements": 9984,
+            "output_payload_bytes": 39936
+          },
+          "aten.sum.dim_IntList": {
+            "calls": 8,
+            "output_elements": 256,
+            "output_payload_bytes": 1024
+          },
+          "aten.bmm.default": {
+            "calls": 32,
+            "output_elements": 12032,
+            "output_payload_bytes": 48128
+          },
+          "aten.repeat.default": {
+            "calls": 8,
+            "output_elements": 1024,
+            "output_payload_bytes": 4096
+          },
+          "aten.mm.default": {
+            "calls": 24,
+            "output_elements": 3072,
+            "output_payload_bytes": 12288
+          },
+          "aten._unsafe_view.default": {
+            "calls": 48,
+            "output_elements": 14080,
+            "output_payload_bytes": 56320
+          },
+          "aten.transpose.int": {
+            "calls": 8,
+            "output_elements": 1024,
+            "output_payload_bytes": 4096
+          },
+          "aten.expand.default": {
+            "calls": 32,
+            "output_elements": 4096,
+            "output_payload_bytes": 16384
+          },
+          "aten.mul.Tensor": {
+            "calls": 8,
+            "output_elements": 1024,
+            "output_payload_bytes": 4096
+          }
+        },
+        "temporary_materializations": {
+          "blocks.0.Attn:aten.clone.default": {
+            "calls": 6,
+            "payload_bytes": 26880
+          },
+          "blocks.0.Attn:aten.repeat.default": {
+            "calls": 1,
+            "payload_bytes": 512
+          },
+          "blocks.1.Attn:aten.clone.default": {
+            "calls": 6,
+            "payload_bytes": 26880
+          },
+          "blocks.1.Attn:aten.repeat.default": {
+            "calls": 1,
+            "payload_bytes": 512
+          },
+          "blocks.2.Attn:aten.clone.default": {
+            "calls": 6,
+            "payload_bytes": 26880
+          },
+          "blocks.2.Attn:aten.repeat.default": {
+            "calls": 1,
+            "payload_bytes": 512
+          },
+          "blocks.3.Attn:aten.clone.default": {
+            "calls": 6,
+            "payload_bytes": 26880
+          },
+          "blocks.3.Attn:aten.repeat.default": {
+            "calls": 1,
+            "payload_bytes": 512
+          },
+          "blocks.4.Attn:aten.clone.default": {
+            "calls": 6,
+            "payload_bytes": 26880
+          },
+          "blocks.4.Attn:aten.repeat.default": {
+            "calls": 1,
+            "payload_bytes": 512
+          },
+          "blocks.5.Attn:aten.clone.default": {
+            "calls": 6,
+            "payload_bytes": 26880
+          },
+          "blocks.5.Attn:aten.repeat.default": {
+            "calls": 1,
+            "payload_bytes": 512
+          },
+          "blocks.6.Attn:aten.clone.default": {
+            "calls": 6,
+            "payload_bytes": 26880
+          },
+          "blocks.6.Attn:aten.repeat.default": {
+            "calls": 1,
+            "payload_bytes": 512
+          },
+          "blocks.7.Attn:aten.clone.default": {
+            "calls": 6,
+            "payload_bytes": 26880
+          },
+          "blocks.7.Attn:aten.repeat.default": {
+            "calls": 1,
+            "payload_bytes": 512
+          }
+        },
+        "storage": {
+          "largest_point_block_input_payload_bytes": 0,
+          "h_f_payload_bytes": 0,
+          "largest_history_list_payload_bytes": 0,
+          "current_latent_payload_bytes": 0,
+          "current_latent_payload_note": "FP32 residual representation; actual mixed activation dtypes in norm/SDPA ledgers",
+          "saved_activation_unique_backing_bytes": 535496,
+          "saved_activation_logical_bytes": 655304,
+          "saved_storage_excludes": "parameters, buffers, input backing storage; not allocator peak"
+        }
+      },
+      "chunk_equivalence": {
+        "reference_chunk": 0,
+        "baseline": true
+      }
+    },
+    {
+      "model": "lrsa_matched",
+      "chunk": 0,
+      "status": "passed",
+      "config": {
+        "task": "airfoil",
+        "comparison": "matched",
+        "B": 2,
+        "N": 35,
+        "d": 16,
+        "h": 4,
+        "M": 4,
+        "L": 8,
+        "F": 2,
+        "ratio": 2,
+        "grid": [
+          5,
+          7
+        ],
+        "P": 6,
+        "task_geometry_and_batch_preserved": false,
+        "preset_source": "original Transolver launchers + industrial main constructors; CDLNO configs/CDLNO/*.json (v1.2), not old parser defaults"
+      },
+      "source": {},
+      "initial_weights_sha256": "3101ea480dc938e9f05b30cc855b9f507da0a530200d5a5385c87cff44b6ce9c",
+      "effective_structure": {
+        "full_lrsa_blocks": 8,
+        "persistent_blocks": 0,
+        "bridge": false,
+        "extra_readout": false
+      },
+      "cost": {
+        "parameters": {
+          "registered": 69361,
+          "requires_grad": 69361,
+          "missing_grad_names": [],
+          "nonfinite_grad_names": []
+        },
+        "finite_output": true,
+        "counts": {
+          "down_bridge": 8,
+          "up_readout": 8,
+          "latent_sa": 8,
+          "structured_convffn": 8,
+          "cdpa_logical_sources": 0,
+          "cdpa_locations": 0,
+          "history_sdpa_calls": 0,
+          "all_sdpa_calls": 24
+        },
+        "history_sizes": [],
+        "matrix_macs_by_component": {
+          "stem_and_time": 40320,
+          "front_bridge_readout_projections": 688128,
+          "non_cdpa_sdpa_qk_av": 151552,
+          "front_two_latent_ffns": 131072,
+          "point_ffn_dense_conv": 1290240,
+          "point_ffn_linears": 573440,
+          "output_head": 1120
+        },
+        "matrix_macs": 2875872,
+        "matrix_flops_2_per_mac": 5751744,
+        "bias_adds_by_component": {
+          "stem_and_time": 3360,
+          "front_bridge_readout_projections": 11008,
+          "front_two_latent_ffns": 6144,
+          "point_ffn_dense_conv": 8960,
+          "point_ffn_linears": 8960,
+          "output_head": 70
+        },
+        "norm_work": [
+          {
+            "path": "core.blocks.0.point_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.0.down.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.0.down.k_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.0.latent_norm_1",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.0.latent_norm_sa",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.0.latent_sa.attn.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.0.latent_sa.attn.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.0.latent_norm_2",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.0.up_latent_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.0.up.q_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.0.up.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.0.point_ffn_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.0.point_ffn.norm",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.1.point_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.1.down.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.1.down.k_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.1.latent_norm_1",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.1.latent_norm_sa",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.1.latent_sa.attn.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.1.latent_sa.attn.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.1.latent_norm_2",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.1.up_latent_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.1.up.q_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.1.up.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.1.point_ffn_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.1.point_ffn.norm",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.2.point_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.2.down.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.2.down.k_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.2.latent_norm_1",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.2.latent_norm_sa",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.2.latent_sa.attn.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.2.latent_sa.attn.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.2.latent_norm_2",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.2.up_latent_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.2.up.q_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.2.up.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.2.point_ffn_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.2.point_ffn.norm",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.3.point_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.3.down.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.3.down.k_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.3.latent_norm_1",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.3.latent_norm_sa",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.3.latent_sa.attn.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.3.latent_sa.attn.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.3.latent_norm_2",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.3.up_latent_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.3.up.q_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.3.up.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.3.point_ffn_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.3.point_ffn.norm",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.4.point_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.4.down.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.4.down.k_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.4.latent_norm_1",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.4.latent_norm_sa",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.4.latent_sa.attn.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.4.latent_sa.attn.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.4.latent_norm_2",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.4.up_latent_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.4.up.q_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.4.up.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.4.point_ffn_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.4.point_ffn.norm",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.5.point_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.5.down.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.5.down.k_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.5.latent_norm_1",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.5.latent_norm_sa",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.5.latent_sa.attn.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.5.latent_sa.attn.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.5.latent_norm_2",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.5.up_latent_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.5.up.q_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.5.up.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.5.point_ffn_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.5.point_ffn.norm",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.6.point_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.6.down.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.6.down.k_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.6.latent_norm_1",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.6.latent_norm_sa",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.6.latent_sa.attn.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.6.latent_sa.attn.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.6.latent_norm_2",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.6.up_latent_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.6.up.q_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.6.up.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.6.point_ffn_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.6.point_ffn.norm",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.7.point_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.7.down.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.7.down.k_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.7.latent_norm_1",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.7.latent_norm_sa",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.7.latent_sa.attn.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.7.latent_sa.attn.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.7.latent_norm_2",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.7.up_latent_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.7.up.q_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.7.up.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.7.point_ffn_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.blocks.7.point_ffn.norm",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.output_norm",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          }
+        ],
+        "sdpa": [
+          {
+            "path": "core.blocks.0.down",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.blocks.0.latent_sa.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.blocks.0.up",
+            "q": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.blocks.1.down",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.blocks.1.latent_sa.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.blocks.1.up",
+            "q": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.blocks.2.down",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.blocks.2.latent_sa.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.blocks.2.up",
+            "q": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.blocks.3.down",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.blocks.3.latent_sa.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.blocks.3.up",
+            "q": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.blocks.4.down",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.blocks.4.latent_sa.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.blocks.4.up",
+            "q": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.blocks.5.down",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.blocks.5.latent_sa.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.blocks.5.up",
+            "q": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.blocks.6.down",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.blocks.6.latent_sa.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.blocks.6.up",
+            "q": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.blocks.7.down",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.blocks.7.latent_sa.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.blocks.7.up",
+            "q": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          }
+        ],
+        "depth_work_estimate": [],
+        "operations": {
+          "aten.view.default": {
+            "calls": 310,
+            "output_elements": 170002,
+            "output_payload_bytes": 680008
+          },
+          "aten.t.default": {
+            "calls": 139,
+            "output_elements": 47696,
+            "output_payload_bytes": 190784
+          },
+          "aten.addmm.default": {
+            "calls": 67,
+            "output_elements": 29542,
+            "output_payload_bytes": 118168
+          },
+          "aten.gelu.default": {
+            "calls": 25,
+            "output_elements": 24256,
+            "output_payload_bytes": 97024
+          },
+          "aten.unsqueeze.default": {
+            "calls": 10,
+            "output_elements": 544,
+            "output_payload_bytes": 2176
+          },
+          "aten.add.Tensor": {
+            "calls": 137,
+            "output_elements": 28992,
+            "output_payload_bytes": 115968
+          },
+          "aten.pow.Tensor_Scalar": {
+            "calls": 96,
+            "output_elements": 44032,
+            "output_payload_bytes": 176128
+          },
+          "aten.mean.dim": {
+            "calls": 96,
+            "output_elements": 6880,
+            "output_payload_bytes": 27520
+          },
+          "aten.rsqrt.default": {
+            "calls": 96,
+            "output_elements": 6880,
+            "output_payload_bytes": 27520
+          },
+          "aten.mul.Tensor": {
+            "calls": 192,
+            "output_elements": 88064,
+            "output_payload_bytes": 352256
+          },
+          "aten.expand.default": {
+            "calls": 8,
+            "output_elements": 1024,
+            "output_payload_bytes": 4096
+          },
+          "aten.permute.default": {
+            "calls": 24,
+            "output_elements": 18944,
+            "output_payload_bytes": 75776
+          },
+          "aten.mm.default": {
+            "calls": 72,
+            "output_elements": 49920,
+            "output_payload_bytes": 199680
+          },
+          "aten._unsafe_view.default": {
+            "calls": 72,
+            "output_elements": 49920,
+            "output_payload_bytes": 199680
+          },
+          "aten.transpose.int": {
+            "calls": 88,
+            "output_elements": 43008,
+            "output_payload_bytes": 172032
+          },
+          "aten._scaled_dot_product_flash_attention_for_cpu.default": {
+            "calls": 24,
+            "output_elements": 13760,
+            "output_payload_bytes": 55040
+          },
+          "aten.convolution.default": {
+            "calls": 8,
+            "output_elements": 8960,
+            "output_payload_bytes": 35840
+          },
+          "aten.native_layer_norm.default": {
+            "calls": 9,
+            "output_elements": 11340,
+            "output_payload_bytes": 45360
+          }
+        },
+        "temporary_materializations": {},
+        "storage": {
+          "largest_point_block_input_payload_bytes": 4480,
+          "h_f_payload_bytes": 0,
+          "largest_history_list_payload_bytes": 0,
+          "current_latent_payload_bytes": 512,
+          "current_latent_payload_note": "FP32 residual representation; actual mixed activation dtypes in norm/SDPA ledgers",
+          "saved_activation_unique_backing_bytes": 930888,
+          "saved_activation_logical_bytes": 1258440,
+          "saved_storage_excludes": "parameters, buffers, input backing storage; not allocator peak"
+        }
+      },
+      "chunk_equivalence": {
+        "reference_chunk": 0,
+        "baseline": true
+      }
+    },
+    {
+      "model": "cdlno_off",
+      "chunk": 0,
+      "status": "passed",
+      "config": {
+        "task": "airfoil",
+        "comparison": "matched",
+        "B": 2,
+        "N": 35,
+        "d": 16,
+        "h": 4,
+        "M": 4,
+        "L": 8,
+        "F": 2,
+        "ratio": 2,
+        "grid": [
+          5,
+          7
+        ],
+        "P": 6,
+        "task_geometry_and_batch_preserved": false,
+        "preset_source": "original Transolver launchers + industrial main constructors; CDLNO configs/CDLNO/*.json (v1.2), not old parser defaults"
+      },
+      "source": {},
+      "initial_weights_sha256": "c6f6c3499e477cb6c4a7387bb671123393c888079bd6c0f2db3441156e027340",
+      "effective_structure": {
+        "full_lrsa_blocks": 2,
+        "persistent_blocks": 6,
+        "bridge": true,
+        "extra_readout": true
+      },
+      "cost": {
+        "parameters": {
+          "registered": 39833,
+          "requires_grad": 39833,
+          "missing_grad_names": [],
+          "nonfinite_grad_names": []
+        },
+        "finite_output": true,
+        "counts": {
+          "down_bridge": 3,
+          "up_readout": 3,
+          "latent_sa": 8,
+          "structured_convffn": 3,
+          "cdpa_logical_sources": 0,
+          "cdpa_locations": 0,
+          "history_sdpa_calls": 0,
+          "all_sdpa_calls": 14
+        },
+        "history_sizes": [],
+        "matrix_macs_by_component": {
+          "stem_and_time": 40320,
+          "front_bridge_readout_projections": 251904,
+          "non_cdpa_sdpa_qk_av": 61952,
+          "front_two_latent_ffns": 32768,
+          "point_ffn_dense_conv": 483840,
+          "point_ffn_linears": 215040,
+          "rear_attention": 49152,
+          "rear_geglu": 73728,
+          "output_head": 1120
+        },
+        "matrix_macs": 1209824,
+        "matrix_flops_2_per_mac": 2419648,
+        "bias_adds_by_component": {
+          "stem_and_time": 3360,
+          "front_bridge_readout_projections": 4000,
+          "front_two_latent_ffns": 1536,
+          "point_ffn_dense_conv": 3360,
+          "point_ffn_linears": 3360,
+          "rear_attention": 768,
+          "rear_geglu": 3840,
+          "output_head": 70
+        },
+        "norm_work": [
+          {
+            "path": "core.front_blocks.0.point_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.down.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.down.k_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.latent_norm_1",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.latent_norm_sa",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.latent_sa.attn.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.latent_sa.attn.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.latent_norm_2",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.up_latent_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.up.q_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.up.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.point_ffn_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.point_ffn.norm",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.point_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.down.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.down.k_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.latent_norm_1",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.latent_norm_sa",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.latent_sa.attn.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.latent_sa.attn.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.latent_norm_2",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.up_latent_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.up.q_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.up.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.point_ffn_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.point_ffn.norm",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.bridge.query_norm",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.bridge.context_norm",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.0.norm_1",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.0.norm_2",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.1.norm_1",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.1.norm_2",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.2.norm_1",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.2.norm_2",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.3.norm_1",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.3.norm_2",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.4.norm_1",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.4.norm_2",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.5.norm_1",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.5.norm_2",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.query_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.latent_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.up.q_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.up.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.point_ffn_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.point_ffn.norm",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.output_norm",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          }
+        ],
+        "sdpa": [
+          {
+            "path": "core.front_blocks.0.down",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.front_blocks.0.latent_sa.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.front_blocks.0.up",
+            "q": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.front_blocks.1.down",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.front_blocks.1.latent_sa.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.front_blocks.1.up",
+            "q": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.bridge.cross.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.latent_blocks.0.self_attention.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.latent_blocks.1.self_attention.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.latent_blocks.2.self_attention.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.latent_blocks.3.self_attention.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.latent_blocks.4.self_attention.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.latent_blocks.5.self_attention.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.readout.up",
+            "q": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          }
+        ],
+        "depth_work_estimate": [],
+        "operations": {
+          "aten.view.default": {
+            "calls": 183,
+            "output_elements": 78706,
+            "output_payload_bytes": 314824
+          },
+          "aten.t.default": {
+            "calls": 83,
+            "output_elements": 30800,
+            "output_payload_bytes": 123200
+          },
+          "aten.addmm.default": {
+            "calls": 40,
+            "output_elements": 16934,
+            "output_payload_bytes": 67736
+          },
+          "aten.gelu.default": {
+            "calls": 14,
+            "output_elements": 11520,
+            "output_payload_bytes": 46080
+          },
+          "aten.unsqueeze.default": {
+            "calls": 5,
+            "output_elements": 224,
+            "output_payload_bytes": 896
+          },
+          "aten.add.Tensor": {
+            "calls": 55,
+            "output_elements": 12452,
+            "output_payload_bytes": 49808
+          },
+          "aten.pow.Tensor_Scalar": {
+            "calls": 29,
+            "output_elements": 14624,
+            "output_payload_bytes": 58496
+          },
+          "aten.mean.dim": {
+            "calls": 29,
+            "output_elements": 2180,
+            "output_payload_bytes": 8720
+          },
+          "aten.rsqrt.default": {
+            "calls": 29,
+            "output_elements": 2180,
+            "output_payload_bytes": 8720
+          },
+          "aten.mul.Tensor": {
+            "calls": 64,
+            "output_elements": 30784,
+            "output_payload_bytes": 123136
+          },
+          "aten.expand.default": {
+            "calls": 3,
+            "output_elements": 384,
+            "output_payload_bytes": 1536
+          },
+          "aten.permute.default": {
+            "calls": 8,
+            "output_elements": 6976,
+            "output_payload_bytes": 27904
+          },
+          "aten.mm.default": {
+            "calls": 43,
+            "output_elements": 20768,
+            "output_payload_bytes": 83072
+          },
+          "aten._unsafe_view.default": {
+            "calls": 43,
+            "output_elements": 20768,
+            "output_payload_bytes": 83072
+          },
+          "aten.transpose.int": {
+            "calls": 54,
+            "output_elements": 18816,
+            "output_payload_bytes": 75264
+          },
+          "aten._scaled_dot_product_flash_attention_for_cpu.default": {
+            "calls": 14,
+            "output_elements": 5960,
+            "output_payload_bytes": 23840
+          },
+          "aten.convolution.default": {
+            "calls": 3,
+            "output_elements": 3360,
+            "output_payload_bytes": 13440
+          },
+          "aten.native_layer_norm.default": {
+            "calls": 18,
+            "output_elements": 8172,
+            "output_payload_bytes": 32688
+          },
+          "aten.split.Tensor": {
+            "calls": 6,
+            "output_elements": 3072,
+            "output_payload_bytes": 12288
+          }
+        },
+        "temporary_materializations": {},
+        "storage": {
+          "largest_point_block_input_payload_bytes": 4480,
+          "h_f_payload_bytes": 4480,
+          "largest_history_list_payload_bytes": 0,
+          "current_latent_payload_bytes": 512,
+          "current_latent_payload_note": "FP32 residual representation; actual mixed activation dtypes in norm/SDPA ledgers",
+          "saved_activation_unique_backing_bytes": 398712,
+          "saved_activation_logical_bytes": 520584,
+          "saved_storage_excludes": "parameters, buffers, input backing storage; not allocator peak"
+        }
+      },
+      "chunk_equivalence": {
+        "reference_chunk": 0,
+        "baseline": true
+      }
+    },
+    {
+      "model": "cdlno_entry",
+      "chunk": 0,
+      "status": "passed",
+      "config": {
+        "task": "airfoil",
+        "comparison": "matched",
+        "B": 2,
+        "N": 35,
+        "d": 16,
+        "h": 4,
+        "M": 4,
+        "L": 8,
+        "F": 2,
+        "ratio": 2,
+        "grid": [
+          5,
+          7
+        ],
+        "P": 6,
+        "task_geometry_and_batch_preserved": false,
+        "preset_source": "original Transolver launchers + industrial main constructors; CDLNO configs/CDLNO/*.json (v1.2), not old parser defaults"
+      },
+      "source": {},
+      "initial_weights_sha256": "9da4c9082fc81972c538f917ec5cd04dba57b1a870bf0be73d54b5c43a58cd42",
+      "effective_structure": {
+        "full_lrsa_blocks": 2,
+        "persistent_blocks": 6,
+        "bridge": true,
+        "extra_readout": true
+      },
+      "cost": {
+        "parameters": {
+          "registered": 40969,
+          "requires_grad": 40969,
+          "missing_grad_names": [],
+          "nonfinite_grad_names": []
+        },
+        "finite_output": true,
+        "counts": {
+          "down_bridge": 3,
+          "up_readout": 3,
+          "latent_sa": 8,
+          "structured_convffn": 3,
+          "cdpa_logical_sources": 2,
+          "cdpa_locations": 1,
+          "history_sdpa_calls": 1,
+          "all_sdpa_calls": 15
+        },
+        "history_sizes": [
+          2
+        ],
+        "matrix_macs_by_component": {
+          "stem_and_time": 40320,
+          "front_bridge_readout_projections": 251904,
+          "non_cdpa_sdpa_qk_av": 61952,
+          "front_two_latent_ffns": 32768,
+          "point_ffn_dense_conv": 483840,
+          "point_ffn_linears": 215040,
+          "cdpa": 14336,
+          "cdpa_qk_av": 2048,
+          "rear_attention": 49152,
+          "rear_geglu": 73728,
+          "output_head": 1120
+        },
+        "matrix_macs": 1226208,
+        "matrix_flops_2_per_mac": 2452416,
+        "bias_adds_by_component": {
+          "stem_and_time": 3360,
+          "front_bridge_readout_projections": 4000,
+          "front_two_latent_ffns": 1536,
+          "point_ffn_dense_conv": 3360,
+          "point_ffn_linears": 3360,
+          "cdpa": 256,
+          "rear_attention": 768,
+          "rear_geglu": 3840,
+          "output_head": 70
+        },
+        "norm_work": [
+          {
+            "path": "core.front_blocks.0.point_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.down.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.down.k_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.latent_norm_1",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.latent_norm_sa",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.latent_sa.attn.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.latent_sa.attn.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.latent_norm_2",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.up_latent_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.up.q_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.up.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.point_ffn_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.point_ffn.norm",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.point_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.down.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.down.k_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.latent_norm_1",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.latent_norm_sa",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.latent_sa.attn.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.latent_sa.attn.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.latent_norm_2",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.up_latent_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.up.q_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.up.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.point_ffn_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.point_ffn.norm",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.bridge.query_norm",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.bridge.context_norm",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.0.ln_q",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.0.ln_kv",
+            "type": "LayerNorm",
+            "elements": 256,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.0.depth_norm",
+            "type": "RMSNorm",
+            "elements": 384,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.0.norm_1",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.0.norm_2",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.1.norm_1",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.1.norm_2",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.2.norm_1",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.2.norm_2",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.3.norm_1",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.3.norm_2",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.4.norm_1",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.4.norm_2",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.5.norm_1",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.5.norm_2",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.query_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.latent_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.up.q_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.up.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.point_ffn_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.point_ffn.norm",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.output_norm",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          }
+        ],
+        "sdpa": [
+          {
+            "path": "core.front_blocks.0.down",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.front_blocks.0.latent_sa.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.front_blocks.0.up",
+            "q": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.front_blocks.1.down",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.front_blocks.1.latent_sa.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.front_blocks.1.up",
+            "q": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.bridge.cross.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.cdpa_at.0",
+            "q": [
+              4,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              4,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              4,
+              4,
+              4,
+              4
+            ],
+            "macs": 2048,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 256
+          },
+          {
+            "path": "core.latent_blocks.0.self_attention.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.latent_blocks.1.self_attention.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.latent_blocks.2.self_attention.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.latent_blocks.3.self_attention.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.latent_blocks.4.self_attention.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.latent_blocks.5.self_attention.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.readout.up",
+            "q": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          }
+        ],
+        "depth_work_estimate": [
+          {
+            "sources": 2,
+            "dtype": "torch.float32",
+            "raw_stack_bytes": 1536,
+            "normalized_keys_bytes": 1536,
+            "weighted_values_bytes": 1536,
+            "score_and_weight_bytes": 192,
+            "arithmetic_ops_excluding_rsqrt_exp_comparisons": 2944,
+            "rsqrt_evaluations": 24,
+            "source_softmax_elements": 24,
+            "source_softmax_exp_evaluations": 24,
+            "source_softmax_arithmetic_ops": 64,
+            "source_softmax_max_comparisons": 16,
+            "source_softmax_axis": 3
+          }
+        ],
+        "operations": {
+          "aten.view.default": {
+            "calls": 194,
+            "output_elements": 81394,
+            "output_payload_bytes": 325576
+          },
+          "aten.t.default": {
+            "calls": 87,
+            "output_elements": 31824,
+            "output_payload_bytes": 127296
+          },
+          "aten.addmm.default": {
+            "calls": 41,
+            "output_elements": 17190,
+            "output_payload_bytes": 68760
+          },
+          "aten.gelu.default": {
+            "calls": 14,
+            "output_elements": 11520,
+            "output_payload_bytes": 46080
+          },
+          "aten.unsqueeze.default": {
+            "calls": 7,
+            "output_elements": 376,
+            "output_payload_bytes": 1504
+          },
+          "aten.add.Tensor": {
+            "calls": 56,
+            "output_elements": 12476,
+            "output_payload_bytes": 49904
+          },
+          "aten.pow.Tensor_Scalar": {
+            "calls": 30,
+            "output_elements": 15008,
+            "output_payload_bytes": 60032
+          },
+          "aten.mean.dim": {
+            "calls": 30,
+            "output_elements": 2204,
+            "output_payload_bytes": 8816
+          },
+          "aten.rsqrt.default": {
+            "calls": 30,
+            "output_elements": 2204,
+            "output_payload_bytes": 8816
+          },
+          "aten.mul.Tensor": {
+            "calls": 67,
+            "output_elements": 31936,
+            "output_payload_bytes": 127744
+          },
+          "aten.expand.default": {
+            "calls": 4,
+            "output_elements": 640,
+            "output_payload_bytes": 2560
+          },
+          "aten.permute.default": {
+            "calls": 8,
+            "output_elements": 6976,
+            "output_payload_bytes": 27904
+          },
+          "aten.mm.default": {
+            "calls": 46,
+            "output_elements": 21408,
+            "output_payload_bytes": 85632
+          },
+          "aten._unsafe_view.default": {
+            "calls": 49,
+            "output_elements": 21944,
+            "output_payload_bytes": 87776
+          },
+          "aten.transpose.int": {
+            "calls": 58,
+            "output_elements": 19712,
+            "output_payload_bytes": 78848
+          },
+          "aten._scaled_dot_product_flash_attention_for_cpu.default": {
+            "calls": 15,
+            "output_elements": 6280,
+            "output_payload_bytes": 25120
+          },
+          "aten.convolution.default": {
+            "calls": 3,
+            "output_elements": 3360,
+            "output_payload_bytes": 13440
+          },
+          "aten.native_layer_norm.default": {
+            "calls": 20,
+            "output_elements": 8604,
+            "output_payload_bytes": 34416
+          },
+          "aten.stack.default": {
+            "calls": 2,
+            "output_elements": 640,
+            "output_payload_bytes": 2560
+          },
+          "aten.clone.default": {
+            "calls": 2,
+            "output_elements": 512,
+            "output_payload_bytes": 2048
+          },
+          "aten.unbind.int": {
+            "calls": 1,
+            "output_elements": 256,
+            "output_payload_bytes": 1024
+          },
+          "aten.mv.default": {
+            "calls": 1,
+            "output_elements": 24,
+            "output_payload_bytes": 96
+          },
+          "aten._softmax.default": {
+            "calls": 1,
+            "output_elements": 24,
+            "output_payload_bytes": 96
+          },
+          "aten.sum.dim_IntList": {
+            "calls": 1,
+            "output_elements": 128,
+            "output_payload_bytes": 512
+          },
+          "aten.split.Tensor": {
+            "calls": 6,
+            "output_elements": 3072,
+            "output_payload_bytes": 12288
+          }
+        },
+        "temporary_materializations": {
+          "core.cdpa_at.0:aten.stack.default": {
+            "calls": 2,
+            "payload_bytes": 2560
+          },
+          "core.cdpa_at.0:aten.clone.default": {
+            "calls": 2,
+            "payload_bytes": 2048
+          }
+        },
+        "storage": {
+          "largest_point_block_input_payload_bytes": 4480,
+          "h_f_payload_bytes": 4480,
+          "largest_history_list_payload_bytes": 1024,
+          "current_latent_payload_bytes": 512,
+          "current_latent_payload_note": "FP32 residual representation; actual mixed activation dtypes in norm/SDPA ledgers",
+          "saved_activation_unique_backing_bytes": 412152,
+          "saved_activation_logical_bytes": 538312,
+          "saved_storage_excludes": "parameters, buffers, input backing storage; not allocator peak"
+        }
+      },
+      "chunk_equivalence": {
+        "reference_chunk": 0,
+        "baseline": true
+      }
+    },
+    {
+      "model": "cdlno_every_block",
+      "chunk": 0,
+      "status": "passed",
+      "config": {
+        "task": "airfoil",
+        "comparison": "matched",
+        "B": 2,
+        "N": 35,
+        "d": 16,
+        "h": 4,
+        "M": 4,
+        "L": 8,
+        "F": 2,
+        "ratio": 2,
+        "grid": [
+          5,
+          7
+        ],
+        "P": 6,
+        "task_geometry_and_batch_preserved": false,
+        "preset_source": "original Transolver launchers + industrial main constructors; CDLNO configs/CDLNO/*.json (v1.2), not old parser defaults"
+      },
+      "source": {},
+      "initial_weights_sha256": "79b017544a56bee5e5de42c219dceafb3f128f2a95e983ecbc769c2b6c9b6062",
+      "effective_structure": {
+        "full_lrsa_blocks": 2,
+        "persistent_blocks": 6,
+        "bridge": true,
+        "extra_readout": true
+      },
+      "cost": {
+        "parameters": {
+          "registered": 46649,
+          "requires_grad": 46649,
+          "missing_grad_names": [],
+          "nonfinite_grad_names": []
+        },
+        "finite_output": true,
+        "counts": {
+          "down_bridge": 3,
+          "up_readout": 3,
+          "latent_sa": 8,
+          "structured_convffn": 3,
+          "cdpa_logical_sources": 27,
+          "cdpa_locations": 6,
+          "history_sdpa_calls": 6,
+          "all_sdpa_calls": 20
+        },
+        "history_sizes": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "matrix_macs_by_component": {
+          "stem_and_time": 40320,
+          "front_bridge_readout_projections": 251904,
+          "non_cdpa_sdpa_qk_av": 61952,
+          "front_two_latent_ffns": 32768,
+          "point_ffn_dense_conv": 483840,
+          "point_ffn_linears": 215040,
+          "cdpa": 178176,
+          "cdpa_qk_av": 27648,
+          "rear_attention": 49152,
+          "rear_geglu": 73728,
+          "output_head": 1120
+        },
+        "matrix_macs": 1415648,
+        "matrix_flops_2_per_mac": 2831296,
+        "bias_adds_by_component": {
+          "stem_and_time": 3360,
+          "front_bridge_readout_projections": 4000,
+          "front_two_latent_ffns": 1536,
+          "point_ffn_dense_conv": 3360,
+          "point_ffn_linears": 3360,
+          "cdpa": 3456,
+          "rear_attention": 768,
+          "rear_geglu": 3840,
+          "output_head": 70
+        },
+        "norm_work": [
+          {
+            "path": "core.front_blocks.0.point_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.down.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.down.k_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.latent_norm_1",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.latent_norm_sa",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.latent_sa.attn.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.latent_sa.attn.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.latent_norm_2",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.up_latent_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.up.q_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.up.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.point_ffn_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.point_ffn.norm",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.point_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.down.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.down.k_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.latent_norm_1",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.latent_norm_sa",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.latent_sa.attn.q_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.latent_sa.attn.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.latent_norm_2",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.up_latent_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.up.q_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.up.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.point_ffn_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.point_ffn.norm",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.bridge.query_norm",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.bridge.context_norm",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.0.ln_q",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.0.ln_kv",
+            "type": "LayerNorm",
+            "elements": 256,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.0.depth_norm",
+            "type": "RMSNorm",
+            "elements": 384,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.0.norm_1",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.0.norm_2",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.1.ln_q",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.1.ln_kv",
+            "type": "LayerNorm",
+            "elements": 384,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.1.depth_norm",
+            "type": "RMSNorm",
+            "elements": 512,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.1.norm_1",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.1.norm_2",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.2.ln_q",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.2.ln_kv",
+            "type": "LayerNorm",
+            "elements": 512,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.2.depth_norm",
+            "type": "RMSNorm",
+            "elements": 640,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.2.norm_1",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.2.norm_2",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.3.ln_q",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.3.ln_kv",
+            "type": "LayerNorm",
+            "elements": 640,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.3.depth_norm",
+            "type": "RMSNorm",
+            "elements": 768,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.3.norm_1",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.3.norm_2",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.4.ln_q",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.4.ln_kv",
+            "type": "LayerNorm",
+            "elements": 768,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.4.depth_norm",
+            "type": "RMSNorm",
+            "elements": 896,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.4.norm_1",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.4.norm_2",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.5.ln_q",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.5.ln_kv",
+            "type": "LayerNorm",
+            "elements": 896,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.5.depth_norm",
+            "type": "RMSNorm",
+            "elements": 1024,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.5.norm_1",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.5.norm_2",
+            "type": "LayerNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.query_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.latent_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.up.q_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.up.k_norm",
+            "type": "RMSNorm",
+            "elements": 128,
+            "width": 4,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.point_ffn_norm",
+            "type": "RMSNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.point_ffn.norm",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.output_norm",
+            "type": "LayerNorm",
+            "elements": 1120,
+            "width": 16,
+            "dtype": "torch.float32"
+          }
+        ],
+        "sdpa": [
+          {
+            "path": "core.front_blocks.0.down",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.front_blocks.0.latent_sa.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.front_blocks.0.up",
+            "q": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.front_blocks.1.down",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.front_blocks.1.latent_sa.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.front_blocks.1.up",
+            "q": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.bridge.cross.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          },
+          {
+            "path": "core.cdpa_at.0",
+            "q": [
+              4,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              4,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              4,
+              4,
+              4,
+              4
+            ],
+            "macs": 2048,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 256
+          },
+          {
+            "path": "core.latent_blocks.0.self_attention.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.cdpa_at.1",
+            "q": [
+              6,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              6,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              6,
+              4,
+              4,
+              4
+            ],
+            "macs": 3072,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 384
+          },
+          {
+            "path": "core.latent_blocks.1.self_attention.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.cdpa_at.2",
+            "q": [
+              8,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              8,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              8,
+              4,
+              4,
+              4
+            ],
+            "macs": 4096,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 512
+          },
+          {
+            "path": "core.latent_blocks.2.self_attention.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.cdpa_at.3",
+            "q": [
+              10,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              10,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              10,
+              4,
+              4,
+              4
+            ],
+            "macs": 5120,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 640
+          },
+          {
+            "path": "core.latent_blocks.3.self_attention.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.cdpa_at.4",
+            "q": [
+              12,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              12,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              12,
+              4,
+              4,
+              4
+            ],
+            "macs": 6144,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 768
+          },
+          {
+            "path": "core.latent_blocks.4.self_attention.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.cdpa_at.5",
+            "q": [
+              14,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              14,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              14,
+              4,
+              4,
+              4
+            ],
+            "macs": 7168,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 896
+          },
+          {
+            "path": "core.latent_blocks.5.self_attention.attn",
+            "q": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 1024,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 128
+          },
+          {
+            "path": "core.readout.up",
+            "q": [
+              2,
+              4,
+              35,
+              4
+            ],
+            "k": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "v": [
+              2,
+              4,
+              4,
+              4
+            ],
+            "macs": 8960,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 1120
+          }
+        ],
+        "depth_work_estimate": [
+          {
+            "sources": 2,
+            "dtype": "torch.float32",
+            "raw_stack_bytes": 1536,
+            "normalized_keys_bytes": 1536,
+            "weighted_values_bytes": 1536,
+            "score_and_weight_bytes": 192,
+            "arithmetic_ops_excluding_rsqrt_exp_comparisons": 2944,
+            "rsqrt_evaluations": 24,
+            "source_softmax_elements": 24,
+            "source_softmax_exp_evaluations": 24,
+            "source_softmax_arithmetic_ops": 64,
+            "source_softmax_max_comparisons": 16,
+            "source_softmax_axis": 3
+          },
+          {
+            "sources": 3,
+            "dtype": "torch.float32",
+            "raw_stack_bytes": 2048,
+            "normalized_keys_bytes": 2048,
+            "weighted_values_bytes": 2048,
+            "score_and_weight_bytes": 256,
+            "arithmetic_ops_excluding_rsqrt_exp_comparisons": 3968,
+            "rsqrt_evaluations": 32,
+            "source_softmax_elements": 32,
+            "source_softmax_exp_evaluations": 32,
+            "source_softmax_arithmetic_ops": 88,
+            "source_softmax_max_comparisons": 24,
+            "source_softmax_axis": 4
+          },
+          {
+            "sources": 4,
+            "dtype": "torch.float32",
+            "raw_stack_bytes": 2560,
+            "normalized_keys_bytes": 2560,
+            "weighted_values_bytes": 2560,
+            "score_and_weight_bytes": 320,
+            "arithmetic_ops_excluding_rsqrt_exp_comparisons": 4992,
+            "rsqrt_evaluations": 40,
+            "source_softmax_elements": 40,
+            "source_softmax_exp_evaluations": 40,
+            "source_softmax_arithmetic_ops": 112,
+            "source_softmax_max_comparisons": 32,
+            "source_softmax_axis": 5
+          },
+          {
+            "sources": 5,
+            "dtype": "torch.float32",
+            "raw_stack_bytes": 3072,
+            "normalized_keys_bytes": 3072,
+            "weighted_values_bytes": 3072,
+            "score_and_weight_bytes": 384,
+            "arithmetic_ops_excluding_rsqrt_exp_comparisons": 6016,
+            "rsqrt_evaluations": 48,
+            "source_softmax_elements": 48,
+            "source_softmax_exp_evaluations": 48,
+            "source_softmax_arithmetic_ops": 136,
+            "source_softmax_max_comparisons": 40,
+            "source_softmax_axis": 6
+          },
+          {
+            "sources": 6,
+            "dtype": "torch.float32",
+            "raw_stack_bytes": 3584,
+            "normalized_keys_bytes": 3584,
+            "weighted_values_bytes": 3584,
+            "score_and_weight_bytes": 448,
+            "arithmetic_ops_excluding_rsqrt_exp_comparisons": 7040,
+            "rsqrt_evaluations": 56,
+            "source_softmax_elements": 56,
+            "source_softmax_exp_evaluations": 56,
+            "source_softmax_arithmetic_ops": 160,
+            "source_softmax_max_comparisons": 48,
+            "source_softmax_axis": 7
+          },
+          {
+            "sources": 7,
+            "dtype": "torch.float32",
+            "raw_stack_bytes": 4096,
+            "normalized_keys_bytes": 4096,
+            "weighted_values_bytes": 4096,
+            "score_and_weight_bytes": 512,
+            "arithmetic_ops_excluding_rsqrt_exp_comparisons": 8064,
+            "rsqrt_evaluations": 64,
+            "source_softmax_elements": 64,
+            "source_softmax_exp_evaluations": 64,
+            "source_softmax_arithmetic_ops": 184,
+            "source_softmax_max_comparisons": 56,
+            "source_softmax_axis": 8
+          }
+        ],
+        "operations": {
+          "aten.view.default": {
+            "calls": 249,
+            "output_elements": 112114,
+            "output_payload_bytes": 448456
+          },
+          "aten.t.default": {
+            "calls": 107,
+            "output_elements": 36944,
+            "output_payload_bytes": 147776
+          },
+          "aten.addmm.default": {
+            "calls": 46,
+            "output_elements": 20390,
+            "output_payload_bytes": 81560
+          },
+          "aten.gelu.default": {
+            "calls": 14,
+            "output_elements": 11520,
+            "output_payload_bytes": 46080
+          },
+          "aten.unsqueeze.default": {
+            "calls": 17,
+            "output_elements": 1256,
+            "output_payload_bytes": 5024
+          },
+          "aten.add.Tensor": {
+            "calls": 61,
+            "output_elements": 12716,
+            "output_payload_bytes": 50864
+          },
+          "aten.pow.Tensor_Scalar": {
+            "calls": 35,
+            "output_elements": 18848,
+            "output_payload_bytes": 75392
+          },
+          "aten.mean.dim": {
+            "calls": 35,
+            "output_elements": 2444,
+            "output_payload_bytes": 9776
+          },
+          "aten.rsqrt.default": {
+            "calls": 35,
+            "output_elements": 2444,
+            "output_payload_bytes": 9776
+          },
+          "aten.mul.Tensor": {
+            "calls": 82,
+            "output_elements": 43456,
+            "output_payload_bytes": 173824
+          },
+          "aten.expand.default": {
+            "calls": 9,
+            "output_elements": 3840,
+            "output_payload_bytes": 15360
+          },
+          "aten.permute.default": {
+            "calls": 8,
+            "output_elements": 6976,
+            "output_payload_bytes": 27904
+          },
+          "aten.mm.default": {
+            "calls": 61,
+            "output_elements": 28448,
+            "output_payload_bytes": 113792
+          },
+          "aten._unsafe_view.default": {
+            "calls": 79,
+            "output_elements": 35624,
+            "output_payload_bytes": 142496
+          },
+          "aten.transpose.int": {
+            "calls": 78,
+            "output_elements": 29952,
+            "output_payload_bytes": 119808
+          },
+          "aten._scaled_dot_product_flash_attention_for_cpu.default": {
+            "calls": 20,
+            "output_elements": 10280,
+            "output_payload_bytes": 41120
+          },
+          "aten.convolution.default": {
+            "calls": 3,
+            "output_elements": 3360,
+            "output_payload_bytes": 13440
+          },
+          "aten.native_layer_norm.default": {
+            "calls": 30,
+            "output_elements": 12924,
+            "output_payload_bytes": 51696
+          },
+          "aten.stack.default": {
+            "calls": 12,
+            "output_elements": 7680,
+            "output_payload_bytes": 30720
+          },
+          "aten.clone.default": {
+            "calls": 12,
+            "output_elements": 6912,
+            "output_payload_bytes": 27648
+          },
+          "aten.unbind.int": {
+            "calls": 6,
+            "output_elements": 3456,
+            "output_payload_bytes": 13824
+          },
+          "aten.mv.default": {
+            "calls": 6,
+            "output_elements": 264,
+            "output_payload_bytes": 1056
+          },
+          "aten._softmax.default": {
+            "calls": 6,
+            "output_elements": 264,
+            "output_payload_bytes": 1056
+          },
+          "aten.sum.dim_IntList": {
+            "calls": 6,
+            "output_elements": 768,
+            "output_payload_bytes": 3072
+          },
+          "aten.split.Tensor": {
+            "calls": 6,
+            "output_elements": 3072,
+            "output_payload_bytes": 12288
+          }
+        },
+        "temporary_materializations": {
+          "core.cdpa_at.0:aten.stack.default": {
+            "calls": 2,
+            "payload_bytes": 2560
+          },
+          "core.cdpa_at.0:aten.clone.default": {
+            "calls": 2,
+            "payload_bytes": 2048
+          },
+          "core.cdpa_at.1:aten.stack.default": {
+            "calls": 2,
+            "payload_bytes": 3584
+          },
+          "core.cdpa_at.1:aten.clone.default": {
+            "calls": 2,
+            "payload_bytes": 3072
+          },
+          "core.cdpa_at.2:aten.stack.default": {
+            "calls": 2,
+            "payload_bytes": 4608
+          },
+          "core.cdpa_at.2:aten.clone.default": {
+            "calls": 2,
+            "payload_bytes": 4096
+          },
+          "core.cdpa_at.3:aten.stack.default": {
+            "calls": 2,
+            "payload_bytes": 5632
+          },
+          "core.cdpa_at.3:aten.clone.default": {
+            "calls": 2,
+            "payload_bytes": 5120
+          },
+          "core.cdpa_at.4:aten.stack.default": {
+            "calls": 2,
+            "payload_bytes": 6656
+          },
+          "core.cdpa_at.4:aten.clone.default": {
+            "calls": 2,
+            "payload_bytes": 6144
+          },
+          "core.cdpa_at.5:aten.stack.default": {
+            "calls": 2,
+            "payload_bytes": 7680
+          },
+          "core.cdpa_at.5:aten.clone.default": {
+            "calls": 2,
+            "payload_bytes": 7168
+          }
+        },
+        "storage": {
+          "largest_point_block_input_payload_bytes": 4480,
+          "h_f_payload_bytes": 4480,
+          "largest_history_list_payload_bytes": 3584,
+          "current_latent_payload_bytes": 512,
+          "current_latent_payload_note": "FP32 residual representation; actual mixed activation dtypes in norm/SDPA ledgers",
+          "saved_activation_unique_backing_bytes": 559992,
+          "saved_activation_logical_bytes": 731592,
+          "saved_storage_excludes": "parameters, buffers, input backing storage; not allocator peak"
+        }
+      },
+      "chunk_equivalence": {
+        "reference_chunk": 0,
+        "baseline": true
+      }
+    }
+  ],
+  "errors": []
+}

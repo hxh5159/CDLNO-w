@@ -50,7 +50,7 @@ class StaticStandardModel(nn.Module):
         n_head=None, Time_Input=False, act='gelu', mlp_ratio=2,
         fun_dim=None, out_dim=1, slice_num=None, ref=8, unified_pos=None,
         H=None, W=None, *, task_name, front_blocks=2, latent_ffn_ratio=2,
-        cdpa_mode='entry', cdpa_source_chunk_size=0,
+        cdpa_mode='entry', cdpa_source_chunk_size=0, front_latent_mode='full',
     ):
         super().__init__()
         if task_name not in STATIC_TASKS:
@@ -77,7 +77,7 @@ class StaticStandardModel(nn.Module):
             M=task['latents'] if slice_num is None else slice_num, d_model=n_hidden,
             num_heads=task['heads'] if n_head is None else n_head,
             ffn_ratio=mlp_ratio, latent_ffn_ratio=latent_ffn_ratio,
-            cdpa_mode=cdpa_mode, attention_dropout=dropout,
+            cdpa_mode=cdpa_mode, attention_dropout=dropout, front_latent_mode=front_latent_mode,
             structured=task['structured'], grid_shape=(H, W) if task['structured'] else None,
             output_dim=out_dim,
         ).validate()
@@ -161,7 +161,7 @@ class TemporalStandardModel(nn.Module):
         n_head=None, Time_Input=False, act='gelu', mlp_ratio=2,
         fun_dim=None, out_dim=None, slice_num=None, ref=8, unified_pos=None,
         H=None, W=None, *, task_name, front_blocks=2, latent_ffn_ratio=2,
-        cdpa_mode='entry', cdpa_source_chunk_size=0,
+        cdpa_mode='entry', cdpa_source_chunk_size=0, front_latent_mode='full',
     ):
         super().__init__()
         if task_name not in TEMPORAL_TASKS:
@@ -183,7 +183,7 @@ class TemporalStandardModel(nn.Module):
             M=task['latents'] if slice_num is None else slice_num, d_model=n_hidden,
             num_heads=task['heads'] if n_head is None else n_head,
             ffn_ratio=mlp_ratio, latent_ffn_ratio=latent_ffn_ratio,
-            cdpa_mode=cdpa_mode, attention_dropout=dropout,
+            cdpa_mode=cdpa_mode, attention_dropout=dropout, front_latent_mode=front_latent_mode,
             structured=True, grid_shape=(H, W), output_dim=out_dim,
         ).validate()
         self.task_name, self.space_dim, self.fun_dim = task_name, space_dim, fun_dim

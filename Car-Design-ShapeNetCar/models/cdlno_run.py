@@ -19,6 +19,8 @@ MODEL_OPTIONS = {
 
 
 def parse_args(parser, *, evaluation=False, argv=None):
+    parser.add_argument('--front_latent_mode', '--front-latent-mode',
+                        choices=('full', 'no_sa', 'identity'), default=None)
     for name, kind in MODEL_OPTIONS.items():
         flags = ['--' + name]
         if '_' in name:
@@ -30,6 +32,12 @@ def parse_args(parser, *, evaluation=False, argv=None):
     args = parser.parse_args(argv)
     if args.cfd_model != 'CDLNO':
         return args
+    if evaluation:
+        if args.run_dir is None:
+            parser.error('CDLNO evaluation requires --run_dir pointing to an existing run')
+        from cdlno.checkpoint import resolve_front_latent_mode
+        args.front_latent_mode = resolve_front_latent_mode(
+            args.run_dir / 'architecture.json', args.front_latent_mode)
     preset_path = Path(__file__).resolve().parents[1] / 'configs' / 'CDLNO' / 'shapenet_car.json'
     preset = json.loads(preset_path.read_text())
     for name, value in preset['model'].items():
@@ -55,6 +63,7 @@ def parse_args(parser, *, evaluation=False, argv=None):
 
 def model_kwargs(args):
     return dict(n_hidden=args.n_hidden, n_layers=args.n_layers, n_head=args.n_heads,
+                front_latent_mode=getattr(args, 'front_latent_mode', 'full'),
                 slice_num=args.slice_num, front_blocks=args.front_blocks,
                 mlp_ratio=args.mlp_ratio, latent_ffn_ratio=args.latent_ffn_ratio,
                 dropout=args.dropout, cdpa_mode=args.cdpa_mode,
@@ -76,6 +85,8 @@ class CarRun:
         from models.CDLNO import architecture, adapter_architecture
         from cdlno.config import CDLNORuntimeConfig
         from cdlno.checkpoint import save_sidecar
+        from cdlno.experiment import session, reserve_directory, default_directory
+        self.recorder = session(args)
         self.kwargs = model_kwargs(args)
         values = dict(self.kwargs)
         values.pop('cdpa_source_chunk_size')
@@ -96,11 +107,12 @@ class CarRun:
             self.validate()  # Read sidecar first; never write in evaluation.
         else:
             self._check_model(model)
+            mode_suffix = '' if self.architecture.front_latent_mode == 'full' else '_' + self.architecture.front_latent_mode
             stem = (f'fold{args.fold_id}_L{args.n_layers}_F{args.front_blocks}'
-                    f'_M{args.slice_num}_{args.cdpa_mode}_{_unique_suffix()}')
+                    f'_M{args.slice_num}_{args.cdpa_mode}{mode_suffix}_{_unique_suffix()}')
             self.directory = (Path(args.run_dir) if args.run_dir is not None
-                              else Path('runs') / 'CDLNO' / 'shapenet-car' / stem).resolve()
-            self.directory.mkdir(parents=True, exist_ok=False)
+                              else default_directory('car')).resolve()
+            reserve_directory(args, self.directory)
             arguments = {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()}
             try:
                 commit = subprocess.check_output(
@@ -114,6 +126,10 @@ class CarRun:
                                        run_contract=self.contract, resolved_arguments=arguments,
                                        base_repository_commit=commit))
         self.result_dir = str(self.directory / ('eval_' + _unique_suffix())) + '/'
+        if self.recorder is not None:
+            self.result_dir = self.recorder.result_dir
+            if model is not None:
+                self.recorder.attach_model(model, hparams=dict(lr=args.lr, batch_size=args.batch_size, nb_epochs=args.nb_epochs), protocol=self.contract)
         print('CDLNO run directory:', self.directory)
         print('CDLNO resolved architecture:', self.architecture.to_dict(), self.adapter)
 
@@ -140,6 +156,8 @@ class CarRun:
         from cdlno.checkpoint import SidecarMismatch, compare_architecture
         if type(model) is not Model:
             raise SidecarMismatch('checkpoint must contain models.CDLNO.Model')
+        from cdlno.checkpoint import validate_model_front_mode
+        validate_model_front_mode(model, self.architecture)
         if (compare_architecture(self.architecture, model.config)
                 or compare_architecture(self.architecture, model.core.config)
                 or model.adapter_architecture() != self.adapter):
@@ -159,4 +177,7 @@ class CarRun:
         expected.load_state_dict(model.state_dict(), strict=True)
         del expected
         model.core.source_chunk_size = self.runtime.source_chunk_size
-        return model.to(self.device)
+        model = model.to(self.device)
+        if self.recorder is not None:
+            self.recorder.attach_model(model, protocol=self.contract)
+        return model

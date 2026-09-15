@@ -18,6 +18,8 @@ MODEL_OPTIONS = dict(n_hidden=int, n_layers=int, n_heads=int, slice_num=int,
 
 
 def parse_args(parser, *, evaluation=False, argv=None):
+    parser.add_argument('--front_latent_mode', '--front-latent-mode',
+                        choices=('full', 'no_sa', 'identity'), default=None)
     for name, kind in MODEL_OPTIONS.items():
         flags = ['--' + name]
         if '_' in name:
@@ -36,6 +38,12 @@ def parse_args(parser, *, evaluation=False, argv=None):
     args = parser.parse_args(argv)
     if args.model != 'CDLNO':
         return args
+    if evaluation:
+        if args.run_dir is None:
+            parser.error('CDLNO evaluation requires an existing --run_dir')
+        from cdlno.checkpoint import resolve_front_latent_mode
+        args.front_latent_mode = resolve_front_latent_mode(
+            args.run_dir / 'architecture.json', args.front_latent_mode)
     defaults = json.loads((Path(__file__).parent / 'configs/CDLNO/airfrans.json').read_text())['model']
     for name, value in defaults.items():
         if getattr(args, name) is None:
@@ -55,6 +63,7 @@ def parse_args(parser, *, evaluation=False, argv=None):
 
 def model_kwargs(args):
     return dict(n_hidden=args.n_hidden, n_layers=args.n_layers, n_head=args.n_heads,
+                front_latent_mode=getattr(args, 'front_latent_mode', 'full'),
                 slice_num=args.slice_num, front_blocks=args.front_blocks,
                 mlp_ratio=args.mlp_ratio, latent_ffn_ratio=args.latent_ffn_ratio,
                 dropout=args.dropout, cdpa_mode=args.cdpa_mode,
@@ -84,6 +93,8 @@ class AirRun:
         from cdlno.airfrans import architecture, adapter_architecture
         from cdlno.config import CDLNORuntimeConfig
         from cdlno.checkpoint import save_sidecar
+        from cdlno.experiment import session, reserve_directory, default_directory
+        self.recorder = session(args)
         self.kwargs = model_kwargs(args)
         structural = dict(self.kwargs)
         structural.pop('cdpa_source_chunk_size')
@@ -102,10 +113,11 @@ class AirRun:
             self.directory = Path(args.run_dir).resolve()
             self.validate()  # Sidecar is read before any whole-model load or write.
         else:
-            stem = f'L{args.n_layers}_F{args.front_blocks}_M{args.slice_num}_{args.cdpa_mode}_{_suffix()}'
+            mode_suffix = '' if self.architecture.front_latent_mode == 'full' else '_' + self.architecture.front_latent_mode
+            stem = f'L{args.n_layers}_F{args.front_blocks}_M{args.slice_num}_{args.cdpa_mode}{mode_suffix}_{_suffix()}'
             self.directory = (Path(args.run_dir) if args.run_dir is not None else
-                              Path(args.save_path) / args.task / 'CDLNO' / stem).resolve()
-            self.directory.mkdir(parents=True, exist_ok=False)
+                              default_directory('airfrans')).resolve()
+            reserve_directory(args, self.directory)
             arguments = {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()}
             try:
                 commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'],
@@ -116,6 +128,8 @@ class AirRun:
                 wrapper_architecture=self.adapter, run_contract=self.contract,
                 resolved_arguments=arguments, base_repository_commit=commit))
         self.result_dir = str(self.directory / ('eval_' + _suffix()))
+        if self.recorder is not None:
+            self.result_dir = self.recorder.result_dir
         print('CDLNO run directory:', self.directory)
         print('CDLNO resolved architecture:', self.architecture.to_dict(), self.adapter)
         print('CDLNO resolved training/data settings:', self.hparams)
@@ -163,6 +177,8 @@ class AirRun:
         for model in models:
             if type(model) is not AirfRANSModel:
                 raise SidecarMismatch('checkpoint must contain cdlno.airfrans.AirfRANSModel')
+            from cdlno.checkpoint import validate_model_front_mode
+            validate_model_front_mode(model, self.architecture)
             if (compare_architecture(self.architecture, model.config)
                     or compare_architecture(self.architecture, model.core.config)
                     or model.adapter_architecture() != self.adapter):
@@ -170,4 +186,7 @@ class AirRun:
             expected.load_state_dict(model.state_dict(), strict=True)
             model.core.source_chunk_size = self.runtime.source_chunk_size
             model.to(self.device)
+        if self.recorder is not None:
+            for index, model in enumerate(models):
+                self.recorder.attach_model(model, hparams=self.hparams, member=index if member is None else member, protocol=self.contract)
         return models if member is None else models[0]

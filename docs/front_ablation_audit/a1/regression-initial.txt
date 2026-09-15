@@ -1,0 +1,198 @@
+/home/hwz/anaconda3/lib/python3.13/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+test_complete_entry_ast_preserves_original_protocol (test_airfrans.AirFrozenChecks.test_complete_entry_ast_preserves_original_protocol) ... ok
+test_frozen_training_sampling_metrics_and_original_models (test_airfrans.AirFrozenChecks.test_frozen_training_sampling_metrics_and_original_models) ... fatal: path 'Airfoil-Design-AirfRANS/cdlno_entry.py' exists on disk, but not in '75e0f67643806a81cd1d3f6adc88dd8c02416fe7'
+ERROR
+test_scripts_configuration_and_evaluation_model_selection (test_airfrans.AirFrozenChecks.test_scripts_configuration_and_evaluation_model_selection) ... ok
+test_32000_synthetic_points_small_width_backward (test_airfrans.AirRealPyG.test_32000_synthetic_points_small_width_backward) ... ok
+test_original_weighted_loss_train_and_test (test_airfrans.AirRealPyG.test_original_weighted_loss_train_and_test) ... ok
+test_sampled_single_graph_ptr_and_multiple_graph_rejection (test_airfrans.AirRealPyG.test_sampled_single_graph_ptr_and_multiple_graph_rejection) ... ok
+test_variable_nodes_batch_and_immutable_fields_no_y_leak (test_airfrans.AirRealPyG.test_variable_nodes_batch_and_immutable_fields_no_y_leak) ... ok
+test_checkpoint_list_type_length_and_strict_keys (test_airfrans.AirWrapperChecks.test_checkpoint_list_type_length_and_strict_keys) ... ok
+test_cli_yaml_inheritance_and_explicit_overrides (test_airfrans.AirWrapperChecks.test_cli_yaml_inheritance_and_explicit_overrides) ... ok
+test_defaults_modes_gradients_placeholder_initialization (test_airfrans.AirWrapperChecks.test_defaults_modes_gradients_placeholder_initialization) ... ok
+test_reference_matches_original_get_grid_and_lifting (test_airfrans.AirWrapperChecks.test_reference_matches_original_get_grid_and_lifting) ... ok
+test_sidecar_read_first_member_paths_and_runtime (test_airfrans.AirWrapperChecks.test_sidecar_read_first_member_paths_and_runtime) ... ok
+test_whole_model_and_list_fresh_processes_in_air_cwd (test_airfrans.AirWrapperChecks.test_whole_model_and_list_fresh_processes_in_air_cwd) ... ok
+test_gpu_depth_autocast_precision_and_gradients (test_cdpa.CDPACUDAChecks.test_gpu_depth_autocast_precision_and_gradients) ... ok
+test_gpu_fp32_reference_and_fused_sdpa (test_cdpa.CDPACUDAChecks.test_gpu_fp32_reference_and_fused_sdpa) ... ok
+test_gpu_half_bfloat16_outputs_chunks_and_extremes (test_cdpa.CDPACUDAChecks.test_gpu_half_bfloat16_outputs_chunks_and_extremes) ... ok
+test_batch_isolation_forward_and_gradient (test_cdpa.CDPAChecks.test_batch_isolation_forward_and_gradient) ... ok
+test_chunk_layout_counts_q_once_and_single_global_fusion (test_cdpa.CDPAChecks.test_chunk_layout_counts_q_once_and_single_global_fusion) ... ok
+test_current_token_permutation_equivariance (test_cdpa.CDPAChecks.test_current_token_permutation_equivariance) ... ok
+test_depth_fp32_dispatch_under_cpu_autocast (test_cdpa.CDPAChecks.test_depth_fp32_dispatch_under_cpu_autocast) ... ok
+test_empty_history_is_exact_identity_without_computation (test_cdpa.CDPAChecks.test_empty_history_is_exact_identity_without_computation) ... ok
+test_extreme_magnitudes_and_all_gradients_finite (test_cdpa.CDPAChecks.test_extreme_magnitudes_and_all_gradients_finite) ... ok
+test_initialization_and_only_shared_parameters (test_cdpa.CDPAChecks.test_initialization_and_only_shared_parameters) ... ok
+test_invalid_inputs_rejected_before_projection (test_cdpa.CDPAChecks.test_invalid_inputs_rejected_before_projection) ... ok
+test_mixed_history_dtypes_preserve_cast_gradients (test_cdpa.CDPAChecks.test_mixed_history_dtypes_preserve_cast_gradients) ... ok
+test_noncontiguous_inputs_and_minimal_sizes (test_cdpa.CDPAChecks.test_noncontiguous_inputs_and_minimal_sizes) ... ok
+test_reference_does_not_call_production_or_sdpa (test_cdpa.CDPAChecks.test_reference_does_not_call_production_or_sdpa) ... ok
+test_sdpa_reference_output_and_all_gradients_matrix (test_cdpa.CDPAChecks.test_sdpa_reference_output_and_all_gradients_matrix) ... ok
+test_sidecar_runtime_changes_and_architecture_rejection_without_overwrite (test_cdpa.CDPAChecks.test_sidecar_runtime_changes_and_architecture_rejection_without_overwrite) ... ok
+test_source_reorder_and_historical_token_permutations (test_cdpa.CDPAChecks.test_source_reorder_and_historical_token_permutations) ... ok
+test_stateless_calls_input_immutability_and_chunk_weight_loading (test_cdpa.CDPAChecks.test_stateless_calls_input_immutability_and_chunk_weight_loading) ... ok
+test_two_softmax_axes_and_tokenwise_weights (test_cdpa.CDPAChecks.test_two_softmax_axes_and_tokenwise_weights) ... ok
+test_uniform_initialization_raw_values_and_no_outer_residual (test_cdpa.CDPAChecks.test_uniform_initialization_raw_values_and_no_outer_residual) ... ok
+test_zero_w_gradient_then_updated_w (test_cdpa.CDPAChecks.test_zero_w_gradient_then_updated_w) ... ok
+test_small_core_fp32_and_amp_modes_point_and_grid (test_core.CoreCUDAChecks.test_small_core_fp32_and_amp_modes_point_and_grid) ... ok
+test_actual_history_sdpa_counts_chunks_and_each_location_projections (test_core.CoreChecks.test_actual_history_sdpa_counts_chunks_and_each_location_projections) ... ok
+test_default_and_42_depth_mode_point_grid_forward_backward_cases (test_core.CoreChecks.test_default_and_42_depth_mode_point_grid_forward_backward_cases) ... ok
+test_direct_history_readout_gradients_zero_w_then_updated_w (test_core.CoreChecks.test_direct_history_readout_gradients_zero_w_then_updated_w) ... ok
+test_explicit_raw_state_schedule_output_and_all_gradient_parity (test_core.CoreChecks.test_explicit_raw_state_schedule_output_and_all_gradient_parity) ... ok
+test_extended_boundary_and_front_above_six_all_modes (test_core.CoreChecks.test_extended_boundary_and_front_above_six_all_modes) ... ok
+test_f0_entry_off_same_weights_exact_outputs_gradients_and_calls (test_core.CoreChecks.test_f0_entry_off_same_weights_exact_outputs_gradients_and_calls) ... ok
+test_history_objects_timing_readout_and_two_forward_graph_isolation (test_core.CoreChecks.test_history_objects_timing_readout_and_two_forward_graph_isolation) ... ok
+test_off_discards_t_and_entry_releases_history_after_only_use (test_core.CoreChecks.test_off_discards_t_and_entry_releases_history_after_only_use) ... ok
+test_operation_counts_and_constant_m_all_front_depths (test_core.CoreChecks.test_operation_counts_and_constant_m_all_front_depths) ... ok
+test_point_order_batch_independence_and_variable_n (test_core.CoreChecks.test_point_order_batch_independence_and_variable_n) ... ok
+test_registration_storage_independence_and_single_initialization (test_core.CoreChecks.test_registration_storage_independence_and_single_initialization) ... ok
+test_state_dict_roundtrip_actual_chunk_changes_and_all_gradients (test_core.CoreChecks.test_state_dict_roundtrip_actual_chunk_changes_and_all_gradients) ... ok
+test_derived_p_ratios_and_json_grid_roundtrip (test_core_config.CoreConfigChecks.test_derived_p_ratios_and_json_grid_roundtrip) ... ok
+test_illegal_architecture_and_core_policy_rejected (test_core_config.CoreConfigChecks.test_illegal_architecture_and_core_policy_rejected) ... ok
+test_invalid_input_and_chunk_rejected_before_computation (test_core_config.CoreConfigChecks.test_invalid_input_and_chunk_rejected_before_computation) ... ok
+test_sidecar_runtime_allowed_architecture_rejected_bytes_preserved (test_core_config.CoreConfigChecks.test_sidecar_runtime_allowed_architecture_rejected_bytes_preserved) ... ok
+test_strict_weights_and_existing_sidecar_in_fresh_process (test_core_config.CoreConfigChecks.test_strict_weights_and_existing_sidecar_in_fresh_process) ... ok
+test_three_task_cwd_fresh_imports_without_entry_or_install (test_core_config.CoreConfigChecks.test_three_task_cwd_fresh_imports_without_entry_or_install) ... ok
+test_ablation_history_unchanged_across_consumers_and_new_forwards (test_front_ablation.FrontAblationChecks.test_ablation_history_unchanged_across_consumers_and_new_forwards) ... ok
+test_block_formula_outputs_and_gradients_point_and_grid (test_front_ablation.FrontAblationChecks.test_block_formula_outputs_and_gradients_point_and_grid) ... ok
+test_configuration_validation_roundtrip_and_runtime_separation (test_front_ablation.FrontAblationChecks.test_configuration_validation_roundtrip_and_runtime_separation) ... ok
+test_core_depth_modes_finite_gradients_independence_and_active_counts (test_front_ablation.FrontAblationChecks.test_core_depth_modes_finite_gradients_independence_and_active_counts) ... ok
+test_core_explicit_history_reference_and_chunk_parity (test_front_ablation.FrontAblationChecks.test_core_explicit_history_reference_and_chunk_parity) ... ok
+test_exact_sublayer_calls_removed_parameters_and_counts (test_front_ablation.FrontAblationChecks.test_exact_sublayer_calls_removed_parameters_and_counts) ... ok
+test_f0_modes_same_weights_outputs_gradients_and_parameter_keys (test_front_ablation.FrontAblationChecks.test_f0_modes_same_weights_outputs_gradients_and_parameter_keys) ... ok
+test_identity_history_is_live_down_before_up_norm_and_point_nonlinearity (test_front_ablation.FrontAblationChecks.test_identity_history_is_live_down_before_up_norm_and_point_nonlinearity) ... ok
+test_implicit_explicit_full_same_construction_and_computation (test_front_ablation.FrontAblationChecks.test_implicit_explicit_full_same_construction_and_computation) ... ok
+test_new_core_checkpoint_roundtrip_each_mode_and_wrong_state_rejected (test_front_ablation.FrontAblationChecks.test_new_core_checkpoint_roundtrip_each_mode_and_wrong_state_rejected) ... ok
+test_old_json_alias_strict_modes_and_sidecar_bytes (test_front_ablation.FrontAblationChecks.test_old_json_alias_strict_modes_and_sidecar_bytes) ... ok
+test_pickle_layout_rejects_ambiguous_or_unknown_state (test_front_ablation.FrontAblationChecks.test_pickle_layout_rejects_ambiguous_or_unknown_state) ... ok
+test_zero_output_branches_match_ablations_with_copied_weights (test_front_ablation.FrontAblationChecks.test_zero_output_branches_match_ablations_with_copied_weights) ... ok
+test_point_front_against_same_configuration (test_lrsa_reference.LRSAReferenceChecks.test_point_front_against_same_configuration) ... ok
+test_structured_front_against_same_configuration (test_lrsa_reference.LRSAReferenceChecks.test_structured_front_against_same_configuration) ... ok
+test_small_cuda_fp32_and_amp (test_modules.CUDAModuleChecks.test_small_cuda_fp32_and_amp) ... ok
+test_bridge_formula_and_gradients (test_modules.ModuleChecks.test_bridge_formula_and_gradients) ... ok
+test_conv_5_by_7_row_major_channel_mixing (test_modules.ModuleChecks.test_conv_5_by_7_row_major_channel_mixing) ... ok
+test_cpu_autocast_bfloat16_individual_modules (test_modules.ModuleChecks.test_cpu_autocast_bfloat16_individual_modules) ... /home/hwz/anaconda3/lib/python3.13/site-packages/torch/backends/mkldnn/__init__.py:96: UserWarning: TF32 acceleration on top of oneDNN is available for Intel GPUs. The current Torch version does not have Intel GPU Support. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/Context.cpp:265.)
+  torch._C._set_onednn_allow_tf32(_allow_tf32)
+ok
+test_front_down_zero_and_bridge_query_residual (test_modules.ModuleChecks.test_front_down_zero_and_bridge_query_residual) ... ok
+test_front_order_history_object_and_live_gradients (test_modules.ModuleChecks.test_front_order_history_object_and_live_gradients) ... ok
+test_initialization_once_queries_and_default_conv (test_modules.ModuleChecks.test_initialization_once_queries_and_default_conv) ... ok
+test_invalid_dimensions_ratios_and_grid_fail_early (test_modules.ModuleChecks.test_invalid_dimensions_ratios_and_grid_fail_early) ... ok
+test_norm_bias_and_ffn_default_policies (test_modules.ModuleChecks.test_norm_bias_and_ffn_default_policies) ... ok
+test_norm_formula_outputs_and_gradients (test_modules.ModuleChecks.test_norm_formula_outputs_and_gradients) ... ok
+test_parameter_identity_and_storage_are_independent (test_modules.ModuleChecks.test_parameter_identity_and_storage_are_independent) ... ok
+test_persistent_same_normalized_qkv_and_formula (test_modules.ModuleChecks.test_persistent_same_normalized_qkv_and_formula) ... ok
+test_plain_and_geglu_formula (test_modules.ModuleChecks.test_plain_and_geglu_formula) ... ok
+test_point_permutation_latent_permutation_and_batch_isolation (test_modules.ModuleChecks.test_point_permutation_latent_permutation_and_batch_isolation) ... ok
+test_readout_formula_and_gradients (test_modules.ModuleChecks.test_readout_formula_and_gradients) ... ok
+test_readout_query_context_residual_and_output_norm (test_modules.ModuleChecks.test_readout_query_context_residual_and_output_norm) ... ok
+test_rms_small_large_zero_and_low_precision (test_modules.ModuleChecks.test_rms_small_large_zero_and_low_precision) ... ok
+test_sdpa_matches_explicit_attention_and_gradients (test_modules.ModuleChecks.test_sdpa_matches_explicit_attention_and_gradients) ... ok
+test_all_eight_task_wrapper_and_original_baseline_synthetic_calls (test_performance.PerformanceChecks.test_all_eight_task_wrapper_and_original_baseline_synthetic_calls) ... ok
+test_chunk_same_weights_output_all_gradients_and_memory_ledgers (test_performance.PerformanceChecks.test_chunk_same_weights_output_all_gradients_and_memory_ledgers) ... ok
+test_fresh_cli_no_overwrite_and_python310_syntax (test_performance.PerformanceChecks.test_fresh_cli_no_overwrite_and_python310_syntax) ... ok
+test_initialized_optimizer_timing_quantiles_and_profiler_gap (test_performance.PerformanceChecks.test_initialized_optimizer_timing_quantiles_and_profiler_gap) ... USDT:2026-09-14 22:07:14 96894:96894 SyncActivityProfilerHandler.cpp:52] profiler_start
+USDT:2026-09-14 22:07:14 96894:96894 SyncActivityProfilerHandler.cpp:59] profiler_stop
+USDT:2026-09-14 22:07:14 96894:96894 SyncActivityProfilerHandler.cpp:52] profiler_start
+USDT:2026-09-14 22:07:14 96894:96894 SyncActivityProfilerHandler.cpp:59] profiler_stop
+ok
+test_live_counts_formulas_and_chunk_invariant_matrix_cost (test_performance.PerformanceChecks.test_live_counts_formulas_and_chunk_invariant_matrix_cost) ... ok
+test_matched_composition_head_stem_independence_and_manual_forward (test_performance.PerformanceChecks.test_matched_composition_head_stem_independence_and_manual_forward) ... ok
+test_precision_global_settings_restored (test_performance.PerformanceChecks.test_precision_global_settings_restored) ... ok
+test_projection_ffn_and_dense_conv_all_counted_against_closed_form (test_performance.PerformanceChecks.test_projection_ffn_and_dense_conv_all_counted_against_closed_form) ... ok
+test_task_preset_comparison_matches_current_sources (test_performance.PerformanceChecks.test_task_preset_comparison_matches_current_sources) ... ok
+test_transolver_actual_per_head_projection_and_unused_parameters (test_performance.PerformanceChecks.test_transolver_actual_per_head_projection_and_unused_parameters) ... ok
+test_zero_front_extended_depth_and_invalid_inputs (test_performance.PerformanceChecks.test_zero_front_extended_depth_and_invalid_inputs) ... ok
+test_epoch_path_fix_and_launch_arguments (test_shapenet_car.FrozenSourceAndScripts.test_epoch_path_fix_and_launch_arguments) ... ok
+test_frozen_car_and_airfrans_original_files (test_shapenet_car.FrozenSourceAndScripts.test_frozen_car_and_airfrans_original_files) ... fatal: path 'Airfoil-Design-AirfRANS/cdlno_entry.py' exists on disk, but not in '75e0f67643806a81cd1d3f6adc88dd8c02416fe7'
+ERROR
+test_original_entries_project_to_baseline_ast (test_shapenet_car.FrozenSourceAndScripts.test_original_entries_project_to_baseline_ast) ... ok
+test_large_synthetic_point_count_and_input_gradients (test_shapenet_car.RealPyGChecks.test_large_synthetic_point_count_and_input_gradients) ... ok
+test_multigraph_batch_ptr_and_malformed_inputs_rejected (test_shapenet_car.RealPyGChecks.test_multigraph_batch_ptr_and_malformed_inputs_rejected) ... ok
+test_original_train_mask_loss_backward_optimizer_scheduler (test_shapenet_car.RealPyGChecks.test_original_train_mask_loss_backward_optimizer_scheduler) ... ok
+test_variable_n_single_batch_no_mutation_no_label_geometry_read (test_shapenet_car.RealPyGChecks.test_variable_n_single_batch_no_mutation_no_label_geometry_read) ... ok
+test_baseline_lifting_placeholder_and_query_initialization (test_shapenet_car.WrapperAndProtocol.test_baseline_lifting_placeholder_and_query_initialization) ... ok
+test_checkpoint_rejects_wrong_object_and_missing_weights (test_shapenet_car.WrapperAndProtocol.test_checkpoint_rejects_wrong_object_and_missing_weights) ... ok
+test_defaults_active_parameters_and_three_modes (test_shapenet_car.WrapperAndProtocol.test_defaults_active_parameters_and_three_modes) ... ok
+test_parser_overrides_legacy_and_invalid_contracts (test_shapenet_car.WrapperAndProtocol.test_parser_overrides_legacy_and_invalid_contracts) ... ok
+test_run_isolation_and_sidecar_before_load (test_shapenet_car.WrapperAndProtocol.test_run_isolation_and_sidecar_before_load) ... ok
+test_whole_model_save_and_load_in_separate_car_processes (test_shapenet_car.WrapperAndProtocol.test_whole_model_save_and_load_in_separate_car_processes) ... ok
+test_automatic_run_names_and_eval_missing_sidecar (test_static_standard.StaticCheckpointChecks.test_automatic_run_names_and_eval_missing_sidecar) ... ok
+test_fresh_process_wrapper_checkpoint_restore (test_static_standard.StaticCheckpointChecks.test_fresh_process_wrapper_checkpoint_restore) ... ok
+test_invalid_runtime_chunk_all_sidecar_boundaries (test_static_standard.StaticCheckpointChecks.test_invalid_runtime_chunk_all_sidecar_boundaries) ... ok
+test_strict_roundtrip_sidecar_no_overwrite_and_separate_outputs (test_static_standard.StaticCheckpointChecks.test_strict_roundtrip_sidecar_no_overwrite_and_separate_outputs) ... ok
+test_legacy_ast_recovered_exactly_from_limited_branches (test_static_standard.StaticFrozenChecks.test_legacy_ast_recovered_exactly_from_limited_branches) ... ok
+test_scripts_syntax_arguments_and_fresh_imports (test_static_standard.StaticFrozenChecks.test_scripts_syntax_arguments_and_fresh_imports) ... ok
+test_static_wrapper_device_and_amp_backward (test_static_standard.StaticGPUChecks.test_static_wrapper_device_and_amp_backward) ... ok
+test_darcy_exact_training_decode_and_gradient_loss_ast (test_static_standard.StaticInterfaceChecks.test_darcy_exact_training_decode_and_gradient_loss_ast) ... ok
+test_defaults_and_explicit_overrides_leave_legacy_parser_unchanged (test_static_standard.StaticInterfaceChecks.test_defaults_and_explicit_overrides_leave_legacy_parser_unchanged) ... ok
+test_four_interfaces_three_modes_backward_placeholder_and_no_time (test_static_standard.StaticInterfaceChecks.test_four_interfaces_three_modes_backward_placeholder_and_no_time) ... ok
+test_original_lifting_reference_order_coords_and_initialization (test_static_standard.StaticInterfaceChecks.test_original_lifting_reference_order_coords_and_initialization) ... ok
+test_pipe_and_elasticity_original_normalizer_loss_connections (test_static_standard.StaticInterfaceChecks.test_pipe_and_elasticity_original_normalizer_loss_connections) ... ok
+test_real_n_with_smaller_width_latents_preserves_layout (test_static_standard.StaticInterfaceChecks.test_real_n_with_smaller_width_latents_preserves_layout) ... ok
+test_complete_temporal_entries_project_to_baseline_ast (test_temporal_standard.StaticTemporalFreeze.test_complete_temporal_entries_project_to_baseline_ast) ... ok
+test_scripts_and_python_syntax (test_temporal_standard.StaticTemporalFreeze.test_scripts_and_python_syntax) ... ok
+test_checkpoint_roundtrip_temporal (test_temporal_standard.TemporalChecks.test_checkpoint_roundtrip_temporal) ... ok
+test_defaults_dimensions_and_time_registration (test_temporal_standard.TemporalChecks.test_defaults_dimensions_and_time_registration) ... ok
+test_model_registry_excludes_unapproved_tasks (test_temporal_standard.TemporalChecks.test_model_registry_excludes_unapproved_tasks) ... ok
+test_ns_original_no_clip_default_and_explicit_override (test_temporal_standard.TemporalChecks.test_ns_original_no_clip_default_and_explicit_override) ... ok
+test_ns_teacher_forcing_and_prediction_windows_batched (test_temporal_standard.TemporalChecks.test_ns_teacher_forcing_and_prediction_windows_batched) ... ok
+test_original_temporal_loop_ast_contract (test_temporal_standard.TemporalChecks.test_original_temporal_loop_ast_contract) ... ok
+test_plasticity_time_changes_output_and_time_gradients (test_temporal_standard.TemporalChecks.test_plasticity_time_changes_output_and_time_gradients) ... ok
+test_plasticity_twenty_independent_time_steps_and_loss (test_temporal_standard.TemporalChecks.test_plasticity_twenty_independent_time_steps_and_loss) ... ok
+
+======================================================================
+ERROR: test_frozen_training_sampling_metrics_and_original_models (test_airfrans.AirFrozenChecks.test_frozen_training_sampling_metrics_and_original_models)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_airfrans.py", line 417, in test_frozen_training_sampling_metrics_and_original_models
+    expected=subprocess.check_output(['git','show',BASE+':'+name],cwd=ROOT)
+  File "/home/hwz/anaconda3/lib/python3.13/subprocess.py", line 472, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+               **kwargs).stdout
+               ^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['git', 'show', '75e0f67643806a81cd1d3f6adc88dd8c02416fe7:Airfoil-Design-AirfRANS/cdlno_entry.py']' returned non-zero exit status 128.
+
+======================================================================
+ERROR: test_frozen_car_and_airfrans_original_files (test_shapenet_car.FrozenSourceAndScripts.test_frozen_car_and_airfrans_original_files)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_shapenet_car.py", line 412, in test_frozen_car_and_airfrans_original_files
+    before = subprocess.check_output(['git', 'show', '75e0f67643806a81cd1d3f6adc88dd8c02416fe7:' + name], cwd=ROOT)
+  File "/home/hwz/anaconda3/lib/python3.13/subprocess.py", line 472, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+               **kwargs).stdout
+               ^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['git', 'show', '75e0f67643806a81cd1d3f6adc88dd8c02416fe7:Airfoil-Design-AirfRANS/cdlno_entry.py']' returned non-zero exit status 128.
+
+----------------------------------------------------------------------
+Ran 133 tests in 51.380s
+
+FAILED (errors=2)
+phase-3 execution: torch=2.13.0+cu130, CUDA runtime=13.0
+phase-3 GPU: NVIDIA GeForce RTX 5090 Laptop GPU
+CDPA reference matrix: 48 cases, all parameter/input gradients; max abs grad error=2.17e-05
+phase-4 GPU: NVIDIA GeForce RTX 5090 Laptop GPU torch: 2.13.0+cu130
+phase-4 default off: logical histories=0, actual history SDPA=0, total SDPA=14
+phase-4 default entry: logical histories=2, actual history SDPA=1, total SDPA=15
+phase-4 default every_block: logical histories=27, actual history SDPA=6, total SDPA=20
+ImportError: No module named 'xformers'
+ImportError: No module named 'liger_kernel'
+LRSA structured=False: y max error=0; T max error=0; gradient max error=0
+LRSA structured=True: y max error=0; T max error=0; gradient max error=0
+phase-2 tests: torch=2.13.0+cu130, runtime=13.0
+phase-2 GPU: NVIDIA GeForce RTX 5090 Laptop GPU
+static GPU: NVIDIA GeForce RTX 5090 Laptop GPU
+static real-N: darcy (1, 7225, 1) backward passed
+static real-N: elasticity (1, 972, 1) backward passed
+static real-N: airfoil (1, 11271, 1) backward passed
+static real-N: pipe (1, 16641, 1) backward passed

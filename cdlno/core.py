@@ -9,7 +9,7 @@ from __future__ import annotations
 from torch import Tensor, nn
 
 from .cdpa import CDPA, _check_chunk_size
-from .config import CDLNOArchitectureConfig
+from .config import CDLNOArchitectureConfig, HISTORY_RULE
 from .modules import (
     IPOTBridge, LRSAFeatureReadout, LRSAFrontBlock, PersistentLatentBlock,
     _check_grid, _check_tokens,
@@ -40,8 +40,8 @@ class CDLNO(nn.Module):
         # Reject unsupported policy changes rather than silently ignoring them.
         if config.model_version != "cdlno-core-v1":
             raise ValueError("CDLNO core requires model_version='cdlno-core-v1'")
-        if config.history_rule != "front-t-after-ffn2-before-up-v1":
-            raise ValueError("CDLNO core requires the v1 history rule")
+        if config.history_rule != HISTORY_RULE:
+            raise ValueError("CDLNO core requires the selected-processor pre-Up history rule")
         if config.norm_type != "rmsnorm":
             raise ValueError("CDLNO core requires norm_type='rmsnorm' for LRSA branches")
         if config.attention_dropout != 0.0:
@@ -55,7 +55,8 @@ class CDLNO(nn.Module):
             ffn_ratio=config.ffn_ratio,
         )
         self.front_blocks = nn.ModuleList([
-            LRSAFrontBlock(d, h, m, **point_settings) for _ in range(config.F)
+            LRSAFrontBlock(d, h, m, front_latent_mode=config.front_latent_mode, **point_settings)
+            for _ in range(config.F)
         ])
         self.bridge = IPOTBridge(d, h, m)
         self.latent_blocks = nn.ModuleList([

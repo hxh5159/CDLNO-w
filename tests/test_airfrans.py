@@ -1,5 +1,6 @@
 """Synthetic AirfRANS interfaces; original data/metrics entrypoints never run."""
 import ast
+from output_recording_projection import strip_recording
 import copy
 from contextlib import redirect_stdout
 import importlib.util
@@ -406,20 +407,28 @@ class AirFrozenChecks(unittest.TestCase):
                 if node.id=='score_path': return ast.Constant(value='scores')
                 return node
         for filename in ('main.py','main_evaluation.py'):
-            projected=Project().visit(ast.parse((AIR/filename).read_text()))
+            projected=Project().visit(strip_recording(ast.parse((AIR/filename).read_text())))
             self.assertEqual(ast.dump(projected),ast.dump(ast.parse(original(filename))),filename)
 
     def test_frozen_training_sampling_metrics_and_original_models(self):
-        names=subprocess.check_output(['git','ls-files','Airfoil-Design-AirfRANS'],cwd=ROOT,text=True).splitlines()
+        # New CDLNO files can be committed after the audit; freeze only the
+        # original file inventory from BASE, including any later deletions.
+        names=subprocess.check_output(['git','ls-tree','-r','--name-only',BASE,'--','Airfoil-Design-AirfRANS'],cwd=ROOT,text=True).splitlines()
         count=0
         for name in names:
             if Path(name).name in ('main.py','main_evaluation.py','params.yaml'): continue
             expected=subprocess.check_output(['git','show',BASE+':'+name],cwd=ROOT)
-            self.assertEqual((ROOT/name).read_bytes(),expected,name); count+=1
+            if Path(name).name == 'train.py':
+                self.assertEqual(ast.dump(strip_recording(ast.parse((ROOT/name).read_text()))), ast.dump(ast.parse(expected)), name)
+            else:
+                self.assertEqual((ROOT/name).read_bytes(),expected,name)
+            count+=1
         self.assertTrue((AIR/'params.yaml').read_text().startswith(original('params.yaml')))
         print('AirfRANS original frozen files byte-identical:',count)
 
-    def test_scripts_configuration_and_evaluation_model_selection(self):
+    # Argument-only launch check; actual sidecar/load tests do not mock this.
+    @patch('cdlno.checkpoint.resolve_front_latent_mode', return_value='full')
+    def test_scripts_configuration_and_evaluation_model_selection(self, _mode):
         for evaluation,filename in ((False,'CDLNO.sh'),(True,'CDLNO_Evaluation.sh')):
             script=AIR/'scripts'/filename
             subprocess.run(['bash','-n',str(script)],check=True)

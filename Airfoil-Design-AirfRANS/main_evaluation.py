@@ -11,6 +11,11 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--my_path', default='/data/path', type=str)  # data save path
 parser.add_argument('--save_path', default='./', type=str)  # model save path
 args = parse_cdlno_args(parser, evaluation=True)
+if args.model == 'CDLNO':
+    from cdlno.experiment import start as start_experiment, finish as finish_experiment
+    with open('params.yaml', 'r') as config_file:
+        recording_hparams = resolve_hparams(args, yaml.safe_load(config_file)['CDLNO'])
+    start_experiment(args, 'airfrans', evaluation=True, hparams=recording_hparams)
 
 # Compute the normalization used for the training
 
@@ -83,3 +88,7 @@ for task in tasks:
         np.save(osp.join(results_dir, 'surf_coefs_' + str(n)), file)
     np.save(osp.join(results_dir, 'true_bls'), coefs[5])
     np.save(osp.join(results_dir, 'bls'), coefs[6])
+
+if args.model == 'CDLNO':
+    cdlno_run.recorder.record_air_scores(results_dir)
+    finish_experiment(args)

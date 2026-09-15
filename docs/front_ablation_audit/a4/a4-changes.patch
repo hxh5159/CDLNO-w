@@ -1,0 +1,849 @@
+diff --git a/AGENTS.md b/AGENTS.md
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -1,6 +1,12 @@
+ # AGENTS.md
+ 
+ ## Current phase and reading order
++
++Latest authorization (2026-09-15): **A3 approved; supplemental A4 counts/performance/documentation is complete, awaiting review.** Read [A4 report](docs/CDLNO_FRONT_ABLATION_A4.md), [eight-task commands](docs/CDLNO_FRONT_ABLATION_A2_COMMANDS.md), [results](docs/front_ablation_audit/a4/summary.json) and [freeze](docs/front_ablation_audit/a4/freeze.json). Performance CLI now accepts --front-latent-mode, defaultfull; actual sublayer hooks count front SA/FFN and rear SA/GEGLU, rather than assuming every front block does SA. matched LRSA explicitly locks config/each block to full; original Transolver never receives new kwargs. DefaultF2/P6 SA8/6/6, front FFN4/4/0, rear6/6 and down/up/structuredConv3 each. CDPA sources/calls unchanged. Original full initialization hashes/parameters/full MACs/counts equal real pre-A4 capture for all5 performance models.
++
++A4 final203/203 tests passed126.687s;13 performance tests passed14.496s;33CPU audit/chunk rows+10GPU measured rows,24 actual preset parameter counts,24 train/eval previews+48 actual parser checks passed. GPU only Elasticity original preset and17x23/B2 scaledAirfoil, FP32/mathSDPA/TF32off/compileoff, warmup5/measured20; syntheticMSE/AdamW states initialized, no real loss/rollout timing or real training. Do not infer epoch speed, accuracy or that CDPA replaces removed branches. Rear SA remains. CPU chunk max output/gradient diffs4.47e-8/2.98e-7 within inherited tolerances. Remote torch2.11/cu128/new-mode fullGPU/AMP/compile performance remains unverified. Air actual-entry MSE_weighted versus prior A3 function-default MSE coverage correction remains; A4 does not upgrade this to actual all-mode weighted training acceptance.
++
++Only3 performance source files+test_performance+docs changed. Shared production math/config/wrappers/entries/task presets/scripts/dependencies/measure.py remain unchanged;128 files match284-file snapshot `/home/hwz/CDLNO-artifacts/front-a4-before-ftvcu781/source`. Cumulative pre-A1 review confirms CDPA byte equality, all shared module AST except front unchanged, core.forward and bridge/rear/readout constructions identical, wrappers differ only mode,8JSON only modefull. Preserve accepted A1–A3/V1/user changes. The independent visualization/resume V1 is complete but **V2–V5 still unexecuted; task launchers have no new --resume/full-training-archive/periodic-viz integration**. No next supplement or real training authorized. End “本补充阶段结束，未执行下一阶段”. Earlier statuses below are historical.
+ 
+ Latest authorization (2026-09-15): **the visualization/resume plan is approved; V1 shared foundations are complete, awaiting review. V2–V5 have NOT been executed.** Read [V1 report](docs/CDLNO_VISUALIZATION_RESUME_V1.md), [evidence](docs/viz_resume_audit/v1/) and [plan](docs/CDLNO_VISUALIZATION_RESUME_PLAN.md). New `cdlno/training_state.py`, `training_observer.py`, `visualization.py` provide complete epoch archives + paired pure state_dict, strict continuation and RNG-isolated field plots. **No task entry/script has the new --resume or periodic visualization/checkpoint integration yet.** No model/math/config/wrapper/entry/data/train/eval/dependency edits this stage; all128 existing production/task/script/tool files match snapshot `/home/hwz/CDLNO-artifacts/viz-v1-before-04ww1akt/source` (270 source files). Preserve accepted A1/A2/A3 and preexisting user changes.
+ 
+diff --git a/README.md b/README.md
+--- a/README.md
++++ b/README.md
+@@ -10,7 +10,7 @@
+ → HF 查询最终 latent、保留 HF 点残差 → 点FFN → LN/head → 原任务输出
+ ```
+ 
+-T 在 FFN2 后、up 前取得。规则网格点 FFN 为普通 `groups=1` 的 3×3 ConvFFN；潜空间无卷积。完整规格及最终核对见 [实施报告](docs/CDLNO_IMPLEMENTATION_REPORT.md)、[需求矩阵](docs/CDLNO_REQUIREMENTS_MATRIX.md)、[八任务清单](docs/CDLNO_TASK_LAUNCHERS.md) 和 [来源/许可](docs/CDLNO_THIRD_PARTY_NOTICES.md)。旧 Transolver 模型与脚本保留，下方原论文结果仅属于原 Transolver。
++上图是默认`front_latent_mode=full`，T在FFN2后、Up专属norm之前取得。八任务也支持`no_sa`（保留两次latent FFN、跳过完整SA子层）及`identity`（T直接等于Down输出），三者之后都保留Up和点更新。规则网格点FFN为普通`groups=1`的3×3 ConvFFN；潜空间无卷积。完整规格及最终核对见 [实施报告](docs/CDLNO_IMPLEMENTATION_REPORT.md)、[需求矩阵](docs/CDLNO_REQUIREMENTS_MATRIX.md)、[八任务清单](docs/CDLNO_TASK_LAUNCHERS.md) 和 [来源/许可](docs/CDLNO_THIRD_PARTY_NOTICES.md)。旧 Transolver 模型与脚本保留，下方原论文结果仅属于原 Transolver。
+ 
+ 交付通过静态、合成张量、原损失连接、真实 PyG 接口、checkpoint 和本地 GPU 检查。**尚未运行真实数据训练或完整抽样评价，未验证收敛、预测精度、真实 epoch 效率或远端目标环境。**
+ 
+@@ -31,6 +31,8 @@
+ 无需安装的源码导入可在仓库根使用 `export PYTHONPATH="$PWD${PYTHONPATH:+:$PYTHONPATH}"` 后进入原工作目录。最终本地检查使用 Python3.13.9/torch2.13+cu130/PyG2.3.1 与此导入方式，**没有**把该环境当成目标 editable 安装验证。
+ 
+ ## 八任务训练与评价示例
++
++使用现有`tran_evaluate/train_eval.sh TASK --front-latent-mode full|no_sa|identity`可以在一次命令中先训练、成功后评估。八任务逐条命令、模式目录和参数表见[三模式命令页](docs/CDLNO_FRONT_ABLATION_A2_COMMANDS.md)，最新结构/成本/实测范围见[A4交付](docs/CDLNO_FRONT_ABLATION_A4.md)。以下未传新字段的旧CDLNO命令仍使用full。所有训练由用户自行启动，本次不执行。
+ 
+ 以下为用户准备好真实数据后手动运行的命令，交付过程未执行这些入口。数据路径按原项目 README 的文件布局准备，不更改字段/划分/采样。所有新脚本显式列出模型与训练初值，末尾用户参数优先；打印的新 run 路径须保留。评价需要已有 run，并重复训练时非默认的架构、fold/task/nmodel、预算等参数。
+ 
+@@ -85,6 +87,7 @@
+ | 总深度L / 前段F | `--n-layers` / `--front-blocks` | `--n_layers` / `--front_blocks` |
+ | d / heads / M | `--n-hidden` / `--n-heads` / `--slice_num` | `--n_hidden` / `--n_heads` / `--slice_num` |
+ | 模式 | `--cdpa-mode off|entry|every_block` | `--cdpa_mode off|entry|every_block` |
++| 前段latent processor | `--front-latent-mode full|no_sa|identity` | `--front-latent-mode full|no_sa|identity` |
+ | 来源分块 | `--cdpa-source-chunk-size 0` | `--cdpa_source_chunk_size 0` |
+ | 前段/点FFN ratio | `--mlp_ratio 2` | `--mlp_ratio 2` |
+ | 后段GEGLU ratio | `--latent-ffn-ratio 2` | `--latent_ffn_ratio 2` |
+@@ -96,7 +99,15 @@
+ 
+ 每个新训练使用独立目录并保存 `architecture.json`。标准任务保存严格 state_dict（weights_only）；Car保留 `model_<epochs>.pth` 整模型；Air保留 `member_000/model` 等整模型及run根 `CDLNO` 模型列表。工业整模型仅按原受信任本地checkpoint协议使用局部 `weights_only=False`，不接受来源不明文件。
+ 
+-评价**先读既有 sidecar，再核对架构、wrapper语义及相应任务条件，最后加载**；不覆盖sidecar或训练权重，结果写入独立子目录。M/F/L/d/h/mode/网格或错误权重键形状不匹配会拒绝；chunk/device/dtype属于运行字段。运行目录不自动复用，不新增训练resume。
++评价**先读既有sidecar，再核对架构、wrapper语义及相应任务条件，最后加载**；不覆盖sidecar或训练权重，结果写入独立子目录。省略front模式时从明确指定run的sidecar恢复该字段；其它自定义参数仍须重复提供。仅能明确识别的历史完整full配置允许缺front字段，旧工业对象缺该属性也按历史full路径运行。显式mode冲突、错误权重键/shape等均严格拒绝，F0也不放宽架构校验；chunk/device/dtype属于运行字段。**no_sa和identity默认从头训练，不支持full到消融的权重转换。**
++
++| 默认L8/F2/P6 | full | no_sa | identity |
++|---|---:|---:|---:|
++| 前段SA / latent FFN | 2 / 4 | 0 / 4 | 0 / 0 |
++| 后段SA / GEGLU | 6 / 6 | 6 / 6 | 6 / 6 |
++| Down/Bridge、Up/Readout、规则ConvFFN | 各3 | 各3 | 各3 |
++
++固定CDPA比较三模式检验前段SA/FFN必要性，不能单独证明CDPA替代了它们；后段SA仍存在，不能称为“无层内注意力”。另一个可视化/续训计划目前仅V1公共组件完成，任务入口未接入新的resume/周期保存，本A4不推进该计划。普通训练仍拒绝已有目录。
+ 
+ ## 无数据验收与性能工具
+ 
+@@ -108,6 +119,8 @@
+ python -B tools/cdlno_benchmark.py --task airfoil --grid 5 7 --B 2 --d 16 --h 4 --M 4 --audit-only --output /tmp/cdlno-cost.json
+ # 远端GPU有限代表配置；输出文件必须不存在
+ python -B tools/cdlno_benchmark.py --task elasticity --comparison matched --device cuda:0 --chunks 0 1 2 --warmup 5 --iterations 20 --output /tmp/cdlno-elasticity.json
++# 只改CDLNO前段；matched LRSA始终full。
++python -B tools/cdlno_benchmark.py --task elasticity --models cdlno_entry --front-latent-mode identity --chunks 0 --device cuda:0 --precision fp32 --backend math --output /tmp/cdlno-identity.json
+ ```
+ 
+ 工具比较原 Transolver、连续L个完整LRSA的 `lrsa_matched` 和 CDLNO off/entry/every_block。`--comparison task` 使用原任务各自配置；`matched` 使用同一d/h/M/L/点FFN设置。matched LRSA仅是结构性能对照，没有注册进训练器，也不是LRSA论文复现。
+diff --git a/docs/CDLNO_FRONT_ABLATION.md b/docs/CDLNO_FRONT_ABLATION.md
+--- a/docs/CDLNO_FRONT_ABLATION.md
++++ b/docs/CDLNO_FRONT_ABLATION.md
+@@ -1,4 +1,6 @@
+ # CDLNO 前段 latent processor 消融审查
++
++**最新（2026-09-15）：A3已审查通过；A4计数、有限性能及文档交付完成，待审查。** 见[A4报告](CDLNO_FRONT_ABLATION_A4.md)、[八任务命令](CDLNO_FRONT_ABLATION_A2_COMMANDS.md)、[实际结果](front_ablation_audit/a4/summary.json)。性能工具支持三front模式、matched LRSA显式full；默认SA8/6/6、前段FFN4/4/0实际核对，完整成本/实际参数、33行CPU/10行GPU通过；203/203回归通过。生产数学/八任务/预设/训练数据未改，128份本轮冻结文件不变；累计pre-A1核心历史/CDPA/rear/readout及原协议核查通过。没有真实训练或自动后续矩阵；V2–V5续训可视化接入仍未执行。下方状态均为历史。
+ 
+ **最新（2026-09-15）：A2已由用户审查通过；A3八任务三模式合成训练/eval/checkpoint验证完成，待审查。** 见 [A3报告与覆盖表](CDLNO_FRONT_ABLATION_A3.md)。184/184完整回归通过，最后43/43定向检查通过；真实PyG、有限12格新模式GPU及真正修改前full16份基准均实际通过。只改测试/文档，128份生产/任务/脚本/工具文件hash不变；无真实数据训练。用户本轮A3范围替代旧建议“性能工具A3”，性能工具仍冻结，A4未执行。下方A0–A2及阶段建议保留为历史，以本段与A3报告为准。
+ 
+@@ -116,7 +118,7 @@
+ 
+ entry 只读 T1…TF；every 在第 j 个后段前读 T1…TF、raw Z0…Z(j−2)，当前为 Z(j−1)，不重复当前。各位置参数独立，不共享跨位置投影缓存，不 detach；CDPA 两级 softmax、R0 恒等、完整 O+b、RAW 融合、零 scorer、FP32 depth 和 chunk 公式全部冻结。
+ 
+-### C3. 三种模式的保留/移除清单（规格，尚未实现）
++### C3. 三种模式的保留/移除清单（A0时为规格；A1–A4已实现并核验）
+ 
+ | 子层、norm、残差、参数 | full | no_sa | identity |
+ |---|---|---|---|
+diff --git a/docs/CDLNO_FRONT_ABLATION_A2_COMMANDS.md b/docs/CDLNO_FRONT_ABLATION_A2_COMMANDS.md
+--- a/docs/CDLNO_FRONT_ABLATION_A2_COMMANDS.md
++++ b/docs/CDLNO_FRONT_ABLATION_A2_COMMANDS.md
+@@ -1,4 +1,6 @@
+ # A2：八任务前段消融训练与评估命令
++
++A4交付时重新核对本页实际脚本/参数和预览命令，仍适用于full/no_sa/identity；见[A4报告](CDLNO_FRONT_ABLATION_A4.md)。两个消融默认从头训练，不提供跨模式权重迁移。本页是训练/评估命令，不包含尚未接入任务入口的V1续训公共组件。
+ 
+ 从远端实际仓库根目录运行，沿用 `path.sh` 和已有环境。本页命令未由代理执行真实训练。八任务均支持 `--front-latent-mode full|no_sa|identity`（也接受下划线写法）；省略时新训练选择full。
+ 
+diff --git a/docs/CDLNO_FRONT_ABLATION_A4.md b/docs/CDLNO_FRONT_ABLATION_A4.md
+new file mode 100644
+--- /dev/null
++++ b/docs/CDLNO_FRONT_ABLATION_A4.md
+@@ -0,0 +1,243 @@
++# A4：前段三模式计数、有限性能验证与交付
++
++日期：2026-09-15。用户已审查通过A3，本轮只执行A4。**full仍默认，三模式在八任务中的参数/接口/评估加载已完成；性能工具现已按实际模式计数并通过有限验证。没有新增模型结构或真实训练实验。** 另行可视化/续训V1公共组件保持，V2–V5没有推进。
++
++## A. 完成范围与模块定义
++
++唯一架构字段为`front_latent_mode ∈ {full,no_sa,identity}`，默认full，全部F个前段一致。S为完整Down输出；N1/Nsa/N2为各分支专属pre-norm：
++
++```text
++full:     A=S+FFN1(N1(S)); B=A+SA(Nsa(A)); T=B+FFN2(N2(B))
++no_sa:    A=S+FFN1(N1(S)); T=A+FFN2(N2(A))
++identity: T=S
++```
++
++S、A、B、T均为`[B,M,d]`。T在Up专属norm之前取得、保留梯度；三模式都继续执行完整Up、点残差和点FFN/ConvFFN。identity只表示latent processor恒等，**不是整个front block恒等**。实际公式实现仍是`cdlno/modules.py:LRSAFrontBlock.forward`，本轮未改该文件。
++
++| 模块、norm与残差 | full | no_sa | identity |
++|---|---|---|---|
++| 点pre-norm、完整Down、queries及Q/K norm/K/V/O | 保留 | 保留 | 保留 |
++| FFN1及N1、整个残差分支 | 保留 | 保留 | 不注册/不计算 |
++| SA、Nsa、内部Q/K norm/Q/K/V/O、整个残差分支 | 保留 | 不注册/不计算 | 不注册/不计算 |
++| FFN2及N2、整个残差分支 | 保留 | 保留 | 不注册/不计算 |
++| 历史T | B+FFN2(N2(B)) | A+FFN2(N2(A)) | 原Down输出S本身 |
++| Up专属norm、完整Up、点残差/点FFN及norm | 保留 | 保留 | 保留 |
++| bridge、P个后段SA+GEGLU、CDPA、最终HF feature readout | 保留 | 保留 | 保留 |
++
++L仍表示F+P个处理block，P=L−F；不再把L解释成所有模式的SA数量。F0没有front参数，三模式同权重计算等价；架构字段依然严格比较。模型无前段CDPA、无后段Kimi AttnRes、无新增缓存或替代机制。
++
++## B. 修改文件与diff审查
++
++起点分支main/HEAD `769fa333742f73c132868cf560bce5ec21529362`。284份真实工作区文件保存在`/home/hwz/CDLNO-artifacts/front-a4-before-ftvcu781/source`；[start.json](front_ablation_audit/a4/start.json)记录起点hash及未提交修改。原Transolver历史基线仍为`75e0f67643806a81cd1d3f6adc88dd8c02416fe7`。本轮保护已接受A1–A3及独立V1成果。
++
++| 文件 | A4实际修改 |
++|---|---|
++| `tools/cdlno_perf/models.py` | Case增加默认full字段/合法性；仅向CDLNO wrapper传模式；Transolver对照不接收新kwargs，matched LRSA实际config/每层显式锁full |
++| `tools/cdlno_benchmark.py` | 复用既有CLI，增加`--front-latent-mode`和下划线别名；记录有效模式及full block数，默认命令不变 |
++| `tools/cdlno_perf/costs.py` | 修正旧“每进入front就计一次SA”的错误统计；hook实际Down/Up/SA/FFN调用；补前/后段分项、实际参数分项和逐投影/卷积MAC账 |
++| `tests/test_performance.py` | 增加2项测试，扩展既有边界/CLI检查；核对三模式×CDPA×chunk、完整成本公式、移除参数、matched锁full、F0/扩展L |
++| README、PERFORMANCE_TOOLS、FRONT_ABLATION、八任务命令页、总报告/需求矩阵/阶段4与9/参考审查 | 增量交付模式、计数、兼容、命令、归因和实际证据；把历史“SA=L”限定为full，不重写原论文/原报告结果 |
++| STATUS、AGENTS、memory、`front_ablation_audit/a4/` | 当前阶段状态、冻结/累计审查、命令、实际原始结果与可审查patch |
++
++**没有修改`cdlno/`生产代码、任务entry/wrapper/配置预设、训练/评估脚本、依赖或计时实现`measure.py`。** [本轮增量patch](front_ablation_audit/a4/a4-changes.patch)覆盖A4代码/文档；[A1–A4累计运行代码patch](front_ablation_audit/a4/front-ablation-runtime.patch)覆盖相对真正pre-A1的25份已有运行文件，方便审查模式/必要接入/兼容/性能增量。该累计patch刻意区分另行V1新增的3个公共组件：它们不属于前段消融，本轮均字节不变。不能把工作区总git diff都算作A4。
++
++## C. 计数、实际参数与完整运算账
++
++### C1. 实际调用计数
++
++成本审查用`_SelfAttention`、`PlainFFN`、`GEGLUFFN`、`_DownAttention`、`_UpAttention`的真实forward hook；CDPA历史Cross另计。所有hook仅在工具的未计时审查期间注册并移除，不进入生产模型或正式计时。
++
++| 项目 | full | no_sa | identity |
++|---|---:|---:|---:|
++| 前段SA | F | 0 | 0 |
++| 前段latent FFN | 2F | 2F | 0 |
++| 后段SA | P | P | P |
++| 后段GEGLU | P | P | P |
++| Down+Bridge | F+1 | F+1 | F+1 |
++| Up+FinalReadout | F+1 | F+1 | F+1 |
++| 规则点ConvFFN | F+1 | F+1 | F+1 |
++| 总latent SA（L8/F2/P6） | 8 | 6 | 6 |
++| 前段latent FFN（L8/F2） | 4 | 4 | 0 |
++
++默认entry逻辑来源总F=2，chunk0历史SDPA=1；every逻辑总`PF+P(P−1)/2=27`，chunk0历史SDPA=6。三种前段模式历史位置/份数相同，内容按各自真实T改变。每位置s份来源：chunk0一次，chunkk共ceil(s/k)次；各位置统一源softmax保持。
++
++| L8/F2，chunk0 | full总SDPA | no_sa/identity总SDPA | 历史来源 / 历史SDPA |
++|---|---:|---:|---:|
++| off | 14 | 12 | 0 / 0 |
++| entry | 15 | 13 | 2 / 1 |
++| every_block | 20 | 18 | 27 / 6 |
++
++33行CPU成本/梯度结果含三front模式、原Transolver、matched LRSA、CDLNO三CDPA模式及chunk0/1/2；同模式不同chunk严格恢复同份权重，输出/全部参与参数梯度按原FP32容差atol2e-5/rtol5e-4比较。chunk改变不减少来源或MAC。另有单元测试覆盖chunk99，以及L1/F0、L8/F0、L12/F2、L16/F6、L10/F8；原核心21格F0…6×CDPA及扩展边界继续回归。
++
++### C2. 实际正式预设参数量
++
++以下通过八个真实wrapper的正式d/h/M/L/F/ratio构造，计算`sum(p.numel() for p in model.parameters())`。没有用局部删除比例代替整网计数；全部为实际可训练参数，不含buffer。统一entry/F2/L8/ratio2，**非小张量测试预设**；仅构造模型，不训练。数据见[summary.json](front_ablation_audit/a4/summary.json)。
++
++| 任务 | d/h/M | full | no_sa | identity |
++|---|---|---:|---:|---:|
++| Darcy | 128/8/64 | 2,531,297 | 2,399,649 | 2,135,457 |
++| Elasticity | 128/8/64 | 2,072,545 | 1,940,897 | 1,676,705 |
++| Airfoil | 128/4/64 | 2,515,521 | 2,383,809 | 2,119,617 |
++| Pipe | 128/4/32 | 2,503,233 | 2,371,521 | 2,107,329 |
++| NS | 256/8/64 | 10,015,169 | 9,489,729 | 8,437,057 |
++| Plasticity | 128/8/64 | 2,548,836 | 2,417,188 | 2,152,996 |
++| ShapeNet-Car | 256/8/64 | 8,211,652 | 7,686,212 | 6,633,540 |
++| AirfRANS | 256/8/64 | 8,244,420 | 7,718,980 | 6,666,308 |
++
++独立核对公式（d_h=d/h，r为整数FFN ratio，本次正式r2）：每前段删除SA+Nsa减少`4d²+2d+2d_h`；再删除两次FFN+norm减少`4rd²+2(r+2)d`。整网乘F，F0为0。实际参数差额与公式相符；各移除参数确实不存在，不把闲置参数标成“不参与成本”。不同模式初始化消耗随机数不同，不承诺相同seed使所有保留权重相等；数值等价测试显式复制保留权重，性能对照只固定配置和初始化方法。
++
++### C3. 全模型成本口径
++
++沿用1 MAC=一次乘加，矩阵FLOPs=2×MAC；`matrix_macs`只计稠密矩阵/卷积乘加，**不是所有标量FLOPs**。bias、norm/QK norm、GELU/GEGLU、softmax、depth FP32归约/累加及拷贝/stack均有单独ATen及payload记录，不能当0。SDPA QK/AV由实际Q/K/V形状补计，不依赖profiler的FLOPs支持。
++
++令q=L（full）或P（no_sa/identity），S为跨所有位置的历史来源总数，A为活跃CDPA位置数：
++
++```text
++CDLNO QK+AV全部矩阵MAC = 2Bd[2(F+1)NM + (q+S)M²]
++每个front Down+Up投影 = Bd²(4N+3M)
++每个front SA投影（仅full） = 4BMd²
++每个保留的front latent FFN = 2rBMd²
++Bridge+最终Up投影 = Bd²(4N+4M)
++后段SA投影 = 4PBMd²
++后段GEGLU = 3r_rear PBMd²
++点FFN线性 = 2r(F+1)BNd²
++规则dense3×3卷积 = 9(F+1)BNd²
++CDPA Q/K/V/O投影 = BMd²(A+3S)
++再加实际任务stem、时间投影、最终head的矩阵成本
++```
++
++这里N规模Down K/V、Up Q/O均保留；消融不删除点FFN/卷积、bridge/rear/readout的成本。matched LRSA保持L个完整full block、stem和LN/head，最后一层已Up，不加bridge/CDPA/final-up。它不是LRSA论文复现训练。
++
++独立闭式全成本测试先核对full，再核对删去的完整SA投影/QK/AV及FFN线性差额，并与实际每层账合计互证。参数、norm、bias、临时stack、历史/点特征与autograd保存storage也保留。payload累计有别名和生命周期，不能相加冒充峰值；实际峰值另测CUDA allocated。
++
++## D. 实际有限性能、命令和验证结果
++
++本机Python3.13.9、torch2.13.0+cu130、CUDA13.0、PyG2.3.1、cuDNN92000，RTX5090 Laptop GPU/driver591.86。**不是用户远端Python3.10/torch2.11/cu128验收**；未安装或替换任何依赖。
++
++各模式相同输入/目标/配置，FP32参数及输入、math SDPA、TF32关、compile关、cuDNN benchmark关、CPU线程1、seed20260914。每行5次warmup、20次测量，逐次CUDA同步，报告median/p90；实际SDPA探针确认math路径。forward为eval/no_grad；训练步为合成FP32 MSE+backward+AdamW(lr.001,weight_decay1e-5,foreach=False)，不是任务loss、时间循环或scheduler。训练测量前state已初始化，每个活跃参数25次成功更新；额外未计时诊断1次更新在测量之后。详见每行原始samples、state bytes与profiler记录。
++
++### D1. 原任务配置：Elasticity
++
++N972/B1/d128/h8/M64/L8，CDLNO F2/P6，point FFN。`--comparison task`读取原/新各自任务配置；本任务恰好d/h/M相同。所有输入为合成点和标签，**不是实际Elasticity样本**。
++
++| 模型/模式 | 实际参数 | 完整矩阵GMAC | forward median/p90 ms | 合成step median/p90 ms | forward/step峰值MiB |
++|---|---:|---:|---:|---:|---:|
++| 原Transolver | 976,833 | 1.126924 | 4.870 / 5.278 | 26.795 / 28.964 | 73.439 / 156.843 |
++| matched LRSA，full | 3,133,569 | 1.440710 | 13.774 / 15.054 | 66.820 / 69.707 | 82.795 / 213.611 |
++| CDLNO off，full | 2,006,113 | .617185 | 7.468 / 8.721 | 36.636 / 40.313 | 78.480 / 134.838 |
++| CDLNO entry，full | 2,072,545 | .626622 | 8.117 / 11.432 | 37.595 / 41.798 | 78.765 / 136.571 |
++| CDLNO every，full | 2,404,705 | .736722 | 10.735 / 11.751 | 50.745 / 54.066 | 80.032 / 151.344 |
++| CDLNO entry，no_sa | 1,940,897 | .616136 | 6.557 / 7.971 | 36.774 / 42.678 | 78.261 / 134.113 |
++| CDLNO entry，identity | 1,676,705 | .599359 | 6.118 / 8.130 | 29.464 / 33.006 | 77.222 / 130.213 |
++
++原始文件为`gpu-elasticity-task-{full,no_sa,identity}.json`，均在[证据目录](front_ablation_audit/a4/)中。
++
++### D2. 同配置结构比较：缩小Airfoil网格
++
++明确使用合成17×23、N391/B2、d128/h4/M64/L8/F2/P6、entry/chunk0及相同dense ConvFFN。**不是原Airfoil221×51/B4任务规模**；不改变正式任务JSON。
++
++| 前段模式 | 实际参数 | 完整矩阵GMAC | forward median/p90 ms | 合成step median/p90 ms | forward/step峰值MiB |
++|---|---:|---:|---:|---:|---:|
++| full | 2,515,521 | .989209 | 7.646 / 9.498 | 39.859 / 47.590 | 77.999 / 140.643 |
++| no_sa | 2,383,809 | .968238 | 6.656 / 8.956 | 34.265 / 39.620 | 77.495 / 137.498 |
++| identity | 2,119,617 | .934683 | 6.613 / 8.188 | 31.071 / 32.967 | 76.425 / 132.722 |
++
++原始文件为`gpu-airfoil-matched-{full,no_sa,identity}.json`。这些有限样本有可见p90波动，没有多次独立运行/置信区间；不得承诺普遍加速比例。删除前段子层并未移除N规模处理，MAC降幅有限。
++
++值得保留的结果：Elasticity中entry full甚至identity虽MAC低于Transolver，实测仍较慢。未计时训练诊断ATen调用：Transolver7234、entry full8718/no_sa7818/identity7134；本工具显式归一化、多投影、小算子及逐tensor AdamW发射会使低MAC不等于低延迟。已有profiler用于定位这些来源，但事件数不是严格因果分解，也不能把原Transolver手写attention和CDLNO SDPA视为相同kernel。未为追求速度改变CDPA、共享参数、detach历史、缓存K/V或启用不同精度。
++
++### D3. 实际执行命令
++
++以下均已运行，未导入exp/main/loader或执行真实数据训练：
++
++```bash
++python -B -m unittest discover -s tests -p test_performance.py -v
++python -B docs/front_ablation_audit/a4/run_performance.py
++python -B docs/front_ablation_audit/a4/summarize.py
++python -B docs/front_ablation_audit/a4/verify_commands.py
++CDLNO_LRSA_ROOT=/home/hwz/LRSA-Operator python -B -m unittest discover -s tests -p 'test_*.py' -v
++python -B docs/front_ablation_audit/a4/audit_scope.py
++git diff --check
++```
++
++修改前还实际执行同小配置full成本CLI，保存`full-before.json`。修改后所有五种原性能模型的初始化权重hash、参数、完整MAC、历史数、原有调用计数与修改前完全一致。计数新增分项不影响full旧值。
++
++| 验证 | 实际结果 |
++|---|---|
++| 性能定向 | 13/13通过，14.496s；[日志](front_ablation_audit/a4/performance-targeted.txt) |
++| 完整回归 | **203/203通过，126.687s；0失败/错误/跳过**；[日志](front_ablation_audit/a4/regression-final.txt) |
++| CPU成本/同权重chunk | 33行全部通过；三front模式×既有5模型/适用chunk，完整矩阵账及梯度 |
++| GPU有限性能 | 上述10行全部完成；无GPU大网格/超参扫描 |
++| 原full性能基准 | 五种模型前后初始化hash/原计数/参数/MAC保持，未重生成所谓“旧基准” |
++| 八任务正式参数 | 24个实际wrapper构造并统计；全部requires_grad参数计入 |
++| 训练/评价命令 | 24组顺序dry-run、48次真实parser通过；实际脚本/模式/run/预设一致，[命令记录](front_ablation_audit/a4/commands.json) |
++| 加载/旧full回归 | 复用实际八任务三模式strict state/整对象/list、sidecar不覆盖、显式冲突与真实pre-A1旧对象/16份数值fixture、三原cwd新进程检查，均通过；未新增跨模式转换 |
++| 冻结/语法 | 128份本轮生产/任务/脚本等冻结文件字节一致；40份shell语法通过；新增修改Python3.10 AST语法通过（非3.10运行证明） |
++
++本阶段没有失败的验收测试或失败的性能行。缺少外部LRSA可选xformers/liger打印的是其fallback提示，实际参考测试通过，未安装这些框架。203项包含独立V1已有测试；它们通过不意味着本阶段实现了八任务续训。
++
++### D4. 远端可运行的有限无数据命令
++
++在已有远端环境/源码中执行，无需安装新框架；输出文件必须不存在。以下未在远端执行：
++
++```bash
++cd /inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/transolver/CDLNO-w
++# CPU完整成本/非方格/来源分块，一次选择一个front模式
++python -B tools/cdlno_benchmark.py --task airfoil --grid 5 7 \
++  --B 2 --d 16 --h 4 --M 4 --front-latent-mode identity \
++  --chunks 0 1 2 --audit-only --output /tmp/a4-identity-cost.json
++
++# 仅固定entry的三种前段模式；同规模、精度、backend
++for mode in full no_sa identity; do
++  python -B tools/cdlno_benchmark.py --task elasticity --comparison matched \
++    --models cdlno_entry --front-latent-mode "$mode" --chunks 0 \
++    --device cuda:0 --precision fp32 --backend math --warmup 5 --iterations 20 \
++    --output "/tmp/a4-elasticity-${mode}.json"
++done
++```
++
++已有benchmark旧命令不传模式仍full；原Transolver脚本仍保留，例如六标准任务的`scripts/Transolver_Darcy.sh`、工业两个`scripts/Transolver.sh`，从各自原工作目录运行，参数与原数据路径语义不变。没有为了本轮新增LRSA真实训练系统。
++
++## E. 八任务命令、checkpoint兼容与冻结证据
++
++完整三模式的八任务训练、评估、顺序命令、默认配置及目录规则见[命令页](CDLNO_FRONT_ABLATION_A2_COMMANDS.md)。最常用形式如下：在仓库根设置`mode=full`、`no_sa`或`identity`，选择一行执行；使用未占用的`CDLNO_RUN_TAG`，不要自动循环启动全部任务：
++
++```bash
++mode=no_sa
++export CDLNO_RUN_TAG=front_trial1
++bash tran_evaluate/train_eval.sh darcy      --front-latent-mode "$mode" --gpu 0
++bash tran_evaluate/train_eval.sh elasticity --front-latent-mode "$mode" --gpu 0
++bash tran_evaluate/train_eval.sh airfoil    --front-latent-mode "$mode" --gpu 0
++bash tran_evaluate/train_eval.sh pipe       --front-latent-mode "$mode" --gpu 0
++bash tran_evaluate/train_eval.sh ns         --front-latent-mode "$mode" --gpu 0
++bash tran_evaluate/train_eval.sh plasticity --front-latent-mode "$mode" --gpu 0
++bash tran_evaluate/train_eval.sh car        --front-latent-mode "$mode" --gpu 0
++CUDA_VISIBLE_DEVICES=0 bash tran_evaluate/train_eval.sh airfrans --front-latent-mode "$mode"
++```
++
++上述整块含八条独立任务命令，复制时只选择所需行；本轮只执行了带`--dry-run`的预览。训练失败不启动eval。单独训练/评价用同名`TASK.sh train|eval`；余参最后覆盖。正式默认仍F2/L8/P6、entry/chunk0，Pipe M32其余M64，PDE500/Car200/Air398、batch/lr/optimizer/scheduler不改。Car一次run一个fold、完整drag原路径/fold0限制保留；Air训练`--my_path`指Dataset、评价指父目录。
++
++| 任务 | full/no_sa/identity train/eval | checkpoint形式 | A4实际证据 |
++|---|---|---|---|
++| Darcy/Elasticity/Airfoil/Pipe | 全部已接入 | strict state_dict `model.pt` | parser预览、现有合成训练/损失/加载回归 |
++| NS/Plasticity | 全部已接入 | strict state_dict `model.pt` | 现有10→10窗口/20次时间更新及加载回归；性能不是时间rollout |
++| ShapeNet-Car | 全部已接入 | 稳定模块整对象 `model_<epochs>.pth` | 真实PyG/现有mask损失、原cwd新进程加载 |
++| AirfRANS | 全部已接入 | 每成员整对象+根模型list | 真实PyG/现有工业loss/原cwd对象及list加载；正式weighted覆盖边界见F |
++
++eval先读已有sidecar：省略front模式只恢复这个字段；显式不匹配先报架构冲突，不能用CLI默认full覆盖no_sa。其它自定义d/M/F/L/fold/task/epochs等继续按既有协议提供。旧配置只有被识别为完整历史CDLNO full、且仅缺mode才内存兼容；不随意补其它字段。旧整对象没有新属性时运行历史full路径，保留类路径/可信局部加载；不扩大torch.load权限。无论F0是否参数相同，显式模式冲突仍拒绝。
++
++**两个消融默认从头训练；不承诺旧full权重直接变成消融权重，不实现跨模式迁移。** 同模式strict往返、chunk改变可载入，错误键/shape/模式拒绝。sidecar不改写；隐式消融目录含模式，full旧路径不变；显式run/save_name保留已有拒绝覆盖防护。
++
++[冻结及累计审计](front_ablation_audit/a4/freeze.json)进一步重查pre-A1：除LRSAFrontBlock外的原共享数学类/函数AST相同；CDPA字节相同；core.forward及bridge/latent_blocks/readout/cdpa_at构造AST相同；三个wrapper仅去除新增mode参数/转发后AST相同；八份JSON只新增full字段，训练字段相同；原12个exp/main/train、数据/normalizer/采样/指标/原脚本/YAML/依赖保持。没有改变CDPA/rear/decoder/data来制造性能收益。
++
++## F. 归因边界、未验证项与自审结论
++
++1. 固定CDPA比较full/no_sa/identity检验前段SA与FFN是否必要；不能单独证明CDPA替代了它们。已有off可用于用户后续同模式控制，但本轮没有开启额外真实训练矩阵。后段P次SA始终存在，不能称“全模型无层内注意力”。
++2. 当前GPU实测仅两个代表性合成配置/10行，统一FP32/math；没有完整八任务新模式GPU性能矩阵、Flash/AMP/compile/TF32不同精度性能对照或多机重复。GPU chunk0/1/2性能矩阵本轮没有重跑，CPU的同权重成本/梯度等价已运行；沿用已有其它精度测试并不等于新性能验收。
++3. 本轮不运行真实数据读取/训练/轨迹/工业采样评价，未验证数据完整性、收敛、准确率或真实epoch效率。不能从参数量/MAC比例或forward推导训练加速。现有Car日志压力/速度名字交换及drag固定路径/fold限制、Air旧MAE条件问题不属于本次回归，未顺手修复。
++4. Air实际main选择MSE_weighted；A3三模式测试的函数默认MSE覆盖不能冒充完整三模式正式weighted入口链路验收。该历史表述已在V1计划纠正，本次保留真实原loss代码及既有weighted测试，不因A4成本验证宣称这个新链路边界已补齐。
++5. 另行V1只提供完整归档/恢复/绘图公共组件；八任务新增周期保存/可视化/`--resume`尚未接入，本轮没有推进它们。现有纯权重/整模型评估兼容不能当作完整断点续训。
++
++交付前已自行审查：实际子层计数与闭式完整成本相符；matched full锁定且旧full数值/成本基准未变；mode×chunk权重与梯度及source账保持；累计模型/数据协议AST与hash冻结；命令/sidecar/旧对象兼容回归通过。**未发现本轮遗留实现缺陷需要裁定**。用户审查重点为上述有限实测适用范围和归因限制，以及是否接受A1–A4消融交付；没有未经自审的技术问题留给用户。
++
++**本补充阶段结束，未执行下一阶段。**
+diff --git a/docs/CDLNO_IMPLEMENTATION_REPORT.md b/docs/CDLNO_IMPLEMENTATION_REPORT.md
+--- a/docs/CDLNO_IMPLEMENTATION_REPORT.md
++++ b/docs/CDLNO_IMPLEMENTATION_REPORT.md
+@@ -1,4 +1,6 @@
+ # CDLNO 最终实施与综合审查报告
++
++2026-09-15补充A4：A3已由用户审查通过，三种前段模式的完整交付见[A4报告](CDLNO_FRONT_ABLATION_A4.md)及[八任务命令](CDLNO_FRONT_ABLATION_A2_COMMANDS.md)。full仍默认；no_sa只删除完整前段SA子层/norm，identity令pre-Up T=S并删除前段两FFN/SA/norm。后段、CDPA、bridge、最终HF读出及数据训练协议不变。性能工具按实际子层计数，matched LRSA固定full；本机有限性能与未验证范围在新报告中。下方阶段10原结果按历史full范围保留，不能外推到所有front模式。另行V1完整归档公共组件已完成，但任务resume/周期图尚未接入，A4没有推进V2–V5。
+ 
+ 日期：2026-09-14；阶段10，等待用户审查。基线分支 `main`，commit `75e0f67643806a81cd1d3f6adc88dd8c02416fe7`，origin `git@github.com:thuml/Transolver.git`。阶段0没有已跟踪代码修改；阶段0–9的未提交成果是本阶段必须保留的工作，不是应恢复的上游差异。
+ 
+@@ -49,17 +51,19 @@
+ 
+ 零w时输出为候选均值，默认两历史是 `(Z+R1+R2)/3`；不是identity，不另加Z/gate/当前来源偏置。depth scale首步梯度可以为0，更新w后路径梯度已验证。历史浮点dtype不同则在Cross前转Z.dtype并保持梯度；FP32 depth没有被外层AMP再次降精度。
+ 
+-### 三种模式、历史时序与计数
++### 三种CDPA模式、历史时序与计数（本表front=full）
+ 
+ `0≤F<L`，P仅由L−F派生；全阶段M一致，F不硬限6。`off`不收集T；`entry`只在第一个后段前读T1…TF，F0完全不建CDPA参数，且同权重与off计算完全一致。`every_block`第j个后段前当前为Z(j−1)，历史为 `[T1…TF,Z0…Z(j−2)]`，raw bridge Z0保留。每次forward局部重建；仅把完整后段输出作为后续历史，不记录融合中间值/SA/FFN增量，不跨真实时间缓存，不detach。不同活跃CDPA位置参数/storage独立，无跨位置投影K/V缓存。
+ 
+-| 默认L8/F2/P6 | down/bridge | up/readout | latent SA | 结构ConvFFN | 逻辑历史来源总数 | chunk0历史SDPA | 全模型SDPA |
++| 默认L8/F2/P6且front=full | down/bridge | up/readout | latent SA | 结构ConvFFN | 逻辑历史来源总数 | chunk0历史SDPA | 全模型SDPA |
+ |---|---:|---:|---:|---:|---:|---:|---:|
+ | off | 3 | 3 | 8 | 3 | 0 | 0 | 14 |
+ | entry | 3 | 3 | 8 | 3 | 2 | 1 | 15 |
+ | every_block | 3 | 3 | 8 | 3 | 27 | 6 | 20 |
+ 
+ 以上为真实forward spies验证，不只公式估计。entry逻辑总F，every总PF+P(P−1)/2；chunk1每份来源一次，chunkk为各位置ceil(s/k)之和。chunk减少调用不减少数学来源/MAC。正常core只返回Tensor，不无条件保存注意力矩阵或调试梯度/CPU统计。
++
++A4前段模式增量：full的latent SA为F+P=L，no_sa/identity均为P；三者前段latent FFN为2F/2F/0，后段FFN恒为P。默认2+6下，no_sa/identity的off/entry/every总SDPA分别12/13/18，历史份数和chunk0调用仍为0/0、2/1、27/6。三个Down/Up/规则ConvFFN均保留。该计数修正不改变L表示总处理block数的定义。
+ 
+ ### 八任务合同与接入
+ 
+diff --git a/docs/CDLNO_IMPLEMENTATION_STATUS.md b/docs/CDLNO_IMPLEMENTATION_STATUS.md
+--- a/docs/CDLNO_IMPLEMENTATION_STATUS.md
++++ b/docs/CDLNO_IMPLEMENTATION_STATUS.md
+@@ -1,6 +1,23 @@
+ # CDLNO 实施状态
+ 
+ 更新日期：2026-09-15。
++
++## 最新：A3已批准，A4计数/有限性能/文档交付完成，待审查
++
++本轮只执行补充A4；[报告](CDLNO_FRONT_ABLATION_A4.md)、[命令](CDLNO_FRONT_ABLATION_A2_COMMANDS.md)、[本轮diff](front_ablation_audit/a4/a4-changes.patch)、[累计前段消融运行diff](front_ablation_audit/a4/front-ablation-runtime.patch)。full仍默认，八任务已接入三front模式。性能工具现按实际SA/FFN调用统计，matched LRSA锁full；模型/数据/训练入口/预设/脚本/依赖与V1组件未改，不推进V2–V5。
++
++| 补充阶段 | 当前状态 |
++|---|---|
++| A0/A1/A2/A3 | 用户已审查通过 |
++| A4 | 计数、完整成本、有限GPU实测与三模式命令/兼容交付完成，待审查 |
++| 另行V1 | 归档/绘图公共组件完成，原范围保持 |
++| 另行V2–V5 | 尚未执行；正式任务还未接入新resume/周期图 |
++
++默认2+6实测full/no_sa/identity的latentSA为8/6/6，前段FFN4/4/0；后段SA/GEGLU各6、Down/Up/规则ConvFFN各3；entry2历史/1调用，every27/6。13/13定向通过（14.496s），最终**203/203通过（126.687s，无失败/错误/跳过）**。33行CPU完整成本与chunk0/1/2等价、10行有限GPU性能、24个正式模型参数统计、24组顺序预览/48次真实parser均通过。修改前真实full性能基准五模型的初始化hash/参数/成本/原计数精确保持。
++
++本机RTX5090 Laptop/Python3.13.9/torch2.13cu130。两组有限GPU为原Elasticity N972/B1及缩小Airfoil17×23/B2，统一FP32/mathSDPA/TF32关/compile关，warmup5/measure20、同步/median/p90/峰值显存/已初始化AdamW。固定entry三mode的结果详见报告；不能由MAC/参数降幅推定延迟或真实epoch效率，不能证明CDPA替代前段子层，后段SA仍在。没有真实训练、远端torch2.11cu128或新模式全GPU/AMP/compile性能矩阵。
++
++284份本轮起点保留于`/home/hwz/CDLNO-artifacts/front-a4-before-ftvcu781/source`；128份[冻结文件](front_ablation_audit/a4/freeze.json)不变，40份shell语法通过；累计pre-A1原CDPA/core历史/rear/decoder及数据训练协议AST/hash也通过。实际Air main使用MSE_weighted，前A3默认MSE测试不升级为正式weighted三模式链路验收；现存旧Car/Air问题继续分开报告。无commit/push/下载/依赖改动或真实训练。**本补充阶段结束，未执行下一阶段。** 以下为历史状态。
+ 
+ ## 最新：可视化/续训计划已批准，V1公共组件完成，待审查
+ 
+@@ -282,7 +299,7 @@
+ 
+ - **A 范围**：新增 `cdlno.core.CDLNO`，接收已提升 `H_0[B,N,d]`，执行F个完整前段、bridge、三种CDPA模式、P个独立后段和 `H_F` feature readout，仅返回 `[B,N,C_out]` Tensor。默认L8/F2/P6；未接八任务wrapper、数据或训练。
+ - **B 文件**：新增 `cdlno/core.py`、`tests/test_core.py`、`tests/test_core_config.py` 和阶段4报告；更新 `cdlno/config.py`（核心版本/历史规则、独立latent ratio、网格与合法性检查）、`cdlno/__init__.py`（懒加载CDLNO）、本状态、AGENTS和记忆。阶段2/3实现、checkpoint.py、依赖和原任务目录未改。
+-- **C 公式/形状**：前段 `[B,N,d]→(H_i[B,N,d],T_i[B,M,d])`；bridge→raw `Z_0[B,M,d]`；后段第j层当前 `Z_(j−1)`，every历史 `T_1…T_F,Z_0…Z_(j−2)`；readout `(H_F,Z_P)→[B,N,C_out]`。历史仅本次forward存活并传tuple快照，无detach或跨位置K/V缓存。模块调用down/bridge=F+1、up/readout=F+1、latent SA=L、结构ConvFFN=F+1。默认chunk0实际测得：off 0份历史/0次历史SDPA/14次总SDPA；entry 2/1/15；every 27/6/20。
++- **C 公式/形状**：前段 `[B,N,d]→(H_i[B,N,d],T_i[B,M,d])`；bridge→raw `Z_0[B,M,d]`；后段第j层当前 `Z_(j−1)`，every历史 `T_1…T_F,Z_0…Z_(j−2)`；readout `(H_F,Z_P)→[B,N,C_out]`。历史仅本次forward存活并传tuple快照，无detach或跨位置K/V缓存。模块调用down/bridge=F+1、up/readout=F+1、latent SA=L（仅full；no_sa/identity为P）、结构ConvFFN=F+1。默认chunk0实际测得：off 0份历史/0次历史SDPA/14次总SDPA；entry 2/1/15；every 27/6/20。
+ - **D 实际通过**：最终 `CDLNO_LRSA_ROOT=/home/hwz/LRSA-Operator python -B -m unittest discover -s tests -p 'test_*.py' -v` 为 **60/60通过，0失败/错误/跳过，12.912秒**，日志 `/tmp/cdlno-phase4-final-tests.log`。其中阶段4为13项核心+6项配置测试：42组L8/F0…6/三模式/点与5×7网格；L12/F2、L16/F6、L1/F0及F7/F8；非法配置/输入/chunk；完整raw历史ID和两forward图隔离；同权重F0等价；参数/storage独立、所有活跃路径梯度；真实chunk切换的state_dict、sidecar不覆盖、新进程权重恢复与三个任务cwd共享导入。核心数学reference/跨chunk容差atol1e-5/rtol3e-4。
+ - **D 环境/失败/未运行**：本地Python3.13.9、torch2.13.0+cu130、RTX5090；核心18组GPU FP32/FP16 AMP/BF16 AMP前反向有限，已有阶段2/3精度检查通过。早期测试计数断言及冻结slots只读属性的异常类型期望曾失败，现已修正；另外补强了实际SDPA、完整历史ID及跨chunk证据，没有改变核心数学或阶段2/3实现。远端Python3.10/torch2.11/cu128、任务loss/入口checkpoint、真实训练和性能未运行。未实施未经确认的自动dtype转换。
+ - **E 冻结证据**：阶段开始保存98文件清单及5个允许更新文件副本；93个非目标文件SHA256全部不变。71个原tracked文件无diff。原八任务模型、入口、数据、loss、时间、优化器/调度器、评价和依赖未编辑；无安装、数据下载、训练、commit或push。新Python文件和修改后的配置/导出另做Python3.10语法解析；不声称在3.10解释器实际运行。
+diff --git a/docs/CDLNO_PERFORMANCE_TOOLS.md b/docs/CDLNO_PERFORMANCE_TOOLS.md
+--- a/docs/CDLNO_PERFORMANCE_TOOLS.md
++++ b/docs/CDLNO_PERFORMANCE_TOOLS.md
+@@ -1,4 +1,6 @@
+ # CDLNO 无数据性能工具
++
++A4补充：`--front-latent-mode full|no_sa|identity`（下划线别名也可）只控制CDLNO前段，默认full。`lrsa_matched`显式固定完整full；原Transolver不接收新kwargs。实际子模块hook分别报告`front_sa/front_latent_ffn/rear_sa/rear_ffn`，不把进入一个前段block当成必然执行SA。A4实际结果与范围见[交付报告](CDLNO_FRONT_ABLATION_A4.md)。
+ 
+ 阶段9工具只生成合成输入，计时一次模型调用或一次合成 MSE/AdamW 更新。它不导入 exp/main、loader，不构造数据图，不替代真实任务训练/指标；NS 的10次调用和 Plasticity 的20次更新不在单步计时中。基础模型出处为 [Transolver, ICML 2024](https://arxiv.org/abs/2402.02366)。LRSA/IPOT 源码差异及许可沿用 [参考审查](CDLNO_REFERENCE_AUDIT.md)。
+ 
+@@ -21,6 +23,15 @@
+ # 同配置结构比较，小型非方形Airfoil索引网格；这是合成缩小网格，不是原任务规模。
+ python -B tools/cdlno_benchmark.py --task airfoil --comparison matched --grid 17 23 \
+   --B 2 --device cuda:0 --warmup 5 --iterations 20 --output /tmp/cdlno-airfoil-matched.json
++
++# 固定CDPA entry、同配置/精度的三前段模式；只执行有限合成性能检查。
++# 输出须不存在；不读取数据、不训练实际数据集。
++for mode in full no_sa identity; do
++  python -B tools/cdlno_benchmark.py --task elasticity --comparison matched \
++    --models cdlno_entry --front-latent-mode "$mode" --chunks 0 \
++    --device cuda:0 --precision fp32 --backend math --warmup 5 --iterations 20 \
++    --output "/tmp/cdlno-front-${mode}.json"
++done
+ ```
+ 
+ `--task` 支持八任务；工业保持B1，NS/Plasticity保持原空间网格。`--comparison task` 采用原启动脚本/工业main构造与新JSON的各自架构，拒绝 d/h/M/L/F/ratio 覆盖。B/N/grid 如被显式缩小，JSON会标记不是原任务几何/batch；不能将其称为原任务规模实测。原任务标准脚本实际L8，不能拿旧parser默认L3当作论文主配置。
+@@ -33,19 +44,23 @@
+ 
+ `matrix_macs`只计forward稠密Linear、Conv、QK/AV及原Transolver的slice/deslice乘法；一个乘加记1 MAC，`matrix_flops_2_per_mac=2*MAC`。Conv按包含padding位置的dense核计算，不把边缘零乘法当作结构稀疏。参数量为实际注册/可训练参数，不根据论文估算；原模型没有梯度的参数单列。
+ 
+-完整矩阵账包括stem/head、down的N规模K/V、up的N规模Q/O、前段两次latent FFN、点FFN/dense3×3卷积、后段GEGLU，以及每个CDPA位置的一次Q和每份来源各自K/V/O。基于实际张量形状统计SDPA的QK+AV，通用profiler未支持SDPA时也不会遗漏该项。通用profiler的数字专门命名为 `profiler_partial_flops`，不能当作总FLOPs。
++完整矩阵账包括stem/head、down的N规模K/V、up的N规模Q/O、实际保留的前段latent FFN、点FFN/dense3×3卷积、后段GEGLU，以及每个CDPA位置的一次Q和每份来源各自K/V/O。基于实际张量形状统计SDPA的QK+AV，通用profiler未支持SDPA时也不会遗漏该项。通用profiler的数字专门命名为 `profiler_partial_flops`，不能当作总FLOPs。`linear_conv_macs_by_module`给出实际每个投影/卷积的账目；参数总量和`parameters.by_component`从实际注册对象统计，移除分支没有参数或成本。
+ 
+-设单次配置B/N/d/M/L/F，P=L−F，各位置历史数为s，S为所有s之和，A为活跃位置数。独立公式测试核对：
++设单次配置B/N/d/M/L/F，P=L−F，各位置历史数为s，S为所有s之和，A为活跃位置数；q为latent SA数（full时L，其余P），f_ff为前段FFN个数（full/no_sa时2F，identity时0）。独立公式测试核对：
+ 
+ ```text
+ LRSA attention MAC = 2Bd(2LNM + LM²)
+-CDLNO attention MAC = 2Bd(2(F+1)NM + (L+S)M²)
++CDLNO attention MAC = 2Bd(2(F+1)NM + (q+S)M²)
+ CDPA projection MAC = BMd²(A+3S)
+-front两次latent FFN / block = 4rBMd²
++front保留的latent FFN总MAC = f_ff × 2rBMd²
+ rear GEGLU / block = 3rBMd²
+ point FFN线性 / 次 = 2rBNd²
+ dense 3×3 Conv / 次 = 9BNd²
+ ```
++
++前段Down+Up投影每块为`Bd²(4N+3M)`；其SA投影仅full时加`4BMd²`。Bridge+最终Up为`Bd²(4N+4M)`；后段SA投影合计`4PBMd²`。再加上述前段FFN、后段GEGLU、F+1次点处理、stem/head和CDPA即为整网矩阵账（实际stem维度与输出通道按任务）。前段FFN与点FFN使用前段ratio，后段GEGLU使用后段ratio；工具的共同`--ratio`同时设二者，与当前正式ratio2一致。
++
++默认2+6的SA总数为8/6/6，前段FFN为4/4/0，后段SA/GEGLU均6次；Down/Bridge=3、Up/FinalReadout=3、规则ConvFFN=3。entry仍2逻辑来源/chunk0一次历史SDPA，every仍27/6；CDPA Cross不计作前段SA。固定CDPA比较三模式只能检验前段SA/FFN必要性，不能单独证明CDPA替代这些子层；后段SA始终存在。阶段9旧结果与旧`q=L`表仅适用于full。
+ 
+ 矩阵MAC**不是完整标量FLOPs**。bias加法、LN/RMS/QK norm的元素数/宽度/dtype、GELU/SiLU、乘除、归约、softmax等另有实际ATen操作清单；源内softmax即使融合在SDPA中也有由Q/K形状恢复的逻辑元素数。depth单独列出FP32的RMS、评分、source softmax和RAW融合标量工作量。这些操作的硬件指令数/exp/rsqrt代价依backend而变，不编造一个“精确全算子FLOPs”。输入reference距离和time embedding运行时工作也进入操作清单；构造时预计算固定位置buffer的成本不属于forward。
+ 
+diff --git a/docs/CDLNO_PHASE4_CORE.md b/docs/CDLNO_PHASE4_CORE.md
+--- a/docs/CDLNO_PHASE4_CORE.md
++++ b/docs/CDLNO_PHASE4_CORE.md
+@@ -72,7 +72,7 @@
+ |---|---|---:|
+ | down + bridge | F+1 | 3 |
+ | up + readout up | F+1 | 3 |
+-| latent SA | F+P=L | 8 |
++| latent SA | F+P=L（仅full；no_sa/identity为P） | full:8；其余6 |
+ | 规则点ConvFFN | F+1 | 3 |
+ | entry逻辑历史 | F | 2 |
+ | every逻辑历史 | PF+P(P−1)/2 | 27 |
+diff --git a/docs/CDLNO_PHASE9_PERFORMANCE.md b/docs/CDLNO_PHASE9_PERFORMANCE.md
+--- a/docs/CDLNO_PHASE9_PERFORMANCE.md
++++ b/docs/CDLNO_PHASE9_PERFORMANCE.md
+@@ -36,7 +36,7 @@
+ 
+ 以下由真实hook/SDPA调用验证，不只按构造参数推算：
+ 
+-| 默认L8/F2/P6，结构化任务 | down/bridge | up/readout | latent SA | dense ConvFFN | 逻辑历史S | 历史SDPA chunk0/1/2 |
++| 默认L8/F2/P6、front=full，结构化任务 | down/bridge | up/readout | latent SA | dense ConvFFN | 逻辑历史S | 历史SDPA chunk0/1/2 |
+ |---|---:|---:|---:|---:|---:|---|
+ | lrsa_matched | 8 | 8 | 8 | 8 | 0 | 0 / 0 / 0 |
+ | off | 3 | 3 | 8 | 3 | 0 | 0 / 0 / 0 |
+diff --git a/docs/CDLNO_REFERENCE_AUDIT.md b/docs/CDLNO_REFERENCE_AUDIT.md
+--- a/docs/CDLNO_REFERENCE_AUDIT.md
++++ b/docs/CDLNO_REFERENCE_AUDIT.md
+@@ -60,7 +60,7 @@
+   → 原任务要求的输出形状
+ ```
+ 
+-`L` 是包含 latent self-attention 的处理 block 总数，不把 bridge、CDPA 和最终 readout 偷算进 8 层。`F` 在 `0..L-1` 范围内配置，`P=L-F` 且至少为 1；当 `L=8` 时必须覆盖 `F=0..6`，扩大 `L` 时不能把前段上限硬编码为 6。各阶段使用同一个标量 `M`。
++在原full设计中，`L` 是包含 latent self-attention 的处理 block 总数（A1消融后L仍计block；no_sa/identity的SA只在P个后段执行），不把 bridge、CDPA 和最终 readout 偷算进 8 层。`F` 在 `0..L-1` 范围内配置，`P=L-F` 且至少为 1；当 `L=8` 时必须覆盖 `F=0..6`，扩大 `L` 时不能把前段上限硬编码为 6。各阶段使用同一个标量 `M`。
+ 
+ ### 3.3 前段完整 LRSA block
+ 
+diff --git a/docs/CDLNO_REQUIREMENTS_MATRIX.md b/docs/CDLNO_REQUIREMENTS_MATRIX.md
+--- a/docs/CDLNO_REQUIREMENTS_MATRIX.md
++++ b/docs/CDLNO_REQUIREMENTS_MATRIX.md
+@@ -110,7 +110,7 @@
+ | L12/F2、L16/F6、L1/F0 | Q/C | TC.test_extended_boundary_and_front_above_six_all_modes，另含L8/F7、L10/F8 | 通过 |
+ | 非法F/dh/N清楚报错 | Q.validate；C/M检查 | TQ.test_illegal_architecture_and_core_policy_rejected；test_invalid_input_and_chunk_rejected_before_computation | 通过 |
+ | P=L−F独立对象/storage | C.latent_blocks/cdpa_at | TC.test_registration_storage_independence_and_single_initialization；TM.test_parameter_identity_and_storage_are_independent | 通过 |
+-| down/up各F+1；latentSA=L | C/M | TC.test_operation_counts_and_constant_m_all_front_depths；TP.test_live_counts_formulas_and_chunk_invariant_matrix_cost | 通过；默认3/3/8 |
++| down/up各F+1；latentSA在full为L，no_sa/identity为P | C/M | TC.test_operation_counts_and_constant_m_all_front_depths；TP.test_front_modes_live_counts_whole_model_costs_and_actual_parameters | 通过；默认full为3/3/8，no_sa/identity为3/3/6；A4补充 |
+ | ConvFFN=F+1；后段/CDPA无卷积 | C/M | TC计数及模块类型检查；TP.test_projection_ffn_and_dense_conv_all_counted_against_closed_form | 通过；默认3 |
+ | entry总F；every PF+P(P−1)/2；次数与份数分开 | C/D/P | TC.test_actual_history_sdpa_counts_chunks_and_each_location_projections；TP计数测试 | 通过；默认entry2/1、every27/6（chunk0） |
+ | off不存T；entry无后段历史；every只存待消费状态 | C.forward局部列表 | TC.test_off_discards_t_and_entry_releases_history_after_only_use；test_history_objects_timing_readout_and_two_forward_graph_isolation | 通过 |
+@@ -170,4 +170,3 @@
+ | 不宣称固定M普适逼近、普适低秩/无损、误差必降、守恒/网格一致、严格类包含、GPU必加速 | README/报告 | 明确保留条件性；阶段9还有变慢的实测，不包装为普遍优势 | 边界已落实 |
+ | 14.3 历史理论审阅/数值/编译不升级工程状态 | 全报告证据分类 | 只把本轮119项与已持久阶段9结果标实测；缺附件项未完成 | 通过（记录准确） |
+ | POD/JVP/VJP等未来可选，不加研究/损失；CFD全局后处理冻结 | 生产core/原metrics | 无新研究诊断/损失；Freeze原指标字节相同 | 排除/静态冻结通过 |
+-
+diff --git a/memory/current-state.md b/memory/current-state.md
+--- a/memory/current-state.md
++++ b/memory/current-state.md
+@@ -1,6 +1,14 @@
+ # Current project state
+ 
+ Last reviewed: 2026-09-15
++
++## Current: A3 approved; supplemental A4 complete awaiting review
++
++[A4 report](../docs/CDLNO_FRONT_ABLATION_A4.md), [eight-task three-mode commands](../docs/CDLNO_FRONT_ABLATION_A2_COMMANDS.md), [raw results/summary](../docs/front_ablation_audit/a4/). Only performance models.py/costs.py/CLI, test_performance and docs changed. Actual hooks now count SA/FFN sublayers, including0 frontSA for no_sa/identity and0 frontFFN for identity; matched LRSA locks full at config and every block. Full default/old commands remain. DefaultF2L8P6: SA8/6/6,frontFFN4/4/0,rearSA/GEGLU6 each,down/up/structuredConv3 each; CDPAentry2sources/1historySDPA,every27/6unchanged. Source batching changes API calls, not MACs/source semantics.
++
++203/203 full tests passed126.687s;13performance tests14.496s;33CPU cost/chunk rows,10finiteGPU measurements,24actual preset parameter counts,24sequential command previews/48parser checks allpassed. Five original performance models retain real pre-A4 initial-weight hashes,parameters,MACs andoldcounts. GPUElasticityN972B1 andscaledAirfoil17x23B2,commonFP32/mathSDPA/TF32off/compileoff,warmup5/iterations20,synchronizedmedian/p90/peakallocated,initializedAdamW andsyntheticMSE. Notrealepoch or taskloss/temporalrollout timing; params/MAC don't predict speed. RearSA remains; fixedCDPA comparison cannot establishCDPA substitutes deletedbranches. RemotePython3.10torch2.11cu128/newmodeAMP/Flash/compile/fullGPUmatrix andrealdata/convergence/accuracy/speed unverified. AiractualMSE_weighted vsA3function-defaultMSE coverage boundary remains explicit.
++
++128existingproduction/task/script/toolfiles match284file snapshot `/home/hwz/CDLNO-artifacts/front-a4-before-ftvcu781/source`;40shell syntaxpassed. Cumulativepre-A1 AST/hash: CDPAunchanged,allmodule definitions exceptfrontunchanged,coreforward/history andbridge/rear/readout constructionidentical,wrappers onlymode,eightpresets onlymodefull,originalexp/main/train/data/loss/metrics/scripts/dependenciesunchanged. PreserveA1-A3/userchanges andV1. V1complete sharedarchives/viz remains separate; V2–V5 unexecuted,tasklaunchers stillno newresume/fullarchive/periodicviz. No commit/push,downloads,dependencyreinstall,realtraining or nextphase. End “本补充阶段结束，未执行下一阶段”. Allbelowstatuseshistorical.
+ 
+ ## Current: visualization/resume plan approved, V1 complete awaiting review
+ 
+@@ -131,7 +139,7 @@
+ - Source chunking (`0`, `1`, or positive chunk size) must be mathematically and gradient equivalent; do not concatenate all source tokens into one softmax.
+ - Different CDPA locations use independent parameters; only sources within the same location share projections/norms. Earlier cross-location K/V caching suggestions are superseded. Keep raw history with gradients, never projected K/V or learned-LN outputs from another location.
+ - `every_block` rear block j uses identity `Z_(j-1)` and history `[T_1,...,T_F,Z_0,...,Z_(j-2)]`; raw bridge `Z_0` is preserved for later blocks, current is never duplicated, and history never persists across forward calls.
+-- Default 2+6 has three down/bridge operations, three up/readout operations, eight latent SA operations, and three structured ConvFFNs. Entry aligns two historical sources; every_block aligns 27 across six locations. Source batching changes calls and temporary memory, not these logical counts or MACs.
++- Default 2+6 has three down/bridge operations, three up/readout operations, eight latent SA operations in full (six in no_sa/identity), and three structured ConvFFNs. Entry aligns two historical sources; every_block aligns 27 across six locations. Source batching changes calls and temporary memory, not these logical counts or MACs.
+ - Use PyTorch SDPA; no custom CUDA/Triton kernels, xFormers, Lightning, Hydra, or new training framework.
+ 
+ ## Frozen scope
+@@ -191,7 +199,7 @@
+ - Phase-4 configuration adds `model_version='cdlno-core-v1'`, fixed `history_rule`, `latent_ffn_ratio`, and optional structured `grid_shape`; P remains derived only from L−F. Core rejects unsupported norm/dropout/history variants rather than silently changing the architecture. `CDLNO` is lazily exported by `cdlno` while configuration/sidecar imports remain torch-independent.
+ - Final regression: `CDLNO_LRSA_ROOT=/home/hwz/LRSA-Operator python -B -m unittest discover -s tests -p 'test_*.py' -v` passed 60/60 in 12.912s, no failures/errors/skips. Phase 4 contributes 13 core + 6 configuration/loading tests. Core covers 42 L8/F0…6/mode/point-grid cases, extended L12/F2 and L16/F6, L1/F0, F7/F8 without a cap, exact F0 entry/off copied-weight output/gradient/call equality, actual SDPA and projection counters, all raw-history source object IDs, two-forward graph isolation, direct live intermediate gradients, initialization and parameter/storage independence without deduplication. Configuration tests cover invalid values/inputs/chunks, independent front/rear ratio binding, JSON grids, derived-only P, sidecar byte preservation and runtime changes, new-process checkpoint restoration and imports from all three task working directories using PYTHONPATH (no install).
+ - Core raw-prefix reference and real cross-chunk weight/output/all-gradient comparisons use atol=1e-5, rtol=3e-4. The raw-prefix oracle calls the independent phase-3 CDPA mathematical reference, not CDPA.forward. Initial test-count assertions and a frozen-slots exception-type expectation were corrected; the final report records these failures and earlier coverage gaps. They did not require changes to the core mathematics or validated phase-2/3 modules.
+-- Call contract verified by actual hooks/spies: down+bridge=F+1, up+readout=F+1, latent SA=F+P=L, structured point ConvFFN=F+1. Default F2/P6 chunk0: off 0 logical histories / 0 history SDPA / 14 total SDPA; entry 2 / 1 / 15; every 27 / 6 / 20. L8/F0/every has P8, 28 sources / 7 history SDPA. Chunk0 reduces API calls, not source computation or necessarily kernel count.
++- Call contract verified by actual hooks/spies: down+bridge=F+1, up+readout=F+1, latent SA=F+P=L for full (P for no_sa/identity), structured point ConvFFN=F+1. Default F2/P6 chunk0: off 0 logical histories / 0 history SDPA / 14 total SDPA; entry 2 / 1 / 15; every 27 / 6 / 20. L8/F0/every has P8, 28 sources / 7 history SDPA. Chunk0 reduces API calls, not source computation or necessarily kernel count.
+ - Actual local environment: Python3.13.9, torch2.13.0+cu130, RTX5090 Laptop GPU; core point/grid × modes × FP32/FP16 AMP/BF16 AMP gives 18 finite forward/backward cases. This is not remote torch2.11/cu128 compatibility, real training, full-core mixed-precision error-bound, or performance evidence. Standard caller-controlled dtype/autocast remains; no unapproved automatic dtype conversion was added.
+ - Frozen phase-4 baseline `/tmp/cdlno-phase4-baseline/` contains 98-file hashes; 93 non-target files remain byte-identical. Original task directories, model/entry/data/loss/time/optimizer/scheduler/evaluation/dependency files are unchanged. No remote target run, data, training, install, commit or push.
+ 
+diff --git a/tests/test_performance.py b/tests/test_performance.py
+--- a/tests/test_performance.py
++++ b/tests/test_performance.py
+@@ -1,5 +1,6 @@
+ """Phase9 synthetic benchmark structure, cost and measurement contracts."""
+ import ast
++from dataclasses import replace
+ import json
+ from pathlib import Path
+ import shlex
+@@ -108,6 +109,63 @@
+             expected=stem+head+f*front+bridge_readout+rear+b*m*d*d*(a+3*s)+2*b*d*(2*(f+1)*n*m+(l+s)*m*m)
+             self.assertEqual(result['matrix_macs'],expected)
+ 
++    def test_front_modes_live_counts_whole_model_costs_and_actual_parameters(self):
++        case = self.small('airfoil')
++        b,n,d,m,l,f,r = case.B,case.N,case.d,case.M,case.L,case.F,case.ratio
++        for name,sources,locations in [('cdlno_off',0,0),('cdlno_entry',f,1),('cdlno_every_block',27,6)]:
++            full_model, full = self.checked(case,name)
++            full_parameters = sum(p.numel() for p in full_model.parameters())
++            for mode in ('full','no_sa','identity'):
++                removed_sa = int(mode!='full')
++                removed_ffn = int(mode=='identity')
++                # Independent formula includes removed SA projections/QK+AV,
++                # both FFN linears, biases/pre-norm and head Q/K scales.
++                removed_macs = f*b*m*(removed_sa*(4*d*d+2*m*d)+removed_ffn*4*r*d*d)
++                removed_params = f*(removed_sa*(4*d*d+2*d+2*d//case.h)
++                                    + removed_ffn*(4*r*d*d+2*(r+2)*d))
++                for chunk in (0,1,2):
++                    model,a = self.checked(replace(case,front_latent_mode=mode),name,chunk)
++                    c,costs = a['counts'],a['matrix_macs_by_component']
++                    with self.subTest(cdpa=name,mode=mode,chunk=chunk):
++                        self.assertEqual([c[k] for k in ('front_sa','front_latent_ffn','rear_sa','rear_ffn')],
++                                         [f if mode=='full' else 0,2*f if mode!='identity' else 0,l-f,l-f])
++                        sa = l if mode=='full' else l-f
++                        self.assertEqual(c['latent_sa'],sa)
++                        self.assertEqual([c[k] for k in ('down_bridge','up_readout','structured_convffn')],[f+1]*3)
++                        self.assertEqual(c['cdpa_logical_sources'],sources)
++                        calls=sum(1 if chunk==0 else (s+chunk-1)//chunk for s in a['history_sizes'])
++                        self.assertEqual(c['history_sdpa_calls'],calls)
++                        self.assertEqual(c['all_sdpa_calls'],2*(f+1)+sa+calls)
++                        self.assertEqual(costs.get('cdpa',0), b*m*d*d*(locations+3*sources))
++                        self.assertEqual(costs.get('front_two_latent_ffns',0),0 if mode=='identity' else f*4*r*b*m*d*d)
++                        self.assertEqual(costs['rear_geglu'],(l-f)*3*r*b*m*d*d)
++                        self.assertEqual(costs['point_ffn_dense_conv'],(f+1)*9*b*n*d*d)
++                        self.assertEqual(a['matrix_macs'],full['matrix_macs']-removed_macs)
++                        self.assertEqual(a['matrix_flops_2_per_mac'],2*a['matrix_macs'])
++                        self.assertEqual(a['parameters']['registered'],full_parameters-removed_params)
++                        self.assertEqual(a['parameters']['requires_grad'],sum(p.numel() for p in model.parameters()))
++                        self.assertEqual(sum(a['parameters']['by_component'].values()),a['parameters']['registered'])
++                        self.assertFalse(a['parameters']['missing_grad_names'])
++                        expected=sum(a['linear_conv_macs_by_module'].values())+costs['non_cdpa_sdpa_qk_av']+costs.get('cdpa_qk_av',0)
++                        self.assertEqual(a['matrix_macs'],expected)
++                        if mode!='full': self.assertFalse(any('.latent_sa.' in k for k in model.state_dict()))
++                        if mode=='identity': self.assertFalse(any('latent_ffn_' in k for k in model.state_dict()))
++
++    def test_matched_lrsa_and_transolver_are_full_even_for_ablation_request(self):
++        case=self.small('airfoil')
++        for name in ('lrsa_matched','transolver'):
++            baseline,_,_=build(case,name)
++            for mode in ('full','no_sa','identity'):
++                model,actual,_=build(replace(case,front_latent_mode=mode),name)
++                self.assertEqual(actual.front_latent_mode,'full')
++                torch.testing.assert_close(model.state_dict(),baseline.state_dict(),atol=0,rtol=0)
++                if name=='lrsa_matched':
++                    self.assertEqual(model.config.front_latent_mode,'full')
++                    self.assertTrue(all(block.front_latent_mode=='full' for block in model.core.blocks))
++                    args,target=synthetic_inputs(actual)
++                    a=audit(model,args,target,contexts(torch.device('cpu')))
++                    self.assertEqual([a['counts'][k] for k in ('front_sa','front_latent_ffn','rear_sa','rear_ffn')],[case.L,2*case.L,0,0])
++
+     def test_transolver_actual_per_head_projection_and_unused_parameters(self):
+         for task in ('elasticity','airfoil'):
+             case=self.small(task)
+@@ -145,15 +203,19 @@
+     def test_zero_front_extended_depth_and_invalid_inputs(self):
+         for l,f in ((1,0),(8,0),(12,2),(16,6),(10,8)):
+             case=self.small(L=l,F=f,d=8,h=2,M=3,N=7,B=1)
+-            for name in ('cdlno_off','cdlno_entry','cdlno_every_block'):
+-                _,a=self.checked(case,name)
+-                s=0 if name=='cdlno_off' else f if name=='cdlno_entry' else (l-f)*f+(l-f)*(l-f-1)//2
+-                self.assertEqual(a['counts']['cdpa_logical_sources'],s)
++            for mode in ('full','no_sa','identity'):
++                for name in ('cdlno_off','cdlno_entry','cdlno_every_block'):
++                    _,a=self.checked(replace(case,front_latent_mode=mode),name)
++                    s=0 if name=='cdlno_off' else f if name=='cdlno_entry' else (l-f)*f+(l-f)*(l-f-1)//2
++                    self.assertEqual(a['counts']['cdpa_logical_sources'],s)
++                    self.assertEqual(a['counts']['latent_sa'],l if mode=='full' else l-f)
++                    self.assertEqual(a['counts']['front_latent_ffn'],2*f if mode!='identity' else 0)
+         for values in ({'L':0},{'F':8},{'F':-1},{'d':15},{'M':0},{'B':0}):
+             with self.assertRaises(ValueError): self.small(**values)
+         with self.assertRaises(ValueError): Case.preset('airfrans',B=2)
+         with self.assertRaises(ValueError): Case.preset('ns',grid=(5,7))
+         with self.assertRaises(ValueError): Case.preset('pipe',comparison='task',M=32)
++        with self.assertRaisesRegex(ValueError,'front_latent_mode'): self.small(front_latent_mode='off')
+ 
+     def test_task_preset_comparison_matches_current_sources(self):
+         filenames=dict(darcy='Darcy',elasticity='Elas',airfoil='Airfoil',pipe='Pipe',ns='NS',plasticity='Plasticity')
+@@ -219,6 +281,14 @@
+             self.assertTrue(all(r['status']=='passed' for r in data['results']))
+             result=subprocess.run(cmd,cwd='/tmp',capture_output=True)
+             self.assertNotEqual(result.returncode,0);self.assertEqual(path.read_bytes(),content)
++            ablated=Path(folder)/'identity.json'
++            result=subprocess.run(cmd[:-1]+[str(ablated),'--front-latent-mode','identity'],cwd='/tmp',text=True,capture_output=True)
++            self.assertEqual(result.returncode,0,result.stderr+result.stdout)
++            changed=json.loads(ablated.read_text())
++            for row in changed['results']:
++                self.assertEqual(row['config']['front_latent_mode'],'identity' if row['model'].startswith('cdlno_') else 'full')
++                if row['model'].startswith('cdlno_'):
++                    self.assertEqual(row['cost']['counts']['front_latent_ffn'],0)
+         for file in [ROOT/'tools/cdlno_benchmark.py',*(ROOT/'tools/cdlno_perf').glob('*.py')]:
+             ast.parse(file.read_text(),feature_version=(3,10))
+ 
+diff --git a/tools/cdlno_benchmark.py b/tools/cdlno_benchmark.py
+--- a/tools/cdlno_benchmark.py
++++ b/tools/cdlno_benchmark.py
+@@ -32,6 +32,8 @@
+                    help='task: original/new task presets; matched: common dimensions, architecture overrides allowed')
+     p.add_argument('--models', nargs='+', choices=MODELS, default=list(MODELS))
+     p.add_argument('--chunks', nargs='+', type=int, default=[0, 1, 2])
++    p.add_argument('--front-latent-mode', '--front_latent_mode', choices=('full', 'no_sa', 'identity'), default='full',
++                   help='CDLNO front processor only; matched LRSA always remains full')
+     for name in ('B', 'N', 'd', 'h', 'M', 'L', 'F', 'ratio'):
+         p.add_argument('--' + name, type=int)
+     p.add_argument('--grid', nargs=2, type=int, metavar=('H', 'W'))
+@@ -56,6 +58,7 @@
+     if a.threads < 1 or a.warmup < 1 or a.iterations < 2 or not a.chunks or min(a.chunks) < 0:
+         raise ValueError('threads/warmup>=1, iterations>=2 and nonnegative chunks required')
+     overrides = {k: getattr(a, k) for k in ('B','N','d','h','M','L','F','ratio','grid') if getattr(a, k) is not None}
++    overrides['front_latent_mode'] = a.front_latent_mode
+     if a.grid is not None and a.N is not None and a.N != a.grid[0] * a.grid[1]:
+         raise ValueError('--N disagrees with --grid')
+     case = Case.preset(a.task, a.comparison, **overrides)
+@@ -69,7 +72,7 @@
+     if device.type == 'cpu' and (a.precision == 'amp-fp16' or a.backend not in ('auto', 'math')):
+         raise ValueError('CPU supports fp32/amp-bf16 and auto/math here')
+     torch.set_num_threads(a.threads)
+-    report = dict(schema='cdlno-performance-v1', phase=9, scope='synthetic model structure only',
++    report = dict(schema='cdlno-performance-v1', phase=9, supplement='A4', scope='synthetic model structure only',
+                   case=case.description(), environment=environment(device),
+                   git_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
+                   source_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest()
+@@ -107,7 +110,9 @@
+                     row.update(config=actual_case.description(), source=provenance, initial_weights_sha256=initial_hash)
+                     row['effective_structure'] = (dict(physics_blocks=actual_case.L) if name=='transolver' else
+                         dict(full_lrsa_blocks=actual_case.L, persistent_blocks=0, bridge=False, extra_readout=False) if name=='lrsa_matched' else
+-                        dict(full_lrsa_blocks=actual_case.F, persistent_blocks=actual_case.L-actual_case.F, bridge=True, extra_readout=True))
++                        dict(front_blocks=actual_case.F, front_latent_mode=actual_case.front_latent_mode,
++                             full_lrsa_blocks=actual_case.F if actual_case.front_latent_mode=='full' else 0,
++                             persistent_blocks=actual_case.L-actual_case.F, bridge=True, extra_readout=True))
+                     row['cost'] = audit(model, args, target, context)
+                     if not row['cost']['finite_output'] or row['cost']['parameters']['nonfinite_grad_names']:
+                         raise RuntimeError('nonfinite synthetic audit')
+diff --git a/tools/cdlno_perf/costs.py b/tools/cdlno_perf/costs.py
+--- a/tools/cdlno_perf/costs.py
++++ b/tools/cdlno_perf/costs.py
+@@ -17,7 +17,8 @@
+ from torch.utils._pytree import tree_flatten
+ 
+ from cdlno.cdpa import CDPA
+-from cdlno.modules import ConvFFN, IPOTBridge, LRSAFrontBlock, LRSAFeatureReadout, PersistentLatentBlock, RMSNorm
++from cdlno.modules import (ConvFFN, IPOTBridge, LRSAFrontBlock, LRSAFeatureReadout, RMSNorm,
++                           PlainFFN, GEGLUFFN, _DownAttention, _UpAttention, _SelfAttention)
+ 
+ 
+ def tensors(value):
+@@ -79,8 +80,10 @@
+     autograd; no detach, activation compression or checkpoint recomputation.
+     """
+     macs = Counter()
++    module_macs = Counter()
+     bias_adds = Counter()
+     counts = Counter(down_bridge=0, up_readout=0, latent_sa=0, structured_convffn=0,
++                     front_sa=0, front_latent_ffn=0, rear_sa=0, rear_ffn=0,
+                      cdpa_logical_sources=0, cdpa_locations=0, history_sdpa_calls=0, all_sdpa_calls=0)
+     scope, sdpa_shapes, history_sizes, norm_work = [], [], [], []
+     handles = []
+@@ -99,12 +102,18 @@
+     def pre(path, module, inputs):
+         scope.append(path)
+         if isinstance(module, (LRSAFrontBlock, IPOTBridge)):
++            point_block_payloads.append(inputs[0].numel() * inputs[0].element_size())
++        if isinstance(module, (_DownAttention, IPOTBridge)):
+             counts['down_bridge'] += 1
+-            point_block_payloads.append(inputs[0].numel() * inputs[0].element_size())
+-        if isinstance(module, (LRSAFrontBlock, LRSAFeatureReadout)):
++        if isinstance(module, _UpAttention):
+             counts['up_readout'] += 1
+-        if isinstance(module, (LRSAFrontBlock, PersistentLatentBlock)):
++        if isinstance(module, _SelfAttention):
+             counts['latent_sa'] += 1
++            counts['rear_sa' if '.latent_blocks.' in path else 'front_sa'] += 1
++        if isinstance(module, PlainFFN) and path.endswith(('.latent_ffn_1', '.latent_ffn_2')):
++            counts['front_latent_ffn'] += 1
++        if isinstance(module, GEGLUFFN) and '.latent_blocks.' in path:
++            counts['rear_ffn'] += 1
+         if isinstance(module, ConvFFN):
+             counts['structured_convffn'] += 1
+         if isinstance(module, LRSAFeatureReadout):
+@@ -120,10 +129,12 @@
+     def post(path, module, inputs, out):
+         if isinstance(module, nn.Linear):
+             macs[category(path)] += out.numel() * module.in_features
++            module_macs[path] += out.numel() * module.in_features
+             if module.bias is not None:
+                 bias_adds[category(path)] += out.numel()
+         elif isinstance(module, (nn.Conv2d, nn.Conv3d)):
+             macs[category(path)] += out.numel() * (module.in_channels // module.groups) * math.prod(module.kernel_size)
++            module_macs[path] += out.numel() * (module.in_channels // module.groups) * math.prod(module.kernel_size)
+             if module.bias is not None:
+                 bias_adds[category(path)] += out.numel()
+         elif isinstance(module, (nn.LayerNorm, RMSNorm)):
+@@ -173,6 +184,10 @@
+     parameters = dict(registered=sum(p.numel() for p in model.parameters()),
+                       requires_grad=sum(p.numel() for p in model.parameters() if p.requires_grad),
+                       missing_grad_names=missing, nonfinite_grad_names=nonfinite)
++    parameter_components = Counter()
++    for name, parameter in model.named_parameters():
++        parameter_components[category(name.rsplit('.', 1)[0])] += parameter.numel()
++    parameters['by_component'] = dict(parameter_components)
+     # Explicit source-fusion scalar work; this is NOT folded into matrix MACs.
+     depth = []
+     d = getattr(getattr(model, 'config', None), 'd_model', 0)
+@@ -191,6 +206,7 @@
+                           source_softmax_axis=s + 1))
+     result = dict(parameters=parameters, finite_output=finite_output, counts=dict(counts),
+                   history_sizes=history_sizes, matrix_macs_by_component=dict(macs),
++                  linear_conv_macs_by_module=dict(module_macs),
+                   matrix_macs=sum(macs.values()), matrix_flops_2_per_mac=2 * sum(macs.values()),
+                   bias_adds_by_component=dict(bias_adds), norm_work=norm_work,
+                   sdpa=sdpa_shapes, depth_work_estimate=depth,
+diff --git a/tools/cdlno_perf/models.py b/tools/cdlno_perf/models.py
+--- a/tools/cdlno_perf/models.py
++++ b/tools/cdlno_perf/models.py
+@@ -50,6 +50,7 @@
+     F: int = 2
+     ratio: int = 2
+     grid: tuple[int, int] | None = None
++    front_latent_mode: str = 'full'
+ 
+     @classmethod
+     def preset(cls, task, comparison='matched', **overrides):
+@@ -69,6 +70,8 @@
+     def validate(self):
+         if self.task not in TASKS or self.comparison not in ('matched', 'task'):
+             raise ValueError('unknown task/comparison')
++        if self.front_latent_mode not in ('full', 'no_sa', 'identity'):
++            raise ValueError('front_latent_mode must be full, no_sa or identity')
+         if any(type(v) is not int or v < 1 for v in (self.B, self.N, self.d, self.h, self.M, self.L, self.ratio)):
+             raise ValueError('B/N/d/h/M/L/ratio must be positive integers')
+         if type(self.F) is not int or not 0 <= self.F < self.L or self.d % self.h:
+@@ -88,8 +91,12 @@
+     def for_model(self, name):
+         if name not in MODELS:
+             raise ValueError(name)
+-        if name == 'transolver' and self.comparison == 'task':
+-            return replace(self, h=8, M=TASKS[self.task][5])
++        # A requested CDLNO ablation never modifies either reference model.
++        if name in ('transolver', 'lrsa_matched'):
++            case = replace(self, front_latent_mode='full')
++            if name == 'transolver' and self.comparison == 'task':
++                return replace(case, h=8, M=TASKS[self.task][5])
++            return case
+         return self
+ 
+     def description(self):
+@@ -118,11 +125,11 @@
+     def __init__(self, config, output_norm, output):
+         super().__init__()
+         config.validate()  # never pretend F=L is a valid CDLNO configuration
+-        self.config = config
++        self.config = config = replace(config, front_latent_mode='full')
+         self.blocks = nn.ModuleList([
+             LRSAFrontBlock(config.d_model, config.num_heads, config.M,
+                            structured=config.structured, grid_shape=config.grid_shape,
+-                           ffn_ratio=config.ffn_ratio) for _ in range(config.L)
++                           ffn_ratio=config.ffn_ratio, front_latent_mode='full') for _ in range(config.L)
+         ])
+         self.output_norm = copy.deepcopy(output_norm)
+         self.output = copy.deepcopy(output)
+@@ -198,7 +205,8 @@
+         model = cls(**kwargs)
+     else:
+         kwargs.update(front_blocks=case.F, cdpa_mode=name.removeprefix('cdlno_') if name != 'lrsa_matched' else 'off',
+-                      cdpa_source_chunk_size=chunk, latent_ffn_ratio=case.ratio)
++                      cdpa_source_chunk_size=chunk, latent_ffn_ratio=case.ratio,
++                      front_latent_mode=case.front_latent_mode)
+         if case.task == 'airfrans':
+             cls = AirfRANSModel
+         elif case.task == 'shapenet-car':

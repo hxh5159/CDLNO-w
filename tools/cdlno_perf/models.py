@@ -50,6 +50,7 @@ class Case:
     F: int = 2
     ratio: int = 2
     grid: tuple[int, int] | None = None
+    front_latent_mode: str = 'full'
 
     @classmethod
     def preset(cls, task, comparison='matched', **overrides):
@@ -69,6 +70,8 @@ class Case:
     def validate(self):
         if self.task not in TASKS or self.comparison not in ('matched', 'task'):
             raise ValueError('unknown task/comparison')
+        if self.front_latent_mode not in ('full', 'no_sa', 'identity'):
+            raise ValueError('front_latent_mode must be full, no_sa or identity')
         if any(type(v) is not int or v < 1 for v in (self.B, self.N, self.d, self.h, self.M, self.L, self.ratio)):
             raise ValueError('B/N/d/h/M/L/ratio must be positive integers')
         if type(self.F) is not int or not 0 <= self.F < self.L or self.d % self.h:
@@ -88,8 +91,12 @@ class Case:
     def for_model(self, name):
         if name not in MODELS:
             raise ValueError(name)
-        if name == 'transolver' and self.comparison == 'task':
-            return replace(self, h=8, M=TASKS[self.task][5])
+        # A requested CDLNO ablation never modifies either reference model.
+        if name in ('transolver', 'lrsa_matched'):
+            case = replace(self, front_latent_mode='full')
+            if name == 'transolver' and self.comparison == 'task':
+                return replace(case, h=8, M=TASKS[self.task][5])
+            return case
         return self
 
     def description(self):
@@ -118,11 +125,11 @@ class LRSAMatched(nn.Module):
     def __init__(self, config, output_norm, output):
         super().__init__()
         config.validate()  # never pretend F=L is a valid CDLNO configuration
-        self.config = config
+        self.config = config = replace(config, front_latent_mode='full')
         self.blocks = nn.ModuleList([
             LRSAFrontBlock(config.d_model, config.num_heads, config.M,
                            structured=config.structured, grid_shape=config.grid_shape,
-                           ffn_ratio=config.ffn_ratio) for _ in range(config.L)
+                           ffn_ratio=config.ffn_ratio, front_latent_mode='full') for _ in range(config.L)
         ])
         self.output_norm = copy.deepcopy(output_norm)
         self.output = copy.deepcopy(output)
@@ -198,7 +205,8 @@ def build(case, name, device='cpu', chunk=0, seed=20260914):
         model = cls(**kwargs)
     else:
         kwargs.update(front_blocks=case.F, cdpa_mode=name.removeprefix('cdlno_') if name != 'lrsa_matched' else 'off',
-                      cdpa_source_chunk_size=chunk, latent_ffn_ratio=case.ratio)
+                      cdpa_source_chunk_size=chunk, latent_ffn_ratio=case.ratio,
+                      front_latent_mode=case.front_latent_mode)
         if case.task == 'airfrans':
             cls = AirfRANSModel
         elif case.task == 'shapenet-car':

@@ -36,7 +36,7 @@ CDLNO: F×完整LRSA → HF与Ti[B,M,d] → bridge/raw Z0
 
 以下由真实hook/SDPA调用验证，不只按构造参数推算：
 
-| 默认L8/F2/P6，结构化任务 | down/bridge | up/readout | latent SA | dense ConvFFN | 逻辑历史S | 历史SDPA chunk0/1/2 |
+| 默认L8/F2/P6、front=full，结构化任务 | down/bridge | up/readout | latent SA | dense ConvFFN | 逻辑历史S | 历史SDPA chunk0/1/2 |
 |---|---:|---:|---:|---:|---:|---|
 | lrsa_matched | 8 | 8 | 8 | 8 | 0 | 0 / 0 / 0 |
 | off | 3 | 3 | 8 | 3 | 0 | 0 / 0 / 0 |

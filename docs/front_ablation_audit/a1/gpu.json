@@ -1,0 +1,27 @@
+{
+  "torch": "2.13.0+cu130",
+  "cuda_build": "13.0",
+  "cuda_available": true,
+  "checks": [
+    {
+      "mode": "full",
+      "status": "passed",
+      "max_output_error": 2.9802322387695312e-08,
+      "max_parameter_gradient_error": 3.814697265625e-06
+    },
+    {
+      "mode": "no_sa",
+      "status": "passed",
+      "max_output_error": 4.470348358154297e-08,
+      "max_parameter_gradient_error": 5.7220458984375e-06
+    },
+    {
+      "mode": "identity",
+      "status": "passed",
+      "max_output_error": 2.9802322387695312e-08,
+      "max_parameter_gradient_error": 3.814697265625e-06
+    }
+  ],
+  "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+  "precision": "FP32; math SDPA; TF32 off; no AMP/compile"
+}

@@ -32,6 +32,8 @@ def parser():
                    help='task: original/new task presets; matched: common dimensions, architecture overrides allowed')
     p.add_argument('--models', nargs='+', choices=MODELS, default=list(MODELS))
     p.add_argument('--chunks', nargs='+', type=int, default=[0, 1, 2])
+    p.add_argument('--front-latent-mode', '--front_latent_mode', choices=('full', 'no_sa', 'identity'), default='full',
+                   help='CDLNO front processor only; matched LRSA always remains full')
     for name in ('B', 'N', 'd', 'h', 'M', 'L', 'F', 'ratio'):
         p.add_argument('--' + name, type=int)
     p.add_argument('--grid', nargs=2, type=int, metavar=('H', 'W'))
@@ -56,6 +58,7 @@ def run(a):
     if a.threads < 1 or a.warmup < 1 or a.iterations < 2 or not a.chunks or min(a.chunks) < 0:
         raise ValueError('threads/warmup>=1, iterations>=2 and nonnegative chunks required')
     overrides = {k: getattr(a, k) for k in ('B','N','d','h','M','L','F','ratio','grid') if getattr(a, k) is not None}
+    overrides['front_latent_mode'] = a.front_latent_mode
     if a.grid is not None and a.N is not None and a.N != a.grid[0] * a.grid[1]:
         raise ValueError('--N disagrees with --grid')
     case = Case.preset(a.task, a.comparison, **overrides)
@@ -69,7 +72,7 @@ def run(a):
     if device.type == 'cpu' and (a.precision == 'amp-fp16' or a.backend not in ('auto', 'math')):
         raise ValueError('CPU supports fp32/amp-bf16 and auto/math here')
     torch.set_num_threads(a.threads)
-    report = dict(schema='cdlno-performance-v1', phase=9, scope='synthetic model structure only',
+    report = dict(schema='cdlno-performance-v1', phase=9, supplement='A4', scope='synthetic model structure only',
                   case=case.description(), environment=environment(device),
                   git_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
                   source_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest()
@@ -107,7 +110,9 @@ def run(a):
                     row.update(config=actual_case.description(), source=provenance, initial_weights_sha256=initial_hash)
                     row['effective_structure'] = (dict(physics_blocks=actual_case.L) if name=='transolver' else
                         dict(full_lrsa_blocks=actual_case.L, persistent_blocks=0, bridge=False, extra_readout=False) if name=='lrsa_matched' else
-                        dict(full_lrsa_blocks=actual_case.F, persistent_blocks=actual_case.L-actual_case.F, bridge=True, extra_readout=True))
+                        dict(front_blocks=actual_case.F, front_latent_mode=actual_case.front_latent_mode,
+                             full_lrsa_blocks=actual_case.F if actual_case.front_latent_mode=='full' else 0,
+                             persistent_blocks=actual_case.L-actual_case.F, bridge=True, extra_readout=True))
                     row['cost'] = audit(model, args, target, context)
                     if not row['cost']['finite_output'] or row['cost']['parameters']['nonfinite_grad_names']:
                         raise RuntimeError('nonfinite synthetic audit')

@@ -24,6 +24,11 @@ parser.add_argument('--my_path',
 parser.add_argument('--save_path',
                     default='metrics', type=str)
 args = parse_cdlno_args(parser)
+if args.model == 'CDLNO':
+    from cdlno.experiment import start as start_experiment, finish as finish_experiment
+    with open('params.yaml', 'r') as config_file:
+        recording_hparams = resolve_hparams(args, yaml.safe_load(config_file)['CDLNO'])
+    start_experiment(args, 'airfrans', evaluation=False, hparams=recording_hparams)
 
 with open(args.my_path + '/manifest.json', 'r') as f:
     manifest = json.load(f)
@@ -52,6 +57,8 @@ cdlno_run = None
 if args.model == 'CDLNO':
     hparams = resolve_hparams(args, hparams)
     cdlno_run = AirRun(args, hparams, device=device)
+    cdlno_run.recorder.update_protocol(dict(train_graphs=len(train_dataset), validation_graphs=len(val_dataset),
+                                         val_iter=10, val_sample=True, criterion="MSE_weighted"))
 
 from models.MLP import MLP
 
@@ -98,16 +105,26 @@ for i in range(args.nmodel):
             model = GUNet(hparams, encoder, decoder)
 
     log_path = cdlno_run.member_dir(i) if cdlno_run is not None else osp.join(args.save_path, args.task, args.model)
+    if cdlno_run is not None:
+        cdlno_run.recorder.attach_model(model, hparams=hparams, member=i, protocol=cdlno_run.contract)
     print('start training')
     model = train.main(device, train_dataset, val_dataset, model, hparams, log_path,
-                       criterion='MSE_weighted', val_iter=10, reg=args.weight, name_mod=args.model, val_sample=True)
+                       criterion='MSE_weighted', val_iter=10, reg=args.weight, name_mod=args.model, val_sample=True,
+                       **(dict(record=cdlno_run.recorder, record_member=i) if cdlno_run is not None else {}))
     print('end training')
     models.append(model)
 torch.save(models, cdlno_run.checkpoint if cdlno_run is not None else osp.join(args.save_path, args.task, args.model, args.model))
 
 score_path = cdlno_run.result_dir if cdlno_run is not None else 'scores'
 score_array_path = score_path if cdlno_run is not None else osp.join('scores', args.task)
+if args.model == 'CDLNO':
+    finish_experiment(args)
+
 if bool(args.score):
+    if args.model == 'CDLNO':
+        cdlno_run.recorder = start_experiment(args, 'airfrans', evaluation=True, hparams=hparams)
+        score_path = cdlno_run.recorder.result_dir
+        score_array_path = score_path
     print('start score')
     s = args.task + '_test' if args.task != 'scarce' else 'full_test'
     coefs = metrics.Results_test(device, [models], [hparams], coef_norm, args.my_path, path_out=score_path, n_test=3,
@@ -124,3 +141,7 @@ if bool(args.score):
     np.save(osp.join(score_array_path, 'true_bls'), coefs[5])
     np.save(osp.join(score_array_path, 'bls'), coefs[6])
     print('end score')
+
+    if args.model == 'CDLNO':
+        cdlno_run.recorder.record_air_scores(score_path)
+        finish_experiment(args)

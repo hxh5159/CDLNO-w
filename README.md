@@ -10,9 +10,11 @@
 → HF 查询最终 latent、保留 HF 点残差 → 点FFN → LN/head → 原任务输出
 ```
 
-T 在 FFN2 后、up 前取得。规则网格点 FFN 为普通 `groups=1` 的 3×3 ConvFFN；潜空间无卷积。完整规格及最终核对见 [实施报告](docs/CDLNO_IMPLEMENTATION_REPORT.md)、[需求矩阵](docs/CDLNO_REQUIREMENTS_MATRIX.md)、[八任务清单](docs/CDLNO_TASK_LAUNCHERS.md) 和 [来源/许可](docs/CDLNO_THIRD_PARTY_NOTICES.md)。旧 Transolver 模型与脚本保留，下方原论文结果仅属于原 Transolver。
+上图是默认`front_latent_mode=full`，T在FFN2后、Up专属norm之前取得。八任务也支持`no_sa`（保留两次latent FFN、跳过完整SA子层）及`identity`（T直接等于Down输出），三者之后都保留Up和点更新。规则网格点FFN为普通`groups=1`的3×3 ConvFFN；潜空间无卷积。完整规格及最终核对见 [实施报告](docs/CDLNO_IMPLEMENTATION_REPORT.md)、[需求矩阵](docs/CDLNO_REQUIREMENTS_MATRIX.md)、[八任务清单](docs/CDLNO_TASK_LAUNCHERS.md) 和 [来源/许可](docs/CDLNO_THIRD_PARTY_NOTICES.md)。旧 Transolver 模型与脚本保留，下方原论文结果仅属于原 Transolver。
 
 交付通过静态、合成张量、原损失连接、真实 PyG 接口、checkpoint 和本地 GPU 检查。**尚未运行真实数据训练或完整抽样评价，未验证收敛、预测精度、真实 epoch 效率或远端目标环境。**
+
+新实验现在默认写入 `output/<数据集>/<UTC时间戳>/`，包含启动配置、实际参数量、训练日志/结果和各次评估结果。`bash tran_evaluate/train_eval.sh darcy --gpu 0` 可训练成功后自动评估；八任务命令及旧结果加载见 [统一实验记录](docs/CDLNO_EXPERIMENT_OUTPUTS.md)。
 
 ## CDLNO 环境与共享包
 
@@ -31,6 +33,8 @@ python -B tools/cdlno_environment_preflight.py
 无需安装的源码导入可在仓库根使用 `export PYTHONPATH="$PWD${PYTHONPATH:+:$PYTHONPATH}"` 后进入原工作目录。最终本地检查使用 Python3.13.9/torch2.13+cu130/PyG2.3.1 与此导入方式，**没有**把该环境当成目标 editable 安装验证。
 
 ## 八任务训练与评价示例
+
+使用现有`tran_evaluate/train_eval.sh TASK --front-latent-mode full|no_sa|identity`可以在一次命令中先训练、成功后评估。八任务逐条命令、模式目录和参数表见[三模式命令页](docs/CDLNO_FRONT_ABLATION_A2_COMMANDS.md)，最新结构/成本/实测范围见[A4交付](docs/CDLNO_FRONT_ABLATION_A4.md)。以下未传新字段的旧CDLNO命令仍使用full。所有训练由用户自行启动，本次不执行。
 
 以下为用户准备好真实数据后手动运行的命令，交付过程未执行这些入口。数据路径按原项目 README 的文件布局准备，不更改字段/划分/采样。所有新脚本显式列出模型与训练初值，末尾用户参数优先；打印的新 run 路径须保留。评价需要已有 run，并重复训练时非默认的架构、fold/task/nmodel、预算等参数。
 
@@ -85,6 +89,7 @@ bash scripts/CDLNO_Evaluation.sh --my_path /data/naca --task full --nmodel 1 --r
 | 总深度L / 前段F | `--n-layers` / `--front-blocks` | `--n_layers` / `--front_blocks` |
 | d / heads / M | `--n-hidden` / `--n-heads` / `--slice_num` | `--n_hidden` / `--n_heads` / `--slice_num` |
 | 模式 | `--cdpa-mode off|entry|every_block` | `--cdpa_mode off|entry|every_block` |
+| 前段latent processor | `--front-latent-mode full|no_sa|identity` | `--front-latent-mode full|no_sa|identity` |
 | 来源分块 | `--cdpa-source-chunk-size 0` | `--cdpa_source_chunk_size 0` |
 | 前段/点FFN ratio | `--mlp_ratio 2` | `--mlp_ratio 2` |
 | 后段GEGLU ratio | `--latent-ffn-ratio 2` | `--latent_ffn_ratio 2` |
@@ -96,7 +101,15 @@ chunk0把来源折叠进batch，chunk1逐来源，正整数k分块；每份历�
 
 每个新训练使用独立目录并保存 `architecture.json`。标准任务保存严格 state_dict（weights_only）；Car保留 `model_<epochs>.pth` 整模型；Air保留 `member_000/model` 等整模型及run根 `CDLNO` 模型列表。工业整模型仅按原受信任本地checkpoint协议使用局部 `weights_only=False`，不接受来源不明文件。
 
-评价**先读既有 sidecar，再核对架构、wrapper语义及相应任务条件，最后加载**；不覆盖sidecar或训练权重，结果写入独立子目录。M/F/L/d/h/mode/网格或错误权重键形状不匹配会拒绝；chunk/device/dtype属于运行字段。运行目录不自动复用，不新增训练resume。
+评价**先读既有sidecar，再核对架构、wrapper语义及相应任务条件，最后加载**；不覆盖sidecar或训练权重，结果写入独立子目录。省略front模式时从明确指定run的sidecar恢复该字段；其它自定义参数仍须重复提供。仅能明确识别的历史完整full配置允许缺front字段，旧工业对象缺该属性也按历史full路径运行。显式mode冲突、错误权重键/shape等均严格拒绝，F0也不放宽架构校验；chunk/device/dtype属于运行字段。**no_sa和identity默认从头训练，不支持full到消融的权重转换。**
+
+| 默认L8/F2/P6 | full | no_sa | identity |
+|---|---:|---:|---:|
+| 前段SA / latent FFN | 2 / 4 | 0 / 4 | 0 / 0 |
+| 后段SA / GEGLU | 6 / 6 | 6 / 6 | 6 / 6 |
+| Down/Bridge、Up/Readout、规则ConvFFN | 各3 | 各3 | 各3 |
+
+固定CDPA比较三模式检验前段SA/FFN必要性，不能单独证明CDPA替代了它们；后段SA仍存在，不能称为“无层内注意力”。另一个可视化/续训计划目前仅V1公共组件完成，任务入口未接入新的resume/周期保存，本A4不推进该计划。普通训练仍拒绝已有目录。
 
 ## 无数据验收与性能工具
 
@@ -108,6 +121,8 @@ CDLNO_LRSA_ROOT=/path/to/LRSA-Operator python -B -m unittest discover -s tests -
 python -B tools/cdlno_benchmark.py --task airfoil --grid 5 7 --B 2 --d 16 --h 4 --M 4 --audit-only --output /tmp/cdlno-cost.json
 # 远端GPU有限代表配置；输出文件必须不存在
 python -B tools/cdlno_benchmark.py --task elasticity --comparison matched --device cuda:0 --chunks 0 1 2 --warmup 5 --iterations 20 --output /tmp/cdlno-elasticity.json
+# 只改CDLNO前段；matched LRSA始终full。
+python -B tools/cdlno_benchmark.py --task elasticity --models cdlno_entry --front-latent-mode identity --chunks 0 --device cuda:0 --precision fp32 --backend math --output /tmp/cdlno-identity.json
 ```
 
 工具比较原 Transolver、连续L个完整LRSA的 `lrsa_matched` 和 CDLNO off/entry/every_block。`--comparison task` 使用原任务各自配置；`matched` 使用同一d/h/M/L/点FFN设置。matched LRSA仅是结构性能对照，没有注册进训练器，也不是LRSA论文复现。

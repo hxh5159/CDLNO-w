@@ -1,0 +1,25 @@
+{
+  "baseline": "/home/hwz/CDLNO-artifacts/front-a1-before-_okzkms0",
+  "pre_edit_source": "/home/hwz/CDLNO-artifacts/front-a1-before-_okzkms0/source",
+  "core_source_matches_A0": true,
+  "tolerances": {
+    "atol": 0.0,
+    "rtol": 0.0
+  },
+  "config_field_absent_before_edit": true,
+  "groups": {
+    "core": "before-core.json",
+    "car": "before-car.json",
+    "airfrans": "before-airfrans.json"
+  },
+  "initial_car_capture_failure": "ModuleNotFoundError: models; retried pre-edit with project cwd in PYTHONPATH; 2 fixtures then passed",
+  "capture_script_sha256": "31b1b940304a40732ec8664fdd481002d36de395789c4f5408b173e0001f8360",
+  "raw_fixtures_in_git": false,
+  "production_source_sha256": {
+    "cdlno/config.py": "4161a8f5b4b01a6ebe079a2d23779531a6aa08e689eb9b7cdfef7c2cadfbf48b",
+    "cdlno/modules.py": "3b2e84ca6af1080c894d840d9a0e2be0390ed68aebc8644c038e451328a5a6a4",
+    "cdlno/core.py": "6cbb2ada63d86e47d2a5497ac55c7f0f3bd103ad42dddb5bc80d180b8309295a",
+    "cdlno/checkpoint.py": "6d7b6301a81528fba935d7d2cd9c4683e022adc56ee1966700c1223a383cd8cb",
+    "cdlno/cdpa.py": "eb6f515508479066fe2a2086b70929b93914de218aaf55347ecaa71ebe05c4fa"
+  }
+}

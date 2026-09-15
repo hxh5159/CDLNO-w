@@ -17,7 +17,8 @@ from torch.utils._python_dispatch import TorchDispatchMode
 from torch.utils._pytree import tree_flatten
 
 from cdlno.cdpa import CDPA
-from cdlno.modules import ConvFFN, IPOTBridge, LRSAFrontBlock, LRSAFeatureReadout, PersistentLatentBlock, RMSNorm
+from cdlno.modules import (ConvFFN, IPOTBridge, LRSAFrontBlock, LRSAFeatureReadout, RMSNorm,
+                           PlainFFN, GEGLUFFN, _DownAttention, _UpAttention, _SelfAttention)
 
 
 def tensors(value):
@@ -79,8 +80,10 @@ def audit(model, args, target, precision_context):
     autograd; no detach, activation compression or checkpoint recomputation.
     """
     macs = Counter()
+    module_macs = Counter()
     bias_adds = Counter()
     counts = Counter(down_bridge=0, up_readout=0, latent_sa=0, structured_convffn=0,
+                     front_sa=0, front_latent_ffn=0, rear_sa=0, rear_ffn=0,
                      cdpa_logical_sources=0, cdpa_locations=0, history_sdpa_calls=0, all_sdpa_calls=0)
     scope, sdpa_shapes, history_sizes, norm_work = [], [], [], []
     handles = []
@@ -99,12 +102,18 @@ def audit(model, args, target, precision_context):
     def pre(path, module, inputs):
         scope.append(path)
         if isinstance(module, (LRSAFrontBlock, IPOTBridge)):
-            counts['down_bridge'] += 1
             point_block_payloads.append(inputs[0].numel() * inputs[0].element_size())
-        if isinstance(module, (LRSAFrontBlock, LRSAFeatureReadout)):
+        if isinstance(module, (_DownAttention, IPOTBridge)):
+            counts['down_bridge'] += 1
+        if isinstance(module, _UpAttention):
             counts['up_readout'] += 1
-        if isinstance(module, (LRSAFrontBlock, PersistentLatentBlock)):
+        if isinstance(module, _SelfAttention):
             counts['latent_sa'] += 1
+            counts['rear_sa' if '.latent_blocks.' in path else 'front_sa'] += 1
+        if isinstance(module, PlainFFN) and path.endswith(('.latent_ffn_1', '.latent_ffn_2')):
+            counts['front_latent_ffn'] += 1
+        if isinstance(module, GEGLUFFN) and '.latent_blocks.' in path:
+            counts['rear_ffn'] += 1
         if isinstance(module, ConvFFN):
             counts['structured_convffn'] += 1
         if isinstance(module, LRSAFeatureReadout):
@@ -120,10 +129,12 @@ def audit(model, args, target, precision_context):
     def post(path, module, inputs, out):
         if isinstance(module, nn.Linear):
             macs[category(path)] += out.numel() * module.in_features
+            module_macs[path] += out.numel() * module.in_features
             if module.bias is not None:
                 bias_adds[category(path)] += out.numel()
         elif isinstance(module, (nn.Conv2d, nn.Conv3d)):
             macs[category(path)] += out.numel() * (module.in_channels // module.groups) * math.prod(module.kernel_size)
+            module_macs[path] += out.numel() * (module.in_channels // module.groups) * math.prod(module.kernel_size)
             if module.bias is not None:
                 bias_adds[category(path)] += out.numel()
         elif isinstance(module, (nn.LayerNorm, RMSNorm)):
@@ -173,6 +184,10 @@ def audit(model, args, target, precision_context):
     parameters = dict(registered=sum(p.numel() for p in model.parameters()),
                       requires_grad=sum(p.numel() for p in model.parameters() if p.requires_grad),
                       missing_grad_names=missing, nonfinite_grad_names=nonfinite)
+    parameter_components = Counter()
+    for name, parameter in model.named_parameters():
+        parameter_components[category(name.rsplit('.', 1)[0])] += parameter.numel()
+    parameters['by_component'] = dict(parameter_components)
     # Explicit source-fusion scalar work; this is NOT folded into matrix MACs.
     depth = []
     d = getattr(getattr(model, 'config', None), 'd_model', 0)
@@ -191,6 +206,7 @@ def audit(model, args, target, precision_context):
                           source_softmax_axis=s + 1))
     result = dict(parameters=parameters, finite_output=finite_output, counts=dict(counts),
                   history_sizes=history_sizes, matrix_macs_by_component=dict(macs),
+                  linear_conv_macs_by_module=dict(module_macs),
                   matrix_macs=sum(macs.values()), matrix_flops_2_per_mac=2 * sum(macs.values()),
                   bias_adds_by_component=dict(bias_adds), norm_work=norm_work,
                   sdpa=sdpa_shapes, depth_work_estimate=depth,

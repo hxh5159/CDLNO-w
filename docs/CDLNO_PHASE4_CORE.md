@@ -1,5 +1,7 @@
 # CDLNO 阶段4：核心组装与历史调度
 
+补充A1（2026-09-14）：核心已从架构配置显式转发front_latent_mode到全部front；默认full保持，no_sa/identity对应SA总数P而非L。history_rule现在准确表述selected-processor后/Up norm前，并兼容已知旧full配置；完整forward历史循环/CDPA/rear未改。见 [A1配置与验收](CDLNO_FRONT_ABLATION_A1.md)。以下保留阶段4原记录。
+
 日期：2026-09-13。阶段0–3已获用户审查通过；阶段4实现及本地合成验收完成，等待用户审查。只组装共享核心，不接入八任务 wrapper、数据或训练入口。依据为用户本阶段指令及 [v1.2](../PLAN_CDLNO/CDPA_Transolver_Implementation_Plan_v1_2.md) §2–4、§8.3–8.4。
 
 ## A. 完成范围
@@ -70,7 +72,7 @@ F=0/entry 与 off 使用相同权重时具有完全相同的模块集合、调�
 |---|---|---:|
 | down + bridge | F+1 | 3 |
 | up + readout up | F+1 | 3 |
-| latent SA | F+P=L | 8 |
+| latent SA | F+P=L（仅full；no_sa/identity为P） | full:8；其余6 |
 | 规则点ConvFFN | F+1 | 3 |
 | entry逻辑历史 | F | 2 |
 | every逻辑历史 | PF+P(P−1)/2 | 27 |

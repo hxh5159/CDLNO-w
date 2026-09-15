@@ -1,5 +1,9 @@
 # CDLNO 最终实施与综合审查报告
 
+更新（2026-09-15）：八任务统一实验输出与记录已完成。新训练默认 `output/<dataset>/<timestamp>`；模型/数据/训练计算未改。配置、实际参数量、训练与独立评估结果见 [本次报告](CDLNO_EXPERIMENT_OUTPUTS_REPORT.md)。Final212tests OK（1项Air抽样环境缺依赖跳过），无真实训练。旧checkpoint格式保留；周期可视化/任务完整resume接入仍不在本次范围。
+
+2026-09-15补充A4：A3已由用户审查通过，三种前段模式的完整交付见[A4报告](CDLNO_FRONT_ABLATION_A4.md)及[八任务命令](CDLNO_FRONT_ABLATION_A2_COMMANDS.md)。full仍默认；no_sa只删除完整前段SA子层/norm，identity令pre-Up T=S并删除前段两FFN/SA/norm。后段、CDPA、bridge、最终HF读出及数据训练协议不变。性能工具按实际子层计数，matched LRSA固定full；本机有限性能与未验证范围在新报告中。下方阶段10原结果按历史full范围保留，不能外推到所有front模式。另行V1完整归档公共组件已完成，但任务resume/周期图尚未接入，A4没有推进V2–V5。
+
 日期：2026-09-14；阶段10，等待用户审查。基线分支 `main`，commit `75e0f67643806a81cd1d3f6adc88dd8c02416fe7`，origin `git@github.com:thuml/Transolver.git`。阶段0没有已跟踪代码修改；阶段0–9的未提交成果是本阶段必须保留的工作，不是应恢复的上游差异。
 
 **结论：在已确认设计和无数据验收范围内，CDLNO架构、八任务接口、checkpoint与性能工具按计划实现。最终119项测试实际全部通过，无失败/错误/跳过；本轮没有发现需要修改生产模型或训练代码的缺陷。发现并补齐了时间任务的测试证据缺口。真实数据读取完整性、收敛、精度、真实epoch效率及远端目标环境仍未验证。**
@@ -49,17 +53,19 @@ norm/bias/初始化再核对：LRSA前段/读出外层RMS及独立per-head Q/K R
 
 零w时输出为候选均值，默认两历史是 `(Z+R1+R2)/3`；不是identity，不另加Z/gate/当前来源偏置。depth scale首步梯度可以为0，更新w后路径梯度已验证。历史浮点dtype不同则在Cross前转Z.dtype并保持梯度；FP32 depth没有被外层AMP再次降精度。
 
-### 三种模式、历史时序与计数
+### 三种CDPA模式、历史时序与计数（本表front=full）
 
 `0≤F<L`，P仅由L−F派生；全阶段M一致，F不硬限6。`off`不收集T；`entry`只在第一个后段前读T1…TF，F0完全不建CDPA参数，且同权重与off计算完全一致。`every_block`第j个后段前当前为Z(j−1)，历史为 `[T1…TF,Z0…Z(j−2)]`，raw bridge Z0保留。每次forward局部重建；仅把完整后段输出作为后续历史，不记录融合中间值/SA/FFN增量，不跨真实时间缓存，不detach。不同活跃CDPA位置参数/storage独立，无跨位置投影K/V缓存。
 
-| 默认L8/F2/P6 | down/bridge | up/readout | latent SA | 结构ConvFFN | 逻辑历史来源总数 | chunk0历史SDPA | 全模型SDPA |
+| 默认L8/F2/P6且front=full | down/bridge | up/readout | latent SA | 结构ConvFFN | 逻辑历史来源总数 | chunk0历史SDPA | 全模型SDPA |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | off | 3 | 3 | 8 | 3 | 0 | 0 | 14 |
 | entry | 3 | 3 | 8 | 3 | 2 | 1 | 15 |
 | every_block | 3 | 3 | 8 | 3 | 27 | 6 | 20 |
 
 以上为真实forward spies验证，不只公式估计。entry逻辑总F，every总PF+P(P−1)/2；chunk1每份来源一次，chunkk为各位置ceil(s/k)之和。chunk减少调用不减少数学来源/MAC。正常core只返回Tensor，不无条件保存注意力矩阵或调试梯度/CPU统计。
+
+A4前段模式增量：full的latent SA为F+P=L，no_sa/identity均为P；三者前段latent FFN为2F/2F/0，后段FFN恒为P。默认2+6下，no_sa/identity的off/entry/every总SDPA分别12/13/18，历史份数和chunk0调用仍为0/0、2/1、27/6。三个Down/Up/规则ConvFFN均保留。该计数修正不改变L表示总处理block数的定义。
 
 ### 八任务合同与接入
 

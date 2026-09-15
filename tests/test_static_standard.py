@@ -2,6 +2,7 @@
 
 import argparse
 import ast
+from output_recording_projection import strip_recording
 from collections import Counter
 from contextlib import redirect_stdout
 import copy
@@ -297,9 +298,11 @@ class StaticCheckpointChecks(unittest.TestCase):
                 os.chdir(folder)
                 args = arguments('elasticity', ['--n-hidden','8','--n-heads','2','--slice_num','4'])
                 model = construct('elasticity', args)
-                a, b = StaticRun(args, model), StaticRun(args, model)
+                with patch.dict(os.environ, CDLNO_RUNS_ROOT=str(Path(folder) / 'output')):
+                    a, b = StaticRun(args, model), StaticRun(args, model)
                 self.assertNotEqual(a.directory, b.directory)
-                self.assertIn('L8_F2_M4_entry', a.directory.name)
+                self.assertEqual(a.directory.parent, Path(folder) / 'output' / 'elasticity')
+                self.assertRegex(a.directory.name, r'^\d{8}T\d{12}Z$')
                 args.eval = 1
                 args.cdlno_run_dir = Path(folder) / 'missing'
                 with self.assertRaises(FileNotFoundError):
@@ -424,13 +427,16 @@ class StaticFrozenChecks(unittest.TestCase):
         for task, (name, *_) in TASKS.items():
             relative = f'PDE-Solving-StandardBenchmark/exp_{name}.py'
             original = subprocess.check_output(['git','show',f'{UPSTREAM}:{relative}'], cwd=ROOT, text=True)
-            projected = LegacyProjection().visit(tree(task))
+            projected = LegacyProjection().visit(strip_recording(tree(task)))
             self.assertEqual(ast.dump(projected), ast.dump(ast.parse(original)), task)
         current = ast.parse((PROJECT / 'model_dict.py').read_text())
         original = subprocess.check_output(['git','show',f'{UPSTREAM}:PDE-Solving-StandardBenchmark/model_dict.py'], cwd=ROOT, text=True)
         self.assertEqual(ast.dump(LegacyProjection().visit(current)), ast.dump(ast.parse(original)))
 
-    def test_scripts_syntax_arguments_and_fresh_imports(self):
+    # This test captures arguments only, with a placeholder /existing-run.
+    # Real eval sidecar resolution is covered by checkpoint and A2 task tests.
+    @patch('cdlno.checkpoint.resolve_front_latent_mode', return_value='full')
+    def test_scripts_syntax_arguments_and_fresh_imports(self, _mode):
         with tempfile.TemporaryDirectory() as folder:
             # Capture argv with a temporary executable, never run exp scripts or
             # manufacture datasets. This exercises shell paths and "$@" quoting.

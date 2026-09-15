@@ -1,5 +1,6 @@
 """Synthetic NS/Plasticity contracts and frozen temporal-loop audit."""
 from argparse import Namespace
+from output_recording_projection import strip_recording
 import ast, copy, io, json, os, subprocess, sys, tempfile, unittest
 from contextlib import redirect_stdout
 from pathlib import Path
@@ -163,7 +164,7 @@ class StaticTemporalFreeze(unittest.TestCase):
         for task in ('ns','plas'):
             relative=f'PDE-Solving-StandardBenchmark/exp_{task}.py'
             original=subprocess.check_output(['git','show','75e0f67643806a81cd1d3f6adc88dd8c02416fe7:'+relative],cwd=ROOT,text=True)
-            projected=LegacyProjection().visit(ast.parse((ROOT/relative).read_text()))
+            projected=LegacyProjection().visit(strip_recording(ast.parse((ROOT/relative).read_text())))
             self.assertEqual(ast.dump(projected),ast.dump(ast.parse(original)),task)
 
     def test_scripts_and_python_syntax(self):

@@ -1,0 +1,894 @@
+diff --git a/Airfoil-Design-AirfRANS/cdlno_entry.py b/Airfoil-Design-AirfRANS/cdlno_entry.py
+--- a/Airfoil-Design-AirfRANS/cdlno_entry.py
++++ b/Airfoil-Design-AirfRANS/cdlno_entry.py
+@@ -18,6 +18,8 @@
+ 
+ 
+ def parse_args(parser, *, evaluation=False, argv=None):
++    parser.add_argument('--front_latent_mode', '--front-latent-mode',
++                        choices=('full', 'no_sa', 'identity'), default=None)
+     for name, kind in MODEL_OPTIONS.items():
+         flags = ['--' + name]
+         if '_' in name:
+@@ -36,6 +38,12 @@
+     args = parser.parse_args(argv)
+     if args.model != 'CDLNO':
+         return args
++    if evaluation:
++        if args.run_dir is None:
++            parser.error('CDLNO evaluation requires an existing --run_dir')
++        from cdlno.checkpoint import resolve_front_latent_mode
++        args.front_latent_mode = resolve_front_latent_mode(
++            args.run_dir / 'architecture.json', args.front_latent_mode)
+     defaults = json.loads((Path(__file__).parent / 'configs/CDLNO/airfrans.json').read_text())['model']
+     for name, value in defaults.items():
+         if getattr(args, name) is None:
+@@ -55,6 +63,7 @@
+ 
+ def model_kwargs(args):
+     return dict(n_hidden=args.n_hidden, n_layers=args.n_layers, n_head=args.n_heads,
++                front_latent_mode=getattr(args, 'front_latent_mode', 'full'),
+                 slice_num=args.slice_num, front_blocks=args.front_blocks,
+                 mlp_ratio=args.mlp_ratio, latent_ffn_ratio=args.latent_ffn_ratio,
+                 dropout=args.dropout, cdpa_mode=args.cdpa_mode,
+@@ -102,7 +111,8 @@
+             self.directory = Path(args.run_dir).resolve()
+             self.validate()  # Sidecar is read before any whole-model load or write.
+         else:
+-            stem = f'L{args.n_layers}_F{args.front_blocks}_M{args.slice_num}_{args.cdpa_mode}_{_suffix()}'
++            mode_suffix = '' if self.architecture.front_latent_mode == 'full' else '_' + self.architecture.front_latent_mode
++            stem = f'L{args.n_layers}_F{args.front_blocks}_M{args.slice_num}_{args.cdpa_mode}{mode_suffix}_{_suffix()}'
+             self.directory = (Path(args.run_dir) if args.run_dir is not None else
+                               Path(args.save_path) / args.task / 'CDLNO' / stem).resolve()
+             self.directory.mkdir(parents=True, exist_ok=False)
+@@ -163,6 +173,8 @@
+         for model in models:
+             if type(model) is not AirfRANSModel:
+                 raise SidecarMismatch('checkpoint must contain cdlno.airfrans.AirfRANSModel')
++            from cdlno.checkpoint import validate_model_front_mode
++            validate_model_front_mode(model, self.architecture)
+             if (compare_architecture(self.architecture, model.config)
+                     or compare_architecture(self.architecture, model.core.config)
+                     or model.adapter_architecture() != self.adapter):
+diff --git a/Airfoil-Design-AirfRANS/configs/CDLNO/airfrans.json b/Airfoil-Design-AirfRANS/configs/CDLNO/airfrans.json
+--- a/Airfoil-Design-AirfRANS/configs/CDLNO/airfrans.json
++++ b/Airfoil-Design-AirfRANS/configs/CDLNO/airfrans.json
+@@ -1,6 +1,7 @@
+ {
+   "task": "airfrans",
+   "model": {
++    "front_latent_mode": "full",
+     "n_hidden": 256,
+     "n_layers": 8,
+     "n_heads": 8,
+diff --git a/Car-Design-ShapeNetCar/configs/CDLNO/shapenet_car.json b/Car-Design-ShapeNetCar/configs/CDLNO/shapenet_car.json
+--- a/Car-Design-ShapeNetCar/configs/CDLNO/shapenet_car.json
++++ b/Car-Design-ShapeNetCar/configs/CDLNO/shapenet_car.json
+@@ -1,6 +1,7 @@
+ {
+   "task": "shapenet-car",
+   "model": {
++    "front_latent_mode": "full",
+     "n_hidden": 256,
+     "n_layers": 8,
+     "n_heads": 8,
+diff --git a/Car-Design-ShapeNetCar/models/CDLNO.py b/Car-Design-ShapeNetCar/models/CDLNO.py
+--- a/Car-Design-ShapeNetCar/models/CDLNO.py
++++ b/Car-Design-ShapeNetCar/models/CDLNO.py
+@@ -12,14 +12,14 @@
+ 
+ def architecture(n_hidden=256, n_layers=8, n_head=8, mlp_ratio=2,
+                  dropout=0.0, slice_num=64, front_blocks=2,
+-                 latent_ffn_ratio=2.0, cdpa_mode="entry"):
++                 latent_ffn_ratio=2.0, cdpa_mode="entry", front_latent_mode="full"):
+     """Describe the fixed task input contract without constructing weights."""
+     if dropout != 0.0:
+         raise ValueError('the confirmed CDLNO core requires dropout=0')
+     return CDLNOArchitectureConfig(
+         task_name="shapenet-car", L=n_layers, F=front_blocks, M=slice_num,
+         d_model=n_hidden, num_heads=n_head, ffn_ratio=mlp_ratio,
+-        latent_ffn_ratio=latent_ffn_ratio, cdpa_mode=cdpa_mode,
++        latent_ffn_ratio=latent_ffn_ratio, cdpa_mode=cdpa_mode, front_latent_mode=front_latent_mode,
+         attention_dropout=dropout, structured=False, output_dim=4,
+     ).validate()
+ 
+@@ -45,10 +45,10 @@
+     def __init__(self, n_hidden=256, n_layers=8, n_head=8, mlp_ratio=2,
+                  dropout=0.0, slice_num=64, front_blocks=2,
+                  latent_ffn_ratio=2.0, cdpa_mode="entry",
+-                 cdpa_source_chunk_size=0):
++                 cdpa_source_chunk_size=0, front_latent_mode="full"):
+         super().__init__()
+         self.config = architecture(n_hidden, n_layers, n_head, mlp_ratio, dropout,
+-                                   slice_num, front_blocks, latent_ffn_ratio, cdpa_mode)
++                                   slice_num, front_blocks, latent_ffn_ratio, cdpa_mode, front_latent_mode)
+         self.preprocess = nn.Sequential(
+             nn.Linear(7, 2 * n_hidden), nn.GELU(), nn.Linear(2 * n_hidden, n_hidden)
+         )
+diff --git a/Car-Design-ShapeNetCar/models/cdlno_run.py b/Car-Design-ShapeNetCar/models/cdlno_run.py
+--- a/Car-Design-ShapeNetCar/models/cdlno_run.py
++++ b/Car-Design-ShapeNetCar/models/cdlno_run.py
+@@ -19,6 +19,8 @@
+ 
+ 
+ def parse_args(parser, *, evaluation=False, argv=None):
++    parser.add_argument('--front_latent_mode', '--front-latent-mode',
++                        choices=('full', 'no_sa', 'identity'), default=None)
+     for name, kind in MODEL_OPTIONS.items():
+         flags = ['--' + name]
+         if '_' in name:
+@@ -30,6 +32,12 @@
+     args = parser.parse_args(argv)
+     if args.cfd_model != 'CDLNO':
+         return args
++    if evaluation:
++        if args.run_dir is None:
++            parser.error('CDLNO evaluation requires --run_dir pointing to an existing run')
++        from cdlno.checkpoint import resolve_front_latent_mode
++        args.front_latent_mode = resolve_front_latent_mode(
++            args.run_dir / 'architecture.json', args.front_latent_mode)
+     preset_path = Path(__file__).resolve().parents[1] / 'configs' / 'CDLNO' / 'shapenet_car.json'
+     preset = json.loads(preset_path.read_text())
+     for name, value in preset['model'].items():
+@@ -55,6 +63,7 @@
+ 
+ def model_kwargs(args):
+     return dict(n_hidden=args.n_hidden, n_layers=args.n_layers, n_head=args.n_heads,
++                front_latent_mode=getattr(args, 'front_latent_mode', 'full'),
+                 slice_num=args.slice_num, front_blocks=args.front_blocks,
+                 mlp_ratio=args.mlp_ratio, latent_ffn_ratio=args.latent_ffn_ratio,
+                 dropout=args.dropout, cdpa_mode=args.cdpa_mode,
+@@ -96,8 +105,9 @@
+             self.validate()  # Read sidecar first; never write in evaluation.
+         else:
+             self._check_model(model)
++            mode_suffix = '' if self.architecture.front_latent_mode == 'full' else '_' + self.architecture.front_latent_mode
+             stem = (f'fold{args.fold_id}_L{args.n_layers}_F{args.front_blocks}'
+-                    f'_M{args.slice_num}_{args.cdpa_mode}_{_unique_suffix()}')
++                    f'_M{args.slice_num}_{args.cdpa_mode}{mode_suffix}_{_unique_suffix()}')
+             self.directory = (Path(args.run_dir) if args.run_dir is not None
+                               else Path('runs') / 'CDLNO' / 'shapenet-car' / stem).resolve()
+             self.directory.mkdir(parents=True, exist_ok=False)
+@@ -140,6 +150,8 @@
+         from cdlno.checkpoint import SidecarMismatch, compare_architecture
+         if type(model) is not Model:
+             raise SidecarMismatch('checkpoint must contain models.CDLNO.Model')
++        from cdlno.checkpoint import validate_model_front_mode
++        validate_model_front_mode(model, self.architecture)
+         if (compare_architecture(self.architecture, model.config)
+                 or compare_architecture(self.architecture, model.core.config)
+                 or model.adapter_architecture() != self.adapter):
+diff --git a/PDE-Solving-StandardBenchmark/cdlno_entry.py b/PDE-Solving-StandardBenchmark/cdlno_entry.py
+--- a/PDE-Solving-StandardBenchmark/cdlno_entry.py
++++ b/PDE-Solving-StandardBenchmark/cdlno_entry.py
+@@ -16,6 +16,8 @@
+ 
+ 
+ def parse_args(parser, task, argv=None):
++    parser.add_argument('--front-latent-mode', '--front_latent_mode',
++                        choices=('full', 'no_sa', 'identity'), default=None)
+     parser.add_argument('--front-blocks', type=int, default=2)
+     parser.add_argument('--latent-ffn-ratio', type=float, default=2.0)
+     parser.add_argument('--cdpa-mode', choices=('off', 'entry', 'every_block'), default='entry')
+@@ -33,14 +35,25 @@
+     for action in probe._actions:
+         action.default = argparse.SUPPRESS
+     explicit = vars(probe.parse_args(tokens))
++    saved_mode = None
++    if args.eval:
++        if args.cdlno_run_dir is None:
++            parser.error('CDLNO eval requires --cdlno-run-dir pointing to an existing run')
++        from cdlno.checkpoint import resolve_front_latent_mode
++        saved_mode = resolve_front_latent_mode(args.cdlno_run_dir / 'architecture.json',
++                                              explicit.get('front_latent_mode'))
+     preset = json.loads((Path(__file__).parent / 'configs' / 'CDLNO' / f'{task}.json').read_text())
+     for name, value in {**preset['model'], **preset['training']}.items():
+         if name not in explicit:
+             setattr(args, name, value)
++    if saved_mode is not None:
++        args.front_latent_mode = saved_mode
+     args.cdlno_task = task
+     if 'save_name' not in explicit:
+         args.save_name = (f'{task}_CDLNO_L{args.n_layers}_F{args.front_blocks}'
+                           f'_M{args.slice_num}_{args.cdpa_mode}')
++        if args.front_latent_mode != 'full':
++            args.save_name += '_' + args.front_latent_mode
+     if args.eval and args.cdlno_run_dir is None:
+         parser.error('CDLNO eval requires --cdlno-run-dir pointing to an existing run')
+     if not re.fullmatch(r'[A-Za-z0-9_.-]+', args.save_name) or args.save_name in ('.', '..'):
+@@ -51,6 +64,7 @@
+ def model_kwargs(args):
+     """Call only on the CDLNO branch; original constructors receive no new keys."""
+     return dict(task_name=args.cdlno_task, front_blocks=args.front_blocks,
++                front_latent_mode=getattr(args, 'front_latent_mode', 'full'),
+                 latent_ffn_ratio=args.latent_ffn_ratio, cdpa_mode=args.cdpa_mode,
+                 cdpa_source_chunk_size=args.cdpa_source_chunk_size)
+ 
+diff --git a/PDE-Solving-StandardBenchmark/configs/CDLNO/airfoil.json b/PDE-Solving-StandardBenchmark/configs/CDLNO/airfoil.json
+--- a/PDE-Solving-StandardBenchmark/configs/CDLNO/airfoil.json
++++ b/PDE-Solving-StandardBenchmark/configs/CDLNO/airfoil.json
+@@ -1,6 +1,7 @@
+ {
+   "task": "airfoil",
+   "model": {
++    "front_latent_mode": "full",
+     "n_hidden": 128,
+     "n_layers": 8,
+     "n_heads": 4,
+diff --git a/PDE-Solving-StandardBenchmark/configs/CDLNO/darcy.json b/PDE-Solving-StandardBenchmark/configs/CDLNO/darcy.json
+--- a/PDE-Solving-StandardBenchmark/configs/CDLNO/darcy.json
++++ b/PDE-Solving-StandardBenchmark/configs/CDLNO/darcy.json
+@@ -1,6 +1,7 @@
+ {
+   "task": "darcy",
+   "model": {
++    "front_latent_mode": "full",
+     "n_hidden": 128,
+     "n_layers": 8,
+     "n_heads": 8,
+diff --git a/PDE-Solving-StandardBenchmark/configs/CDLNO/elasticity.json b/PDE-Solving-StandardBenchmark/configs/CDLNO/elasticity.json
+--- a/PDE-Solving-StandardBenchmark/configs/CDLNO/elasticity.json
++++ b/PDE-Solving-StandardBenchmark/configs/CDLNO/elasticity.json
+@@ -1,6 +1,7 @@
+ {
+   "task": "elasticity",
+   "model": {
++    "front_latent_mode": "full",
+     "n_hidden": 128,
+     "n_layers": 8,
+     "n_heads": 8,
+diff --git a/PDE-Solving-StandardBenchmark/configs/CDLNO/ns.json b/PDE-Solving-StandardBenchmark/configs/CDLNO/ns.json
+--- a/PDE-Solving-StandardBenchmark/configs/CDLNO/ns.json
++++ b/PDE-Solving-StandardBenchmark/configs/CDLNO/ns.json
+@@ -1,6 +1,7 @@
+ {
+   "task": "ns",
+   "model": {
++    "front_latent_mode": "full",
+     "n_hidden": 256,
+     "n_layers": 8,
+     "n_heads": 8,
+diff --git a/PDE-Solving-StandardBenchmark/configs/CDLNO/pipe.json b/PDE-Solving-StandardBenchmark/configs/CDLNO/pipe.json
+--- a/PDE-Solving-StandardBenchmark/configs/CDLNO/pipe.json
++++ b/PDE-Solving-StandardBenchmark/configs/CDLNO/pipe.json
+@@ -1,6 +1,7 @@
+ {
+   "task": "pipe",
+   "model": {
++    "front_latent_mode": "full",
+     "n_hidden": 128,
+     "n_layers": 8,
+     "n_heads": 4,
+diff --git a/PDE-Solving-StandardBenchmark/configs/CDLNO/plasticity.json b/PDE-Solving-StandardBenchmark/configs/CDLNO/plasticity.json
+--- a/PDE-Solving-StandardBenchmark/configs/CDLNO/plasticity.json
++++ b/PDE-Solving-StandardBenchmark/configs/CDLNO/plasticity.json
+@@ -1,6 +1,7 @@
+ {
+   "task": "plasticity",
+   "model": {
++    "front_latent_mode": "full",
+     "n_hidden": 128,
+     "n_layers": 8,
+     "n_heads": 8,
+diff --git a/cdlno/airfrans.py b/cdlno/airfrans.py
+--- a/cdlno/airfrans.py
++++ b/cdlno/airfrans.py
+@@ -12,13 +12,13 @@
+ 
+ def architecture(n_hidden=256, n_layers=8, n_head=8, mlp_ratio=2,
+                  dropout=0., slice_num=64, front_blocks=2,
+-                 latent_ffn_ratio=2., cdpa_mode='entry'):
++                 latent_ffn_ratio=2., cdpa_mode='entry', front_latent_mode='full'):
+     if dropout != 0.:
+         raise ValueError('the confirmed CDLNO core requires dropout=0')
+     return CDLNOArchitectureConfig(
+         task_name='airfrans', L=n_layers, F=front_blocks, M=slice_num,
+         d_model=n_hidden, num_heads=n_head, ffn_ratio=mlp_ratio,
+-        latent_ffn_ratio=latent_ffn_ratio, cdpa_mode=cdpa_mode,
++        latent_ffn_ratio=latent_ffn_ratio, cdpa_mode=cdpa_mode, front_latent_mode=front_latent_mode,
+         attention_dropout=dropout, structured=False, output_dim=4,
+     ).validate()
+ 
+@@ -62,10 +62,11 @@
+ 
+     def __init__(self, n_hidden=256, n_layers=8, n_head=8, mlp_ratio=2,
+                  dropout=0., slice_num=64, front_blocks=2,
+-                 latent_ffn_ratio=2., cdpa_mode='entry', cdpa_source_chunk_size=0):
++                 latent_ffn_ratio=2., cdpa_mode='entry', cdpa_source_chunk_size=0,
++                 front_latent_mode='full'):
+         super().__init__()
+         self.config = architecture(n_hidden, n_layers, n_head, mlp_ratio, dropout,
+-                                   slice_num, front_blocks, latent_ffn_ratio, cdpa_mode)
++                                   slice_num, front_blocks, latent_ffn_ratio, cdpa_mode, front_latent_mode)
+         self.preprocess = nn.Sequential(nn.Linear(71, 2 * n_hidden), nn.GELU(),
+                                         nn.Linear(2 * n_hidden, n_hidden))
+         _init_linear(self.preprocess[0])
+diff --git a/cdlno/checkpoint.py b/cdlno/checkpoint.py
+--- a/cdlno/checkpoint.py
++++ b/cdlno/checkpoint.py
+@@ -3,6 +3,7 @@
+ from __future__ import annotations
+ 
+ import argparse
++from dataclasses import fields
+ import json
+ from pathlib import Path
+ from typing import Any
+@@ -66,7 +67,17 @@
+     payload = json.loads(source.read_text(encoding="utf-8"))
+     if payload.get("schema_version") != SCHEMA_VERSION:
+         raise SidecarMismatch(f"unsupported sidecar schema: {payload.get('schema_version')!r}")
+-    architecture = CDLNOArchitectureConfig.from_dict(payload["architecture"])
++    raw = payload.get("architecture")
++    if not isinstance(raw, dict):
++        raise SidecarMismatch('sidecar architecture must be a complete object')
++    missing = {field.name for field in fields(CDLNOArchitectureConfig)} - raw.keys()
++    if missing == {'front_latent_mode'} and (
++            raw.get('model_name') == 'CDLNO' and raw.get('model_version') == 'cdlno-core-v1'
++            and raw.get('history_rule') == 'front-t-after-ffn2-before-up-v1'):
++        raw = dict(raw, front_latent_mode='full')  # Known pre-A1 full only; no file rewrite.
++    elif missing:
++        raise SidecarMismatch('sidecar missing architecture fields: ' + ', '.join(sorted(missing)))
++    architecture = CDLNOArchitectureConfig.from_dict(raw)
+     derived = payload.get("derived", {})
+     if derived.get("P", architecture.P) != architecture.P:
+         raise SidecarMismatch("sidecar derived.P does not match L-F")
+@@ -74,6 +85,36 @@
+     payload["architecture"] = architecture.to_dict()
+     payload["derived"] = {"P": architecture.P}
+     return payload
++
++
++def resolve_front_latent_mode(path: str | Path, explicit: str | None) -> str:
++    """Read an eval sidecar first, then check only a user-supplied mode override."""
++    saved = load_sidecar(path)['architecture']['front_latent_mode']
++    if explicit is not None and explicit != saved:
++        raise SidecarMismatch(
++            f'architecture mismatch: front_latent_mode (checkpoint={saved!r}, requested={explicit!r})')
++    return saved
++
++
++def validate_model_front_mode(model, architecture: CDLNOArchitectureConfig) -> None:
++    """Check saved object semantics, including pre-A1 objects whose init is not run.
++
++    This does not rebuild or migrate weights. Industrial callers also compare
++    wrapper contracts and strictly validate the complete state_dict as before.
++    """
++    if not all(isinstance(value, CDLNOArchitectureConfig) for value in (model.config, model.core.config)):
++        raise SidecarMismatch('checkpoint wrapper/core require complete CDLNOArchitectureConfig objects')
++    if (compare_architecture(architecture, model.config)
++            or compare_architecture(architecture, model.core.config)):
++        raise SidecarMismatch('checkpoint wrapper/core architecture disagree (including front_latent_mode)')
++    fronts = model.core.front_blocks
++    if len(fronts) != architecture.F:
++        raise SidecarMismatch('checkpoint front block count disagrees with F')
++    for index, block in enumerate(fronts):
++        # Genuine old objects have no field: their only supported path is full.
++        mode = getattr(block, 'front_latent_mode', 'full')
++        if mode != architecture.front_latent_mode:
++            raise SidecarMismatch(f'checkpoint front_blocks.{index}.front_latent_mode disagrees with architecture')
+ 
+ 
+ def validate_sidecar(
+diff --git a/cdlno/config.py b/cdlno/config.py
+--- a/cdlno/config.py
++++ b/cdlno/config.py
+@@ -7,12 +7,27 @@
+ 
+ from __future__ import annotations
+ 
+-from dataclasses import asdict, dataclass
++from dataclasses import asdict, dataclass, fields
+ import math
+ from typing import Any, Literal
+ 
+ 
+ CDPAMode = Literal["off", "entry", "every_block"]
++FrontLatentMode = Literal["full", "no_sa", "identity"]
++HISTORY_RULE = "front-t-after-selected-processor-before-up-v1"
++_LEGACY_HISTORY_RULE = "front-t-after-ffn2-before-up-v1"
++# Frozen/slotted dataclasses originally pickled this positional 18-field list.
++# Keep this snapshot explicit: changing declaration order must not remap it.
++_LEGACY_FIELDS = (
++    "model_name", "model_version", "history_rule", "task_name", "L", "F", "M",
++    "d_model", "num_heads", "norm_type", "ffn_ratio", "latent_ffn_ratio",
++    "decoder_mode", "cdpa_mode", "attention_dropout", "structured", "grid_shape", "output_dim",
++)
++
++
++def _check_front_latent_mode(value: str) -> None:
++    if type(value) is not str or value not in ("full", "no_sa", "identity"):
++        raise ValueError(f"front_latent_mode must be 'full', 'no_sa' or 'identity', got {value!r}")
+ 
+ 
+ @dataclass(frozen=True, slots=True)
+@@ -21,7 +36,7 @@
+ 
+     model_name: str = "CDLNO"
+     model_version: str = "cdlno-core-v1"
+-    history_rule: str = "front-t-after-ffn2-before-up-v1"
++    history_rule: str = HISTORY_RULE
+     task_name: str = "unspecified"
+     L: int = 8
+     F: int = 2
+@@ -38,6 +53,38 @@
+     structured: bool = False
+     grid_shape: tuple[int, int] | None = None
+     output_dim: int = 1
++    # Architecture, not runtime: removed sublayers have no registered weights.
++    front_latent_mode: FrontLatentMode = "full"
++
++    def __post_init__(self) -> None:
++        # Only the known historical full rule is an alias. Never reinterpret a
++        # conflicting ablation or an unknown model version as historical full.
++        if (self.history_rule == _LEGACY_HISTORY_RULE
++                and self.model_version == "cdlno-core-v1"
++                and self.front_latent_mode == "full"):
++            object.__setattr__(self, "history_rule", HISTORY_RULE)
++
++    def __getstate__(self) -> dict[str, Any]:
++        # New object checkpoints use named fields; old 18-value lists remain
++        # readable below without inserting a value into the wrong slot.
++        return {"config_pickle_version": 1, "architecture": self.to_dict()}
++
++    def __setstate__(self, state: Any) -> None:
++        if type(state) in (list, tuple) and len(state) == len(_LEGACY_FIELDS):
++            values = dict(zip(_LEGACY_FIELDS, state))
++            if (values["model_version"] != "cdlno-core-v1"
++                    or values["history_rule"] != _LEGACY_HISTORY_RULE):
++                raise ValueError("unsupported legacy CDLNO configuration pickle")
++        elif (type(state) is dict and set(state) == {"config_pickle_version", "architecture"}
++              and type(state["config_pickle_version"]) is int and state["config_pickle_version"] == 1
++              and type(state["architecture"]) is dict
++              and "front_latent_mode" in state["architecture"]):
++            values = state["architecture"]
++        else:
++            raise ValueError("unsupported CDLNO configuration pickle layout")
++        restored = type(self).from_dict(values)
++        for field in fields(self):
++            object.__setattr__(self, field.name, getattr(restored, field.name))
+ 
+     @property
+     def P(self) -> int:
+@@ -48,7 +95,8 @@
+     def validate(self) -> "CDLNOArchitectureConfig":
+         if self.model_name != "CDLNO":
+             raise ValueError(f"model_name must be CDLNO, got {self.model_name!r}")
+-        if self.history_rule != "front-t-after-ffn2-before-up-v1":
++        _check_front_latent_mode(self.front_latent_mode)
++        if self.history_rule != HISTORY_RULE:
+             raise ValueError("unsupported CDLNO history_rule")
+         for name in ("L", "F", "M", "d_model", "num_heads", "output_dim"):
+             if type(getattr(self, name)) is not int:
+@@ -100,6 +148,10 @@
+     @classmethod
+     def from_dict(cls, data: dict[str, Any]) -> "CDLNOArchitectureConfig":
+         values = dict(data)
++        if "front_latent_mode" not in values:
++            if values.get("model_version", "cdlno-core-v1") != "cdlno-core-v1":
++                raise ValueError("cannot infer historical full for an unknown CDLNO model version")
++            values["front_latent_mode"] = "full"
+         if isinstance(values.get("grid_shape"), list):
+             values["grid_shape"] = tuple(values["grid_shape"])
+         supplied_p = values.pop("P", None)
+diff --git a/cdlno/core.py b/cdlno/core.py
+--- a/cdlno/core.py
++++ b/cdlno/core.py
+@@ -9,7 +9,7 @@
+ from torch import Tensor, nn
+ 
+ from .cdpa import CDPA, _check_chunk_size
+-from .config import CDLNOArchitectureConfig
++from .config import CDLNOArchitectureConfig, HISTORY_RULE
+ from .modules import (
+     IPOTBridge, LRSAFeatureReadout, LRSAFrontBlock, PersistentLatentBlock,
+     _check_grid, _check_tokens,
+@@ -40,8 +40,8 @@
+         # Reject unsupported policy changes rather than silently ignoring them.
+         if config.model_version != "cdlno-core-v1":
+             raise ValueError("CDLNO core requires model_version='cdlno-core-v1'")
+-        if config.history_rule != "front-t-after-ffn2-before-up-v1":
+-            raise ValueError("CDLNO core requires the v1 history rule")
++        if config.history_rule != HISTORY_RULE:
++            raise ValueError("CDLNO core requires the selected-processor pre-Up history rule")
+         if config.norm_type != "rmsnorm":
+             raise ValueError("CDLNO core requires norm_type='rmsnorm' for LRSA branches")
+         if config.attention_dropout != 0.0:
+@@ -55,7 +55,8 @@
+             ffn_ratio=config.ffn_ratio,
+         )
+         self.front_blocks = nn.ModuleList([
+-            LRSAFrontBlock(d, h, m, **point_settings) for _ in range(config.F)
++            LRSAFrontBlock(d, h, m, front_latent_mode=config.front_latent_mode, **point_settings)
++            for _ in range(config.F)
+         ])
+         self.bridge = IPOTBridge(d, h, m)
+         self.latent_blocks = nn.ModuleList([
+diff --git a/cdlno/modules.py b/cdlno/modules.py
+--- a/cdlno/modules.py
++++ b/cdlno/modules.py
+@@ -13,6 +13,8 @@
+ import torch
+ from torch import Tensor, nn
+ from torch.nn import functional as F
++
++from .config import FrontLatentMode, _check_front_latent_mode
+ 
+ 
+ def _init_linear(module: nn.Linear, std: float = 0.02) -> None:
+@@ -287,10 +289,12 @@
+ 
+ 
+ class LRSAFrontBlock(nn.Module):
+-    """One complete LRSA-style point/latent block.
+-
+-    Returns ``(H_next, T)`` where T is captured after the second latent FFN
+-    and before up-attention, exactly as required for later CDPA history.
++    """LRSA point/latent block with a selectable latent processor.
++
++    full: FFN1 -> SA -> FFN2, each with its own pre-norm and residual.
++    no_sa: FFN1 -> FFN2; identity: T is the complete Down output itself.
++    Returns (H_next, T), with live T before the retained Up-specific norm.
++    Down, Up, point residuals and point FFN are identical in all modes.
+     """
+ 
+     def __init__(
+@@ -303,20 +307,27 @@
+         grid_shape: Optional[Tuple[int, int]] = None,
+         ffn_ratio: float = 2.0,
+         dropout: float = 0.0,
++        front_latent_mode: FrontLatentMode = "full",
+     ) -> None:
+         super().__init__()
++        _check_front_latent_mode(front_latent_mode)
++        self.front_latent_mode = front_latent_mode
+         self.dim = dim
+         self.num_latents = num_latents
+         self.structured = structured
+         self.grid_shape = grid_shape
+         self.point_norm = RMSNorm(dim)
+         self.down = _DownAttention(dim, heads, num_latents, dropout)
+-        self.latent_norm_1 = RMSNorm(dim)
+-        self.latent_ffn_1 = PlainFFN(dim, ffn_ratio)
+-        self.latent_norm_sa = RMSNorm(dim)
+-        self.latent_sa = _SelfAttention(dim, heads, qk_norm=True, output_dropout=dropout)
+-        self.latent_norm_2 = RMSNorm(dim)
+-        self.latent_ffn_2 = PlainFFN(dim, ffn_ratio)
++        # Keep full's names and construction/RNG order exactly as before.
++        if front_latent_mode != "identity":
++            self.latent_norm_1 = RMSNorm(dim)
++            self.latent_ffn_1 = PlainFFN(dim, ffn_ratio)
++        if front_latent_mode == "full":
++            self.latent_norm_sa = RMSNorm(dim)
++            self.latent_sa = _SelfAttention(dim, heads, qk_norm=True, output_dropout=dropout)
++        if front_latent_mode != "identity":
++            self.latent_norm_2 = RMSNorm(dim)
++            self.latent_ffn_2 = PlainFFN(dim, ffn_ratio)
+         self.up_latent_norm = RMSNorm(dim)
+         self.up = _UpAttention(
+             dim, heads, qk_norm=True,
+@@ -326,6 +337,9 @@
+         self.point_ffn = ConvFFN(dim, ffn_ratio) if structured else PlainFFN(dim, ffn_ratio)
+ 
+     def forward(self, h: Tensor, *, grid_shape: Optional[Tuple[int, int]] = None) -> tuple[Tensor, Tensor]:
++        # Trusted pre-A1 whole objects predate this attribute and are full.
++        mode = getattr(self, "front_latent_mode", "full")
++        _check_front_latent_mode(mode)
+         _check_tokens(h, self.dim)
+         shape = grid_shape if grid_shape is not None else self.grid_shape
+         if self.structured:
+@@ -335,9 +349,13 @@
+         point_input = h
+         h_norm = self.point_norm(h)
+         z = self.down(h_norm)
+-        z = z + self.latent_ffn_1(self.latent_norm_1(z))
+-        z = z + self.latent_sa(self.latent_norm_sa(z))
+-        t = z + self.latent_ffn_2(self.latent_norm_2(z))
++        if mode == "identity":
++            t = z
++        else:
++            z = z + self.latent_ffn_1(self.latent_norm_1(z))
++            if mode == "full":
++                z = z + self.latent_sa(self.latent_norm_sa(z))
++            t = z + self.latent_ffn_2(self.latent_norm_2(z))
+         delta = self.up(h_norm, self.up_latent_norm(t))
+         u = point_input + delta
+         if self.structured:
+diff --git a/cdlno/standard.py b/cdlno/standard.py
+--- a/cdlno/standard.py
++++ b/cdlno/standard.py
+@@ -50,7 +50,7 @@
+         n_head=None, Time_Input=False, act='gelu', mlp_ratio=2,
+         fun_dim=None, out_dim=1, slice_num=None, ref=8, unified_pos=None,
+         H=None, W=None, *, task_name, front_blocks=2, latent_ffn_ratio=2,
+-        cdpa_mode='entry', cdpa_source_chunk_size=0,
++        cdpa_mode='entry', cdpa_source_chunk_size=0, front_latent_mode='full',
+     ):
+         super().__init__()
+         if task_name not in STATIC_TASKS:
+@@ -77,7 +77,7 @@
+             M=task['latents'] if slice_num is None else slice_num, d_model=n_hidden,
+             num_heads=task['heads'] if n_head is None else n_head,
+             ffn_ratio=mlp_ratio, latent_ffn_ratio=latent_ffn_ratio,
+-            cdpa_mode=cdpa_mode, attention_dropout=dropout,
++            cdpa_mode=cdpa_mode, attention_dropout=dropout, front_latent_mode=front_latent_mode,
+             structured=task['structured'], grid_shape=(H, W) if task['structured'] else None,
+             output_dim=out_dim,
+         ).validate()
+@@ -161,7 +161,7 @@
+         n_head=None, Time_Input=False, act='gelu', mlp_ratio=2,
+         fun_dim=None, out_dim=None, slice_num=None, ref=8, unified_pos=None,
+         H=None, W=None, *, task_name, front_blocks=2, latent_ffn_ratio=2,
+-        cdpa_mode='entry', cdpa_source_chunk_size=0,
++        cdpa_mode='entry', cdpa_source_chunk_size=0, front_latent_mode='full',
+     ):
+         super().__init__()
+         if task_name not in TEMPORAL_TASKS:
+@@ -183,7 +183,7 @@
+             M=task['latents'] if slice_num is None else slice_num, d_model=n_hidden,
+             num_heads=task['heads'] if n_head is None else n_head,
+             ffn_ratio=mlp_ratio, latent_ffn_ratio=latent_ffn_ratio,
+-            cdpa_mode=cdpa_mode, attention_dropout=dropout,
++            cdpa_mode=cdpa_mode, attention_dropout=dropout, front_latent_mode=front_latent_mode,
+             structured=True, grid_shape=(H, W), output_dim=out_dim,
+         ).validate()
+         self.task_name, self.space_dim, self.fun_dim = task_name, space_dim, fun_dim
+diff --git a/tools/cdlno_benchmark.py b/tools/cdlno_benchmark.py
+--- a/tools/cdlno_benchmark.py
++++ b/tools/cdlno_benchmark.py
+@@ -32,6 +32,8 @@
+                    help='task: original/new task presets; matched: common dimensions, architecture overrides allowed')
+     p.add_argument('--models', nargs='+', choices=MODELS, default=list(MODELS))
+     p.add_argument('--chunks', nargs='+', type=int, default=[0, 1, 2])
++    p.add_argument('--front-latent-mode', '--front_latent_mode', choices=('full', 'no_sa', 'identity'), default='full',
++                   help='CDLNO front processor only; matched LRSA always remains full')
+     for name in ('B', 'N', 'd', 'h', 'M', 'L', 'F', 'ratio'):
+         p.add_argument('--' + name, type=int)
+     p.add_argument('--grid', nargs=2, type=int, metavar=('H', 'W'))
+@@ -56,6 +58,7 @@
+     if a.threads < 1 or a.warmup < 1 or a.iterations < 2 or not a.chunks or min(a.chunks) < 0:
+         raise ValueError('threads/warmup>=1, iterations>=2 and nonnegative chunks required')
+     overrides = {k: getattr(a, k) for k in ('B','N','d','h','M','L','F','ratio','grid') if getattr(a, k) is not None}
++    overrides['front_latent_mode'] = a.front_latent_mode
+     if a.grid is not None and a.N is not None and a.N != a.grid[0] * a.grid[1]:
+         raise ValueError('--N disagrees with --grid')
+     case = Case.preset(a.task, a.comparison, **overrides)
+@@ -69,7 +72,7 @@
+     if device.type == 'cpu' and (a.precision == 'amp-fp16' or a.backend not in ('auto', 'math')):
+         raise ValueError('CPU supports fp32/amp-bf16 and auto/math here')
+     torch.set_num_threads(a.threads)
+-    report = dict(schema='cdlno-performance-v1', phase=9, scope='synthetic model structure only',
++    report = dict(schema='cdlno-performance-v1', phase=9, supplement='A4', scope='synthetic model structure only',
+                   case=case.description(), environment=environment(device),
+                   git_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
+                   source_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest()
+@@ -107,7 +110,9 @@
+                     row.update(config=actual_case.description(), source=provenance, initial_weights_sha256=initial_hash)
+                     row['effective_structure'] = (dict(physics_blocks=actual_case.L) if name=='transolver' else
+                         dict(full_lrsa_blocks=actual_case.L, persistent_blocks=0, bridge=False, extra_readout=False) if name=='lrsa_matched' else
+-                        dict(full_lrsa_blocks=actual_case.F, persistent_blocks=actual_case.L-actual_case.F, bridge=True, extra_readout=True))
++                        dict(front_blocks=actual_case.F, front_latent_mode=actual_case.front_latent_mode,
++                             full_lrsa_blocks=actual_case.F if actual_case.front_latent_mode=='full' else 0,
++                             persistent_blocks=actual_case.L-actual_case.F, bridge=True, extra_readout=True))
+                     row['cost'] = audit(model, args, target, context)
+                     if not row['cost']['finite_output'] or row['cost']['parameters']['nonfinite_grad_names']:
+                         raise RuntimeError('nonfinite synthetic audit')
+diff --git a/tools/cdlno_perf/costs.py b/tools/cdlno_perf/costs.py
+--- a/tools/cdlno_perf/costs.py
++++ b/tools/cdlno_perf/costs.py
+@@ -17,7 +17,8 @@
+ from torch.utils._pytree import tree_flatten
+ 
+ from cdlno.cdpa import CDPA
+-from cdlno.modules import ConvFFN, IPOTBridge, LRSAFrontBlock, LRSAFeatureReadout, PersistentLatentBlock, RMSNorm
++from cdlno.modules import (ConvFFN, IPOTBridge, LRSAFrontBlock, LRSAFeatureReadout, RMSNorm,
++                           PlainFFN, GEGLUFFN, _DownAttention, _UpAttention, _SelfAttention)
+ 
+ 
+ def tensors(value):
+@@ -79,8 +80,10 @@
+     autograd; no detach, activation compression or checkpoint recomputation.
+     """
+     macs = Counter()
++    module_macs = Counter()
+     bias_adds = Counter()
+     counts = Counter(down_bridge=0, up_readout=0, latent_sa=0, structured_convffn=0,
++                     front_sa=0, front_latent_ffn=0, rear_sa=0, rear_ffn=0,
+                      cdpa_logical_sources=0, cdpa_locations=0, history_sdpa_calls=0, all_sdpa_calls=0)
+     scope, sdpa_shapes, history_sizes, norm_work = [], [], [], []
+     handles = []
+@@ -99,12 +102,18 @@
+     def pre(path, module, inputs):
+         scope.append(path)
+         if isinstance(module, (LRSAFrontBlock, IPOTBridge)):
++            point_block_payloads.append(inputs[0].numel() * inputs[0].element_size())
++        if isinstance(module, (_DownAttention, IPOTBridge)):
+             counts['down_bridge'] += 1
+-            point_block_payloads.append(inputs[0].numel() * inputs[0].element_size())
+-        if isinstance(module, (LRSAFrontBlock, LRSAFeatureReadout)):
++        if isinstance(module, _UpAttention):
+             counts['up_readout'] += 1
+-        if isinstance(module, (LRSAFrontBlock, PersistentLatentBlock)):
++        if isinstance(module, _SelfAttention):
+             counts['latent_sa'] += 1
++            counts['rear_sa' if '.latent_blocks.' in path else 'front_sa'] += 1
++        if isinstance(module, PlainFFN) and path.endswith(('.latent_ffn_1', '.latent_ffn_2')):
++            counts['front_latent_ffn'] += 1
++        if isinstance(module, GEGLUFFN) and '.latent_blocks.' in path:
++            counts['rear_ffn'] += 1
+         if isinstance(module, ConvFFN):
+             counts['structured_convffn'] += 1
+         if isinstance(module, LRSAFeatureReadout):
+@@ -120,10 +129,12 @@
+     def post(path, module, inputs, out):
+         if isinstance(module, nn.Linear):
+             macs[category(path)] += out.numel() * module.in_features
++            module_macs[path] += out.numel() * module.in_features
+             if module.bias is not None:
+                 bias_adds[category(path)] += out.numel()
+         elif isinstance(module, (nn.Conv2d, nn.Conv3d)):
+             macs[category(path)] += out.numel() * (module.in_channels // module.groups) * math.prod(module.kernel_size)
++            module_macs[path] += out.numel() * (module.in_channels // module.groups) * math.prod(module.kernel_size)
+             if module.bias is not None:
+                 bias_adds[category(path)] += out.numel()
+         elif isinstance(module, (nn.LayerNorm, RMSNorm)):
+@@ -173,6 +184,10 @@
+     parameters = dict(registered=sum(p.numel() for p in model.parameters()),
+                       requires_grad=sum(p.numel() for p in model.parameters() if p.requires_grad),
+                       missing_grad_names=missing, nonfinite_grad_names=nonfinite)
++    parameter_components = Counter()
++    for name, parameter in model.named_parameters():
++        parameter_components[category(name.rsplit('.', 1)[0])] += parameter.numel()
++    parameters['by_component'] = dict(parameter_components)
+     # Explicit source-fusion scalar work; this is NOT folded into matrix MACs.
+     depth = []
+     d = getattr(getattr(model, 'config', None), 'd_model', 0)
+@@ -191,6 +206,7 @@
+                           source_softmax_axis=s + 1))
+     result = dict(parameters=parameters, finite_output=finite_output, counts=dict(counts),
+                   history_sizes=history_sizes, matrix_macs_by_component=dict(macs),
++                  linear_conv_macs_by_module=dict(module_macs),
+                   matrix_macs=sum(macs.values()), matrix_flops_2_per_mac=2 * sum(macs.values()),
+                   bias_adds_by_component=dict(bias_adds), norm_work=norm_work,
+                   sdpa=sdpa_shapes, depth_work_estimate=depth,
+diff --git a/tools/cdlno_perf/models.py b/tools/cdlno_perf/models.py
+--- a/tools/cdlno_perf/models.py
++++ b/tools/cdlno_perf/models.py
+@@ -50,6 +50,7 @@
+     F: int = 2
+     ratio: int = 2
+     grid: tuple[int, int] | None = None
++    front_latent_mode: str = 'full'
+ 
+     @classmethod
+     def preset(cls, task, comparison='matched', **overrides):
+@@ -69,6 +70,8 @@
+     def validate(self):
+         if self.task not in TASKS or self.comparison not in ('matched', 'task'):
+             raise ValueError('unknown task/comparison')
++        if self.front_latent_mode not in ('full', 'no_sa', 'identity'):
++            raise ValueError('front_latent_mode must be full, no_sa or identity')
+         if any(type(v) is not int or v < 1 for v in (self.B, self.N, self.d, self.h, self.M, self.L, self.ratio)):
+             raise ValueError('B/N/d/h/M/L/ratio must be positive integers')
+         if type(self.F) is not int or not 0 <= self.F < self.L or self.d % self.h:
+@@ -88,8 +91,12 @@
+     def for_model(self, name):
+         if name not in MODELS:
+             raise ValueError(name)
+-        if name == 'transolver' and self.comparison == 'task':
+-            return replace(self, h=8, M=TASKS[self.task][5])
++        # A requested CDLNO ablation never modifies either reference model.
++        if name in ('transolver', 'lrsa_matched'):
++            case = replace(self, front_latent_mode='full')
++            if name == 'transolver' and self.comparison == 'task':
++                return replace(case, h=8, M=TASKS[self.task][5])
++            return case
+         return self
+ 
+     def description(self):
+@@ -118,11 +125,11 @@
+     def __init__(self, config, output_norm, output):
+         super().__init__()
+         config.validate()  # never pretend F=L is a valid CDLNO configuration
+-        self.config = config
++        self.config = config = replace(config, front_latent_mode='full')
+         self.blocks = nn.ModuleList([
+             LRSAFrontBlock(config.d_model, config.num_heads, config.M,
+                            structured=config.structured, grid_shape=config.grid_shape,
+-                           ffn_ratio=config.ffn_ratio) for _ in range(config.L)
++                           ffn_ratio=config.ffn_ratio, front_latent_mode='full') for _ in range(config.L)
+         ])
+         self.output_norm = copy.deepcopy(output_norm)
+         self.output = copy.deepcopy(output)
+@@ -198,7 +205,8 @@
+         model = cls(**kwargs)
+     else:
+         kwargs.update(front_blocks=case.F, cdpa_mode=name.removeprefix('cdlno_') if name != 'lrsa_matched' else 'off',
+-                      cdpa_source_chunk_size=chunk, latent_ffn_ratio=case.ratio)
++                      cdpa_source_chunk_size=chunk, latent_ffn_ratio=case.ratio,
++                      front_latent_mode=case.front_latent_mode)
+         if case.task == 'airfrans':
+             cls = AirfRANSModel
+         elif case.task == 'shapenet-car':
+diff --git a/tran_evaluate/_common.sh b/tran_evaluate/_common.sh
+--- a/tran_evaluate/_common.sh
++++ b/tran_evaluate/_common.sh
+@@ -28,6 +28,26 @@
+ export CDLNO_RUNS_ROOT="${CDLNO_RUNS_ROOT:-$cdlno_repo_root/runs/CDLNO}"
+ export CDLNO_RUN_TAG="${CDLNO_RUN_TAG:-entry}"
+ export CDLNO_PYTHON="${CDLNO_PYTHON:-${PYTHON_BIN:-python}}"
++
++cdlno_front_run_suffix() {
++    # Only choose the implicit run name; explicit run paths still win last.
++    # Do not inject a mode flag: eval with an explicit run can infer its mode.
++    local selected=full
++    while (($#)); do
++        case "$1" in
++            --front-latent-mode|--front_latent_mode)
++                (($# >= 2)) || { printf 'Missing front latent mode\n' >&2; return 2; }
++                selected="$2"; shift ;;
++            --front-latent-mode=*|--front_latent_mode=*) selected="${1#*=}" ;;
++        esac
++        shift
++    done
++    case "$selected" in
++        full) ;;
++        no_sa|identity) printf '_%s' "$selected" ;;
++        *) printf 'Invalid front_latent_mode: %s\n' "$selected" >&2; return 2 ;;
++    esac
++}
+ 
+ cdlno_dispatch() {
+     local task_project="$1" task_entry="$2"
+diff --git a/tran_evaluate/_standard.sh b/tran_evaluate/_standard.sh
+--- a/tran_evaluate/_standard.sh
++++ b/tran_evaluate/_standard.sh
+@@ -24,6 +24,8 @@
+     *) printf 'Expected train, eval or help.\n' >&2; exit 2 ;;
+ esac
+ shift
++
++cdlno_mode_suffix="$(cdlno_front_run_suffix "$@")"
+ 
+ # Explicit values match the already accepted CDLNO task presets/launchers.
+ cdlno_width=128 cdlno_heads=8 cdlno_latents=64 cdlno_unified=0
+@@ -66,5 +68,5 @@
+     --unified_pos "$cdlno_unified" --ref 8 \
+     --lr 0.001 --epochs 500 --batch-size "$cdlno_batch" --weight_decay 1e-5 \
+     "${cdlno_clip[@]}" "${cdlno_extra[@]}" \
+-    --data_path "$cdlno_data" --cdlno-run-dir "$CDLNO_RUNS_ROOT/$cdlno_task/$CDLNO_RUN_TAG" \
++    --data_path "$cdlno_data" --cdlno-run-dir "$CDLNO_RUNS_ROOT/$cdlno_task/${CDLNO_RUN_TAG}${cdlno_mode_suffix}" \
+     --eval "$cdlno_eval" "$@"
+diff --git a/tran_evaluate/airfrans.sh b/tran_evaluate/airfrans.sh
+--- a/tran_evaluate/airfrans.sh
++++ b/tran_evaluate/airfrans.sh
+@@ -23,6 +23,7 @@
+     *) printf 'Expected train, eval or help.\n' >&2; exit 2 ;;
+ esac
+ shift
++cdlno_mode_suffix="$(cdlno_front_run_suffix "$@")"
+ cdlno_dataset="${CDLNO_AIRFRANS_DATASET%/}"
+ cdlno_extra=()
+ if [[ "$cdlno_entry" == main.py ]]; then
+@@ -47,5 +48,5 @@
+     --cdpa_mode entry --cdpa_source_chunk_size 0 \
+     --nb_epochs 398 --batch_size 1 --lr 0.001 \
+     --my_path "$cdlno_data_arg" --save_path "$CDLNO_RUNS_ROOT" \
+-    --run_dir "$CDLNO_RUNS_ROOT/airfrans/full_$CDLNO_RUN_TAG" \
++    --run_dir "$CDLNO_RUNS_ROOT/airfrans/full_${CDLNO_RUN_TAG}${cdlno_mode_suffix}" \
+     "${cdlno_extra[@]}" "$@"
+diff --git a/tran_evaluate/car.sh b/tran_evaluate/car.sh
+--- a/tran_evaluate/car.sh
++++ b/tran_evaluate/car.sh
+@@ -34,9 +34,10 @@
+ esac
+ shift
+ 
++cdlno_mode_suffix="$(cdlno_front_run_suffix "$@")"
+ cdlno_args=(
+     --data_dir "$CDLNO_CAR_RAW_ROOT" --save_dir "$CDLNO_CAR_CACHE_ROOT"
+-    --run_dir "$CDLNO_RUNS_ROOT/car/fold0_$CDLNO_RUN_TAG"
++    --run_dir "$CDLNO_RUNS_ROOT/car/fold0_${CDLNO_RUN_TAG}${cdlno_mode_suffix}"
+     --cfd_model CDLNO
+     --n_hidden 256 --n_layers 8 --n_heads 8 --slice_num 64
+     --front_blocks 2 --mlp_ratio 2 --latent_ffn_ratio 2 --dropout 0

@@ -1,0 +1,62 @@
+{
+  "scope": "A3 synthetic verification only; no production edits or A4",
+  "environment": {
+    "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+    "torch": "2.13.0+cu130",
+    "cuda_build": "13.0",
+    "cuda_available": true,
+    "pyg_available": true,
+    "pyg": "2.3.1",
+    "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU"
+  },
+  "suites": {
+    "targeted-initial": {
+      "tests": 43,
+      "seconds": 14.078,
+      "result": "passed",
+      "skips": 0
+    },
+    "final-regression": {
+      "tests": 184,
+      "seconds": 75.836,
+      "result": "passed",
+      "skips": 0
+    },
+    "targeted-final": {
+      "tests": 43,
+      "seconds": 13.469,
+      "result": "passed",
+      "skips": 0
+    }
+  },
+  "cpu_primary_task_mode_cells": 24,
+  "cpu_extra_5x7_cells": 6,
+  "gpu_cells": 12,
+  "checkpoint_max_abs_error": 6.146728992462158e-08,
+  "checkpoint_tolerance": {
+    "atol": 1e-05,
+    "rtol": 0.0003
+  },
+  "true_pre_A1_fixtures": {
+    "core": 12,
+    "car": 2,
+    "airfrans": 2
+  },
+  "pre_A1_atol": 0,
+  "pre_A1_rtol": 0,
+  "frozen_production_task_script_tool_files": 128,
+  "production_defects_found": [],
+  "not_run": [
+    "remote Python3.10/torch2.11/cu128",
+    "new mode AMP or other SDPA backends",
+    "new mode GPU for Elasticity/Airfoil/Pipe/AirfRANS",
+    "full width/batch resource acceptance",
+    "real data loading/sampling/physical metrics/training/convergence/accuracy/epoch performance"
+  ],
+  "commands": [
+    "CDLNO_A3_EVIDENCE=docs/front_ablation_audit/a3 python -B -m unittest discover -s tests -p test_front_training.py -v",
+    "CDLNO_LRSA_ROOT=/home/hwz/LRSA-Operator CDLNO_A3_EVIDENCE=docs/front_ablation_audit/a3 python -B -m unittest discover -s tests -p 'test_*.py' -v",
+    "python -B docs/front_ablation_audit/a3/audit_scope.py",
+    "git diff --check"
+  ]
+}

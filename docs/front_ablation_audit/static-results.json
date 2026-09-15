@@ -1,0 +1,368 @@
+{
+  "audit": "A0 source-only; not model/runtime acceptance",
+  "python": "3.13.9",
+  "head": "769fa333742f73c132868cf560bce5ec21529362",
+  "checks": [
+    {
+      "name": "full exact residual sequence and live T return",
+      "passed": true,
+      "evidence": [
+        "z = self.down(h_norm)",
+        "z = z + self.latent_ffn_1(self.latent_norm_1(z))",
+        "z = z + self.latent_sa(self.latent_norm_sa(z))",
+        "t = z + self.latent_ffn_2(self.latent_norm_2(z))",
+        "delta = self.up(h_norm, self.up_latent_norm(t))",
+        "u = point_input + delta"
+      ]
+    },
+    {
+      "name": "CDPA consumes histories only in rear loop",
+      "passed": true,
+      "evidence": {
+        "front_loop": "for block in self.front_blocks:\n    h_f, t = block(h_f)\n    if history is not None:\n        history.append(t)\n    del t",
+        "rear_loop": "for j, block in enumerate(self.latent_blocks):\n    previous = current\n    key = str(j)\n    if key in self.cdpa_at:\n        block_input = self.cdpa_at[key](previous, tuple(history), source_chunk_size=chunk)\n    else:\n        block_input = previous\n    current = block(block_input)\n    if history is not None:\n        if self.config.cdpa_mode == 'every_block' and j + 1 < self.config.P:\n            history.append(previous)\n        else:\n            history = None"
+      }
+    },
+    {
+      "name": "no front mode or new AttnRes implementation in shared production source",
+      "passed": true,
+      "evidence": "Text search supplements the explicit front/core call-path review; not a proof about arbitrary hidden code."
+    },
+    {
+      "name": "LRSA disable_interleaved_blocks skips SA and FFN2 together",
+      "passed": true,
+      "evidence": {
+        "commit": "47b03f8c8c8da30bbcc0737b008dc4548f9cb98e",
+        "clean": true,
+        "source": "/home/hwz/LRSA-Operator/src/perceiverforpde/modeling/layers/attn.py",
+        "sha256": "7e5fb208c4936889b3c9e68e2416bf60c6efafe8004b6081696e787ee1d024e9",
+        "guarded_branch": "if not self.disable_interleaved_blocks:\n    sn = self.sm_norm(slice)\n    slice = slice + self.latents_attention(sn, sn, sn)\n    slice = slice + self.channel_mixing_2(self.channel_norm_2(slice))"
+      }
+    },
+    {
+      "name": "legacy architecture is frozen/slotted with 18 fields",
+      "passed": true,
+      "evidence": [
+        "model_name",
+        "model_version",
+        "history_rule",
+        "task_name",
+        "L",
+        "F",
+        "M",
+        "d_model",
+        "num_heads",
+        "norm_type",
+        "ffn_ratio",
+        "latent_ffn_ratio",
+        "decoder_mode",
+        "cdpa_mode",
+        "attention_dropout",
+        "structured",
+        "grid_shape",
+        "output_dim"
+      ]
+    },
+    {
+      "name": "eight current presets are implicit full L8 F2 entry chunk0",
+      "passed": true,
+      "evidence": {
+        "PDE-Solving-StandardBenchmark/configs/CDLNO/airfoil.json": {
+          "task": "airfoil",
+          "model": {
+            "n_hidden": 128,
+            "n_layers": 8,
+            "n_heads": 4,
+            "slice_num": 64,
+            "mlp_ratio": 2,
+            "front_blocks": 2,
+            "latent_ffn_ratio": 2,
+            "cdpa_mode": "entry",
+            "cdpa_source_chunk_size": 0,
+            "dropout": 0.0,
+            "unified_pos": 0,
+            "ref": 8
+          },
+          "training": {
+            "lr": 0.001,
+            "epochs": 500,
+            "batch_size": 4,
+            "weight_decay": 1e-05,
+            "max_grad_norm": 0.1
+          }
+        },
+        "PDE-Solving-StandardBenchmark/configs/CDLNO/darcy.json": {
+          "task": "darcy",
+          "model": {
+            "n_hidden": 128,
+            "n_layers": 8,
+            "n_heads": 8,
+            "slice_num": 64,
+            "mlp_ratio": 2,
+            "front_blocks": 2,
+            "latent_ffn_ratio": 2,
+            "cdpa_mode": "entry",
+            "cdpa_source_chunk_size": 0,
+            "dropout": 0.0,
+            "unified_pos": 1,
+            "ref": 8
+          },
+          "training": {
+            "lr": 0.001,
+            "epochs": 500,
+            "batch_size": 4,
+            "weight_decay": 1e-05,
+            "max_grad_norm": 0.1
+          }
+        },
+        "PDE-Solving-StandardBenchmark/configs/CDLNO/elasticity.json": {
+          "task": "elasticity",
+          "model": {
+            "n_hidden": 128,
+            "n_layers": 8,
+            "n_heads": 8,
+            "slice_num": 64,
+            "mlp_ratio": 2,
+            "front_blocks": 2,
+            "latent_ffn_ratio": 2,
+            "cdpa_mode": "entry",
+            "cdpa_source_chunk_size": 0,
+            "dropout": 0.0,
+            "unified_pos": 0,
+            "ref": 8
+          },
+          "training": {
+            "lr": 0.001,
+            "epochs": 500,
+            "batch_size": 1,
+            "weight_decay": 1e-05,
+            "max_grad_norm": 0.1
+          }
+        },
+        "PDE-Solving-StandardBenchmark/configs/CDLNO/ns.json": {
+          "task": "ns",
+          "model": {
+            "n_hidden": 256,
+            "n_layers": 8,
+            "n_heads": 8,
+            "slice_num": 64,
+            "mlp_ratio": 2,
+            "front_blocks": 2,
+            "latent_ffn_ratio": 2,
+            "cdpa_mode": "entry",
+            "cdpa_source_chunk_size": 0,
+            "dropout": 0.0,
+            "unified_pos": 1,
+            "ref": 8
+          },
+          "training": {
+            "lr": 0.001,
+            "epochs": 500,
+            "batch_size": 2,
+            "weight_decay": 1e-05,
+            "max_grad_norm": null
+          }
+        },
+        "PDE-Solving-StandardBenchmark/configs/CDLNO/pipe.json": {
+          "task": "pipe",
+          "model": {
+            "n_hidden": 128,
+            "n_layers": 8,
+            "n_heads": 4,
+            "slice_num": 32,
+            "mlp_ratio": 2,
+            "front_blocks": 2,
+            "latent_ffn_ratio": 2,
+            "cdpa_mode": "entry",
+            "cdpa_source_chunk_size": 0,
+            "dropout": 0.0,
+            "unified_pos": 0,
+            "ref": 8
+          },
+          "training": {
+            "lr": 0.001,
+            "epochs": 500,
+            "batch_size": 8,
+            "weight_decay": 1e-05,
+            "max_grad_norm": 0.1
+          }
+        },
+        "PDE-Solving-StandardBenchmark/configs/CDLNO/plasticity.json": {
+          "task": "plasticity",
+          "model": {
+            "n_hidden": 128,
+            "n_layers": 8,
+            "n_heads": 8,
+            "slice_num": 64,
+            "mlp_ratio": 2,
+            "front_blocks": 2,
+            "latent_ffn_ratio": 2,
+            "cdpa_mode": "entry",
+            "cdpa_source_chunk_size": 0,
+            "dropout": 0.0,
+            "unified_pos": 0,
+            "ref": 8
+          },
+          "training": {
+            "lr": 0.001,
+            "epochs": 500,
+            "batch_size": 8,
+            "weight_decay": 1e-05,
+            "max_grad_norm": 0.1
+          }
+        },
+        "Car-Design-ShapeNetCar/configs/CDLNO/shapenet_car.json": {
+          "task": "shapenet-car",
+          "model": {
+            "n_hidden": 256,
+            "n_layers": 8,
+            "n_heads": 8,
+            "slice_num": 64,
+            "front_blocks": 2,
+            "mlp_ratio": 2,
+            "latent_ffn_ratio": 2,
+            "dropout": 0.0,
+            "cdpa_mode": "entry",
+            "cdpa_source_chunk_size": 0
+          },
+          "training": {
+            "nb_epochs": 200,
+            "batch_size": 1,
+            "lr": 0.001,
+            "weight": 0.5,
+            "fold_id": 0,
+            "val_iter": 10,
+            "preprocessed": 1
+          }
+        },
+        "Airfoil-Design-AirfRANS/configs/CDLNO/airfrans.json": {
+          "task": "airfrans",
+          "model": {
+            "n_hidden": 256,
+            "n_layers": 8,
+            "n_heads": 8,
+            "slice_num": 64,
+            "front_blocks": 2,
+            "mlp_ratio": 2,
+            "latent_ffn_ratio": 2,
+            "dropout": 0.0,
+            "cdpa_mode": "entry",
+            "cdpa_source_chunk_size": 0
+          },
+          "training_source": "params.yaml:CDLNO (copied from current Transolver)",
+          "initial_training": {
+            "batch_size": 1,
+            "nb_epochs": 398,
+            "lr": 0.001,
+            "max_neighbors": 64,
+            "subsampling": 32000,
+            "r": 0.05
+          }
+        }
+      }
+    },
+    {
+      "name": "six standard entries already forward CDLNO-only kwargs",
+      "passed": true,
+      "evidence": [
+        "PDE-Solving-StandardBenchmark/exp_airfoil.py",
+        "PDE-Solving-StandardBenchmark/exp_darcy.py",
+        "PDE-Solving-StandardBenchmark/exp_elas.py",
+        "PDE-Solving-StandardBenchmark/exp_ns.py",
+        "PDE-Solving-StandardBenchmark/exp_pipe.py",
+        "PDE-Solving-StandardBenchmark/exp_plas.py"
+      ]
+    },
+    {
+      "name": "sixteen project launchers and eight root train/eval launchers exist",
+      "passed": true,
+      "evidence": [
+        "PDE-Solving-StandardBenchmark/scripts/CDLNO_Airfoil.sh",
+        "PDE-Solving-StandardBenchmark/scripts/CDLNO_Airfoil_Eval.sh",
+        "PDE-Solving-StandardBenchmark/scripts/CDLNO_Darcy.sh",
+        "PDE-Solving-StandardBenchmark/scripts/CDLNO_Darcy_Eval.sh",
+        "PDE-Solving-StandardBenchmark/scripts/CDLNO_Elas.sh",
+        "PDE-Solving-StandardBenchmark/scripts/CDLNO_Elas_Eval.sh",
+        "PDE-Solving-StandardBenchmark/scripts/CDLNO_NS.sh",
+        "PDE-Solving-StandardBenchmark/scripts/CDLNO_NS_Eval.sh",
+        "PDE-Solving-StandardBenchmark/scripts/CDLNO_Pipe.sh",
+        "PDE-Solving-StandardBenchmark/scripts/CDLNO_Pipe_Eval.sh",
+        "PDE-Solving-StandardBenchmark/scripts/CDLNO_Plasticity.sh",
+        "PDE-Solving-StandardBenchmark/scripts/CDLNO_Plasticity_Eval.sh",
+        "Car-Design-ShapeNetCar/scripts/CDLNO.sh",
+        "Car-Design-ShapeNetCar/scripts/CDLNO_Evaluation.sh",
+        "Airfoil-Design-AirfRANS/scripts/CDLNO.sh",
+        "Airfoil-Design-AirfRANS/scripts/CDLNO_Evaluation.sh"
+      ]
+    },
+    {
+      "name": "strict loading; sidecar validation precedes torch.load",
+      "passed": true,
+      "evidence": {
+        "standard": "def load(self, model):\n    import torch\n    self._validate(model)\n    state = torch.load(self.checkpoint, map_location=next(model.parameters()).device, weights_only=True)\n    model.load_state_dict(state, strict=True)",
+        "car": "def load(self):\n    import torch\n    from models.CDLNO import Model\n    if not self.evaluation:\n        raise RuntimeError('CarRun.load is for evaluation of an existing trusted run')\n    self.validate()\n    model = torch.load(self.checkpoint, map_location=self.device, weights_only=False)\n    self._check_model(model)\n    expected = Model(**self.kwargs)\n    expected.load_state_dict(model.state_dict(), strict=True)\n    del expected\n    model.core.source_chunk_size = self.runtime.source_chunk_size\n    return model.to(self.device)",
+        "airfrans": "def load(self, *, member=None):\n    \"\"\"Load this project's trusted model list, or one saved complete member.\"\"\"\n    import torch\n    from cdlno.airfrans import AirfRANSModel\n    from cdlno.checkpoint import SidecarMismatch, compare_architecture\n    if not self.evaluation:\n        raise RuntimeError('loading requires evaluation of an existing run')\n    self.validate()\n    path = self.checkpoint if member is None else Path(self.member_dir(member)) / 'model'\n    saved = torch.load(path, map_location=self.device, weights_only=False)\n    if member is None:\n        if type(saved) is not list or len(saved) != self.contract['nmodel']:\n            raise SidecarMismatch('checkpoint must be the complete model list for this run')\n        models = saved\n    else:\n        models = [saved]\n    expected = AirfRANSModel(**self.kwargs)\n    for model in models:\n        if type(model) is not AirfRANSModel:\n            raise SidecarMismatch('checkpoint must contain cdlno.airfrans.AirfRANSModel')\n        if compare_architecture(self.architecture, model.config) or compare_architecture(self.architecture, model.core.config) or model.adapter_architecture() != self.adapter:\n            raise SidecarMismatch('checkpoint model and sidecar architecture disagree')\n        expected.load_state_dict(model.state_dict(), strict=True)\n        model.core.source_chunk_size = self.runtime.source_chunk_size\n        model.to(self.device)\n    return models if member is None else models[0]"
+      }
+    },
+    {
+      "name": "original serialization protocols remain distinct",
+      "passed": true,
+      "evidence": [
+        "standard:model.pt state_dict",
+        "car:model_<epochs>.pth object",
+        "AirfRANS:member_NNN/model object plus run/CDLNO list"
+      ]
+    },
+    {
+      "name": "production/task/config/test/tool sources unchanged relative to HEAD",
+      "passed": true,
+      "evidence": []
+    },
+    {
+      "name": "upstream byte differences limited to previously integrated entry/config files",
+      "passed": true,
+      "evidence": {
+        "commit": "75e0f67643806a81cd1d3f6adc88dd8c02416fe7",
+        "compared": 65,
+        "byte_identical": 53,
+        "inherited_differences": [
+          "Airfoil-Design-AirfRANS/main.py",
+          "Airfoil-Design-AirfRANS/main_evaluation.py",
+          "Airfoil-Design-AirfRANS/params.yaml",
+          "Car-Design-ShapeNetCar/main.py",
+          "Car-Design-ShapeNetCar/main_evaluation.py",
+          "PDE-Solving-StandardBenchmark/exp_airfoil.py",
+          "PDE-Solving-StandardBenchmark/exp_darcy.py",
+          "PDE-Solving-StandardBenchmark/exp_elas.py",
+          "PDE-Solving-StandardBenchmark/exp_ns.py",
+          "PDE-Solving-StandardBenchmark/exp_pipe.py",
+          "PDE-Solving-StandardBenchmark/exp_plas.py",
+          "PDE-Solving-StandardBenchmark/model_dict.py"
+        ],
+        "limit": "A0 does not rerun prior AST equivalence tests for these 12 integration files."
+      }
+    },
+    {
+      "name": "A0 protects all pre-existing files except incremental status/memory docs",
+      "passed": true,
+      "evidence": {
+        "start_files": 203,
+        "changed": [
+          "AGENTS.md",
+          "docs/CDLNO_IMPLEMENTATION_STATUS.md",
+          "memory/current-state.md"
+        ],
+        "identical": 200
+      }
+    }
+  ],
+  "passed": 13,
+  "failed": 0,
+  "not_run": [
+    "model forward/backward",
+    "legacy pickle roundtrip",
+    "PyG integration",
+    "GPU/remote environment",
+    "real data/training/evaluation"
+  ]
+}

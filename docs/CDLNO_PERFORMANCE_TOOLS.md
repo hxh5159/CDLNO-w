@@ -1,5 +1,7 @@
 # CDLNO 无数据性能工具
 
+A4补充：`--front-latent-mode full|no_sa|identity`（下划线别名也可）只控制CDLNO前段，默认full。`lrsa_matched`显式固定完整full；原Transolver不接收新kwargs。实际子模块hook分别报告`front_sa/front_latent_ffn/rear_sa/rear_ffn`，不把进入一个前段block当成必然执行SA。A4实际结果与范围见[交付报告](CDLNO_FRONT_ABLATION_A4.md)。
+
 阶段9工具只生成合成输入，计时一次模型调用或一次合成 MSE/AdamW 更新。它不导入 exp/main、loader，不构造数据图，不替代真实任务训练/指标；NS 的10次调用和 Plasticity 的20次更新不在单步计时中。基础模型出处为 [Transolver, ICML 2024](https://arxiv.org/abs/2402.02366)。LRSA/IPOT 源码差异及许可沿用 [参考审查](CDLNO_REFERENCE_AUDIT.md)。
 
 入口：[tools/cdlno_benchmark.py](../tools/cdlno_benchmark.py)。无需安装新依赖；在已有可导入 torch、numpy、einops、timm 的环境运行；工业合成输入使用真实 PyG Data，缺失 PyG 明确失败，不伪造依赖。脚本自动定位仓库根，不需要导入任何训练入口。
@@ -21,6 +23,15 @@ python -B tools/cdlno_benchmark.py --task airfoil --comparison task \
 # 同配置结构比较，小型非方形Airfoil索引网格；这是合成缩小网格，不是原任务规模。
 python -B tools/cdlno_benchmark.py --task airfoil --comparison matched --grid 17 23 \
   --B 2 --device cuda:0 --warmup 5 --iterations 20 --output /tmp/cdlno-airfoil-matched.json
+
+# 固定CDPA entry、同配置/精度的三前段模式；只执行有限合成性能检查。
+# 输出须不存在；不读取数据、不训练实际数据集。
+for mode in full no_sa identity; do
+  python -B tools/cdlno_benchmark.py --task elasticity --comparison matched \
+    --models cdlno_entry --front-latent-mode "$mode" --chunks 0 \
+    --device cuda:0 --precision fp32 --backend math --warmup 5 --iterations 20 \
+    --output "/tmp/cdlno-front-${mode}.json"
+done
 ```
 
 `--task` 支持八任务；工业保持B1，NS/Plasticity保持原空间网格。`--comparison task` 采用原启动脚本/工业main构造与新JSON的各自架构，拒绝 d/h/M/L/F/ratio 覆盖。B/N/grid 如被显式缩小，JSON会标记不是原任务几何/batch；不能将其称为原任务规模实测。原任务标准脚本实际L8，不能拿旧parser默认L3当作论文主配置。
@@ -33,19 +44,23 @@ python -B tools/cdlno_benchmark.py --task airfoil --comparison matched --grid 17
 
 `matrix_macs`只计forward稠密Linear、Conv、QK/AV及原Transolver的slice/deslice乘法；一个乘加记1 MAC，`matrix_flops_2_per_mac=2*MAC`。Conv按包含padding位置的dense核计算，不把边缘零乘法当作结构稀疏。参数量为实际注册/可训练参数，不根据论文估算；原模型没有梯度的参数单列。
 
-完整矩阵账包括stem/head、down的N规模K/V、up的N规模Q/O、前段两次latent FFN、点FFN/dense3×3卷积、后段GEGLU，以及每个CDPA位置的一次Q和每份来源各自K/V/O。基于实际张量形状统计SDPA的QK+AV，通用profiler未支持SDPA时也不会遗漏该项。通用profiler的数字专门命名为 `profiler_partial_flops`，不能当作总FLOPs。
+完整矩阵账包括stem/head、down的N规模K/V、up的N规模Q/O、实际保留的前段latent FFN、点FFN/dense3×3卷积、后段GEGLU，以及每个CDPA位置的一次Q和每份来源各自K/V/O。基于实际张量形状统计SDPA的QK+AV，通用profiler未支持SDPA时也不会遗漏该项。通用profiler的数字专门命名为 `profiler_partial_flops`，不能当作总FLOPs。`linear_conv_macs_by_module`给出实际每个投影/卷积的账目；参数总量和`parameters.by_component`从实际注册对象统计，移除分支没有参数或成本。
 
-设单次配置B/N/d/M/L/F，P=L−F，各位置历史数为s，S为所有s之和，A为活跃位置数。独立公式测试核对：
+设单次配置B/N/d/M/L/F，P=L−F，各位置历史数为s，S为所有s之和，A为活跃位置数；q为latent SA数（full时L，其余P），f_ff为前段FFN个数（full/no_sa时2F，identity时0）。独立公式测试核对：
 
 ```text
 LRSA attention MAC = 2Bd(2LNM + LM²)
-CDLNO attention MAC = 2Bd(2(F+1)NM + (L+S)M²)
+CDLNO attention MAC = 2Bd(2(F+1)NM + (q+S)M²)
 CDPA projection MAC = BMd²(A+3S)
-front两次latent FFN / block = 4rBMd²
+front保留的latent FFN总MAC = f_ff × 2rBMd²
 rear GEGLU / block = 3rBMd²
 point FFN线性 / 次 = 2rBNd²
 dense 3×3 Conv / 次 = 9BNd²
 ```
+
+前段Down+Up投影每块为`Bd²(4N+3M)`；其SA投影仅full时加`4BMd²`。Bridge+最终Up为`Bd²(4N+4M)`；后段SA投影合计`4PBMd²`。再加上述前段FFN、后段GEGLU、F+1次点处理、stem/head和CDPA即为整网矩阵账（实际stem维度与输出通道按任务）。前段FFN与点FFN使用前段ratio，后段GEGLU使用后段ratio；工具的共同`--ratio`同时设二者，与当前正式ratio2一致。
+
+默认2+6的SA总数为8/6/6，前段FFN为4/4/0，后段SA/GEGLU均6次；Down/Bridge=3、Up/FinalReadout=3、规则ConvFFN=3。entry仍2逻辑来源/chunk0一次历史SDPA，every仍27/6；CDPA Cross不计作前段SA。固定CDPA比较三模式只能检验前段SA/FFN必要性，不能单独证明CDPA替代这些子层；后段SA始终存在。阶段9旧结果与旧`q=L`表仅适用于full。
 
 矩阵MAC**不是完整标量FLOPs**。bias加法、LN/RMS/QK norm的元素数/宽度/dtype、GELU/SiLU、乘除、归约、softmax等另有实际ATen操作清单；源内softmax即使融合在SDPA中也有由Q/K形状恢复的逻辑元素数。depth单独列出FP32的RMS、评分、source softmax和RAW融合标量工作量。这些操作的硬件指令数/exp/rsqrt代价依backend而变，不编造一个“精确全算子FLOPs”。输入reference距离和time embedding运行时工作也进入操作清单；构造时预计算固定位置buffer的成本不属于forward。
 

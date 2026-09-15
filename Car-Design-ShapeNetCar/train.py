@@ -74,7 +74,7 @@ class NumpyEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def main(device, train_dataset, val_dataset, Net, hparams, path, reg=1, val_iter=1, coef_norm=[]):
+def main(device, train_dataset, val_dataset, Net, hparams, path, reg=1, val_iter=1, coef_norm=[], record=None):
     model = Net.to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=hparams['lr'])
     lr_scheduler = torch.optim.lr_scheduler.OneCycleLR(
@@ -83,6 +83,8 @@ def main(device, train_dataset, val_dataset, Net, hparams, path, reg=1, val_iter
         total_steps=(len(train_dataset) // hparams['batch_size'] + 1) * hparams['nb_epochs'],
         final_div_factor=1000.,
     )
+    if record is not None:
+        record.record_training_setup(optimizer, lr_scheduler)
     start = time.time()
 
     train_loss, val_loss = 1e5, 1e5
@@ -90,6 +92,8 @@ def main(device, train_dataset, val_dataset, Net, hparams, path, reg=1, val_iter
     for epoch in pbar_train:
         train_loader = DataLoader(train_dataset, batch_size=hparams['batch_size'], shuffle=True, drop_last=True)
         loss_velo, loss_press = train(device, model, train_loader, optimizer, lr_scheduler, reg=reg)
+        if record is not None:
+            recorded_train = dict(pressure_mse=loss_velo, velocity_mse=loss_press)
         train_loss = loss_velo + reg * loss_press
         del (train_loader)
 
@@ -103,6 +107,13 @@ def main(device, train_dataset, val_dataset, Net, hparams, path, reg=1, val_iter
             pbar_train.set_postfix(train_loss=train_loss, val_loss=val_loss)
         else:
             pbar_train.set_postfix(train_loss=train_loss)
+
+        if record is not None:
+            metrics = dict(train_components=recorded_train, upstream_train_log_value=train_loss)
+            if val_iter is not None and (epoch == hparams['nb_epochs'] - 1 or epoch % val_iter == 0):
+                metrics.update(validation_pressure_mse=loss_velo, validation_velocity_mse=loss_press,
+                               upstream_validation_log_value=val_loss)
+            record.record_epoch(epoch + 1, metrics)
 
     end = time.time()
     time_elapsed = end - start

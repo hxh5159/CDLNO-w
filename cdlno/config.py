@@ -7,12 +7,27 @@ argument or serialized as an authoritative input.
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, fields
 import math
 from typing import Any, Literal
 
 
 CDPAMode = Literal["off", "entry", "every_block"]
+FrontLatentMode = Literal["full", "no_sa", "identity"]
+HISTORY_RULE = "front-t-after-selected-processor-before-up-v1"
+_LEGACY_HISTORY_RULE = "front-t-after-ffn2-before-up-v1"
+# Frozen/slotted dataclasses originally pickled this positional 18-field list.
+# Keep this snapshot explicit: changing declaration order must not remap it.
+_LEGACY_FIELDS = (
+    "model_name", "model_version", "history_rule", "task_name", "L", "F", "M",
+    "d_model", "num_heads", "norm_type", "ffn_ratio", "latent_ffn_ratio",
+    "decoder_mode", "cdpa_mode", "attention_dropout", "structured", "grid_shape", "output_dim",
+)
+
+
+def _check_front_latent_mode(value: str) -> None:
+    if type(value) is not str or value not in ("full", "no_sa", "identity"):
+        raise ValueError(f"front_latent_mode must be 'full', 'no_sa' or 'identity', got {value!r}")
 
 
 @dataclass(frozen=True, slots=True)
@@ -21,7 +36,7 @@ class CDLNOArchitectureConfig:
 
     model_name: str = "CDLNO"
     model_version: str = "cdlno-core-v1"
-    history_rule: str = "front-t-after-ffn2-before-up-v1"
+    history_rule: str = HISTORY_RULE
     task_name: str = "unspecified"
     L: int = 8
     F: int = 2
@@ -38,6 +53,38 @@ class CDLNOArchitectureConfig:
     structured: bool = False
     grid_shape: tuple[int, int] | None = None
     output_dim: int = 1
+    # Architecture, not runtime: removed sublayers have no registered weights.
+    front_latent_mode: FrontLatentMode = "full"
+
+    def __post_init__(self) -> None:
+        # Only the known historical full rule is an alias. Never reinterpret a
+        # conflicting ablation or an unknown model version as historical full.
+        if (self.history_rule == _LEGACY_HISTORY_RULE
+                and self.model_version == "cdlno-core-v1"
+                and self.front_latent_mode == "full"):
+            object.__setattr__(self, "history_rule", HISTORY_RULE)
+
+    def __getstate__(self) -> dict[str, Any]:
+        # New object checkpoints use named fields; old 18-value lists remain
+        # readable below without inserting a value into the wrong slot.
+        return {"config_pickle_version": 1, "architecture": self.to_dict()}
+
+    def __setstate__(self, state: Any) -> None:
+        if type(state) in (list, tuple) and len(state) == len(_LEGACY_FIELDS):
+            values = dict(zip(_LEGACY_FIELDS, state))
+            if (values["model_version"] != "cdlno-core-v1"
+                    or values["history_rule"] != _LEGACY_HISTORY_RULE):
+                raise ValueError("unsupported legacy CDLNO configuration pickle")
+        elif (type(state) is dict and set(state) == {"config_pickle_version", "architecture"}
+              and type(state["config_pickle_version"]) is int and state["config_pickle_version"] == 1
+              and type(state["architecture"]) is dict
+              and "front_latent_mode" in state["architecture"]):
+            values = state["architecture"]
+        else:
+            raise ValueError("unsupported CDLNO configuration pickle layout")
+        restored = type(self).from_dict(values)
+        for field in fields(self):
+            object.__setattr__(self, field.name, getattr(restored, field.name))
 
     @property
     def P(self) -> int:
@@ -48,7 +95,8 @@ class CDLNOArchitectureConfig:
     def validate(self) -> "CDLNOArchitectureConfig":
         if self.model_name != "CDLNO":
             raise ValueError(f"model_name must be CDLNO, got {self.model_name!r}")
-        if self.history_rule != "front-t-after-ffn2-before-up-v1":
+        _check_front_latent_mode(self.front_latent_mode)
+        if self.history_rule != HISTORY_RULE:
             raise ValueError("unsupported CDLNO history_rule")
         for name in ("L", "F", "M", "d_model", "num_heads", "output_dim"):
             if type(getattr(self, name)) is not int:
@@ -100,6 +148,10 @@ class CDLNOArchitectureConfig:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "CDLNOArchitectureConfig":
         values = dict(data)
+        if "front_latent_mode" not in values:
+            if values.get("model_version", "cdlno-core-v1") != "cdlno-core-v1":
+                raise ValueError("cannot infer historical full for an unknown CDLNO model version")
+            values["front_latent_mode"] = "full"
         if isinstance(values.get("grid_shape"), list):
             values["grid_shape"] = tuple(values["grid_shape"])
         supplied_p = values.pop("P", None)

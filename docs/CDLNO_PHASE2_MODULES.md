@@ -1,5 +1,7 @@
 # CDLNO 阶段2：基础模块实现与验证
 
+补充A1（2026-09-14）：`LRSAFrontBlock`新增架构选择full/no_sa/identity；full原顺序/初始化/参数键保持，no_sa只删除SA子层，identity令T=Down输出。Down/Up/点FFN及其他模块不变。当前配置/模块API和实际验证见 [A1报告](CDLNO_FRONT_ABLATION_A1.md)；下文保留原阶段2历史报告。
+
 日期：2026-09-13。依据：用户本轮阶段2授权、v1.2 §2/§4、阶段0确认的 LRSA/IPOT 源码差异。阶段0、1已获用户审查通过；阶段3未执行。
 
 ## A. 完成范围

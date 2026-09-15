@@ -12,13 +12,13 @@ from .modules import _init_linear
 
 def architecture(n_hidden=256, n_layers=8, n_head=8, mlp_ratio=2,
                  dropout=0., slice_num=64, front_blocks=2,
-                 latent_ffn_ratio=2., cdpa_mode='entry'):
+                 latent_ffn_ratio=2., cdpa_mode='entry', front_latent_mode='full'):
     if dropout != 0.:
         raise ValueError('the confirmed CDLNO core requires dropout=0')
     return CDLNOArchitectureConfig(
         task_name='airfrans', L=n_layers, F=front_blocks, M=slice_num,
         d_model=n_hidden, num_heads=n_head, ffn_ratio=mlp_ratio,
-        latent_ffn_ratio=latent_ffn_ratio, cdpa_mode=cdpa_mode,
+        latent_ffn_ratio=latent_ffn_ratio, cdpa_mode=cdpa_mode, front_latent_mode=front_latent_mode,
         attention_dropout=dropout, structured=False, output_dim=4,
     ).validate()
 
@@ -62,10 +62,11 @@ class AirfRANSModel(nn.Module):
 
     def __init__(self, n_hidden=256, n_layers=8, n_head=8, mlp_ratio=2,
                  dropout=0., slice_num=64, front_blocks=2,
-                 latent_ffn_ratio=2., cdpa_mode='entry', cdpa_source_chunk_size=0):
+                 latent_ffn_ratio=2., cdpa_mode='entry', cdpa_source_chunk_size=0,
+                 front_latent_mode='full'):
         super().__init__()
         self.config = architecture(n_hidden, n_layers, n_head, mlp_ratio, dropout,
-                                   slice_num, front_blocks, latent_ffn_ratio, cdpa_mode)
+                                   slice_num, front_blocks, latent_ffn_ratio, cdpa_mode, front_latent_mode)
         self.preprocess = nn.Sequential(nn.Linear(71, 2 * n_hidden), nn.GELU(),
                                         nn.Linear(2 * n_hidden, n_hidden))
         _init_linear(self.preprocess[0])

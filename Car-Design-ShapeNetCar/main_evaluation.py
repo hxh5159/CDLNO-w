@@ -23,6 +23,9 @@ parser.add_argument('--r', default=0.2, type=float)
 parser.add_argument('--weight', default=0.5, type=float)
 parser.add_argument('--nb_epochs', default=200, type=int)
 args = parse_cdlno_args(parser, evaluation=True)
+if args.cfd_model == 'CDLNO':
+    from cdlno.experiment import start as start_experiment, finish as finish_experiment
+    start_experiment(args, 'car', evaluation=True)
 print(args)
 
 
@@ -126,3 +129,11 @@ with torch.no_grad():
     print('press:', rmse_press)
     print('velo:', rmse_velo_var, np.sqrt(np.mean(np.square(rmse_velo_var))))
     print('time:', np.mean(times))
+
+if args.cfd_model == 'CDLNO':
+    cdlno_run.recorder.record_metrics(dict(
+        rho_d=spear, c_d=coef_error / index, relative_l2_pressure=l2err_press,
+        relative_l2_velocity=l2err_velo, rmse_pressure=rmse_press, rmse_velocity_components=rmse_velo_var,
+        rmse_velocity=np.sqrt(np.mean(np.square(rmse_velo_var))),
+        upstream_unsynchronized_mean_forward_seconds=np.mean(times), evaluated_graphs=index))
+    finish_experiment(args)

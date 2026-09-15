@@ -1,0 +1,135 @@
+# A0 source-only audit. Run with python -B; no task/model imports or data access.
+import ast
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+import sys
+
+ROOT = Path(__file__).resolve().parents[2]
+REF = Path('/home/hwz/LRSA-Operator')
+UPSTREAM = '75e0f67643806a81cd1d3f6adc88dd8c02416fe7'
+def git(*args, cwd=ROOT):
+    return subprocess.check_output(['git', *args], cwd=cwd)
+def read(path):
+    return (ROOT / path).read_text()
+def tree(path):
+    return ast.parse(read(path))
+def method(path, cls, name):
+    c = next(n for n in tree(path).body if isinstance(n, ast.ClassDef) and n.name == cls)
+    return next(n for n in c.body if isinstance(n, ast.FunctionDef) and n.name == name)
+def digest(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+checks = []
+def check(name, condition, evidence):
+    checks.append(dict(name=name, passed=bool(condition), evidence=evidence))
+
+front = method('cdlno/modules.py', 'LRSAFrontBlock', 'forward')
+sequence = [ast.unparse(n) for n in front.body]
+expected = [
+    'z = self.down(h_norm)',
+    'z = z + self.latent_ffn_1(self.latent_norm_1(z))',
+    'z = z + self.latent_sa(self.latent_norm_sa(z))',
+    't = z + self.latent_ffn_2(self.latent_norm_2(z))',
+    'delta = self.up(h_norm, self.up_latent_norm(t))',
+    'u = point_input + delta',
+]
+check('full exact residual sequence and live T return',
+      any(sequence[i:i+len(expected)] == expected for i in range(len(sequence)))
+      and sequence[-1] == 'return (u + point_update, t)', expected)
+core = method('cdlno/core.py', 'CDLNO', 'forward')
+loops = [n for n in core.body if isinstance(n, ast.For)]
+calls_front = [ast.unparse(n.func) for n in ast.walk(loops[0]) if isinstance(n, ast.Call)]
+calls_rear = [ast.unparse(n.func) for n in ast.walk(loops[1]) if isinstance(n, ast.Call)]
+check('CDPA consumes histories only in rear loop',
+      len(loops) == 2 and 'block' in calls_front
+      and not any('cdpa' in c for c in calls_front)
+      and 'self.cdpa_at[key]' in calls_rear,
+      dict(front_loop=ast.unparse(loops[0]), rear_loop=ast.unparse(loops[1])))
+check('no front mode or new AttnRes implementation in shared production source',
+      not any(term in p.read_text().lower() for p in (ROOT/'cdlno').glob('*.py')
+              for term in ('front_latent_mode', 'attnres', 'front_cdpa')),
+      'Text search supplements the explicit front/core call-path review; not a proof about arbitrary hidden code.')
+
+ref_file = REF/'src/perceiverforpde/modeling/layers/attn.py'
+ref_tree = ast.parse(ref_file.read_text())
+ref_class = next(n for n in ref_tree.body if isinstance(n, ast.ClassDef) and n.name == 'PerceiverAttention')
+ref_forward = next(n for n in ref_class.body if isinstance(n, ast.FunctionDef) and n.name == 'forward')
+flags = {ast.unparse(n.test): ast.unparse(n) for n in ref_forward.body if isinstance(n, ast.If)}
+branch = flags['not self.disable_interleaved_blocks']
+check('LRSA disable_interleaved_blocks skips SA and FFN2 together',
+      all(s in branch for s in ('self.sm_norm', 'self.latents_attention', 'self.channel_norm_2', 'self.channel_mixing_2'))
+      and 'channel_mixing_1' not in branch,
+      dict(commit=git('rev-parse','HEAD',cwd=REF).decode().strip(),
+           clean=not git('status','--porcelain',cwd=REF).strip(),
+           source=str(ref_file), sha256=digest(ref_file), guarded_branch=branch))
+
+config_class = next(n for n in tree('cdlno/config.py').body if isinstance(n, ast.ClassDef) and n.name == 'CDLNOArchitectureConfig')
+fields = [n.target.id for n in config_class.body if isinstance(n, ast.AnnAssign)]
+check('legacy architecture is frozen/slotted with 18 fields',
+      len(fields) == 18 and 'dataclass(frozen=True, slots=True)' in [ast.unparse(n) for n in config_class.decorator_list], fields)
+
+projects = ('PDE-Solving-StandardBenchmark', 'Car-Design-ShapeNetCar', 'Airfoil-Design-AirfRANS')
+presets = {}
+for project in projects:
+    for path in sorted((ROOT/project/'configs/CDLNO').glob('*.json')):
+        payload = json.loads(path.read_text())
+        presets[str(path.relative_to(ROOT))] = payload
+check('eight current presets are implicit full L8 F2 entry chunk0',
+      len(presets) == 8 and all(p['model']['n_layers'] == 8 and p['model']['front_blocks'] == 2
+        and p['model']['cdpa_mode'] == 'entry' and p['model']['cdpa_source_chunk_size'] == 0
+        and 'front_latent_mode' not in p['model'] for p in presets.values()), presets)
+exps = sorted((ROOT/projects[0]).glob('exp_*.py'))
+entries = [str(p.relative_to(ROOT)) for p in exps]
+check('six standard entries already forward CDLNO-only kwargs',
+      len(exps) == 6 and all('**cdlno_model_kwargs(args)' in p.read_text() and 'StaticRun(args, model)' in p.read_text() for p in exps), entries)
+scripts = [str(p.relative_to(ROOT)) for project in projects for p in sorted((ROOT/project/'scripts').glob('CDLNO*.sh'))]
+tasks = ('darcy','elasticity','airfoil','pipe','ns','plasticity','car','airfrans')
+check('sixteen project launchers and eight root train/eval launchers exist',
+      len(scripts) == 16 and all((ROOT/'tran_evaluate'/f'{t}.sh').is_file() for t in tasks), scripts)
+helpers = {
+    'standard': ('PDE-Solving-StandardBenchmark/cdlno_entry.py','StaticRun'),
+    'car': ('Car-Design-ShapeNetCar/models/cdlno_run.py','CarRun'),
+    'airfrans': ('Airfoil-Design-AirfRANS/cdlno_entry.py','AirRun'),
+}
+loads = {key: ast.unparse(method(path,cls,'load')) for key,(path,cls) in helpers.items()}
+check('strict loading; sidecar validation precedes torch.load',
+      all('strict=True' in body and body.index('self._validate' if key == 'standard' else 'self.validate') < body.index('torch.load') for key,body in loads.items()), loads)
+check('original serialization protocols remain distinct',
+      'torch.save(model.state_dict(), self.checkpoint)' in read(helpers['standard'][0])
+      and 'torch.save(model, path + os.sep' in read('Car-Design-ShapeNetCar/train.py')
+      and "torch.save(model, osp.join(path, 'model'))" in read('Airfoil-Design-AirfRANS/train.py')
+      and 'torch.save(models' in read('Airfoil-Design-AirfRANS/main.py'),
+      ['standard:model.pt state_dict','car:model_<epochs>.pth object','AirfRANS:member_NNN/model object plus run/CDLNO list'])
+
+head_changes = git('diff','HEAD','--name-only','--','cdlno',*projects,'tools','tests','pyproject.toml').decode().splitlines()
+check('production/task/config/test/tool sources unchanged relative to HEAD', not head_changes, head_changes)
+upstream_files = git('ls-tree','-r','--name-only',UPSTREAM).decode().splitlines()
+baseline_changes = []
+checked = 0
+for name in upstream_files:
+    if not (name.startswith(projects) or name == 'Physics_Attention.py'):
+        continue
+    checked += 1
+    if not (ROOT/name).is_file() or (ROOT/name).read_bytes() != git('show', f'{UPSTREAM}:{name}'):
+        baseline_changes.append(name)
+allowed_inherited = {f'{projects[0]}/{name}' for name in ('model_dict.py','exp_darcy.py','exp_elas.py','exp_airfoil.py','exp_pipe.py','exp_ns.py','exp_plas.py')}
+allowed_inherited |= {f'{p}/{name}' for p in projects[1:] for name in ('main.py','main_evaluation.py')}
+allowed_inherited.add(f'{projects[2]}/params.yaml')
+check('upstream byte differences limited to previously integrated entry/config files',
+      set(baseline_changes) == allowed_inherited,
+      dict(commit=UPSTREAM, compared=checked, byte_identical=checked-len(baseline_changes), inherited_differences=baseline_changes,
+           limit='A0 does not rerun prior AST equivalence tests for these 12 integration files.'))
+
+start = json.loads((ROOT/'docs/front_ablation_audit/a0-start.json').read_text())
+changed = [name for name,sha in start['sha256'].items() if not (ROOT/name).is_file() or digest(ROOT/name) != sha]
+permitted_docs = {'AGENTS.md','docs/CDLNO_IMPLEMENTATION_STATUS.md','memory/current-state.md'}
+check('A0 protects all pre-existing files except incremental status/memory docs',
+      set(changed) <= permitted_docs, dict(start_files=len(start['sha256']), changed=changed,
+        identical=len(start['sha256'])-len(changed)))
+result = dict(audit='A0 source-only; not model/runtime acceptance', python=sys.version.split()[0],
+              head=git('rev-parse','HEAD').decode().strip(), checks=checks,
+              passed=sum(c['passed'] for c in checks), failed=sum(not c['passed'] for c in checks),
+              not_run=['model forward/backward','legacy pickle roundtrip','PyG integration','GPU/remote environment','real data/training/evaluation'])
+print(json.dumps(result,ensure_ascii=False,indent=2))
+sys.exit(bool(result['failed']))

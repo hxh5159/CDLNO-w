@@ -1,0 +1,1576 @@
+diff --git a/AGENTS.md b/AGENTS.md
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -1,6 +1,10 @@
+ # AGENTS.md
+ 
+ ## Current phase and reading order
++
++Latest authorization (2026-09-15): **the visualization/resume plan is approved; V1 shared foundations are complete, awaiting review. V2–V5 have NOT been executed.** Read [V1 report](docs/CDLNO_VISUALIZATION_RESUME_V1.md), [evidence](docs/viz_resume_audit/v1/) and [plan](docs/CDLNO_VISUALIZATION_RESUME_PLAN.md). New `cdlno/training_state.py`, `training_observer.py`, `visualization.py` provide complete epoch archives + paired pure state_dict, strict continuation and RNG-isolated field plots. **No task entry/script has the new --resume or periodic visualization/checkpoint integration yet.** No model/math/config/wrapper/entry/data/train/eval/dependency edits this stage; all128 existing production/task/script/tool files match snapshot `/home/hwz/CDLNO-artifacts/viz-v1-before-04ww1akt/source` (270 source files). Preserve accepted A1/A2/A3 and preexisting user changes.
++
++V1 final201/201 regression passed122.573s, no failures/errors/skips. New14 archive/observer+3 rendering tests; six CPU fresh-process comparisons (three front modes × OneCycle/Cosine) have exact weights/AdamW/scheduler/loss/lr/RNG/shuffle equality, plus one localGPU identity/OneCycle FP32 math-SDPA comparison at atol1e-6/rtol1e-5. These new continuation tests use small CDLNO + explicitly synthetic MSE, NOT real NS/task loops. Existing original-loss/PyG tests pass but do not validate the new task resume integration. Saving both files commits a per-epoch hash manifest before latest/final; newer committed manifests prevent rollback even after latest publication failure. Bare legacy weights/whole objects cannot resume optimizer state; paired weights resolve a complete verified companion. RNG restored last; sidecars never rewritten; normalizers/data protocol compared strictly. Final-only task policy means no mid-training recovery points for Darcy/Elasticity/Pipe/Plasticity. Optional scaler state exists but AMP resume was not run. RemotePython3.10/torch2.11/cu128, actual data/training, real filesystem power loss, distributed/persistent-worker recovery unverified. A4/performance work remains untouched. End “本阶段结束，未执行下一阶段”; all earlier plan-only statements below are historical.
+ 
+ Latest request (2026-09-15): **visualization/checkpoint/resume PLAN ONLY, awaiting explicit approval; no implementation phase of this request is authorized.** Read [the proposed V0–V5 plan](docs/CDLNO_VISUALIZATION_RESUME_PLAN.md) and [paper sources](docs/viz_resume_audit/paper_sources.json). The user requests all8 tasks visualization every50 completed epochs; NS/Car/AirfRANS/Airfoil complete resume checkpoint+weights every100 and final; Darcy/Elasticity/Pipe/Plasticity final only. Preserve actual epochs (PDE500, Car200, Air398), all model math and task protocols. Proposed shared state/RNG helpers, pure-output figures, epoch callbacks and explicit resume are **not implemented**. Proposal adds final figures,2 fixed cases,epoch-boundary resume,existing final eval formats,with implementation phases V1–V5 only after individual approvals. A4/performance work remains unexecuted. Only plan/evidence/status/memory files changed; no model/training/dependency edits, no real training or new model acceptance. User explicitly requires approving the plan before edits.
+ 
+diff --git a/cdlno/training_observer.py b/cdlno/training_observer.py
+new file mode 100644
+--- /dev/null
++++ b/cdlno/training_observer.py
+@@ -0,0 +1,69 @@
++"""Small epoch policy/observer. Task entry integrations belong to later stages."""
++from __future__ import annotations
++
++from dataclasses import dataclass
++import logging
++
++from .training_state import TASKS, ResumeError, TrainingArchive, isolated_evaluation
++
++
++@dataclass(frozen=True)
++class EpochPolicy:
++    task: str
++    total_epochs: int
++    visualize_every: int = 50
++    checkpoint_every: int | None = None
++
++    def __post_init__(self):
++        if self.task not in TASKS:
++            raise ValueError(f'unknown task: {self.task}')
++        if type(self.total_epochs) is not int or self.total_epochs < 1:
++            raise ValueError('total_epochs must be a positive integer')
++        if self.checkpoint_every is None:
++            object.__setattr__(self, 'checkpoint_every', 100 if self.task in ('ns', 'car', 'airfrans', 'airfoil') else 0)
++        for value in (self.visualize_every, self.checkpoint_every):
++            if type(value) is not int or value < 0:
++                raise ValueError('intervals must be nonnegative integers')
++
++    def events(self, completed_epoch):
++        if type(completed_epoch) is not int or not 1 <= completed_epoch <= self.total_epochs:
++            raise ValueError('completed_epoch must be in [1,total_epochs]')
++        final = completed_epoch == self.total_epochs
++        return dict(visualize=bool(self.visualize_every and (final or completed_epoch % self.visualize_every == 0)),
++                    checkpoint=final or bool(self.checkpoint_every and completed_epoch % self.checkpoint_every == 0),
++                    final=final)
++
++
++class EpochObserver:
++    """Call after original epoch training/validation; owns no optimizer loop.
++
++    Visualization callbacks receive epoch only, close over task inputs, and
++    must not update parameters. Errors are returned and warned; saving still
++    runs. Archive write errors propagate. Saved history is supplied by caller.
++    """
++    def __init__(self, archive: TrainingArchive, policy: EpochPolicy):
++        if (archive.protocol.task, archive.protocol.total_epochs) != (policy.task, policy.total_epochs):
++            raise ResumeError('observer policy differs from training protocol')
++        self.archive, self.policy = archive, policy
++        self._last_completed = 0
++
++    def after_epoch(self, completed_epoch, model, optimizer, scheduler, *,
++                    global_step, scheduler_steps, normalizers, visualize=None,
++                    generators=None, scaler=None, history=None, extra=None):
++        events = self.policy.events(completed_epoch)
++        if completed_epoch <= self._last_completed:
++            raise ResumeError('observer epoch already processed or out of order')
++        result = dict(completed_epoch=completed_epoch, events=events, visualization_error=None, checkpoint=None)
++        if events['visualize'] and visualize is not None:
++            try:
++                with isolated_evaluation(model, generators=generators):
++                    visualize(completed_epoch)
++            except Exception as e:
++                result['visualization_error'] = f'{type(e).__name__}: {e}'
++                logging.getLogger(__name__).warning('CDLNO visualization failed: %s', result['visualization_error'])
++        if events['checkpoint']:
++            result['checkpoint'] = self.archive.save(model, optimizer, scheduler,
++                completed_epochs=completed_epoch, global_step=global_step, scheduler_steps=scheduler_steps,
++                normalizers=normalizers, generators=generators, scaler=scaler, history=history, extra=extra)
++        self._last_completed = completed_epoch
++        return result
+diff --git a/cdlno/training_state.py b/cdlno/training_state.py
+new file mode 100644
+--- /dev/null
++++ b/cdlno/training_state.py
+@@ -0,0 +1,637 @@
++"""Epoch-boundary training archives; independent of model math and task loaders.
++
++Only plain containers/tensors are serialized. Each archive has a per-epoch
++commit manifest; latest/final pointers are published after BOTH checkpoint and
++weights are durable. A bare old state_dict is never treated as resumable.
++"""
++from __future__ import annotations
++
++from collections import OrderedDict
++from contextlib import contextmanager
++from dataclasses import dataclass
++import hashlib
++from importlib import metadata
++import json
++import math
++import os
++from pathlib import Path
++import random
++import subprocess
++import sys
++import tempfile
++from typing import Mapping
++
++import numpy as np
++import torch
++
++from .checkpoint import compare_architecture, load_sidecar
++
++
++VERSION = 1
++TASKS = ('darcy', 'elasticity', 'airfoil', 'pipe', 'ns', 'plasticity', 'car', 'airfrans')
++
++
++class ResumeError(ValueError):
++    """Incomplete archive or a mismatch in the requested continuation."""
++
++
++def _integer(value, name, minimum=0):
++    if type(value) is not int or value < minimum:
++        raise ResumeError(f'{name} must be an integer >= {minimum}')
++
++
++def _json_copy(value):
++    return json.loads(json.dumps(value, allow_nan=False, sort_keys=True))
++
++
++def _cpu(value):
++    """Owned snapshots: no live parameter, optimizer, or NumPy storage aliases."""
++    if isinstance(value, torch.Tensor):
++        return value.detach().cpu().clone()
++    if isinstance(value, np.ndarray):
++        return torch.from_numpy(value.copy())
++    if isinstance(value, np.generic):
++        return _cpu(value.item())
++    if isinstance(value, dict):
++        out = OrderedDict() if isinstance(value, OrderedDict) else {}
++        for key, item in value.items():
++            if type(key) not in (str, int):
++                raise ResumeError('state mapping keys must be str/int')
++            out[key] = _cpu(item)
++        if hasattr(value, '_metadata'):
++            out._metadata = _cpu(value._metadata)
++        return out
++    if isinstance(value, (tuple, list)):
++        return type(value)(_cpu(item) for item in value)
++    if value is None or type(value) in (str, bool, int, float):
++        if isinstance(value, float) and not math.isfinite(value):
++            raise ResumeError('nonfinite scalar in training state')
++        return value
++    raise ResumeError(f'unsupported state type: {type(value).__name__}')
++
++
++def _same(a, b):
++    if isinstance(a, torch.Tensor) or isinstance(b, torch.Tensor):
++        return (isinstance(a, torch.Tensor) and isinstance(b, torch.Tensor)
++                and a.dtype == b.dtype and a.shape == b.shape and torch.equal(a.cpu(), b.cpu()))
++    if isinstance(a, dict) and isinstance(b, dict):
++        return a.keys() == b.keys() and all(_same(a[k], b[k]) for k in a)
++    if isinstance(a, (list, tuple)) and isinstance(b, (list, tuple)):
++        return type(a) is type(b) and len(a) == len(b) and all(_same(x, y) for x, y in zip(a, b))
++    return type(a) is type(b) and a == b
++
++
++def ordered_fingerprint(items):
++    """Order-sensitive digest of ALREADY loaded identifiers/arrays (no data IO)."""
++    digest = hashlib.sha256()
++    def visit(value):
++        value = _cpu(value)
++        if isinstance(value, torch.Tensor):
++            if value.layout != torch.strided:
++                raise ResumeError('fingerprint requires dense tensors')
++            header = json.dumps([str(value.dtype), list(value.shape)]).encode()
++            data = value.contiguous().reshape(-1).view(torch.uint8).numpy().tobytes()
++            digest.update(b'tensor' + str(len(header)).encode() + b':' + header)
++            digest.update(str(len(data)).encode() + b':' + data)
++        elif isinstance(value, dict):
++            digest.update(b'dict{')
++            for key in sorted(value, key=lambda k: (type(k).__name__, str(k))):
++                visit(key); visit(value[key])
++            digest.update(b'}')
++        elif isinstance(value, (list, tuple)):
++            digest.update(type(value).__name__.encode() + b'[')
++            for item in value:
++                visit(item)
++            digest.update(b']')
++        else:
++            encoded = json.dumps(value, allow_nan=False).encode()
++            digest.update(type(value).__name__.encode() + str(len(encoded)).encode() + b':' + encoded)
++    for item in items:
++        visit(item)
++    return digest.hexdigest()
++
++
++@dataclass(frozen=True)
++class TrainingProtocol:
++    """Explicit task facts, supplied by future entry adapters, never inferred.
++
++    Counts are per completed epoch. This handles Plasticity's 20 updates per
++    batch without changing its scheduler rate. training/data/adapter must be
++    JSON mappings; normalizer tensors live separately in the archive.
++    """
++    task: str
++    total_epochs: int
++    updates_per_epoch: int
++    scheduler_steps_per_epoch: int
++    training: dict
++    data: dict
++    adapter: dict
++
++    def __post_init__(self):
++        if self.task not in TASKS:
++            raise ResumeError(f'unsupported task: {self.task}')
++        for name in ('total_epochs', 'updates_per_epoch', 'scheduler_steps_per_epoch'):
++            _integer(getattr(self, name), name, 1)
++        for name in ('training', 'data', 'adapter'):
++            if not isinstance(getattr(self, name), dict):
++                raise ResumeError(f'{name} must be an explicit mapping')
++            object.__setattr__(self, name, _json_copy(getattr(self, name)))
++        if not {'optimizer', 'scheduler', 'loss', 'batch_size'} <= self.training.keys():
++            raise ResumeError('training requires optimizer/scheduler/loss/batch_size')
++        _integer(self.training['batch_size'], 'batch_size', 1)
++        if not {'split', 'ordered_fingerprint'} <= self.data.keys():
++            raise ResumeError('data requires split and ordered_fingerprint')
++        fingerprint = self.data['ordered_fingerprint']
++        if not isinstance(fingerprint, str) or len(fingerprint) != 64 or any(c not in '0123456789abcdef' for c in fingerprint):
++            raise ResumeError('data.ordered_fingerprint must be a SHA256 digest')
++
++    def to_dict(self):
++        return _json_copy(dict(version=VERSION, task=self.task, total_epochs=self.total_epochs,
++            updates_per_epoch=self.updates_per_epoch, scheduler_steps_per_epoch=self.scheduler_steps_per_epoch,
++            training=self.training, data=self.data, adapter=self.adapter))
++
++
++def capture_rng(generators: Mapping[str, torch.Generator] | None = None):
++    numpy_state = np.random.get_state()
++    return dict(python=random.getstate(), numpy=dict(algorithm=numpy_state[0],
++        keys=torch.tensor(numpy_state[1].astype(np.int64)), position=int(numpy_state[2]),
++        has_gauss=int(numpy_state[3]), cached_gaussian=float(numpy_state[4])),
++        cpu=torch.get_rng_state().clone(),
++        cuda=[v.clone() for v in torch.cuda.get_rng_state_all()] if torch.cuda.is_available() else [],
++        generators={k: dict(device=str(g.device), state=g.get_state().clone()) for k, g in (generators or {}).items()})
++
++
++def _validate_rng(state, generators):
++    if not isinstance(state, dict) or set(state) != {'python', 'numpy', 'cpu', 'cuda', 'generators'}:
++        raise ResumeError('missing/incompatible RNG state')
++    try:
++        random.Random().setstate(state['python'])
++        n = state['numpy']
++        np.random.RandomState().set_state((n['algorithm'], n['keys'].numpy().astype(np.uint32),
++                                           n['position'], n['has_gauss'], n['cached_gaussian']))
++        torch.Generator().set_state(state['cpu'])
++        expected = torch.cuda.device_count() if torch.cuda.is_available() else 0
++        if len(state['cuda']) != expected:
++            raise ResumeError('CUDA RNG device count differs; exact continuation requires the same visible devices')
++        for i, value in enumerate(state['cuda']):
++            torch.Generator(device=f'cuda:{i}').set_state(value)
++        if state['generators'].keys() != generators.keys():
++            raise ResumeError('DataLoader/Sampler generator names differ')
++        for name, g in generators.items():
++            saved = state['generators'][name]
++            if str(g.device) != saved['device']:
++                raise ResumeError(f'generator device differs: {name}')
++            torch.Generator(device=g.device).set_state(saved['state'])
++    except ResumeError:
++        raise
++    except (KeyError, TypeError, ValueError, RuntimeError, AttributeError) as e:
++        raise ResumeError(f'invalid RNG state: {e}') from e
++
++
++def restore_rng(state, generators: Mapping[str, torch.Generator] | None = None):
++    generators = dict(generators or {})
++    _validate_rng(state, generators)
++    random.setstate(state['python'])
++    n = state['numpy']
++    np.random.set_state((n['algorithm'], n['keys'].numpy().astype(np.uint32),
++                         n['position'], n['has_gauss'], n['cached_gaussian']))
++    torch.set_rng_state(state['cpu'])
++    if state['cuda']:
++        torch.cuda.set_rng_state_all(state['cuda'])
++    for name, generator in generators.items():
++        generator.set_state(state['generators'][name]['state'])
++
++
++@contextmanager
++def isolated_evaluation(model, *, generators=None):
++    """Restore RNG, each module's train/eval flag and buffers, also on exceptions.
++
++    Callbacks must only infer/render, never update parameters or call optimizer.
++    The context does not modify gradients, parameters or model forward methods.
++    """
++    rng = capture_rng(generators)
++    flags = [(module, module.training) for module in model.modules()]
++    buffers = [(buffer, buffer.detach().clone()) for buffer in model.buffers()]
++    try:
++        model.eval()
++        with torch.no_grad():
++            yield
++    finally:
++        with torch.no_grad():
++            for buffer, value in buffers:
++                buffer.copy_(value)
++        for module, training in flags:
++            module.training = training
++        restore_rng(rng, generators)
++
++
++def _qualified(obj):
++    cls = type(obj)
++    return cls.__module__ + '.' + cls.__qualname__
++
++
++def _optimizer_signature(model, optimizer):
++    if type(optimizer) not in (torch.optim.Adam, torch.optim.AdamW):
++        raise ResumeError('epoch continuation currently supports original Adam/AdamW only')
++    names = {id(p): name for name, p in model.named_parameters()}
++    seen, groups = set(), []
++    for group in optimizer.param_groups:
++        keys = []
++        for p in group['params']:
++            if id(p) not in names or id(p) in seen:
++                raise ResumeError('optimizer has foreign or repeated parameters')
++            seen.add(id(p)); keys.append(names[id(p)])
++        groups.append(dict(names=keys, options=_cpu({k: v for k, v in group.items()
++                      if k not in ('params', 'lr', 'betas', 'momentum')})))
++    return dict(type=_qualified(optimizer), defaults=_cpu(optimizer.defaults), groups=groups)
++
++
++def _scheduler_signature(scheduler):
++    if type(scheduler) not in (torch.optim.lr_scheduler.OneCycleLR, torch.optim.lr_scheduler.CosineAnnealingLR):
++        raise ResumeError('epoch continuation supports original OneCycleLR/CosineAnnealingLR only')
++    mutable = {'last_epoch', '_step_count', '_last_lr', '_get_lr_called_within_step', '_is_initial'}
++    return dict(type=_qualified(scheduler), plan=_cpu({k: v for k, v in scheduler.state_dict().items() if k not in mutable}))
++
++
++def _file_sha(path):
++    h = hashlib.sha256()
++    with Path(path).open('rb') as f:
++        for chunk in iter(lambda: f.read(1024 * 1024), b''):
++            h.update(chunk)
++    return h.hexdigest()
++
++
++def _fsync_dir(path):
++    fd = os.open(path, os.O_RDONLY)
++    try:
++        os.fsync(fd)
++    finally:
++        os.close(fd)
++
++
++def _atomic(path, value, *, json_file=False):
++    path = Path(path)
++    path.parent.mkdir(parents=True, exist_ok=True)
++    fd, temporary = tempfile.mkstemp(prefix='.' + path.name + '.', dir=path.parent)
++    try:
++        with os.fdopen(fd, 'wb') as f:
++            if json_file:
++                f.write((json.dumps(value, indent=2, sort_keys=True, allow_nan=False) + '\n').encode())
++            else:
++                torch.save(value, f)
++            f.flush(); os.fsync(f.fileno())
++        os.replace(temporary, path)
++        _fsync_dir(path.parent)
++    finally:
++        if os.path.exists(temporary):
++            os.unlink(temporary)
++
++
++def _model_state_check(saved, model):
++    expected = model.state_dict()
++    if not isinstance(saved, dict) or saved.keys() != expected.keys():
++        raise ResumeError('model state_dict keys differ (strict loading required)')
++    for name, value in expected.items():
++        other = saved[name]
++        if not isinstance(other, torch.Tensor) or other.shape != value.shape or other.dtype != value.dtype:
++            raise ResumeError(f'model shape/dtype differs: {name}')
++        if other.is_floating_point() and not torch.isfinite(other).all():
++            raise ResumeError(f'nonfinite model weight: {name}')
++
++
++def _environment(model):
++    packages = {}
++    for name in ('numpy', 'matplotlib', 'torch-geometric'):
++        try:
++            packages[name] = metadata.version(name)
++        except metadata.PackageNotFoundError:
++            packages[name] = None
++    return dict(python=sys.version.split()[0], torch=str(torch.__version__), cuda=torch.version.cuda,
++        packages=packages,
++        devices=sorted({str(p.device) for p in model.parameters()}),
++        dtypes=sorted({str(p.dtype) for p in model.parameters()}),
++        deterministic=torch.are_deterministic_algorithms_enabled(),
++        matmul_tf32=torch.backends.cuda.matmul.allow_tf32, cudnn_tf32=torch.backends.cudnn.allow_tf32,
++        cudnn_benchmark=torch.backends.cudnn.benchmark, cudnn_deterministic=torch.backends.cudnn.deterministic,
++        float32_matmul_precision=torch.get_float32_matmul_precision(),
++        sdpa_enabled=dict(math=torch.backends.cuda.math_sdp_enabled(), flash=torch.backends.cuda.flash_sdp_enabled(),
++                          memory_efficient=torch.backends.cuda.mem_efficient_sdp_enabled(), cudnn=torch.backends.cuda.cudnn_sdp_enabled()),
++        source=_source_provenance(model))
++
++
++def _source_provenance(model):
++    # Hash the actual shared code and wrapper modules, including dirty edits.
++    # Task adapters additionally supply their loader/entry provenance in extra.
++    root = Path(__file__).resolve().parents[1]
++    paths = set(Path(__file__).resolve().parent.glob('*.py'))
++    for module in model.modules():
++        name = type(module).__module__
++        filename = getattr(sys.modules.get(name), '__file__', None)
++        if filename and not name.startswith('torch.') and Path(filename).is_file():
++            paths.add(Path(filename).resolve())
++    hashes = {str(p.relative_to(root) if p.is_relative_to(root) else p): _file_sha(p) for p in sorted(paths)}
++    try:
++        result = subprocess.run(['git', '-C', str(root), 'rev-parse', 'HEAD'],
++                                capture_output=True, text=True, timeout=5, check=False)
++        head = result.stdout.strip() if result.returncode == 0 else None
++    except (OSError, subprocess.TimeoutExpired):
++        head = None
++    return dict(git_head=head, shared_and_model_source_sha256=hashes)
++
++
++class TrainingArchive:
++    """An existing run/sidecar, with immutable epoch pairs and explicit restore.
++
++    No directory is created by construction/read/restore. Future task adapters
++    reserve fresh runs separately. One writer per run is required; a local
++    exclusive lock rejects concurrent writes rather than overwriting archives.
++    """
++    def __init__(self, directory, protocol: TrainingProtocol, *, sidecar=None):
++        self.directory = Path(directory).resolve()
++        self.protocol = protocol
++        self.sidecar = Path(sidecar).resolve() if sidecar else self.directory / 'architecture.json'
++        load_sidecar(self.sidecar)
++
++    def _check_architecture(self, model):
++        saved = load_sidecar(self.sidecar)
++        if compare_architecture(model.config, saved['architecture']):
++            raise ResumeError('model architecture differs from existing sidecar')
++        if saved.get('metadata', {}).get('wrapper_architecture', {}) != self.protocol.adapter:
++            raise ResumeError('wrapper architecture differs from protocol/sidecar')
++        if hasattr(model, 'adapter_architecture') and model.adapter_architecture() != self.protocol.adapter:
++            raise ResumeError('actual model adapter differs from protocol')
++        if hasattr(model, 'core'):
++            from .checkpoint import validate_model_front_mode
++            validate_model_front_mode(model, model.config)
++        return saved
++
++    def save(self, model, optimizer, scheduler, *, completed_epochs, global_step,
++             scheduler_steps, normalizers, generators=None, scaler=None, history=None, extra=None):
++        """Snapshot AFTER all original work in an epoch; no gradients are saved."""
++        self._check_architecture(model)
++        _integer(completed_epochs, 'completed_epochs', 1)
++        if completed_epochs > self.protocol.total_epochs:
++            raise ResumeError('completed_epochs exceeds original total_epochs')
++        _integer(global_step, 'global_step', 1); _integer(scheduler_steps, 'scheduler_steps', 1)
++        if global_step != completed_epochs * self.protocol.updates_per_epoch:
++            raise ResumeError('global_step differs from completed epochs/protocol')
++        if scheduler_steps != completed_epochs * self.protocol.scheduler_steps_per_epoch:
++            raise ResumeError('scheduler_steps differs from completed epochs/protocol')
++        if scheduler.optimizer is not optimizer or scheduler.last_epoch != scheduler_steps:
++            raise ResumeError('actual scheduler progress/optimizer differs')
++        if not isinstance(normalizers, dict):
++            raise ResumeError('normalizers must be explicit state mappings, including {} if none')
++        state = _cpu(model.state_dict())
++        _model_state_check(state, model)
++        payload = dict(format='cdlno-training', version=VERSION, protocol=self.protocol.to_dict(),
++            architecture=model.config.to_dict(), sidecar_sha256=_file_sha(self.sidecar),
++            model=state, optimizer=_cpu(optimizer.state_dict()), optimizer_signature=_optimizer_signature(model, optimizer),
++            scheduler=_cpu(scheduler.state_dict()), scheduler_signature=_scheduler_signature(scheduler),
++            progress=dict(completed_epochs=completed_epochs, next_epoch=completed_epochs, global_step=global_step,
++                          scheduler_steps=scheduler_steps), normalizers=_cpu(normalizers), rng=capture_rng(generators),
++            scaler=None if scaler is None else dict(type=_qualified(scaler), state=_cpu(scaler.state_dict())),
++            history=_cpu(history if history is not None else {}), extra=_cpu(extra if extra is not None else {}),
++            environment=_environment(model))
++        self._validate(payload, model, optimizer, scheduler, normalizers, generators, scaler)
++        ckdir = self.directory / 'checkpoints'; wdir = self.directory / 'weights'
++        ckdir.mkdir(exist_ok=True); wdir.mkdir(exist_ok=True)
++        lock = ckdir / '.writer.lock'
++        try:
++            fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
++        except FileExistsError as e:
++            raise ResumeError('checkpoint writer lock exists; inspect interrupted/concurrent writer') from e
++        os.close(fd)
++        try:
++            return self._publish(payload, completed_epochs)
++        finally:
++            lock.unlink()
++
++    def _publish(self, payload, epoch):
++        ckdir = self.directory / 'checkpoints'
++        cp = ckdir / f'epoch_{epoch:04d}.pt'
++        wp = self.directory / 'weights' / cp.name
++        manifest = cp.with_suffix('.json')
++        latest = ckdir / 'latest.json'
++        protocol_file = self.directory / 'training_protocol.json'
++        if protocol_file.exists():
++            if json.loads(protocol_file.read_text()) != self.protocol.to_dict():
++                raise ResumeError('existing training_protocol.json differs')
++        else:
++            _atomic(protocol_file, self.protocol.to_dict(), json_file=True)
++        if self._newest_committed_epoch() > epoch:
++            raise ResumeError('refusing rollback over a later checkpoint')
++        if manifest.exists():
++            old = self.read(manifest)
++            if not _same(old, payload):
++                raise ResumeError('epoch already committed with different state')
++        else:
++            if cp.exists() or wp.exists():
++                raise ResumeError('uncommitted epoch files exist; inspect incomplete archive')
++            try:
++                _atomic(cp, payload)
++                _atomic(wp, payload['model'])
++                record = dict(format='cdlno-epoch-pair', version=VERSION, completed_epochs=epoch,
++                    checkpoint=dict(path=str(cp.relative_to(self.directory)), sha256=_file_sha(cp)),
++                    weights=dict(path=str(wp.relative_to(self.directory)), sha256=_file_sha(wp)))
++                _atomic(manifest, record, json_file=True)  # the pair's commit point
++            except BaseException:
++                # Do not remove a committed pair if fsync/index publication fails.
++                if not manifest.exists():
++                    cp.unlink(missing_ok=True); wp.unlink(missing_ok=True)
++                raise
++        pointer = dict(format='cdlno-archive-pointer', version=VERSION,
++                       manifest=manifest.name, sha256=_file_sha(manifest))
++        _atomic(latest, pointer, json_file=True)
++        if epoch == self.protocol.total_epochs:
++            _atomic(ckdir / 'final.json', pointer, json_file=True)
++        return cp
++
++    def _newest_committed_epoch(self):
++        # The pair manifest commits BEFORE latest.json. A crash in between
++        # must not make an older epoch eligible to overwrite this continuation.
++        ckdir = self.directory / 'checkpoints'
++        epochs = []
++        for path in ckdir.glob('epoch_*.json'):
++            try:
++                epochs.append((int(path.stem.removeprefix('epoch_')), path))
++            except ValueError as e:
++                raise ResumeError(f'invalid epoch manifest filename: {path.name}') from e
++        newest = self._manifest(max(epochs)[1])['completed_epochs'] if epochs else 0
++        latest = ckdir / 'latest.json'
++        if latest.exists():
++            newest = max(newest, self._manifest(latest)['completed_epochs'])
++        return newest
++
++    def _manifest(self, path):
++        try:
++            return self._read_manifest(path)
++        except ResumeError:
++            raise
++        except (KeyError, TypeError, ValueError, AttributeError, OSError) as e:
++            raise ResumeError(f'invalid/incomplete archive manifest: {e}') from e
++
++    def _read_manifest(self, path):
++        path = Path(path).resolve()
++        if path.suffix == '.pt':
++            if path.parent not in (self.directory / 'checkpoints', self.directory / 'weights'):
++                raise ResumeError('checkpoint/weights must belong to this run')
++            # An independent weights path resolves to its verified training pair.
++            path = self.directory / 'checkpoints' / path.with_suffix('.json').name
++        if not path.is_relative_to(self.directory / 'checkpoints'):
++            raise ResumeError('archive must belong to this run')
++        if not path.exists():
++            raise ResumeError('no committed training archive; bare weights/legacy objects cannot resume')
++        value = json.loads(path.read_text())
++        if value.get('format') == 'cdlno-archive-pointer':
++            if value.get('version') != VERSION:
++                raise ResumeError('unsupported archive pointer version')
++            target = path.parent / value['manifest']
++            if target.resolve().parent != path.parent or _file_sha(target) != value['sha256']:
++                raise ResumeError('archive pointer checksum/path mismatch')
++            path = target; value = json.loads(path.read_text())
++        if value.get('format') != 'cdlno-epoch-pair' or value.get('version') != VERSION:
++            raise ResumeError('unsupported/incomplete epoch manifest')
++        _integer(value['completed_epochs'], 'manifest completed_epochs', 1)
++        if path.name != f"epoch_{value['completed_epochs']:04d}.json":
++            raise ResumeError('manifest filename/epoch mismatch')
++        for key in ('checkpoint', 'weights'):
++            target = (self.directory / value[key]['path']).resolve()
++            expected_dir = self.directory / ('checkpoints' if key == 'checkpoint' else 'weights')
++            if target.parent != expected_dir or target.name != path.with_suffix('.pt').name:
++                raise ResumeError('archive pair path mismatch')
++            if not target.exists() or _file_sha(target) != value[key]['sha256']:
++                raise ResumeError(f'{key} file missing or checksum mismatch')
++        return value
++
++    def read(self, path):
++        """Safe CPU read, no model/RNG mutation, no sidecar write."""
++        manifest = self._manifest(path)
++        payload = torch.load(self.directory / manifest['checkpoint']['path'], map_location='cpu', weights_only=True)
++        required = {'format', 'version', 'protocol', 'architecture', 'sidecar_sha256', 'model', 'optimizer',
++                    'optimizer_signature', 'scheduler', 'scheduler_signature', 'progress', 'normalizers',
++                    'rng', 'scaler', 'history', 'extra', 'environment'}
++        if not isinstance(payload, dict) or set(payload) != required or payload['format'] != 'cdlno-training' or payload['version'] != VERSION:
++            raise ResumeError('incomplete/unsupported training checkpoint; weights alone cannot resume')
++        if not isinstance(payload['progress'], dict) or payload['progress'].get('completed_epochs') != manifest['completed_epochs']:
++            raise ResumeError('manifest epoch disagrees with checkpoint')
++        weights = torch.load(self.directory / manifest['weights']['path'], map_location='cpu', weights_only=True)
++        if not _same(weights, payload['model']):
++            raise ResumeError('independent weights differ from checkpoint')
++        return payload
++
++    def _validate(self, saved, model, optimizer, scheduler, normalizers, generators, scaler):
++        try:
++            self._validate_state(saved, model, optimizer, scheduler, normalizers, generators, scaler)
++        except ResumeError:
++            raise
++        except (KeyError, TypeError, ValueError, RuntimeError, AttributeError, IndexError) as e:
++            raise ResumeError(f'invalid/incomplete training state: {e}') from e
++
++    def _validate_state(self, saved, model, optimizer, scheduler, normalizers, generators, scaler):
++        self._check_architecture(model)
++        if saved['sidecar_sha256'] != _file_sha(self.sidecar):
++            raise ResumeError('sidecar bytes differ from saved training run')
++        if saved['protocol'] != self.protocol.to_dict():
++            raise ResumeError('training/data/adapter protocol mismatch; original total epochs must be retained')
++        if compare_architecture(model.config, saved['architecture']):
++            raise ResumeError('checkpoint architecture mismatch')
++        _model_state_check(saved['model'], model)
++        if not _same(saved['normalizers'], _cpu(normalizers)):
++            raise ResumeError('normalizer state mismatch')
++        if not _same(saved['optimizer_signature'], _optimizer_signature(model, optimizer)):
++            raise ResumeError('optimizer type/defaults/parameter group order mismatch')
++        if not _same(saved['scheduler_signature'], _scheduler_signature(scheduler)) or scheduler.optimizer is not optimizer:
++            raise ResumeError('scheduler type/plan mismatch')
++        progress = saved['progress']
++        if set(progress) != {'completed_epochs', 'next_epoch', 'global_step', 'scheduler_steps'}:
++            raise ResumeError('incomplete progress counters')
++        ep = progress['completed_epochs']
++        _integer(ep, 'completed_epochs', 1)
++        if ep > self.protocol.total_epochs or progress != dict(completed_epochs=ep, next_epoch=ep,
++                global_step=ep*self.protocol.updates_per_epoch, scheduler_steps=ep*self.protocol.scheduler_steps_per_epoch):
++            raise ResumeError('progress counters disagree with training protocol')
++        ss = saved['scheduler']
++        if ss.get('last_epoch') != progress['scheduler_steps'] or not {'_step_count', '_last_lr'} <= ss.keys():
++            raise ResumeError('scheduler state missing or progress mismatch')
++        mutable = {'last_epoch', '_step_count', '_last_lr', '_get_lr_called_within_step', '_is_initial'}
++        if not _same({k: v for k, v in ss.items() if k not in mutable}, saved['scheduler_signature']['plan']):
++            raise ResumeError('scheduler state differs from saved schedule plan')
++        if ss['_step_count'] != progress['scheduler_steps'] + 1:
++            raise ResumeError('scheduler step count mismatch')
++        if not isinstance(ss['_last_lr'], (list, tuple)) or len(ss['_last_lr']) != len(optimizer.param_groups):
++            raise ResumeError('scheduler learning rate group count mismatch')
++        optim = saved['optimizer']
++        if set(optim) != {'state', 'param_groups'} or len(optim['param_groups']) != len(optimizer.param_groups):
++            raise ResumeError('incomplete optimizer state')
++        if not optim['state']:
++            raise ResumeError('optimizer has no accumulated state')
++        known = set()
++        for index, (old, group) in enumerate(zip(optim['param_groups'], optimizer.param_groups)):
++            static = {k: v for k, v in old.items() if k not in ('params', 'lr', 'betas', 'momentum')}
++            if not _same(static, saved['optimizer_signature']['groups'][index]['options']):
++                raise ResumeError('optimizer group options differ from saved signature')
++            if old.get('lr') != ss['_last_lr'][index]:
++                raise ResumeError('optimizer learning rate differs from scheduler state')
++            if not isinstance(old['lr'], (int, float)) or not math.isfinite(old['lr']) or old['lr'] < 0:
++                raise ResumeError('invalid optimizer learning rate')
++            betas = old.get('betas')
++            if not isinstance(betas, (tuple, list)) or len(betas) != 2 or not all(isinstance(v, (int, float)) and 0 <= v < 1 for v in betas):
++                raise ResumeError('invalid optimizer betas')
++            if len(old['params']) != len(group['params']):
++                raise ResumeError('optimizer parameter count mismatch')
++            for ident, p in zip(old['params'], group['params']):
++                if ident in known:
++                    raise ResumeError('duplicate optimizer state parameter')
++                known.add(ident)
++                state = optim['state'].get(ident)
++                if state is None:  # Parameters without a gradient may legitimately have no state.
++                    continue
++                required = {'step', 'exp_avg', 'exp_avg_sq'} | ({'max_exp_avg_sq'} if group.get('amsgrad') else set())
++                if set(state) != required:
++                    raise ResumeError('missing/unknown Adam moment state')
++                for key in required - {'step'}:
++                    if (not isinstance(state[key], torch.Tensor) or state[key].shape != p.shape
++                            or state[key].dtype != p.dtype or not torch.isfinite(state[key]).all()):
++                        raise ResumeError('optimizer moment shape/dtype/nonfinite mismatch')
++                step = state['step']
++                if (not isinstance(step, torch.Tensor) or step.numel() != 1
++                        or not 0 < step.item() <= progress['global_step'] or not float(step.item()).is_integer()):
++                    raise ResumeError('invalid optimizer step')
++        if optim['state'].keys() - known:
++            raise ResumeError('foreign optimizer state')
++        if (scaler is None) != (saved['scaler'] is None):
++            raise ResumeError('AMP scaler presence mismatch')
++        if scaler is not None:
++            if type(scaler) is not torch.amp.GradScaler or _qualified(scaler) != saved['scaler']['type']:
++                raise ResumeError('AMP scaler type mismatch; only torch.amp.GradScaler is supported')
++            state = saved['scaler']['state']
++            if state.keys() != scaler.state_dict().keys():
++                raise ResumeError('AMP scaler state missing/unknown fields or enabled setting differs')
++            if state and (not all(isinstance(state[k], (float, int)) and math.isfinite(state[k]) and state[k] > 0
++                                 for k in ('scale', 'growth_factor', 'backoff_factor'))
++                          or not state['growth_factor'] > 1 or not state['backoff_factor'] < 1
++                          or type(state['growth_interval']) is not int or state['growth_interval'] < 1
++                          or type(state['_growth_tracker']) is not int or state['_growth_tracker'] < 0):
++                raise ResumeError('invalid AMP scaler state')
++        _validate_rng(saved['rng'], dict(generators or {}))
++
++    def restore(self, path, model, optimizer, scheduler, *, normalizers, generators=None, scaler=None):
++        """Validate first, strict-load all state, restore RNG LAST before iteration.
++
++        next_epoch is the next ZERO-BASED loop index: completed100 resumes at
++        range(100,total_epochs), i.e. the human-readable epoch101.
++        """
++        saved = self.read(path)
++        self._validate(saved, model, optimizer, scheduler, normalizers, generators, scaler)
++        if self._newest_committed_epoch() > saved['progress']['completed_epochs']:
++            raise ResumeError('refusing continuation from an older checkpoint over a later committed epoch')
++        # Preserve original objects/parameter identities; no reinitialization.
++        model.load_state_dict(saved['model'], strict=True)
++        optimizer.load_state_dict(saved['optimizer'])
++        scheduler.load_state_dict(saved['scheduler'])
++        if scaler is not None:
++            scaler.load_state_dict(saved['scaler']['state'])
++        optimizer.zero_grad(set_to_none=True)  # completed epoch: no partial accumulation to restore
++        restore_rng(saved['rng'], generators)
++        return dict(progress=saved['progress'], history=saved['history'], extra=saved['extra'],
++                    saved_environment=saved['environment'], current_environment=_environment(model))
+diff --git a/cdlno/visualization.py b/cdlno/visualization.py
+new file mode 100644
+--- /dev/null
++++ b/cdlno/visualization.py
+@@ -0,0 +1,171 @@
++"""Pure output-field rendering; no model, data loader, or training imports.
++
++Task adapters decode/reduce fields before calling this module. Grid shape is
++explicit; point clouds never acquire fabricated connectivity/interpolation.
++"""
++from __future__ import annotations
++
++from dataclasses import dataclass
++import json
++from pathlib import Path
++
++import numpy as np
++
++
++def _array(value):
++    # Duck-type torch tensors so importing visualization does not import torch.
++    if hasattr(value, 'detach'):
++        value = value.detach().cpu().numpy()
++    result = np.array(value, copy=True)
++    if result.dtype.kind not in 'fiu':
++        raise ValueError('fields/coordinates must be numeric arrays')
++    if not np.isfinite(result).all():
++        raise ValueError('nonfinite field/coordinate; figure cannot hide invalid values')
++    return result
++
++
++def _range(lo, hi):
++    if hi <= lo:
++        delta = max(abs(lo), 1.) * 1e-6
++        return float(lo-delta), float(hi+delta)
++    return float(lo), float(hi)
++
++
++@dataclass(frozen=True)
++class ColorScale:
++    """One field's fixed truth limits and independent absolute-error limit."""
++    minimum: float
++    maximum: float
++    error_maximum: float
++
++    def __post_init__(self):
++        if not all(np.isfinite(x) for x in (self.minimum, self.maximum, self.error_maximum)):
++            raise ValueError('color scale must be finite')
++        if self.maximum <= self.minimum or self.error_maximum <= 0:
++            raise ValueError('invalid color scale interval')
++
++    @classmethod
++    def from_first_case(cls, truth, prediction):
++        truth, prediction = _array(truth), _array(prediction)
++        if truth.size == 0 or truth.shape != prediction.shape:
++            raise ValueError('truth/prediction must have identical nonempty shapes')
++        lo, hi = _range(truth.min(), truth.max())
++        err = float(np.abs(prediction.astype(np.float64)-truth).max())
++        return cls(lo, hi, err if err > 0 else max(abs(lo), abs(hi), 1.) * 1e-6)
++
++    def to_dict(self):
++        return dict(minimum=self.minimum, maximum=self.maximum, error_maximum=self.error_maximum)
++
++
++def fixed_scales(path, truth, prediction, channel_names):
++    """Create once, otherwise read; different channel names are never reused."""
++    path = Path(path)
++    truth, prediction = _array(truth), _array(prediction)
++    if (truth.ndim != 2 or 0 in truth.shape or prediction.shape != truth.shape
++            or truth.shape[1] != len(channel_names) or len(set(channel_names)) != len(channel_names)):
++        raise ValueError('expected matching [N,C] and C channel names')
++    if path.exists():
++        saved = json.loads(path.read_text())
++        if (saved.get('channel_names') != list(channel_names) or saved.get('version') != 1
++                or len(saved.get('scales', [])) != len(channel_names)):
++            raise ValueError('existing visualization scale channel/version mismatch')
++        return [ColorScale(**v) for v in saved['scales']]
++    scales = [ColorScale.from_first_case(truth[:, i], prediction[:, i]) for i in range(truth.shape[1])]
++    path.parent.mkdir(parents=True, exist_ok=True)
++    with path.open('x', encoding='utf-8') as f:
++        json.dump(dict(version=1, channel_names=list(channel_names), scales=[s.to_dict() for s in scales]), f, indent=2)
++        f.write('\n')
++    return scales
++
++
++def render_fields(directory, *, coordinates, truth, prediction, channel_names,
++                  scales, task, case_id, completed_epoch, grid_shape=None,
++                  display_mask=None, units=None, view=(20., -60.), metadata=None):
++    """Write scalar-channel GT/pred/absolute-error panels + original arrays.
++
++    Structured panels preserve explicit [H,W] point order and physical xy.
++    Unstructured 2D/3D uses scatter; display masks NEVER subset model inputs.
++    Caller supplies fixed scales. No interpolation, clipping of saved arrays,
++    or creation of physical units. Returns JSON metrics, not a figure handle.
++    """
++    xyz, gt, pred = _array(coordinates), _array(truth), _array(prediction)
++    if xyz.ndim != 2 or xyz.shape[1] not in (2, 3) or xyz.shape[0] == 0:
++        raise ValueError('coordinates must be nonempty [N,2] or [N,3]')
++    if gt.ndim != 2 or pred.shape != gt.shape or gt.shape[0] != xyz.shape[0] or gt.shape[1] == 0:
++        raise ValueError('truth/prediction must be matching [N,C] fields')
++    if len(channel_names) != gt.shape[1] or len(set(channel_names)) != len(channel_names) or len(scales) != gt.shape[1]:
++        raise ValueError('unique channel names and fixed scales must match C')
++    if type(completed_epoch) is not int or completed_epoch < 1:
++        raise ValueError('completed_epoch must be positive integer')
++    if not all(isinstance(scale, ColorScale) for scale in scales):
++        raise ValueError('scales must contain ColorScale objects')
++    units = [''] * gt.shape[1] if units is None else list(units)
++    if len(units) != gt.shape[1]:
++        raise ValueError('units must match channels')
++    mask = np.ones(xyz.shape[0], dtype=bool) if display_mask is None else np.array(display_mask, copy=True)
++    if mask.shape != (xyz.shape[0],) or mask.dtype != np.bool_ or not mask.any():
++        raise ValueError('display_mask must be nonempty boolean [N]')
++    if grid_shape is not None:
++        if (len(grid_shape) != 2 or any(type(i) is not int or i < 2 for i in grid_shape)
++                or np.prod(grid_shape) != xyz.shape[0] or xyz.shape[1] != 2 or not mask.all()):
++            raise ValueError('structured field requires explicit H,W with N=H*W and unmasked xy')
++    error = np.abs(pred.astype(np.float64) - gt.astype(np.float64))
++    metrics = []
++    for c, (name, scale) in enumerate(zip(channel_names, scales)):
++        denominator = np.linalg.norm(gt[:, c].astype(np.float64))
++        metrics.append(dict(channel=name, unit=units[c],
++            relative_l2=None if denominator == 0 else float(np.linalg.norm(error[:, c])/denominator),
++            relative_l2_status='undefined_zero_target' if denominator == 0 else 'defined',
++            maximum_absolute_error=float(error[:, c].max()),
++            prediction_outside_color_fraction=float(np.mean((pred[:, c] < scale.minimum) | (pred[:, c] > scale.maximum))),
++            error_above_color_fraction=float(np.mean(error[:, c] > scale.error_maximum)),
++            color_scale=scale.to_dict()))
++    record = dict(version=1, task=task, case_id=case_id, completed_epoch=completed_epoch,
++        shape=list(gt.shape), grid_shape=None if grid_shape is None else list(grid_shape),
++        coordinates_dimension=xyz.shape[1], displayed_points=int(mask.sum()),
++        scalar_error='abs(prediction-truth)', channel_metrics=metrics, view=list(view),
++        supplied_metadata=metadata or {})
++    # Fail on invalid metadata before creating output files.
++    encoded = json.dumps(record, indent=2, allow_nan=False) + '\n'
++    directory = Path(directory)
++    directory.mkdir(parents=True, exist_ok=False)
++    from matplotlib.figure import Figure
++    from matplotlib.backends.backend_agg import FigureCanvasAgg
++    # Object API: no global backend/rcParams/pyplot figure registry mutation.
++    figure = Figure(figsize=(12, 3.5 * gt.shape[1]), layout='constrained')
++    FigureCanvasAgg(figure)
++    try:
++        for c, name in enumerate(channel_names):
++            scale = scales[c]
++            for col, (label, values) in enumerate((('Ground truth', gt[:, c]), ('CDLNO prediction', pred[:, c]), ('Absolute error', error[:, c]))):
++                ax = figure.add_subplot(gt.shape[1], 3, c*3+col+1, projection='3d' if xyz.shape[1] == 3 else None)
++                lo, hi = (0., scale.error_maximum) if col == 2 else (scale.minimum, scale.maximum)
++                color = 'magma' if col == 2 else 'viridis'
++                if grid_shape is not None:
++                    artist = ax.pcolormesh(xyz[:, 0].reshape(grid_shape), xyz[:, 1].reshape(grid_shape),
++                        values.reshape(grid_shape), shading='nearest', cmap=color, vmin=lo, vmax=hi, rasterized=True)
++                    ax.set_aspect('equal')
++                elif xyz.shape[1] == 2:
++                    artist = ax.scatter(xyz[mask, 0], xyz[mask, 1], c=values[mask], s=6,
++                        cmap=color, vmin=lo, vmax=hi, rasterized=True)
++                    ax.set_aspect('equal')
++                else:
++                    artist = ax.scatter(xyz[mask, 0], xyz[mask, 1], xyz[mask, 2], c=values[mask], s=3,
++                        cmap=color, vmin=lo, vmax=hi, depthshade=False, rasterized=True)
++                    ax.view_init(elev=view[0], azim=view[1])
++                    ax.set_box_aspect(np.maximum(np.ptp(xyz[mask], axis=0), 1e-12))
++                title = f'{name}: {label}'
++                if col == 2:
++                    relative = metrics[c]['relative_l2']
++                    title += '\nrelative L2 = ' + ('undefined (zero truth)' if relative is None else f'{relative:.3g}')
++                ax.set_title(title)
++                figure.colorbar(artist, ax=ax, label=units[c], shrink=.8)
++        figure.suptitle(f'{task} | {case_id} | completed epoch {completed_epoch}')
++        figure.savefig(directory / 'fields.png', dpi=300, bbox_inches='tight', pad_inches=.15)
++        figure.savefig(directory / 'fields.pdf', dpi=300, bbox_inches='tight', pad_inches=.15)
++        np.savez_compressed(directory / 'fields.npz', coordinates=xyz, truth=gt, prediction=pred,
++                            absolute_error=error, display_mask=mask, channel_names=np.array(channel_names))
++        (directory / 'metadata.json').write_text(encoded, encoding='utf-8')
++    finally:
++        figure.clear()
++    return record
+diff --git a/docs/CDLNO_IMPLEMENTATION_STATUS.md b/docs/CDLNO_IMPLEMENTATION_STATUS.md
+--- a/docs/CDLNO_IMPLEMENTATION_STATUS.md
++++ b/docs/CDLNO_IMPLEMENTATION_STATUS.md
+@@ -1,6 +1,25 @@
+ # CDLNO 实施状态
+ 
+ 更新日期：2026-09-15。
++
++## 最新：可视化/续训计划已批准，V1公共组件完成，待审查
++
++本轮按逐阶段约束只执行V1，详见[V1报告](CDLNO_VISUALIZATION_RESUME_V1.md)和[增量diff](viz_resume_audit/v1/v1-changes.patch)。新增完整checkpoint/配对纯权重、严格恢复、RNG隔离、epoch周期和输出场绘图；**八任务训练/评估/脚本尚未接入本次新功能，不能使用新的`--resume`。** V2–V5及A4未执行。
++
++| 阶段 | 范围 | 当前状态 |
++|---|---|---|
++| V0 | 论文可视化/源码审查与计划 | 用户已批准实施计划 |
++| V1 | 完整归档/恢复/周期/RNG隔离/绘图公共组件 | 完成，待审查 |
++| V2 | Darcy/Elasticity/Airfoil/Pipe | 未执行 |
++| V3 | NS/Plasticity时间任务 | 未执行 |
++| V4 | Car/AirfRANS工业/成员恢复 | 未执行 |
++| V5 | 八任务综合验收/使用交付 | 未执行 |
++
++本轮最终201/201回归通过（122.573s，无失败/错误/跳过）；新增14项归档/观察器+3项绘图检查。CPU三front模式×两scheduler共6组跨新进程恢复与连续训练逐位相等，包括权重、AdamW矩/step、scheduler、每步loss/lr、采样及RNG。有限本机GPU identity/OneCycle FP32/mathSDPA/TF32关闭对照通过；不是远端torch2.11/cu128验收。新的恢复对照采用B2/5×7/d8/h2/M4小核心及明确标注的合成MSE，不是NS原时间训练链路。原损失/PyG旧回归仍通过，但新八任务续训/周期图尚未验证。
++
++实际验证两份文件后才发布manifest/latest；补强并测试manifest已提交而latest失败时的防回退；错误模式/协议/权重/优化器/调度器/RNG、旧纯权重及跨run拒绝。真实推理/绘图开关不改训练权重/梯度/随机状态，异常渲染仍保存到期checkpoint。纯权重只能在配套完整归档存在并通过摘要校验时通过本接口用于续训。
++
++270份起点snapshot保留于`/home/hwz/CDLNO-artifacts/viz-v1-before-04ww1akt/source`；[冻结证据](viz_resume_audit/v1/freeze.json)确认128份原生产/任务/脚本/工具文件字节不变，包括模型结构、数据、损失、训练评估与依赖。未下载数据、安装依赖、真实训练或commit/push。新功能的真实数据/原时间采样协议/工业整对象及list续训、AMP、远端文件系统断电恢复、收敛/精度/epoch效率未验证。默认final-only四任务仍无中途恢复点。**本阶段结束，未执行下一阶段。** 以下审批前及A3状态保留为历史。
+ 
+ ## 最新请求：八任务可视化/周期保存/断点续训，计划待审批
+ 
+diff --git a/docs/CDLNO_VISUALIZATION_RESUME_PLAN.md b/docs/CDLNO_VISUALIZATION_RESUME_PLAN.md
+--- a/docs/CDLNO_VISUALIZATION_RESUME_PLAN.md
++++ b/docs/CDLNO_VISUALIZATION_RESUME_PLAN.md
+@@ -1,4 +1,6 @@
+-# 八任务周期可视化、权重归档与断点续训修改计划（待审批）
++# 八任务周期可视化、权重归档与断点续训修改计划
++
++最新进度（2026-09-15）：用户已批准按计划修改。遵守逐阶段要求，本轮仅完成V1公共完整归档/恢复/RNG隔离/绘图基础，见[V1报告](CDLNO_VISUALIZATION_RESUME_V1.md)。201/201回归通过，模型与任务源码冻结。V2–V5未执行，正式任务仍未接入新的周期保存/绘图/`--resume`；不能把V1基础能力当成八任务功能完成。下文保留原审批计划及当时状态。
+ 
+ 日期：2026-09-15。**本轮只读论文与源码、编写计划；以下功能尚未实现。** 当前基线为用户已有的CDLNO+A1/A2/A3工作区，HEAD `769fa333742f73c132868cf560bce5ec21529362`。A4没有执行。本计划是新的训练运维需求，不自动推进任何既有补充阶段。
+ 
+diff --git a/docs/CDLNO_VISUALIZATION_RESUME_V1.md b/docs/CDLNO_VISUALIZATION_RESUME_V1.md
+new file mode 100644
+--- /dev/null
++++ b/docs/CDLNO_VISUALIZATION_RESUME_V1.md
+@@ -0,0 +1,132 @@
++# V1：完整续训归档与独立绘图公共组件
++
++日期：2026-09-15。用户已批准按[计划](CDLNO_VISUALIZATION_RESUME_PLAN.md)修改；按持续有效的逐阶段约束，本轮只执行V1。**V1完成，待审查；八任务训练入口尚未接入新功能，当前脚本还不能使用新的`--resume`。** V2–V5没有执行，A4消融性能工作没有执行。
++
++## A. 完成范围
++
++增加模型外部的完整checkpoint、配对纯权重、严格恢复、epoch事件策略与输出场绘图组件。没有改动CDLNO/Transolver结构、forward、初始化、front模式、CDPA或任何任务的数据/训练/评估代码。
++
++新的公共接口可以恢复模型、Adam/AdamW状态、OneCycleLR/CosineAnnealingLR状态、epoch/更新计数、Python/NumPy/torch CPU/CUDA及显式DataLoader generator随机状态，并核对既有sidecar、模型结构、任务/数据顺序协议及normalizer。实际连续训练与跨进程恢复对照已通过，见D节。
++
++**完整checkpoint才含续训所需状态。** `weights/epoch_XXXX.pt`保持纯state_dict；通过本接口指定该路径时，会查找并校验同run下完整checkpoint及manifest，再恢复整个训练状态。单独拷走纯权重、旧`model.pt`或旧工业整模型对象不能恢复原优化器/调度器进度，会明确拒绝。没有用`strict=False`、猜测学习率或伪造历史状态。
++
++## B. 文件与增量diff
++
++| 文件 | 本轮变更与用途 |
++|---|---|
++| `cdlno/training_state.py` | 新增`TrainingProtocol`、`TrainingArchive`、RNG保存/恢复/隔离、有序数据摘要、成对原子归档及严格恢复 |
++| `cdlno/training_observer.py` | 新增`EpochPolicy`和`EpochObserver.after_epoch`；只调度回调/保存，不拥有训练循环 |
++| `cdlno/visualization.py` | 新增显式网格/点云三联图、锁定色标、PNG/PDF/NPZ/JSON输出；不导入模型或数据入口 |
++| `tests/test_training_state.py` | 14项针对性检查，含六组CPU新进程对照、一组GPU对照、归档故障与恢复负向项 |
++| `tests/test_visualization.py` | 3项网格/图像/色标/误差与保存值检查 |
++| 本报告、计划顶部状态、STATUS、AGENTS、memory | 增量记录当前范围、证据与后续边界，保留历史内容 |
++| `docs/viz_resume_audit/v1/` | 起点清单、环境、实际日志、绘图演示、冻结核查和增量patch |
++
++HEAD为`769fa333742f73c132868cf560bce5ec21529362`；原Transolver历史基线为`75e0f67643806a81cd1d3f6adc88dd8c02416fe7`。本轮对比的是**包含用户和已接受A1/A2/A3修改的真实工作区**，而非把HEAD误当成干净模型基线。
++
++270份起点文件和hash保存于`/home/hwz/CDLNO-artifacts/viz-v1-before-04ww1akt/source`及[start.json](viz_resume_audit/v1/start.json)。审查本轮请使用[v1-changes.patch](viz_resume_audit/v1/v1-changes.patch)；普通`git diff`还包含原先未提交修改。本轮未commit/push。
++
++## C. 接口、数据形状与执行次序
++
++### C1. 周期策略
++
++按**已完成epoch数**`e`判断，不在源码`ep=0`时误当第100轮：
++
++`visualize = (e % 50 == 0) or (e == total_epochs)`。
++
++NS/Car/AirfRANS/Airfoil：`checkpoint = (e % 100 == 0) or final`；Darcy/Elasticity/Pipe/Plasticity：`checkpoint = final`。实际总轮数仍取正式入口原参数；策略默认保留PDE500、Car200、Air398的含义。100轮同时触发时只存一对文件；398和小于50轮的最终训练也补图/补存。显式`visualize_every=0`可关闭包括最终图在内的全部绘图；运行周期不进入模型architecture。
++
++| 任务 | V1公共策略 | 正式任务入口接入 |
++|---|---|---|
++| Darcy / Elasticity / Pipe / Plasticity | 每50轮图+最终图；仅最终checkpoint与权重 | 未执行，分别属于V2/V3 |
++| Airfoil / NS | 每50轮图+最终图；每100轮归档+最终归档 | 未执行，分别属于V2/V3 |
++| ShapeNet-Car / AirfRANS | 每50轮图+最终图；每100轮归档+最终归档 | 未执行，属于V4 |
++
++后四个final-only任务仍没有中途恢复点；图片不能替代checkpoint。
++
++### C2. 完整归档与恢复
++
++`TrainingProtocol`要求入口显式提供task、原总epochs、每epoch真实optimizer/scheduler调用次数、训练字段、split/有序数据摘要和adapter架构。`ordered_fingerprint`只处理调用者已载入的数组/ID，不读取或重排数据。`normalizers`必须显式给出状态字典，无normalizer时传`{}`；恢复时与当前构造结果逐值比较，不能静默改用不同均值/标准差。
++
++归档内容包含：严格模型state_dict、optimizer矩/step/参数组、scheduler完整状态及构造计划、计数、normalizer、全部受支持RNG、调用者的历史日志/额外元数据、架构和sidecar摘要。记录实际Python/torch/CUDA/NumPy/Matplotlib/PyG版本、device/dtype/TF32/SDPA开关、HEAD及共享包/实际wrapper文件hash。后续入口仍需通过协议/extra提供实际数据、collate/采样、入口源码及工业成员进度；V1没有凭空构造这些事实。
++
++文件关系：
++
++```text
++existing_run/architecture.json      # 仅读取，不改写
++existing_run/training_protocol.json # 首次保存创建，以后逐项比较
++existing_run/checkpoints/epoch_0100.pt   # 完整状态，weights_only=True读取
++existing_run/weights/epoch_0100.pt       # 纯state_dict
++existing_run/checkpoints/epoch_0100.json # 两文件的SHA256，完整配对的提交点
++existing_run/checkpoints/latest.json
++existing_run/checkpoints/final.json     # 仅实际完成训练时发布
++```
++
++每个文件先写同目录临时文件，再flush/fsync、原子rename；**两份pt均完成后才提交manifest，再发布latest/final**。同epoch相同状态可重试，不改写pt；不同状态拒绝覆盖。第二份文件写失败保留上一份有效归档，并清理本次未提交文件。若manifest已完成而latest更新失败，恢复仍识别最新已提交epoch，阻止从较早epoch回退覆盖；可用该明确epoch路径恢复/重试发布索引。
++
++恢复流程：读manifest并校验两文件摘要 → `weights_only=True`读取 → 核对sidecar/协议/normalizer/架构/权重keys/shape/dtype/数值 → 检查optimizer参数名及顺序/矩/step、scheduler计划及计数 → 检查RNG/generator → 拒绝回退 → `strict=True`装载原对象 → 清空已完成epoch边界的梯度 → **最后恢复RNG**。不重新初始化模型，不改变参数对象id，不绕过旧工业可信加载边界。
++
++计数采用：`global_step=e×updates_per_epoch`、`scheduler_steps=e×scheduler_steps_per_epoch`。两者可以不同，未来可准确表达Plasticity的20次更新/每batch1次scheduler；没有因此实现或改写该时间循环。`next_epoch=e`是零基循环起点：完成100轮后执行`range(100,total_epochs)`，即从人类计数第101轮继续。恢复原计划剩余轮次，不把目标500改为再跑500。
++
++### C3. 绘图与训练隔离
++
++`render_fields`输入坐标`[N,2/3]`、真值/预测`[N,C]`、每通道固定色标；规则任务显式给`(H,W)`且`N=H×W`，不猜`sqrt(N)`。规则网格保留物理坐标与原索引，使用pcolormesh；2D/3D点云只scatter，不能生成虚假网格连接。可选mask只筛选显示，NPZ保留全部传入坐标/真值/预测/绝对误差/mask。
++
++标量误差`E=abs(pred-truth)`；案例指标`relative_L2=norm(E)/norm(truth)`，零目标记为不可定义。GT/Pred共享由首份真值建立的色标；误差使用独立从0开始的固定色标，超范围比例写JSON，原数组不截断。图内标明案例指标，PNG300dpi/PDF/NPZ/JSON均保存。向量模长、物理decode、时间曲线、工业表面/剖面、固定案例选择属于后续任务适配，未用通用标量图冒充完整任务可视化。
++
++`isolated_evaluation`保存Python/NumPy/torch/generator RNG、各子模块train/eval标志和buffer，使用eval/no_grad，异常时仍恢复。绘图不碰参数、梯度、optimizer；回调只允许推理/渲染。`EpochObserver`记录绘图异常并继续应到期的归档，保存错误则向外抛出。使用logging报告绘图错误，避免环境将warnings当异常时跳过checkpoint。
++
++人工实际打开了两幅明确标注“SYNTHETIC ONLY”的[5×7弯曲网格图](/home/hwz/CDLNO-artifacts/viz-v1-demo-eo0pz_6e/grid_5x7/fields.png)和[3D点云图](/home/hwz/CDLNO-artifacts/viz-v1-demo-eo0pz_6e/cloud_3d/fields.png)。它们来自解析函数加指定扰动，**不是模型预测或实际数据集实验**。自审修正了初版3D图边缘刻度被裁切的问题，最终导出保留完整边界。两案例渲染合计1.627秒，文件大小/hash见[记录](viz_resume_audit/v1/render-demo.json)；这不是训练epoch性能结果。
++
++## D. 实际命令、环境与结果
++
++现有本机环境为Python3.13.9、torch2.13.0+cu130/CUDA13.0、NumPy2.2.6、Matplotlib3.10.6、RTX5090 Laptop GPU。没有安装/修改依赖。远端Python3.10/torch2.11/cu128仍为兼容目标，本轮未访问远端；Python3.10语法解析通过不等于远端运行通过。
++
++从仓库根目录执行：
++
++```bash
++python -B -m unittest discover -s tests -p test_training_state.py -v
++python -B -m unittest discover -s tests -p test_visualization.py -v
++CDLNO_LRSA_ROOT=/home/hwz/LRSA-Operator python -B -m unittest discover -s tests -p 'test_*.py' -v
++PYTHONPATH=. python -B docs/viz_resume_audit/v1/render_demo.py
++python -B docs/viz_resume_audit/v1/audit_scope.py
++```
++
++| 实际检查 | 结果与边界 |
++|---|---|
++| 首轮定向 | training12/12、绘图3/3通过；没有首轮失败测试 |
++| 自审补强后定向 | training14/14通过，47.899s；绘图导出调整后3/3通过，2.000s |
++| 完整既有+新增套件 | **201/201通过，122.573s，0失败/错误/跳过**；17项新增，184项既有回归 |
++| CPU新进程连续vs恢复 | full/no_sa/identity×两种scheduler，共6组，每组连续4epoch对比2epoch保存后新进程再2epoch；每轮2次optimizer，共8步；权重、AdamW状态、scheduler、逐步loss/lr、Python/NumPy采样、真实DataLoader shuffle与RNG全部逐位相等 |
++| 本机GPU新进程连续vs恢复 | identity + OneCycleLR一组，FP32、math SDPA、TF32关；权重及optimizer atol1e-6/rtol1e-5，loss小数点后5位，采样/lr/RNG严格一致，通过 |
++| 训练隔离 | 同初始状态开/关真实推理+绘图，最终权重、梯度、optimizer/scheduler、逐步记录及RNG严格相等；异常回调也恢复RNG/模块状态，通过 |
++| 严格拒绝/故障 | 不同模式/总epoch/loss/数据摘要/normalizer/参数组/scheduler；缺关键字段/Adam矩；不完整RNG/坏dtype/坏beta/坏manifest/摘要；旧纯权重/外run；覆盖/回退；第二文件失败和latest失败，均通过 |
++| 周期/绘图 | 八任务49/50/99/100/200/398/500及短run边界、final不重复、5×7顺序/格式/固定色标/零目标/3D显示mask，通过 |
++| 模型结构保护 | 原模块文件hash、参数对象id、state_dict键、sidecar字节均保持；恢复没有重新构造或宽松加载 |
++| 原损失/PyG | 完整套件重跑了既有原损失及真实PyG接口；**本轮新的续训对照是小CDLNO核心+显式合成MSE，不是八任务原损失续训链路** |
++
++小核心采用B2、5×7、d8/h2/M4、L3/F1、every_block、输出2通道，仅用于状态恢复检查。`TrainingProtocol.task='ns'`只用于策略选择，loss明确记录为synthetic MSE；该测试没有假装执行NS10→10原时间协议。GPU及两调度器检查也不是增加新的正式任务训练设置。
++
++日志：[完整回归](viz_resume_audit/v1/final-regression.log)、[归档定向](viz_resume_audit/v1/training-final.log)、[绘图定向](viz_resume_audit/v1/visualization-final.log)、[环境](viz_resume_audit/v1/environment.json)。参考LRSA测试打印缺少可选xformers/liger的提示后使用其已有替代路径，实际参考比较通过；本项目未安装或引入这两个依赖。
++
++## E. 冻结区域与自审结果
++
++[冻结审计](viz_resume_audit/v1/freeze.json)对本轮270份起点文件逐一比较，128份既有生产/任务/脚本/工具文件全部字节相同。原模型、共享math/config/core/wrapper/checkpoint helper、exp/main/train/eval、数据/采样/normalizer/loss/时间循环/指标、脚本及依赖没有变化；旧AGENTS/STATUS/计划/memory只追加新状态。
++
++| 自审重点 | 结论与证据 |
++|---|---|
++| 真续训，而非只加载权重 | 新进程6组CPU+1组GPU；对照optimizer/scheduler/RNG和后续每步记录，已通过 |
++| 写入中断与覆盖 | 发现并修复“manifest已提交、latest未更新”时潜在回退；新增故障注入验证，已通过 |
++| 绘图干扰训练 | 真实推理/渲染开关和异常路径逐值对照，已通过；修正warning-as-error对保存的干扰 |
++| 模型结构与既有协议 | 128份冻结文件hash及201项回归通过；没有改forward/初始化/模式/数据训练代码 |
++| 图像可信度 | 点序/原数组/固定色标/零目标检查通过；实际开图修复3D刻度裁切，最终图复查通过 |
++
++## F. 未验证项及下一阶段边界
++
++1. **新归档/周期图/续训CLI尚未连接任何正式任务。** V2负责四静态任务，V3负责NS/Plasticity，V4负责工业及ensemble，V5综合交付。当前不能给出可执行的任务`--resume`命令，也不能宣称八任务已经具备本次新功能。
++2. 新续训未验证实际normalizer/data/采样/collate/时间链路、PyG工业原mask损失及对象/list/ensemble恢复。既有PyG回归通过只证明原功能未回归。后续Air必须使用实际入口MSE_weighted，保留计划指出的A3历史覆盖差异。
++3. 没有真实数据完整读取、真实训练/断电续训、收敛、精度或真实epoch耗时结果。远端torch2.11/cu128、共享文件系统的真实断电/fsync行为未验证。有限本机GPU对照不能代表所有GPU/AMP/Flash/compile/DDP；没有自动改变这些运行设置。
++4. 完整恢复限定在完整epoch边界、同训练计划与数据顺序；不保存未完成batch梯度。API可携带已有torch.amp.GradScaler状态，但本轮未运行AMP恢复实验；正式任务也没有为此引入AMP。worker内部隐藏状态、persistent workers、分布式恢复不在当前保证内。
++5. 保存只支持单writer。硬中断可能留下`.writer.lock`或未提交孤立文件，接口清楚拒绝覆盖并要求检查；不会自动删除用户文件。文件缺失/摘要损坏不会跳过校验。保存/恢复产生的CPU快照和磁盘耗时未作真实大模型性能验收。
++
++没有遗留已发现的V1缺陷需要用户裁定；以上为本阶段可验证范围与后续工作边界。**本阶段结束，未执行下一阶段。**
+diff --git a/memory/current-state.md b/memory/current-state.md
+--- a/memory/current-state.md
++++ b/memory/current-state.md
+@@ -1,6 +1,14 @@
+ # Current project state
+ 
+ Last reviewed: 2026-09-15
++
++## Current: visualization/resume plan approved, V1 complete awaiting review
++
++User approved implementation while preserving model structure. Following the standing one-stage rule, only V1 shared foundations ran. [Report](../docs/CDLNO_VISUALIZATION_RESUME_V1.md), [plan](../docs/CDLNO_VISUALIZATION_RESUME_PLAN.md), [evidence](../docs/viz_resume_audit/v1/). V2–V5 task integrations were not run; **existing launchers have no new --resume/periodic-viz/full-training-archive integration yet**. A4/performance work remains unexecuted. New files only: cdlno/training_state.py, training_observer.py, visualization.py plus tests/docs. All128 preexisting production/task/script/tool files unchanged against270-file snapshot `/home/hwz/CDLNO-artifacts/viz-v1-before-04ww1akt/source`; keep prior user/A1/A2/A3 modifications and fixtures.
++
++Complete epoch archive stores strict model/Adam(W)/OneCycle or Cosine state, actual update/scheduler counters, normalizers/protocol/ordered fingerprint, Python/NumPy/CPU/CUDA/named generator RNG, history/extra and execution/code provenance. Paired pure weights resolve a verified full companion; bare legacy state_dict/whole-model objects cannot promise optimizer continuation. Manifest commits both file hashes before latest/final. Failure after manifest but before latest now correctly blocks rollback to older committed state; same-state publication retry allowed. No overwriting architecture sidecar, no strict=False, no object reinitialization. Restore RNG last. Drawing uses owned outputs, explicit H/W or point scatter, shared GT/pred/fixed error scale, PNG/PDF/NPZ/JSON; callback isolation restores RNG/buffers/per-module flags and preserves params/grads. Viz failures are logged and checkpoint still saves; archive failures propagate.
++
++201/201 regression passed122.573s, 0fail/error/skip.17 new tests(14archive+3viz).Six CPU fresh-process continuation comparisons full/no_sa/identity×OneCycle/Cosine are bitwise equal across weights/AdamW/scheduler/loss/lr/sampling/DataLoader shuffle/RNG. One localGPU identity/OneCycle FP32/mathSDPA/TF32off case passed atol1e-6/rtol1e-5. New continuation is smallB2/5×7/d8/h2/M4/L3F1/everyblock core + explicit synthetic MSE, not NS or eight task original-loss resume. Legacy original-loss/PyG suite passed but doesn't establish new task integration. Optional GradScaler state path exists; AMP continuation untested. RemotePython3.10/torch2.11/cu128, actual data/training/accuracy/epoch speed/filesystem power-loss/persistent-worker/distributed recovery unverified. No install/download/realtraining/commit/push. Ending “本阶段结束，未执行下一阶段”. Earlier plan-only entries below are historical; source corrections about actual Air weighted loss and Plasticity fx/time remain applicable.
+ 
+ ## Latest request: visualization/resume proposal only, awaiting approval
+ 
+diff --git a/tests/test_training_state.py b/tests/test_training_state.py
+new file mode 100644
+--- /dev/null
++++ b/tests/test_training_state.py
+@@ -0,0 +1,397 @@
++"""V1 archive/observer foundations. No task exp/main imports or dataset files."""
++from dataclasses import replace
++import copy
++import hashlib
++import json
++import os
++from pathlib import Path
++import random
++import subprocess
++import sys
++import tempfile
++import unittest
++import warnings
++from unittest.mock import patch
++
++import numpy as np
++import torch
++from torch.nn.attention import SDPBackend, sdpa_kernel
++
++from cdlno import CDLNO, CDLNOArchitectureConfig
++from cdlno.checkpoint import save_sidecar
++from cdlno.training_state import (TrainingArchive, TrainingProtocol, ResumeError,
++    capture_rng, restore_rng, isolated_evaluation, ordered_fingerprint, _same)
++from cdlno.training_observer import EpochPolicy, EpochObserver
++
++ROOT = Path(__file__).resolve().parents[1]
++MODES = ('full', 'no_sa', 'identity')
++
++
++def seed():
++    random.seed(101); np.random.seed(202); torch.manual_seed(303)
++    if torch.cuda.is_available():
++        torch.cuda.manual_seed_all(404)
++
++
++def protocol(schedule='onecycle'):
++    return TrainingProtocol(task='ns', total_epochs=4, updates_per_epoch=2,
++        scheduler_steps_per_epoch=2 if schedule == 'onecycle' else 1,
++        training=dict(optimizer={'name': 'AdamW', 'lr': .001, 'weight_decay': .01},
++                      scheduler={'name': schedule, 'total_epochs': 4}, loss='synthetic MSE (not task loss)', batch_size=2),
++        data=dict(split='synthetic fixtures only', ordered_fingerprint=ordered_fingerprint([torch.arange(4)])), adapter={})
++
++
++def build(mode='full', schedule='onecycle', device='cpu'):
++    model = CDLNO(CDLNOArchitectureConfig(d_model=8, num_heads=2, M=4, L=3, F=1,
++        output_dim=2, front_latent_mode=mode, cdpa_mode='every_block', structured=True, grid_shape=(5, 7))).to(device)
++    optimizer = torch.optim.AdamW(model.parameters(), lr=.001, weight_decay=.01)
++    scheduler = (torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=.001, total_steps=8)
++                 if schedule == 'onecycle' else torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=4))
++    return model, optimizer, scheduler
++
++
++def run_epochs(model, optimizer, scheduler, generator, start, end, schedule, records=None, observer=None, visualize=None):
++    records = [] if records is None else records
++    device = next(model.parameters()).device
++    # Real DataLoader/generator shuffle on immutable synthetic tensors.
++    dataset = torch.utils.data.TensorDataset(torch.arange(4))
++    loader = torch.utils.data.DataLoader(dataset, batch_size=2, shuffle=True, generator=generator)
++    for ep in range(start, end):
++        model.train()
++        for (ids,) in loader:
++            picks = random.sample(range(20), 3)
++            offset = float(np.random.uniform())
++            x = torch.randn(2, 35, 8, device=device) + offset + sum(picks)/100
++            y = torch.randn(2, 35, 2, device=device)
++            optimizer.zero_grad()
++            loss = (model(x)-y).square().mean()
++            loss.backward(); optimizer.step()
++            if schedule == 'onecycle':
++                scheduler.step()
++            records.append(dict(ids=ids.tolist(), picks=picks, offset=offset, loss=loss.item(), lr=optimizer.param_groups[0]['lr']))
++        if schedule != 'onecycle':
++            scheduler.step()
++        if observer is not None:
++            observer.after_epoch(ep+1, model, optimizer, scheduler, global_step=(ep+1)*2,
++                scheduler_steps=(ep+1)*(2 if schedule == 'onecycle' else 1),
++                normalizers={'mean': torch.tensor([1., 2.]), 'std': np.array([2., 3.], dtype=np.float32)},
++                generators={'loader': generator}, history=records, visualize=visualize)
++    return records
++
++
++def worker(action, directory, mode, schedule, device):
++    torch.set_num_threads(1)
++    torch.backends.cuda.matmul.allow_tf32 = False
++    torch.backends.cudnn.allow_tf32 = False
++    torch.use_deterministic_algorithms(device == 'cpu')
++    seed()
++    directory = Path(directory)
++    model, opt, sched = build(mode, schedule, device)
++    generator = torch.Generator().manual_seed(505)
++    norms = {'mean': torch.tensor([1., 2.]), 'std': np.array([2., 3.], dtype=np.float32)}
++    policy = EpochPolicy('ns', 4, visualize_every=0, checkpoint_every=2)
++    if action != 'resume':
++        directory.mkdir()
++        save_sidecar(directory/'architecture.json', model.config)
++    archive = TrainingArchive(directory, protocol(schedule))
++    observer = EpochObserver(archive, policy)
++    start, history = 0, []
++    if action == 'resume':
++        # Deliberately disturb all RNG streams after constructor/dataloader setup.
++        random.random(); np.random.rand(9); torch.rand(9); torch.rand(9, generator=generator)
++        if device == 'cuda':
++            torch.rand(9, device=device)
++        result = archive.restore(directory/'weights/epoch_0002.pt', model, opt, sched,
++                                 normalizers=norms, generators={'loader': generator})
++        start, history = result['progress']['next_epoch'], result['history']
++    with sdpa_kernel(SDPBackend.MATH):
++        records = run_epochs(model, opt, sched, generator, start, 2 if action == 'split' else 4,
++                             schedule, records=history, observer=observer)
++    result = dict(model={k: v.cpu() for k, v in model.state_dict().items()}, optimizer=opt.state_dict(),
++                  scheduler=sched.state_dict(), records=records, rng=capture_rng({'loader': generator}))
++    torch.save(result, directory/(action+'-result.pt'))
++    print(action, mode, schedule, device, 'passed', len(records), 'updates')
++
++
++class TrainingStateChecks(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        cls.threads = torch.get_num_threads(); torch.set_num_threads(1)
++
++    @classmethod
++    def tearDownClass(cls):
++        torch.set_num_threads(cls.threads)
++
++    def setUp(self):
++        seed()
++        self.tmp = tempfile.TemporaryDirectory(); self.addCleanup(self.tmp.cleanup)
++        self.path = Path(self.tmp.name)
++        self.model, self.opt, self.sched = build()
++        save_sidecar(self.path/'architecture.json', self.model.config)
++        self.archive = TrainingArchive(self.path, protocol())
++        self.generator = torch.Generator().manual_seed(505)
++        self.norms = {'mean': torch.tensor([1., 2.]), 'std': np.array([2., 3.], dtype=np.float32)}
++
++    def save_after(self, start=0, end=1):
++        with sdpa_kernel(SDPBackend.MATH):
++            history = run_epochs(self.model, self.opt, self.sched, self.generator, start, end, 'onecycle')
++        return self.archive.save(self.model, self.opt, self.sched, completed_epochs=end, global_step=end*2,
++            scheduler_steps=end*2, normalizers=self.norms, generators={'loader': self.generator}, history=history)
++
++    def test_policy_all_eight_completed_epoch_boundaries_and_final(self):
++        for task in ('darcy','elasticity','pipe','plasticity','ns','car','airfrans','airfoil'):
++            total = 200 if task=='car' else 398 if task=='airfrans' else 500
++            policy = EpochPolicy(task, total)
++            for ep in (1, 49, 50, 99, 100, 150, 200, 398, 500):
++                if ep > total: continue
++                with self.subTest(task=task, ep=ep):
++                    result = policy.events(ep)
++                    self.assertEqual(result['visualize'], ep%50==0 or ep==total)
++                    self.assertEqual(result['checkpoint'], ep==total or (task in ('ns','car','airfrans','airfoil') and ep%100==0))
++            self.assertTrue(EpochPolicy(task, 3).events(3)['checkpoint'])
++        for invalid in (0, -1, True, 2.5):
++            with self.assertRaises(ValueError): EpochPolicy('ns', 500).events(invalid)
++        self.assertFalse(EpochPolicy('ns', 500, visualize_every=0).events(500)['visualize'])
++
++    def test_cpu_fresh_process_continuation_all_modes_both_schedulers(self):
++        for mode in MODES:
++            for schedule in ('onecycle', 'cosine'):
++                with self.subTest(mode=mode, scheduler=schedule):
++                    self.process_comparison(mode, schedule, 'cpu')
++
++    def process_comparison(self, mode, schedule, device):
++        with tempfile.TemporaryDirectory() as temp:
++            continuous, split = Path(temp)/'continuous', Path(temp)/'split'
++            for action, path in (('continuous',continuous),('split',split),('resume',split)):
++                result = subprocess.run([sys.executable,'-B',str(Path(__file__).resolve()),'--worker',action,str(path),mode,schedule,device],
++                    cwd=ROOT, env=dict(os.environ, PYTHONPATH=str(ROOT)), capture_output=True, text=True)
++                self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
++            a = torch.load(continuous/'continuous-result.pt', weights_only=True, map_location='cpu')
++            b = torch.load(split/'resume-result.pt', weights_only=True, map_location='cpu')
++            if device == 'cpu':
++                self.assertTrue(_same(a,b), 'continuous and resumed states must be bitwise equal on CPU')
++            else:
++                torch.testing.assert_close(a['model'], b['model'], atol=1e-6, rtol=1e-5)
++                torch.testing.assert_close(a['optimizer'], b['optimizer'], atol=1e-6, rtol=1e-5)
++                self.assertTrue(_same(a['rng'],b['rng']))
++                self.assertTrue(_same(a['scheduler'],b['scheduler']))
++                for x,y in zip(a['records'],b['records']):
++                    for key in ('ids','picks','offset','lr'): self.assertEqual(x[key],y[key])
++                    self.assertAlmostEqual(x['loss'],y['loss'],places=5)
++
++    @unittest.skipUnless(torch.cuda.is_available(), 'GPU continuation not run: CUDA unavailable')
++    def test_gpu_fresh_process_identity_onecycle(self):
++        self.process_comparison('identity', 'onecycle', 'cuda')
++
++    def test_roundtrip_weights_pair_sidecar_and_structure_unchanged(self):
++        keys = list(self.model.state_dict())
++        objects = {name:id(p) for name,p in self.model.named_parameters()}
++        sidecar = (self.path/'architecture.json').read_bytes()
++        saved = self.save_after()
++        weights = self.path/'weights'/saved.name
++        pure = torch.load(weights,weights_only=True)
++        self.assertEqual(list(pure),keys)
++        state = self.archive.read(weights)
++        self.assertTrue(_same(pure,state['model']))
++        self.archive.restore(saved, self.model,self.opt,self.sched,normalizers=self.norms,generators={'loader':self.generator})
++        self.assertEqual({name:id(p) for name,p in self.model.named_parameters()},objects)
++        self.assertEqual((self.path/'architecture.json').read_bytes(),sidecar)
++        self.assertTrue(all(p.grad is None for p in self.model.parameters()))
++        self.assertTrue(_same(self.archive.read(self.path/'checkpoints/latest.json'),state))
++
++    def test_wrong_protocol_normalizer_groups_plan_and_mode_rejected_before_weights(self):
++        saved = self.save_after()
++        original = copy.deepcopy(self.model.state_dict())
++        variants = [replace(protocol(),total_epochs=5),replace(protocol(),data=dict(split='other',ordered_fingerprint='0'*64)),
++                    replace(protocol(),training={**protocol().training,'loss':'changed'})]
++        for value in variants:
++            with self.assertRaisesRegex(ResumeError,'protocol mismatch'):
++                TrainingArchive(self.path,value).restore(saved,self.model,self.opt,self.sched,normalizers=self.norms,generators={'loader':self.generator})
++        with self.assertRaisesRegex(ResumeError,'normalizer'):
++            self.archive.restore(saved,self.model,self.opt,self.sched,normalizers={},generators={'loader':self.generator})
++        wrong_opt=torch.optim.AdamW(reversed(list(self.model.parameters())),lr=.001,weight_decay=.01)
++        wrong_sched=torch.optim.lr_scheduler.OneCycleLR(wrong_opt,max_lr=.001,total_steps=8)
++        with self.assertRaisesRegex(ResumeError,'parameter group order'):
++            self.archive.restore(saved,self.model,wrong_opt,wrong_sched,normalizers=self.norms,generators={'loader':self.generator})
++        wrong_sched=torch.optim.lr_scheduler.OneCycleLR(self.opt,max_lr=.001,total_steps=12)
++        with self.assertRaisesRegex(ResumeError,'scheduler'):
++            self.archive.restore(saved,self.model,self.opt,wrong_sched,normalizers=self.norms,generators={'loader':self.generator})
++        other,op,sc=build('identity')
++        with self.assertRaisesRegex(ResumeError,'architecture'):
++            self.archive.restore(saved,other,op,sc,normalizers=self.norms,generators={'loader':self.generator})
++        self.assertTrue(_same(original,self.model.state_dict()))
++
++    def test_missing_state_fields_and_bad_weights_cannot_resume(self):
++        saved = self.save_after()
++        payload = self.archive.read(saved)
++        for field in ('optimizer','scheduler','rng','normalizers','progress','model'):
++            damaged=copy.deepcopy(payload);del damaged[field]
++            torch.save(damaged,saved)
++            self.rehash(saved)
++            with self.assertRaisesRegex(ResumeError,'incomplete'):
++                self.archive.read(saved)
++        torch.save(payload,saved);self.rehash(saved)
++        for field in ('step','exp_avg','exp_avg_sq'):
++            damaged=copy.deepcopy(payload)
++            del next(iter(damaged['optimizer']['state'].values()))[field]
++            torch.save(damaged,saved);self.rehash(saved)
++            with self.assertRaisesRegex(ResumeError,'Adam moment'):
++                self.archive.restore(saved,self.model,self.opt,self.sched,normalizers=self.norms,generators={'loader':self.generator})
++        torch.save(payload,saved);self.rehash(saved)
++        weights=self.path/'weights'/saved.name
++        torch.save({'wrong':torch.zeros(1)},weights)
++        with self.assertRaisesRegex(ResumeError,'checksum'):
++            self.archive.read(saved)
++        with self.assertRaisesRegex(ResumeError,'belong'):
++            self.archive.read(Path('/tmp/elsewhere')/saved.name)
++        torch.save(self.model.state_dict(),self.path/'model.pt')
++        with self.assertRaises(ResumeError):self.archive.read(self.path/'model.pt')
++
++    def rehash(self, checkpoint):
++        # Explicit corruption fixture: repair checksum to reach semantic validation.
++        manifest=checkpoint.with_suffix('.json');value=json.loads(manifest.read_text())
++        value['checkpoint']['sha256']=hashlib.sha256(checkpoint.read_bytes()).hexdigest()
++        manifest.write_text(json.dumps(value))
++
++    def test_failed_second_file_write_preserves_last_commit_and_retry(self):
++        first=self.save_after()
++        pointer=(self.path/'checkpoints/latest.json').read_bytes()
++        with sdpa_kernel(SDPBackend.MATH):run_epochs(self.model,self.opt,self.sched,self.generator,1,2,'onecycle')
++        from cdlno import training_state as state
++        original=state._atomic
++        def fail_weights(path,*a,**kw):
++            if Path(path).parent.name=='weights':raise OSError('simulated disk write failure')
++            return original(path,*a,**kw)
++        kwargs=dict(completed_epochs=2,global_step=4,scheduler_steps=4,normalizers=self.norms,generators={'loader':self.generator})
++        with patch.object(state,'_atomic',side_effect=fail_weights),self.assertRaises(OSError):
++            self.archive.save(self.model,self.opt,self.sched,**kwargs)
++        self.assertEqual((self.path/'checkpoints/latest.json').read_bytes(),pointer)
++        self.assertFalse((self.path/'checkpoints/epoch_0002.pt').exists())
++        self.assertFalse((self.path/'weights/epoch_0002.pt').exists())
++        self.assertFalse((self.path/'checkpoints/.writer.lock').exists())
++        self.assertEqual(self.archive.read(first)['progress']['completed_epochs'],1)
++        self.archive.save(self.model,self.opt,self.sched,**kwargs)
++        with self.assertRaisesRegex(ResumeError,'older checkpoint'):
++            self.archive.restore(first,self.model,self.opt,self.sched,normalizers=self.norms,generators={'loader':self.generator})
++
++    def test_idempotent_final_no_duplicate_or_overwrite(self):
++        with sdpa_kernel(SDPBackend.MATH):run_epochs(self.model,self.opt,self.sched,self.generator,0,4,'onecycle')
++        kw=dict(completed_epochs=4,global_step=8,scheduler_steps=8,normalizers=self.norms,generators={'loader':self.generator})
++        path=self.archive.save(self.model,self.opt,self.sched,**kw)
++        before=path.read_bytes();mtime=path.stat().st_mtime_ns
++        self.assertEqual(self.archive.save(self.model,self.opt,self.sched,**kw),path)
++        self.assertEqual(path.read_bytes(),before);self.assertEqual(path.stat().st_mtime_ns,mtime)
++        self.assertEqual(len(list((self.path/'checkpoints').glob('*.pt'))),1)
++        self.assertEqual(self.archive.read(self.path/'checkpoints/final.json')['progress']['completed_epochs'],4)
++        with torch.no_grad():next(self.model.parameters()).add_(1)
++        with self.assertRaisesRegex(ResumeError,'different state'):
++            self.archive.save(self.model,self.opt,self.sched,**kw)
++
++    def test_committed_pair_survives_failed_latest_and_prevents_rollback(self):
++        first = self.save_after()
++        pointer = (self.path/'checkpoints/latest.json').read_bytes()
++        with sdpa_kernel(SDPBackend.MATH):
++            run_epochs(self.model,self.opt,self.sched,self.generator,1,2,'onecycle')
++        from cdlno import training_state as state
++        original = state._atomic
++        def fail_index(path, *a, **kw):
++            if Path(path).name == 'latest.json':
++                raise OSError('simulated index failure after durable pair commit')
++            return original(path, *a, **kw)
++        kwargs = dict(completed_epochs=2,global_step=4,scheduler_steps=4,normalizers=self.norms,generators={'loader':self.generator})
++        with patch.object(state,'_atomic',side_effect=fail_index), self.assertRaises(OSError):
++            self.archive.save(self.model,self.opt,self.sched,**kwargs)
++        second = self.path/'checkpoints/epoch_0002.pt'
++        self.assertEqual((self.path/'checkpoints/latest.json').read_bytes(),pointer)
++        self.assertEqual(self.archive.read(second)['progress']['completed_epochs'],2)
++        with self.assertRaisesRegex(ResumeError,'older checkpoint'):
++            self.archive.restore(first,self.model,self.opt,self.sched,normalizers=self.norms,generators={'loader':self.generator})
++        before = second.read_bytes()
++        self.archive.save(self.model,self.opt,self.sched,**kwargs)
++        self.assertEqual(second.read_bytes(),before)
++        self.assertEqual(self.archive.read(self.path/'checkpoints/latest.json')['progress']['completed_epochs'],2)
++
++    def test_semantically_damaged_state_rejected_before_model_or_rng_mutation(self):
++        saved = self.save_after()
++        payload = self.archive.read(saved)
++        weights = copy.deepcopy(self.model.state_dict())
++        rng = capture_rng({'loader':self.generator})
++        mutations = [lambda p: p['scheduler'].update(_last_lr=[]),
++                     lambda p: p['optimizer']['param_groups'][0].update(betas=[2., .99]),
++                     lambda p: next(iter(p['optimizer']['state'].values())).update(exp_avg=torch.zeros(1, dtype=torch.float64)),
++                     lambda p: p.update(rng={'cpu':torch.get_rng_state()})]
++        for mutate in mutations:
++            damaged = copy.deepcopy(payload); mutate(damaged)
++            torch.save(damaged,saved); self.rehash(saved)
++            with self.assertRaises(ResumeError):
++                self.archive.restore(saved,self.model,self.opt,self.sched,normalizers=self.norms,generators={'loader':self.generator})
++            self.assertTrue(_same(weights,self.model.state_dict()))
++            self.assertTrue(_same(rng,capture_rng({'loader':self.generator})))
++        manifest = saved.with_suffix('.json'); manifest.write_text('{}')
++        with self.assertRaisesRegex(ResumeError,'manifest'):
++            self.archive.read(saved)
++
++    def test_rng_roundtrip_generators_and_exception_isolation(self):
++        self.model.train();self.model.front_blocks[0].eval()
++        flags=[m.training for m in self.model.modules()]
++        before=capture_rng({'loader':self.generator})
++        weights=copy.deepcopy(self.model.state_dict())
++        with self.assertRaisesRegex(RuntimeError,'plot failed'):
++            with isolated_evaluation(self.model,generators={'loader':self.generator}):
++                self.assertFalse(any(m.training for m in self.model.modules()))
++                random.random();np.random.rand();torch.rand(3);torch.rand(3,generator=self.generator)
++                if torch.cuda.is_available():torch.rand(3,device='cuda')
++                raise RuntimeError('plot failed')
++        self.assertTrue(_same(before,capture_rng({'loader':self.generator})))
++        self.assertEqual(flags,[m.training for m in self.model.modules()])
++        self.assertTrue(_same(weights,self.model.state_dict()))
++        with self.assertRaisesRegex(ResumeError,'generator names'):
++            restore_rng(before,{})
++
++    def test_visualization_enabled_disabled_gives_identical_training(self):
++        from cdlno.visualization import ColorScale,render_fields
++        outcomes=[]
++        for enabled in (False,True):
++            seed();model,opt,sched=build('no_sa');gen=torch.Generator().manual_seed(505)
++            directory=self.path/str(enabled);directory.mkdir();save_sidecar(directory/'architecture.json',model.config)
++            observer=EpochObserver(TrainingArchive(directory,protocol()),EpochPolicy('ns',4,visualize_every=2 if enabled else 0,checkpoint_every=0))
++            def draw(ep):
++                # Extra model forward and all RNG streams; isolation must undo them.
++                random.random();np.random.rand();torch.rand(1,generator=gen)
++                h=torch.randn(1,35,8);out=model(h)[0]
++                xx,yy=np.meshgrid(np.arange(7),np.arange(5),indexing='xy')
++                xy=np.stack((xx.ravel(),yy.ravel()),-1)
++                scales=[ColorScale(-1,1,1) for _ in range(2)]
++                render_fields(directory/f'viz{ep}',coordinates=xy,truth=np.ones((35,2)),prediction=out,
++                    scales=scales,channel_names=['a','b'],task='synthetic',case_id='case0',completed_epoch=ep,grid_shape=(5,7))
++            with sdpa_kernel(SDPBackend.MATH):records=run_epochs(model,opt,sched,gen,0,4,'onecycle',observer=observer,visualize=draw)
++            outcomes.append(dict(model=copy.deepcopy(model.state_dict()),optimizer=opt.state_dict(),scheduler=sched.state_dict(),
++                                 rng=capture_rng({'loader':gen}),records=records,grads=[p.grad.clone() for p in model.parameters()]))
++        self.assertTrue(_same(outcomes[0],outcomes[1]))
++
++    def test_visualization_failure_still_saves_complete_checkpoint(self):
++        self.save_after()
++        policy=EpochPolicy('ns',4,visualize_every=1,checkpoint_every=1)
++        observer=EpochObserver(self.archive,policy)
++        def fail(_):
++            random.random();raise RuntimeError('headless renderer failed')
++        with warnings.catch_warnings(), self.assertLogs('cdlno.training_observer', level='WARNING') as logged:
++            warnings.simplefilter('error')
++            result=observer.after_epoch(1,self.model,self.opt,self.sched,global_step=2,scheduler_steps=2,
++                normalizers=self.norms,generators={'loader':self.generator},visualize=fail,
++                history=self.archive.read(self.path/'checkpoints/latest.json')['history'])
++        self.assertIn('headless renderer', logged.output[0])
++        self.assertIn('headless renderer failed',result['visualization_error'])
++        self.assertTrue(result['checkpoint'].is_file())
++
++    def test_protocol_and_data_order_are_not_model_architecture(self):
++        self.assertNotEqual(ordered_fingerprint([torch.tensor([1,2])]),ordered_fingerprint([torch.tensor([2,1])]))
++        self.assertNotEqual(ordered_fingerprint(['ab','c']),ordered_fingerprint(['a','bc']))
++        with self.assertRaises(ResumeError):replace(protocol(),updates_per_epoch=True)
++        with self.assertRaises(ResumeError):replace(protocol(),data={})
++        self.assertNotIn('checkpoint_every',self.model.config.to_dict())
++
++
++if __name__=='__main__':
++    if len(sys.argv)>1 and sys.argv[1]=='--worker':worker(*sys.argv[2:])
++    else:unittest.main()
+diff --git a/tests/test_visualization.py b/tests/test_visualization.py
+new file mode 100644
+--- /dev/null
++++ b/tests/test_visualization.py
+@@ -0,0 +1,68 @@
++"""V1 pure field rendering, point order, color/metric and side-effect checks."""
++import json
++from pathlib import Path
++import tempfile
++import unittest
++import numpy as np
++from PIL import Image
++from cdlno.visualization import ColorScale,fixed_scales,render_fields
++
++
++class VisualizationChecks(unittest.TestCase):
++    def setUp(self):
++        self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
++        self.path=Path(self.tmp.name)
++        row,col=np.meshgrid(np.arange(5),np.arange(7),indexing='ij')
++        self.xyz=np.stack((col.ravel(),row.ravel()),-1)
++        self.gt=(10*row+col).reshape(-1,1).astype(float)
++        self.pred=self.gt+np.arange(35).reshape(-1,1)/10
++
++    def test_non_square_grid_png_pdf_npz_and_locked_scales(self):
++        scale_path=self.path/'scale.json'
++        scales=fixed_scales(scale_path,self.gt,self.pred,['u'])
++        before=scale_path.read_bytes()
++        again=fixed_scales(scale_path,self.gt,self.pred*100,['u'])
++        self.assertEqual(scales,again);self.assertEqual(scale_path.read_bytes(),before)
++        case=self.path/'case'
++        result=render_fields(case,coordinates=self.xyz,truth=self.gt,prediction=self.pred,
++            channel_names=['u'],scales=scales,task='synthetic',case_id='0',completed_epoch=50,grid_shape=(5,7))
++        with np.load(case/'fields.npz',allow_pickle=False) as saved:
++            np.testing.assert_array_equal(saved['truth'].reshape(5,7),self.gt.reshape(5,7))
++            np.testing.assert_array_equal(saved['coordinates'],self.xyz)
++            np.testing.assert_array_equal(saved['prediction'],self.pred)
++            np.testing.assert_allclose(saved['absolute_error'],np.abs(self.pred-self.gt))
++        with Image.open(case/'fields.png') as image:
++            self.assertGreater(image.width,1000);self.assertGreater(image.height,500)
++        self.assertTrue((case/'fields.pdf').read_bytes().startswith(b'%PDF'))
++        metric=result['channel_metrics'][0]
++        self.assertAlmostEqual(metric['relative_l2'],np.linalg.norm(self.pred-self.gt)/np.linalg.norm(self.gt))
++        self.assertEqual(metric['color_scale'],scales[0].to_dict())
++        self.assertEqual(json.loads((case/'metadata.json').read_text())['grid_shape'],[5,7])
++        with self.assertRaises(FileExistsError):render_fields(case,coordinates=self.xyz,truth=self.gt,prediction=self.pred,
++            channel_names=['u'],scales=scales,task='synthetic',case_id='0',completed_epoch=50,grid_shape=(5,7))
++
++    def test_unstructured_three_dimensional_mask_only_affects_rendering(self):
++        xyz=np.column_stack((self.xyz,np.sin(self.xyz[:,0])))
++        mask=np.arange(35)%2==0
++        result=render_fields(self.path/'cloud',coordinates=xyz,truth=self.gt,prediction=self.pred,
++            channel_names=['pressure'],scales=[ColorScale(0,46,1)],task='synthetic-car',case_id='0',completed_epoch=100,display_mask=mask)
++        self.assertEqual(result['displayed_points'],18)
++        with np.load(self.path/'cloud/fields.npz') as values:
++            self.assertEqual(values['truth'].shape,(35,1));np.testing.assert_array_equal(values['display_mask'],mask)
++        self.assertGreater(result['channel_metrics'][0]['error_above_color_fraction'],0)
++
++    def test_zero_truth_nonfinite_channels_grid_and_physical_values(self):
++        result=render_fields(self.path/'zero',coordinates=self.xyz,truth=self.gt*0,prediction=self.gt*0+1,
++            channel_names=['u'],scales=[ColorScale(0,1,.1)],task='synthetic',case_id='0',completed_epoch=1)
++        metric=result['channel_metrics'][0]
++        self.assertIsNone(metric['relative_l2']);self.assertEqual(metric['relative_l2_status'],'undefined_zero_target')
++        self.assertEqual(metric['error_above_color_fraction'],1.)
++        for invalid in ((7,7),(35,), (True,35)):
++            with self.assertRaises(ValueError):render_fields(self.path/'invalid',coordinates=self.xyz,truth=self.gt,prediction=self.pred,
++                channel_names=['u'],scales=[ColorScale(0,46,3.4)],task='synthetic',case_id='0',completed_epoch=1,grid_shape=invalid)
++        with self.assertRaisesRegex(ValueError,'nonfinite'):
++            ColorScale.from_first_case(self.gt,self.gt*np.nan)
++        with self.assertRaises(ValueError):fixed_scales(self.path/'bad.json',self.gt,self.pred,['a','b'])
++
++
++if __name__=='__main__':unittest.main()

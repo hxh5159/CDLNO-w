@@ -1,0 +1,194 @@
+{
+  "Airfoil-Design-AirfRANS/configs/CDLNO/airfrans.json": {
+    "task": "airfrans",
+    "model": {
+      "n_hidden": 256,
+      "n_layers": 8,
+      "n_heads": 8,
+      "slice_num": 64,
+      "front_blocks": 2,
+      "mlp_ratio": 2,
+      "latent_ffn_ratio": 2,
+      "dropout": 0.0,
+      "cdpa_mode": "entry",
+      "cdpa_source_chunk_size": 0
+    },
+    "training_source": "params.yaml:CDLNO (copied from current Transolver)",
+    "initial_training": {
+      "batch_size": 1,
+      "nb_epochs": 398,
+      "lr": 0.001,
+      "max_neighbors": 64,
+      "subsampling": 32000,
+      "r": 0.05
+    }
+  },
+  "Car-Design-ShapeNetCar/configs/CDLNO/shapenet_car.json": {
+    "task": "shapenet-car",
+    "model": {
+      "n_hidden": 256,
+      "n_layers": 8,
+      "n_heads": 8,
+      "slice_num": 64,
+      "front_blocks": 2,
+      "mlp_ratio": 2,
+      "latent_ffn_ratio": 2,
+      "dropout": 0.0,
+      "cdpa_mode": "entry",
+      "cdpa_source_chunk_size": 0
+    },
+    "training": {
+      "nb_epochs": 200,
+      "batch_size": 1,
+      "lr": 0.001,
+      "weight": 0.5,
+      "fold_id": 0,
+      "val_iter": 10,
+      "preprocessed": 1
+    }
+  },
+  "PDE-Solving-StandardBenchmark/configs/CDLNO/airfoil.json": {
+    "task": "airfoil",
+    "model": {
+      "n_hidden": 128,
+      "n_layers": 8,
+      "n_heads": 4,
+      "slice_num": 64,
+      "mlp_ratio": 2,
+      "front_blocks": 2,
+      "latent_ffn_ratio": 2,
+      "cdpa_mode": "entry",
+      "cdpa_source_chunk_size": 0,
+      "dropout": 0.0,
+      "unified_pos": 0,
+      "ref": 8
+    },
+    "training": {
+      "lr": 0.001,
+      "epochs": 500,
+      "batch_size": 4,
+      "weight_decay": 1e-05,
+      "max_grad_norm": 0.1
+    }
+  },
+  "PDE-Solving-StandardBenchmark/configs/CDLNO/darcy.json": {
+    "task": "darcy",
+    "model": {
+      "n_hidden": 128,
+      "n_layers": 8,
+      "n_heads": 8,
+      "slice_num": 64,
+      "mlp_ratio": 2,
+      "front_blocks": 2,
+      "latent_ffn_ratio": 2,
+      "cdpa_mode": "entry",
+      "cdpa_source_chunk_size": 0,
+      "dropout": 0.0,
+      "unified_pos": 1,
+      "ref": 8
+    },
+    "training": {
+      "lr": 0.001,
+      "epochs": 500,
+      "batch_size": 4,
+      "weight_decay": 1e-05,
+      "max_grad_norm": 0.1
+    }
+  },
+  "PDE-Solving-StandardBenchmark/configs/CDLNO/elasticity.json": {
+    "task": "elasticity",
+    "model": {
+      "n_hidden": 128,
+      "n_layers": 8,
+      "n_heads": 8,
+      "slice_num": 64,
+      "mlp_ratio": 2,
+      "front_blocks": 2,
+      "latent_ffn_ratio": 2,
+      "cdpa_mode": "entry",
+      "cdpa_source_chunk_size": 0,
+      "dropout": 0.0,
+      "unified_pos": 0,
+      "ref": 8
+    },
+    "training": {
+      "lr": 0.001,
+      "epochs": 500,
+      "batch_size": 1,
+      "weight_decay": 1e-05,
+      "max_grad_norm": 0.1
+    }
+  },
+  "PDE-Solving-StandardBenchmark/configs/CDLNO/ns.json": {
+    "task": "ns",
+    "model": {
+      "n_hidden": 256,
+      "n_layers": 8,
+      "n_heads": 8,
+      "slice_num": 64,
+      "mlp_ratio": 2,
+      "front_blocks": 2,
+      "latent_ffn_ratio": 2,
+      "cdpa_mode": "entry",
+      "cdpa_source_chunk_size": 0,
+      "dropout": 0.0,
+      "unified_pos": 1,
+      "ref": 8
+    },
+    "training": {
+      "lr": 0.001,
+      "epochs": 500,
+      "batch_size": 2,
+      "weight_decay": 1e-05,
+      "max_grad_norm": null
+    }
+  },
+  "PDE-Solving-StandardBenchmark/configs/CDLNO/pipe.json": {
+    "task": "pipe",
+    "model": {
+      "n_hidden": 128,
+      "n_layers": 8,
+      "n_heads": 4,
+      "slice_num": 32,
+      "mlp_ratio": 2,
+      "front_blocks": 2,
+      "latent_ffn_ratio": 2,
+      "cdpa_mode": "entry",
+      "cdpa_source_chunk_size": 0,
+      "dropout": 0.0,
+      "unified_pos": 0,
+      "ref": 8
+    },
+    "training": {
+      "lr": 0.001,
+      "epochs": 500,
+      "batch_size": 8,
+      "weight_decay": 1e-05,
+      "max_grad_norm": 0.1
+    }
+  },
+  "PDE-Solving-StandardBenchmark/configs/CDLNO/plasticity.json": {
+    "task": "plasticity",
+    "model": {
+      "n_hidden": 128,
+      "n_layers": 8,
+      "n_heads": 8,
+      "slice_num": 64,
+      "mlp_ratio": 2,
+      "front_blocks": 2,
+      "latent_ffn_ratio": 2,
+      "cdpa_mode": "entry",
+      "cdpa_source_chunk_size": 0,
+      "dropout": 0.0,
+      "unified_pos": 0,
+      "ref": 8
+    },
+    "training": {
+      "lr": 0.001,
+      "epochs": 500,
+      "batch_size": 8,
+      "weight_decay": 1e-05,
+      "max_grad_norm": 0.1
+    }
+  }
+}

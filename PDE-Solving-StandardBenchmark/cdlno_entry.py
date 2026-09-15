@@ -16,6 +16,8 @@ from uuid import uuid4
 
 
 def parse_args(parser, task, argv=None):
+    parser.add_argument('--front-latent-mode', '--front_latent_mode',
+                        choices=('full', 'no_sa', 'identity'), default=None)
     parser.add_argument('--front-blocks', type=int, default=2)
     parser.add_argument('--latent-ffn-ratio', type=float, default=2.0)
     parser.add_argument('--cdpa-mode', choices=('off', 'entry', 'every_block'), default='entry')
@@ -33,14 +35,25 @@ def parse_args(parser, task, argv=None):
     for action in probe._actions:
         action.default = argparse.SUPPRESS
     explicit = vars(probe.parse_args(tokens))
+    saved_mode = None
+    if args.eval:
+        if args.cdlno_run_dir is None:
+            parser.error('CDLNO eval requires --cdlno-run-dir pointing to an existing run')
+        from cdlno.checkpoint import resolve_front_latent_mode
+        saved_mode = resolve_front_latent_mode(args.cdlno_run_dir / 'architecture.json',
+                                              explicit.get('front_latent_mode'))
     preset = json.loads((Path(__file__).parent / 'configs' / 'CDLNO' / f'{task}.json').read_text())
     for name, value in {**preset['model'], **preset['training']}.items():
         if name not in explicit:
             setattr(args, name, value)
+    if saved_mode is not None:
+        args.front_latent_mode = saved_mode
     args.cdlno_task = task
     if 'save_name' not in explicit:
         args.save_name = (f'{task}_CDLNO_L{args.n_layers}_F{args.front_blocks}'
                           f'_M{args.slice_num}_{args.cdpa_mode}')
+        if args.front_latent_mode != 'full':
+            args.save_name += '_' + args.front_latent_mode
     if args.eval and args.cdlno_run_dir is None:
         parser.error('CDLNO eval requires --cdlno-run-dir pointing to an existing run')
     if not re.fullmatch(r'[A-Za-z0-9_.-]+', args.save_name) or args.save_name in ('.', '..'):
@@ -51,6 +64,7 @@ def parse_args(parser, task, argv=None):
 def model_kwargs(args):
     """Call only on the CDLNO branch; original constructors receive no new keys."""
     return dict(task_name=args.cdlno_task, front_blocks=args.front_blocks,
+                front_latent_mode=getattr(args, 'front_latent_mode', 'full'),
                 latent_ffn_ratio=args.latent_ffn_ratio, cdpa_mode=args.cdpa_mode,
                 cdpa_source_chunk_size=args.cdpa_source_chunk_size)
 
@@ -70,6 +84,8 @@ class StaticRun:
     def __init__(self, args, model):
         from cdlno.config import CDLNORuntimeConfig
         from cdlno.checkpoint import save_sidecar
+        from cdlno.experiment import session, reserve_directory, default_directory
+        self.recorder = session(args)
         self.architecture = model.config
         self.adapter = model.adapter_architecture()
         parameter = next(model.parameters())
@@ -85,10 +101,9 @@ class StaticRun:
             self._validate(model)  # load existing sidecar before any comparison/write
         else:
             self.directory = (Path(args.cdlno_run_dir) if args.cdlno_run_dir is not None
-                              else Path('runs') / 'CDLNO' / args.cdlno_task /
-                              (args.save_name + '_' + _unique_suffix())).resolve()
+                              else default_directory(args.cdlno_task)).resolve()
             # Atomic directory reservation: never silently reuse another run.
-            self.directory.mkdir(parents=True, exist_ok=False)
+            reserve_directory(args, self.directory)
             values = {key: str(value) if isinstance(value, Path) else value
                       for key, value in vars(args).items()}
             try:
@@ -102,6 +117,9 @@ class StaticRun:
                          metadata=dict(wrapper_architecture=self.adapter, resolved_arguments=values,
                                        base_repository_commit=commit))
         self.result_dir = str(self.directory / ('eval_' + _unique_suffix())) + '/'
+        if self.recorder is not None:
+            self.result_dir = self.recorder.result_dir
+            self.recorder.attach_model(model)
         print('CDLNO run directory:', self.directory)
         print('CDLNO resolved architecture:', self.architecture.to_dict(), self.adapter)
 

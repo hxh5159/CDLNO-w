@@ -1,0 +1,2042 @@
+--- a/.gitignore
++++ b/.gitignore
+@@ -158,3 +158,6 @@
+ #  and can be added to the global gitignore or merged into this file.  For a more nuclear
+ #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
+ #.idea/
++
++# Generated per-dataset experiment records and checkpoints.
++/output/
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -1,6 +1,10 @@
+ # AGENTS.md
+ 
+ ## Current phase and reading order
++
++Latest authorized scope (2026-09-15): **unified experiment outputs and records complete, awaiting review.** Read [report](docs/CDLNO_EXPERIMENT_OUTPUTS_REPORT.md), [usage](docs/CDLNO_EXPERIMENT_OUTPUTS.md), [evidence](docs/output_audit/). Eight CDLNO entries now reserve `output/<dataset>/<UTC timestamp>` before dataset reads and write config/log/status; parameter counts are explicitly pending until actual model construction, then measured before first batch. Epoch JSONL/train results and unique eval directories/index preserve prior evals. Default shell paths changed; explicit run overrides and existing runs/CDLNO checkpoints remain usable. Eval never rewrites training config/sidecar; no latest-run guessing. Original Transolver and all model math/task protocols remain frozen; only observation/path calls were added to entries and optional industrial train callbacks.
++
++Final212 tests/142.652s, zero failures/errors, one Air full sampled-epoch subcase skipped because local torch_cluster is absent. New9 record methods,24task/mode synthetic step/checkpoint/repeated eval, three freshcwd loads, Car realPyG complete synthetic epochs exact weights/RNG with/without recording, Air original weighted-loss+record-fragment pass. ExistingGPU synthetic suite rerun passed. 86production/model/config/data/utils/script/tool files byte-identical;12complete entry/train ASTs equal pre-task snapshot after exact observation stripping. Snapshot312files `/home/hwz/CDLNO-artifacts/output-before-kql2cnpe` must be preserved along with previous A1–A4/V1 artifacts. No real data/training, remote target environment or full Air sampled evaluation acceptance. V2–V5 periodic visualization/task resume integration remains unexecuted; old task weights are NOT complete optimizer/RNG resume archives. Stop for user review; end “本阶段结束，未执行下一阶段”. Earlier status entries below are historical.
+ 
+ Latest authorization (2026-09-15): **A3 approved; supplemental A4 counts/performance/documentation is complete, awaiting review.** Read [A4 report](docs/CDLNO_FRONT_ABLATION_A4.md), [eight-task commands](docs/CDLNO_FRONT_ABLATION_A2_COMMANDS.md), [results](docs/front_ablation_audit/a4/summary.json) and [freeze](docs/front_ablation_audit/a4/freeze.json). Performance CLI now accepts --front-latent-mode, defaultfull; actual sublayer hooks count front SA/FFN and rear SA/GEGLU, rather than assuming every front block does SA. matched LRSA explicitly locks config/each block to full; original Transolver never receives new kwargs. DefaultF2/P6 SA8/6/6, front FFN4/4/0, rear6/6 and down/up/structuredConv3 each. CDPA sources/calls unchanged. Original full initialization hashes/parameters/full MACs/counts equal real pre-A4 capture for all5 performance models.
+ 
+--- a/Airfoil-Design-AirfRANS/cdlno_entry.py
++++ b/Airfoil-Design-AirfRANS/cdlno_entry.py
+@@ -93,6 +93,8 @@
+         from cdlno.airfrans import architecture, adapter_architecture
+         from cdlno.config import CDLNORuntimeConfig
+         from cdlno.checkpoint import save_sidecar
++        from cdlno.experiment import session, reserve_directory, default_directory
++        self.recorder = session(args)
+         self.kwargs = model_kwargs(args)
+         structural = dict(self.kwargs)
+         structural.pop('cdpa_source_chunk_size')
+@@ -114,8 +116,8 @@
+             mode_suffix = '' if self.architecture.front_latent_mode == 'full' else '_' + self.architecture.front_latent_mode
+             stem = f'L{args.n_layers}_F{args.front_blocks}_M{args.slice_num}_{args.cdpa_mode}{mode_suffix}_{_suffix()}'
+             self.directory = (Path(args.run_dir) if args.run_dir is not None else
+-                              Path(args.save_path) / args.task / 'CDLNO' / stem).resolve()
+-            self.directory.mkdir(parents=True, exist_ok=False)
++                              default_directory('airfrans')).resolve()
++            reserve_directory(args, self.directory)
+             arguments = {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()}
+             try:
+                 commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'],
+@@ -126,6 +128,8 @@
+                 wrapper_architecture=self.adapter, run_contract=self.contract,
+                 resolved_arguments=arguments, base_repository_commit=commit))
+         self.result_dir = str(self.directory / ('eval_' + _suffix()))
++        if self.recorder is not None:
++            self.result_dir = self.recorder.result_dir
+         print('CDLNO run directory:', self.directory)
+         print('CDLNO resolved architecture:', self.architecture.to_dict(), self.adapter)
+         print('CDLNO resolved training/data settings:', self.hparams)
+@@ -182,4 +186,7 @@
+             expected.load_state_dict(model.state_dict(), strict=True)
+             model.core.source_chunk_size = self.runtime.source_chunk_size
+             model.to(self.device)
++        if self.recorder is not None:
++            for index, model in enumerate(models):
++                self.recorder.attach_model(model, hparams=self.hparams, member=index if member is None else member, protocol=self.contract)
+         return models if member is None else models[0]
+--- a/Airfoil-Design-AirfRANS/main.py
++++ b/Airfoil-Design-AirfRANS/main.py
+@@ -24,6 +24,11 @@
+ parser.add_argument('--save_path',
+                     default='metrics', type=str)
+ args = parse_cdlno_args(parser)
++if args.model == 'CDLNO':
++    from cdlno.experiment import start as start_experiment, finish as finish_experiment
++    with open('params.yaml', 'r') as config_file:
++        recording_hparams = resolve_hparams(args, yaml.safe_load(config_file)['CDLNO'])
++    start_experiment(args, 'airfrans', evaluation=False, hparams=recording_hparams)
+ 
+ with open(args.my_path + '/manifest.json', 'r') as f:
+     manifest = json.load(f)
+@@ -52,6 +57,8 @@
+ if args.model == 'CDLNO':
+     hparams = resolve_hparams(args, hparams)
+     cdlno_run = AirRun(args, hparams, device=device)
++    cdlno_run.recorder.update_protocol(dict(train_graphs=len(train_dataset), validation_graphs=len(val_dataset),
++                                         val_iter=10, val_sample=True, criterion="MSE_weighted"))
+ 
+ from models.MLP import MLP
+ 
+@@ -98,16 +105,26 @@
+             model = GUNet(hparams, encoder, decoder)
+ 
+     log_path = cdlno_run.member_dir(i) if cdlno_run is not None else osp.join(args.save_path, args.task, args.model)
++    if cdlno_run is not None:
++        cdlno_run.recorder.attach_model(model, hparams=hparams, member=i, protocol=cdlno_run.contract)
+     print('start training')
+     model = train.main(device, train_dataset, val_dataset, model, hparams, log_path,
+-                       criterion='MSE_weighted', val_iter=10, reg=args.weight, name_mod=args.model, val_sample=True)
++                       criterion='MSE_weighted', val_iter=10, reg=args.weight, name_mod=args.model, val_sample=True,
++                       **(dict(record=cdlno_run.recorder, record_member=i) if cdlno_run is not None else {}))
+     print('end training')
+     models.append(model)
+ torch.save(models, cdlno_run.checkpoint if cdlno_run is not None else osp.join(args.save_path, args.task, args.model, args.model))
+ 
+ score_path = cdlno_run.result_dir if cdlno_run is not None else 'scores'
+ score_array_path = score_path if cdlno_run is not None else osp.join('scores', args.task)
++if args.model == 'CDLNO':
++    finish_experiment(args)
++
+ if bool(args.score):
++    if args.model == 'CDLNO':
++        cdlno_run.recorder = start_experiment(args, 'airfrans', evaluation=True, hparams=hparams)
++        score_path = cdlno_run.recorder.result_dir
++        score_array_path = score_path
+     print('start score')
+     s = args.task + '_test' if args.task != 'scarce' else 'full_test'
+     coefs = metrics.Results_test(device, [models], [hparams], coef_norm, args.my_path, path_out=score_path, n_test=3,
+@@ -124,3 +141,7 @@
+     np.save(osp.join(score_array_path, 'true_bls'), coefs[5])
+     np.save(osp.join(score_array_path, 'bls'), coefs[6])
+     print('end score')
++
++    if args.model == 'CDLNO':
++        cdlno_run.recorder.record_air_scores(score_path)
++        finish_experiment(args)
+--- a/Airfoil-Design-AirfRANS/main_evaluation.py
++++ b/Airfoil-Design-AirfRANS/main_evaluation.py
+@@ -11,6 +11,11 @@
+ parser.add_argument('--my_path', default='/data/path', type=str)  # data save path
+ parser.add_argument('--save_path', default='./', type=str)  # model save path
+ args = parse_cdlno_args(parser, evaluation=True)
++if args.model == 'CDLNO':
++    from cdlno.experiment import start as start_experiment, finish as finish_experiment
++    with open('params.yaml', 'r') as config_file:
++        recording_hparams = resolve_hparams(args, yaml.safe_load(config_file)['CDLNO'])
++    start_experiment(args, 'airfrans', evaluation=True, hparams=recording_hparams)
+ 
+ # Compute the normalization used for the training
+ 
+@@ -83,3 +88,7 @@
+         np.save(osp.join(results_dir, 'surf_coefs_' + str(n)), file)
+     np.save(osp.join(results_dir, 'true_bls'), coefs[5])
+     np.save(osp.join(results_dir, 'bls'), coefs[6])
++
++if args.model == 'CDLNO':
++    cdlno_run.recorder.record_air_scores(results_dir)
++    finish_experiment(args)
+--- a/Airfoil-Design-AirfRANS/train.py
++++ b/Airfoil-Design-AirfRANS/train.py
+@@ -119,7 +119,7 @@
+ 
+ 
+ def main(device, train_dataset, val_dataset, Net, hparams, path, criterion='MSE', reg=1, val_iter=10,
+-         name_mod='GraphSAGE', val_sample=True):
++         name_mod='GraphSAGE', val_sample=True, record=None, record_member=0):
+     '''
+         Args:
+         device (str): device on which you want to do the computation.
+@@ -143,6 +143,8 @@
+         total_steps=(len(train_dataset) // hparams['batch_size'] + 1) * hparams['nb_epochs'],
+     )
+     val_loader = DataLoader(val_dataset, batch_size=1)
++    if record is not None:
++        record.record_training_setup(optimizer, lr_scheduler)
+     start = time.time()
+ 
+     train_loss_surf_list = []
+@@ -258,6 +260,17 @@
+         else:
+             pbar_train.set_postfix(train_loss=train_loss, loss_surf=loss_surf)
+ 
++        if record is not None:
++            recorded_metrics = dict(train_loss=train_loss, train_surface_mse=loss_surf,
++                                    train_volume_mse=loss_vol, train_surface_per_channel=loss_surf_var,
++                                    train_volume_per_channel=loss_vol_var, criterion=criterion, reg=reg)
++            if val_iter is not None and (epoch % val_iter == val_iter - 1 or epoch == 0):
++                recorded_metrics.update(upstream_validation_log_value=val_loss,
++                                        validation_surface_mse=val_surf, validation_volume_mse=val_vol,
++                                        validation_surface_per_channel=val_surf_var,
++                                        validation_volume_per_channel=val_vol_var)
++            record.record_epoch(epoch + 1, recorded_metrics, member=record_member)
++
+     loss_surf_var_list = np.array(loss_surf_var_list)
+     loss_vol_var_list = np.array(loss_vol_var_list)
+     val_surf_var_list = np.array(val_surf_var_list)
+--- a/Car-Design-ShapeNetCar/main.py
++++ b/Car-Design-ShapeNetCar/main.py
+@@ -24,6 +24,9 @@
+ parser.add_argument('--nb_epochs', default=200, type=int)
+ parser.add_argument('--preprocessed', default=1, type=int)
+ args = parse_cdlno_args(parser)
++if args.cfd_model == 'CDLNO':
++    from cdlno.experiment import start as start_experiment, finish as finish_experiment
++    start_experiment(args, 'car', evaluation=False)
+ print(args)
+ 
+ hparams = {'lr': args.lr, 'batch_size': args.batch_size, 'nb_epochs': args.nb_epochs}
+@@ -48,10 +51,16 @@
+     from models.CDLNO import Model as CDLNOModel
+     model = CDLNOModel(**cdlno_model_kwargs(args)).to(device)
+     cdlno_run = CarRun(args, device=device, model=model)
++    cdlno_run.recorder.update_protocol(dict(train_graphs=len(train_ds), validation_graphs=len(val_ds),
++                                         val_iter=args.val_iter, loss="velocity_mse + weight * surface_pressure_mse"))
+ 
+ path = str(cdlno_run.directory) if cdlno_run is not None else f'metrics/{args.cfd_model}/{args.fold_id}/{args.nb_epochs}_{args.weight}'
+ if not os.path.exists(path):
+     os.makedirs(path)
+ 
+ model = train.main(device, train_ds, val_ds, model, hparams, path, val_iter=args.val_iter, reg=args.weight,
+-                   coef_norm=coef_norm)
++                   coef_norm=coef_norm,
++                   **(dict(record=cdlno_run.recorder) if cdlno_run is not None else {}))
++
++if args.cfd_model == 'CDLNO':
++    finish_experiment(args)
+--- a/Car-Design-ShapeNetCar/main_evaluation.py
++++ b/Car-Design-ShapeNetCar/main_evaluation.py
+@@ -23,6 +23,9 @@
+ parser.add_argument('--weight', default=0.5, type=float)
+ parser.add_argument('--nb_epochs', default=200, type=int)
+ args = parse_cdlno_args(parser, evaluation=True)
++if args.cfd_model == 'CDLNO':
++    from cdlno.experiment import start as start_experiment, finish as finish_experiment
++    start_experiment(args, 'car', evaluation=True)
+ print(args)
+ 
+ 
+@@ -126,3 +129,11 @@
+     print('press:', rmse_press)
+     print('velo:', rmse_velo_var, np.sqrt(np.mean(np.square(rmse_velo_var))))
+     print('time:', np.mean(times))
++
++if args.cfd_model == 'CDLNO':
++    cdlno_run.recorder.record_metrics(dict(
++        rho_d=spear, c_d=coef_error / index, relative_l2_pressure=l2err_press,
++        relative_l2_velocity=l2err_velo, rmse_pressure=rmse_press, rmse_velocity_components=rmse_velo_var,
++        rmse_velocity=np.sqrt(np.mean(np.square(rmse_velo_var))),
++        upstream_unsynchronized_mean_forward_seconds=np.mean(times), evaluated_graphs=index))
++    finish_experiment(args)
+--- a/Car-Design-ShapeNetCar/models/cdlno_run.py
++++ b/Car-Design-ShapeNetCar/models/cdlno_run.py
+@@ -85,6 +85,8 @@
+         from models.CDLNO import architecture, adapter_architecture
+         from cdlno.config import CDLNORuntimeConfig
+         from cdlno.checkpoint import save_sidecar
++        from cdlno.experiment import session, reserve_directory, default_directory
++        self.recorder = session(args)
+         self.kwargs = model_kwargs(args)
+         values = dict(self.kwargs)
+         values.pop('cdpa_source_chunk_size')
+@@ -109,8 +111,8 @@
+             stem = (f'fold{args.fold_id}_L{args.n_layers}_F{args.front_blocks}'
+                     f'_M{args.slice_num}_{args.cdpa_mode}{mode_suffix}_{_unique_suffix()}')
+             self.directory = (Path(args.run_dir) if args.run_dir is not None
+-                              else Path('runs') / 'CDLNO' / 'shapenet-car' / stem).resolve()
+-            self.directory.mkdir(parents=True, exist_ok=False)
++                              else default_directory('car')).resolve()
++            reserve_directory(args, self.directory)
+             arguments = {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()}
+             try:
+                 commit = subprocess.check_output(
+@@ -124,6 +126,10 @@
+                                        run_contract=self.contract, resolved_arguments=arguments,
+                                        base_repository_commit=commit))
+         self.result_dir = str(self.directory / ('eval_' + _unique_suffix())) + '/'
++        if self.recorder is not None:
++            self.result_dir = self.recorder.result_dir
++            if model is not None:
++                self.recorder.attach_model(model, hparams=dict(lr=args.lr, batch_size=args.batch_size, nb_epochs=args.nb_epochs), protocol=self.contract)
+         print('CDLNO run directory:', self.directory)
+         print('CDLNO resolved architecture:', self.architecture.to_dict(), self.adapter)
+ 
+@@ -171,4 +177,7 @@
+         expected.load_state_dict(model.state_dict(), strict=True)
+         del expected
+         model.core.source_chunk_size = self.runtime.source_chunk_size
+-        return model.to(self.device)
++        model = model.to(self.device)
++        if self.recorder is not None:
++            self.recorder.attach_model(model, protocol=self.contract)
++        return model
+--- a/Car-Design-ShapeNetCar/train.py
++++ b/Car-Design-ShapeNetCar/train.py
+@@ -74,7 +74,7 @@
+         return json.JSONEncoder.default(self, obj)
+ 
+ 
+-def main(device, train_dataset, val_dataset, Net, hparams, path, reg=1, val_iter=1, coef_norm=[]):
++def main(device, train_dataset, val_dataset, Net, hparams, path, reg=1, val_iter=1, coef_norm=[], record=None):
+     model = Net.to(device)
+     optimizer = torch.optim.Adam(model.parameters(), lr=hparams['lr'])
+     lr_scheduler = torch.optim.lr_scheduler.OneCycleLR(
+@@ -83,6 +83,8 @@
+         total_steps=(len(train_dataset) // hparams['batch_size'] + 1) * hparams['nb_epochs'],
+         final_div_factor=1000.,
+     )
++    if record is not None:
++        record.record_training_setup(optimizer, lr_scheduler)
+     start = time.time()
+ 
+     train_loss, val_loss = 1e5, 1e5
+@@ -90,6 +92,8 @@
+     for epoch in pbar_train:
+         train_loader = DataLoader(train_dataset, batch_size=hparams['batch_size'], shuffle=True, drop_last=True)
+         loss_velo, loss_press = train(device, model, train_loader, optimizer, lr_scheduler, reg=reg)
++        if record is not None:
++            recorded_train = dict(pressure_mse=loss_velo, velocity_mse=loss_press)
+         train_loss = loss_velo + reg * loss_press
+         del (train_loader)
+ 
+@@ -103,6 +107,13 @@
+             pbar_train.set_postfix(train_loss=train_loss, val_loss=val_loss)
+         else:
+             pbar_train.set_postfix(train_loss=train_loss)
++
++        if record is not None:
++            metrics = dict(train_components=recorded_train, upstream_train_log_value=train_loss)
++            if val_iter is not None and (epoch == hparams['nb_epochs'] - 1 or epoch % val_iter == 0):
++                metrics.update(validation_pressure_mse=loss_velo, validation_velocity_mse=loss_press,
++                               upstream_validation_log_value=val_loss)
++            record.record_epoch(epoch + 1, metrics)
+ 
+     end = time.time()
+     time_elapsed = end - start
+--- a/PDE-Solving-StandardBenchmark/cdlno_entry.py
++++ b/PDE-Solving-StandardBenchmark/cdlno_entry.py
+@@ -84,6 +84,8 @@
+     def __init__(self, args, model):
+         from cdlno.config import CDLNORuntimeConfig
+         from cdlno.checkpoint import save_sidecar
++        from cdlno.experiment import session, reserve_directory, default_directory
++        self.recorder = session(args)
+         self.architecture = model.config
+         self.adapter = model.adapter_architecture()
+         parameter = next(model.parameters())
+@@ -99,10 +101,9 @@
+             self._validate(model)  # load existing sidecar before any comparison/write
+         else:
+             self.directory = (Path(args.cdlno_run_dir) if args.cdlno_run_dir is not None
+-                              else Path('runs') / 'CDLNO' / args.cdlno_task /
+-                              (args.save_name + '_' + _unique_suffix())).resolve()
++                              else default_directory(args.cdlno_task)).resolve()
+             # Atomic directory reservation: never silently reuse another run.
+-            self.directory.mkdir(parents=True, exist_ok=False)
++            reserve_directory(args, self.directory)
+             values = {key: str(value) if isinstance(value, Path) else value
+                       for key, value in vars(args).items()}
+             try:
+@@ -116,6 +117,9 @@
+                          metadata=dict(wrapper_architecture=self.adapter, resolved_arguments=values,
+                                        base_repository_commit=commit))
+         self.result_dir = str(self.directory / ('eval_' + _unique_suffix())) + '/'
++        if self.recorder is not None:
++            self.result_dir = self.recorder.result_dir
++            self.recorder.attach_model(model)
+         print('CDLNO run directory:', self.directory)
+         print('CDLNO resolved architecture:', self.architecture.to_dict(), self.adapter)
+ 
+--- a/PDE-Solving-StandardBenchmark/exp_airfoil.py
++++ b/PDE-Solving-StandardBenchmark/exp_airfoil.py
+@@ -31,6 +31,9 @@
+ parser.add_argument('--save_name', type=str, default='airfoil_Transolver')
+ parser.add_argument('--data_path', type=str, default='/data/fno/airfoil/naca')
+ args = parse_cdlno_args(parser, 'airfoil')
++if args.model == 'CDLNO':
++    from cdlno.experiment import start as start_experiment, finish as finish_experiment
++    start_experiment(args, args.cdlno_task, evaluation=bool(args.eval))
+ eval = args.eval
+ save_name = args.save_name
+ 
+@@ -104,6 +107,8 @@
+                                       unified_pos=args.unified_pos,
+                                       H=s1, W=s2, **cdlno_model_kwargs(args)).cuda()
+         cdlno_run = StaticRun(args, model)
++        if cdlno_run.recorder is not None:
++            cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest))
+     else:
+         model = get_model(args).Model(space_dim=2,
+                                       n_layers=args.n_layers,
+@@ -127,6 +132,8 @@
+ 
+     scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=args.lr, epochs=args.epochs,
+                                                     steps_per_epoch=len(train_loader))
++    if cdlno_run is not None and cdlno_run.recorder is not None:
++        cdlno_run.recorder.record_training_setup(optimizer, scheduler)
+     myloss = TestLoss(size_average=False)
+ 
+     if eval:
+@@ -200,6 +207,8 @@
+ 
+         rel_err /= ntest
+         print("rel_err:{}".format(rel_err))
++        if cdlno_run is not None and cdlno_run.recorder is not None:
++            cdlno_run.recorder.record_metrics(dict(relative_l2=rel_err))
+     else:
+         for ep in range(args.epochs):
+ 
+@@ -235,6 +244,8 @@
+ 
+             rel_err /= ntest
+             print("rel_err:{}".format(rel_err))
++            if cdlno_run is not None and cdlno_run.recorder is not None:
++                cdlno_run.recorder.record_epoch(ep + 1, dict(train_loss=train_loss, validation_relative_l2=rel_err))
+ 
+             if ep % 100 == 0:
+                 if cdlno_run is not None:
+@@ -256,3 +267,5 @@
+ 
+ if __name__ == "__main__":
+     main()
++    if args.model == 'CDLNO':
++        finish_experiment(args)
+--- a/PDE-Solving-StandardBenchmark/exp_darcy.py
++++ b/PDE-Solving-StandardBenchmark/exp_darcy.py
+@@ -35,6 +35,9 @@
+ parser.add_argument('--save_name', type=str, default='darcy_Transolver')
+ parser.add_argument('--data_path', type=str, default='/data/fno')
+ args = parse_cdlno_args(parser, 'darcy')
++if args.model == 'CDLNO':
++    from cdlno.experiment import start as start_experiment, finish as finish_experiment
++    start_experiment(args, args.cdlno_task, evaluation=bool(args.eval))
+ 
+ os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
+ 
+@@ -132,6 +135,8 @@
+                                       unified_pos=args.unified_pos,
+                                       H=s, W=s, **cdlno_model_kwargs(args)).cuda()
+         cdlno_run = StaticRun(args, model)
++        if cdlno_run.recorder is not None:
++            cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest))
+     else:
+         model = get_model(args).Model(space_dim=2,
+                                       n_layers=args.n_layers,
+@@ -156,6 +161,8 @@
+ 
+     scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=args.lr, epochs=epochs,
+                                                     steps_per_epoch=len(train_loader))
++    if cdlno_run is not None and cdlno_run.recorder is not None:
++        cdlno_run.recorder.record_training_setup(optimizer, scheduler)
+     myloss = TestLoss(size_average=False)
+     de_x = TestLoss(size_average=False)
+     de_y = TestLoss(size_average=False)
+@@ -223,6 +230,8 @@
+ 
+             rel_err /= ntest
+             print("rel_err:{}".format(rel_err))
++            if cdlno_run is not None and cdlno_run.recorder is not None:
++                cdlno_run.recorder.record_metrics(dict(relative_l2=rel_err))
+     else:
+         for ep in range(args.epochs):
+             model.train()
+@@ -277,6 +286,8 @@
+ 
+             rel_err /= ntest
+             print("rel_err:{}".format(rel_err))
++            if cdlno_run is not None and cdlno_run.recorder is not None:
++                cdlno_run.recorder.record_epoch(ep + 1, dict(train_loss=train_loss, validation_relative_l2=rel_err, derivative_regularizer=reg))
+ 
+             if ep % 100 == 0:
+                 if cdlno_run is not None:
+@@ -298,3 +309,5 @@
+ 
+ if __name__ == "__main__":
+     main()
++    if args.model == 'CDLNO':
++        finish_experiment(args)
+--- a/PDE-Solving-StandardBenchmark/exp_elas.py
++++ b/PDE-Solving-StandardBenchmark/exp_elas.py
+@@ -32,6 +32,9 @@
+ parser.add_argument('--save_name', type=str, default='elas_Transolver')
+ parser.add_argument('--data_path', type=str, default='/data/fno')
+ args = parse_cdlno_args(parser, 'elasticity')
++if args.model == 'CDLNO':
++    from cdlno.experiment import start as start_experiment, finish as finish_experiment
++    start_experiment(args, args.cdlno_task, evaluation=bool(args.eval))
+ eval = args.eval
+ save_name = args.save_name
+ 
+@@ -96,6 +99,8 @@
+                                       ref=args.ref,
+                                       unified_pos=args.unified_pos, **cdlno_model_kwargs(args)).cuda()
+         cdlno_run = StaticRun(args, model)
++        if cdlno_run.recorder is not None:
++            cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest))
+     else:
+         model = get_model(args).Model(space_dim=2,
+                                       n_layers=args.n_layers,
+@@ -118,6 +123,8 @@
+     count_parameters(model)
+     
+     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
++    if cdlno_run is not None and cdlno_run.recorder is not None:
++        cdlno_run.recorder.record_training_setup(optimizer, scheduler)
+     
+     myloss = TestLoss(size_average=False)
+ 
+@@ -175,6 +182,8 @@
+ 
+         rel_err /= ntest
+         print("rel_err : {}".format(rel_err))
++        if cdlno_run is not None and cdlno_run.recorder is not None:
++            cdlno_run.recorder.record_metrics(dict(relative_l2=rel_err))
+     else:
+         for ep in range(args.epochs):
+ 
+@@ -212,6 +221,8 @@
+ 
+             rel_err /= ntest
+             print("rel_err : {}".format(rel_err))
++            if cdlno_run is not None and cdlno_run.recorder is not None:
++                cdlno_run.recorder.record_epoch(ep + 1, dict(train_loss=train_loss, validation_relative_l2=rel_err))
+ 
+             if ep % 100 == 0:
+                 if cdlno_run is not None:
+@@ -233,3 +244,5 @@
+ 
+ if __name__ == "__main__":
+     main()
++    if args.model == 'CDLNO':
++        finish_experiment(args)
+--- a/PDE-Solving-StandardBenchmark/exp_ns.py
++++ b/PDE-Solving-StandardBenchmark/exp_ns.py
+@@ -31,6 +31,9 @@
+ parser.add_argument('--save_name', type=str, default='ns_2d_UniPDE')
+ parser.add_argument('--data_path', type=str, default='/data/fno')
+ args = parse_cdlno_args(parser, 'ns')
++if args.model == 'CDLNO':
++    from cdlno.experiment import start as start_experiment, finish as finish_experiment
++    start_experiment(args, args.cdlno_task, evaluation=bool(args.eval))
+ 
+ os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
+ 
+@@ -106,6 +109,8 @@
+                                       unified_pos=args.unified_pos,
+                                       H=h, W=h, **cdlno_model_kwargs(args)).cuda()
+         cdlno_run = StaticRun(args, model)
++        if cdlno_run.recorder is not None:
++            cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest, input_steps=T_in, output_steps=T, step=step))
+     else:
+         model = get_model(args).Model(space_dim=2,
+                                       n_layers=args.n_layers,
+@@ -130,6 +135,8 @@
+ 
+     scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=args.lr, epochs=args.epochs,
+                                                     steps_per_epoch=len(train_loader))
++    if cdlno_run is not None and cdlno_run.recorder is not None:
++        cdlno_run.recorder.record_training_setup(optimizer, scheduler)
+     myloss = TestLoss(size_average=False)
+ 
+     if eval:
+@@ -191,6 +198,8 @@
+                     plt.close()
+                 test_l2_full += myloss(pred.reshape(bsz, -1), yy.reshape(bsz, -1)).item()
+             print(test_l2_full / ntest)
++            if cdlno_run is not None and cdlno_run.recorder is not None:
++                cdlno_run.recorder.record_metrics(dict(test_full_loss=test_l2_full / ntest))
+     else:
+         for ep in range(args.epochs):
+ 
+@@ -250,6 +259,8 @@
+                     ep, train_l2_step / ntrain / (T / step), train_l2_full / ntrain, test_l2_step / ntest / (T / step),
+                         test_l2_full / ntest))
+ 
++            if cdlno_run is not None and cdlno_run.recorder is not None:
++                cdlno_run.recorder.record_epoch(ep + 1, dict(train_step_loss=train_l2_step / ntrain / (T / step), test_step_loss=test_l2_step / ntest / (T / step), test_full_loss=test_l2_full / ntest, train_full_loss=train_l2_full / ntrain))
+             if ep % 100 == 0:
+                 if cdlno_run is not None:
+                     cdlno_run.save(model)
+@@ -273,3 +284,5 @@
+ 
+ if __name__ == "__main__":
+     main()
++    if args.model == 'CDLNO':
++        finish_experiment(args)
+--- a/PDE-Solving-StandardBenchmark/exp_pipe.py
++++ b/PDE-Solving-StandardBenchmark/exp_pipe.py
+@@ -26,6 +26,9 @@
+ parser.add_argument('--save_name', type=str, default='pipe_UniPDE')
+ parser.add_argument('--data_path', type=str, default='/data/fno/pipe')
+ args = parse_cdlno_args(parser, 'pipe')
++if args.model == 'CDLNO':
++    from cdlno.experiment import start as start_experiment, finish as finish_experiment
++    start_experiment(args, args.cdlno_task, evaluation=bool(args.eval))
+ eval = args.eval
+ save_name = args.save_name
+ 
+@@ -116,6 +119,8 @@
+                                       unified_pos=args.unified_pos,
+                                       H=s1, W=s2, **cdlno_model_kwargs(args)).cuda()
+         cdlno_run = StaticRun(args, model)
++        if cdlno_run.recorder is not None:
++            cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest))
+     else:
+         model = get_model(args).Model(space_dim=2,
+                                       n_layers=args.n_layers,
+@@ -141,6 +146,8 @@
+     # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)
+     scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=args.lr, epochs=args.epochs,
+                                                     steps_per_epoch=len(train_loader))
++    if cdlno_run is not None and cdlno_run.recorder is not None:
++        cdlno_run.recorder.record_training_setup(optimizer, scheduler)
+     myloss = TestLoss(size_average=False)
+ 
+     if eval:
+@@ -217,6 +224,8 @@
+ 
+         rel_err /= ntest
+         print("rel_err:{}".format(rel_err))
++        if cdlno_run is not None and cdlno_run.recorder is not None:
++            cdlno_run.recorder.record_metrics(dict(relative_l2=rel_err))
+     else:
+         for ep in range(args.epochs):
+ 
+@@ -258,6 +267,8 @@
+ 
+             rel_err /= ntest
+             print("rel_err:{}".format(rel_err))
++            if cdlno_run is not None and cdlno_run.recorder is not None:
++                cdlno_run.recorder.record_epoch(ep + 1, dict(train_loss=train_loss, validation_relative_l2=rel_err))
+ 
+             if ep % 100 == 0:
+                 if cdlno_run is not None:
+@@ -279,3 +290,5 @@
+ 
+ if __name__ == "__main__":
+     main()
++    if args.model == 'CDLNO':
++        finish_experiment(args)
+--- a/PDE-Solving-StandardBenchmark/exp_plas.py
++++ b/PDE-Solving-StandardBenchmark/exp_plas.py
+@@ -26,6 +26,9 @@
+ parser.add_argument('--save_name', type=str, default='plas_Transolver')
+ parser.add_argument('--data_path', type=str, default='/data/fno/plas_N987_T20.mat')
+ args = parse_cdlno_args(parser, 'plasticity')
++if args.model == 'CDLNO':
++    from cdlno.experiment import start as start_experiment, finish as finish_experiment
++    start_experiment(args, args.cdlno_task, evaluation=bool(args.eval))
+ eval = args.eval
+ save_name = args.save_name
+ os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
+@@ -158,6 +161,8 @@
+                                       H=s1,
+                                       W=s2, **cdlno_model_kwargs(args)).cuda()
+         cdlno_run = StaticRun(args, model)
++        if cdlno_run.recorder is not None:
++            cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest, time_points=T, optimizer_updates_per_batch=T))
+     else:
+         model = get_model(args).Model(space_dim=2,
+                                       n_hidden=args.n_hidden,
+@@ -181,6 +186,8 @@
+ 
+     scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=args.lr, epochs=args.epochs,
+                                                     steps_per_epoch=len(train_loader))
++    if cdlno_run is not None and cdlno_run.recorder is not None:
++        cdlno_run.recorder.record_training_setup(optimizer, scheduler)
+     myloss = TestLoss(size_average=False)
+ 
+     if eval:
+@@ -250,6 +257,8 @@
+                 test_l2_full += myloss(pred.reshape(bsz, -1), yy.reshape(bsz, -1)).item()
+ 
+         print("test_step_loss:{:.5f} , test_full_loss:{:.5f}".format(test_l2_step / ntest / T, test_l2_full / ntest))
++        if cdlno_run is not None and cdlno_run.recorder is not None:
++            cdlno_run.recorder.record_metrics(dict(test_step_loss=test_l2_step / ntest / T, test_full_loss=test_l2_full / ntest))
+     else:
+         for ep in range(args.epochs):
+ 
+@@ -301,6 +310,8 @@
+                                                                                                              train_l2_step / ntrain / T,
+                                                                                                              test_l2_step / ntest / T,
+                                                                                                              test_l2_full / ntest))
++            if cdlno_run is not None and cdlno_run.recorder is not None:
++                cdlno_run.recorder.record_epoch(ep + 1, dict(train_step_loss=train_l2_step / ntrain / T, test_step_loss=test_l2_step / ntest / T, test_full_loss=test_l2_full / ntest))
+             if ep % 100 == 0:
+                 if cdlno_run is not None:
+                     cdlno_run.save(model)
+@@ -324,3 +335,5 @@
+ 
+ if __name__ == "__main__":
+     main()
++    if args.model == 'CDLNO':
++        finish_experiment(args)
+--- a/README.md
++++ b/README.md
+@@ -13,6 +13,8 @@
+ 上图是默认`front_latent_mode=full`，T在FFN2后、Up专属norm之前取得。八任务也支持`no_sa`（保留两次latent FFN、跳过完整SA子层）及`identity`（T直接等于Down输出），三者之后都保留Up和点更新。规则网格点FFN为普通`groups=1`的3×3 ConvFFN；潜空间无卷积。完整规格及最终核对见 [实施报告](docs/CDLNO_IMPLEMENTATION_REPORT.md)、[需求矩阵](docs/CDLNO_REQUIREMENTS_MATRIX.md)、[八任务清单](docs/CDLNO_TASK_LAUNCHERS.md) 和 [来源/许可](docs/CDLNO_THIRD_PARTY_NOTICES.md)。旧 Transolver 模型与脚本保留，下方原论文结果仅属于原 Transolver。
+ 
+ 交付通过静态、合成张量、原损失连接、真实 PyG 接口、checkpoint 和本地 GPU 检查。**尚未运行真实数据训练或完整抽样评价，未验证收敛、预测精度、真实 epoch 效率或远端目标环境。**
++
++新实验现在默认写入 `output/<数据集>/<UTC时间戳>/`，包含启动配置、实际参数量、训练日志/结果和各次评估结果。`bash tran_evaluate/train_eval.sh darcy --gpu 0` 可训练成功后自动评估；八任务命令及旧结果加载见 [统一实验记录](docs/CDLNO_EXPERIMENT_OUTPUTS.md)。
+ 
+ ## CDLNO 环境与共享包
+ 
+--- /dev/null
++++ b/cdlno/experiment.py
+@@ -0,0 +1,303 @@
++"""Observation-only CDLNO experiment records; no model or data imports.
++
++Entry points explicitly start/finish a session. Parsers and checkpoint loaders
++remain usable without process hooks or filesystem side effects from this module.
++"""
++from __future__ import annotations
++
++import atexit
++from datetime import datetime, timezone
++import importlib.metadata
++import json
++import math
++import os
++from pathlib import Path
++import platform
++import subprocess
++import sys
++import tempfile
++import time
++
++_SESSIONS = {}
++
++
++def timestamp():
++    return datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
++
++
++def default_directory(task):
++    root = Path(os.environ.get('CDLNO_RUNS_ROOT', Path(__file__).resolve().parents[1] / 'output'))
++    return (root / task / timestamp()).resolve()
++
++
++def _json(value):
++    if isinstance(value, dict):
++        return {str(k): _json(v) for k, v in value.items()}
++    if isinstance(value, (list, tuple)):
++        return [_json(v) for v in value]
++    if isinstance(value, Path):
++        return str(value)
++    if hasattr(value, 'detach'):
++        return _json(value.detach().cpu().tolist())
++    if hasattr(value, 'tolist'):
++        return _json(value.tolist())
++    if isinstance(value, float) and not math.isfinite(value):
++        return str(value)  # Explicit nonfinite value; never invalid JSON or silent zero.
++    return value
++
++
++def write_json(path, value):
++    path = Path(path)
++    with tempfile.NamedTemporaryFile(mode='w', dir=path.parent, prefix='.' + path.name,
++                                     suffix='.tmp', delete=False) as stream:
++        temporary = Path(stream.name)
++        try:
++            json.dump(_json(value), stream, indent=2, ensure_ascii=False, allow_nan=False)
++            stream.write('\n')
++            stream.flush()
++            os.fsync(stream.fileno())
++        except BaseException:
++            temporary.unlink(missing_ok=True)
++            raise
++    try:
++        os.replace(temporary, path)
++    finally:
++        temporary.unlink(missing_ok=True)
++
++
++class _Tee:
++    def __init__(self, original, log):
++        self.original, self.log = original, log
++
++    def write(self, text):
++        self.original.write(text)
++        self.log.write(text)
++        self.log.flush()
++        return len(text)
++
++    def flush(self):
++        self.original.flush()
++        self.log.flush()
++
++    def __getattr__(self, name):
++        return getattr(self.original, name)
++
++
++def session(args):
++    value = _SESSIONS.get(id(args))
++    return value if value is not None and value.args is args else None
++
++
++def reserve_directory(args, path):
++    """Adopt only this process's exact early reservation, never an arbitrary dir."""
++    path = Path(path).resolve()
++    active = session(args)
++    if active is not None and not active.evaluation and active.directory == path:
++        return
++    path.mkdir(parents=True, exist_ok=False)
++
++
++def start(args, task, *, evaluation=False, hparams=None):
++    if session(args) is not None:
++        raise RuntimeError('an experiment is already active for these arguments')
++    active = Experiment(args, task, evaluation=evaluation, hparams=hparams)
++    _SESSIONS[id(args)] = active
++    return active
++
++
++def finish(args):
++    active = session(args)
++    if active is not None:
++        active.finish()
++
++
++class Experiment:
++    def __init__(self, args, task, *, evaluation=False, hparams=None):
++        self.args, self.task, self.evaluation = args, task, evaluation
++        self.run_key = 'cdlno_run_dir' if hasattr(args, 'cdlno_run_dir') else 'run_dir'
++        requested = getattr(args, self.run_key)
++        self.directory = Path(requested).resolve() if requested is not None else default_directory(task)
++        if evaluation:
++            if requested is None or not (self.directory / 'architecture.json').is_file():
++                raise ValueError('evaluation requires an existing run with architecture.json')
++        else:
++            self.directory.mkdir(parents=True, exist_ok=False)
++        setattr(args, self.run_key, self.directory)
++        self.closed = False
++        self.members = {}
++        self.latest_epochs = {}
++        self.eval_directory = None
++        self.started = timestamp()
++        self.clock = time.monotonic()
++        self.result = dict(status='running', phase='startup', task=task,
++                           started_at_utc=self.started, pid=os.getpid(), metrics={})
++        self.config = dict(schema_version=1, task=task, model='CDLNO', run_directory=str(self.directory),
++                           started_at_utc=self.started, resolved_arguments=_json(vars(args)),
++                           hparams=_json(hparams), parameter_count_status='pending_model_construction',
++                           parameters=None, architecture=None, environment=self._environment(),
++                           code=self._code(), command=sys.argv, cwd=str(Path.cwd()))
++        if evaluation:
++            self.result['resolved_arguments'] = _json(vars(args))
++            self.result['environment'] = self.config['environment']
++            self.result['code'] = self.config['code']
++            self.result['command'] = sys.argv
++            self.result['hparams'] = _json(hparams)
++            self._ensure_eval()
++        else:
++            write_json(self.directory / 'config.json', self.config)
++        self._write_result()
++        self.stdout, self.stderr, self.exception_hook = sys.stdout, sys.stderr, sys.excepthook
++        log_path = (self.eval_directory / 'eval.log') if evaluation else (self.directory / 'train.log')
++        self.log = log_path.open('x', encoding='utf-8')
++        sys.stdout, sys.stderr = _Tee(self.stdout, self.log), _Tee(self.stderr, self.log)
++        sys.excepthook = self._exception
++        atexit.register(self._unfinished)
++        print('CDLNO experiment:', self.directory)
++        print('CDLNO phase:', 'evaluation' if evaluation else 'training')
++
++    @staticmethod
++    def _environment():
++        versions = {}
++        for name in ('torch', 'numpy', 'torch-geometric'):
++            try:
++                versions[name] = importlib.metadata.version(name)
++            except importlib.metadata.PackageNotFoundError:
++                versions[name] = None
++        result = dict(python=platform.python_version(), executable=sys.executable,
++                      platform=platform.platform(), packages=versions,
++                      cuda_visible_devices=os.environ.get('CUDA_VISIBLE_DEVICES'))
++        torch = sys.modules.get('torch')
++        if torch is not None:
++            result['torch_cuda_build'] = torch.version.cuda
++        return result
++
++    @staticmethod
++    def _code():
++        root = Path(__file__).resolve().parents[1]
++        try:
++            commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root,
++                                             stderr=subprocess.DEVNULL, text=True).strip()
++            dirty = bool(subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=normal'],
++                                                 cwd=root, stderr=subprocess.DEVNULL))
++            return dict(commit=commit, dirty=dirty)
++        except (OSError, subprocess.CalledProcessError):
++            return dict(commit=None, dirty=None)
++
++    def _ensure_eval(self):
++        if self.eval_directory is None:
++            parent = self.directory / 'evaluations'
++            parent.mkdir(exist_ok=True)
++            self.eval_directory = parent / timestamp()
++            self.eval_directory.mkdir(exist_ok=False)
++        return self.eval_directory
++
++    @property
++    def result_dir(self):
++        # Training's existing figures need no evaluation record until score runs.
++        return str(self._ensure_eval() if self.evaluation else self.directory / 'training_artifacts') + '/'
++
++    def attach_model(self, model, *, hparams=None, member=0, protocol=None):
++        params = dict(total=sum(p.numel() for p in model.parameters()),
++                      trainable=sum(p.numel() for p in model.parameters() if p.requires_grad))
++        parameter = next(model.parameters())
++        actual = dict(parameters=params, architecture=model.config.to_dict(),
++                      wrapper_architecture=model.adapter_architecture(),
++                      device=str(parameter.device), dtype=str(parameter.dtype))
++        self.members[str(member)] = actual
++        if not self.evaluation:
++            self.config.update(parameter_count_status='measured', parameters=params,
++                               architecture=actual['architecture'], wrapper_architecture=actual['wrapper_architecture'],
++                               members=self.members)
++            if hparams is not None:
++                self.config['hparams'] = _json(hparams)
++            if protocol is not None:
++                self.config.setdefault('protocol', {}).update(_json(protocol))
++            self.config['constructed_members_parameters'] = {
++                key: sum(item['parameters'][key] for item in self.members.values())
++                for key in ('total', 'trainable')}
++            write_json(self.directory / 'config.json', self.config)
++        else:
++            self.result['loaded_members'] = self.members
++        self.result['phase'] = 'model_ready'
++        self._write_result()
++
++    def update_protocol(self, values):
++        if not self.evaluation:
++            self.config.setdefault('protocol', {}).update(_json(values))
++            write_json(self.directory / 'config.json', self.config)
++
++    def record_training_setup(self, optimizer, scheduler):
++        if self.evaluation:
++            return
++        self.config['optimizer'] = dict(
++            type=type(optimizer).__module__ + '.' + type(optimizer).__name__,
++            parameter_groups=[{k: _json(v) for k, v in group.items() if k != 'params'}
++                              for group in optimizer.param_groups])
++        self.config['scheduler'] = dict(type=type(scheduler).__module__ + '.' + type(scheduler).__name__)
++        write_json(self.directory / 'config.json', self.config)
++
++    def record_epoch(self, epoch, metrics, *, member=0):
++        if self.evaluation or self.closed:
++            raise RuntimeError('epoch records require an active training run')
++        if not self.members:
++            raise RuntimeError('attach the real model before recording training')
++        row = dict(epoch=int(epoch), member=member, metrics=_json(metrics), recorded_at_utc=timestamp())
++        with (self.directory / 'train_history.jsonl').open('a', encoding='utf-8') as stream:
++            stream.write(json.dumps(row, ensure_ascii=False, allow_nan=False) + '\n')
++        self.latest_epochs[str(member)] = row
++        self.result.update(phase='training', latest_epochs=self.latest_epochs)
++        self._write_result()
++
++    def record_metrics(self, metrics):
++        self.result['metrics'].update(_json(metrics))
++        self._write_result()
++
++    def record_air_scores(self, result_dir):
++        """Import the evaluator's exact structured output, never rederive metrics."""
++        path = Path(result_dir) / 'score.json'
++        scores = json.loads(path.read_text())
++        self.record_metrics(dict(score=scores, score_file=str(path.relative_to(self.directory))))
++
++    def _write_result(self):
++        if self.evaluation:
++            write_json(self._ensure_eval() / 'results.json', self.result)
++            # Serialize concurrent evaluation index updates. Individual attempts
++            # are authoritative, including failed/interrupted ones.
++            import fcntl
++            with (self.directory / '.eval_index.lock').open('a') as lock:
++                fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
++                evaluations = []
++                for path in sorted((self.directory / 'evaluations').glob('*/results.json')):
++                    evaluations.append(dict(result_file=str(path.relative_to(self.directory)),
++                                            **json.loads(path.read_text())))
++                write_json(self.directory / 'eval_results.json', dict(evaluations=evaluations))
++        else:
++            write_json(self.directory / 'train_results.json', self.result)
++
++    def finish(self, *, status='completed', error=None):
++        if self.closed:
++            return
++        self.result.update(status=status, finished_at_utc=timestamp(),
++                           elapsed_wall_seconds=time.monotonic() - self.clock)
++        if not self.evaluation:
++            self.result['final_recorded_metrics_by_member'] = {
++                key: row['metrics'] for key, row in self.latest_epochs.items()}
++        if error is not None:
++            self.result['error'] = error
++        self._write_result()
++        self.closed = True
++        atexit.unregister(self._unfinished)
++        sys.stdout, sys.stderr, sys.excepthook = self.stdout, self.stderr, self.exception_hook
++        self.log.close()
++        _SESSIONS.pop(id(self.args), None)
++
++    def _exception(self, kind, value, tb):
++        try:
++            self.exception_hook(kind, value, tb)
++        finally:
++            self.finish(status='interrupted' if issubclass(kind, KeyboardInterrupt) else 'failed',
++                        error=f'{kind.__name__}: {value}')
++
++    def _unfinished(self):
++        if not self.closed:
++            self.finish(status='incomplete', error='process exited before explicit completion')
+--- /dev/null
++++ b/docs/CDLNO_EXPERIMENT_OUTPUTS.md
+@@ -0,0 +1,107 @@
++# CDLNO 实验目录与记录
++
++本次范围：八任务 CDLNO 的实验路径、配置、日志和结果记录。适用于 `full/no_sa/identity`、`off/entry/every_block` 及已有深度设置；模型数学和正式任务预设不变。旧 Transolver 入口及输出协议保留。该工作不代表可视化/断点续训 V2–V5 已接入。
++
++## 默认目录和生命周期
++
++默认根目录跟随实际 checkout：本地 `/home/hwz/CDLNO/output`，用户远端为 `/inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/transolver/CDLNO-w/output`。八个数据集目录为 `darcy/elasticity/airfoil/pipe/ns/plasticity/car/airfrans`。每次新训练使用 UTC 时间戳；Python 含微秒，shell 含纳秒。原子 `mkdir(exist_ok=False)` 防止覆盖；不复用旧实验目录。
++
++```text
++output/<dataset>/<timestamp>/
++  config.json
++  architecture.json
++  train.log
++  train_history.jsonl
++  train_results.json
++  model.pt                        # 六标准任务，原 state_dict
++  model_200.pth                   # Car 示例，原末轮整模型
++  CDLNO                           # AirfRANS 原整模型列表
++  member_000/model                # AirfRANS 原成员整模型
++  training_artifacts/             # 原入口需要的训练侧输出位置
++  eval_results.json               # 各次评估的索引及结果
++  evaluations/<eval_timestamp>/
++    eval.log
++    results.json
++    ...原任务图、数组、score.json/VTK...
++```
++
++三个 checkpoint 形式按任务实际出现，并非每个实验都同时生成。已有保存频率、序列化方式和严格加载协议未改动。没有把旧权重文件宣称为含 optimizer/scheduler/RNG 的完整续训包。
++
++有效 CLI 参数解析完成后、数据加载前，创建目录、`config.json`、运行中结果记录和日志。此时实际模型未构造，参数量明确为 `null`、`pending_model_construction`。在实际模型构造后、第一训练 batch 前写入 `measured`、总参数量/可训练参数量、架构、wrapper 配置、设备/dtype；不构造额外随机模型估算参数。
++
++`config.json` 还记录最终 CLI 参数、数据路径、超参数、代码 commit/dirty 状态、Python/torch/PyG 版本、启动命令和工作目录；实际 split 数量/时间条件和优化器参数组在原入口对应步骤补充。AirfRANS YAML 在数据加载前只读解析，原训练读取/合并逻辑保留；多成员模型的参数分别列于 `members`，累计已构造成员参数位于 `constructed_members_parameters`。
++
++训练每个已完成 epoch 追加 `train_history.jsonl`，并更新 `train_results.json` 中最近结果。`epoch=1` 指完成原循环 `ep=0`。训练成功且原 checkpoint 保存完成后才标记 `completed`。未捕获异常为 `failed`，Ctrl-C 为 `interrupted`，未走显式完成出口的正常进程退出为 `incomplete`；硬杀/断电可能保持 `running`，这不表示成功。参数解析、依赖导入失败发生在正式记录启动前，不保证产生目录。
++
++单独评估必须明确指定已有 run 或明确 `CDLNO_RUN_TAG`，不猜测最近一次训练。每次评估新建子目录和日志；配置及 sidecar 只读，`eval_results.json` 保留各次结果。索引写入使用文件锁及原子替换。实际权重形状、mode 和架构冲突继续由原严格校验拒绝。旧 `runs/CDLNO/...` 可通过显式 run 路径加载，即使不存在新 `config.json` 也不补写它。
++
++## 命令
++
++以下命令均在仓库根执行，每一行是一个独立选择。本次没有执行这些真实训练命令。
++
++```bash
++# 如先前手动 export 过固定 tag，取消后恢复每次自动时间戳。
++unset CDLNO_RUN_TAG
++
++# 推荐先预览，不加载数据、不创建输出目录。
++bash tran_evaluate/train_eval.sh darcy --gpu 0 --dry-run
++
++# 每个任务：训练成功后，使用同一目录和配置评估。
++bash tran_evaluate/train_eval.sh darcy --gpu 0
++bash tran_evaluate/train_eval.sh elasticity --gpu 0
++bash tran_evaluate/train_eval.sh airfoil --gpu 0
++bash tran_evaluate/train_eval.sh pipe --gpu 0
++bash tran_evaluate/train_eval.sh ns --gpu 0
++bash tran_evaluate/train_eval.sh plasticity --gpu 0
++bash tran_evaluate/train_eval.sh car --gpu 0
++CUDA_VISIBLE_DEVICES=0 bash tran_evaluate/train_eval.sh airfrans
++
++# 三种前段模式共用参数。选择一个模式即可；每次新训练自动新目录。
++bash tran_evaluate/train_eval.sh darcy --gpu 0 --front-latent-mode no_sa
++bash tran_evaluate/train_eval.sh darcy --gpu 0 --front-latent-mode identity
++bash tran_evaluate/train_eval.sh darcy --gpu 0 --front-latent-mode full
++
++# 用户此前指定的 F3/L8、完整前段、关闭 CDPA。
++bash tran_evaluate/train_eval.sh darcy --gpu 0 --front-blocks 3 --n-layers 8 --cdpa-mode off
++
++# 单独训练仍自动创建 timestamp。
++bash tran_evaluate/ns.sh train --gpu 0
++
++# 复评：替换下列时间戳为控制台打印的真实目录，重复自定义架构参数。
++bash tran_evaluate/darcy.sh eval --gpu 0 --front-blocks 3 --cdpa-mode off \
++  --cdlno-run-dir "$PWD/output/darcy/实际时间戳"
++bash tran_evaluate/car.sh eval --gpu 0 --run_dir "$PWD/output/car/实际时间戳"
++CUDA_VISIBLE_DEVICES=0 bash tran_evaluate/airfrans.sh eval --run_dir "$PWD/output/airfrans/实际时间戳"
++```
++
++默认依然 F2/L8/full/entry，Pipe M32，其余 M64；epochs PDE500、Car200、AirfRANS398。评估省略 mode 可从已有 sidecar 恢复；其他自定义模型深度、宽度、Car fold/epochs、Air task/nmodel/budget 等仍需重复，不自动重建全部训练参数。
++
++`CDLNO_RUNS_ROOT` 可显式改变输出根；`CDLNO_RUN_TAG` 可选自定义唯一标识。指定 tag 后三种模式不再自动添加后缀，每个新实验必须选择新 tag，避免碰撞。`--cdlno-run-dir`（六标准任务）/`--run_dir`（工业任务）仍最后覆盖默认路径；显式路径必须是新目录，复评则用已有目录。不要对同一目录重跑 `train_eval.sh` 来复评。
++
++Car 的 `--save_dir` 始终是预处理数据目录，不是模型目录。Air 的 `--save_path` 保留旧分支意义，CDLNO 的运行位置由 `--run_dir`/统一输出根决定。Air 训练 `--my_path` 指 Dataset，评估指其父目录；根脚本继续自动处理。Car 阻力评估固定 raw 路径/fold0 限制保持，详见 [启动说明](../tran_evaluate/README.md)。
++
++## 指标来源
++
++| 任务 | 训练记录 | 独立评估记录 |
++|---|---|---|
++| Darcy | 原已归一分母的 train_loss、derivative_regularizer、validation_relative_l2 | 原解码后 relative_l2 |
++| Elasticity/Airfoil/Pipe | 原 train_loss、validation_relative_l2 | 原 relative_l2 |
++| NS | 原 train_step/full、test_step/full 平均 loss | 原打印的 test_full_loss；10→10 不变 |
++| Plasticity | 原 train_step、test_step/full loss | 原 test_step/full；20 次独立时间前向不变 |
++| Car | 原 train 返回的 pressure/velocity 分项；原外层日志另用 upstream_* 字段标记 | 原压力/速度 relative L2、RMSE、阻力误差、Spearman、原计时 |
++| AirfRANS | 原 MSE_weighted 的 train_loss、surface/volume 及通道分项；有实际验证的 epoch 才记录验证值 | 原 `score.json` 的结构化指标直接拷入 results；原数组/VTK 留在该次评估目录 |
++
++Car 原外层日志的 pressure/velocity 名称对调仍保留；新分项按真实返回值命名，不改内部损失。Air 原验证标量存在 `MSE_weigthed` 拼写分支，且抽样后分项均值与最后一次 `val_loss` 不等价；故将原标量称为 `upstream_validation_log_value`，独立记录原已计算的 surface/volume 均值，不伪称修正后的验证目标。Car/Air 原 forward 计时未加 GPU 同步，不作为本次可靠性能测量。
++
++## 验证与边界
++
++实际结果见 [交付报告](CDLNO_EXPERIMENT_OUTPUTS_REPORT.md)。本次只运行无真实数据的检查：24 个 task×mode 记录/合成步/checkpoint、多次评估与三工作目录新进程、失败记录、路径预览、冻结 AST。原损失/时间循环/GPU 合成回归复用既有套件。新增合成 MSE 检查只说明模型与记录接口；不称为原数据集训练。
++
++无真实数据训练、收敛、精度、完整物理指标或远端目标环境验收。当前机器缺 `torch_cluster`，Air 完整抽样 epoch 的新增测试跳过；其可安全复用的原加权 loss/梯度和真实记录片段有单独验证。没有安装替代依赖。远端可在既有环境运行：
++
++```bash
++PYTHONPATH=tests:. python -B -m unittest test_experiment_records -v
++CDLNO_LRSA_ROOT=/path/to/audited/LRSA-Operator python -B -m unittest discover -s tests -p 'test_*.py' -v
++```
++
++上述快照AST回归依赖真正修改前的 `output-before-kql2cnpe/source`；远端可同步该保留快照并设置 `CDLNO_OUTPUT_BASELINE=/path/to/output-before-kql2cnpe`。缺快照则该项明确跳过，不能在修改后重新生成“旧基准”。此前A1/LRSA等回归的外部快照也需按原说明提供。
+--- /dev/null
++++ b/docs/CDLNO_EXPERIMENT_OUTPUTS_REPORT.md
+@@ -0,0 +1,88 @@
++# 统一实验目录和记录交付报告（2026-09-15）
++
++本轮只完成用户批准的八任务 CDLNO 输出归档与配置/日志/结果记录。新实验默认 `output/<dataset>/<UTC timestamp>`；训练启动即预留目录并写配置，实际模型构造后补全参数量。训练与评估结果分别记录，重复评估不覆盖历史。模型、数据和训练计算没有修改。
++
++## A. 完成范围
++
++- 六标准任务、Car、AirfRANS 的实际训练/评估入口均已接入，共用 `cdlno.experiment`；三个前段模式及已有 CDPA 模式无需单独实现。
++- 数据加载前写 `config.json`、`train.log`/`eval.log`、运行状态；模型构造后、首 batch 前记录实测 total/trainable 参数、完整架构/adapter、设备/dtype、训练超参数、优化器组配置、实际数据 split 数量/时间条件。
++- `train_history.jsonl` 保存原 epoch 指标；`train_results.json` 保存状态、各成员最近/末轮指标；每次 eval 的 `results.json` 和 `eval.log` 位于独立 `evaluations/<timestamp>`，根 `eval_results.json` 聚合索引。
++- 顺序脚本只生成一个 run tag，训练成功后评估同一目录；显式 run 参数最后覆盖。独立 eval 必须明确已有 run/tag，不猜 latest。旧 run 不迁移、不删除、不补写 config/sidecar。
++- 原 Transolver 路径/命令保留。原 checkpoint 保存频率、state_dict/整对象/列表形式、strict 校验均保留。本轮没有接入 V2–V5 的周期图/完整恢复训练功能。
++
++## B. 文件和增量 diff
++
++实际基线：`main`，HEAD `769fa333742f73c132868cf560bce5ec21529362`。工作区在本轮开始前已有大量接受的未提交 A1–A4/V1/脚本修改，完整留存在 `/home/hwz/CDLNO-artifacts/output-before-kql2cnpe/source`（312 文件），附 hashes、HEAD、status。不能用对 HEAD 的累计 diff 冒充本轮 diff。工作期间另外出现的用户 `PLAN_KCDNO/KCDNO_Model_Specification_v1.md` 保持原样，不属于本轮实现，也不计入本轮patch。
++
++本轮可审查 patch：[output_audit/incremental.patch](output_audit/incremental.patch)，清单及行数：[output_audit/changes.json](output_audit/changes.json)。
++
++| 文件/区域 | 本轮用途 |
++|---|---|
++| 新 `cdlno/experiment.py` | 原子预留、初始配置、实测模型附加、Python stdout/stderr 日志、epoch/result 写入、异常状态、并发复评索引 |
++| 标准 `cdlno_entry.py`、Car `models/cdlno_run.py`、Air `cdlno_entry.py` | 只允许认领本进程该 args 已预留目录；关联 recorder；保留原 sidecar 和 checkpoint 校验/序列化 |
++| 六个 `exp_*.py` | CDLNO 分支启动/结束；原模型构造后和 scheduler 建立后记录配置；epoch/最终 eval 只读取已有指标 |
++| 工业 `main.py/main_evaluation.py`（4 文件） | 同上；Air 各成员统计、训练后可选 score 分开记录；原输出导向当前 run |
++| 工业 `train.py`（2 文件） | 增加默认 None 的可选 record 参数；epoch 后读取既有指标；旧调用参数及计算不变 |
++| `path.sh`、根 common/standard/car/airfrans/train_eval shell | 默认 output 根和时间戳；明确 eval 路径；余参仍最后覆盖；dry-run 不创建文件 |
++| `.gitignore` | 忽略根 `/output/` |
++| 新 tests + 5 个既有测试 | 新目录/记录/往返/失败验证；既有冻结检查只移除精确记录语句后比较完整 AST，不跳过训练冻结检查 |
++| README、命令/交付文档、STATUS、AGENTS、memory | 当前目录规则、八任务命令、结果与边界；保留历史文档 |
++
++## C. 模型公式/形状与记录对应
++
++本轮无新数学模块；原 `full/no_sa/identity` 的前段公式、`T_i`、CDPA 两级融合、bridge/rear/readout 均字节不变。原输出六标准任务 `[B,N,C_out]`，Car/Air `[N,4]`。参数量直接取实际 `model.parameters()` 的 `numel()` 及 `requires_grad`，不是理论 MAC 或另建随机模型的估计。
++
++记录只接收原循环已计算的 loss/metric，必要时 `detach().cpu().tolist()` 用于 JSON；不替换用于 backward 的 Tensor。Darcy 保留原 normalizer/decode/导数项；NS 保留10次 forward 后1次 backward/step；Plasticity 保留20次独立时刻更新和原 scheduler 节奏。详细逐任务字段见 [指标来源表](CDLNO_EXPERIMENT_OUTPUTS.md#指标来源)。
++
++Car 外层旧日志变量名互换：新记录分项对应真实返回 `pressure, velocity`，旧组合日志值明确命名 `upstream_*`，不改真实训练损失。Air 保留 `MSE_weighted`；原验证 typo 分支和抽样聚合原样保留，新记录明确区分分项均值与原外层 val_loss，不声称修正旧指标。
++
++## D. 实际命令、环境和结果
++
++环境：[environment.json](output_audit/environment.json)：Python3.13.9，torch2.13.0+cu130，CUDA build13.0，PyG2.3.1，RTX5090 Laptop GPU。保留用户远端 Python3.10/torch2.11/cu128 作为目标，未安装/升级/替换任何依赖。未在远端执行。
++
++```bash
++PYTHONPATH=tests:. python -B -m unittest test_experiment_records -v
++CDLNO_LRSA_ROOT=/home/hwz/LRSA-Operator python -B -m unittest discover -s tests -p 'test_*.py' -v
++git diff --check
++```
++
++| 范围 | 实际结果 |
++|---|---|
++| 新记录测试 | 9 个 test methods，12.872s，OK，1 个 Air sampled-epoch 子项跳过；[日志](output_audit/record-tests.txt) |
++| 最终完整套件 | 212 tests，142.652s，0 failures/errors，1 skipped 子项；[日志](output_audit/final-regression.txt) |
++| 24 task×mode | 初始 pending config→真实参数、合成 MSE forward/loss/backward/AdamW step、原格式 save/load、chunk0→1、每次两次 eval、sidecar/config 字节保留通过 |
++| 原损失 | 既有 A3 等原 loss/normalizer/时间循环/PyG 测试实际重跑通过；另通过 Air 原 `MSE_weighted` loss 梯度及真实 epoch record AST 片段，未混称完整抽样训练 |
++| Car 完整合成 epoch | 真实 PyG、原 train.main、2epochs；有/无 observer 同权重、同 torch/Python/NumPy RNG 完全一致；记录分项等于原函数实际返回 |
++| 工业/标准新进程 | 从三个原工作目录加载包、执行记录生命周期及 state_dict/整对象/列表加载，输出完全一致 |
++| 静态冻结 | 86 个原已有核心/模型/配置/数据/utils/脚本/性能文件字节相同；12 个 entry/train 完整 AST 去除精确观察语句后等于本轮前版本 |
++| 原 upstream 冻结 | 7 项定向检查通过，0.175s；含基线投影、数据/指标/旧模型原文件；工业 train.py 为精确观察语句剔除后 AST 比较，其他仍字节比较 |
++| 路径 | 8任务×默认/显式路径=16个顺序预览对，两步目录一致，支持空格、最后参数覆盖、dry-run零输出文件；8个独立无路径eval清晰拒绝；既有48个模式/parser检查重跑通过 |
++| 失败/复评 | FileNotFoundError/Ctrl-C/无显式完成退出均留记录；已有目录拒绝；旧无config run可eval；重复eval各有独立日志/结果 |
++| GPU | 完整套件中既有实际 GPU 合成/精度/梯度/保存恢复检查通过；本轮没有真实任务GPU训练或性能跑分 |
++| 语法 | 13个shell通过 bash -n；变更Python通过3.10语法解析；diff空白检查通过 |
++
++初次完整回归（203 tests）出现8失败/1错误：[初次日志](output_audit/first-regression.txt)。原因是原目录命名断言和禁止任何入口/训练源码变化的旧冻结检查尚未适配授权记录逻辑；修订仅限新目录规则和精确 AST 观察语句剔除，并新增对312文件快照的冻结证据。另一个定向检查曾漏导入 projection，已修正测试导入。Air 完整 sampled epoch 探测发现本机 `torch_cluster` 缺失，明确跳过且不伪造依赖。最终无失败。
++
++## E. 冻结区域证据
++
++[freeze.json](output_audit/freeze.json) 包含全部冻结清单。既有 `cdlno/config.py/core.py/modules.py/cdpa.py/standard.py/airfrans.py/checkpoint.py`、工业 Model、八个 JSON/YAML、原 Transolver 模型/脚本、dataset/utils、V1 续训基础、性能工具与快照一致。
++
++全部10个实际 exp/main 及2个工业 train 的完整 AST，经 [精确记录投影](../tests/output_recording_projection.py) 后与本轮前版本相等。不是只检查几个 loss 字符串；能检测数据读取、点序、归一化、原模型调用、optimizer/scheduler、时间回填/训练循环、指标和 checkpoint 计算被意外修改。
++
++运行记录不会注册模型参数、改变 forward 签名、初始化权重、消耗 torch/Python/NumPy 模型 RNG。实际 synthetic 参数/训练结果和旧 full 回归已验证；固定保存协议和旧 checkpoint 接入未被替换成新 resume 协议。
++
++## F. 自审及剩余限制
++
++交付前已自行审查：
++
++1. 目录提前创建与保护：先 config pending，后真实参数；只能原 args 身份认领本进程预留目录，外来已存在目录拒绝。失败/重复评估和干跑均有实际证据。
++2. train/eval 路径：组合脚本只生成一次时间戳；最后显式路径一致；单独eval不能猜最新；旧run无config仍加载，sidecar/config字节不变。
++3. 记录值与训练计算：完整 AST 相等，Car记录分项来源正确、训练权重/RNG精确一致，Air真实加权loss与记录片段通过。
++4. 模型与兼容：冻结核心字节一致，24模式接口/检查点及旧基准回归通过；没有把weights文件称为完整续训状态。
++5. 证据归因：真实PyG对象不等于真实数据；本机GPU合成通过不等于远端验收；指标数组与原score文件保留，不从stdout拼凑精度。
++
++当前未发现本轮范围内待修复缺陷。具体未验证项：本机无torch_cluster，Air完整抽样epoch记录测试未执行；原抽样/图/完整物理评价不变但本轮未用真实数据运行。未验证远端完整数据读取、收敛、实际精度、真实epoch效率、磁盘断电恢复或并发跨网络文件系统锁行为。硬杀可能留下running状态，不能将其当作成功。独立V1的完整恢复基础尚未接入八任务，V2–V5仍未执行。
++
++八任务可运行命令、复评和自定义目录见 [使用说明](CDLNO_EXPERIMENT_OUTPUTS.md#命令)。无需审批新的架构决定；本次按批准的输出管理方案交付供审查。
++
++本阶段结束，未执行下一阶段。
+--- a/docs/CDLNO_FRONT_ABLATION_A2_COMMANDS.md
++++ b/docs/CDLNO_FRONT_ABLATION_A2_COMMANDS.md
+@@ -1,4 +1,6 @@
+ # A2：八任务前段消融训练与评估命令
++
++当前输出规则（2026-09-15）：默认改为 `output/<dataset>/<timestamp>`。以下显式旧路径仍能加载；历史按模式追加目录后缀的规则已由时间戳规则替代。选择固定 `CDLNO_RUN_TAG` 时，不同模式必须使用不同tag；优先使用不设tag的 `train_eval.sh TASK --front-latent-mode MODE`，详见 [统一实验记录](CDLNO_EXPERIMENT_OUTPUTS.md)。
+ 
+ A4交付时重新核对本页实际脚本/参数和预览命令，仍适用于full/no_sa/identity；见[A4报告](CDLNO_FRONT_ABLATION_A4.md)。两个消融默认从头训练，不提供跨模式权重迁移。本页是训练/评估命令，不包含尚未接入任务入口的V1续训公共组件。
+ 
+@@ -7,7 +9,7 @@
+ ```bash
+ cd /inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/transolver/CDLNO-w
+ mode=no_sa                 # 可改为 full 或 identity
+-export CDLNO_RUN_TAG=trial1 # 选择尚未使用的标识；已存在目录会拒绝再次训练
++export CDLNO_RUN_TAG="trial1_${mode}" # 每次实验选择新标识，禁止覆盖；不设tag则自动时间戳
+ ```
+ 
+ 下面每行是独立任务，选择需要的一行运行。训练成功后才评估，同一个mode和run贯穿两步。模式属于共享参数，应放在 `--train-args/--eval-args` 之前；其余用户覆盖仍放在默认值后面。
+@@ -61,15 +63,16 @@
+ 
+ NS仍不裁剪梯度；其余标准任务clip0.1。原optimizer/scheduler、损失、时间语义均不变。NS保持10→10及训练真值/测试预测回填；Plasticity仍按20个时间点分别更新，原时间嵌入不变。
+ 
+-根任务脚本默认run路径，R=`CDLNO_RUNS_ROOT`，tag=`CDLNO_RUN_TAG`：
++当前根任务脚本默认run路径，R=`CDLNO_RUNS_ROOT`（默认仓库根/output），tag为明确设置的 `CDLNO_RUN_TAG` 或每次训练自动生成的UTC时间戳：
+ 
+-| 类别 | full（保持原路径） | no_sa / identity |
+-|---|---|---|
+-| 六标准任务 | `R/<task>/<tag>` | `R/<task>/<tag>_no_sa` / `<tag>_identity` |
+-| Car | `R/car/fold0_<tag>` | `R/car/fold0_<tag>_no_sa` / `..._identity` |
+-| AirfRANS | `R/airfrans/full_<tag>` | `R/airfrans/full_<tag>_no_sa` / `..._identity` |
++| 类别 | 三模式通用目录 |
++|---|---|
++| 六标准任务 | `R/<task>/<timestamp或tag>` |
++| Car | `R/car/<timestamp或tag>` |
++| AirfRANS | `R/airfrans/<timestamp或tag>` |
+ 
+-显式 `--cdlno-run-dir`（标准）或 `--run_dir`（工业）保持用户路径，不追加模式；请选择不同的新目录。已有目录拒绝再次训练，不清空、不resume。直接使用Python入口/子项目脚本且省略run目录时，原自动运行名在消融模式下加入模式后缀。标准任务显式 `--save_name` 原样保留，现有唯一目录及覆盖防护继续生效。
++每种模式每次训练获得独立时间戳。手动固定tag时必须为新实验换tag；不能只改变mode并复用原tag。
++显式 `--cdlno-run-dir`（标准）或 `--run_dir`（工业）保持用户路径，不追加模式；请选择不同的新目录。已有目录拒绝再次训练，不清空、不resume。直接使用Python入口/子项目脚本且省略run目录时，也使用统一output根和新的UTC时间戳。标准任务显式 `--save_name` 原样保留，现有唯一目录及覆盖防护继续生效。
+ 
+ ## 评估已有checkpoint
+ 
+--- a/docs/CDLNO_IMPLEMENTATION_REPORT.md
++++ b/docs/CDLNO_IMPLEMENTATION_REPORT.md
+@@ -1,4 +1,6 @@
+ # CDLNO 最终实施与综合审查报告
++
++更新（2026-09-15）：八任务统一实验输出与记录已完成。新训练默认 `output/<dataset>/<timestamp>`；模型/数据/训练计算未改。配置、实际参数量、训练与独立评估结果见 [本次报告](CDLNO_EXPERIMENT_OUTPUTS_REPORT.md)。Final212tests OK（1项Air抽样环境缺依赖跳过），无真实训练。旧checkpoint格式保留；周期可视化/任务完整resume接入仍不在本次范围。
+ 
+ 2026-09-15补充A4：A3已由用户审查通过，三种前段模式的完整交付见[A4报告](CDLNO_FRONT_ABLATION_A4.md)及[八任务命令](CDLNO_FRONT_ABLATION_A2_COMMANDS.md)。full仍默认；no_sa只删除完整前段SA子层/norm，identity令pre-Up T=S并删除前段两FFN/SA/norm。后段、CDPA、bridge、最终HF读出及数据训练协议不变。性能工具按实际子层计数，matched LRSA固定full；本机有限性能与未验证范围在新报告中。下方阶段10原结果按历史full范围保留，不能外推到所有front模式。另行V1完整归档公共组件已完成，但任务resume/周期图尚未接入，A4没有推进V2–V5。
+ 
+--- a/docs/CDLNO_IMPLEMENTATION_STATUS.md
++++ b/docs/CDLNO_IMPLEMENTATION_STATUS.md
+@@ -1,4 +1,12 @@
+ # CDLNO 实施状态
++
++## 2026-09-15：统一实验目录与记录完成，待审查
++
++用户批准的新范围已完成：八任务CDLNO默认 `output/<dataset>/<UTC timestamp>`，有效参数解析后/数据加载前预留目录写config/log；真实model后补total/trainable/architecture/adapter/optimizer和实际协议。训练history/results、每次eval独立子目录+根索引；old runs显式加载、sidecar/config不改写，strict和原checkpoint格式不变。全模式适用，模型/数据/优化/时间/指标计算冻结。见 [报告](CDLNO_EXPERIMENT_OUTPUTS_REPORT.md)、[命令](CDLNO_EXPERIMENT_OUTPUTS.md)、[证据](output_audit/)。
++
++Final212tests/142.652s，0fail/error，1Air sampled-epoch子项因本机torch_cluster缺失skip；新9test methods/12.872s，24任务模式合成记录/step/checkpoint+复评、三原cwd新进程、Car完整合成epoch有无记录权重/RNG精确、Air原weighted loss/梯度+真实记录AST片段通过。既有实际GPU套件重跑通过；未运行真实数据/远端目标环境/完整Air抽样评价。86已有核心/model/preset/data/utils/script/tool文件hash相同，12entry/train完整AST仅移除精确记录语句后与本轮312文件快照相同：`/home/hwz/CDLNO-artifacts/output-before-kql2cnpe`。先前未提交A1–A4/V1等修改保留。
++
++原模型checkpoint保存频率/格式保留；本轮不是V2–V5任务resume/周期可视化接入，不能宣称已有任务权重能完整恢复optimizer/RNG。无commit/push/真实训练。阶段结束，未执行下一阶段。旧状态如下保留为历史。
+ 
+ 更新日期：2026-09-15。
+ 
+--- a/memory/current-state.md
++++ b/memory/current-state.md
+@@ -1,4 +1,8 @@
+ # Current project state
++
++## Latest: experiment output management complete (2026-09-15)
++
++User approved unified output/<dataset>/<timestamp> only. EightCDLNO entries create startup config/log before data; actual parameters/architecture/optimizer/protocol follow real model setup. Train results separate from each unique eval results/index. Model math/presets/data/train/eval computations untouched, old checkpoint formats/strict checks preserved, no V2–V5 resume/viz task integration. Report/commands: docs/CDLNO_EXPERIMENT_OUTPUTS_REPORT.md and CDLNO_EXPERIMENT_OUTPUTS.md. Snapshot312files /home/hwz/CDLNO-artifacts/output-before-kql2cnpe; preserve previous dirty work. Final212tests OK/142.652s,1Air full sampling subcase skipped (no torch_cluster);24mode recording/checkpoint+threecwd+Car exact synthetic epoch weights/RNG and Air original weighted kernel/record fragment passed.86existing fileshash same,12complete entry/train AST observation projection equal. No actual data training/remote target/full sampling metric acceptance. Current timestamp path supersedes older mode-suffix/fold0/full path defaults; explicit old paths remain loadable. Stop this scope, no next phase.
+ 
+ Last reviewed: 2026-09-15
+ 
+--- a/path.sh
++++ b/path.sh
+@@ -20,7 +20,7 @@
+ export CDLNO_CAR_CACHE_ROOT="${CDLNO_CAR_CACHE_ROOT:-${CDLNO_DATA_ROOT}/mlcfd_data/preprocessed_data}"
+ export CDLNO_AIRFRANS_DATASET="${CDLNO_AIRFRANS_DATASET:-${CDLNO_DATA_ROOT}/AirfRANS/Dataset}"
+ 
+-export CDLNO_RUNS_ROOT="${CDLNO_RUNS_ROOT:-${CDLNO_REPO_ROOT}/runs/CDLNO}"
++export CDLNO_RUNS_ROOT="${CDLNO_RUNS_ROOT:-${CDLNO_REPO_ROOT}/output}"
+ # Change the tag (or explicit run-dir argument) for each new experiment.
+-export CDLNO_RUN_TAG="${CDLNO_RUN_TAG:-entry}"
++# CDLNO_RUN_TAG is optional; each new training invocation gets a timestamp.
+ export CDLNO_PYTHON="${CDLNO_PYTHON:-python}"
+--- /dev/null
++++ b/tests/output_recording_projection.py
+@@ -0,0 +1,62 @@
++"""Remove only the approved observational additions for exact frozen AST checks."""
++import ast
++
++
++class WithoutRecording(ast.NodeTransformer):
++    def visit_ImportFrom(self, node):
++        if node.module == 'cdlno.experiment':
++            return None
++        return node
++
++    def visit_Expr(self, node):
++        if isinstance(node.value, ast.Call):
++            function = ast.unparse(node.value.func)
++            if function in ('start_experiment', 'finish_experiment') or function in {
++                'cdlno_run.recorder.attach_model', 'cdlno_run.recorder.update_protocol',
++                'cdlno_run.recorder.record_training_setup',
++                'cdlno_run.recorder.record_epoch', 'cdlno_run.recorder.record_metrics',
++                'cdlno_run.recorder.record_air_scores'}:
++                return None
++        return self.generic_visit(node)
++
++    def visit_With(self, node):
++        if any(ast.unparse(item.optional_vars) == 'config_file'
++               for item in node.items if item.optional_vars is not None):
++            return None
++        return self.generic_visit(node)
++
++    def visit_Assign(self, node):
++        if ast.unparse(node.targets[0]) == 'cdlno_run.recorder':
++            return None
++        if ast.unparse(node.targets[0]) in ('score_path', 'score_array_path'):
++            if ast.unparse(node.value) in ('cdlno_run.recorder.result_dir', 'score_path'):
++                return None
++        return self.generic_visit(node)
++
++    def visit_If(self, node):
++        if ast.unparse(node.test) == 'record is not None':
++            return None
++        node = self.generic_visit(node)
++        return node if node.body else None
++
++    def visit_Call(self, node):
++        # Only remove the conditional observer kwargs from the two train calls.
++        if ast.unparse(node.func) == 'train.main':
++            node.keywords = [kw for kw in node.keywords if not (
++                kw.arg is None and isinstance(kw.value, ast.IfExp)
++                and ast.unparse(kw.value.test) == 'cdlno_run is not None'
++                and isinstance(kw.value.body, ast.Call)
++                and ast.unparse(kw.value.body.func) == 'dict'
++                and {k.arg for k in kw.value.body.keywords} <= {'record', 'record_member'})]
++        return self.generic_visit(node)
++
++    def visit_FunctionDef(self, node):
++        if node.name == 'main':
++            while node.args.args and node.args.args[-1].arg in ('record', 'record_member'):
++                node.args.args.pop()
++                node.args.defaults.pop()
++        return self.generic_visit(node)
++
++
++def strip_recording(tree):
++    return WithoutRecording().visit(tree)
+--- a/tests/test_airfrans.py
++++ b/tests/test_airfrans.py
+@@ -1,5 +1,6 @@
+ """Synthetic AirfRANS interfaces; original data/metrics entrypoints never run."""
+ import ast
++from output_recording_projection import strip_recording
+ import copy
+ from contextlib import redirect_stdout
+ import importlib.util
+@@ -406,7 +407,7 @@
+                 if node.id=='score_path': return ast.Constant(value='scores')
+                 return node
+         for filename in ('main.py','main_evaluation.py'):
+-            projected=Project().visit(ast.parse((AIR/filename).read_text()))
++            projected=Project().visit(strip_recording(ast.parse((AIR/filename).read_text())))
+             self.assertEqual(ast.dump(projected),ast.dump(ast.parse(original(filename))),filename)
+ 
+     def test_frozen_training_sampling_metrics_and_original_models(self):
+@@ -417,7 +418,11 @@
+         for name in names:
+             if Path(name).name in ('main.py','main_evaluation.py','params.yaml'): continue
+             expected=subprocess.check_output(['git','show',BASE+':'+name],cwd=ROOT)
+-            self.assertEqual((ROOT/name).read_bytes(),expected,name); count+=1
++            if Path(name).name == 'train.py':
++                self.assertEqual(ast.dump(strip_recording(ast.parse((ROOT/name).read_text()))), ast.dump(ast.parse(expected)), name)
++            else:
++                self.assertEqual((ROOT/name).read_bytes(),expected,name)
++            count+=1
+         self.assertTrue((AIR/'params.yaml').read_text().startswith(original('params.yaml')))
+         print('AirfRANS original frozen files byte-identical:',count)
+ 
+--- /dev/null
++++ b/tests/test_experiment_records.py
+@@ -0,0 +1,324 @@
++"""Output lifecycle and observational regression, with no real dataset entry imports."""
++import ast
++from contextlib import redirect_stdout
++import copy
++import importlib.util
++import io
++import json
++import os
++from pathlib import Path
++import shlex
++import subprocess
++import sys
++import tempfile
++import unittest
++from unittest.mock import patch
++
++import torch
++import test_front_task_modes as task_modes
++from cdlno.experiment import start, finish, reserve_directory, default_directory
++from output_recording_projection import strip_recording
++
++ROOT = Path(__file__).resolve().parents[1]
++BEFORE = Path(os.environ.get('CDLNO_OUTPUT_BASELINE', '/home/hwz/CDLNO-artifacts/output-before-kql2cnpe')) / 'source'
++
++
++class ExperimentRecords(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        cls.threads = torch.get_num_threads()
++        torch.set_num_threads(1)
++
++    @classmethod
++    def tearDownClass(cls):
++        torch.set_num_threads(cls.threads)
++
++    def test_all_task_modes_early_config_actual_counts_epochs_repeat_eval_checkpoint(self):
++        for task in task_modes.TASKS:
++            for mode in task_modes.MODES:
++                with self.subTest(task=task, mode=mode), tempfile.TemporaryDirectory() as folder, redirect_stdout(io.StringIO()):
++                    path = Path(folder) / 'output' / task / 'timestamp'
++                    flags = [*task_modes.SMALL, '--front-latent-mode', mode, *task_modes.run_option(task, path)]
++                    args = task_modes.parse(task, flags)
++                    record = start(args, task)
++                    try:
++                        self.assertTrue((path / 'train.log').exists())
++                        pending = json.loads((path / 'config.json').read_text())
++                        self.assertEqual(pending['parameter_count_status'], 'pending_model_construction')
++                        self.assertIsNone(pending['parameters'])
++                        self.assertEqual(pending['resolved_arguments']['front_latent_mode'], mode)
++                        print('early config exists before constructing real model')
++                        model = task_modes.build(task, args)
++                        run = task_modes.make_run(task, args, model)
++                        if task == 'airfrans':
++                            record.attach_model(model, hparams=run.hparams, protocol=run.contract)
++                        attached = json.loads((path / 'config.json').read_text())
++                        self.assertEqual(attached['parameters']['total'], sum(p.numel() for p in model.parameters()))
++                        rng = torch.get_rng_state().clone()
++                        tensors = task_modes.inputs(task, model)
++                        optimizer = torch.optim.AdamW(model.parameters(), lr=.001)
++                        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, 2)
++                        record.record_training_setup(optimizer, scheduler)
++                        # Purposefully labelled synthetic MSE, original loss tests are reused separately.
++                        output = model(*tensors)
++                        loss = output.square().mean()
++                        loss.backward(); optimizer.step(); scheduler.step()
++                        state_after_step = {k: v.clone() for k, v in model.state_dict().items()}
++                        rng_after_step = torch.get_rng_state().clone()
++                        record.record_epoch(1, {'synthetic_mse': loss, 'known_metric': 0.125})
++                        self.assertTrue(torch.equal(torch.get_rng_state(), rng_after_step))
++                        for k,v in state_after_step.items():
++                            self.assertTrue(torch.equal(v, model.state_dict()[k]))
++                        model.eval()
++                        with torch.no_grad(): expected = model(*tensors)
++                        task_modes.save(task, run, model)
++                        finish(args)
++                    finally:
++                        if not record.closed: record.finish(status='failed')
++                    saved_config, saved_sidecar = (path / 'config.json').read_bytes(), run.sidecar.read_bytes()
++                    results = json.loads((path / 'train_results.json').read_text())
++                    self.assertEqual(results['status'], 'completed')
++                    self.assertEqual(results['final_recorded_metrics_by_member']['0']['known_metric'], .125)
++                    self.assertEqual(len((path / 'train_history.jsonl').read_text().splitlines()), 1)
++                    for attempt in range(2):
++                        ev = task_modes.parse(task, [*flags, '--cdpa-source-chunk-size', '1'], True)
++                        er = start(ev, task, evaluation=True)
++                        try:
++                            requested = task_modes.build(task, ev) if task in task_modes.STANDARD else None
++                            loaded_run = task_modes.make_run(task, ev, requested, True)
++                            loaded = task_modes.load(task, loaded_run, requested).eval()
++                            with torch.no_grad(): actual = loaded(*tensors)
++                            torch.testing.assert_close(actual, expected, atol=1e-5, rtol=3e-4)
++                            er.record_metrics(dict(synthetic_output_max_error=(actual-expected).abs().max(), attempt=attempt))
++                            finish(ev)
++                        finally:
++                            if not er.closed: er.finish(status='failed')
++                        self.assertEqual((path / 'config.json').read_bytes(), saved_config)
++                        self.assertEqual(run.sidecar.read_bytes(), saved_sidecar)
++                    index = json.loads((path / 'eval_results.json').read_text())['evaluations']
++                    self.assertEqual(len(index), 2)
++                    self.assertEqual({x['metrics']['attempt'] for x in index}, {0, 1})
++                    self.assertTrue(all((path / x['result_file']).with_name('eval.log').exists() for x in index))
++                    with self.assertRaises(FileExistsError): start(args, task)
++
++    def test_exceptions_and_incomplete_exit_leave_early_records(self):
++        for ending, status in [("raise FileNotFoundError('synthetic startup failure before data IO')", 'failed'),
++                               ('raise KeyboardInterrupt()', 'interrupted'), ('', 'incomplete')]:
++            with self.subTest(status=status), tempfile.TemporaryDirectory() as temp:
++                code = '''
++from argparse import Namespace
++from cdlno.experiment import start
++from pathlib import Path
++import sys
++args=Namespace(cdlno_run_dir=Path(sys.argv[1]), model='CDLNO', front_latent_mode='full')
++start(args,'darcy')
++print('startup log is preserved')
++''' + ending
++                path = Path(temp)/'run'
++                p = subprocess.run([sys.executable,'-B','-c',code,str(path)], cwd=ROOT, capture_output=True,text=True)
++                data = json.loads((path/'train_results.json').read_text())
++                self.assertEqual(data['status'],status,p.stderr)
++                self.assertEqual(data['phase'],'startup')
++                self.assertEqual(json.loads((path/'config.json').read_text())['parameter_count_status'], 'pending_model_construction')
++                log=(path/'train.log').read_text()
++                self.assertIn('startup log is preserved',log)
++                if ending: self.assertIn('Traceback',log)
++
++    def test_same_process_only_reservation_and_unique_defaults(self):
++        from argparse import Namespace
++        with tempfile.TemporaryDirectory() as temp, patch.dict(os.environ, CDLNO_RUNS_ROOT=temp), redirect_stdout(io.StringIO()):
++            a=Namespace(cdlno_run_dir=None, model='CDLNO')
++            record=start(a,'darcy')
++            try:
++                reserve_directory(a,a.cdlno_run_dir)
++                with self.assertRaises(FileExistsError): reserve_directory(copy.copy(a),a.cdlno_run_dir)
++                self.assertEqual(record.directory.parent,Path(temp)/'darcy')
++                self.assertNotEqual(default_directory('darcy'),record.directory)
++            finally: record.finish(status='incomplete')
++
++    def test_entries_early_lifecycle_and_complete_observation_only_ast(self):
++        if not BEFORE.is_dir():
++            self.skipTest("pre-change source snapshot absent; set CDLNO_OUTPUT_BASELINE to the preserved artifact")
++        paths = [Path('PDE-Solving-StandardBenchmark') / f'exp_{stem}.py'
++                 for stem in ('darcy','elas','airfoil','pipe','ns','plas')]
++        paths += [Path(project)/file for project in ('Car-Design-ShapeNetCar','Airfoil-Design-AirfRANS')
++                  for file in ('main.py','main_evaluation.py','train.py')]
++        for relative in paths:
++            with self.subTest(path=str(relative)):
++                now=ast.parse((ROOT/relative).read_text(),feature_version=(3,10))
++                old=ast.parse((BEFORE/relative).read_text())
++                self.assertEqual(ast.dump(strip_recording(copy.deepcopy(now))),ast.dump(old))
++                if relative.name=='train.py': continue
++                calls=[n for n in ast.walk(now) if isinstance(n,ast.Call)]
++                early=next(n for n in calls if ast.unparse(n.func)=='start_experiment')
++                data_calls=[n for n in calls if ast.unparse(n.func) in ('scio.loadmat','np.load','Dataset',
++                                    'load_train_val_fold','load_train_val_fold_file','MatReader')]
++                self.assertTrue(data_calls)
++                self.assertTrue(all(early.lineno < n.lineno for n in data_calls))
++                self.assertTrue(any(ast.unparse(n.func)=='finish_experiment' for n in calls))
++        self.assertFalse(any(k.startswith('exp_') for k in sys.modules))
++
++    def test_all_launch_pairs_same_timestamp_explicit_override_and_no_writes(self):
++        for task in task_modes.TASKS:
++            with self.subTest(task=task), tempfile.TemporaryDirectory() as temp:
++                env=dict(os.environ,CDLNO_RUNS_ROOT=str(Path(temp)/'output'))
++                env.pop('CDLNO_RUN_TAG',None)
++                for explicit in (False,True):
++                    requested=Path(temp)/'explicit run with spaces'
++                    options=task_modes.run_option(task,requested) if explicit else []
++                    p=subprocess.run(['bash',str(ROOT/'tran_evaluate/train_eval.sh'),task,
++                        '--front-blocks','3','--cdpa-mode','off',*options,'--dry-run'],env=env,
++                        cwd=ROOT,capture_output=True,text=True)
++                    self.assertEqual(p.returncode,0,p.stderr)
++                    commands=[shlex.split(line.removeprefix('Command:')) for line in p.stdout.splitlines() if line.startswith('Command:')]
++                    self.assertEqual(len(commands),2)
++                    key='--cdlno-run-dir' if task in task_modes.STANDARD else '--run_dir'
++                    resolved=[cmd[len(cmd)-1-cmd[::-1].index(key)+1] for cmd in commands]
++                    self.assertEqual(resolved[0],resolved[1])
++                    if explicit: self.assertEqual(resolved[0],str(requested))
++                    else: self.assertEqual(Path(resolved[0]).parent,Path(temp)/'output'/task)
++                    self.assertFalse(list(Path(temp).iterdir()))
++                p=subprocess.run(['bash',str(ROOT/'tran_evaluate'/f'{task}.sh'),'eval','--dry-run'],
++                                 env=env,cwd=ROOT,capture_output=True,text=True)
++                self.assertNotEqual(p.returncode,0)
++                self.assertIn('Evaluation needs',p.stderr)
++
++    def test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values(self):
++        if not task_modes.car.HAS_PYG:
++            self.skipTest('real PyG unavailable')
++        import random
++        import numpy as np
++        from torch_geometric.data import Data
++        for task, project in [('car', 'Car-Design-ShapeNetCar'), ('airfrans', 'Airfoil-Design-AirfRANS')]:
++            with self.subTest(task=task), tempfile.TemporaryDirectory() as temp, redirect_stdout(io.StringIO()):
++                spec=importlib.util.spec_from_file_location('output_safe_train_'+task, ROOT/project/'train.py')
++                training=importlib.util.module_from_spec(spec);spec.loader.exec_module(training)
++                if task == 'airfrans':
++                    if importlib.util.find_spec('torch_cluster') is None:
++                        self.skipTest('AirfRANS complete sampled epoch not run: torch_cluster is absent; no dependency was installed')
++                    try:
++                        training.nng.radius_graph(torch.rand(4,2), r=1.)
++                    except ImportError as exc:
++                        self.skipTest('real radius_graph dependency unavailable: '+str(exc))
++                a=task_modes.parse(task,[*task_modes.SMALL,*task_modes.run_option(task,Path(temp)/'recorded')])
++                initial=task_modes.build(task,a)
++                graph=Data(x=torch.randn(13,7),pos=torch.randn(13,2),y=torch.randn(13,4),surf=torch.arange(13)%2==0)
++                dataset=[(graph,torch.randn(7,3))]*2 if task=='car' else [graph,graph.clone()]
++                hparams=dict(lr=.001,batch_size=1,nb_epochs=2,subsampling=13,r=2.,max_neighbors=8)
++                outputs=[];rngs=[]
++                for observed in (False,True):
++                    m=copy.deepcopy(initial)
++                    random.seed(812);np.random.seed(812);torch.manual_seed(812)
++                    record=start(a,task,hparams=hparams) if observed else None
++                    if record: record.attach_model(m,hparams=hparams)
++                    path=Path(temp)/('recorded' if observed else 'unobserved');path.mkdir(exist_ok=True)
++                    returned=[];original_train=training.train
++                    def spy(*args,**kwargs):
++                        values=original_train(*args,**kwargs)
++                        returned.append(values)
++                        return values
++                    try:
++                        extra=dict(criterion='MSE_weighted',name_mod='CDLNO',val_sample=True) if task=='airfrans' else {}
++                        with patch.object(training,'train',side_effect=spy):
++                            trained=training.main('cpu',dataset,dataset,m,hparams,str(path),reg=.5,val_iter=10,
++                                                  record=record,**extra)
++                        outputs.append({k:v.clone() for k,v in trained.state_dict().items()})
++                        rngs.append((torch.get_rng_state().clone(),random.getstate(),np.random.get_state()))
++                        if record:
++                            rows=[json.loads(row) for row in (path/'train_history.jsonl').read_text().splitlines()]
++                            self.assertEqual(len(rows),2)
++                            for row,values in zip(rows,returned):
++                                metrics=row['metrics']
++                                if task=='car':
++                                    self.assertEqual(metrics['train_components']['pressure_mse'],float(values[0]))
++                                    self.assertEqual(metrics['train_components']['velocity_mse'],float(values[1]))
++                                else:
++                                    self.assertEqual(metrics['train_surface_mse'],float(values[4]))
++                                    self.assertEqual(metrics['train_volume_mse'],float(values[5]))
++                                    self.assertEqual(metrics['train_loss'],float(.5*values[4]+values[5]))
++                            finish(a)
++                    finally:
++                        if record and not record.closed:record.finish(status='failed')
++                    if task=='airfrans':training.plt.close('all')
++                for key in outputs[0]:self.assertTrue(torch.equal(outputs[0][key],outputs[1][key]),key)
++                self.assertTrue(torch.equal(rngs[0][0],rngs[1][0]))
++                self.assertEqual(rngs[0][1],rngs[1][1])
++                np.testing.assert_equal(rngs[0][2],rngs[1][2])
++
++    def test_air_weighted_loss_and_real_epoch_record_fragment_without_sampling(self):
++        if not task_modes.car.HAS_PYG:self.skipTest('real PyG unavailable')
++        from torch_geometric.data import Data
++        from torch_geometric.loader import DataLoader
++        spec=importlib.util.spec_from_file_location('output_air_weighted',ROOT/'Airfoil-Design-AirfRANS/train.py')
++        training=importlib.util.module_from_spec(spec);spec.loader.exec_module(training)
++        with tempfile.TemporaryDirectory() as temp,redirect_stdout(io.StringIO()):
++            a=task_modes.parse('airfrans',[*task_modes.SMALL,*task_modes.run_option('airfrans',Path(temp)/'run')])
++            m=task_modes.build('airfrans',a);r=start(a,'airfrans');r.attach_model(m)
++            try:
++                graph=Data(x=torch.randn(13,7),pos=torch.randn(13,2),y=torch.randn(13,4),surf=torch.arange(13)%2==0)
++                loader=DataLoader([graph],batch_size=1)
++                reference=copy.deepcopy(m);pred=reference(graph);per=(pred-graph.y).square()
++                expected=per[~graph.surf].mean()+.5*per[graph.surf].mean();expected.backward()
++                optim=torch.optim.Adam(m.parameters(),lr=.001)
++                sched=torch.optim.lr_scheduler.OneCycleLR(optim,max_lr=.001,total_steps=4)
++                values=training.train('cpu',m,loader,optim,sched,criterion='MSE_weighted',reg=.5)
++                for p,q in zip(m.parameters(),reference.parameters()):
++                    if p.grad is not None:torch.testing.assert_close(p.grad,q.grad,atol=1e-6,rtol=1e-5)
++                scope=dict(record=r,record_member=0,epoch=0,train_loss=values[0],loss_surf_var=values[2],
++                           loss_vol_var=values[3],loss_surf=values[4],loss_vol=values[5],criterion='MSE_weighted',
++                           reg=.5,val_iter=None)
++                tree=ast.parse((ROOT/'Airfoil-Design-AirfRANS/train.py').read_text())
++                main=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='main')
++                epoch=next(n for n in main.body if isinstance(n,ast.For))
++                adjustment=next(n for n in epoch.body if isinstance(n,ast.If) and ast.unparse(n.test)=="criterion == 'MSE_weighted'")
++                callback=next(n for n in epoch.body if isinstance(n,ast.If) and ast.unparse(n.test)=='record is not None')
++                exec(compile(ast.Module(body=[adjustment,callback],type_ignores=[]),'<actual-weighted-epoch-record-fragment>','exec'),scope)
++                r.finish()
++                row=json.loads((r.directory/'train_history.jsonl').read_text())
++                self.assertAlmostEqual(row['metrics']['train_loss'],expected.item(),places=6)
++                self.assertEqual(row['metrics']['criterion'],'MSE_weighted')
++            finally:
++                if not r.closed:r.finish(status='failed')
++
++    def test_recording_lifecycle_in_three_original_fresh_workdirs(self):
++        code = """
++import sys, pathlib, torch
++sys.path.insert(0, str(pathlib.Path(sys.argv[1])/'tests'))
++import test_front_task_modes as modes
++from cdlno.experiment import start, finish
++from torch_geometric.data import Data
++root=pathlib.Path(sys.argv[2]);task=sys.argv[3];torch.set_num_threads(1)
++a=modes.parse(task,[*modes.SMALL,*modes.run_option(task,root/'run')]);rec=start(a,task)
++m=modes.build(task,a);run=modes.make_run(task,a,m)
++if task=='airfrans':rec.attach_model(m)
++x=modes.inputs(task,m);m.eval();expected=m(*x).detach();modes.save(task,run,m);finish(a)
++e=modes.parse(task,[*modes.SMALL,*modes.run_option(task,run.directory)],True);rec=start(e,task,evaluation=True)
++requested=modes.build(task,e) if task in modes.STANDARD else None
++loader=modes.make_run(task,e,requested,True);loaded=modes.load(task,loader,requested).eval()
++torch.testing.assert_close(loaded(*x),expected,atol=0,rtol=0);rec.record_metrics(dict(exact=True));finish(e)
++"""
++        for project,task in [('PDE-Solving-StandardBenchmark','elasticity'),
++                             ('Car-Design-ShapeNetCar','car'),('Airfoil-Design-AirfRANS','airfrans')]:
++            with self.subTest(project=project),tempfile.TemporaryDirectory() as temp:
++                result=subprocess.run([sys.executable,'-B','-c',code,str(ROOT),temp,task],
++                    cwd=ROOT/project,env=dict(os.environ,PYTHONPATH=str(ROOT)),capture_output=True,text=True)
++                self.assertEqual(result.returncode,0,result.stdout+result.stderr)
++
++    def test_old_runs_without_config_keep_loadable(self):
++        with tempfile.TemporaryDirectory() as temp, redirect_stdout(io.StringIO()):
++            path=Path(temp)/'runs/CDLNO/elasticity/old'
++            a=task_modes.parse('elasticity',[*task_modes.SMALL,*task_modes.run_option('elasticity',path)])
++            m=task_modes.build('elasticity',a);run=task_modes.make_run('elasticity',a,m);run.save(m)
++            self.assertFalse((path/'config.json').exists())
++            before=run.sidecar.read_bytes()
++            ev=task_modes.parse('elasticity',[*task_modes.SMALL,*task_modes.run_option('elasticity',path)],True)
++            r=start(ev,'elasticity',evaluation=True)
++            try:
++                load=task_modes.make_run('elasticity',ev,m,True);load.load(m);r.record_metrics(dict(synthetic=True));finish(ev)
++            finally:
++                if not r.closed:r.finish(status='failed')
++            self.assertFalse((path/'config.json').exists())
++            self.assertEqual(before,run.sidecar.read_bytes())
++
++
++if __name__=='__main__': unittest.main()
+--- a/tests/test_front_task_modes.py
++++ b/tests/test_front_task_modes.py
+@@ -287,13 +287,14 @@
+                     for evaluation in (False, True):
+                         tokens = subprocess.check_output(['bash', str(ROOT / 'tran_evaluate' / f'{task}.sh'),
+                             'eval' if evaluation else 'train', '--front-latent-mode', 'identity',
+-                            '--front_latent_mode=' + mode, '--dry-run'], cwd=ROOT, text=True)
++                            '--front_latent_mode=' + mode, '--dry-run'], cwd=ROOT, text=True,
++                            env=dict(os.environ, CDLNO_RUN_TAG='test_timestamp'))
+                         command = shlex.split(next(s.removeprefix('Command:') for s in tokens.splitlines() if s.startswith('Command:')))
+                         argv = command[3:]
+                         option = '--cdlno-run-dir' if task in STANDARD else '--run_dir'
+                         implicit = argv[argv.index(option) + 1]
+-                        if mode != 'full': self.assertTrue(implicit.endswith('_' + mode), implicit)
+-                        else: self.assertFalse(implicit.endswith(('_full', '_identity', '_no_sa')), implicit)
++                        self.assertEqual(Path(implicit).name, 'test_timestamp')
++                        self.assertEqual(Path(implicit).parent.name, task)
+                         # Actual parser with a synthetic config fixture, no task/data execution.
+                         argv += run_option(task, path)
+                         if task in STANDARD:
+@@ -314,10 +315,11 @@
+                     for mode in MODES:
+                         a = parse(task, [*SMALL, '--front-latent-mode', mode])
+                         model = build(task, a)
+-                        run = make_run(task, a, model)
++                        with patch.dict(os.environ, CDLNO_RUNS_ROOT=str(Path(tmp) / 'output')):
++                            run = make_run(task, a, model)
+                         directories.append(run.directory)
+-                        if mode != 'full': self.assertIn('_' + mode, run.directory.name)
+-                        else: self.assertNotIn('_full', run.directory.name)
++                        self.assertEqual(run.directory.parent, Path(tmp) / 'output' / task)
++                        self.assertRegex(run.directory.name, r'^\d{8}T\d{12}Z$')
+                         if task in STANDARD:
+                             named = parse(task, [*SMALL, '--front-latent-mode', mode, '--save_name', 'chosen'])
+                             self.assertEqual(named.save_name, 'chosen')
+--- a/tests/test_shapenet_car.py
++++ b/tests/test_shapenet_car.py
+@@ -5,6 +5,7 @@
+ """
+ from argparse import ArgumentParser
+ import ast
++from output_recording_projection import strip_recording
+ import copy
+ from contextlib import redirect_stdout
+ import importlib.util
+@@ -395,7 +396,7 @@
+                 return node
+ 
+         for evaluation, filename in ((False, 'main.py'), (True, 'main_evaluation.py')):
+-            restored = Project().visit(ast.parse((CAR / filename).read_text()))
++            restored = Project().visit(strip_recording(ast.parse((CAR / filename).read_text())))
+             self.assertEqual(ast.dump(restored), ast.dump(ast.parse(original(filename))), filename)
+ 
+     def test_frozen_car_and_airfrans_original_files(self):
+@@ -413,7 +414,10 @@
+                         'Airfoil-Design-AirfRANS/params.yaml'):
+                 continue
+             before = subprocess.check_output(['git', 'show', '75e0f67643806a81cd1d3f6adc88dd8c02416fe7:' + name], cwd=ROOT)
+-            self.assertEqual((ROOT / name).read_bytes(), before, name)
++            if Path(name).name == 'train.py':
++                self.assertEqual(ast.dump(strip_recording(ast.parse((ROOT/name).read_text()))), ast.dump(ast.parse(before)), name)
++            else:
++                self.assertEqual((ROOT / name).read_bytes(), before, name)
+             count += 1
+         print('Frozen Car/AirfRANS original files byte-identical:', count)
+ 
+--- a/tests/test_static_standard.py
++++ b/tests/test_static_standard.py
+@@ -2,6 +2,7 @@
+ 
+ import argparse
+ import ast
++from output_recording_projection import strip_recording
+ from collections import Counter
+ from contextlib import redirect_stdout
+ import copy
+@@ -297,9 +298,11 @@
+                 os.chdir(folder)
+                 args = arguments('elasticity', ['--n-hidden','8','--n-heads','2','--slice_num','4'])
+                 model = construct('elasticity', args)
+-                a, b = StaticRun(args, model), StaticRun(args, model)
++                with patch.dict(os.environ, CDLNO_RUNS_ROOT=str(Path(folder) / 'output')):
++                    a, b = StaticRun(args, model), StaticRun(args, model)
+                 self.assertNotEqual(a.directory, b.directory)
+-                self.assertIn('L8_F2_M4_entry', a.directory.name)
++                self.assertEqual(a.directory.parent, Path(folder) / 'output' / 'elasticity')
++                self.assertRegex(a.directory.name, r'^\d{8}T\d{12}Z$')
+                 args.eval = 1
+                 args.cdlno_run_dir = Path(folder) / 'missing'
+                 with self.assertRaises(FileNotFoundError):
+@@ -424,7 +427,7 @@
+         for task, (name, *_) in TASKS.items():
+             relative = f'PDE-Solving-StandardBenchmark/exp_{name}.py'
+             original = subprocess.check_output(['git','show',f'{UPSTREAM}:{relative}'], cwd=ROOT, text=True)
+-            projected = LegacyProjection().visit(tree(task))
++            projected = LegacyProjection().visit(strip_recording(tree(task)))
+             self.assertEqual(ast.dump(projected), ast.dump(ast.parse(original)), task)
+         current = ast.parse((PROJECT / 'model_dict.py').read_text())
+         original = subprocess.check_output(['git','show',f'{UPSTREAM}:PDE-Solving-StandardBenchmark/model_dict.py'], cwd=ROOT, text=True)
+--- a/tests/test_temporal_standard.py
++++ b/tests/test_temporal_standard.py
+@@ -1,5 +1,6 @@
+ """Synthetic NS/Plasticity contracts and frozen temporal-loop audit."""
+ from argparse import Namespace
++from output_recording_projection import strip_recording
+ import ast, copy, io, json, os, subprocess, sys, tempfile, unittest
+ from contextlib import redirect_stdout
+ from pathlib import Path
+@@ -163,7 +164,7 @@
+         for task in ('ns','plas'):
+             relative=f'PDE-Solving-StandardBenchmark/exp_{task}.py'
+             original=subprocess.check_output(['git','show','75e0f67643806a81cd1d3f6adc88dd8c02416fe7:'+relative],cwd=ROOT,text=True)
+-            projected=LegacyProjection().visit(ast.parse((ROOT/relative).read_text()))
++            projected=LegacyProjection().visit(strip_recording(ast.parse((ROOT/relative).read_text())))
+             self.assertEqual(ast.dump(projected),ast.dump(ast.parse(original)),task)
+ 
+     def test_scripts_and_python_syntax(self):
+--- a/tran_evaluate/README.md
++++ b/tran_evaluate/README.md
+@@ -1,10 +1,12 @@
+ # CDLNO 远端八任务训练与评估
+ 
+-更新（补充A2）：八任务已接入 `--front-latent-mode full|no_sa|identity`。不传时新训练仍full；评估可从显式已有run的sidecar恢复mode，显式冲突拒绝。根脚本消融默认目录追加 `_no_sa`/`_identity`，full路径保持。`train_eval.sh TASK --front-latent-mode no_sa` 支持同配置训练后评估，余参仍最后覆盖。见 [八任务三模式命令](../docs/CDLNO_FRONT_ABLATION_A2_COMMANDS.md) 和 [A2报告](../docs/CDLNO_FRONT_ABLATION_A2.md)。以下A1及更早“尚未接入”状态保留为历史，当前以本段为准。
++更新（2026-09-15，统一实验记录）：新训练默认 `output/<数据集>/<UTC时间戳>/`，启动数据读取前创建 `config.json` 与日志；真实模型构造后补全参数量。训练/评估分别记入结果 JSON，复评使用独立子目录。八任务和三种前段模式均适用。详见 [目录、命令与边界](../docs/CDLNO_EXPERIMENT_OUTPUTS.md)。下述历史 A1/A2 目录规则由本次规则替代。
++
++更新（补充A2）：八任务已接入 `--front-latent-mode full|no_sa|identity`。不传时新训练仍full；评估可从显式已有run的sidecar恢复mode，显式冲突拒绝。当前统一按时间戳创建目录；旧实验通过显式路径加载。`train_eval.sh TASK --front-latent-mode no_sa` 支持同配置训练后评估，余参仍最后覆盖。见 [八任务三模式命令](../docs/CDLNO_FRONT_ABLATION_A2_COMMANDS.md) 和 [A2报告](../docs/CDLNO_FRONT_ABLATION_A2.md)。以下A1及更早“尚未接入”状态保留为历史，当前以本段为准。
+ 
+ 更新（补充A1）：共享核心已实现full/no_sa/identity，但八任务wrapper、CLI/任务JSON及本目录脚本尚未接入front_latent_mode，仍运行默认full。此时不要向启动脚本添加`--front-latent-mode`；等待用户指定后续接入阶段。见 [A1报告](../docs/CDLNO_FRONT_ABLATION_A1.md)。以下保留已有启动说明及此前状态记录。
+ 
+-所有脚本从根目录 `path.sh` 读取路径，转到各任务原工作目录执行原入口。一个脚本对应一个数据集，`train` / `eval` 分开执行；不会自动训练所有任务。前段保持当前完整 LRSA，`no_sa/identity` 补充消融尚未实施，脚本不传入未实现的参数。
++所有脚本从根目录 `path.sh` 读取路径，转到各任务原工作目录执行原入口。一个脚本对应一个数据集，`train` / `eval` 分开执行；不会自动训练所有任务。前段默认完整 LRSA，也支持 `--front-latent-mode no_sa|identity`。
+ 
+ ## 一条命令顺序完成训练和评估
+ 
+@@ -27,20 +29,20 @@
+ CUDA_VISIBLE_DEVICES=0 bash tran_evaluate/train_eval.sh airfrans
+ ```
+ 
+-保持下方任务配置表中的默认值：F2/L8、full前段、entry CDPA；Pipe M32，其余M64。两步共用命令中的模型参数。未设置 `CDLNO_RUN_TAG` 时，组合脚本生成一个含时间和进程号的tag，两步使用同一个tag；如果已设置该变量，则沿用。实际run路径由两条原任务命令打印。tag不设置随机种子。显式run目录仍优先，必须尚不存在；评估已有训练请继续使用原 `TASK.sh eval`，不要重跑组合脚本。
++保持下方任务配置表中的默认值：F2/L8、full前段、entry CDPA；Pipe M32，其余M64。两步共用命令中的模型参数。未设置 `CDLNO_RUN_TAG` 时，组合脚本生成一个含纳秒的UTC时间戳tag，两步使用同一个tag；如果已设置该变量，则沿用。实际run路径由两条原任务命令打印。tag不设置随机种子。显式run目录仍优先，必须尚不存在；评估已有训练请继续使用原 `TASK.sh eval`，不要重跑组合脚本。
+ 
+ ```bash
+ # 显式保留可记忆的实验目录；训练评估共同使用F=3、L=8：
+ bash tran_evaluate/train_eval.sh darcy --gpu 0 --front-blocks 3 \
+-    --cdlno-run-dir "$PWD/runs/CDLNO/darcy/F3_L8_run1"
++    --cdlno-run-dir "$PWD/output/darcy/F3_L8_run1"
+ 
+ # 关闭CDPA，仍是两个完整LRSA前段；两步自动共享该配置：
+ bash tran_evaluate/train_eval.sh ns --gpu 0 --cdpa-mode off \
+-    --cdlno-run-dir "$PWD/runs/CDLNO/ns/F2_L8_off_run1"
++    --cdlno-run-dir "$PWD/output/ns/F2_L8_off_run1"
+ 
+ # Car只供训练使用的参数，放在--train-args后，不传给eval parser：
+ bash tran_evaluate/train_eval.sh car --gpu 0 \
+-    --run_dir "$PWD/runs/CDLNO/car/fold0_run1" \
++    --run_dir "$PWD/output/car/fold0_run1" \
+     --train-args --preprocessed 1 --batch_size 1 --lr 0.001
+ 
+ # AirfRANS推荐统一配置Dataset，原脚本自动区分训练/评估路径：
+@@ -48,7 +50,7 @@
+     bash tran_evaluate/train_eval.sh airfrans
+ # 如要手动分别传路径：
+ CUDA_VISIBLE_DEVICES=0 bash tran_evaluate/train_eval.sh airfrans \
+-    --run_dir "$PWD/runs/CDLNO/airfrans/full_run1" \
++    --run_dir "$PWD/output/airfrans/full_run1" \
+     --train-args --my_path /actual/AirfRANS/Dataset \
+     --eval-args --my_path /actual/AirfRANS
+ ```
+@@ -57,7 +59,7 @@
+ 
+ **Car 的完整阻力评估仍要求 fold0 和原固定路径 `/data/PDE_data/mlcfd_data/training_data/param0` 可访问，且与配置的raw目录是同一份数据。** 组合脚本保留这个检查；路径不满足时可能训练完成但评估被拒绝，不代表训练权重丢失。先确认下方Car限制。AirfRANS保持训练Dataset本身、评估父目录的区别；组合脚本拒绝把同一个 `--my_path` 直接共用。
+ 
+-本次只验证命令与顺序控制，未实际训练或评估。A1按用户要求暂停，新增前段消融尚未实现。
++三种前段模式已接入；未启动真实数据训练或评估。
+ 
+ ## 远端路径与环境
+ 
+@@ -173,11 +175,11 @@
+ 
+ ## 输出目录与checkpoint
+ 
+-默认 `CDLNO_RUNS_ROOT=仓库根/runs/CDLNO`，`CDLNO_RUN_TAG=entry`：
+-
+-- 六标准任务：`runs/CDLNO/<task>/entry/`，checkpoint为 `model.pt`。
+-- Car：`runs/CDLNO/car/fold0_entry/`，末轮整模型 `model_200.pth`。
+-- AirfRANS：`runs/CDLNO/airfrans/full_entry/`，成员 `member_000/model`，模型列表 `CDLNO`。
++默认 `CDLNO_RUNS_ROOT=仓库根/output`，未指定tag时每次训练使用新的UTC时间戳；独立评估明确指定旧run：
++
++- 六标准任务：`output/<task>/<timestamp>/`，checkpoint为 `model.pt`。
++- Car：`output/car/<timestamp>/`，末轮整模型 `model_200.pth`。
++- AirfRANS：`output/airfrans/<timestamp>/`，成员 `member_000/model`，模型列表 `CDLNO`。
+ 
+ train要求run尚不存在；eval用同一已有目录，校验原architecture.json后严格加载，写独立eval子目录，不覆盖sidecar/权重。不会自动寻找latest/best，不提供优化器状态resume。改变tag可开始另一次实验，训练和评价使用相同tag：
+ 
+--- a/tran_evaluate/_common.sh
++++ b/tran_evaluate/_common.sh
+@@ -25,8 +25,8 @@
+ export CDLNO_CAR_RAW_ROOT="${CDLNO_CAR_RAW_ROOT:-${CAR_DATA_DIR:-}}"
+ export CDLNO_CAR_CACHE_ROOT="${CDLNO_CAR_CACHE_ROOT:-${CAR_SAVE_DIR:-}}"
+ export CDLNO_AIRFRANS_DATASET="${CDLNO_AIRFRANS_DATASET:-${AIRFRANS_DATASET:-}}"
+-export CDLNO_RUNS_ROOT="${CDLNO_RUNS_ROOT:-$cdlno_repo_root/runs/CDLNO}"
+-export CDLNO_RUN_TAG="${CDLNO_RUN_TAG:-entry}"
++export CDLNO_RUNS_ROOT="${CDLNO_RUNS_ROOT:-$cdlno_repo_root/output}"
++# CDLNO_RUN_TAG is optional; each new training invocation gets a timestamp.
+ export CDLNO_PYTHON="${CDLNO_PYTHON:-${PYTHON_BIN:-python}}"
+ 
+ cdlno_front_run_suffix() {
+@@ -47,6 +47,30 @@
+         no_sa|identity) printf '_%s' "$selected" ;;
+         *) printf 'Invalid front_latent_mode: %s\n' "$selected" >&2; return 2 ;;
+     esac
++}
++
++cdlno_run_path() {
++    local task="$1" action="$2" selected="" flag
++    shift 2
++    while (($#)); do
++        flag="$1"; shift
++        case "$flag" in
++            --cdlno-run-dir|--run_dir)
++                (($#)) || { printf 'Missing run directory\n' >&2; return 2; }
++                selected="$1"; shift ;;
++            --cdlno-run-dir=*|--run_dir=*) selected="${flag#*=}" ;;
++        esac
++    done
++    if [[ -n "$selected" ]]; then
++        printf '%s' "$selected"
++    elif [[ -n "${CDLNO_RUN_TAG:-}" ]]; then
++        printf '%s/%s/%s' "$CDLNO_RUNS_ROOT" "$task" "$CDLNO_RUN_TAG"
++    elif [[ "$action" == train ]]; then
++        printf '%s/%s/%s' "$CDLNO_RUNS_ROOT" "$task" "$(date -u +%Y%m%dT%H%M%S%6NZ)"
++    else
++        printf 'Evaluation needs --cdlno-run-dir/--run_dir or an explicit CDLNO_RUN_TAG; no latest-run guessing.\n' >&2
++        return 2
++    fi
+ }
+ 
+ cdlno_dispatch() {
+--- a/tran_evaluate/_standard.sh
++++ b/tran_evaluate/_standard.sh
+@@ -14,7 +14,7 @@
+ Usage: bash tran_evaluate/$cdlno_task.sh train|eval [entry options] [--dry-run]
+ CDLNO defaults: L8/F2, entry CDPA, chunk0, FFN ratios2; per-task d/h/M/batch.
+ Paths: root path.sh; override --data_path and --cdlno-run-dir as needed.
+-Default run: CDLNO_RUNS_ROOT/$cdlno_task/CDLNO_RUN_TAG (new train/existing eval).
++Default: output/$cdlno_task/UTC_TIMESTAMP; eval needs an existing --cdlno-run-dir.
+ Each invocation performs one action. Custom architecture requires a new run
+ and the same architecture during eval. Arguments supplied last win.
+ --dry-run prints the command without Python, data or filesystem writes.
+@@ -23,9 +23,10 @@
+         exit 0 ;;
+     *) printf 'Expected train, eval or help.\n' >&2; exit 2 ;;
+ esac
++cdlno_action="$1"
+ shift
+ 
+-cdlno_mode_suffix="$(cdlno_front_run_suffix "$@")"
++cdlno_run="$(cdlno_run_path "$cdlno_task" "$cdlno_action" "$@")"
+ 
+ # Explicit values match the already accepted CDLNO task presets/launchers.
+ cdlno_width=128 cdlno_heads=8 cdlno_latents=64 cdlno_unified=0
+@@ -68,5 +69,5 @@
+     --unified_pos "$cdlno_unified" --ref 8 \
+     --lr 0.001 --epochs 500 --batch-size "$cdlno_batch" --weight_decay 1e-5 \
+     "${cdlno_clip[@]}" "${cdlno_extra[@]}" \
+-    --data_path "$cdlno_data" --cdlno-run-dir "$CDLNO_RUNS_ROOT/$cdlno_task/${CDLNO_RUN_TAG}${cdlno_mode_suffix}" \
++    --data_path "$cdlno_data" --cdlno-run-dir "$cdlno_run" \
+     --eval "$cdlno_eval" "$@"
+--- a/tran_evaluate/airfrans.sh
++++ b/tran_evaluate/airfrans.sh
+@@ -14,7 +14,7 @@
+ Paths from path.sh: verify CDLNO_AIRFRANS_DATASET with inspect_data.sh.
+ TRAIN --my_path means Dataset itself (contains manifest.json).
+ EVAL --my_path means Dataset's PARENT; Dataset must be named exactly Dataset.
+-Default run: CDLNO_RUNS_ROOT/airfrans/full_CDLNO_RUN_TAG.
++Default: output/airfrans/UTC_TIMESTAMP; eval needs an existing --run_dir.
+ Use --run_dir for another run; repeat task/model/budget settings during eval.
+ Original entry has no --gpu; use CUDA_VISIBLE_DEVICES to choose a GPU.
+ Arguments supplied last win. --dry-run never calls Python/data/metrics.
+@@ -22,8 +22,9 @@
+         exit 0 ;;
+     *) printf 'Expected train, eval or help.\n' >&2; exit 2 ;;
+ esac
++cdlno_action="$1"
+ shift
+-cdlno_mode_suffix="$(cdlno_front_run_suffix "$@")"
++cdlno_run="$(cdlno_run_path airfrans "$cdlno_action" "$@")"
+ cdlno_dataset="${CDLNO_AIRFRANS_DATASET%/}"
+ cdlno_extra=()
+ if [[ "$cdlno_entry" == main.py ]]; then
+@@ -48,5 +49,5 @@
+     --cdpa_mode entry --cdpa_source_chunk_size 0 \
+     --nb_epochs 398 --batch_size 1 --lr 0.001 \
+     --my_path "$cdlno_data_arg" --save_path "$CDLNO_RUNS_ROOT" \
+-    --run_dir "$CDLNO_RUNS_ROOT/airfrans/full_${CDLNO_RUN_TAG}${cdlno_mode_suffix}" \
++    --run_dir "$cdlno_run" \
+     "${cdlno_extra[@]}" "$@"
+--- a/tran_evaluate/car.sh
++++ b/tran_evaluate/car.sh
+@@ -18,7 +18,7 @@
+ Train: --data_dir RAW_ROOT --save_dir PREPROCESSED_ROOT --run_dir NEW_RUN
+ Eval:  --data_dir RAW_ROOT --save_dir PREPROCESSED_ROOT --run_dir EXISTING_RUN
+ Defaults come from root path.sh; industrial directories need remote inspection.
+-Default run: CDLNO_RUNS_ROOT/car/fold0_CDLNO_RUN_TAG (new train/existing eval).
++Default: output/car/UTC_TIMESTAMP; eval needs an existing --run_dir.
+ --save_dir means the preprocessed dataset, NOT the model checkpoint directory.
+ Training uses existing preprocessed data by default (--preprocessed 1).
+ 
+@@ -32,12 +32,13 @@
+         exit 0 ;;
+     *) printf 'Expected train, eval or help; see %s help\n' "$0" >&2; exit 2 ;;
+ esac
++cdlno_action="$1"
+ shift
+ 
+-cdlno_mode_suffix="$(cdlno_front_run_suffix "$@")"
++cdlno_run="$(cdlno_run_path car "$cdlno_action" "$@")"
+ cdlno_args=(
+     --data_dir "$CDLNO_CAR_RAW_ROOT" --save_dir "$CDLNO_CAR_CACHE_ROOT"
+-    --run_dir "$CDLNO_RUNS_ROOT/car/fold0_${CDLNO_RUN_TAG}${cdlno_mode_suffix}"
++    --run_dir "$cdlno_run"
+     --cfd_model CDLNO
+     --n_hidden 256 --n_layers 8 --n_heads 8 --slice_num 64
+     --front_blocks 2 --mlp_ratio 2 --latent_ffn_ratio 2 --dropout 0
+--- a/tran_evaluate/train_eval.sh
++++ b/tran_evaluate/train_eval.sh
+@@ -68,7 +68,7 @@
+ 
+ # Export once for the two child processes, before their path.sh is sourced.
+ # A tag names the experiment; it does not set a random seed.
+-export CDLNO_RUN_TAG="${CDLNO_RUN_TAG:-entry_$(date -u +%Y%m%dT%H%M%S)_$$}"
++export CDLNO_RUN_TAG="${CDLNO_RUN_TAG:-$(date -u +%Y%m%dT%H%M%S%6NZ)}"
+ printf 'Task: %s | train/eval run tag: %s\n' "$cdlno_pair_task" "$CDLNO_RUN_TAG"
+ printf 'Step 1/2: training\n'
+ if bash "$cdlno_pair_dir/$cdlno_pair_task.sh" train \

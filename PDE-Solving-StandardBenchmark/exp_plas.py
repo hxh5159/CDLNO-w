@@ -26,6 +26,9 @@ parser.add_argument('--eval', type=int, default=0)
 parser.add_argument('--save_name', type=str, default='plas_Transolver')
 parser.add_argument('--data_path', type=str, default='/data/fno/plas_N987_T20.mat')
 args = parse_cdlno_args(parser, 'plasticity')
+if args.model == 'CDLNO':
+    from cdlno.experiment import start as start_experiment, finish as finish_experiment
+    start_experiment(args, args.cdlno_task, evaluation=bool(args.eval))
 eval = args.eval
 save_name = args.save_name
 os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
@@ -158,6 +161,8 @@ def main():
                                       H=s1,
                                       W=s2, **cdlno_model_kwargs(args)).cuda()
         cdlno_run = StaticRun(args, model)
+        if cdlno_run.recorder is not None:
+            cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest, time_points=T, optimizer_updates_per_batch=T))
     else:
         model = get_model(args).Model(space_dim=2,
                                       n_hidden=args.n_hidden,
@@ -181,6 +186,8 @@ def main():
 
     scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=args.lr, epochs=args.epochs,
                                                     steps_per_epoch=len(train_loader))
+    if cdlno_run is not None and cdlno_run.recorder is not None:
+        cdlno_run.recorder.record_training_setup(optimizer, scheduler)
     myloss = TestLoss(size_average=False)
 
     if eval:
@@ -250,6 +257,8 @@ def main():
                 test_l2_full += myloss(pred.reshape(bsz, -1), yy.reshape(bsz, -1)).item()
 
         print("test_step_loss:{:.5f} , test_full_loss:{:.5f}".format(test_l2_step / ntest / T, test_l2_full / ntest))
+        if cdlno_run is not None and cdlno_run.recorder is not None:
+            cdlno_run.recorder.record_metrics(dict(test_step_loss=test_l2_step / ntest / T, test_full_loss=test_l2_full / ntest))
     else:
         for ep in range(args.epochs):
 
@@ -301,6 +310,8 @@ def main():
                                                                                                              train_l2_step / ntrain / T,
                                                                                                              test_l2_step / ntest / T,
                                                                                                              test_l2_full / ntest))
+            if cdlno_run is not None and cdlno_run.recorder is not None:
+                cdlno_run.recorder.record_epoch(ep + 1, dict(train_step_loss=train_l2_step / ntrain / T, test_step_loss=test_l2_step / ntest / T, test_full_loss=test_l2_full / ntest))
             if ep % 100 == 0:
                 if cdlno_run is not None:
                     cdlno_run.save(model)
@@ -324,3 +335,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+    if args.model == 'CDLNO':
+        finish_experiment(args)

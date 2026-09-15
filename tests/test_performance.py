@@ -1,5 +1,6 @@
 """Phase9 synthetic benchmark structure, cost and measurement contracts."""
 import ast
+from dataclasses import replace
 import json
 from pathlib import Path
 import shlex
@@ -108,6 +109,63 @@ class PerformanceChecks(unittest.TestCase):
             expected=stem+head+f*front+bridge_readout+rear+b*m*d*d*(a+3*s)+2*b*d*(2*(f+1)*n*m+(l+s)*m*m)
             self.assertEqual(result['matrix_macs'],expected)
 
+    def test_front_modes_live_counts_whole_model_costs_and_actual_parameters(self):
+        case = self.small('airfoil')
+        b,n,d,m,l,f,r = case.B,case.N,case.d,case.M,case.L,case.F,case.ratio
+        for name,sources,locations in [('cdlno_off',0,0),('cdlno_entry',f,1),('cdlno_every_block',27,6)]:
+            full_model, full = self.checked(case,name)
+            full_parameters = sum(p.numel() for p in full_model.parameters())
+            for mode in ('full','no_sa','identity'):
+                removed_sa = int(mode!='full')
+                removed_ffn = int(mode=='identity')
+                # Independent formula includes removed SA projections/QK+AV,
+                # both FFN linears, biases/pre-norm and head Q/K scales.
+                removed_macs = f*b*m*(removed_sa*(4*d*d+2*m*d)+removed_ffn*4*r*d*d)
+                removed_params = f*(removed_sa*(4*d*d+2*d+2*d//case.h)
+                                    + removed_ffn*(4*r*d*d+2*(r+2)*d))
+                for chunk in (0,1,2):
+                    model,a = self.checked(replace(case,front_latent_mode=mode),name,chunk)
+                    c,costs = a['counts'],a['matrix_macs_by_component']
+                    with self.subTest(cdpa=name,mode=mode,chunk=chunk):
+                        self.assertEqual([c[k] for k in ('front_sa','front_latent_ffn','rear_sa','rear_ffn')],
+                                         [f if mode=='full' else 0,2*f if mode!='identity' else 0,l-f,l-f])
+                        sa = l if mode=='full' else l-f
+                        self.assertEqual(c['latent_sa'],sa)
+                        self.assertEqual([c[k] for k in ('down_bridge','up_readout','structured_convffn')],[f+1]*3)
+                        self.assertEqual(c['cdpa_logical_sources'],sources)
+                        calls=sum(1 if chunk==0 else (s+chunk-1)//chunk for s in a['history_sizes'])
+                        self.assertEqual(c['history_sdpa_calls'],calls)
+                        self.assertEqual(c['all_sdpa_calls'],2*(f+1)+sa+calls)
+                        self.assertEqual(costs.get('cdpa',0), b*m*d*d*(locations+3*sources))
+                        self.assertEqual(costs.get('front_two_latent_ffns',0),0 if mode=='identity' else f*4*r*b*m*d*d)
+                        self.assertEqual(costs['rear_geglu'],(l-f)*3*r*b*m*d*d)
+                        self.assertEqual(costs['point_ffn_dense_conv'],(f+1)*9*b*n*d*d)
+                        self.assertEqual(a['matrix_macs'],full['matrix_macs']-removed_macs)
+                        self.assertEqual(a['matrix_flops_2_per_mac'],2*a['matrix_macs'])
+                        self.assertEqual(a['parameters']['registered'],full_parameters-removed_params)
+                        self.assertEqual(a['parameters']['requires_grad'],sum(p.numel() for p in model.parameters()))
+                        self.assertEqual(sum(a['parameters']['by_component'].values()),a['parameters']['registered'])
+                        self.assertFalse(a['parameters']['missing_grad_names'])
+                        expected=sum(a['linear_conv_macs_by_module'].values())+costs['non_cdpa_sdpa_qk_av']+costs.get('cdpa_qk_av',0)
+                        self.assertEqual(a['matrix_macs'],expected)
+                        if mode!='full': self.assertFalse(any('.latent_sa.' in k for k in model.state_dict()))
+                        if mode=='identity': self.assertFalse(any('latent_ffn_' in k for k in model.state_dict()))
+
+    def test_matched_lrsa_and_transolver_are_full_even_for_ablation_request(self):
+        case=self.small('airfoil')
+        for name in ('lrsa_matched','transolver'):
+            baseline,_,_=build(case,name)
+            for mode in ('full','no_sa','identity'):
+                model,actual,_=build(replace(case,front_latent_mode=mode),name)
+                self.assertEqual(actual.front_latent_mode,'full')
+                torch.testing.assert_close(model.state_dict(),baseline.state_dict(),atol=0,rtol=0)
+                if name=='lrsa_matched':
+                    self.assertEqual(model.config.front_latent_mode,'full')
+                    self.assertTrue(all(block.front_latent_mode=='full' for block in model.core.blocks))
+                    args,target=synthetic_inputs(actual)
+                    a=audit(model,args,target,contexts(torch.device('cpu')))
+                    self.assertEqual([a['counts'][k] for k in ('front_sa','front_latent_ffn','rear_sa','rear_ffn')],[case.L,2*case.L,0,0])
+
     def test_transolver_actual_per_head_projection_and_unused_parameters(self):
         for task in ('elasticity','airfoil'):
             case=self.small(task)
@@ -145,15 +203,19 @@ class PerformanceChecks(unittest.TestCase):
     def test_zero_front_extended_depth_and_invalid_inputs(self):
         for l,f in ((1,0),(8,0),(12,2),(16,6),(10,8)):
             case=self.small(L=l,F=f,d=8,h=2,M=3,N=7,B=1)
-            for name in ('cdlno_off','cdlno_entry','cdlno_every_block'):
-                _,a=self.checked(case,name)
-                s=0 if name=='cdlno_off' else f if name=='cdlno_entry' else (l-f)*f+(l-f)*(l-f-1)//2
-                self.assertEqual(a['counts']['cdpa_logical_sources'],s)
+            for mode in ('full','no_sa','identity'):
+                for name in ('cdlno_off','cdlno_entry','cdlno_every_block'):
+                    _,a=self.checked(replace(case,front_latent_mode=mode),name)
+                    s=0 if name=='cdlno_off' else f if name=='cdlno_entry' else (l-f)*f+(l-f)*(l-f-1)//2
+                    self.assertEqual(a['counts']['cdpa_logical_sources'],s)
+                    self.assertEqual(a['counts']['latent_sa'],l if mode=='full' else l-f)
+                    self.assertEqual(a['counts']['front_latent_ffn'],2*f if mode!='identity' else 0)
         for values in ({'L':0},{'F':8},{'F':-1},{'d':15},{'M':0},{'B':0}):
             with self.assertRaises(ValueError): self.small(**values)
         with self.assertRaises(ValueError): Case.preset('airfrans',B=2)
         with self.assertRaises(ValueError): Case.preset('ns',grid=(5,7))
         with self.assertRaises(ValueError): Case.preset('pipe',comparison='task',M=32)
+        with self.assertRaisesRegex(ValueError,'front_latent_mode'): self.small(front_latent_mode='off')
 
     def test_task_preset_comparison_matches_current_sources(self):
         filenames=dict(darcy='Darcy',elasticity='Elas',airfoil='Airfoil',pipe='Pipe',ns='NS',plasticity='Plasticity')
@@ -219,6 +281,14 @@ class PerformanceChecks(unittest.TestCase):
             self.assertTrue(all(r['status']=='passed' for r in data['results']))
             result=subprocess.run(cmd,cwd='/tmp',capture_output=True)
             self.assertNotEqual(result.returncode,0);self.assertEqual(path.read_bytes(),content)
+            ablated=Path(folder)/'identity.json'
+            result=subprocess.run(cmd[:-1]+[str(ablated),'--front-latent-mode','identity'],cwd='/tmp',text=True,capture_output=True)
+            self.assertEqual(result.returncode,0,result.stderr+result.stdout)
+            changed=json.loads(ablated.read_text())
+            for row in changed['results']:
+                self.assertEqual(row['config']['front_latent_mode'],'identity' if row['model'].startswith('cdlno_') else 'full')
+                if row['model'].startswith('cdlno_'):
+                    self.assertEqual(row['cost']['counts']['front_latent_ffn'],0)
         for file in [ROOT/'tools/cdlno_benchmark.py',*(ROOT/'tools/cdlno_perf').glob('*.py')]:
             ast.parse(file.read_text(),feature_version=(3,10))
 

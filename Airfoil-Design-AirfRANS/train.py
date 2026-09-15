@@ -119,7 +119,7 @@ class NumpyEncoder(json.JSONEncoder):
 
 
 def main(device, train_dataset, val_dataset, Net, hparams, path, criterion='MSE', reg=1, val_iter=10,
-         name_mod='GraphSAGE', val_sample=True):
+         name_mod='GraphSAGE', val_sample=True, record=None, record_member=0):
     '''
         Args:
         device (str): device on which you want to do the computation.
@@ -143,6 +143,8 @@ def main(device, train_dataset, val_dataset, Net, hparams, path, criterion='MSE'
         total_steps=(len(train_dataset) // hparams['batch_size'] + 1) * hparams['nb_epochs'],
     )
     val_loader = DataLoader(val_dataset, batch_size=1)
+    if record is not None:
+        record.record_training_setup(optimizer, lr_scheduler)
     start = time.time()
 
     train_loss_surf_list = []
@@ -257,6 +259,17 @@ def main(device, train_dataset, val_dataset, Net, hparams, path, criterion='MSE'
                 pbar_train.set_postfix(train_loss=train_loss, loss_surf=loss_surf, val_loss=val_loss, val_surf=val_surf)
         else:
             pbar_train.set_postfix(train_loss=train_loss, loss_surf=loss_surf)
+
+        if record is not None:
+            recorded_metrics = dict(train_loss=train_loss, train_surface_mse=loss_surf,
+                                    train_volume_mse=loss_vol, train_surface_per_channel=loss_surf_var,
+                                    train_volume_per_channel=loss_vol_var, criterion=criterion, reg=reg)
+            if val_iter is not None and (epoch % val_iter == val_iter - 1 or epoch == 0):
+                recorded_metrics.update(upstream_validation_log_value=val_loss,
+                                        validation_surface_mse=val_surf, validation_volume_mse=val_vol,
+                                        validation_surface_per_channel=val_surf_var,
+                                        validation_volume_per_channel=val_vol_var)
+            record.record_epoch(epoch + 1, recorded_metrics, member=record_member)
 
     loss_surf_var_list = np.array(loss_surf_var_list)
     loss_vol_var_list = np.array(loss_vol_var_list)

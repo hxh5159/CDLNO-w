@@ -1,6 +1,147 @@
 # CDLNO 实施状态
 
-更新日期：2026-09-14。
+## 2026-09-15：统一实验目录与记录完成，待审查
+
+用户批准的新范围已完成：八任务CDLNO默认 `output/<dataset>/<UTC timestamp>`，有效参数解析后/数据加载前预留目录写config/log；真实model后补total/trainable/architecture/adapter/optimizer和实际协议。训练history/results、每次eval独立子目录+根索引；old runs显式加载、sidecar/config不改写，strict和原checkpoint格式不变。全模式适用，模型/数据/优化/时间/指标计算冻结。见 [报告](CDLNO_EXPERIMENT_OUTPUTS_REPORT.md)、[命令](CDLNO_EXPERIMENT_OUTPUTS.md)、[证据](output_audit/)。
+
+Final212tests/142.652s，0fail/error，1Air sampled-epoch子项因本机torch_cluster缺失skip；新9test methods/12.872s，24任务模式合成记录/step/checkpoint+复评、三原cwd新进程、Car完整合成epoch有无记录权重/RNG精确、Air原weighted loss/梯度+真实记录AST片段通过。既有实际GPU套件重跑通过；未运行真实数据/远端目标环境/完整Air抽样评价。86已有核心/model/preset/data/utils/script/tool文件hash相同，12entry/train完整AST仅移除精确记录语句后与本轮312文件快照相同：`/home/hwz/CDLNO-artifacts/output-before-kql2cnpe`。先前未提交A1–A4/V1等修改保留。
+
+原模型checkpoint保存频率/格式保留；本轮不是V2–V5任务resume/周期可视化接入，不能宣称已有任务权重能完整恢复optimizer/RNG。无commit/push/真实训练。阶段结束，未执行下一阶段。旧状态如下保留为历史。
+
+更新日期：2026-09-15。
+
+## 最新：A3已批准，A4计数/有限性能/文档交付完成，待审查
+
+本轮只执行补充A4；[报告](CDLNO_FRONT_ABLATION_A4.md)、[命令](CDLNO_FRONT_ABLATION_A2_COMMANDS.md)、[本轮diff](front_ablation_audit/a4/a4-changes.patch)、[累计前段消融运行diff](front_ablation_audit/a4/front-ablation-runtime.patch)。full仍默认，八任务已接入三front模式。性能工具现按实际SA/FFN调用统计，matched LRSA锁full；模型/数据/训练入口/预设/脚本/依赖与V1组件未改，不推进V2–V5。
+
+| 补充阶段 | 当前状态 |
+|---|---|
+| A0/A1/A2/A3 | 用户已审查通过 |
+| A4 | 计数、完整成本、有限GPU实测与三模式命令/兼容交付完成，待审查 |
+| 另行V1 | 归档/绘图公共组件完成，原范围保持 |
+| 另行V2–V5 | 尚未执行；正式任务还未接入新resume/周期图 |
+
+默认2+6实测full/no_sa/identity的latentSA为8/6/6，前段FFN4/4/0；后段SA/GEGLU各6、Down/Up/规则ConvFFN各3；entry2历史/1调用，every27/6。13/13定向通过（14.496s），最终**203/203通过（126.687s，无失败/错误/跳过）**。33行CPU完整成本与chunk0/1/2等价、10行有限GPU性能、24个正式模型参数统计、24组顺序预览/48次真实parser均通过。修改前真实full性能基准五模型的初始化hash/参数/成本/原计数精确保持。
+
+本机RTX5090 Laptop/Python3.13.9/torch2.13cu130。两组有限GPU为原Elasticity N972/B1及缩小Airfoil17×23/B2，统一FP32/mathSDPA/TF32关/compile关，warmup5/measure20、同步/median/p90/峰值显存/已初始化AdamW。固定entry三mode的结果详见报告；不能由MAC/参数降幅推定延迟或真实epoch效率，不能证明CDPA替代前段子层，后段SA仍在。没有真实训练、远端torch2.11cu128或新模式全GPU/AMP/compile性能矩阵。
+
+284份本轮起点保留于`/home/hwz/CDLNO-artifacts/front-a4-before-ftvcu781/source`；128份[冻结文件](front_ablation_audit/a4/freeze.json)不变，40份shell语法通过；累计pre-A1原CDPA/core历史/rear/decoder及数据训练协议AST/hash也通过。实际Air main使用MSE_weighted，前A3默认MSE测试不升级为正式weighted三模式链路验收；现存旧Car/Air问题继续分开报告。无commit/push/下载/依赖改动或真实训练。**本补充阶段结束，未执行下一阶段。** 以下为历史状态。
+
+## 最新：可视化/续训计划已批准，V1公共组件完成，待审查
+
+本轮按逐阶段约束只执行V1，详见[V1报告](CDLNO_VISUALIZATION_RESUME_V1.md)和[增量diff](viz_resume_audit/v1/v1-changes.patch)。新增完整checkpoint/配对纯权重、严格恢复、RNG隔离、epoch周期和输出场绘图；**八任务训练/评估/脚本尚未接入本次新功能，不能使用新的`--resume`。** V2–V5及A4未执行。
+
+| 阶段 | 范围 | 当前状态 |
+|---|---|---|
+| V0 | 论文可视化/源码审查与计划 | 用户已批准实施计划 |
+| V1 | 完整归档/恢复/周期/RNG隔离/绘图公共组件 | 完成，待审查 |
+| V2 | Darcy/Elasticity/Airfoil/Pipe | 未执行 |
+| V3 | NS/Plasticity时间任务 | 未执行 |
+| V4 | Car/AirfRANS工业/成员恢复 | 未执行 |
+| V5 | 八任务综合验收/使用交付 | 未执行 |
+
+本轮最终201/201回归通过（122.573s，无失败/错误/跳过）；新增14项归档/观察器+3项绘图检查。CPU三front模式×两scheduler共6组跨新进程恢复与连续训练逐位相等，包括权重、AdamW矩/step、scheduler、每步loss/lr、采样及RNG。有限本机GPU identity/OneCycle FP32/mathSDPA/TF32关闭对照通过；不是远端torch2.11/cu128验收。新的恢复对照采用B2/5×7/d8/h2/M4小核心及明确标注的合成MSE，不是NS原时间训练链路。原损失/PyG旧回归仍通过，但新八任务续训/周期图尚未验证。
+
+实际验证两份文件后才发布manifest/latest；补强并测试manifest已提交而latest失败时的防回退；错误模式/协议/权重/优化器/调度器/RNG、旧纯权重及跨run拒绝。真实推理/绘图开关不改训练权重/梯度/随机状态，异常渲染仍保存到期checkpoint。纯权重只能在配套完整归档存在并通过摘要校验时通过本接口用于续训。
+
+270份起点snapshot保留于`/home/hwz/CDLNO-artifacts/viz-v1-before-04ww1akt/source`；[冻结证据](viz_resume_audit/v1/freeze.json)确认128份原生产/任务/脚本/工具文件字节不变，包括模型结构、数据、损失、训练评估与依赖。未下载数据、安装依赖、真实训练或commit/push。新功能的真实数据/原时间采样协议/工业整对象及list续训、AMP、远端文件系统断电恢复、收敛/精度/epoch效率未验证。默认final-only四任务仍无中途恢复点。**本阶段结束，未执行下一阶段。** 以下审批前及A3状态保留为历史。
+
+## 最新请求：八任务可视化/周期保存/断点续训，计划待审批
+
+用户要求先阅读相关论文并提交修改计划，再由用户决定是否修改。本轮仅完成 [可视化与续训计划](CDLNO_VISUALIZATION_RESUME_PLAN.md)、[五篇论文来源/图示记录](viz_resume_audit/paper_sources.json)、源码静态核对和状态更新。**没有实现新的checkpoint/resume/绘图功能，没有新增模型验收结果。** A4和性能工具阶段未执行；后续V1–V5每阶段均需用户明确指定。
+
+计划：八任务每50个已完成epoch可视化；NS/Car/AirfRANS/Airfoil每100轮及结束保存完整续训checkpoint+独立权重，其他四任务仅实际结束保存。当前PDE500/Car200/Air398默认不改；建议最终补图，固定2个案例。保存optimizer/scheduler/随机数/normalizer/数据顺序及Air成员进度，epoch边界恢复；保留原最终eval格式。只有最终保存的四任务没有中途恢复点。模型/训练协议不变，仅拟增加运行管理与epoch边界回调，尚未获实施授权。
+
+本轮源码发现并更正历史表述：AirfRANS实际`main.py`显式选择MSE_weighted（volume+weight×surface），并非train函数默认MSE。A3的新三模式合成检查跑过函数默认MSE，旧测试另有weighted分支，但不能将其描述为完整三模式正式入口weighted验收；后续新测试应按实际调用补足。Plasticity原x_normalizer实际作用fx，random_collate_fn随机排列时间；Car原目录顺序及geom抽样、Air原反复抽样均要纳入续训协议。没有因此改loss或数据读取。
+
+阅读范围是Transolver/Transolver++/Transolver-3/LRSA/LinearNO相关可视化正文/附录/图注与选定图片；未声称本轮重新完整数学审查。计划前源码hash及git状态见 [planning_start.json](viz_resume_audit/planning_start.json)。以下A3等报告按当时范围保留；最新更正与未实现状态以本节及计划为准。
+
+## 最新：补充 A3 验证完成，待审查；A4 未执行
+
+A2已由用户审查通过。本轮按最新A3指令完成八任务×三种front模式的原接口、合成优化器更新、原损失连接、eval/checkpoint验证；**不是旧建议中的性能工具阶段**。只新增/调整测试和审查文档，没有修改生产模型、配置、训练入口/数据协议、脚本、依赖或性能工具。253份起点源码保存于 `/home/hwz/CDLNO-artifacts/front-a3-before-l9s4pe2c/source`；128份生产/任务/脚本/工具文件hash不变，用户与A1/A2已有修改完整保留。
+
+完整回归 **184/184通过，75.836s，0失败/错误/跳过**。新增43项中：24个CPU任务×模式格，6个Airfoil/Pipe的5×7格，12个Darcy/NS/Plasticity/Car的GPU格，以及1项禁止import实验入口检查。所有42个计算格实际完成优化器更新、原损失、eval及checkpoint；只修正结果JSON的真实N标签后定向重跑43/43通过（13.469s）。新checkpoint改变chunk后的最大绝对输出误差6.147e-8，容差沿用atol1e-5/rtol3e-4。真正pre-A1的12+2+2份full基准（含整对象/list）再次原零容差通过。
+
+六标准任务以真实PDE N和小d8/h2/M4测试；NS B2保持10输入/10步真值回填训练、1次backward/optimizer/scheduler及10步预测回填eval；Plasticity B2/N3131/T[B,1]，20次独立forward/backward/update与1次scheduler，时间梯度通过。真实PyG工业原train/test、mask/默认MSE、变量N、多图拒绝、标签独立、输入不变、Air抽样后ptr合同通过；工业N32186/32000仅单独layout forward。三原cwd新进程导入/同模式加载、显式错误模式与坏权重拒绝、eval不覆盖sidecar、旧full兼容通过。CDPA off/entry/every和三front模式有限组合、真实T与梯度/历史隔离复用原核心回归并通过。
+
+| 阶段 | 最新状态 |
+|---|---|
+| A0/A1/A2 | 用户已审查通过 |
+| A3 | 八任务三模式合成训练/eval/checkpoint验证完成，待审查 |
+| A4 | 未执行，等待明确指示 |
+| 性能工具新模式支持 | 本轮未授权实施，保持冻结，不按旧阶段建议自动推进 |
+
+本地Python3.13.9/torch2.13+cu130/PyG2.3.1/RTX5090 Laptop。GPU新增12格为FP32/math SDPA、TF32关；不是全八任务GPU/AMP或远端torch2.11/cu128验收。真实数据完整读取/抽样/全物理指标、训练/收敛/准确率/真实epoch效率全部未执行。原Car日志字段交换/drag路径fold限制、Air旧MAE条件缺陷仍属原有问题，本轮无生产修复。
+
+交付：[A3报告与八任务覆盖表](CDLNO_FRONT_ABLATION_A3.md)、[逐格结果](front_ablation_audit/a3/training-cases.json)、[实际原batch片段](front_ablation_audit/a3/executed-standard-fragments.json)、[增量diff](front_ablation_audit/a3/a3-changes.patch)、[冻结证据](front_ablation_audit/a3/freeze.json)。自审未发现本轮新增模型/训练协议回归；没有commit/push/下载/真实训练。**本补充阶段结束，未执行下一阶段。** 以下状态保留为历史，以本节为准。
+
+## 最新：补充 A2 完成，待审查；A3/A4 未执行
+
+A1已由用户审查通过。本轮A2完成八任务 `front_latent_mode` 的CLI/JSON→wrapper/core传递、eval先读sidecar恢复未指定mode、显式冲突拒绝和工业整对象/list的实际mode检查。默认full、旧full路径、所有任务模型/训练预设不变；缺少其它架构字段拒绝补默认，仅已识别的旧完整full允许缺mode。root任务脚本消融默认目录追加模式，显式run仍优先且新训练拒绝已有目录。共享数学、数据/训练/评价循环、原模型、依赖及性能工具未改。
+
+最终 **141/141回归通过，62.591s，0失败/错误/跳过**。含8项A2检查、24任务模式实例、真实PyG工业接口及三个原cwd新进程保存/加载。48条真实parser root命令及24组顺序命令预览通过；12+2+2真正修改前full基准再次零容差通过。首次测试脚本常量/后端及3项旧参数捕获占位目录问题如实记录并修正，没有关闭实际加载校验。新增配置完整对象负向项包含在最终套件。
+
+本地Python3.13.9/torch2.13+cu130，已有PyG/GPU；套件既有full GPU检查通过，A2新模式八任务GPU矩阵未运行。远端torch2.11/cu128、真实数据读取/轨迹/训练/收敛/精度/epoch效率均未验证。没有下载数据、重装依赖或commit/push。
+
+| 阶段 | 当前状态 |
+|---|---|
+| A0/A1 | 已由用户审查通过 |
+| A2 | 八任务三模式接口、配置/checkpoint、必要目录及命令完成，待审查 |
+| A3 | 未执行；性能工具新模式/成本统计等仍待用户明确指定 |
+| A4 | 未执行；补充最终综合交付仍待授权 |
+
+交付：[A2报告及任务×模式覆盖表](CDLNO_FRONT_ABLATION_A2.md)、[八任务训练/评估命令](CDLNO_FRONT_ABLATION_A2_COMMANDS.md)、[本轮diff](front_ablation_audit/a2/a2-changes.patch)、[冻结证据](front_ablation_audit/a2/freeze.json)。已完成重点自审，A2无剩余已知实现缺陷。**本补充阶段结束，未执行下一阶段。** 下方旧状态保留为历史，以本节为准。
+
+## 最新：补充 A1 完成，待审查；A2–A4 未执行
+
+用户明确恢复A1后，仅修改共享 `cdlno/config.py`、`modules.py`、`core.py` 及针对性测试/说明。新增架构字段 `front_latent_mode`，默认full；no_sa只移除SA完整残差子层及其norm，identity直接T=S且不注册latent FFN/SA/norm。保留Down/Up/点FFN、bridge/rear/readout、CDPA两级融合及原历史时序。配置规则、旧full兼容和完整计算图见 [A1报告](CDLNO_FRONT_ABLATION_A1.md)。
+
+修改前真实基准保存在 `/home/hwz/CDLNO-artifacts/front-a1-before-_okzkms0`：12个front/core、2个Car、2个Air旧对象及list重放均以原atol=rtol=0通过键/权重/初始化/输出/梯度检查。Car早期捕获的import失败已记录，并在生产编辑前修正独立进程PYTHONPATH后成功捕获；未重造已完成基准。已知旧JSON和18槽配置pickle按历史full恢复；sidecar只读校验，显式新模式/错误权重拒绝，未使用strict=False。
+
+最终 **133/133测试通过，0失败/错误/跳过**，含13项新检查、36个三前段模式×深度×CDPA配置，F0同权重精确等价及旧完整边界；本地GPU三新模式FP32 parity通过。首次综合测试的2项旧冻结清单错误已保留日志并仅在测试中修正，未改任务实现。实际环境为本地Python3.13.9/torch2.13+cu130/RTX5090 Laptop；未替换依赖，未运行用户远端Python3.10/torch2.11/cu128的新模式或新模式AMP。
+
+三任务项目、共享wrapper、CDPA/checkpoint、任务配置/所有启动shell和依赖均与恢复A1时一致；八任务数据/训练/评估协议保持，新模式尚未接入其CLI。完整证据、初次/最终日志及可审查源码patch在 [a1审查目录](front_ablation_audit/a1/)。没有真实数据下载/训练/评价、commit/push或后续阶段。
+
+| 补充阶段 | 当前状态 |
+|---|---|
+| A0 | 已由用户审查通过，原审查全文保留 |
+| A1 | 共享配置、三模式前段、核心及兼容回归完成，待用户审查 |
+| A2 | 未执行：八任务参数/运行及新模式checkpoint接入 |
+| A3 | 未执行：新模式启动配置/性能统计等后续范围仍以用户明确指令为准 |
+| A4 | 未执行：补充最终综合回归/交付仍需明确授权 |
+
+已自行复核full基准、整子层删除、T/history梯度、strict兼容及冻结证据，A1范围无剩余已知架构缺陷。**本补充阶段结束，未执行下一阶段。** 以下暂停/A0及早期状态保留为历史记录，以本节为当前状态。
+
+## 最新：A1暂停；八任务训练后评估组合脚本完成
+
+用户已审查通过A0，随后授权A1，但在生产实现修改前明确暂停，另行要求训练/评估顺序脚本。当前A1未完成，A2–A4未执行。
+
+新增 `tran_evaluate/train_eval.sh TASK`，顺序复用原任务训练和评估脚本；同配置同run，训练失败不评估，未设置tag时生成一对命令共用的新tag。八任务默认+覆盖共32条实际parser命令及纯shell顺序/失败/引用检查通过；没有真实训练/评价。只改组合脚本及文档记录，原任务脚本、模型/配置/入口/数据/损失/时间循环/依赖均未改。Car完整阻力评价的固定raw路径/param0/fold0限制保留，AirfRANS两步my_path语义保留。见 [顺序启动报告](CDLNO_SEQUENTIAL_LAUNCH.md)和 [命令](../tran_evaluate/README.md)。
+
+A1暂停时，原源码/基准存于 `/home/hwz/CDLNO-artifacts/front-a1-before-_okzkms0`。12个front/core、2个Air旧对象/list基准确定性重复通过；Car捕获因独立进程缺少models搜索路径失败，待恢复A1后先处理，未伪报通过。尚未增加front_latent_mode字段或三种前段模式；不能把本轮脚本通过当作A1模型验收。旧阶段记录保留如下。
+
+## 补充 A0：前段 latent processor 只读审查（最新）
+
+**A0 完成，待用户审查；A1–A4 未授权、未执行。** 以下旧阶段记录原文保留，涉及“尚未指定A阶段”的历史描述由本段更新。详细交付：[CDLNO_FRONT_ABLATION.md](CDLNO_FRONT_ABLATION.md)；起点/静态证据：[front_ablation_audit](front_ablation_audit/)。
+
+| 补充阶段 | 执行状态 | 范围 |
+|---|---|---|
+| A0 | 完成，待审查 | 源码/参考开关、三模式差异、八入口/保存协议、兼容及修改前基准方案；仅文档 |
+| A1 | 未授权、未执行 | 建议先捕获真实旧full基准，再实施核心/配置兼容；以用户后续指令为准 |
+| A2 | 未授权、未执行 | 建议八任务mode参数/checkpoint接入；不改训练数据协议 |
+| A3 | 未授权、未执行 | 建议脚本/目录及合成性能计数接入 |
+| A4 | 未授权、未执行 | 建议综合回归与文档交付，不含真实训练 |
+
+- **A 范围**：从实际代码反查，当前full严格符合FFN1→SA→FFN2三次pre-norm残差；T在Up专属norm前返回，不detach。无前段CDPA/相邻frontCDPA/后段Kimi AttnRes，无需裁定当前baseline冲突。八任务原CDLNO入口已完成，新增三模式字段/CLI/执行均未实现。
+- **B diff**：新增审查文档、起点SHA清单和只读审查文本/结果；本文件、AGENTS、current-state仅增量记录，保留原文及既有远端启动修改。实际main/HEAD为`769fa333742f73c132868cf560bce5ec21529362`，原阶段0commit不是当前版本。
+- **C 合同**：no_sa只移除SA完整残差层及其pre-norm/QK norms/投影；identity移除两个latent FFN及SA全部子层/norm，T=S；Down/Up/点更新和bridge/rear/CDPA/readout保留。LRSA固定快照的disable_interleaved_blocks同时跳过SA和FFN2，不等于no_sa。未来默认2+6的SA计数应为8/6/6，down/up/Conv各3及CDPA来源数不变。
+- **D 实际检查**：`python -B docs/front_ablation_audit/static_check.txt`的13组源码/AST/JSON/hash检查通过，0失败；`git diff --check`通过。Python3.13.9仅作标准库审查执行器，没有检查/变更训练环境。模型前反向、旧pickle兼容、三目录新进程模型加载、PyG、GPU、真实数据/训练均未运行；既有120项回归是历史结果。
+- **E 冻结证据**：起点203文件中仅AGENTS/STATUS/current-state三文档增加内容，其他200文件SHA相同。三个项目、core、配置、工具/测试、脚本、依赖本轮未变；对阶段0的65原文件，53字节一致，12差异仍仅此前已接入的入口/config，且这些12文件本轮未变。原exp冻结AST验收未重跑，不把静态不变写成真实数据通过。
+- **F 自审与后续**：公式/T、前段CDPA缺席、参考开关、八任务加载链、冻结和基准边界已自审。新增模式需要受控兼容旧JSON、18槽frozen配置pickle和缺mode属性的旧front对象；FFN2-specific history_rule需准确迁移，不能strict=False或忽略版本。A0只有源码指纹，A1首次实现修改前必须生成真正旧full配置/权重/输出及Car/Air成员/list基准，不能改后伪造。性能计数目前仅适用于full，后续需跟随模式更新。没有剩余当前full架构缺陷需要用户裁定。
+
+**本补充阶段结束，未执行下一阶段。**
+
+**远端路径补充已完成：** 依据用户`/inspire/.../CDLNO-w`与`/inspire/.../data/fno`，填写原空path.sh，提供八任务train/eval脚本和只读数据格式检查器。16条默认命令+8组override实际parser检查通过，原模型/入口/数据/训练/配置均未改；没有重跑模型/GPU或真实训练。工业子目录尚未实测，Car阻力评价固定root/param0仍受限。见[远端脚本报告](CDLNO_REMOTE_LAUNCHERS.md)。针对远端旧版path.sh缺少`CDLNO_PYTHON`及任务变量的问题，现已增加旧变量派生回退；临时旧版path.sh下inspect及16/16 train/eval dry-run通过。前段full/no_sa/identity补充约束已记录，尚未收到具体A阶段实施授权，本轮未实现或接入这些参数。
 
 **最新工作：用户要求的Car/NS最终逻辑核查和`tran_evaluate/`启动准备已完成，未启动真实训练/评价。最终120项回归通过（0失败/错误/跳过），四条脚本命令经真实parser AST解析检查通过。保持CDLNO M64/ratio2/2+6，纠正新NS preset额外clip0.1为原入口None。原数据/训练/模型/评价文件均未改。Car完整阻力评价固定路径/param0及原日志汇总问题已在[启动审查](CDLNO_TRAINING_LAUNCH_REVIEW.md)和[脚本说明](../tran_evaluate/README.md)记录；不能将既有AST冻结等同于原先所有生效默认值一致。真实数据、远端新模型兼容、精度、收敛与epoch效率仍未验收。**
 
@@ -166,7 +307,7 @@
 
 - **A 范围**：新增 `cdlno.core.CDLNO`，接收已提升 `H_0[B,N,d]`，执行F个完整前段、bridge、三种CDPA模式、P个独立后段和 `H_F` feature readout，仅返回 `[B,N,C_out]` Tensor。默认L8/F2/P6；未接八任务wrapper、数据或训练。
 - **B 文件**：新增 `cdlno/core.py`、`tests/test_core.py`、`tests/test_core_config.py` 和阶段4报告；更新 `cdlno/config.py`（核心版本/历史规则、独立latent ratio、网格与合法性检查）、`cdlno/__init__.py`（懒加载CDLNO）、本状态、AGENTS和记忆。阶段2/3实现、checkpoint.py、依赖和原任务目录未改。
-- **C 公式/形状**：前段 `[B,N,d]→(H_i[B,N,d],T_i[B,M,d])`；bridge→raw `Z_0[B,M,d]`；后段第j层当前 `Z_(j−1)`，every历史 `T_1…T_F,Z_0…Z_(j−2)`；readout `(H_F,Z_P)→[B,N,C_out]`。历史仅本次forward存活并传tuple快照，无detach或跨位置K/V缓存。模块调用down/bridge=F+1、up/readout=F+1、latent SA=L、结构ConvFFN=F+1。默认chunk0实际测得：off 0份历史/0次历史SDPA/14次总SDPA；entry 2/1/15；every 27/6/20。
+- **C 公式/形状**：前段 `[B,N,d]→(H_i[B,N,d],T_i[B,M,d])`；bridge→raw `Z_0[B,M,d]`；后段第j层当前 `Z_(j−1)`，every历史 `T_1…T_F,Z_0…Z_(j−2)`；readout `(H_F,Z_P)→[B,N,C_out]`。历史仅本次forward存活并传tuple快照，无detach或跨位置K/V缓存。模块调用down/bridge=F+1、up/readout=F+1、latent SA=L（仅full；no_sa/identity为P）、结构ConvFFN=F+1。默认chunk0实际测得：off 0份历史/0次历史SDPA/14次总SDPA；entry 2/1/15；every 27/6/20。
 - **D 实际通过**：最终 `CDLNO_LRSA_ROOT=/home/hwz/LRSA-Operator python -B -m unittest discover -s tests -p 'test_*.py' -v` 为 **60/60通过，0失败/错误/跳过，12.912秒**，日志 `/tmp/cdlno-phase4-final-tests.log`。其中阶段4为13项核心+6项配置测试：42组L8/F0…6/三模式/点与5×7网格；L12/F2、L16/F6、L1/F0及F7/F8；非法配置/输入/chunk；完整raw历史ID和两forward图隔离；同权重F0等价；参数/storage独立、所有活跃路径梯度；真实chunk切换的state_dict、sidecar不覆盖、新进程权重恢复与三个任务cwd共享导入。核心数学reference/跨chunk容差atol1e-5/rtol3e-4。
 - **D 环境/失败/未运行**：本地Python3.13.9、torch2.13.0+cu130、RTX5090；核心18组GPU FP32/FP16 AMP/BF16 AMP前反向有限，已有阶段2/3精度检查通过。早期测试计数断言及冻结slots只读属性的异常类型期望曾失败，现已修正；另外补强了实际SDPA、完整历史ID及跨chunk证据，没有改变核心数学或阶段2/3实现。远端Python3.10/torch2.11/cu128、任务loss/入口checkpoint、真实训练和性能未运行。未实施未经确认的自动dtype转换。
 - **E 冻结证据**：阶段开始保存98文件清单及5个允许更新文件副本；93个非目标文件SHA256全部不变。71个原tracked文件无diff。原八任务模型、入口、数据、loss、时间、优化器/调度器、评价和依赖未编辑；无安装、数据下载、训练、commit或push。新Python文件和修改后的配置/导出另做Python3.10语法解析；不声称在3.10解释器实际运行。

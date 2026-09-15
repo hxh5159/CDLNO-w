@@ -1,0 +1,1014 @@
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -1,6 +1,10 @@
+ # AGENTS.md
+ 
+ ## Current phase and reading order
++
++Latest authorized scope: remote path and eight-task launch preparation, now complete; see [remote launch report](docs/CDLNO_REMOTE_LAUNCHERS.md) and [tran_evaluate usage](tran_evaluate/README.md). User remote checkout is `/inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/transolver/CDLNO-w`, data root is its sibling project `houwenzhe-drivaer/data`, with standard PDE data under `data/fno`. Root `path.sh` was empty; it now supplies overrideable paths. Repo root follows the actual checkout. Industrial subdirectories are unverified candidates; read-only inspect_data.sh reports remote formats/missing files without loading tasks. All16 launch/default parsers and8 override cases passed; no new model/PyG/GPU/real-training acceptance was run. All model/entry/data/config/training files remained unchanged. Car fixed metric path/fold0 limitation persists.
++
++Pending supplement: user specified `front_latent_mode` in `{full,no_sa,identity}`, default full, for all front blocks, but has NOT authorized implementation of a named A-stage yet. no_sa removes the SA residual sublayer and its norm; identity sets T=S directly and removes both latent FFNs/SA plus their norms. Down/Up/point updates, bridge/rear/CDPA/readout remain fixed. Do not implement the ablations while working on launch scripts or add unsupported CLI flags. Wait for the explicitly named supplemental phase; report and stop after that phase.
+ 
+ Latest scope (2026-09-14): the user requested a final logic check and Car/NS launch scripts in `tran_evaluate/`, without authorizing real training. This launch-preparation review is complete: see [the launch review](docs/CDLNO_TRAINING_LAUNCH_REVIEW.md) and [commands/protocols](tran_evaluate/README.md). 120 final regressions and four real-parser dry-run commands passed. Keep confirmed CDLNO M64/ratios2/2+6; the new NS preset's accidental clip0.1 was corrected to null/None to match the original NS launcher. Original entry/data/train/model/metric files were not changed. Car's frozen drag evaluator hardcodes the canonical raw root and param0; the new full-eval launcher checks/requires fold0 and that same raw dataset path. Car's inherited outer log-summary pressure/velocity swap does not affect its correct internal backward loss; report it rather than silently fixing the frozen train file. No real data, convergence, remote-new-model or full metrics acceptance has occurred.
+ 
+--- a/docs/CDLNO_IMPLEMENTATION_STATUS.md
++++ b/docs/CDLNO_IMPLEMENTATION_STATUS.md
+@@ -1,6 +1,8 @@
+ # CDLNO 实施状态
+ 
+ 更新日期：2026-09-14。
++
++**远端路径补充已完成：** 依据用户`/inspire/.../CDLNO-w`与`/inspire/.../data/fno`，填写原空path.sh，提供八任务train/eval脚本和只读数据格式检查器。16条默认命令+8组override实际parser检查通过，原模型/入口/数据/训练/配置均未改；没有重跑模型/GPU或真实训练。工业子目录尚未实测，Car阻力评价固定root/param0仍受限。见[远端脚本报告](CDLNO_REMOTE_LAUNCHERS.md)。前段full/no_sa/identity补充约束已记录，尚未收到具体A阶段实施授权，本轮未实现或接入这些参数。
+ 
+ **最新工作：用户要求的Car/NS最终逻辑核查和`tran_evaluate/`启动准备已完成，未启动真实训练/评价。最终120项回归通过（0失败/错误/跳过），四条脚本命令经真实parser AST解析检查通过。保持CDLNO M64/ratio2/2+6，纠正新NS preset额外clip0.1为原入口None。原数据/训练/模型/评价文件均未改。Car完整阻力评价固定路径/param0及原日志汇总问题已在[启动审查](CDLNO_TRAINING_LAUNCH_REVIEW.md)和[脚本说明](../tran_evaluate/README.md)记录；不能将既有AST冻结等同于原先所有生效默认值一致。真实数据、远端新模型兼容、精度、收敛与epoch效率仍未验收。**
+ 
+--- /dev/null
++++ b/docs/CDLNO_REMOTE_LAUNCHERS.md
+@@ -0,0 +1,85 @@
++# 远端八任务启动脚本交付
++
++本轮仅执行用户点名的远端路径配置、各数据集训练/评估脚本和只读数据格式检查工具；未启动前段latent processor消融补充阶段，未运行真实训练或评价。
++
++## A. 范围与依据
++
++起点HEAD：`769fa333742f73c132868cf560bce5ec21529362`（main，用户此前提交的现有实现）；起点唯一未跟踪文件为用户的空 `path.sh`（0字节）。本輪不执行commit/push。与阶段0上游commit `75e0f67643806a81cd1d3f6adc88dd8c02416fe7` 区分，保护当前所有已提交实现。
++
++用户提供远端仓库 `/inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/transolver/CDLNO-w` 和数据根 `/inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/data`。仓库根自动从path.sh位置定位；公共六PDE根为data/fno。逐个阅读真实exp/main的路径拼接、parser、JSON和已确认launchers，保留v1.2及随后NS无clip修正。
++
++核心发现：Elasticity参数是fno父目录，入口追加elasticity/Meshes；NS参数是fno父目录并追加完整子目录/MAT；Plasticity参数是单个MAT。AirfRANS train/eval的my_path分别是Dataset和其父目录。不能统一给所有入口追加任务文件夹。
++
++## B. 文件与diff摘要
++
++| 文件 | 原因/改动 |
++|---|---|
++| [path.sh](../path.sh) | 填充用户空文件，配置远端data/fno、可移植repo根、每任务路径、run根/tag、解释器；各项可环境覆盖；不修改shell系统变量 |
++| [tran_evaluate/_common.sh](../tran_evaluate/_common.sh) | 接入path.sh，增加Air的my_path/save_path相对路径处理；保留dry-run及Car原路径guard |
++| [tran_evaluate/_standard.sh](../tran_evaluate/_standard.sh) | 六任务共享启动参数分派，显式任务d/h/M/batch/位置/采样/clip；仅shell，不复制模型或训练器 |
++| [darcy.sh](../tran_evaluate/darcy.sh)、[elasticity.sh](../tran_evaluate/elasticity.sh)、[airfoil.sh](../tran_evaluate/airfoil.sh)、[pipe.sh](../tran_evaluate/pipe.sh)、[ns.sh](../tran_evaluate/ns.sh)、[plasticity.sh](../tran_evaluate/plasticity.sh) | 每任务train/eval/help入口；NS原显式设置移至共享分派，行为与JSON一致 |
++| [car.sh](../tran_evaluate/car.sh) | 原设置不变，增加远端raw/cache和独立run默认；完整阻力评价仍受原guard限制 |
++| [airfrans.sh](../tran_evaluate/airfrans.sh) | 新增两模式入口，398epochs/batch1，正确转换Dataset/parent；原入口无gpu参数，使用CUDA_VISIBLE_DEVICES |
++| [inspect_data.sh](../tran_evaluate/inspect_data.sh)、[inspect_data.py](../tran_evaluate/inspect_data.py) | 只读目录/NPY头/MAT字段/manifest/有限VTK头；候选查找有深度和数量限制，缺失缓存计数；不读取task loader或torch |
++| [README](../tran_evaluate/README.md)、STATUS、AGENTS、memory、八任务清单、本报告 | 更新远端命令和证据；明确工业目录是假设候选、前段消融尚未授权实施 |
++| [remote_launch_audit/](remote_launch_audit/) | 起点SHA/文本、实际参数检查代码/日志/JSON、冻结清单及可审查patch |
++
++本轮可审查差异：[remote-launch-changes.patch](remote_launch_audit/remote-launch-changes.patch)。不修改三个原任务项目内的任何源码、模型、配置或原脚本。
++
++## C. 配置、形状与原调用对应
++
++统一默认L8/F2/P6、完整LRSA前段、CDPA entry/chunk0、前段/点FFN与后段GEGLU ratio2、dropout0。未新增front_latent_mode参数；no_sa/identity属于已记录但未实施的补充计划。
++
++| 任务 | d/h/M | epochs/batch | 单次模型接口/位置条件 | 脚本数据参数 |
++|---|---|---|---|---|
++| Darcy | 128/8/64 | 500/4 | x2+fx1；reference64替换xy，stem65；[B,7225,1] | fno |
++| Elasticity | 128/8/64 | 500/1 | x2/placeholder，972点；[B,972,1] | fno，非fno/elasticity |
++| Airfoil | 128/4/64 | 500/4 | 原xy/placeholder；[B,221×51,1] | fno/airfoil/naca |
++| Pipe | 128/4/32 | 500/8 | 原归一化xy/placeholder；[B,129×129,1] | fno/pipe |
++| NS | 256/8/64 | 500/2 | reference64+fx10，stem74；每次[B,4096,1] | fno，由原entry追加MAT路径 |
++| Plasticity | 128/8/64 | 500/8 | x2/fx1/T[B,1]；每次[B,3131,4] | fno/plas_N987_T20.mat |
++| Car | 256/8/64 | 200/1 | (cfd,geom)，x7→[N,velocity3+pressure1] | 候选mlcfd_data/{training_data,preprocessed_data} |
++| AirfRANS | 256/8/64 | 398/1 | x7+reference64→[N,vx/vy/p/nut] | 候选AirfRANS/Dataset；eval用其parent |
++
++六PDE lr1e-3/weight_decay1e-5，NS无裁剪，其他五任务clip0.1；与原任务clip配置及当前CDLNO preset一致。NS10次真值回填后一次backward/step、测试预测回填；Plasticity20次独立时间条件更新；Elasticity CosineAnnealing按epoch；其余原scheduler不变。Car Adam/reg0.5/fold0、Air Adam/398及原图抽样参数保持。F/P、CDPA/bridge/readout公式没有变化。
++
++## D. 实际命令、结果、未验证项
++
++实际执行：
++
++```bash
++python -B docs/remote_launch_audit/verify_remote_launchers.py
++git diff --check
++```
++
++验证工具实际对path.sh和tran_evaluate各shell执行bash -n，对Python脚本按Python3.10语法解析；16条train/eval默认命令执行dry-run，并在三个原cwd新进程只执行AST提取的真实parser定义及安全helper（不import exp/main），逐字段比较既有JSON/YAML。再经shell解析8组架构/chunk/相对路径/含空格/flag=value覆盖；核对train/eval同目录、八任务互不覆盖、环境data/run/tag覆盖。
++
++| 项目 | 本轮结果 |
++|---|---|
++| 8任务×train/eval=16条默认命令，JSON/YAML/真实parser比较 | **通过** |
++| 8组用户覆盖参数、环境覆盖、相对/空格路径、dry-run无写入 | **通过** |
++| 8个独立run默认路径、train/eval路径一致 | **通过** |
++| Shell语法、Python3.10语法、git diff --check | **通过** |
++| 数据检查器：空临时目录/不存在目录，缺文件如实报告、不创建文件 | **通过** |
++| NPY v1/v2/v3 header解析、错误magic拒绝 | **通过**；仅内存BytesIO测试，没有创建假数据文件 |
++| 远端真实NPY/MAT/HDF5/manifest/VTK读取 | **未运行**；工具已提供，无远端挂载/SSH连接证据 |
++| 模型前反向、PyG集成、GPU/合成训练步 | **本轮未重跑**；没有改模型，已有120项通过是上一轮证据 |
++| 远端torch2.11/cu128新模型兼容、真实训练、收敛/精度/epoch效率 | **未运行/未验证** |
++
++日志与实参：[launcher-checks.log](remote_launch_audit/launcher-checks.log)、[launcher-checks.json](remote_launch_audit/launcher-checks.json)。实际验证使用当前已有本地解释器；不安装依赖，不把本地Python3.13的parser执行当作目标Python3.10/torch2.11训练验收。Python3.10语法检查也不是远端实际执行证据。
++
++## E. 冻结证据
++
++[start.json](remote_launch_audit/start.json) 保存起点187个文件的SHA（含空path.sh）；本轮仅改变path/tran_evaluate及本报告表列状态文档，具体数量见 [freeze-check.json](remote_launch_audit/freeze-check.json)。所有`cdlno/`核心、三个子项目的源码/配置/launchers、既有tests及依赖逐文件字节相同。没有下载、解压、转换、重采样或创建假数据，没有导入会读数据的实验模块，没有自动commit/push。
++
++## F. 自审与需注意的剩余事项
++
++1. **路径语义已自审通过**：Elasticity/NS父目录、Plasticity文件、AirfRANS两入口差异均由实际源码与最终argv验证；自定义my_path可覆盖脚本默认。
++2. **模型/训练默认已自审通过**：16条命令逐项匹配已接受preset；Pipe32/batch8、Airfoil4heads、Air398、NS无clip没有被原parser旧默认覆盖。前段消融参数未混入。
++3. **目录和覆盖已自审通过**：八任务分目录、train/eval默认相同；已有训练目录仍由原run helper拒绝复用，未创建latest自动选择或隐式resume；tag不设置随机种子。
++4. **远端文件格式仍未知**：用户只提供根路径和Elasticity子目录，不能声称所有细节已观察。应在远端运行inspect_data.sh，依据报告修改path.sh中的实际子目录；工业两个默认候选尤其需要确认。
++5. **Car原阻力评价路径限制仍未解决**：原函数硬编码`/data/PDE_data/mlcfd_data/training_data/param0`，与新`/inspire/...`默认不同。现有同数据目录路径映射可兼容；没有映射时新eval仍明确报错。单改脚本不能改变被冻结的metric内部常量，本轮不改指标、不自动建链接；这是原有问题，不是新脚本支持任意root/fold的证据。训练加载本身可使用新raw/cache路径。原loader会跳过缺样本，工具报告缺失计数但不改原行为。
++
++远端可执行命令和完整说明见 [tran_evaluate/README.md](../tran_evaluate/README.md)。
++
++**本补充阶段结束，未执行下一阶段。**
+--- a/docs/CDLNO_TASK_LAUNCHERS.md
++++ b/docs/CDLNO_TASK_LAUNCHERS.md
+@@ -1,4 +1,6 @@
+ # CDLNO 八任务配置与启动清单
++
++远端路径启动补充：八任务现另有根目录 [tran_evaluate](../tran_evaluate/README.md) 的train/eval脚本，共用 [path.sh](../path.sh)。Elasticity/NS传fno父目录，Plasticity传MAT文件，AirfRANS保持Dataset/parent差异。已通过16条真实parser命令检查；未执行远端数据/训练。原子项目脚本和配置本轮未改，详见[远端交付报告](CDLNO_REMOTE_LAUNCHERS.md)。Car完整阻力评价仍有原固定root/param0限制。
+ 
+ 更新：2026-09-14，阶段10最终核对。八任务均已具备新模型接口、配置和训练/评估脚本；仅完成合成验证，未完成真实数据训练或实际抽样评价。原 Transolver 配置、模型和脚本保留。
+ 
+--- /dev/null
++++ b/docs/remote_launch_audit/verify_remote_launchers.py
+@@ -0,0 +1,149 @@
++"""No-data check of 16 remote launch commands and original parser definitions."""
++import ast
++import importlib.util
++import io
++import json
++import os
++from pathlib import Path
++import shlex
++import struct
++import subprocess
++import sys
++import tempfile
++
++ROOT=Path(__file__).resolve().parents[2]
++AUDIT=Path(__file__).resolve().parent
++REMOTE_DATA='/inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/data'
++TASKS=('darcy','elasticity','airfoil','pipe','ns','plasticity','car','airfrans')
++env={k:v for k,v in os.environ.items() if not k.startswith('CDLNO_')}
++env.update(CDLNO_PYTHON=sys.executable,PYTHONPATH=str(ROOT))
++PARSER=r'''
++import argparse,ast,json,sys
++from pathlib import Path
++task,entry,*tokens=sys.argv[1:]
++nodes=[]
++for node in ast.parse(Path(entry).read_text()).body:
++    if isinstance(node,ast.Assign) and isinstance(node.targets[0],ast.Name) and node.targets[0].id=='parser':
++        nodes.append(node)
++    elif isinstance(node,ast.Expr) and isinstance(node.value,ast.Call) and isinstance(node.value.func,ast.Attribute) and ast.unparse(node.value.func.value)=='parser' and node.value.func.attr=='add_argument':
++        nodes.append(node)
++scope={'argparse':argparse}
++exec(compile(ast.Module(body=nodes,type_ignores=[]),'<only-original-parser-definitions>','exec'),scope)
++if task=='car':
++    from models.cdlno_run import parse_args
++    args=parse_args(scope['parser'],evaluation=entry=='main_evaluation.py',argv=tokens)
++elif task=='airfrans':
++    from cdlno_entry import parse_args,resolve_hparams
++    import yaml
++    args=parse_args(scope['parser'],evaluation=entry=='main_evaluation.py',argv=tokens)
++    hp=resolve_hparams(args,yaml.safe_load(Path('params.yaml').read_text())['CDLNO'])
++else:
++    from cdlno_entry import parse_args
++    args=parse_args(scope['parser'],task,tokens)
++result=vars(args)
++if task=='airfrans': result['resolved_hparams']=hp
++print(json.dumps(result,default=str))
++'''
++
++
++def run(command,cwd=ROOT,environment=None,expected=0):
++    p=subprocess.run(command,cwd=cwd,env=environment or env,capture_output=True,text=True,timeout=45)
++    assert p.returncode==expected,(command,p.returncode,p.stdout,p.stderr)
++    return p.stdout
++
++
++def launch(task,mode,cwd,extra=(),environment=None):
++    output=run(['bash',str(ROOT/'tran_evaluate'/f'{task}.sh'),mode,*extra,'--dry-run'],cwd,environment)
++    lines=output.splitlines()
++    command=shlex.split(next(s[len('Command:'):] for s in lines if s.startswith('Command:')))
++    project=Path(next(s[len('Working directory: '):] for s in lines if s.startswith('Working directory: ')))
++    assert command[:2]==[sys.executable,'-u']
++    parsed=json.loads(run([sys.executable,'-B','-c',PARSER,task,*command[2:]],project,environment))
++    return command,project,parsed
++
++
++records=[]
++runs={}
++for script in [ROOT/'path.sh',*(ROOT/'tran_evaluate').glob('*.sh')]:
++    run(['bash','-n',str(script)])
++for path in (ROOT/'tran_evaluate').glob('*.py'):
++    ast.parse(path.read_text(),feature_version=(3,10))
++with tempfile.TemporaryDirectory(prefix='cdlno remote launch check ') as tmp:
++    cwd=Path(tmp)
++    for task in TASKS:
++        assert '--dry-run' in run(['bash',str(ROOT/'tran_evaluate'/f'{task}.sh'),'help'],cwd)
++        for mode in ('train','eval'):
++            command,project,args=launch(task,mode,cwd)
++            config_task='shapenet_car' if task=='car' else task
++            preset=json.loads((project/'configs/CDLNO'/f'{config_task}.json').read_text())
++            for key,value in preset['model'].items(): assert args[key]==value,(task,mode,key,args[key],value)
++            if task not in ('car','airfrans'):
++                for key,value in preset['training'].items(): assert args[key]==value,(task,key)
++                assert args['eval']==int(mode=='eval')
++                expected_suffix=dict(darcy='fno',elasticity='fno',ns='fno',airfoil='fno/airfoil/naca',pipe='fno/pipe',plasticity='fno/plas_N987_T20.mat')[task]
++                assert args['data_path']==REMOTE_DATA+'/'+expected_suffix
++                run_path=args['cdlno_run_dir']
++                assert run_path==str(ROOT/'runs/CDLNO'/task/'entry')
++            elif task=='car':
++                assert (args['nb_epochs'],args['weight'],args['fold_id'])==(200,.5,0)
++                if mode=='train': assert (args['lr'],args['batch_size'],args['preprocessed'],args['val_iter'])==(.001,1,1,10)
++                assert args['data_dir']==REMOTE_DATA+'/mlcfd_data/training_data'
++                assert args['save_dir']==REMOTE_DATA+'/mlcfd_data/preprocessed_data'
++                run_path=args['run_dir']
++            else:
++                assert args['resolved_hparams']==preset['initial_training']
++                assert args['my_path']==REMOTE_DATA+'/AirfRANS'+('/Dataset' if mode=='train' else '')
++                assert args['task']=='full' and args['nmodel']==1
++                if mode=='train': assert args['score']==0
++                run_path=args['run_dir']
++            if task in runs: assert runs[task]==run_path
++            runs[task]=run_path
++            records.append(dict(task=task,mode=mode,command=command,project=str(project),arguments=args,status='passed'))
++
++        # Through shell dispatch AND parser: spaces, relative paths, --flag=value,
++        # last-option overrides for architectures/chunks and independent run paths.
++        standard=task not in ('car','airfrans')
++        extras=(['--data_path=data path','--cdlno-run-dir','other run','--n-layers=12','--front-blocks','3','--cdpa-source-chunk-size=2'] if standard else
++                ['--run_dir','other run','--n_layers=12','--front_blocks','3','--cdpa_source_chunk_size=2'] +
++                (['--data_dir=data path','--save_dir','cache path'] if task=='car' else ['--my_path=data path']))
++        _,_,custom=launch(task,'eval',cwd,extras)
++        assert (custom['n_layers'],custom['front_blocks'],custom['cdpa_source_chunk_size'])==(12,3,2)
++        assert custom['cdlno_run_dir' if standard else 'run_dir']==str(cwd/'other run')
++        assert custom['data_path' if standard else ('data_dir' if task=='car' else 'my_path')]==str(cwd/'data path')
++        if task=='car': assert custom['save_dir']==str(cwd/'cache path')
++
++    assert len(set(runs.values()))==8
++    assert list(cwd.iterdir())==[], 'Launch dry-run must never create run/data files'
++    override_env={**env,'CDLNO_DATA_ROOT':str(cwd/'alternate data'),'CDLNO_RUNS_ROOT':str(cwd/'output'),'CDLNO_RUN_TAG':'test2'}
++    _,_,custom=launch('elasticity','train',cwd,environment=override_env)
++    assert custom['data_path']==str(cwd/'alternate data/fno')
++    assert custom['cdlno_run_dir']==str(cwd/'output/elasticity/test2')
++    # No fake dataset files. An empty temporary directory checks honest missing
++    # reporting; NPY header logic below is exercised entirely in memory.
++    empty_env={**env,'CDLNO_DATA_ROOT':str(cwd)}
++    report=json.loads(run(['bash',str(ROOT/'tran_evaluate/inspect_data.sh')],cwd,empty_env))
++    assert report['root_exists'] and not report['discovery']['candidates']
++    assert all(not item['exists'] for name,files in report['tasks'].items() if name!='car' for item in files)
++    missing_env={**env,'CDLNO_DATA_ROOT':str(cwd/'absent')}
++    report=json.loads(run(['bash',str(ROOT/'tran_evaluate/inspect_data.sh'),'--no-search'],cwd,missing_env,expected=2))
++    assert not report['root_exists']
++    assert list(cwd.iterdir())==[]
++
++spec=importlib.util.spec_from_file_location('cdlno_readonly_inspector',ROOT/'tran_evaluate/inspect_data.py')
++module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
++for version in ((1,0),(2,0),(3,0)):
++    header=b"{'descr': '<f4', 'fortran_order': True, 'shape': (972, 2, 1200), }\n"
++    content=b'\x93NUMPY'+bytes(version)+struct.pack('<H' if version[0]==1 else '<I',len(header))+header
++    result=module.npy_header(io.BytesIO(content))
++    assert result['shape']==[972,2,1200] and result['fortran_order'] and not result['values_read']
++try: module.npy_header(io.BytesIO(b'wrong!'))
++except ValueError: pass
++else: raise AssertionError('Invalid NPY magic accepted')
++
++payload=dict(status='passed',launches=records,distinct_task_run_directories=len(runs),
++             additional_eight_override_cases='passed',environment_override='passed',
++             shell_and_python310_syntax='passed',missing_data_readonly_checks='passed',
++             npy_in_memory_header_versions=[1,2,3],real_data_and_real_mat_vtk_manifest_checks='not run',
++             model_forward_backward_and_gpu='not run: no model changes in this task')
++(AUDIT/'launcher-checks.json').write_text(json.dumps(payload,ensure_ascii=False,indent=2)+'\n')
++print('PASS: 16 default commands + 8 override commands, original AST-only parsers, 8 isolated paths, syntax, empty/missing data and 3 in-memory NPY headers.')
+--- a/memory/current-state.md
++++ b/memory/current-state.md
+@@ -1,6 +1,16 @@
+ # Current project state
+ 
+ Last reviewed: 2026-09-14
++
++## Remote launch supplement
++
++The user authorized path configuration and eight-task train/eval scripts, plus a read-only remote format inspector. Complete; read [remote launch report](../docs/CDLNO_REMOTE_LAUNCHERS.md) and [usage](../tran_evaluate/README.md). New HEAD at task start is `769fa333742f73c132868cf560bce5ec21529362` (user commit, main); only path.sh was untracked and empty. Current source/entry/model/config/test/old-launcher bytes are protected. No automatic commit/push occurred.
++
++Remote repo: `/inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/transolver/CDLNO-w`; data: `/inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/data`. path.sh derives checkout root from its own location, defaults FNO=data/fno. Elasticity must receive FNO (entry appends elasticity/Meshes), NS FNO (entry appends full dataset dir/MAT), Plasticity the MAT itself; AirfRANS train Dataset vs eval parent. Industrial candidate directories are unverified; inspect_data.sh reports actual headers/manifest/missing raw+cache files and bounded candidate search without torch/task loaders or data mutation. Car fixed drag path/param0 restriction persists; new data_dir alone cannot fix metrics.
++
++16 default train/eval commands plus8 override cases passed actual AST-only original parser checks in fresh processes, with preset comparisons, correct paths and8 isolated run directories. Missing/empty-dir and3 in-memory NPY header versions passed. No new model/GPU/PyG/real-data tests were run; existing120-model-test result remains historical. Full remote file contents/labels/mesh/normalization, convergence and runtime remain unknown.
++
++Pending architecture supplement: user defined front_latent_mode={full,no_sa,identity}, defaultfull, with exact whole latent residual/norm sublayers skipped and T=S for identity. No named supplemental implementation stage was authorized yet; this remote script task does not authorize it. Do not add front CDPA, neighboring-block CDPA, Kimi rear AttnRes or any excluded structure. Future named A-stage must separately audit/implement/verify and stop. Current scripts use the existing full LRSA path and no unimplemented flags.
+ 
+ ## Latest launch preparation
+ 
+--- a/path.sh
++++ b/path.sh
+@@ -0,0 +1,26 @@
++#!/usr/bin/env bash
++# Source this file; it only sets paths. No install, mkdir, symlink or training.
++# Remote checkout: /inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/transolver/CDLNO-w
++# Locating this file keeps the checkout portable (including local --dry-run).
++export CDLNO_REPO_ROOT="${CDLNO_REPO_ROOT:-$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)}"
++export CDLNO_DATA_ROOT="${CDLNO_DATA_ROOT:-/inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/data}"
++export CDLNO_FNO_ROOT="${CDLNO_FNO_ROOT:-${CDLNO_DATA_ROOT}/fno}"
++
++# These are arguments to the ORIGINAL entries, whose path semantics differ.
++export CDLNO_DARCY_ROOT="${CDLNO_DARCY_ROOT:-${CDLNO_FNO_ROOT}}"
++export CDLNO_ELASTICITY_ROOT="${CDLNO_ELASTICITY_ROOT:-${CDLNO_FNO_ROOT}}"
++export CDLNO_NS_ROOT="${CDLNO_NS_ROOT:-${CDLNO_FNO_ROOT}}"
++export CDLNO_AIRFOIL_ROOT="${CDLNO_AIRFOIL_ROOT:-${CDLNO_FNO_ROOT}/airfoil/naca}"
++export CDLNO_PIPE_ROOT="${CDLNO_PIPE_ROOT:-${CDLNO_FNO_ROOT}/pipe}"
++export CDLNO_PLASTICITY_FILE="${CDLNO_PLASTICITY_FILE:-${CDLNO_FNO_ROOT}/plas_N987_T20.mat}"
++
++# Industrial subdirectories are provisional, NOT observed on the remote host.
++# Run tran_evaluate/inspect_data.sh and set these to the actual locations.
++export CDLNO_CAR_RAW_ROOT="${CDLNO_CAR_RAW_ROOT:-${CDLNO_DATA_ROOT}/mlcfd_data/training_data}"
++export CDLNO_CAR_CACHE_ROOT="${CDLNO_CAR_CACHE_ROOT:-${CDLNO_DATA_ROOT}/mlcfd_data/preprocessed_data}"
++export CDLNO_AIRFRANS_DATASET="${CDLNO_AIRFRANS_DATASET:-${CDLNO_DATA_ROOT}/AirfRANS/Dataset}"
++
++export CDLNO_RUNS_ROOT="${CDLNO_RUNS_ROOT:-${CDLNO_REPO_ROOT}/runs/CDLNO}"
++# Change the tag (or explicit run-dir argument) for each new experiment.
++export CDLNO_RUN_TAG="${CDLNO_RUN_TAG:-entry}"
++export CDLNO_PYTHON="${CDLNO_PYTHON:-python}"
+--- a/tran_evaluate/README.md
++++ b/tran_evaluate/README.md
+@@ -1,106 +1,146 @@
+-# CDLNO：ShapeNet-Car 与 Navier–Stokes 训练/评估
++# CDLNO 远端八任务训练与评估
+ 
+-这两个脚本调用原任务入口，保留原数据、损失、优化器、时间循环和评价处理。本轮只准备脚本和做无数据验收，没有启动真实训练或评估。
++所有脚本从根目录 `path.sh` 读取路径，转到各任务原工作目录执行原入口。一个脚本对应一个数据集，`train` / `eval` 分开执行；不会自动训练所有任务。前段保持当前完整 LRSA，`no_sa/identity` 补充消融尚未实施，脚本不传入未实现的参数。
+ 
+-**默认采用已确认的 CDLNO 架构，训练协议对齐原 Transolver。** CDLNO 与 Transolver 的模型超参数并非全部相同，区别如下。依据为 Transolver [论文 v2](https://arxiv.org/pdf/2402.02366v2) 附录 B.1/B.3、Table 8，以及原仓库 commit `75e0f67643806a81cd1d3f6adc88dd8c02416fe7`。
++## 远端路径与环境
+ 
+-| 配置 | Car 原 Transolver | Car 本脚本 CDLNO | NS 原 Transolver | NS 本脚本 CDLNO |
+-|---|---|---|---|---|
+-| d / heads / L | 256 / 8 / 8 | 相同 | 256 / 8 / 8 | 相同 |
+-| 模型结构 | 8层 Transolver | 2完整LRSA + bridge + entry CDPA + 6后段 + readout | 8层 Transolver | 同左侧 CDLNO |
+-| M | 32 | **64（已确认计划）** | 32 | **64（已确认计划）** |
+-| 原MLP / CDLNO前段与点FFN ratio | 2 | 2 | 1（原exp默认） | **2（已确认计划）** |
+-| CDLNO后段 GEGLU ratio | 不适用 | 2 | 不适用 | 2 |
+-| epochs / batch | 200 / 1 | 相同 | 500 / 2 | 相同 |
+-| optimizer / max_lr | Adam / 0.001 | 相同 | AdamW / 0.001 | 相同 |
+-| weight_decay | Adam默认0 | 相同 | 1e-5 | 相同 |
+-| 梯度裁剪 | 无 | 无 | 无 | **无** |
+-| scheduler | 原OneCycleLR | 相同 | 原OneCycleLR | 相同 |
+-| 条件 | x7，原placeholder | 相同语义 | reference8×8 + fx10 | 相同语义，stem74 |
++本次填写的路径为：
+ 
+-NS 之前的 CDLNO JSON/脚本额外设置了 `max_grad_norm=0.1`，与原 `Transolver_NS.sh → exp_ns.py` 的 `None` 不一致。本次将 **CDLNO NS** 默认纠正为 `null/None`，移除其启动脚本的显式0.1；原exp与Transolver脚本未改。需要自选裁剪时仍可追加 `--max_grad_norm 0.1`，但那属于改变默认训练配置。**不要用0表示关闭裁剪，0会清零有限梯度。**
++```text
++仓库：/inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/transolver/CDLNO-w
++数据：/inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/data
++六PDE数据公共目录：数据根/fno
++```
+ 
+-## 使用已有环境
++`CDLNO_REPO_ROOT` 默认取 `path.sh` 实际所在目录，因此把仓库同步到上面的位置后会自动正确定位，不会继续使用 `/home/hwz/CDLNO`。数据默认使用你明确提供的远端位置。`path.sh` 在本轮开始时是空文件，现已填入可覆盖的环境变量；仅配置路径，不安装依赖、不创建目录或链接。
+ 
+-沿用你已成功运行 Car 的 Python3.10 / torch2.11 / CUDA12.8 / PyG 环境，不重新安装旧 requirements，也不升级/降级依赖。Python3.11仍属于未在远端验证的候选。NS还使用 NumPy、SciPy、Matplotlib、einops、tqdm；Car完整评价还需要原 VTK、SciPy、PyYAML 等依赖。
++保留你已工作的 Python3.10 / torch2.11 / CUDA12.8 / PyG 环境。脚本默认调用当前 `python`，可设置 `CDLNO_PYTHON=/absolute/path/to/existing/python`。脚本自动设置根目录 `PYTHONPATH`；不重装旧 requirements，不自动启用AMP/TF32/compile。NS等标准任务需要原有SciPy、NumPy、Matplotlib、einops、tqdm；工业任务仍需原图处理/VTK/PyVista等依赖。
+ 
+-激活环境后，脚本默认调用 `python`。也可选择现有解释器：
++## 先检查远端数据的实际格式
++
++远端各文件尚未由本机实际读取。除用户确认的 `fno/elasticity` 外，下表更细的文件位置均依据当前loader构造；两个工业目录只是**待核实候选**。先在远端执行：
+ 
+ ```bash
+-export CDLNO_PYTHON=/absolute/path/to/existing/environment/bin/python
++cd /inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/transolver/CDLNO-w
++bash tran_evaluate/inspect_data.sh > remote_data_inventory.json
+ ```
+ 
+-脚本自动加入仓库根目录到 `PYTHONPATH`，并切到原任务工作目录，所以无须为这些命令重装共享包。默认 `MPLBACKEND=Agg` 用于远端无显示绘图；不改变计算精度，不自动开启AMP/TF32/compile。`--gpu` 原样转发：Car按设备索引选择，NS沿用原入口的 `CUDA_VISIBLE_DEVICES` 设置。
+-
+-## 四条启动命令
+-
+-在远端仓库根目录执行。数据路径按实际情况修改；训练目录必须尚不存在，评估使用同一个已有目录。下面 Car 数据路径同时满足原完整阻力评价的固定路径要求。
++检查程序只读取目录、文件头和manifest，报告：NPY shape/dtype/Fortran顺序、MAT字段及shape、AirfRANS split数量/样本文件、Car各fold原文件和缓存缺失数量。默认最多搜索6层、约20000目录项，列出实际文件的候选位置；不修改数据，不解压，不计算归一化，不运行task loader、PyG图构建或训练。不读取NPY数值、不反序列化pickle/checkpoint。MAT检查使用已有SciPy；检测到HDF5/v7.3则用已有h5py读取元数据并标注原scipy.loadmat不兼容，缺依赖只报告，不安装。
+ 
+ ```bash
+-cd /home/hwz/CDLNO
+-
+-# 1. Car训练：一个run、fold0、200epochs、batch1。
+-bash tran_evaluate/car.sh train \
+-  --data_dir /data/PDE_data/mlcfd_data/training_data \
+-  --save_dir /data/PDE_data/mlcfd_data/preprocessed_data \
+-  --run_dir /home/hwz/CDLNO/runs/CDLNO/car_entry_fold0 --gpu 0
+-
+-# 2. Car完整评价：训练完成后单独执行。
+-bash tran_evaluate/car.sh eval \
+-  --data_dir /data/PDE_data/mlcfd_data/training_data \
+-  --save_dir /data/PDE_data/mlcfd_data/preprocessed_data \
+-  --run_dir /home/hwz/CDLNO/runs/CDLNO/car_entry_fold0 --gpu 0
+-
+-# 3. NS训练：500epochs、batch2、10→10。
+-bash tran_evaluate/ns.sh train \
+-  --data_path /data/fno \
+-  --cdlno-run-dir /home/hwz/CDLNO/runs/CDLNO/ns_entry --gpu 0
+-
+-# 4. NS评价：训练完成后单独执行。
+-bash tran_evaluate/ns.sh eval \
+-  --data_path /data/fno \
+-  --cdlno-run-dir /home/hwz/CDLNO/runs/CDLNO/ns_entry --gpu 0
++# 只检查path.sh配置的位置，省略递归搜索：
++bash tran_evaluate/inspect_data.sh --no-search > remote_data_inventory.json
++# 如数据套了更多目录，可显式扩大有限搜索：
++bash tran_evaluate/inspect_data.sh --max-depth 8 --max-entries 40000 > remote_data_inventory.json
+ ```
+ 
+-任何一条追加 `--dry-run` 只显示完整命令，**不会调用Python、读取数据、创建训练目录或加载模型**。`bash tran_evaluate/car.sh help` / `bash tran_evaluate/ns.sh help` 显示简要说明。支持从其他目录调用绝对脚本路径；数据/运行目录的相对路径按调用时工作目录解释，含空格的路径要加引号。
++`exists=true` 或成功读取header不等于完整数据/标签/点序验收。远端文件未解压、字段名/轴顺序不同、MAT是v7.3时，先根据报告确认；脚本不会自动换格式、转置或使用另一个文件。`--data-root` 仅改变候选搜索根；改变各任务默认路径请修改 `path.sh` 或在启动时覆盖相应环境变量/CLI。
+ 
+-## 数据和评价合同
++## 每个入口需要什么路径
+ 
+-**Car：** `--data_dir` 是包含 `param0`…`param8` 的原始数据根目录；即使使用缓存，原loader仍要遍历这些目录。`--save_dir` 是**预处理数据目录**，不是checkpoint目录。默认 `--preprocessed 1` 使用你已有的缓存；只有实际没有缓存、且你要运行原预处理时才在训练命令追加 `--preprocessed 0`。评价仍沿用原入口 `preprocessed=True`。不要混用不同数据版本/归一化缓存。
++下面以 `FNO=数据根/fno` 表示公共目录；环境变量都是 `path.sh` 中的实际变量名。
+ 
+-按完整官方数据，fold0为789训练、100测试；实际数量由原目录内容决定，本次未查验真实文件。x7（xyz3、sdf1、normal3）→ `[N,velocity3+pressure1]`，保持表面mask与节点顺序。反向目标是 `MSE(全部节点速度3) + 0.5*MSE(表面压力)`；每图更新一次，无多图batch。每10epoch及最后一轮验证。OneCycle保留原 `total_steps=(len(train_dataset)//batch_size+1)*epochs`、`final_div_factor=1000`，不擅自修正其步数。lr0.001是OneCycle的max_lr，不是全程恒定学习率。
++| 数据集 | 原入口的路径参数 / 默认值 | 入口实际追加或读取的文件 |
++|---|---|---|
++| Darcy | `--data_path $CDLNO_DARCY_ROOT`，默认FNO | `piececonst_r421_N1024_smooth1.mat`、`smooth2.mat`；coeff/sol `[S,421,421]` |
++| Elasticity | `--data_path $CDLNO_ELASTICITY_ROOT`，默认FNO | `elasticity/Meshes/Random_UnitCell_XY_10.npy` `[972,2,S]`；`Random_UnitCell_sigma_10.npy` `[972,S]` |
++| Airfoil | `--data_path $CDLNO_AIRFOIL_ROOT`，默认FNO/airfoil/naca | `NACA_Cylinder_X.npy`、`Y.npy`、`Q.npy`；Q[:,4]；221×51 |
++| Pipe | `--data_path $CDLNO_PIPE_ROOT`，默认FNO/pipe | `Pipe_X.npy`、`Y.npy`、`Q.npy`；Q[:,0]；129×129 |
++| NS | `--data_path $CDLNO_NS_ROOT`，默认FNO | `NavierStokes_V1e-5_N1200_T20/NavierStokes_V1e-5_N1200_T20.mat`；u `[S,64,64,20]` |
++| Plasticity | `--data_path $CDLNO_PLASTICITY_FILE`，默认FNO/plas_N987_T20.mat | **直接传MAT文件，不是目录**；input `[S,101]`，output `[S,101,31,20,4]` |
++| Car | `--data_dir $CDLNO_CAR_RAW_ROOT`，候选data/mlcfd_data/training_data；`--save_dir $CDLNO_CAR_CACHE_ROOT`，候选data/mlcfd_data/preprocessed_data | 原始root/param0…8/sample/*.vtk；缓存root/param*/sample/{x,y,pos,surf,edge_index}.npy |
++| AirfRANS | `$CDLNO_AIRFRANS_DATASET`，候选data/AirfRANS/Dataset | manifest.json；sample/sample_internal.vtu 和 sample_aerofoil.vtp |
+ 
+-**Car原代码有两项已确认的限制，原文件保持：**
++**Elasticity虽存放在 `fno/elasticity`，参数必须传 `fno`，否则入口会重复拼接 `elasticity/elasticity`。** NS同样由入口追加完整子目录与MAT名称，不能直接传MAT文件。Airfoil与AirfRANS是两个不同任务。
+ 
+-1. `utils/drag_coefficient.py::cal_coefficient` 固定读取 `/data/PDE_data/mlcfd_data/training_data/param0/<sample>/...vtk`。单改 `--data_dir` **不能**重定向阻力几何；完整评价必须用fold0，原始数据必须在该固定路径可访问，且与传入 `--data_dir` 是同一份数据。已存在的同数据目录符号链接可用，脚本不自动建立链接或搬移数据。`check_car_eval.py` 在调用入口前检查此限制，避免混用几何算错指标；此检查不替代真实文件完整性校验。其他fold可以训练，**当前完整阻力评估脚本明确拒绝其他fold**。
+-2. `train.py` 返回压力/速度损失，但外层按速度/压力接收，导致进度条和最终JSON的 `train_loss/val_loss` 汇总实际为 `pressure + 0.5*velocity`。内部 `total_loss.backward()` 正确使用 `velocity + 0.5*pressure`，训练目标没有颠倒。不要把日志汇总当成实际优化目标；评价指标由原 `main_evaluation.py` 单独计算。此继承问题本轮没有改动。
++例如，若检查发现Airfoil文件直接在 `fno/airfoil`，可以只覆盖该任务：
+ 
+-Car评价保留反归一化、表面压力与体积速度相对L2/RMSE、阻力误差及Spearman；保留原系数实现与计时。原模型forward计时未做CUDA同步，不能把它当作严格GPU性能基准。训练/评价仍会构造原图/geom，不能将模型不用它解释为可以删除数据处理。
+-
+-**NS：** `--data_path /data/fno` 对应文件：
+-
+-```text
+-/data/fno/NavierStokes_V1e-5_N1200_T20/NavierStokes_V1e-5_N1200_T20.mat
++```bash
++bash tran_evaluate/airfoil.sh train --data_path /actual/fno/airfoil --dry-run
+ ```
+ 
+-MAT字段 `u`，原协议 `[1200,64,64,20]`，前1000训练、后200测试，前10帧输入、后10帧标签。每次模型调用 `x[B,4096,2], fx[B,4096,10] → [B,4096,1]`；规则索引reference64替换xy再拼fx10，stem74，不新增时间编码或normalizer。
++所有用户参数放在默认值后，支持 `--flag value` 和 `--flag=value`。数据/run的相对路径按调用时工作目录解析，含空格时加引号。环境变量可在执行脚本前设置，例如 `CDLNO_FNO_ROOT=/actual/fno bash tran_evaluate/elasticity.sh train --dry-run`；若此前已source过path.sh并导出了各任务变量，修改父变量后也要同步更新子变量。
+ 
+-训练每步回填真值，10个单步relative L2累加后一次backward/optimizer/scheduler更新；每epoch验证和独立eval均回填预测。每个物理时间步重新执行完整模型和建立局部历史，无跨时间latent缓存。独立eval输出全10帧relative L2。保持 `downsample=1`；原评价绘图硬编码64×64，自选下采样不能声称完整绘图仍兼容。
++## 配置与16个启动命令
+ 
+-## checkpoint、覆盖参数与验收范围
++统一：CDLNO `L=8/F=2/P=6`、前段及点FFN ratio2、后段GEGLU ratio2、CDPA entry、chunk0、dropout0。默认M保持整个模型一致。是已确认的CDLNO设置，不声称与Transolver的M/heads/FFN所有模型超参数完全相同。
+ 
+-Car在最后一轮保存整模型 `run/model_200.pth` 和 `log_200.json`；非默认epochs对应文件名改变。NS按原每100epoch（含ep0）及末轮频率写 `run/model.pt`，最终文件为最后保存的权重，不自动选“best”。两者都有 `architecture.json`；不是包含optimizer状态的resume协议。
++| 脚本 | d / h / M | epochs / batch | 位置及点FFN | 原训练配置 |
++|---|---|---|---|---|
++| darcy.sh | 128/8/64 | 500/4 | reference8，dense ConvFFN，downsample5 | AdamW/OneCycle，clip0.1，rL2+0.1梯度项 |
++| elasticity.sh | 128/8/64 | 500/1 | xy，point FFN，972点 | AdamW/CosineAnnealing，clip0.1 |
++| airfoil.sh | 128/4/64 | 500/4 | xy，dense ConvFFN，221×51 | AdamW/OneCycle，clip0.1 |
++| pipe.sh | 128/4/32 | 500/8 | 原归一化xy，dense ConvFFN，129×129 | AdamW/OneCycle，clip0.1 |
++| ns.sh | 256/8/64 | 500/2 | reference8+fx10，dense ConvFFN | AdamW/OneCycle，**无clip** |
++| plasticity.sh | 128/8/64 | 500/8 | xy+fx1+原time embedding，dense ConvFFN | AdamW/原OneCycle节奏，clip0.1 |
++| car.sh | 256/8/64 | 200/1 | x7/placeholder，point FFN | Adam/OneCycle，reg0.5，fold0 |
++| airfrans.sh | 256/8/64 | **398/1** | x7+reference64，point FFN | Adam/OneCycle，原抽样32000、r0.05、max_neighbors64 |
+ 
+-训练拒绝复用已有run目录，避免覆盖。eval先读已有sidecar再比较，随后严格加载，结果写入新的 `eval_*` 子目录，不覆盖sidecar/权重。Car整模型仅使用项目已有的局部可信 `weights_only=False` 加载；必须来自你信任的训练产物。
++lr参数均为0.001；六PDE的weight_decay均1e-5。OneCycle中的lr为max_lr，不是全程恒定；Elasticity保留CosineAnnealing按epoch step。配置分别与已确认JSON、现有CDLNO脚本和原入口核对；NS关闭裁剪沿用上一轮已完成的修正，其余配置本轮不改。
+ 
+-用户参数位于默认参数后。改变d/h/L/F/M/FFN/mode时在新run训练，评价重复相同架构；Car还必须匹配fold/epochs/weight/r/cfd_mesh。`chunk`属于运行参数，可在同一checkpoint上改变；CDPA off/entry/every_block属于架构配置，不能只在eval临时换模式。
++以下每行是独立命令，只选择本次要运行的一条。训练完成后再执行对应eval；所有命令均可追加 `--dry-run` 先看最终实参，dry-run不执行Python/数据/训练或创建run目录。
+ 
+ ```bash
+-# 例：只核查chunk=1的加载命令，不实际评价。
+-bash tran_evaluate/car.sh eval --run_dir runs/CDLNO/car_entry_fold0 \
+-  --cdpa_source_chunk_size 1 --dry-run
+-bash tran_evaluate/ns.sh eval --cdlno-run-dir runs/CDLNO/ns_entry \
+-  --cdpa-source-chunk-size 1 --dry-run
++# 六个PDE benchmark
++bash tran_evaluate/darcy.sh train --gpu 0
++bash tran_evaluate/darcy.sh eval --gpu 0
++
++bash tran_evaluate/elasticity.sh train --gpu 0
++bash tran_evaluate/elasticity.sh eval --gpu 0
++
++bash tran_evaluate/airfoil.sh train --gpu 0
++bash tran_evaluate/airfoil.sh eval --gpu 0
++
++bash tran_evaluate/pipe.sh train --gpu 0
++bash tran_evaluate/pipe.sh eval --gpu 0
++
++bash tran_evaluate/ns.sh train --gpu 0
++bash tran_evaluate/ns.sh eval --gpu 0
++
++bash tran_evaluate/plasticity.sh train --gpu 0
++bash tran_evaluate/plasticity.sh eval --gpu 0
++
++# ShapeNet-Car：先确认原始/缓存路径。
++bash tran_evaluate/car.sh train --gpu 0
++# 仅满足下文原阻力评估的固定路径/fold0限制后执行：
++bash tran_evaluate/car.sh eval --gpu 0
++
++# AirfRANS：原入口没有--gpu，按原cuda:0语义通过环境选择GPU。
++CUDA_VISIBLE_DEVICES=0 bash tran_evaluate/airfrans.sh train
++CUDA_VISIBLE_DEVICES=0 bash tran_evaluate/airfrans.sh eval
+ ```
+ 
+-本轮已运行的无数据回归、脚本实参检查和冻结证据见 [训练启动审查报告](../docs/CDLNO_TRAINING_LAUNCH_REVIEW.md)。合成前反向、真实PyG对象接口、checkpoint及本地小张量GPU成功，不证明真实文件读取完整、远端新模型环境兼容、收敛、论文精度或真实epoch耗时；这些需要你接下来运行实际实验得到。
++AirfRANS训练的 `--my_path` 是 **Dataset本身**；评价的 `--my_path` 是 **Dataset的父目录**，评价入口会追加 `/Dataset`。脚本根据同一 `CDLNO_AIRFRANS_DATASET` 自动分别传参。如手动覆盖CLI，必须保持两者语义。默认full/nmodel1/weight1，训练不自动启动完整score（score0）；其余split可用 `--task scarce/reynolds/aoa`，训练和评价同时传，并为该实验指定独立run。
++
++## 输出目录与checkpoint
++
++默认 `CDLNO_RUNS_ROOT=仓库根/runs/CDLNO`，`CDLNO_RUN_TAG=entry`：
++
++- 六标准任务：`runs/CDLNO/<task>/entry/`，checkpoint为 `model.pt`。
++- Car：`runs/CDLNO/car/fold0_entry/`，末轮整模型 `model_200.pth`。
++- AirfRANS：`runs/CDLNO/airfrans/full_entry/`，成员 `member_000/model`，模型列表 `CDLNO`。
++
++train要求run尚不存在；eval用同一已有目录，校验原architecture.json后严格加载，写独立eval子目录，不覆盖sidecar/权重。不会自动寻找latest/best，不提供优化器状态resume。改变tag可开始另一次实验，训练和评价使用相同tag：
++
++```bash
++CDLNO_RUN_TAG=entry_seed2 bash tran_evaluate/ns.sh train --gpu 0
++CDLNO_RUN_TAG=entry_seed2 bash tran_evaluate/ns.sh eval --gpu 0
++```
++
++tag只是目录名，**不会设置随机种子**。也可用六标准的 `--cdlno-run-dir /absolute/run` 或工业的 `--run_dir /absolute/run` 覆盖。切换CDPA模式、L/F/M/d/h/FFN等架构必须新run并在评价重复配置；同架构只改chunk允许加载原权重。Car需同时匹配fold/epochs/weight/r/cfd_mesh；Air需匹配task/nmodel/训练与抽样参数。原checkpoint保存频率不变；可信整模型加载仍只在已有局部位置使用weights_only=False，不全局放开。
++
++## 保留的协议和实际限制
++
++**NS** 保持黏度1e-5、前1000/后200、输入10帧输出10帧。每次forward产生1帧并重新建立latent/history；训练每步真值回填，10步loss累加后一次backward/optimizer/scheduler；测试预测回填，整10帧relativeL2。没有10→20/40或跨时间缓存。
++
++**Plasticity** 保持空间101×31、fx1、T[B,1]、每次4通道；标签原轴序/随机时间排列保持，每batch20个时间点各自前向和参数更新，scheduler保持原节奏，无预测反馈。规则任务原可视化含硬编码尺寸，默认下采样不变，不承诺自选网格仍可直接绘图。
++
++**Car** 默认缓存preprocessed1，`--save_dir` 是缓存目录而非checkpoint目录。即使使用缓存，原loader仍遍历raw的param0…8；原代码会跳过缺失样本/缓存，因此检查脚本会列出缺失数量，不能在缺样本时声称仍是论文789/100划分。输出velocity3/pressure1，原backward为全部节点速度MSE+0.5表面压力MSE，原surf/图处理/归一化不变。
++
++Car原 `utils/drag_coefficient.py` 固定读取 `/data/PDE_data/mlcfd_data/training_data/param0/...vtk`。**你提供的 `/inspire/.../data` 路径不会自动改写这个常量，所以当前完整阻力评价不能仅靠新 `--data_dir` 就保证跑通。** 新eval脚本保留已有guard：要求fold0，且固定root与配置raw root指向同一份原始数据（可识别已存在的同目录符号链接）。本轮不创建链接、不改旧metrics；若远端没有此路径映射，脚本会明确报错，须以后单独处理路径兼容后再跑完整阻力指标。其他fold训练可显式指定，但完整评估不支持任意fold。
++
++Car原train/test返回pressure、velocity，外层变量名反置，导致日志汇总实际为pressure+0.5velocity；内部真实backward目标正确。原文件保持，不把该日志当实际优化目标。原评价反归一化、压力/速度L2/RMSE、阻力误差/Spearman和原未同步CUDA的计时均保持。
++
++**AirfRANS** 数据目录名/manifest与VTK场尚未在远端核实；保留每epoch抽样、验证重复抽样、图构造、散射平均、mask、边界后处理。完整评价依赖原PyVista/VTK及邻居图组件；以前Car训练成功不能代替这个工作流验收。
++
++本轮仅验收启动参数、路径、检查工具和冻结证据，见[远端脚本报告](../docs/CDLNO_REMOTE_LAUNCHERS.md)。既有模型120项无数据回归证据见[此前审查](../docs/CDLNO_TRAINING_LAUNCH_REVIEW.md)，不冒充本轮重跑或远端真实训练结果。真实数据读取完整性、收敛、精度、显存和epoch效率仍待实际实验。
+--- a/tran_evaluate/_common.sh
++++ b/tran_evaluate/_common.sh
+@@ -1,5 +1,8 @@
+ #!/usr/bin/env bash
+ # Shared command dispatch only; no model, loader, optimizer or time-loop code.
++
++source "$cdlno_repo_root/path.sh"
++cdlno_repo_root="$CDLNO_REPO_ROOT"
+ 
+ cdlno_dispatch() {
+     local task_project="$1" task_entry="$2"
+@@ -12,7 +15,7 @@
+         shift
+         case "$task_arg" in
+             --dry-run) task_dry_run=1 ;;
+-            --data_dir|--save_dir|--run_dir|--data_path|--cdlno-run-dir)
++            --data_dir|--save_dir|--run_dir|--data_path|--cdlno-run-dir|--my_path|--save_path)
+                 if (($# == 0)) || [[ -z "$1" || "$1" == --* ]]; then
+                     printf 'Missing value for %s\n' "$task_arg" >&2
+                     return 2
+@@ -22,7 +25,7 @@
+                 [[ "$task_value" = /* ]] || task_value="$PWD/$task_value"
+                 task_args+=("$task_arg" "$task_value")
+                 ;;
+-            --data_dir=*|--save_dir=*|--run_dir=*|--data_path=*|--cdlno-run-dir=*)
++            --data_dir=*|--save_dir=*|--run_dir=*|--data_path=*|--cdlno-run-dir=*|--my_path=*|--save_path=*)
+                 task_flag="${task_arg%%=*}"
+                 task_value="${task_arg#*=}"
+                 if [[ -z "$task_value" ]]; then
+--- /dev/null
++++ b/tran_evaluate/_standard.sh
+@@ -0,0 +1,70 @@
++#!/usr/bin/env bash
++set -euo pipefail
++cdlno_task="$1"
++shift
++cdlno_script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++cdlno_repo_root="$(cd -- "$cdlno_script_dir/.." && pwd)"
++source "$cdlno_script_dir/_common.sh"
++
++case "${1:-help}" in
++    train) cdlno_eval=0 ;;
++    eval) cdlno_eval=1 ;;
++    help|-h|--help)
++        cat <<USAGE
++Usage: bash tran_evaluate/$cdlno_task.sh train|eval [entry options] [--dry-run]
++CDLNO defaults: L8/F2, entry CDPA, chunk0, FFN ratios2; per-task d/h/M/batch.
++Paths: root path.sh; override --data_path and --cdlno-run-dir as needed.
++Default run: CDLNO_RUNS_ROOT/$cdlno_task/CDLNO_RUN_TAG (new train/existing eval).
++Each invocation performs one action. Custom architecture requires a new run
++and the same architecture during eval. Arguments supplied last win.
++--dry-run prints the command without Python, data or filesystem writes.
++See tran_evaluate/README.md; inspect_data.sh checks remote formats read-only.
++USAGE
++        exit 0 ;;
++    *) printf 'Expected train, eval or help.\n' >&2; exit 2 ;;
++esac
++shift
++
++# Explicit values match the already accepted CDLNO task presets/launchers.
++cdlno_width=128 cdlno_heads=8 cdlno_latents=64 cdlno_unified=0
++cdlno_clip=(--max_grad_norm 0.1)
++case "$cdlno_task" in
++    darcy)
++        cdlno_entry=exp_darcy.py cdlno_batch=4 cdlno_unified=1
++        cdlno_data="$CDLNO_DARCY_ROOT"
++        cdlno_extra=(--downsample 5 --ntrain 1000) ;;
++    elasticity)
++        cdlno_entry=exp_elas.py cdlno_batch=1
++        cdlno_data="$CDLNO_ELASTICITY_ROOT"
++        cdlno_extra=(--ntrain 1000) ;;
++    airfoil)
++        cdlno_entry=exp_airfoil.py cdlno_batch=4 cdlno_heads=4
++        cdlno_data="$CDLNO_AIRFOIL_ROOT"
++        cdlno_extra=(--downsamplex 1 --downsampley 1) ;;
++    pipe)
++        cdlno_entry=exp_pipe.py cdlno_batch=8 cdlno_heads=4 cdlno_latents=32
++        cdlno_data="$CDLNO_PIPE_ROOT"
++        cdlno_extra=(--downsamplex 1 --downsampley 1) ;;
++    ns)
++        cdlno_entry=exp_ns.py cdlno_batch=2 cdlno_width=256 cdlno_unified=1
++        cdlno_data="$CDLNO_NS_ROOT"
++        cdlno_extra=(--downsample 1)
++        # Existing NS preset null resolves to None; 0 is NOT disabled clipping.
++        cdlno_clip=() ;;
++    plasticity)
++        cdlno_entry=exp_plas.py cdlno_batch=8
++        cdlno_data="$CDLNO_PLASTICITY_FILE"
++        cdlno_extra=() ;;
++    *) printf 'Unknown standard task: %s\n' "$cdlno_task" >&2; exit 2 ;;
++esac
++
++cdlno_dispatch PDE-Solving-StandardBenchmark "$cdlno_entry" \
++    --model CDLNO --gpu 0 \
++    --n-hidden "$cdlno_width" --n-layers 8 --n-heads "$cdlno_heads" --slice_num "$cdlno_latents" \
++    --mlp_ratio 2 --front-blocks 2 --latent-ffn-ratio 2 \
++    --cdpa-mode entry --cdpa-source-chunk-size 0 --dropout 0 \
++    --unified_pos "$cdlno_unified" --ref 8 \
++    --lr 0.001 --epochs 500 --batch-size "$cdlno_batch" --weight_decay 1e-5 \
++    "${cdlno_clip[@]}" "${cdlno_extra[@]}" \
++    --data_path "$cdlno_data" --cdlno-run-dir "$CDLNO_RUNS_ROOT/$cdlno_task/$CDLNO_RUN_TAG" \
++    --eval "$cdlno_eval" "$@"
+--- /dev/null
++++ b/tran_evaluate/airfoil.sh
+@@ -0,0 +1,4 @@
++#!/usr/bin/env bash
++set -euo pipefail
++cdlno_launcher_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++exec bash "$cdlno_launcher_dir/_standard.sh" airfoil "$@"
+--- /dev/null
++++ b/tran_evaluate/airfrans.sh
+@@ -0,0 +1,51 @@
++#!/usr/bin/env bash
++set -euo pipefail
++cdlno_script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++cdlno_repo_root="$(cd -- "$cdlno_script_dir/.." && pwd)"
++source "$cdlno_script_dir/_common.sh"
++case "${1:-help}" in
++    train) cdlno_entry=main.py ;;
++    eval) cdlno_entry=main_evaluation.py ;;
++    help|-h|--help)
++        cat <<'USAGE'
++Usage: bash tran_evaluate/airfrans.sh train|eval [entry options] [--dry-run]
++CDLNO: d256/h8/L8/F2/M64, FFN ratios2, entry CDPA, chunk0.
++Protocol: full/nmodel1, 398epochs/batch1/lr0.001, original sampling/metrics.
++Paths from path.sh: verify CDLNO_AIRFRANS_DATASET with inspect_data.sh.
++TRAIN --my_path means Dataset itself (contains manifest.json).
++EVAL --my_path means Dataset's PARENT; Dataset must be named exactly Dataset.
++Default run: CDLNO_RUNS_ROOT/airfrans/full_CDLNO_RUN_TAG.
++Use --run_dir for another run; repeat task/model/budget settings during eval.
++Original entry has no --gpu; use CUDA_VISIBLE_DEVICES to choose a GPU.
++Arguments supplied last win. --dry-run never calls Python/data/metrics.
++USAGE
++        exit 0 ;;
++    *) printf 'Expected train, eval or help.\n' >&2; exit 2 ;;
++esac
++shift
++cdlno_dataset="${CDLNO_AIRFRANS_DATASET%/}"
++cdlno_extra=()
++if [[ "$cdlno_entry" == main.py ]]; then
++    cdlno_data_arg="$cdlno_dataset"
++    cdlno_extra=(--score 0)
++else
++    # The frozen evaluator appends '/Dataset' to --my_path.
++    cdlno_explicit_path=0
++    for cdlno_arg in "$@"; do
++        case "$cdlno_arg" in --my_path|--my_path=*) cdlno_explicit_path=1 ;; esac
++    done
++    if [[ "${cdlno_dataset##*/}" != Dataset ]] && ((cdlno_explicit_path == 0)); then
++        printf 'AirfRANS eval requires CDLNO_AIRFRANS_DATASET ending in /Dataset (original path contract).\n' >&2
++        exit 2
++    fi
++    cdlno_data_arg="$(dirname -- "$cdlno_dataset")"
++fi
++cdlno_dispatch Airfoil-Design-AirfRANS "$cdlno_entry" \
++    --model CDLNO --task full --nmodel 1 --weight 1 \
++    --n_hidden 256 --n_layers 8 --n_heads 8 --slice_num 64 \
++    --front_blocks 2 --mlp_ratio 2 --latent_ffn_ratio 2 --dropout 0 \
++    --cdpa_mode entry --cdpa_source_chunk_size 0 \
++    --nb_epochs 398 --batch_size 1 --lr 0.001 \
++    --my_path "$cdlno_data_arg" --save_path "$CDLNO_RUNS_ROOT" \
++    --run_dir "$CDLNO_RUNS_ROOT/airfrans/full_$CDLNO_RUN_TAG" \
++    "${cdlno_extra[@]}" "$@"
+--- a/tran_evaluate/car.sh
++++ b/tran_evaluate/car.sh
+@@ -17,6 +17,8 @@
+ 
+ Train: --data_dir RAW_ROOT --save_dir PREPROCESSED_ROOT --run_dir NEW_RUN
+ Eval:  --data_dir RAW_ROOT --save_dir PREPROCESSED_ROOT --run_dir EXISTING_RUN
++Defaults come from root path.sh; industrial directories need remote inspection.
++Default run: CDLNO_RUNS_ROOT/car/fold0_CDLNO_RUN_TAG (new train/existing eval).
+ --save_dir means the preprocessed dataset, NOT the model checkpoint directory.
+ Training uses existing preprocessed data by default (--preprocessed 1).
+ 
+@@ -33,6 +35,8 @@
+ shift
+ 
+ cdlno_args=(
++    --data_dir "$CDLNO_CAR_RAW_ROOT" --save_dir "$CDLNO_CAR_CACHE_ROOT"
++    --run_dir "$CDLNO_RUNS_ROOT/car/fold0_$CDLNO_RUN_TAG"
+     --cfd_model CDLNO
+     --n_hidden 256 --n_layers 8 --n_heads 8 --slice_num 64
+     --front_blocks 2 --mlp_ratio 2 --latent_ffn_ratio 2 --dropout 0
+--- /dev/null
++++ b/tran_evaluate/darcy.sh
+@@ -0,0 +1,4 @@
++#!/usr/bin/env bash
++set -euo pipefail
++cdlno_launcher_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++exec bash "$cdlno_launcher_dir/_standard.sh" darcy "$@"
+--- /dev/null
++++ b/tran_evaluate/elasticity.sh
+@@ -0,0 +1,4 @@
++#!/usr/bin/env bash
++set -euo pipefail
++cdlno_launcher_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++exec bash "$cdlno_launcher_dir/_standard.sh" elasticity "$@"
+--- /dev/null
++++ b/tran_evaluate/inspect_data.py
+@@ -0,0 +1,200 @@
++"""Read-only remote file/metadata inventory; never imports task loaders or torch.
++
++NPY headers, MAT variable names/shapes, manifest lengths and bounded file search
++help locate data. This does not validate all values, node order or normalization.
++Prints JSON to stdout; redirect it to a report outside the dataset if desired.
++"""
++import argparse
++import ast
++import json
++import os
++from pathlib import Path
++import re
++import struct
++
++
++def npy_header(stream):
++    if stream.read(6) != b'\x93NUMPY':
++        raise ValueError('not an NPY header')
++    version = tuple(stream.read(2))
++    if version == (1, 0):
++        size = struct.unpack('<H', stream.read(2))[0]
++    elif version in ((2, 0), (3, 0)):
++        size = struct.unpack('<I', stream.read(4))[0]
++    else:
++        raise ValueError(f'unsupported NPY version {version}')
++    if size > 1024 * 1024:
++        raise ValueError('header exceeds 1MiB inspection limit')
++    header = ast.literal_eval(stream.read(size).decode('utf-8' if version[0] == 3 else 'latin1'))
++    return dict(format='npy', shape=list(header['shape']), dtype=header['descr'],
++                fortran_order=header['fortran_order'], values_read=False)
++
++
++def metadata(path):
++    record = dict(path=str(path), exists=path.is_file())
++    if not record['exists']:
++        return record
++    try:
++        record['bytes'] = path.stat().st_size
++        if path.suffix.lower() == '.npy':
++            with path.open('rb') as stream:
++                record.update(npy_header(stream))
++        elif path.suffix.lower() in ('.mat', '.h5', '.hdf5'):
++            with path.open('rb') as stream:
++                header = stream.read(520)
++            hdf5 = header[:8] == b'\x89HDF\r\n\x1a\n' or header[512:520] == b'\x89HDF\r\n\x1a\n'
++            if hdf5:
++                import h5py
++                with h5py.File(path, 'r') as data:
++                    record['variables'] = {key:dict(shape=list(value.shape),dtype=str(value.dtype))
++                                           for key,value in data.items() if hasattr(value,'shape')}
++                record['format'] = 'hdf5 / possibly MATLAB v7.3'
++                record['entry_compatibility'] = 'Original scipy.io.loadmat does not read v7.3; do not transpose/convert silently.'
++            else:
++                from scipy.io import whosmat
++                record['variables'] = {key:dict(shape=list(shape),dtype=kind) for key,shape,kind in whosmat(path)}
++                record['format'] = 'MAT readable by scipy.io.whosmat'
++            record['values_read'] = False
++        elif path.name == 'manifest.json':
++            if record['bytes'] > 8 * 1024 * 1024:
++                raise ValueError('manifest exceeds 8MiB inspection limit')
++            manifest = json.loads(path.read_text())
++            if not isinstance(manifest, dict):
++                raise ValueError('expected a split-name to sample-list mapping')
++            record['splits'] = {key:dict(count=len(value),examples=value[:2])
++                                for key,value in manifest.items() if isinstance(value,list)}
++            record['format'] = 'json manifest'
++            examples = next((value for value in manifest.values() if isinstance(value,list) and value), [])
++            if examples and isinstance(examples[0], str):
++                sample = examples[0]
++                record['first_sample_files'] = {suffix:(path.parent/sample/(sample+suffix)).is_file()
++                                                for suffix in ('_internal.vtu','_aerofoil.vtp')}
++        elif path.suffix.lower() in ('.vtk', '.vtu', '.vtp'):
++            with path.open('rb') as stream:
++                prefix = stream.read(65536)
++            prefix = prefix.split(b'<AppendedData',1)[0].decode('utf-8',errors='replace')
++            record.update(format='bounded VTK header', prefix_limit_bytes=65536,
++                          point_counts=re.findall(r'(?:NumberOfPoints="|POINTS\s+)(\d+)',prefix)[:4],
++                          array_names=re.findall(r'<DataArray\b[^>]*\bName="([^"]+)"',prefix)[:30],
++                          full_mesh_read=False)
++        else:
++            record['format'] = 'file present; contents not read'
++    except Exception as error:
++        record['metadata_error'] = f'{type(error).__name__}: {error}'
++    return record
++
++
++def expected_files(paths):
++    f = lambda p, expected: dict(path=Path(p), expected=expected)
++    return {
++        'darcy': [f(paths['darcy']/f'piececonst_r421_N1024_smooth{i}.mat', 'coeff/sol [S,421,421]; train1000/test200') for i in (1,2)],
++        'elasticity': [f(paths['elasticity']/'elasticity/Meshes'/name, shape) for name,shape in (
++            ('Random_UnitCell_XY_10.npy','[972,2,S], S>=1200'),
++            ('Random_UnitCell_sigma_10.npy','[972,S], S>=1200'))],
++        'airfoil': [f(paths['airfoil']/f'NACA_Cylinder_{key}.npy',shape) for key,shape in (
++            ('X','[S,221,51], S>=1200'),('Y','[S,221,51], S>=1200'),('Q','[S,C,221,51], C>=5; use channel4'))],
++        'pipe': [f(paths['pipe']/f'Pipe_{key}.npy',shape) for key,shape in (
++            ('X','[S,129,129], S>=1200'),('Y','[S,129,129], S>=1200'),('Q','[S,C,129,129], C>=1; use channel0'))],
++        'ns': [f(paths['ns']/'NavierStokes_V1e-5_N1200_T20/NavierStokes_V1e-5_N1200_T20.mat',
++                 'u [S,64,64,20], S>=1200; viscosity1e-5; 10->10')],
++        'plasticity': [f(paths['plasticity'],'input [S,101], output [S,101,31,20,4]; official S987, use900/80')],
++        'airfrans': [f(paths['airfrans']/'manifest.json','full/scarce/reynolds/aoa split lists; sample/sample_internal.vtu and sample_aerofoil.vtp')],
++    }
++
++
++def car_inventory(raw, cache):
++    folds = []
++    required = ('x.npy','y.npy','pos.npy','surf.npy','edge_index.npy')
++    example_files = []
++    for i in range(9):
++        folder = raw/f'param{i}'
++        row = dict(fold=i, raw_directory_exists=folder.is_dir())
++        if folder.is_dir():
++            # Bounded inspection; never alter the original loader's ordering.
++            samples=[]
++            with os.scandir(folder) as entries:
++                for entry in entries:
++                    if entry.is_dir(): samples.append(entry.name)
++                    if len(samples) >= 2000: break
++            row['sample_directories_observed']=len(samples)
++            row['count_may_be_truncated']=len(samples)>=2000
++            absent_raw=[]; absent_cache=[]
++            for name in samples:
++                sample=Path(f'param{i}')/name
++                if not all((raw/sample/file).is_file() for file in ('quadpress_smpl.vtk','hexvelo_smpl.vtk')):
++                    absent_raw.append(name)
++                if not all((cache/sample/file).is_file() for file in required):
++                    absent_cache.append(name)
++            row.update(incomplete_raw_count=len(absent_raw),incomplete_cache_count=len(absent_cache),
++                       incomplete_raw_examples=absent_raw[:5],incomplete_cache_examples=absent_cache[:5])
++            if samples and not example_files:
++                sample=Path(f'param{i}')/samples[0]
++                example_files=[metadata(cache/sample/file) for file in required]
++                example_files += [metadata(raw/sample/file) for file in ('quadpress_smpl.vtk','hexvelo_smpl.vtk')]
++        folds.append(row)
++    canonical=Path('/data/PDE_data/mlcfd_data/training_data')
++    return dict(folds=folds,representative_headers=example_files,
++                expected='cache x[N,7], y[N,4], pos[N,3], surf[N], edge_index[2,E]; variableN allowed',
++                note='Original loader skips missing raw/cache samples. Counts/file presence do not prove label/node order correctness.',
++                drag_evaluation=dict(required_fold=0,hardcoded_root=str(canonical),
++                                     canonical_exists=canonical.is_dir(),same_raw_root=canonical.resolve()==raw.resolve()))
++
++
++def discover(root, max_depth, max_entries):
++    markers={'manifest.json','Random_UnitCell_XY_10.npy','NACA_Cylinder_X.npy','Pipe_X.npy',
++             'plas_N987_T20.mat','piececonst_r421_N1024_smooth1.mat','NavierStokes_V1e-5_N1200_T20.mat',
++             'quadpress_smpl.vtk','x.npy'}
++    hits={}; errors=[]; visited=0; truncated=False; archives=[]
++    for directory,dirs,files in os.walk(root,followlinks=False,onerror=lambda e:errors.append(str(e))):
++        relative=Path(directory).relative_to(root)
++        dirs[:]=sorted(d for d in dirs if not d.startswith('.'))
++        if len(relative.parts)>=max_depth: dirs[:]=[]
++        visited+=len(dirs)+len(files)
++        for name in sorted(files):
++            path=str(Path(directory)/name)
++            if name in markers:
++                bucket=hits.setdefault(name,[])
++                if len(bucket)<4: bucket.append(path)
++            elif name.endswith(('.zip','.tar','.tar.gz','.tgz','.7z')) and len(archives)<20:
++                archives.append(path)
++        if visited>=max_entries:
++            truncated=True
++            break
++    return dict(candidates=hits,archives_not_extracted=archives,entries_observed=visited,
++                truncated=truncated,max_depth=max_depth,errors=errors)
++
++
++def main():
++    parser=argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--data-root',type=Path,default=Path(os.environ.get('CDLNO_DATA_ROOT','.')))
++    parser.add_argument('--max-depth',type=int,default=6)
++    parser.add_argument('--max-entries',type=int,default=20000)
++    parser.add_argument('--no-search',action='store_true',help='Only inspect configured expected paths')
++    args=parser.parse_args()
++    if args.max_depth<0 or args.max_entries<1: parser.error('require max-depth>=0 and max-entries>=1')
++    keys=dict(darcy='CDLNO_DARCY_ROOT',elasticity='CDLNO_ELASTICITY_ROOT',airfoil='CDLNO_AIRFOIL_ROOT',
++              pipe='CDLNO_PIPE_ROOT',ns='CDLNO_NS_ROOT',plasticity='CDLNO_PLASTICITY_FILE',airfrans='CDLNO_AIRFRANS_DATASET')
++    defaults=dict(darcy='fno',elasticity='fno',airfoil='fno/airfoil/naca',pipe='fno/pipe',ns='fno',
++                  plasticity='fno/plas_N987_T20.mat',airfrans='AirfRANS/Dataset')
++    # --data-root controls discovery only; path.sh's per-task settings remain explicit.
++    paths={key:Path(os.environ.get(env,str(args.data_root/defaults[key]))) for key,env in keys.items()}
++    report=dict(scope='read-only metadata; no dataset loaders/training/normalization/value or node-order validation',
++                search_root=str(args.data_root),root_exists=args.data_root.is_dir(),
++                configured_paths={k:str(v) for k,v in paths.items()},tasks={})
++    for task,files in expected_files(paths).items():
++        report['tasks'][task]=[dict(expected=item['expected'],**metadata(item['path'])) for item in files]
++    raw=Path(os.environ.get('CDLNO_CAR_RAW_ROOT',str(args.data_root/'mlcfd_data/training_data')))
++    cache=Path(os.environ.get('CDLNO_CAR_CACHE_ROOT',str(args.data_root/'mlcfd_data/preprocessed_data')))
++    try: report['tasks']['car']=dict(raw_root=str(raw),cache_root=str(cache),**car_inventory(raw,cache))
++    except OSError as error: report['tasks']['car']={'inspection_error':str(error)}
++    if not args.no_search:
++        report['discovery']=discover(args.data_root,args.max_depth,args.max_entries)
++        # A few marker headers reveal formats even when configured paths are wrong.
++        report['candidate_headers']=[metadata(Path(items[0])) for key,items in report['discovery']['candidates'].items()
++                                     if key not in ('quadpress_smpl.vtk','x.npy')]
++    print(json.dumps(report,ensure_ascii=False,indent=2))
++    return 0 if report['root_exists'] else 2
++
++
++if __name__=='__main__':
++    raise SystemExit(main())
+--- /dev/null
++++ b/tran_evaluate/inspect_data.sh
+@@ -0,0 +1,5 @@
++#!/usr/bin/env bash
++set -euo pipefail
++cdlno_inspect_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++source "$cdlno_inspect_dir/../path.sh"
++exec "$CDLNO_PYTHON" -B "$cdlno_inspect_dir/inspect_data.py" "$@"
+--- a/tran_evaluate/ns.sh
++++ b/tran_evaluate/ns.sh
+@@ -1,43 +1,4 @@
+ #!/usr/bin/env bash
+ set -euo pipefail
+-
+-cdlno_script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+-cdlno_repo_root="$(cd -- "$cdlno_script_dir/.." && pwd)"
+-source "$cdlno_script_dir/_common.sh"
+-
+-case "${1:-help}" in
+-    train) cdlno_eval=0 ;;
+-    eval) cdlno_eval=1 ;;
+-    help|-h|--help)
+-        cat <<'USAGE'
+-Usage: bash tran_evaluate/ns.sh train|eval [original exp options] [--dry-run]
+-
+-CDLNO: d256/h8/L8/F2/M64, FFN ratios2, entry CDPA, chunk0, ref8.
+-Original NS protocol: 64x64, 10->10, epochs500, batch2, AdamW/OneCycleLR,
+-lr0.001, weight_decay1e-5, NO gradient clipping by default.
+-Training feeds back truth; evaluation feeds back predictions.
+-
+-Train: --data_path DATA_ROOT --cdlno-run-dir NEW_RUN
+-Eval:  --data_path DATA_ROOT --cdlno-run-dir EXISTING_RUN
+-Required MAT: DATA_ROOT/NavierStokes_V1e-5_N1200_T20/NavierStokes_V1e-5_N1200_T20.mat
+-Repeat custom architecture settings during eval; chunk may change.
+-Arguments supplied last override defaults. --dry-run executes no Python/data.
+-Use CDLNO_PYTHON=/absolute/path/to/python to select your existing environment.
+---gpu is forwarded unchanged to the original CUDA_VISIBLE_DEVICES handling.
+-See tran_evaluate/README.md for losses, checkpoints and validation limits.
+-USAGE
+-        exit 0 ;;
+-    *) printf 'Expected train, eval or help; see %s help\n' "$0" >&2; exit 2 ;;
+-esac
+-shift
+-
+-# Omit --max_grad_norm: the CDLNO NS preset uses null, matching original None.
+-# Passing 0 would zero finite gradients; it is NOT a way to disable clipping.
+-cdlno_dispatch PDE-Solving-StandardBenchmark exp_ns.py \
+-    --model CDLNO --gpu 0 \
+-    --n-hidden 256 --n-layers 8 --n-heads 8 --slice_num 64 \
+-    --mlp_ratio 2 --front-blocks 2 --latent-ffn-ratio 2 \
+-    --cdpa-mode entry --cdpa-source-chunk-size 0 --dropout 0 \
+-    --unified_pos 1 --ref 8 --downsample 1 \
+-    --lr 0.001 --epochs 500 --batch-size 2 --weight_decay 1e-5 \
+-    --eval "$cdlno_eval" "$@"
++cdlno_launcher_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++exec bash "$cdlno_launcher_dir/_standard.sh" ns "$@"
+--- /dev/null
++++ b/tran_evaluate/pipe.sh
+@@ -0,0 +1,4 @@
++#!/usr/bin/env bash
++set -euo pipefail
++cdlno_launcher_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++exec bash "$cdlno_launcher_dir/_standard.sh" pipe "$@"
+--- /dev/null
++++ b/tran_evaluate/plasticity.sh
+@@ -0,0 +1,4 @@
++#!/usr/bin/env bash
++set -euo pipefail
++cdlno_launcher_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++exec bash "$cdlno_launcher_dir/_standard.sh" plasticity "$@"

@@ -110,7 +110,7 @@
 | L12/F2、L16/F6、L1/F0 | Q/C | TC.test_extended_boundary_and_front_above_six_all_modes，另含L8/F7、L10/F8 | 通过 |
 | 非法F/dh/N清楚报错 | Q.validate；C/M检查 | TQ.test_illegal_architecture_and_core_policy_rejected；test_invalid_input_and_chunk_rejected_before_computation | 通过 |
 | P=L−F独立对象/storage | C.latent_blocks/cdpa_at | TC.test_registration_storage_independence_and_single_initialization；TM.test_parameter_identity_and_storage_are_independent | 通过 |
-| down/up各F+1；latentSA=L | C/M | TC.test_operation_counts_and_constant_m_all_front_depths；TP.test_live_counts_formulas_and_chunk_invariant_matrix_cost | 通过；默认3/3/8 |
+| down/up各F+1；latentSA在full为L，no_sa/identity为P | C/M | TC.test_operation_counts_and_constant_m_all_front_depths；TP.test_front_modes_live_counts_whole_model_costs_and_actual_parameters | 通过；默认full为3/3/8，no_sa/identity为3/3/6；A4补充 |
 | ConvFFN=F+1；后段/CDPA无卷积 | C/M | TC计数及模块类型检查；TP.test_projection_ffn_and_dense_conv_all_counted_against_closed_form | 通过；默认3 |
 | entry总F；every PF+P(P−1)/2；次数与份数分开 | C/D/P | TC.test_actual_history_sdpa_counts_chunks_and_each_location_projections；TP计数测试 | 通过；默认entry2/1、every27/6（chunk0） |
 | off不存T；entry无后段历史；every只存待消费状态 | C.forward局部列表 | TC.test_off_discards_t_and_entry_releases_history_after_only_use；test_history_objects_timing_readout_and_two_forward_graph_isolation | 通过 |
@@ -170,4 +170,3 @@
 | 不宣称固定M普适逼近、普适低秩/无损、误差必降、守恒/网格一致、严格类包含、GPU必加速 | README/报告 | 明确保留条件性；阶段9还有变慢的实测，不包装为普遍优势 | 边界已落实 |
 | 14.3 历史理论审阅/数值/编译不升级工程状态 | 全报告证据分类 | 只把本轮119项与已持久阶段9结果标实测；缺附件项未完成 | 通过（记录准确） |
 | POD/JVP/VJP等未来可选，不加研究/损失；CFD全局后处理冻结 | 生产core/原metrics | 无新研究诊断/损失；Freeze原指标字节相同 | 排除/静态冻结通过 |
-

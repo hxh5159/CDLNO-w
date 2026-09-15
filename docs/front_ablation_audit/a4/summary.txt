@@ -1,0 +1,20 @@
+Full before/after identical cost/initial weights: ['transolver', 'lrsa_matched', 'cdlno_off', 'cdlno_entry', 'cdlno_every_block']
+CPU rows 33 GPU measured rows 10 Actual preset parameter counts 24
+darcy [('full', 2531297), ('no_sa', 2399649), ('identity', 2135457)]
+elasticity [('full', 2072545), ('no_sa', 1940897), ('identity', 1676705)]
+airfoil [('full', 2515521), ('no_sa', 2383809), ('identity', 2119617)]
+pipe [('full', 2503233), ('no_sa', 2371521), ('identity', 2107329)]
+ns [('full', 10015169), ('no_sa', 9489729), ('identity', 8437057)]
+plasticity [('full', 2548836), ('no_sa', 2417188), ('identity', 2152996)]
+shapenet-car [('full', 8211652), ('no_sa', 7686212), ('identity', 6633540)]
+airfrans [('full', 8244420), ('no_sa', 7718980), ('identity', 6666308)]
+gpu-airfoil-matched-full.json cdlno_entry 0.989209 [77.999, 140.643] ATen train calls 9304
+gpu-airfoil-matched-identity.json cdlno_entry 0.934683 [76.425, 132.722] ATen train calls 7680
+gpu-airfoil-matched-no_sa.json cdlno_entry 0.968238 [77.495, 137.498] ATen train calls 8364
+gpu-elasticity-task-full.json transolver 1.126924 [73.439, 156.843] ATen train calls 7234
+gpu-elasticity-task-full.json lrsa_matched 1.44071 [82.795, 213.611] ATen train calls 14946
+gpu-elasticity-task-full.json cdlno_off 0.617185 [78.48, 134.838] ATen train calls 8154
+gpu-elasticity-task-full.json cdlno_entry 0.626622 [78.765, 136.571] ATen train calls 8718
+gpu-elasticity-task-full.json cdlno_every_block 0.736722 [80.032, 151.344] ATen train calls 11643
+gpu-elasticity-task-identity.json cdlno_entry 0.599359 [77.222, 130.213] ATen train calls 7134
+gpu-elasticity-task-no_sa.json cdlno_entry 0.616136 [78.261, 134.113] ATen train calls 7818

@@ -1,0 +1,191 @@
+/home/hwz/anaconda3/lib/python3.13/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+test_defaults_cli_precedence_frozen_presets_and_legacy_branches (test_front_task_modes.TaskFrontModes.test_defaults_cli_precedence_frozen_presets_and_legacy_branches) ... ok
+test_eight_task_three_mode_real_constructor_backward_and_roundtrip (test_front_task_modes.TaskFrontModes.test_eight_task_three_mode_real_constructor_backward_and_roundtrip) ... 
+  test_eight_task_three_mode_real_constructor_backward_and_roundtrip (test_front_task_modes.TaskFrontModes.test_eight_task_three_mode_real_constructor_backward_and_roundtrip) (task='ns', mode='full') ... ERROR
+  test_eight_task_three_mode_real_constructor_backward_and_roundtrip (test_front_task_modes.TaskFrontModes.test_eight_task_three_mode_real_constructor_backward_and_roundtrip) (task='ns', mode='no_sa') ... ERROR
+  test_eight_task_three_mode_real_constructor_backward_and_roundtrip (test_front_task_modes.TaskFrontModes.test_eight_task_three_mode_real_constructor_backward_and_roundtrip) (task='ns', mode='identity') ... ERROR
+  test_eight_task_three_mode_real_constructor_backward_and_roundtrip (test_front_task_modes.TaskFrontModes.test_eight_task_three_mode_real_constructor_backward_and_roundtrip) (task='plasticity', mode='full') ... ERROR
+  test_eight_task_three_mode_real_constructor_backward_and_roundtrip (test_front_task_modes.TaskFrontModes.test_eight_task_three_mode_real_constructor_backward_and_roundtrip) (task='plasticity', mode='no_sa') ... ERROR
+  test_eight_task_three_mode_real_constructor_backward_and_roundtrip (test_front_task_modes.TaskFrontModes.test_eight_task_three_mode_real_constructor_backward_and_roundtrip) (task='plasticity', mode='identity') ... ERROR
+test_industrial_object_modes_configs_and_weights_must_agree (test_front_task_modes.TaskFrontModes.test_industrial_object_modes_configs_and_weights_must_agree) ... ok
+test_legacy_industrial_objects_through_actual_run_loaders (test_front_task_modes.TaskFrontModes.test_legacy_industrial_objects_through_actual_run_loaders) ... FAIL
+test_root_scripts_three_modes_paths_overrides_and_parser (test_front_task_modes.TaskFrontModes.test_root_scripts_three_modes_paths_overrides_and_parser) ... ok
+test_sidecar_missing_fields_and_unknown_legacy_rejected (test_front_task_modes.TaskFrontModes.test_sidecar_missing_fields_and_unknown_legacy_rejected) ... ok
+test_three_original_workdirs_new_process_import_and_all_mode_loads (test_front_task_modes.TaskFrontModes.test_three_original_workdirs_new_process_import_and_all_mode_loads) ... FAIL
+
+======================================================================
+ERROR: test_eight_task_three_mode_real_constructor_backward_and_roundtrip (test_front_task_modes.TaskFrontModes.test_eight_task_three_mode_real_constructor_backward_and_roundtrip) (task='ns', mode='full')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_front_task_modes.py", line 120, in test_eight_task_three_mode_real_constructor_backward_and_roundtrip
+    m = build(task, a).eval()
+        ~~~~~^^^^^^^^^
+  File "/home/hwz/CDLNO/tests/test_front_task_modes.py", line 53, in build
+    return eval(compile(ast.Expression(call), '<task-constructor-only>', 'eval'),
+                dict(args=args, get_model=static.get_model, cdlno_model_kwargs=static.model_kwargs,
+                     h=64, s1=101, s2=31))
+  File "<task-constructor-only>", line 102, in <module>
+NameError: name 'T_in' is not defined
+
+======================================================================
+ERROR: test_eight_task_three_mode_real_constructor_backward_and_roundtrip (test_front_task_modes.TaskFrontModes.test_eight_task_three_mode_real_constructor_backward_and_roundtrip) (task='ns', mode='no_sa')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_front_task_modes.py", line 120, in test_eight_task_three_mode_real_constructor_backward_and_roundtrip
+    m = build(task, a).eval()
+        ~~~~~^^^^^^^^^
+  File "/home/hwz/CDLNO/tests/test_front_task_modes.py", line 53, in build
+    return eval(compile(ast.Expression(call), '<task-constructor-only>', 'eval'),
+                dict(args=args, get_model=static.get_model, cdlno_model_kwargs=static.model_kwargs,
+                     h=64, s1=101, s2=31))
+  File "<task-constructor-only>", line 102, in <module>
+NameError: name 'T_in' is not defined
+
+======================================================================
+ERROR: test_eight_task_three_mode_real_constructor_backward_and_roundtrip (test_front_task_modes.TaskFrontModes.test_eight_task_three_mode_real_constructor_backward_and_roundtrip) (task='ns', mode='identity')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_front_task_modes.py", line 120, in test_eight_task_three_mode_real_constructor_backward_and_roundtrip
+    m = build(task, a).eval()
+        ~~~~~^^^^^^^^^
+  File "/home/hwz/CDLNO/tests/test_front_task_modes.py", line 53, in build
+    return eval(compile(ast.Expression(call), '<task-constructor-only>', 'eval'),
+                dict(args=args, get_model=static.get_model, cdlno_model_kwargs=static.model_kwargs,
+                     h=64, s1=101, s2=31))
+  File "<task-constructor-only>", line 102, in <module>
+NameError: name 'T_in' is not defined
+
+======================================================================
+ERROR: test_eight_task_three_mode_real_constructor_backward_and_roundtrip (test_front_task_modes.TaskFrontModes.test_eight_task_three_mode_real_constructor_backward_and_roundtrip) (task='plasticity', mode='full')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_front_task_modes.py", line 120, in test_eight_task_three_mode_real_constructor_backward_and_roundtrip
+    m = build(task, a).eval()
+        ~~~~~^^^^^^^^^
+  File "/home/hwz/CDLNO/tests/test_front_task_modes.py", line 53, in build
+    return eval(compile(ast.Expression(call), '<task-constructor-only>', 'eval'),
+                dict(args=args, get_model=static.get_model, cdlno_model_kwargs=static.model_kwargs,
+                     h=64, s1=101, s2=31))
+  File "<task-constructor-only>", line 154, in <module>
+NameError: name 'Deformation' is not defined
+
+======================================================================
+ERROR: test_eight_task_three_mode_real_constructor_backward_and_roundtrip (test_front_task_modes.TaskFrontModes.test_eight_task_three_mode_real_constructor_backward_and_roundtrip) (task='plasticity', mode='no_sa')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_front_task_modes.py", line 120, in test_eight_task_three_mode_real_constructor_backward_and_roundtrip
+    m = build(task, a).eval()
+        ~~~~~^^^^^^^^^
+  File "/home/hwz/CDLNO/tests/test_front_task_modes.py", line 53, in build
+    return eval(compile(ast.Expression(call), '<task-constructor-only>', 'eval'),
+                dict(args=args, get_model=static.get_model, cdlno_model_kwargs=static.model_kwargs,
+                     h=64, s1=101, s2=31))
+  File "<task-constructor-only>", line 154, in <module>
+NameError: name 'Deformation' is not defined
+
+======================================================================
+ERROR: test_eight_task_three_mode_real_constructor_backward_and_roundtrip (test_front_task_modes.TaskFrontModes.test_eight_task_three_mode_real_constructor_backward_and_roundtrip) (task='plasticity', mode='identity')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_front_task_modes.py", line 120, in test_eight_task_three_mode_real_constructor_backward_and_roundtrip
+    m = build(task, a).eval()
+        ~~~~~^^^^^^^^^
+  File "/home/hwz/CDLNO/tests/test_front_task_modes.py", line 53, in build
+    return eval(compile(ast.Expression(call), '<task-constructor-only>', 'eval'),
+                dict(args=args, get_model=static.get_model, cdlno_model_kwargs=static.model_kwargs,
+                     h=64, s1=101, s2=31))
+  File "<task-constructor-only>", line 154, in <module>
+NameError: name 'Deformation' is not defined
+
+======================================================================
+FAIL: test_legacy_industrial_objects_through_actual_run_loaders (test_front_task_modes.TaskFrontModes.test_legacy_industrial_objects_through_actual_run_loaders)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_front_task_modes.py", line 257, in test_legacy_industrial_objects_through_actual_run_loaders
+    torch.testing.assert_close(y, fixture['output'][0], atol=0, rtol=0)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/site-packages/torch/testing/_comparison.py", line 1631, in assert_close
+    raise error_metas[0].to_error(msg)
+AssertionError: Tensor-likes are not equal!
+
+Mismatched elements: 23 / 44 (52.3%)
+Greatest absolute difference: 2.9802322387695312e-08 at index (1, 0)
+Greatest relative difference: 4.308229108573869e-06 at index (6, 2)
+
+======================================================================
+FAIL: test_three_original_workdirs_new_process_import_and_all_mode_loads (test_front_task_modes.TaskFrontModes.test_three_original_workdirs_new_process_import_and_all_mode_loads)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_front_task_modes.py", line 293, in test_three_original_workdirs_new_process_import_and_all_mode_loads
+    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0 : CDLNO run directory: /tmp/tmpkqzp5hif/darcy_full
+CDLNO resolved architecture: {'model_name': 'CDLNO', 'model_version': 'cdlno-core-v1', 'history_rule': 'front-t-after-selected-processor-before-up-v1', 'task_name': 'darcy', 'L': 8, 'F': 2, 'M': 4, 'd_model': 8, 'num_heads': 2, 'norm_type': 'rmsnorm', 'ffn_ratio': 2, 'latent_ffn_ratio': 2, 'decoder_mode': 'feature', 'cdpa_mode': 'entry', 'attention_dropout': 0.0, 'structured': True, 'grid_shape': [5, 5], 'output_dim': 1, 'front_latent_mode': 'full'} {'version': 'static-standard-v1', 'space_dim': 2, 'fun_dim': 1, 'Time_Input': False, 'act': 'gelu', 'unified_pos': True, 'ref': 8, 'stem_width': 65, 'placeholder': False, 'position_rule': 'baseline-structured-index'}
+CDLNO run directory: /tmp/tmpkqzp5hif/darcy_full
+CDLNO resolved architecture: {'model_name': 'CDLNO', 'model_version': 'cdlno-core-v1', 'history_rule': 'front-t-after-selected-processor-before-up-v1', 'task_name': 'darcy', 'L': 8, 'F': 2, 'M': 4, 'd_model': 8, 'num_heads': 2, 'norm_type': 'rmsnorm', 'ffn_ratio': 2, 'latent_ffn_ratio': 2, 'decoder_mode': 'feature', 'cdpa_mode': 'entry', 'attention_dropout': 0.0, 'structured': True, 'grid_shape': [5, 5], 'output_dim': 1, 'front_latent_mode': 'full'} {'version': 'static-standard-v1', 'space_dim': 2, 'fun_dim': 1, 'Time_Input': False, 'act': 'gelu', 'unified_pos': True, 'ref': 8, 'stem_width': 65, 'placeholder': False, 'position_rule': 'baseline-structured-index'}
+CDLNO run directory: /tmp/tmpkqzp5hif/darcy_no_sa
+CDLNO resolved architecture: {'model_name': 'CDLNO', 'model_version': 'cdlno-core-v1', 'history_rule': 'front-t-after-selected-processor-before-up-v1', 'task_name': 'darcy', 'L': 8, 'F': 2, 'M': 4, 'd_model': 8, 'num_heads': 2, 'norm_type': 'rmsnorm', 'ffn_ratio': 2, 'latent_ffn_ratio': 2, 'decoder_mode': 'feature', 'cdpa_mode': 'entry', 'attention_dropout': 0.0, 'structured': True, 'grid_shape': [5, 5], 'output_dim': 1, 'front_latent_mode': 'no_sa'} {'version': 'static-standard-v1', 'space_dim': 2, 'fun_dim': 1, 'Time_Input': False, 'act': 'gelu', 'unified_pos': True, 'ref': 8, 'stem_width': 65, 'placeholder': False, 'position_rule': 'baseline-structured-index'}
+CDLNO run directory: /tmp/tmpkqzp5hif/darcy_no_sa
+CDLNO resolved architecture: {'model_name': 'CDLNO', 'model_version': 'cdlno-core-v1', 'history_rule': 'front-t-after-selected-processor-before-up-v1', 'task_name': 'darcy', 'L': 8, 'F': 2, 'M': 4, 'd_model': 8, 'num_heads': 2, 'norm_type': 'rmsnorm', 'ffn_ratio': 2, 'latent_ffn_ratio': 2, 'decoder_mode': 'feature', 'cdpa_mode': 'entry', 'attention_dropout': 0.0, 'structured': True, 'grid_shape': [5, 5], 'output_dim': 1, 'front_latent_mode': 'no_sa'} {'version': 'static-standard-v1', 'space_dim': 2, 'fun_dim': 1, 'Time_Input': False, 'act': 'gelu', 'unified_pos': True, 'ref': 8, 'stem_width': 65, 'placeholder': False, 'position_rule': 'baseline-structured-index'}
+CDLNO run directory: /tmp/tmpkqzp5hif/darcy_identity
+CDLNO resolved architecture: {'model_name': 'CDLNO', 'model_version': 'cdlno-core-v1', 'history_rule': 'front-t-after-selected-processor-before-up-v1', 'task_name': 'darcy', 'L': 8, 'F': 2, 'M': 4, 'd_model': 8, 'num_heads': 2, 'norm_type': 'rmsnorm', 'ffn_ratio': 2, 'latent_ffn_ratio': 2, 'decoder_mode': 'feature', 'cdpa_mode': 'entry', 'attention_dropout': 0.0, 'structured': True, 'grid_shape': [5, 5], 'output_dim': 1, 'front_latent_mode': 'identity'} {'version': 'static-standard-v1', 'space_dim': 2, 'fun_dim': 1, 'Time_Input': False, 'act': 'gelu', 'unified_pos': True, 'ref': 8, 'stem_width': 65, 'placeholder': False, 'position_rule': 'baseline-structured-index'}
+CDLNO run directory: /tmp/tmpkqzp5hif/darcy_identity
+CDLNO resolved architecture: {'model_name': 'CDLNO', 'model_version': 'cdlno-core-v1', 'history_rule': 'front-t-after-selected-processor-before-up-v1', 'task_name': 'darcy', 'L': 8, 'F': 2, 'M': 4, 'd_model': 8, 'num_heads': 2, 'norm_type': 'rmsnorm', 'ffn_ratio': 2, 'latent_ffn_ratio': 2, 'decoder_mode': 'feature', 'cdpa_mode': 'entry', 'attention_dropout': 0.0, 'structured': True, 'grid_shape': [5, 5], 'output_dim': 1, 'front_latent_mode': 'identity'} {'version': 'static-standard-v1', 'space_dim': 2, 'fun_dim': 1, 'Time_Input': False, 'act': 'gelu', 'unified_pos': True, 'ref': 8, 'stem_width': 65, 'placeholder': False, 'position_rule': 'baseline-structured-index'}
+CDLNO run directory: /tmp/tmpkqzp5hif/elasticity_full
+CDLNO resolved architecture: {'model_name': 'CDLNO', 'model_version': 'cdlno-core-v1', 'history_rule': 'front-t-after-selected-processor-before-up-v1', 'task_name': 'elasticity', 'L': 8, 'F': 2, 'M': 4, 'd_model': 8, 'num_heads': 2, 'norm_type': 'rmsnorm', 'ffn_ratio': 2, 'latent_ffn_ratio': 2, 'decoder_mode': 'feature', 'cdpa_mode': 'entry', 'attention_dropout': 0.0, 'structured': False, 'grid_shape': None, 'output_dim': 1, 'front_latent_mode': 'full'} {'version': 'static-standard-v1', 'space_dim': 2, 'fun_dim': 0, 'Time_Input': False, 'act': 'gelu', 'unified_pos': False, 'ref': 8, 'stem_width': 2, 'placeholder': True, 'position_rule': 'baseline-irregular-coordinates'}
+CDLNO run directory: /tmp/tmpkqzp5hif/elasticity_full
+CDLNO resolved architecture: {'model_name': 'CDLNO', 'model_version': 'cdlno-core-v1', 'history_rule': 'front-t-after-selected-processor-before-up-v1', 'task_name': 'elasticity', 'L': 8, 'F': 2, 'M': 4, 'd_model': 8, 'num_heads': 2, 'norm_type': 'rmsnorm', 'ffn_ratio': 2, 'latent_ffn_ratio': 2, 'decoder_mode': 'feature', 'cdpa_mode': 'entry', 'attention_dropout': 0.0, 'structured': False, 'grid_shape': None, 'output_dim': 1, 'front_latent_mode': 'full'} {'version': 'static-standard-v1', 'space_dim': 2, 'fun_dim': 0, 'Time_Input': False, 'act': 'gelu', 'unified_pos': False, 'ref': 8, 'stem_width': 2, 'placeholder': True, 'position_rule': 'baseline-irregular-coordinates'}
+CDLNO run directory: /tmp/tmpkqzp5hif/elasticity_no_sa
+CDLNO resolved architecture: {'model_name': 'CDLNO', 'model_version': 'cdlno-core-v1', 'history_rule': 'front-t-after-selected-processor-before-up-v1', 'task_name': 'elasticity', 'L': 8, 'F': 2, 'M': 4, 'd_model': 8, 'num_heads': 2, 'norm_type': 'rmsnorm', 'ffn_ratio': 2, 'latent_ffn_ratio': 2, 'decoder_mode': 'feature', 'cdpa_mode': 'entry', 'attention_dropout': 0.0, 'structured': False, 'grid_shape': None, 'output_dim': 1, 'front_latent_mode': 'no_sa'} {'version': 'static-standard-v1', 'space_dim': 2, 'fun_dim': 0, 'Time_Input': False, 'act': 'gelu', 'unified_pos': False, 'ref': 8, 'stem_width': 2, 'placeholder': True, 'position_rule': 'baseline-irregular-coordinates'}
+CDLNO run directory: /tmp/tmpkqzp5hif/elasticity_no_sa
+CDLNO resolved architecture: {'model_name': 'CDLNO', 'model_version': 'cdlno-core-v1', 'history_rule': 'front-t-after-selected-processor-before-up-v1', 'task_name': 'elasticity', 'L': 8, 'F': 2, 'M': 4, 'd_model': 8, 'num_heads': 2, 'norm_type': 'rmsnorm', 'ffn_ratio': 2, 'latent_ffn_ratio': 2, 'decoder_mode': 'feature', 'cdpa_mode': 'entry', 'attention_dropout': 0.0, 'structured': False, 'grid_shape': None, 'output_dim': 1, 'front_latent_mode': 'no_sa'} {'version': 'static-standard-v1', 'space_dim': 2, 'fun_dim': 0, 'Time_Input': False, 'act': 'gelu', 'unified_pos': False, 'ref': 8, 'stem_width': 2, 'placeholder': True, 'position_rule': 'baseline-irregular-coordinates'}
+CDLNO run directory: /tmp/tmpkqzp5hif/elasticity_identity
+CDLNO resolved architecture: {'model_name': 'CDLNO', 'model_version': 'cdlno-core-v1', 'history_rule': 'front-t-after-selected-processor-before-up-v1', 'task_name': 'elasticity', 'L': 8, 'F': 2, 'M': 4, 'd_model': 8, 'num_heads': 2, 'norm_type': 'rmsnorm', 'ffn_ratio': 2, 'latent_ffn_ratio': 2, 'decoder_mode': 'feature', 'cdpa_mode': 'entry', 'attention_dropout': 0.0, 'structured': False, 'grid_shape': None, 'output_dim': 1, 'front_latent_mode': 'identity'} {'version': 'static-standard-v1', 'space_dim': 2, 'fun_dim': 0, 'Time_Input': False, 'act': 'gelu', 'unified_pos': False, 'ref': 8, 'stem_width': 2, 'placeholder': True, 'position_rule': 'baseline-irregular-coordinates'}
+CDLNO run directory: /tmp/tmpkqzp5hif/elasticity_identity
+CDLNO resolved architecture: {'model_name': 'CDLNO', 'model_version': 'cdlno-core-v1', 'history_rule': 'front-t-after-selected-processor-before-up-v1', 'task_name': 'elasticity', 'L': 8, 'F': 2, 'M': 4, 'd_model': 8, 'num_heads': 2, 'norm_type': 'rmsnorm', 'ffn_ratio': 2, 'latent_ffn_ratio': 2, 'decoder_mode': 'feature', 'cdpa_mode': 'entry', 'attention_dropout': 0.0, 'structured': False, 'grid_shape': None, 'output_dim': 1, 'front_latent_mode': 'identity'} {'version': 'static-standard-v1', 'space_dim': 2, 'fun_dim': 0, 'Time_Input': False, 'act': 'gelu', 'unified_pos': False, 'ref': 8, 'stem_width': 2, 'placeholder': True, 'position_rule': 'baseline-irregular-coordinates'}
+CDLNO run directory: /tmp/tmpkqzp5hif/airfoil_full
+CDLNO resolved architecture: {'model_name': 'CDLNO', 'model_version': 'cdlno-core-v1', 'history_rule': 'front-t-after-selected-processor-before-up-v1', 'task_name': 'airfoil', 'L': 8, 'F': 2, 'M': 4, 'd_model': 8, 'num_heads': 2, 'norm_type': 'rmsnorm', 'ffn_ratio': 2, 'latent_ffn_ratio': 2, 'decoder_mode': 'feature', 'cdpa_mode': 'entry', 'attention_dropout': 0.0, 'structured': True, 'grid_shape': [5, 7], 'output_dim': 1, 'front_latent_mode': 'full'} {'version': 'static-standard-v1', 'space_dim': 2, 'fun_dim': 0, 'Time_Input': False, 'act': 'gelu', 'unified_pos': False, 'ref': 8, 'stem_width': 2, 'placeholder': True, 'position_rule': 'baseline-structured-index'}
+CDLNO run directory: /tmp/tmpkqzp5hif/airfoil_full
+CDLNO resolved architecture: {'model_name': 'CDLNO', 'model_version': 'cdlno-core-v1', 'history_rule': 'front-t-after-selected-processor-before-up-v1', 'task_name': 'airfoil', 'L': 8, 'F': 2, 'M': 4, 'd_model': 8, 'num_heads': 2, 'norm_type': 'rmsnorm', 'ffn_ratio': 2, 'latent_ffn_ratio': 2, 'decoder_mode': 'feature', 'cdpa_mode': 'entry', 'attention_dropout': 0.0, 'structured': True, 'grid_shape': [5, 7], 'output_dim': 1, 'front_latent_mode': 'full'} {'version': 'static-standard-v1', 'space_dim': 2, 'fun_dim': 0, 'Time_Input': False, 'act': 'gelu', 'unified_pos': False, 'ref': 8, 'stem_width': 2, 'placeholder': True, 'position_rule': 'baseline-structured-index'}
+CDLNO run directory: /tmp/tmpkqzp5hif/airfoil_no_sa
+CDLNO resolved architecture: {'model_name': 'CDLNO', 'model_version': 'cdlno-core-v1', 'history_rule': 'front-t-after-selected-processor-before-up-v1', 'task_name': 'airfoil', 'L': 8, 'F': 2, 'M': 4, 'd_model': 8, 'num_heads': 2, 'norm_type': 'rmsnorm', 'ffn_ratio': 2, 'latent_ffn_ratio': 2, 'decoder_mode': 'feature', 'cdpa_mode': 'entry', 'attention_dropout': 0.0, 'structured': True, 'grid_shape': [5, 7], 'output_dim': 1, 'front_latent_mode': 'no_sa'} {'version': 'static-standard-v1', 'space_dim': 2, 'fun_dim': 0, 'Time_Input': False, 'act': 'gelu', 'unified_pos': False, 'ref': 8, 'stem_width': 2, 'placeholder': True, 'position_rule': 'baseline-structured-index'}
+CDLNO run directory: /tmp/tmpkqzp5hif/airfoil_no_sa
+CDLNO resolved architecture: {'model_name': 'CDLNO', 'model_version': 'cdlno-core-v1', 'history_rule': 'front-t-after-selected-processor-before-up-v1', 'task_name': 'airfoil', 'L': 8, 'F': 2, 'M': 4, 'd_model': 8, 'num_heads': 2, 'norm_type': 'rmsnorm', 'ffn_ratio': 2, 'latent_ffn_ratio': 2, 'decoder_mode': 'feature', 'cdpa_mode': 'entry', 'attention_dropout': 0.0, 'structured': True, 'grid_shape': [5, 7], 'output_dim': 1, 'front_latent_mode': 'no_sa'} {'version': 'static-standard-v1', 'space_dim': 2, 'fun_dim': 0, 'Time_Input': False, 'act': 'gelu', 'unified_pos': False, 'ref': 8, 'stem_width': 2, 'placeholder': True, 'position_rule': 'baseline-structured-index'}
+CDLNO run directory: /tmp/tmpkqzp5hif/airfoil_identity
+CDLNO resolved architecture: {'model_name': 'CDLNO', 'model_version': 'cdlno-core-v1', 'history_rule': 'front-t-after-selected-processor-before-up-v1', 'task_name': 'airfoil', 'L': 8, 'F': 2, 'M': 4, 'd_model': 8, 'num_heads': 2, 'norm_type': 'rmsnorm', 'ffn_ratio': 2, 'latent_ffn_ratio': 2, 'decoder_mode': 'feature', 'cdpa_mode': 'entry', 'attention_dropout': 0.0, 'structured': True, 'grid_shape': [5, 7], 'output_dim': 1, 'front_latent_mode': 'identity'} {'version': 'static-standard-v1', 'space_dim': 2, 'fun_dim': 0, 'Time_Input': False, 'act': 'gelu', 'unified_pos': False, 'ref': 8, 'stem_width': 2, 'placeholder': True, 'position_rule': 'baseline-structured-index'}
+CDLNO run directory: /tmp/tmpkqzp5hif/airfoil_identity
+CDLNO resolved architecture: {'model_name': 'CDLNO', 'model_version': 'cdlno-core-v1', 'history_rule': 'front-t-after-selected-processor-before-up-v1', 'task_name': 'airfoil', 'L': 8, 'F': 2, 'M': 4, 'd_model': 8, 'num_heads': 2, 'norm_type': 'rmsnorm', 'ffn_ratio': 2, 'latent_ffn_ratio': 2, 'decoder_mode': 'feature', 'cdpa_mode': 'entry', 'attention_dropout': 0.0, 'structured': True, 'grid_shape': [5, 7], 'output_dim': 1, 'front_latent_mode': 'identity'} {'version': 'static-standard-v1', 'space_dim': 2, 'fun_dim': 0, 'Time_Input': False, 'act': 'gelu', 'unified_pos': False, 'ref': 8, 'stem_width': 2, 'placeholder': True, 'position_rule': 'baseline-structured-index'}
+CDLNO run directory: /tmp/tmpkqzp5hif/pipe_full
+CDLNO resolved architecture: {'model_name': 'CDLNO', 'model_version': 'cdlno-core-v1', 'history_rule': 'front-t-after-selected-processor-before-up-v1', 'task_name': 'pipe', 'L': 8, 'F': 2, 'M': 4, 'd_model': 8, 'num_heads': 2, 'norm_type': 'rmsnorm', 'ffn_ratio': 2, 'latent_ffn_ratio': 2, 'decoder_mode': 'feature', 'cdpa_mode': 'entry', 'attention_dropout': 0.0, 'structured': True, 'grid_shape': [5, 7], 'output_dim': 1, 'front_latent_mode': 'full'} {'version': 'static-standard-v1', 'space_dim': 2, 'fun_dim': 0, 'Time_Input': False, 'act': 'gelu', 'unified_pos': False, 'ref': 8, 'stem_width': 2, 'placeholder': True, 'position_rule': 'baseline-structured-index'}
+CDLNO run directory: /tmp/tmpkqzp5hif/pipe_full
+CDLNO resolved architecture: {'model_name': 'CDLNO', 'model_version': 'cdlno-core-v1', 'history_rule': 'front-t-after-selected-processor-before-up-v1', 'task_name': 'pipe', 'L': 8, 'F': 2, 'M': 4, 'd_model': 8, 'num_heads': 2, 'norm_type': 'rmsnorm', 'ffn_ratio': 2, 'latent_ffn_ratio': 2, 'decoder_mode': 'feature', 'cdpa_mode': 'entry', 'attention_dropout': 0.0, 'structured': True, 'grid_shape': [5, 7], 'output_dim': 1, 'front_latent_mode': 'full'} {'version': 'static-standard-v1', 'space_dim': 2, 'fun_dim': 0, 'Time_Input': False, 'act': 'gelu', 'unified_pos': False, 'ref': 8, 'stem_width': 2, 'placeholder': True, 'position_rule': 'baseline-structured-index'}
+CDLNO run directory: /tmp/tmpkqzp5hif/pipe_no_sa
+CDLNO resolved architecture: {'model_name': 'CDLNO', 'model_version': 'cdlno-core-v1', 'history_rule': 'front-t-after-selected-processor-before-up-v1', 'task_name': 'pipe', 'L': 8, 'F': 2, 'M': 4, 'd_model': 8, 'num_heads': 2, 'norm_type': 'rmsnorm', 'ffn_ratio': 2, 'latent_ffn_ratio': 2, 'decoder_mode': 'feature', 'cdpa_mode': 'entry', 'attention_dropout': 0.0, 'structured': True, 'grid_shape': [5, 7], 'output_dim': 1, 'front_latent_mode': 'no_sa'} {'version': 'static-standard-v1', 'space_dim': 2, 'fun_dim': 0, 'Time_Input': False, 'act': 'gelu', 'unified_pos': False, 'ref': 8, 'stem_width': 2, 'placeholder': True, 'position_rule': 'baseline-structured-index'}
+CDLNO run directory: /tmp/tmpkqzp5hif/pipe_no_sa
+CDLNO resolved architecture: {'model_name': 'CDLNO', 'model_version': 'cdlno-core-v1', 'history_rule': 'front-t-after-selected-processor-before-up-v1', 'task_name': 'pipe', 'L': 8, 'F': 2, 'M': 4, 'd_model': 8, 'num_heads': 2, 'norm_type': 'rmsnorm', 'ffn_ratio': 2, 'latent_ffn_ratio': 2, 'decoder_mode': 'feature', 'cdpa_mode': 'entry', 'attention_dropout': 0.0, 'structured': True, 'grid_shape': [5, 7], 'output_dim': 1, 'front_latent_mode': 'no_sa'} {'version': 'static-standard-v1', 'space_dim': 2, 'fun_dim': 0, 'Time_Input': False, 'act': 'gelu', 'unified_pos': False, 'ref': 8, 'stem_width': 2, 'placeholder': True, 'position_rule': 'baseline-structured-index'}
+CDLNO run directory: /tmp/tmpkqzp5hif/pipe_identity
+CDLNO resolved architecture: {'model_name': 'CDLNO', 'model_version': 'cdlno-core-v1', 'history_rule': 'front-t-after-selected-processor-before-up-v1', 'task_name': 'pipe', 'L': 8, 'F': 2, 'M': 4, 'd_model': 8, 'num_heads': 2, 'norm_type': 'rmsnorm', 'ffn_ratio': 2, 'latent_ffn_ratio': 2, 'decoder_mode': 'feature', 'cdpa_mode': 'entry', 'attention_dropout': 0.0, 'structured': True, 'grid_shape': [5, 7], 'output_dim': 1, 'front_latent_mode': 'identity'} {'version': 'static-standard-v1', 'space_dim': 2, 'fun_dim': 0, 'Time_Input': False, 'act': 'gelu', 'unified_pos': False, 'ref': 8, 'stem_width': 2, 'placeholder': True, 'position_rule': 'baseline-structured-index'}
+CDLNO run directory: /tmp/tmpkqzp5hif/pipe_identity
+CDLNO resolved architecture: {'model_name': 'CDLNO', 'model_version': 'cdlno-core-v1', 'history_rule': 'front-t-after-selected-processor-before-up-v1', 'task_name': 'pipe', 'L': 8, 'F': 2, 'M': 4, 'd_model': 8, 'num_heads': 2, 'norm_type': 'rmsnorm', 'ffn_ratio': 2, 'latent_ffn_ratio': 2, 'decoder_mode': 'feature', 'cdpa_mode': 'entry', 'attention_dropout': 0.0, 'structured': True, 'grid_shape': [5, 7], 'output_dim': 1, 'front_latent_mode': 'identity'} {'version': 'static-standard-v1', 'space_dim': 2, 'fun_dim': 0, 'Time_Input': False, 'act': 'gelu', 'unified_pos': False, 'ref': 8, 'stem_width': 2, 'placeholder': True, 'position_rule': 'baseline-structured-index'}
+/home/hwz/anaconda3/lib/python3.13/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_front_task_modes.py", line 313, in <module>
+    if len(sys.argv) > 1 and sys.argv[1] == '--worker': worker(sys.argv[2], sys.argv[3:])
+                                                        ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/CDLNO/tests/test_front_task_modes.py", line 301, in worker
+    a = parse(task, [*flags, '--front-latent-mode', mode]); model = build(task, a).eval()
+                                                                    ~~~~~^^^^^^^^^
+  File "/home/hwz/CDLNO/tests/test_front_task_modes.py", line 53, in build
+    return eval(compile(ast.Expression(call), '<task-constructor-only>', 'eval'),
+                dict(args=args, get_model=static.get_model, cdlno_model_kwargs=static.model_kwargs,
+                     h=64, s1=101, s2=31))
+  File "<task-constructor-only>", line 102, in <module>
+NameError: name 'T_in' is not defined
+
+
+----------------------------------------------------------------------
+Ran 7 tests in 5.687s
+
+FAILED (failures=2, errors=6)

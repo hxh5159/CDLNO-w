@@ -14,6 +14,8 @@ import torch
 from torch import Tensor, nn
 from torch.nn import functional as F
 
+from .config import FrontLatentMode, _check_front_latent_mode
+
 
 def _init_linear(module: nn.Linear, std: float = 0.02) -> None:
     nn.init.trunc_normal_(module.weight, std=std)
@@ -287,10 +289,12 @@ class _UpAttention(_ProjectedAttention):
 
 
 class LRSAFrontBlock(nn.Module):
-    """One complete LRSA-style point/latent block.
+    """LRSA point/latent block with a selectable latent processor.
 
-    Returns ``(H_next, T)`` where T is captured after the second latent FFN
-    and before up-attention, exactly as required for later CDPA history.
+    full: FFN1 -> SA -> FFN2, each with its own pre-norm and residual.
+    no_sa: FFN1 -> FFN2; identity: T is the complete Down output itself.
+    Returns (H_next, T), with live T before the retained Up-specific norm.
+    Down, Up, point residuals and point FFN are identical in all modes.
     """
 
     def __init__(
@@ -303,20 +307,27 @@ class LRSAFrontBlock(nn.Module):
         grid_shape: Optional[Tuple[int, int]] = None,
         ffn_ratio: float = 2.0,
         dropout: float = 0.0,
+        front_latent_mode: FrontLatentMode = "full",
     ) -> None:
         super().__init__()
+        _check_front_latent_mode(front_latent_mode)
+        self.front_latent_mode = front_latent_mode
         self.dim = dim
         self.num_latents = num_latents
         self.structured = structured
         self.grid_shape = grid_shape
         self.point_norm = RMSNorm(dim)
         self.down = _DownAttention(dim, heads, num_latents, dropout)
-        self.latent_norm_1 = RMSNorm(dim)
-        self.latent_ffn_1 = PlainFFN(dim, ffn_ratio)
-        self.latent_norm_sa = RMSNorm(dim)
-        self.latent_sa = _SelfAttention(dim, heads, qk_norm=True, output_dropout=dropout)
-        self.latent_norm_2 = RMSNorm(dim)
-        self.latent_ffn_2 = PlainFFN(dim, ffn_ratio)
+        # Keep full's names and construction/RNG order exactly as before.
+        if front_latent_mode != "identity":
+            self.latent_norm_1 = RMSNorm(dim)
+            self.latent_ffn_1 = PlainFFN(dim, ffn_ratio)
+        if front_latent_mode == "full":
+            self.latent_norm_sa = RMSNorm(dim)
+            self.latent_sa = _SelfAttention(dim, heads, qk_norm=True, output_dropout=dropout)
+        if front_latent_mode != "identity":
+            self.latent_norm_2 = RMSNorm(dim)
+            self.latent_ffn_2 = PlainFFN(dim, ffn_ratio)
         self.up_latent_norm = RMSNorm(dim)
         self.up = _UpAttention(
             dim, heads, qk_norm=True,
@@ -326,6 +337,9 @@ class LRSAFrontBlock(nn.Module):
         self.point_ffn = ConvFFN(dim, ffn_ratio) if structured else PlainFFN(dim, ffn_ratio)
 
     def forward(self, h: Tensor, *, grid_shape: Optional[Tuple[int, int]] = None) -> tuple[Tensor, Tensor]:
+        # Trusted pre-A1 whole objects predate this attribute and are full.
+        mode = getattr(self, "front_latent_mode", "full")
+        _check_front_latent_mode(mode)
         _check_tokens(h, self.dim)
         shape = grid_shape if grid_shape is not None else self.grid_shape
         if self.structured:
@@ -335,9 +349,13 @@ class LRSAFrontBlock(nn.Module):
         point_input = h
         h_norm = self.point_norm(h)
         z = self.down(h_norm)
-        z = z + self.latent_ffn_1(self.latent_norm_1(z))
-        z = z + self.latent_sa(self.latent_norm_sa(z))
-        t = z + self.latent_ffn_2(self.latent_norm_2(z))
+        if mode == "identity":
+            t = z
+        else:
+            z = z + self.latent_ffn_1(self.latent_norm_1(z))
+            if mode == "full":
+                z = z + self.latent_sa(self.latent_norm_sa(z))
+            t = z + self.latent_ffn_2(self.latent_norm_2(z))
         delta = self.up(h_norm, self.up_latent_norm(t))
         u = point_input + delta
         if self.structured:

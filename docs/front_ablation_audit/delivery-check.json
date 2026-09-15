@@ -1,0 +1,41 @@
+{
+  "kind": "A0 incremental documentation verification",
+  "checks": {
+    "AGENTS.md_preserved": true,
+    "docs/CDLNO_IMPLEMENTATION_STATUS.md_preserved": true,
+    "memory/current-state.md_preserved": true,
+    "local_links_exist": true,
+    "git_diff_check": true,
+    "new_files_only_docs": true,
+    "head_unchanged": true
+  },
+  "missing_links": [],
+  "document_diff_counts": {
+    "AGENTS.md": {
+      "added_lines": 4,
+      "deleted_lines": 0
+    },
+    "docs/CDLNO_IMPLEMENTATION_STATUS.md": {
+      "added_lines": 21,
+      "deleted_lines": 0
+    },
+    "memory/current-state.md": {
+      "added_lines": 12,
+      "deleted_lines": 0
+    },
+    "docs/CDLNO_FRONT_ABLATION.md": {
+      "added_lines": 345,
+      "deleted_lines": 0
+    }
+  },
+  "patch": "a0-documents.patch",
+  "new_files_before_this_result": [
+    "docs/CDLNO_FRONT_ABLATION.md",
+    "docs/front_ablation_audit/a0-documents.patch",
+    "docs/front_ablation_audit/a0-start.json",
+    "docs/front_ablation_audit/static-results.json",
+    "docs/front_ablation_audit/static_check.txt"
+  ],
+  "static_result": "static-results.json",
+  "runtime_tests": "not run"
+}

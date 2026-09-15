@@ -60,7 +60,7 @@ CDLNO（Cross-Depth Latent Neural Operator）以 Transolver 的数据和任务�
   → 原任务要求的输出形状
 ```
 
-`L` 是包含 latent self-attention 的处理 block 总数，不把 bridge、CDPA 和最终 readout 偷算进 8 层。`F` 在 `0..L-1` 范围内配置，`P=L-F` 且至少为 1；当 `L=8` 时必须覆盖 `F=0..6`，扩大 `L` 时不能把前段上限硬编码为 6。各阶段使用同一个标量 `M`。
+在原full设计中，`L` 是包含 latent self-attention 的处理 block 总数（A1消融后L仍计block；no_sa/identity的SA只在P个后段执行），不把 bridge、CDPA 和最终 readout 偷算进 8 层。`F` 在 `0..L-1` 范围内配置，`P=L-F` 且至少为 1；当 `L=8` 时必须覆盖 `F=0..6`，扩大 `L` 时不能把前段上限硬编码为 6。各阶段使用同一个标量 `M`。
 
 ### 3.3 前段完整 LRSA block
 

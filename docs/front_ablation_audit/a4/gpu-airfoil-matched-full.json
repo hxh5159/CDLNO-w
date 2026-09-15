@@ -1,0 +1,1608 @@
+{
+  "schema": "cdlno-performance-v1",
+  "phase": 9,
+  "supplement": "A4",
+  "scope": "synthetic model structure only",
+  "case": {
+    "task": "airfoil",
+    "comparison": "matched",
+    "B": 2,
+    "N": 391,
+    "d": 128,
+    "h": 4,
+    "M": 64,
+    "L": 8,
+    "F": 2,
+    "ratio": 2,
+    "grid": [
+      17,
+      23
+    ],
+    "front_latent_mode": "full",
+    "P": 6,
+    "task_geometry_and_batch_preserved": false,
+    "preset_source": "original Transolver launchers + industrial main constructors; CDLNO configs/CDLNO/*.json (v1.2), not old parser defaults"
+  },
+  "environment": {
+    "python": "3.13.9",
+    "torch": "2.13.0+cu130",
+    "cuda_build": "13.0",
+    "pyg": "2.3.1",
+    "device": "cuda:0",
+    "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+    "driver": "NVIDIA GeForce RTX 5090 Laptop GPU, 591.86",
+    "cpu_threads": 1,
+    "cudnn": 92000
+  },
+  "git_commit": "769fa333742f73c132868cf560bce5ec21529362",
+  "source_sha256": {
+    "tools/cdlno_benchmark.py": "0eb71b8879015686ba05bc40461048b989ccde2f66e91657263a4e1470fde1b8",
+    "tools/cdlno_perf/measure.py": "83c871d50da19deddf26ca0afb128254069f998dc48353e6815da9bb63264847",
+    "tools/cdlno_perf/models.py": "fc523a6055610de25c2539099d54b8d07e865f224a1d8f66f32ca95a043feaa2",
+    "tools/cdlno_perf/__init__.py": "f37d530c1f97443000442a1c750108754095403278d9360a99ff9bc7f469289e",
+    "tools/cdlno_perf/costs.py": "c687ce303bd17391f88824fecc085473ee6001fb9f05cc5ac7bc8053d47fc7fe",
+    "cdlno/airfrans.py": "2e8bca413035807277d60cea9c64cae28f2f8067cb82d5053b4d29f2334b62b5",
+    "cdlno/config.py": "88da555b449857b96d08a721e38e229ef2274b63f66f00b9ec08dad4bb9db18d",
+    "cdlno/standard.py": "ee9a547ded0fef9a46229d88c8c90ed0b86caf57a7c0387993d0a1471610f42e",
+    "cdlno/cdpa.py": "eb6f515508479066fe2a2086b70929b93914de218aaf55347ecaa71ebe05c4fa",
+    "cdlno/checkpoint.py": "6e50e2d9e0514ba5c6beb2a289447ba8a1b171f067e44f179ce4fd955651fad9",
+    "cdlno/core.py": "0b8565fe66d90f1c2e77e2147dfeb5a249220d5fc51d9a6784d0eab4085a23be",
+    "cdlno/visualization.py": "bfebdd05728ae6aed41e03fcab9ee4d80e99305072db23c74750ba267cd5cb36",
+    "cdlno/modules.py": "ceca8a7efd17e06693905030a7cec19f3c533c2770e6458852a93089dd2de99a",
+    "cdlno/training_state.py": "4c6d83a7b5053889b5228ebfeef9149bf4d9966c5420ae0a0dc5847842496b63",
+    "cdlno/training_observer.py": "6241bbc5b9bf61813b8045e0cedb49441f518aac4b67cea0c40b39315fff7af5",
+    "cdlno/__init__.py": "aa7e4e1d615e8a74bcb17899b526e2cfe09f9080754b2e48dcf5507cdddb0d7e"
+  },
+  "settings": {
+    "parameter_dtype": "float32",
+    "input_dtype": "float32",
+    "precision": "fp32",
+    "requested_sdpa_backend": "math",
+    "tf32": false,
+    "compile": false,
+    "warmup": 5,
+    "measured_iterations": 20,
+    "seed": 20260914,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": false,
+    "deterministic_algorithms": false,
+    "fp16_reduced_precision_reduction": true,
+    "bf16_reduced_precision_reduction": true,
+    "float32_matmul_precision": "highest",
+    "audit_only": false
+  },
+  "cost_convention": "Forward dense matrix MAC: one multiply-accumulate=2 FLOPs. Conv includes padded taps. Matrix FLOPs exclude bias/norm/activation/softmax/reductions/copies; these have separate inventories. SDPA QK+AV counted from actual shapes. No claim of exact all-operation FLOPs. Storage payload/activation ledgers are not summed into measured allocator peaks.",
+  "exclusions": "No data, graphs, task loss, temporal rollout, scheduler, epoch estimate or LRSA paper reproduction.",
+  "results": [
+    {
+      "model": "cdlno_entry",
+      "chunk": 0,
+      "status": "passed",
+      "config": {
+        "task": "airfoil",
+        "comparison": "matched",
+        "B": 2,
+        "N": 391,
+        "d": 128,
+        "h": 4,
+        "M": 64,
+        "L": 8,
+        "F": 2,
+        "ratio": 2,
+        "grid": [
+          17,
+          23
+        ],
+        "front_latent_mode": "full",
+        "P": 6,
+        "task_geometry_and_batch_preserved": false,
+        "preset_source": "original Transolver launchers + industrial main constructors; CDLNO configs/CDLNO/*.json (v1.2), not old parser defaults"
+      },
+      "source": {},
+      "initial_weights_sha256": "8ee7752a90677b49ab0650c8f62a7de4ed0fd2e83b9585a52d10e7a4d45787ab",
+      "effective_structure": {
+        "front_blocks": 2,
+        "front_latent_mode": "full",
+        "full_lrsa_blocks": 2,
+        "persistent_blocks": 6,
+        "bridge": true,
+        "extra_readout": true
+      },
+      "cost": {
+        "parameters": {
+          "registered": 2515521,
+          "requires_grad": 2515521,
+          "missing_grad_names": [],
+          "nonfinite_grad_names": [],
+          "by_component": {
+            "front_bridge_readout_projections": 519744,
+            "stem_and_time": 33664,
+            "front_two_latent_ffns": 263680,
+            "point_ffn_linears": 198144,
+            "point_ffn_dense_conv": 442752,
+            "rear_attention": 397056,
+            "rear_geglu": 593664,
+            "output_head": 385,
+            "cdpa": 66432
+          }
+        },
+        "finite_output": true,
+        "counts": {
+          "down_bridge": 3,
+          "up_readout": 3,
+          "latent_sa": 8,
+          "structured_convffn": 3,
+          "front_sa": 2,
+          "front_latent_ffn": 4,
+          "rear_sa": 6,
+          "rear_ffn": 6,
+          "cdpa_logical_sources": 2,
+          "cdpa_locations": 1,
+          "history_sdpa_calls": 1,
+          "all_sdpa_calls": 15
+        },
+        "history_sizes": [
+          2
+        ],
+        "matrix_macs_by_component": {
+          "stem_and_time": 26024960,
+          "front_bridge_readout_projections": 191496192,
+          "non_cdpa_sdpa_qk_av": 93650944,
+          "front_two_latent_ffns": 33554432,
+          "point_ffn_dense_conv": 345931776,
+          "point_ffn_linears": 153747456,
+          "cdpa": 14680064,
+          "cdpa_qk_av": 4194304,
+          "rear_attention": 50331648,
+          "rear_geglu": 75497472,
+          "output_head": 100096
+        },
+        "linear_conv_macs_by_module": {
+          "preprocess.0": 400384,
+          "preprocess.2": 25624576,
+          "core.front_blocks.0.down.to_k": 12812288,
+          "core.front_blocks.0.down.to_v": 12812288,
+          "core.front_blocks.0.down.to_out": 2097152,
+          "core.front_blocks.0.latent_ffn_1.fc1": 4194304,
+          "core.front_blocks.0.latent_ffn_1.fc2": 4194304,
+          "core.front_blocks.0.latent_sa.attn.to_q": 2097152,
+          "core.front_blocks.0.latent_sa.attn.to_k": 2097152,
+          "core.front_blocks.0.latent_sa.attn.to_v": 2097152,
+          "core.front_blocks.0.latent_sa.attn.to_out": 2097152,
+          "core.front_blocks.0.latent_ffn_2.fc1": 4194304,
+          "core.front_blocks.0.latent_ffn_2.fc2": 4194304,
+          "core.front_blocks.0.up.to_q": 12812288,
+          "core.front_blocks.0.up.to_k": 2097152,
+          "core.front_blocks.0.up.to_v": 2097152,
+          "core.front_blocks.0.up.to_out": 12812288,
+          "core.front_blocks.0.point_ffn.conv": 115310592,
+          "core.front_blocks.0.point_ffn.fc1": 25624576,
+          "core.front_blocks.0.point_ffn.fc2": 25624576,
+          "core.front_blocks.1.down.to_k": 12812288,
+          "core.front_blocks.1.down.to_v": 12812288,
+          "core.front_blocks.1.down.to_out": 2097152,
+          "core.front_blocks.1.latent_ffn_1.fc1": 4194304,
+          "core.front_blocks.1.latent_ffn_1.fc2": 4194304,
+          "core.front_blocks.1.latent_sa.attn.to_q": 2097152,
+          "core.front_blocks.1.latent_sa.attn.to_k": 2097152,
+          "core.front_blocks.1.latent_sa.attn.to_v": 2097152,
+          "core.front_blocks.1.latent_sa.attn.to_out": 2097152,
+          "core.front_blocks.1.latent_ffn_2.fc1": 4194304,
+          "core.front_blocks.1.latent_ffn_2.fc2": 4194304,
+          "core.front_blocks.1.up.to_q": 12812288,
+          "core.front_blocks.1.up.to_k": 2097152,
+          "core.front_blocks.1.up.to_v": 2097152,
+          "core.front_blocks.1.up.to_out": 12812288,
+          "core.front_blocks.1.point_ffn.conv": 115310592,
+          "core.front_blocks.1.point_ffn.fc1": 25624576,
+          "core.front_blocks.1.point_ffn.fc2": 25624576,
+          "core.bridge.cross.attn.to_q": 2097152,
+          "core.bridge.cross.attn.to_k": 12812288,
+          "core.bridge.cross.attn.to_v": 12812288,
+          "core.bridge.cross.attn.to_out": 2097152,
+          "core.cdpa_at.0.to_q": 2097152,
+          "core.cdpa_at.0.to_k": 4194304,
+          "core.cdpa_at.0.to_v": 4194304,
+          "core.cdpa_at.0.to_out": 4194304,
+          "core.latent_blocks.0.self_attention.attn.to_q": 2097152,
+          "core.latent_blocks.0.self_attention.attn.to_k": 2097152,
+          "core.latent_blocks.0.self_attention.attn.to_v": 2097152,
+          "core.latent_blocks.0.self_attention.attn.to_out": 2097152,
+          "core.latent_blocks.0.ffn.fc_in": 8388608,
+          "core.latent_blocks.0.ffn.fc_out": 4194304,
+          "core.latent_blocks.1.self_attention.attn.to_q": 2097152,
+          "core.latent_blocks.1.self_attention.attn.to_k": 2097152,
+          "core.latent_blocks.1.self_attention.attn.to_v": 2097152,
+          "core.latent_blocks.1.self_attention.attn.to_out": 2097152,
+          "core.latent_blocks.1.ffn.fc_in": 8388608,
+          "core.latent_blocks.1.ffn.fc_out": 4194304,
+          "core.latent_blocks.2.self_attention.attn.to_q": 2097152,
+          "core.latent_blocks.2.self_attention.attn.to_k": 2097152,
+          "core.latent_blocks.2.self_attention.attn.to_v": 2097152,
+          "core.latent_blocks.2.self_attention.attn.to_out": 2097152,
+          "core.latent_blocks.2.ffn.fc_in": 8388608,
+          "core.latent_blocks.2.ffn.fc_out": 4194304,
+          "core.latent_blocks.3.self_attention.attn.to_q": 2097152,
+          "core.latent_blocks.3.self_attention.attn.to_k": 2097152,
+          "core.latent_blocks.3.self_attention.attn.to_v": 2097152,
+          "core.latent_blocks.3.self_attention.attn.to_out": 2097152,
+          "core.latent_blocks.3.ffn.fc_in": 8388608,
+          "core.latent_blocks.3.ffn.fc_out": 4194304,
+          "core.latent_blocks.4.self_attention.attn.to_q": 2097152,
+          "core.latent_blocks.4.self_attention.attn.to_k": 2097152,
+          "core.latent_blocks.4.self_attention.attn.to_v": 2097152,
+          "core.latent_blocks.4.self_attention.attn.to_out": 2097152,
+          "core.latent_blocks.4.ffn.fc_in": 8388608,
+          "core.latent_blocks.4.ffn.fc_out": 4194304,
+          "core.latent_blocks.5.self_attention.attn.to_q": 2097152,
+          "core.latent_blocks.5.self_attention.attn.to_k": 2097152,
+          "core.latent_blocks.5.self_attention.attn.to_v": 2097152,
+          "core.latent_blocks.5.self_attention.attn.to_out": 2097152,
+          "core.latent_blocks.5.ffn.fc_in": 8388608,
+          "core.latent_blocks.5.ffn.fc_out": 4194304,
+          "core.readout.up.to_q": 12812288,
+          "core.readout.up.to_k": 2097152,
+          "core.readout.up.to_v": 2097152,
+          "core.readout.up.to_out": 12812288,
+          "core.readout.point_ffn.conv": 115310592,
+          "core.readout.point_ffn.fc1": 25624576,
+          "core.readout.point_ffn.fc2": 25624576,
+          "core.readout.output": 100096
+        },
+        "matrix_macs": 989209344,
+        "matrix_flops_2_per_mac": 1978418688,
+        "bias_adds_by_component": {
+          "stem_and_time": 300288,
+          "front_bridge_readout_projections": 382208,
+          "front_two_latent_ffns": 196608,
+          "point_ffn_dense_conv": 300288,
+          "point_ffn_linears": 300288,
+          "cdpa": 32768,
+          "rear_attention": 98304,
+          "rear_geglu": 491520,
+          "output_head": 782
+        },
+        "norm_work": [
+          {
+            "path": "core.front_blocks.0.point_norm",
+            "type": "RMSNorm",
+            "elements": 100096,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.down.q_norm",
+            "type": "RMSNorm",
+            "elements": 16384,
+            "width": 32,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.down.k_norm",
+            "type": "RMSNorm",
+            "elements": 100096,
+            "width": 32,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.latent_norm_1",
+            "type": "RMSNorm",
+            "elements": 16384,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.latent_norm_sa",
+            "type": "RMSNorm",
+            "elements": 16384,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.latent_sa.attn.q_norm",
+            "type": "RMSNorm",
+            "elements": 16384,
+            "width": 32,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.latent_sa.attn.k_norm",
+            "type": "RMSNorm",
+            "elements": 16384,
+            "width": 32,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.latent_norm_2",
+            "type": "RMSNorm",
+            "elements": 16384,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.up_latent_norm",
+            "type": "RMSNorm",
+            "elements": 16384,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.up.q_norm",
+            "type": "RMSNorm",
+            "elements": 100096,
+            "width": 32,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.up.k_norm",
+            "type": "RMSNorm",
+            "elements": 16384,
+            "width": 32,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.point_ffn_norm",
+            "type": "RMSNorm",
+            "elements": 100096,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.0.point_ffn.norm",
+            "type": "LayerNorm",
+            "elements": 100096,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.point_norm",
+            "type": "RMSNorm",
+            "elements": 100096,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.down.q_norm",
+            "type": "RMSNorm",
+            "elements": 16384,
+            "width": 32,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.down.k_norm",
+            "type": "RMSNorm",
+            "elements": 100096,
+            "width": 32,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.latent_norm_1",
+            "type": "RMSNorm",
+            "elements": 16384,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.latent_norm_sa",
+            "type": "RMSNorm",
+            "elements": 16384,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.latent_sa.attn.q_norm",
+            "type": "RMSNorm",
+            "elements": 16384,
+            "width": 32,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.latent_sa.attn.k_norm",
+            "type": "RMSNorm",
+            "elements": 16384,
+            "width": 32,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.latent_norm_2",
+            "type": "RMSNorm",
+            "elements": 16384,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.up_latent_norm",
+            "type": "RMSNorm",
+            "elements": 16384,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.up.q_norm",
+            "type": "RMSNorm",
+            "elements": 100096,
+            "width": 32,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.up.k_norm",
+            "type": "RMSNorm",
+            "elements": 16384,
+            "width": 32,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.point_ffn_norm",
+            "type": "RMSNorm",
+            "elements": 100096,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.front_blocks.1.point_ffn.norm",
+            "type": "LayerNorm",
+            "elements": 100096,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.bridge.query_norm",
+            "type": "LayerNorm",
+            "elements": 16384,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.bridge.context_norm",
+            "type": "LayerNorm",
+            "elements": 100096,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.0.ln_q",
+            "type": "LayerNorm",
+            "elements": 16384,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.0.ln_kv",
+            "type": "LayerNorm",
+            "elements": 32768,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.cdpa_at.0.depth_norm",
+            "type": "RMSNorm",
+            "elements": 49152,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.0.norm_1",
+            "type": "LayerNorm",
+            "elements": 16384,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.0.norm_2",
+            "type": "LayerNorm",
+            "elements": 16384,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.1.norm_1",
+            "type": "LayerNorm",
+            "elements": 16384,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.1.norm_2",
+            "type": "LayerNorm",
+            "elements": 16384,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.2.norm_1",
+            "type": "LayerNorm",
+            "elements": 16384,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.2.norm_2",
+            "type": "LayerNorm",
+            "elements": 16384,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.3.norm_1",
+            "type": "LayerNorm",
+            "elements": 16384,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.3.norm_2",
+            "type": "LayerNorm",
+            "elements": 16384,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.4.norm_1",
+            "type": "LayerNorm",
+            "elements": 16384,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.4.norm_2",
+            "type": "LayerNorm",
+            "elements": 16384,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.5.norm_1",
+            "type": "LayerNorm",
+            "elements": 16384,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.latent_blocks.5.norm_2",
+            "type": "LayerNorm",
+            "elements": 16384,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.query_norm",
+            "type": "RMSNorm",
+            "elements": 100096,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.latent_norm",
+            "type": "RMSNorm",
+            "elements": 16384,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.up.q_norm",
+            "type": "RMSNorm",
+            "elements": 100096,
+            "width": 32,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.up.k_norm",
+            "type": "RMSNorm",
+            "elements": 16384,
+            "width": 32,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.point_ffn_norm",
+            "type": "RMSNorm",
+            "elements": 100096,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.point_ffn.norm",
+            "type": "LayerNorm",
+            "elements": 100096,
+            "width": 128,
+            "dtype": "torch.float32"
+          },
+          {
+            "path": "core.readout.output_norm",
+            "type": "LayerNorm",
+            "elements": 100096,
+            "width": 128,
+            "dtype": "torch.float32"
+          }
+        ],
+        "sdpa": [
+          {
+            "path": "core.front_blocks.0.down",
+            "q": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "k": [
+              2,
+              4,
+              391,
+              32
+            ],
+            "v": [
+              2,
+              4,
+              391,
+              32
+            ],
+            "macs": 12812288,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 200192
+          },
+          {
+            "path": "core.front_blocks.0.latent_sa.attn",
+            "q": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "k": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "v": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "macs": 2097152,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 32768
+          },
+          {
+            "path": "core.front_blocks.0.up",
+            "q": [
+              2,
+              4,
+              391,
+              32
+            ],
+            "k": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "v": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "macs": 12812288,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 200192
+          },
+          {
+            "path": "core.front_blocks.1.down",
+            "q": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "k": [
+              2,
+              4,
+              391,
+              32
+            ],
+            "v": [
+              2,
+              4,
+              391,
+              32
+            ],
+            "macs": 12812288,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 200192
+          },
+          {
+            "path": "core.front_blocks.1.latent_sa.attn",
+            "q": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "k": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "v": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "macs": 2097152,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 32768
+          },
+          {
+            "path": "core.front_blocks.1.up",
+            "q": [
+              2,
+              4,
+              391,
+              32
+            ],
+            "k": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "v": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "macs": 12812288,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 200192
+          },
+          {
+            "path": "core.bridge.cross.attn",
+            "q": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "k": [
+              2,
+              4,
+              391,
+              32
+            ],
+            "v": [
+              2,
+              4,
+              391,
+              32
+            ],
+            "macs": 12812288,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 200192
+          },
+          {
+            "path": "core.cdpa_at.0",
+            "q": [
+              4,
+              4,
+              64,
+              32
+            ],
+            "k": [
+              4,
+              4,
+              64,
+              32
+            ],
+            "v": [
+              4,
+              4,
+              64,
+              32
+            ],
+            "macs": 4194304,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 65536
+          },
+          {
+            "path": "core.latent_blocks.0.self_attention.attn",
+            "q": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "k": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "v": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "macs": 2097152,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 32768
+          },
+          {
+            "path": "core.latent_blocks.1.self_attention.attn",
+            "q": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "k": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "v": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "macs": 2097152,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 32768
+          },
+          {
+            "path": "core.latent_blocks.2.self_attention.attn",
+            "q": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "k": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "v": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "macs": 2097152,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 32768
+          },
+          {
+            "path": "core.latent_blocks.3.self_attention.attn",
+            "q": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "k": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "v": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "macs": 2097152,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 32768
+          },
+          {
+            "path": "core.latent_blocks.4.self_attention.attn",
+            "q": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "k": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "v": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "macs": 2097152,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 32768
+          },
+          {
+            "path": "core.latent_blocks.5.self_attention.attn",
+            "q": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "k": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "v": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "macs": 2097152,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 32768
+          },
+          {
+            "path": "core.readout.up",
+            "q": [
+              2,
+              4,
+              391,
+              32
+            ],
+            "k": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "v": [
+              2,
+              4,
+              64,
+              32
+            ],
+            "macs": 12812288,
+            "q_dtype": "torch.float32",
+            "k_dtype": "torch.float32",
+            "v_dtype": "torch.float32",
+            "softmax_logical_elements": 200192
+          }
+        ],
+        "depth_work_estimate": [
+          {
+            "sources": 2,
+            "dtype": "torch.float32",
+            "raw_stack_bytes": 196608,
+            "normalized_keys_bytes": 196608,
+            "weighted_values_bytes": 196608,
+            "score_and_weight_bytes": 3072,
+            "arithmetic_ops_excluding_rsqrt_exp_comparisons": 376832,
+            "rsqrt_evaluations": 384,
+            "source_softmax_elements": 384,
+            "source_softmax_exp_evaluations": 384,
+            "source_softmax_arithmetic_ops": 1024,
+            "source_softmax_max_comparisons": 256,
+            "source_softmax_axis": 3
+          }
+        ],
+        "operations": {
+          "aten.view.default": {
+            "calls": 210,
+            "output_elements": 9749034,
+            "output_payload_bytes": 38996136
+          },
+          "aten.t.default": {
+            "calls": 87,
+            "output_elements": 2032256,
+            "output_payload_bytes": 8129024
+          },
+          "aten.addmm.default": {
+            "calls": 41,
+            "output_elements": 1802766,
+            "output_payload_bytes": 7211064
+          },
+          "aten.gelu.default": {
+            "calls": 14,
+            "output_elements": 1128448,
+            "output_payload_bytes": 4513792
+          },
+          "aten.unsqueeze.default": {
+            "calls": 7,
+            "output_elements": 41600,
+            "output_payload_bytes": 166400
+          },
+          "aten.add.Tensor": {
+            "calls": 56,
+            "output_elements": 1038444,
+            "output_payload_bytes": 4153776
+          },
+          "aten.pow.Tensor_Scalar": {
+            "calls": 30,
+            "output_elements": 1445120,
+            "output_payload_bytes": 5780480
+          },
+          "aten.mean.dim": {
+            "calls": 30,
+            "output_elements": 26476,
+            "output_payload_bytes": 105904
+          },
+          "aten.rsqrt.default": {
+            "calls": 30,
+            "output_elements": 26476,
+            "output_payload_bytes": 105904
+          },
+          "aten.mul.Tensor": {
+            "calls": 67,
+            "output_elements": 3136000,
+            "output_payload_bytes": 12544000
+          },
+          "aten.expand.default": {
+            "calls": 64,
+            "output_elements": 3150592,
+            "output_payload_bytes": 12602368
+          },
+          "aten.permute.default": {
+            "calls": 8,
+            "output_elements": 633344,
+            "output_payload_bytes": 2533376
+          },
+          "aten.mm.default": {
+            "calls": 46,
+            "output_elements": 2091264,
+            "output_payload_bytes": 8365056
+          },
+          "aten._unsafe_view.default": {
+            "calls": 123,
+            "output_elements": 5706368,
+            "output_payload_bytes": 22825472
+          },
+          "aten.transpose.int": {
+            "calls": 73,
+            "output_elements": 2517248,
+            "output_payload_bytes": 10068992
+          },
+          "aten.mul.Scalar": {
+            "calls": 30,
+            "output_elements": 1026560,
+            "output_payload_bytes": 4106240
+          },
+          "aten.clone.default": {
+            "calls": 60,
+            "output_elements": 2053120,
+            "output_payload_bytes": 8212480
+          },
+          "aten.bmm.default": {
+            "calls": 30,
+            "output_elements": 2042112,
+            "output_payload_bytes": 8168448
+          },
+          "aten._safe_softmax.default": {
+            "calls": 15,
+            "output_elements": 1528832,
+            "output_payload_bytes": 6115328
+          },
+          "aten.convolution.default": {
+            "calls": 3,
+            "output_elements": 300288,
+            "output_payload_bytes": 1201152
+          },
+          "aten.native_layer_norm.default": {
+            "calls": 20,
+            "output_elements": 774540,
+            "output_payload_bytes": 3098160
+          },
+          "aten.stack.default": {
+            "calls": 2,
+            "output_elements": 81920,
+            "output_payload_bytes": 327680
+          },
+          "aten.unbind.int": {
+            "calls": 1,
+            "output_elements": 32768,
+            "output_payload_bytes": 131072
+          },
+          "aten.mv.default": {
+            "calls": 1,
+            "output_elements": 384,
+            "output_payload_bytes": 1536
+          },
+          "aten._softmax.default": {
+            "calls": 1,
+            "output_elements": 384,
+            "output_payload_bytes": 1536
+          },
+          "aten.sum.dim_IntList": {
+            "calls": 1,
+            "output_elements": 16384,
+            "output_payload_bytes": 65536
+          },
+          "aten.split.Tensor": {
+            "calls": 6,
+            "output_elements": 393216,
+            "output_payload_bytes": 1572864
+          }
+        },
+        "temporary_materializations": {
+          "core.front_blocks.0.down:aten.clone.default": {
+            "calls": 4,
+            "payload_bytes": 931840
+          },
+          "core.front_blocks.0.latent_sa.attn:aten.clone.default": {
+            "calls": 4,
+            "payload_bytes": 262144
+          },
+          "core.front_blocks.0.up:aten.clone.default": {
+            "calls": 4,
+            "payload_bytes": 931840
+          },
+          "core.front_blocks.1.down:aten.clone.default": {
+            "calls": 4,
+            "payload_bytes": 931840
+          },
+          "core.front_blocks.1.latent_sa.attn:aten.clone.default": {
+            "calls": 4,
+            "payload_bytes": 262144
+          },
+          "core.front_blocks.1.up:aten.clone.default": {
+            "calls": 4,
+            "payload_bytes": 931840
+          },
+          "core.bridge.cross.attn:aten.clone.default": {
+            "calls": 4,
+            "payload_bytes": 931840
+          },
+          "core.cdpa_at.0:aten.stack.default": {
+            "calls": 2,
+            "payload_bytes": 327680
+          },
+          "core.cdpa_at.0:aten.clone.default": {
+            "calls": 4,
+            "payload_bytes": 524288
+          },
+          "core.latent_blocks.0.self_attention.attn:aten.clone.default": {
+            "calls": 4,
+            "payload_bytes": 262144
+          },
+          "core.latent_blocks.1.self_attention.attn:aten.clone.default": {
+            "calls": 4,
+            "payload_bytes": 262144
+          },
+          "core.latent_blocks.2.self_attention.attn:aten.clone.default": {
+            "calls": 4,
+            "payload_bytes": 262144
+          },
+          "core.latent_blocks.3.self_attention.attn:aten.clone.default": {
+            "calls": 4,
+            "payload_bytes": 262144
+          },
+          "core.latent_blocks.4.self_attention.attn:aten.clone.default": {
+            "calls": 4,
+            "payload_bytes": 262144
+          },
+          "core.latent_blocks.5.self_attention.attn:aten.clone.default": {
+            "calls": 4,
+            "payload_bytes": 262144
+          },
+          "core.readout.up:aten.clone.default": {
+            "calls": 4,
+            "payload_bytes": 931840
+          }
+        },
+        "storage": {
+          "largest_point_block_input_payload_bytes": 400384,
+          "h_f_payload_bytes": 400384,
+          "largest_history_list_payload_bytes": 131072,
+          "current_latent_payload_bytes": 65536,
+          "current_latent_payload_note": "FP32 residual representation; actual mixed activation dtypes in norm/SDPA ledgers",
+          "saved_activation_unique_backing_bytes": 45340184,
+          "saved_activation_logical_bytes": 61187528,
+          "saved_storage_excludes": "parameters, buffers, input backing storage; not allocator peak"
+        }
+      },
+      "chunk_equivalence": {
+        "reference_chunk": 0,
+        "baseline": true
+      },
+      "untimed_eager_profiler": {
+        "observed_sdpa_ops": [
+          "aten::_scaled_dot_product_attention_math",
+          "aten::scaled_dot_product_attention"
+        ],
+        "profiler_partial_flops": 1983570924,
+        "partial_flops_warning": "not total FLOPs; SDPA and other unsupported ops can be omitted",
+        "regions": [
+          {
+            "op": "region::preprocess",
+            "calls": 1,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 3813.55,
+            "device_total_us": 20.95599999999922,
+            "self_device_us": 0.0
+          },
+          {
+            "op": "region::core.front_blocks.0",
+            "calls": 1,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 3243.5339999999997,
+            "device_total_us": 338.60199999999713,
+            "self_device_us": 0.0
+          },
+          {
+            "op": "region::core.front_blocks.1",
+            "calls": 1,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 3299.1899999999996,
+            "device_total_us": 340.3639999999941,
+            "self_device_us": 0.0
+          },
+          {
+            "op": "region::core.bridge",
+            "calls": 1,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 526.6319999999996,
+            "device_total_us": 65.85399999999936,
+            "self_device_us": 0.0
+          },
+          {
+            "op": "region::core.cdpa_at.0",
+            "calls": 1,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 859.5690000000013,
+            "device_total_us": 59.96399999999812,
+            "self_device_us": 0.0
+          },
+          {
+            "op": "region::core.latent_blocks.0",
+            "calls": 1,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 657.2009999999991,
+            "device_total_us": 60.02899999999681,
+            "self_device_us": 0.0
+          },
+          {
+            "op": "region::core.latent_blocks.1",
+            "calls": 1,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 738.9850000000006,
+            "device_total_us": 60.09200000000237,
+            "self_device_us": 0.0
+          },
+          {
+            "op": "region::core.latent_blocks.2",
+            "calls": 1,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 565.9940000000006,
+            "device_total_us": 59.679000000001906,
+            "self_device_us": 0.0
+          },
+          {
+            "op": "region::core.latent_blocks.3",
+            "calls": 1,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 602.2810000000009,
+            "device_total_us": 60.73099999999795,
+            "self_device_us": 0.0
+          },
+          {
+            "op": "region::core.latent_blocks.4",
+            "calls": 1,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 718.0439999999999,
+            "device_total_us": 59.74300000000039,
+            "self_device_us": 0.0
+          },
+          {
+            "op": "region::core.latent_blocks.5",
+            "calls": 1,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 550.2170000000006,
+            "device_total_us": 59.8390000000054,
+            "self_device_us": 0.0
+          },
+          {
+            "op": "region::core.readout",
+            "calls": 1,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 1330.9860000000008,
+            "device_total_us": 174.41900000000533,
+            "self_device_us": 0.0
+          }
+        ],
+        "top_self_device_ops": [
+          {
+            "op": "aten::mm",
+            "calls": 46,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 993.9020000000019,
+            "device_total_us": 251.69999999999163,
+            "self_device_us": 251.69999999999163
+          },
+          {
+            "op": "aten::addmm",
+            "calls": 41,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 3595.1459999999993,
+            "device_total_us": 247.31300000000192,
+            "self_device_us": 242.25800000000208
+          },
+          {
+            "op": "aten::cudnn_convolution",
+            "calls": 3,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 193.95000000000073,
+            "device_total_us": 202.3199999999997,
+            "self_device_us": 196.97699999999895
+          },
+          {
+            "op": "aten::bmm",
+            "calls": 30,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 795.2550000000037,
+            "device_total_us": 166.10199999999622,
+            "self_device_us": 166.10199999999622
+          },
+          {
+            "op": "aten::mul",
+            "calls": 97,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 1461.569999999997,
+            "device_total_us": 102.20300000000861,
+            "self_device_us": 102.20300000000861
+          },
+          {
+            "op": "aten::copy_",
+            "calls": 64,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 576.4539999999979,
+            "device_total_us": 79.09900000000016,
+            "self_device_us": 79.09900000000016
+          },
+          {
+            "op": "aten::add",
+            "calls": 56,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 569.6449999999923,
+            "device_total_us": 54.298999999989974,
+            "self_device_us": 54.298999999989974
+          },
+          {
+            "op": "aten::mean",
+            "calls": 30,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 326.35200000000714,
+            "device_total_us": 45.85200000000532,
+            "self_device_us": 45.85200000000532
+          },
+          {
+            "op": "aten::native_layer_norm",
+            "calls": 20,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 433.1060000000052,
+            "device_total_us": 41.66399999999885,
+            "self_device_us": 40.54399999999987
+          },
+          {
+            "op": "aten::rsqrt",
+            "calls": 30,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 249.50900000000092,
+            "device_total_us": 29.27899999999954,
+            "self_device_us": 29.27899999999954
+          },
+          {
+            "op": "aten::all",
+            "calls": 15,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 160.7440000000006,
+            "device_total_us": 27.648000000001048,
+            "self_device_us": 27.648000000001048
+          },
+          {
+            "op": "aten::pow",
+            "calls": 30,
+            "device_type": "DeviceType.CPU",
+            "cpu_total_us": 392.4570000000067,
+            "device_total_us": 27.038000000005013,
+            "self_device_us": 27.038000000005013
+          }
+        ]
+      },
+      "measurement": {
+        "forward": {
+          "median_ms": 7.645692499863799,
+          "p90_ms": 9.498330900532894,
+          "samples_ms": [
+            8.385586999793304,
+            7.017178000751301,
+            7.6533070005098125,
+            10.313504999430734,
+            8.245453998824814,
+            7.58695600052306,
+            7.545559999925899,
+            7.101699999111588,
+            8.664630999192013,
+            6.856665000668727,
+            10.869675999856554,
+            7.477989998733392,
+            7.431750998875941,
+            7.638077999217785,
+            7.6304100002744235,
+            9.407756000655354,
+            7.372281999778352,
+            8.52098499854037,
+            8.135909998600255,
+            7.715190000453731
+          ],
+          "allocated_before_bytes": 77187072,
+          "peak_allocated_bytes": 81787904,
+          "peak_increment_bytes": 4600832
+        },
+        "train_step": {
+          "median_ms": 39.85875299986219,
+          "p90_ms": 47.59017170053994,
+          "samples_ms": [
+            40.98267100016528,
+            37.0712559997628,
+            40.620095998747274,
+            42.4369120009942,
+            40.89460999966832,
+            40.48737599987362,
+            39.752029999363,
+            38.67536199868482,
+            39.485588000388816,
+            52.880721999827074,
+            36.81539199897088,
+            36.493092999080545,
+            39.18973300096695,
+            37.36965300049633,
+            38.93360000074608,
+            47.58449700057099,
+            46.33672499949171,
+            47.641244000260485,
+            39.1617529985524,
+            39.96547600036138
+          ],
+          "allocated_before_bytes": 107390976,
+          "peak_allocated_bytes": 147474944,
+          "peak_increment_bytes": 40083968
+        },
+        "untimed_train_profiler": {
+          "diagnostic_extra_optimizer_steps": 1,
+          "aten_calls": 9304,
+          "top_cpu_ops": [
+            {
+              "op": "synthetic_train_step",
+              "calls": 1,
+              "self_cpu_us": 29344.471,
+              "self_device_us": 0.0
+            },
+            {
+              "op": "cudaLaunchKernel",
+              "calls": 2925,
+              "self_cpu_us": 15212.208999999995,
+              "self_device_us": 0
+            },
+            {
+              "op": "Optimizer.step#AdamW.step",
+              "calls": 1,
+              "self_cpu_us": 3714.5939999998227,
+              "self_device_us": 0.0
+            },
+            {
+              "op": "aten::mm",
+              "calls": 219,
+              "self_cpu_us": 2233.628000000083,
+              "self_device_us": 1066.8430000000499
+            },
+            {
+              "op": "aten::bmm",
+              "calls": 90,
+              "self_cpu_us": 1966.601999999999,
+              "self_device_us": 475.51299999998446
+            },
+            {
+              "op": "aten::mul",
+              "calls": 400,
+              "self_cpu_us": 1921.5570000000675,
+              "self_device_us": 419.6020000000376
+            },
+            {
+              "op": "Activity Buffer Request",
+              "calls": 1,
+              "self_cpu_us": 1700.5079999999998,
+              "self_device_us": 4.032000000000153
+            },
+            {
+              "op": "cuLaunchKernel",
+              "calls": 269,
+              "self_cpu_us": 1585.5339999999997,
+              "self_device_us": 0
+            },
+            {
+              "op": "aten::add_",
+              "calls": 488,
+              "self_cpu_us": 1049.9720000001153,
+              "self_device_us": 255.67799999991348
+            },
+            {
+              "op": "cudaLaunchKernelExC",
+              "calls": 249,
+              "self_cpu_us": 1000.0879999999866,
+              "self_device_us": 0
+            },
+            {
+              "op": "aten::mul_",
+              "calls": 418,
+              "self_cpu_us": 947.5690000000541,
+              "self_device_us": 431.4589999998352
+            },
+            {
+              "op": "aten::div",
+              "calls": 240,
+              "self_cpu_us": 914.8219999999292,
+              "self_device_us": 213.24999999994907
+            }
+          ]
+        },
+        "compiled_backend_probe": null,
+        "optimizer": {
+          "name": "AdamW",
+          "lr": 0.001,
+          "weight_decay": 1e-05,
+          "foreach": false,
+          "state_initialized_before_measured_train_steps": true,
+          "state_tensor_bytes": 20125004,
+          "cuda_state_tensor_bytes": 20124168,
+          "active_parameter_tensors": 209,
+          "successful_steps_per_active_parameter": [
+            25
+          ],
+          "grad_scaler_enabled": false
+        },
+        "timing": "synchronized perf_counter; includes host launch/wrapper overhead; no data I/O",
+        "loss": "synthetic FP32 mean squared error, one model call/update; not task loss/temporal rollout",
+        "memory_scope": "forward: model+buffers+inputs+output/temporaries, no grads/optimizer; train: also grads+initialized AdamW states",
+        "compile_cold": {}
+      }
+    }
+  ],
+  "errors": []
+}

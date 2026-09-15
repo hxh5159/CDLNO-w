@@ -24,6 +24,9 @@ parser.add_argument('--batch_size', default=1, type=int)
 parser.add_argument('--nb_epochs', default=200, type=int)
 parser.add_argument('--preprocessed', default=1, type=int)
 args = parse_cdlno_args(parser)
+if args.cfd_model == 'CDLNO':
+    from cdlno.experiment import start as start_experiment, finish as finish_experiment
+    start_experiment(args, 'car', evaluation=False)
 print(args)
 
 hparams = {'lr': args.lr, 'batch_size': args.batch_size, 'nb_epochs': args.nb_epochs}
@@ -48,10 +51,16 @@ elif args.cfd_model == 'CDLNO':
     from models.CDLNO import Model as CDLNOModel
     model = CDLNOModel(**cdlno_model_kwargs(args)).to(device)
     cdlno_run = CarRun(args, device=device, model=model)
+    cdlno_run.recorder.update_protocol(dict(train_graphs=len(train_ds), validation_graphs=len(val_ds),
+                                         val_iter=args.val_iter, loss="velocity_mse + weight * surface_pressure_mse"))
 
 path = str(cdlno_run.directory) if cdlno_run is not None else f'metrics/{args.cfd_model}/{args.fold_id}/{args.nb_epochs}_{args.weight}'
 if not os.path.exists(path):
     os.makedirs(path)
 
 model = train.main(device, train_ds, val_ds, model, hparams, path, val_iter=args.val_iter, reg=args.weight,
-                   coef_norm=coef_norm)
+                   coef_norm=coef_norm,
+                   **(dict(record=cdlno_run.recorder) if cdlno_run is not None else {}))
+
+if args.cfd_model == 'CDLNO':
+    finish_experiment(args)

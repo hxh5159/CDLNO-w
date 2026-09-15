@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import fields
 import json
 from pathlib import Path
 from typing import Any
@@ -66,7 +67,17 @@ def load_sidecar(path: str | Path) -> dict[str, Any]:
     payload = json.loads(source.read_text(encoding="utf-8"))
     if payload.get("schema_version") != SCHEMA_VERSION:
         raise SidecarMismatch(f"unsupported sidecar schema: {payload.get('schema_version')!r}")
-    architecture = CDLNOArchitectureConfig.from_dict(payload["architecture"])
+    raw = payload.get("architecture")
+    if not isinstance(raw, dict):
+        raise SidecarMismatch('sidecar architecture must be a complete object')
+    missing = {field.name for field in fields(CDLNOArchitectureConfig)} - raw.keys()
+    if missing == {'front_latent_mode'} and (
+            raw.get('model_name') == 'CDLNO' and raw.get('model_version') == 'cdlno-core-v1'
+            and raw.get('history_rule') == 'front-t-after-ffn2-before-up-v1'):
+        raw = dict(raw, front_latent_mode='full')  # Known pre-A1 full only; no file rewrite.
+    elif missing:
+        raise SidecarMismatch('sidecar missing architecture fields: ' + ', '.join(sorted(missing)))
+    architecture = CDLNOArchitectureConfig.from_dict(raw)
     derived = payload.get("derived", {})
     if derived.get("P", architecture.P) != architecture.P:
         raise SidecarMismatch("sidecar derived.P does not match L-F")
@@ -74,6 +85,36 @@ def load_sidecar(path: str | Path) -> dict[str, Any]:
     payload["architecture"] = architecture.to_dict()
     payload["derived"] = {"P": architecture.P}
     return payload
+
+
+def resolve_front_latent_mode(path: str | Path, explicit: str | None) -> str:
+    """Read an eval sidecar first, then check only a user-supplied mode override."""
+    saved = load_sidecar(path)['architecture']['front_latent_mode']
+    if explicit is not None and explicit != saved:
+        raise SidecarMismatch(
+            f'architecture mismatch: front_latent_mode (checkpoint={saved!r}, requested={explicit!r})')
+    return saved
+
+
+def validate_model_front_mode(model, architecture: CDLNOArchitectureConfig) -> None:
+    """Check saved object semantics, including pre-A1 objects whose init is not run.
+
+    This does not rebuild or migrate weights. Industrial callers also compare
+    wrapper contracts and strictly validate the complete state_dict as before.
+    """
+    if not all(isinstance(value, CDLNOArchitectureConfig) for value in (model.config, model.core.config)):
+        raise SidecarMismatch('checkpoint wrapper/core require complete CDLNOArchitectureConfig objects')
+    if (compare_architecture(architecture, model.config)
+            or compare_architecture(architecture, model.core.config)):
+        raise SidecarMismatch('checkpoint wrapper/core architecture disagree (including front_latent_mode)')
+    fronts = model.core.front_blocks
+    if len(fronts) != architecture.F:
+        raise SidecarMismatch('checkpoint front block count disagrees with F')
+    for index, block in enumerate(fronts):
+        # Genuine old objects have no field: their only supported path is full.
+        mode = getattr(block, 'front_latent_mode', 'full')
+        if mode != architecture.front_latent_mode:
+            raise SidecarMismatch(f'checkpoint front_blocks.{index}.front_latent_mode disagrees with architecture')
 
 
 def validate_sidecar(
