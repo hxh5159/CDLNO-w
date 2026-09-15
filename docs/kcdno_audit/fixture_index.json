@@ -1,0 +1,2509 @@
+{
+  "schema": "kcdno-k0-regression-v2",
+  "baseline_commit": "9f72946e0adbfe27ba0b75b1646fa697ae16d3df",
+  "artifact_root": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures",
+  "source_snapshot": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/source",
+  "fixture_count": 41,
+  "bytes": 17048463,
+  "records": [
+    {
+      "name": "cdlno_darcy_full",
+      "task": "darcy",
+      "family": "CDLNO",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 1,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": true,
+        "H": 5,
+        "W": 7,
+        "task_name": "darcy",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "full"
+      },
+      "device": "cpu",
+      "parameters": 11849,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_darcy_full/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 220919,
+          "sha256": "b7841cac84adcb2b84c97b146bfa985d2e1678a89f681e0d37b4732867b4dcf6"
+        },
+        "metadata.json": {
+          "bytes": 46644,
+          "sha256": "2489ff6255a9fbca3d732f10f9caf9b0fbba110faa4b83337463f9a83fd6a1b4"
+        },
+        "run/architecture.json": {
+          "bytes": 1959,
+          "sha256": "88c6849d9a1bfd17523c77fa338160b2a8557fc898e7f4755a06b0aa617c6c2c"
+        },
+        "run/model.pt": {
+          "bytes": 114099,
+          "sha256": "72390314a5540bf7140f74502d5b453eb90aea9d959c86ce8a61c3be075acecb"
+        }
+      },
+      "replay": {
+        "name": "cdlno_darcy_full",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "chunk": 0,
+            "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+          },
+          {
+            "chunk": 1,
+            "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": [
+          "no_sa",
+          "identity"
+        ]
+      }
+    },
+    {
+      "name": "cdlno_darcy_no_sa",
+      "task": "darcy",
+      "family": "CDLNO",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 1,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": true,
+        "H": 5,
+        "W": 7,
+        "task_name": "darcy",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "no_sa"
+      },
+      "device": "cpu",
+      "parameters": 11289,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_darcy_no_sa/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 206583,
+          "sha256": "f0865b724d77cd7eaa8cc8bd44ea7406b5d4ec5418c781dc0912e8a153905941"
+        },
+        "metadata.json": {
+          "bytes": 43141,
+          "sha256": "327431c69be7a5f053e2ce53ee2a36638956c88802e58893384dc9eec1793895"
+        },
+        "run/architecture.json": {
+          "bytes": 1968,
+          "sha256": "59438d1f31fe63710f8a8830b3f24fde5ba3e8f690cd345e1487cbf8bc872b61"
+        },
+        "run/model.pt": {
+          "bytes": 106355,
+          "sha256": "15f0e83ec328cb0bbb278a16235372a7705ba22205198416f410810820797fa4"
+        }
+      },
+      "replay": {
+        "name": "cdlno_darcy_no_sa",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "chunk": 0,
+            "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+          },
+          {
+            "chunk": 1,
+            "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": [
+          "full",
+          "identity"
+        ]
+      }
+    },
+    {
+      "name": "cdlno_darcy_identity",
+      "task": "darcy",
+      "family": "CDLNO",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 1,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": true,
+        "H": 5,
+        "W": 7,
+        "task_name": "darcy",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "identity"
+      },
+      "device": "cpu",
+      "parameters": 10137,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_darcy_identity/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 185223,
+          "sha256": "88ac48285bf4fc820bce238a743396bf999d1a9857fd600db21f33d2e570fcec"
+        },
+        "metadata.json": {
+          "bytes": 38867,
+          "sha256": "cce5b9c62ebe5ea8e18bdd77d65e75a68a593f234e90eb772d16d2e4981931cc"
+        },
+        "run/architecture.json": {
+          "bytes": 1980,
+          "sha256": "fc3434eb4cec1cc1e7e3480b19a4fd7e42936bf11b1277492925b9003adfbdfb"
+        },
+        "run/model.pt": {
+          "bytes": 95555,
+          "sha256": "5843a71aff34722e8e7728b8846c6f114357186ad427c15ba50edacad5be0282"
+        }
+      },
+      "replay": {
+        "name": "cdlno_darcy_identity",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "chunk": 0,
+            "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+          },
+          {
+            "chunk": 1,
+            "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": [
+          "full",
+          "no_sa"
+        ]
+      }
+    },
+    {
+      "name": "transolver_darcy_original",
+      "task": "darcy",
+      "family": "Transolver",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 1,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": true,
+        "H": 5,
+        "W": 7
+      },
+      "device": "cuda:0",
+      "parameters": 14201,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_darcy_original/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 213653,
+          "sha256": "5ae087d1c593500011d596293def1cc0f8d2c2b2fbf4ec7ad24b715efc4d436b"
+        },
+        "metadata.json": {
+          "bytes": 35512,
+          "sha256": "5b0598d268b48b9aa76dd0a456a09ab500ace2c24c86e392a87953e2fe31a3df"
+        }
+      },
+      "replay": {
+        "name": "transolver_darcy_original",
+        "status": "passed",
+        "device": "cuda:0",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [],
+        "explicit_mode_conflicts_rejected": []
+      }
+    },
+    {
+      "name": "cdlno_elasticity_full",
+      "task": "elasticity",
+      "family": "CDLNO",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "task_name": "elasticity",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "full"
+      },
+      "device": "cpu",
+      "parameters": 9097,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_elasticity_full/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 231641,
+          "sha256": "c385ce29aaeb1b074cbe255231dbb51eeff14cb1d7b5df41a6b9d39bdb4ef22f"
+        },
+        "metadata.json": {
+          "bytes": 44854,
+          "sha256": "7ef60c481b745b51fe02323265c1e6f51ae2fc8717824946ecfb4c0404d44422"
+        },
+        "run/architecture.json": {
+          "bytes": 1964,
+          "sha256": "c5eab3bf3ad42ce3e88036431cde4d80a40393c559de748a85576d53ac67c1ad"
+        },
+        "run/model.pt": {
+          "bytes": 100435,
+          "sha256": "2de505f8279442a37e89ac4adccb75e059d4bdcc83ec70c8e041fc8cf8c52073"
+        }
+      },
+      "replay": {
+        "name": "cdlno_elasticity_full",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "chunk": 0,
+            "classname": "model.CDLNO_Irregular_Mesh.Model"
+          },
+          {
+            "chunk": 1,
+            "classname": "model.CDLNO_Irregular_Mesh.Model"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": [
+          "no_sa",
+          "identity"
+        ]
+      }
+    },
+    {
+      "name": "cdlno_elasticity_no_sa",
+      "task": "elasticity",
+      "family": "CDLNO",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "task_name": "elasticity",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "no_sa"
+      },
+      "device": "cpu",
+      "parameters": 8537,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_elasticity_no_sa/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 217305,
+          "sha256": "d9af12f7bd9986a04a8c7f153b8f3be03da5611cef888719de2a26061bd6e675"
+        },
+        "metadata.json": {
+          "bytes": 41351,
+          "sha256": "59c3f50c6eb44db4b88feb246972834ec4c757e7da72d9cfe5aa007d74d463f6"
+        },
+        "run/architecture.json": {
+          "bytes": 1973,
+          "sha256": "949d7113b37a30a88b0670072adbc1c32a2985fb542360cb00da7cc901298f95"
+        },
+        "run/model.pt": {
+          "bytes": 92691,
+          "sha256": "8ad41014cff27cc689b67f1ed982f50525e9714da858eca4228ed83ea94ce489"
+        }
+      },
+      "replay": {
+        "name": "cdlno_elasticity_no_sa",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "chunk": 0,
+            "classname": "model.CDLNO_Irregular_Mesh.Model"
+          },
+          {
+            "chunk": 1,
+            "classname": "model.CDLNO_Irregular_Mesh.Model"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": [
+          "full",
+          "identity"
+        ]
+      }
+    },
+    {
+      "name": "cdlno_elasticity_identity",
+      "task": "elasticity",
+      "family": "CDLNO",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "task_name": "elasticity",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "identity"
+      },
+      "device": "cpu",
+      "parameters": 7385,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_elasticity_identity/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 196009,
+          "sha256": "4436994b5a2ef0e4b48202fa637490ee0e51d722457bd87140c59469f39cdf20"
+        },
+        "metadata.json": {
+          "bytes": 37077,
+          "sha256": "33e6073cf381cda74e85c59c3d26c146b330a8c2145541160c91630a052c1ff2"
+        },
+        "run/architecture.json": {
+          "bytes": 1985,
+          "sha256": "72ddbe1224646c75d577d1f6eae343a5aab15ea199b3278eb0ce15f0fa71993d"
+        },
+        "run/model.pt": {
+          "bytes": 81955,
+          "sha256": "373a6a7029734865dc08e91bc145d5bd6eb40f453a81bffefd678a7e9a63250f"
+        }
+      },
+      "replay": {
+        "name": "cdlno_elasticity_identity",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "chunk": 0,
+            "classname": "model.CDLNO_Irregular_Mesh.Model"
+          },
+          {
+            "chunk": 1,
+            "classname": "model.CDLNO_Irregular_Mesh.Model"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": [
+          "full",
+          "no_sa"
+        ]
+      }
+    },
+    {
+      "name": "transolver_elasticity_original",
+      "task": "elasticity",
+      "family": "Transolver",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false
+      },
+      "device": "cuda:0",
+      "parameters": 5001,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_elasticity_original/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 177237,
+          "sha256": "7c0c32722088044363e1242d7f3ff2b49c0b525a121f1c214dc7dbdabd8d9f27"
+        },
+        "metadata.json": {
+          "bytes": 35134,
+          "sha256": "aec6735e0d36f7355a69d7756b6f3d284a67929ad4d23a60d2799dd5cbfecd5f"
+        }
+      },
+      "replay": {
+        "name": "transolver_elasticity_original",
+        "status": "passed",
+        "device": "cuda:0",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [],
+        "explicit_mode_conflicts_rejected": []
+      }
+    },
+    {
+      "name": "cdlno_airfoil_full",
+      "task": "airfoil",
+      "family": "CDLNO",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 5,
+        "W": 7,
+        "task_name": "airfoil",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "full"
+      },
+      "device": "cpu",
+      "parameters": 10849,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfoil_full/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 213173,
+          "sha256": "ca4146f531b3454b68121a8c4a681d3da14c5c6283b799d60a0f1d8026bd7f81"
+        },
+        "metadata.json": {
+          "bytes": 46852,
+          "sha256": "f89e0d86907448087e82cbe1b0eda73bfa217b39dcebbd4c6701e0e21f1f79bc"
+        },
+        "run/architecture.json": {
+          "bytes": 1982,
+          "sha256": "2fd7e02d8a2b4815362398b5d625afa634b2c762ac92b2f9b776e5b4c561f760"
+        },
+        "run/model.pt": {
+          "bytes": 110319,
+          "sha256": "761c71f7b1803386884fef838d373d101e3855cbbf148f72d70cf17b28801260"
+        }
+      },
+      "replay": {
+        "name": "cdlno_airfoil_full",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "chunk": 0,
+            "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+          },
+          {
+            "chunk": 1,
+            "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": [
+          "no_sa",
+          "identity"
+        ]
+      }
+    },
+    {
+      "name": "cdlno_airfoil_no_sa",
+      "task": "airfoil",
+      "family": "CDLNO",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 5,
+        "W": 7,
+        "task_name": "airfoil",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "no_sa"
+      },
+      "device": "cpu",
+      "parameters": 10289,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfoil_no_sa/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 198837,
+          "sha256": "094cdb8bd819417c5200a5be4a3fc193ce0001b50661dcd2941df574e2798286"
+        },
+        "metadata.json": {
+          "bytes": 43349,
+          "sha256": "45267e84a3984180c2a99e208fdf8e169a425b689a4ce3a8ec0ecb50447119e6"
+        },
+        "run/architecture.json": {
+          "bytes": 1991,
+          "sha256": "57eac7c1f725695727f9d7f0fd93280e13f8e6b09f64487286e6689c1f9ec53c"
+        },
+        "run/model.pt": {
+          "bytes": 102575,
+          "sha256": "8f169dc13895c02fc372f363f532afc659562d2d09201196d33979b81cd495d5"
+        }
+      },
+      "replay": {
+        "name": "cdlno_airfoil_no_sa",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "chunk": 0,
+            "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+          },
+          {
+            "chunk": 1,
+            "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": [
+          "full",
+          "identity"
+        ]
+      }
+    },
+    {
+      "name": "cdlno_airfoil_identity",
+      "task": "airfoil",
+      "family": "CDLNO",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 5,
+        "W": 7,
+        "task_name": "airfoil",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "identity"
+      },
+      "device": "cpu",
+      "parameters": 9137,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfoil_identity/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 177541,
+          "sha256": "c8c22708bc0675d76647a198ed7a2a1929e7b2ac4a4343ac9d18d80fb33c3a1a"
+        },
+        "metadata.json": {
+          "bytes": 39074,
+          "sha256": "11db28d698002a7ce1107b62d4c13ec95867ec8fd4f37b6375561284d15e29bb"
+        },
+        "run/architecture.json": {
+          "bytes": 2003,
+          "sha256": "056701057cfa708a072a2e055736f517828d0af35f1acbade5a23ce3522248af"
+        },
+        "run/model.pt": {
+          "bytes": 91839,
+          "sha256": "7aed388b969d9207daaac212c1287a24abdd7673b6b2d426d9cae8bd1fe82071"
+        }
+      },
+      "replay": {
+        "name": "cdlno_airfoil_identity",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "chunk": 0,
+            "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+          },
+          {
+            "chunk": 1,
+            "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": [
+          "full",
+          "no_sa"
+        ]
+      }
+    },
+    {
+      "name": "transolver_airfoil_original",
+      "task": "airfoil",
+      "family": "Transolver",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 5,
+        "W": 7
+      },
+      "device": "cuda:0",
+      "parameters": 13193,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_airfoil_original/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 205525,
+          "sha256": "b18afbb3461ad4995fbdb1c6b214d784bf9b764ffd0d4168197ac564c775956a"
+        },
+        "metadata.json": {
+          "bytes": 35516,
+          "sha256": "37f73d06e493a3d8cde5bafd572f9b36fab33d620bb78cb1675f611d54b4d4c7"
+        }
+      },
+      "replay": {
+        "name": "transolver_airfoil_original",
+        "status": "passed",
+        "device": "cuda:0",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [],
+        "explicit_mode_conflicts_rejected": []
+      }
+    },
+    {
+      "name": "cdlno_pipe_full",
+      "task": "pipe",
+      "family": "CDLNO",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 5,
+        "W": 7,
+        "task_name": "pipe",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "full"
+      },
+      "device": "cpu",
+      "parameters": 10849,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_pipe_full/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 213173,
+          "sha256": "10fe09b2f0fb33d4be87e42c8abc7d4972975e850e9dae186ab5ddf7666d5144"
+        },
+        "metadata.json": {
+          "bytes": 46823,
+          "sha256": "c2c6612c6554a670110b21f729cf64e2172241194fbe6ada93949f42e7e6c52a"
+        },
+        "run/architecture.json": {
+          "bytes": 1962,
+          "sha256": "6944430fc29a10cf36cbba50d718dbe18fb7e607cda7a791c86d74d3b4999e9f"
+        },
+        "run/model.pt": {
+          "bytes": 110319,
+          "sha256": "5fcf5a93f34033b673b7c42b3cdde7d4a6dda753c2c62227a47724eb41cc0fa4"
+        }
+      },
+      "replay": {
+        "name": "cdlno_pipe_full",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "chunk": 0,
+            "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+          },
+          {
+            "chunk": 1,
+            "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": [
+          "no_sa",
+          "identity"
+        ]
+      }
+    },
+    {
+      "name": "cdlno_pipe_no_sa",
+      "task": "pipe",
+      "family": "CDLNO",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 5,
+        "W": 7,
+        "task_name": "pipe",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "no_sa"
+      },
+      "device": "cpu",
+      "parameters": 10289,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_pipe_no_sa/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 198837,
+          "sha256": "e91678d203dc09526dbed11552a1b7a311f80b9bbbe7fbc7896e22b58fae4c6e"
+        },
+        "metadata.json": {
+          "bytes": 43320,
+          "sha256": "718ffc63204507f0a6285e5f60f816d80b8fc245d90e7706ba792d7c534bcca7"
+        },
+        "run/architecture.json": {
+          "bytes": 1971,
+          "sha256": "42095d31abd8d18a333abeb11934870cb8417b2fdc7649d8486da7f17410007c"
+        },
+        "run/model.pt": {
+          "bytes": 102575,
+          "sha256": "7e5e465089da2ca4fecf791f1872866e08ec1c2112c11c3985d9ed1bb3e655b7"
+        }
+      },
+      "replay": {
+        "name": "cdlno_pipe_no_sa",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "chunk": 0,
+            "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+          },
+          {
+            "chunk": 1,
+            "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": [
+          "full",
+          "identity"
+        ]
+      }
+    },
+    {
+      "name": "cdlno_pipe_identity",
+      "task": "pipe",
+      "family": "CDLNO",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 5,
+        "W": 7,
+        "task_name": "pipe",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "identity"
+      },
+      "device": "cpu",
+      "parameters": 9137,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_pipe_identity/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 177541,
+          "sha256": "fb24cea386bcd4d78b001a4419fa119fc46f9b0e6df63b3ecff600ccc2d1607b"
+        },
+        "metadata.json": {
+          "bytes": 39045,
+          "sha256": "5c09e2532c6061ba10cfbc3abacf92dd976d17118339d377e1cedc7fb4023444"
+        },
+        "run/architecture.json": {
+          "bytes": 1983,
+          "sha256": "680c00735d45ea2d6c333cc2e12fae7141f58b3005e52b86646a34f5b86bf241"
+        },
+        "run/model.pt": {
+          "bytes": 91839,
+          "sha256": "432d5394b93294b0a8ecdb6706ce5ea26c563272628cbe35a7e61ffc2215562c"
+        }
+      },
+      "replay": {
+        "name": "cdlno_pipe_identity",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "chunk": 0,
+            "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+          },
+          {
+            "chunk": 1,
+            "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": [
+          "full",
+          "no_sa"
+        ]
+      }
+    },
+    {
+      "name": "transolver_pipe_original",
+      "task": "pipe",
+      "family": "Transolver",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 5,
+        "W": 7
+      },
+      "device": "cuda:0",
+      "parameters": 13193,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_pipe_original/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 205525,
+          "sha256": "adf4dbb339e6290a4e2be5de98d587ee09b7ceb64c27a36bb4415141332ba68a"
+        },
+        "metadata.json": {
+          "bytes": 35510,
+          "sha256": "f5ed524954676c8107d0242f52a046487265b9b5639a6a1d364bea414302d657"
+        }
+      },
+      "replay": {
+        "name": "transolver_pipe_original",
+        "status": "passed",
+        "device": "cuda:0",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [],
+        "explicit_mode_conflicts_rejected": []
+      }
+    },
+    {
+      "name": "cdlno_ns_full",
+      "task": "ns",
+      "family": "CDLNO",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 10,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": true,
+        "H": 64,
+        "W": 64,
+        "task_name": "ns",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "full"
+      },
+      "device": "cpu",
+      "parameters": 11993,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_ns_full/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 974455,
+          "sha256": "ba8c2ca5b9cba5f5ff8fe375b8f5f4e04b10985ae5548fa6e52c54d87319b14c"
+        },
+        "metadata.json": {
+          "bytes": 46731,
+          "sha256": "b4c9f4a5e722cb3893ba47839ea21a77980ba0cfe293ee8e6a55c6990478b5ae"
+        },
+        "run/architecture.json": {
+          "bytes": 2033,
+          "sha256": "465c7f5354645a42fe3598a960e8334b521c6bc88edf9d037075e2c41b223a87"
+        },
+        "run/model.pt": {
+          "bytes": 114675,
+          "sha256": "3b0518e6df2de0c060c2ab72ee31841c01eda52f699f3e7ef32e6944dc41a184"
+        }
+      },
+      "replay": {
+        "name": "cdlno_ns_full",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "chunk": 0,
+            "classname": "model.CDLNO_Temporal_Structured_Mesh_2D.Model"
+          },
+          {
+            "chunk": 1,
+            "classname": "model.CDLNO_Temporal_Structured_Mesh_2D.Model"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": [
+          "no_sa",
+          "identity"
+        ]
+      }
+    },
+    {
+      "name": "cdlno_ns_no_sa",
+      "task": "ns",
+      "family": "CDLNO",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 10,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": true,
+        "H": 64,
+        "W": 64,
+        "task_name": "ns",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "no_sa"
+      },
+      "device": "cpu",
+      "parameters": 11433,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_ns_no_sa/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 960119,
+          "sha256": "88cb2e671910ef211412d9a3a04c0b244dce85980ff1e33eafe89c6f2819f699"
+        },
+        "metadata.json": {
+          "bytes": 43228,
+          "sha256": "6ab5b849edf282c804593a69f8eafc8a609ff556fd00e3a9005e444cb4363344"
+        },
+        "run/architecture.json": {
+          "bytes": 2042,
+          "sha256": "53abb2b8ae489eceeea86d6d95cff745776565d2e6dded34430912243fec516b"
+        },
+        "run/model.pt": {
+          "bytes": 106931,
+          "sha256": "58606514c560750339c7420051918863ff184300512361485648587c17e4bf1c"
+        }
+      },
+      "replay": {
+        "name": "cdlno_ns_no_sa",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "chunk": 0,
+            "classname": "model.CDLNO_Temporal_Structured_Mesh_2D.Model"
+          },
+          {
+            "chunk": 1,
+            "classname": "model.CDLNO_Temporal_Structured_Mesh_2D.Model"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": [
+          "full",
+          "identity"
+        ]
+      }
+    },
+    {
+      "name": "cdlno_ns_identity",
+      "task": "ns",
+      "family": "CDLNO",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 10,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": true,
+        "H": 64,
+        "W": 64,
+        "task_name": "ns",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "identity"
+      },
+      "device": "cpu",
+      "parameters": 10281,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_ns_identity/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 938823,
+          "sha256": "cef0652da35f8f1b46724c62691dacaa5464551df0b24b6498a33c59b4bdc945"
+        },
+        "metadata.json": {
+          "bytes": 38954,
+          "sha256": "5d545726fa2aa70f527acfb1e1619bca1f9a4139af1afa2147e5db6538e66611"
+        },
+        "run/architecture.json": {
+          "bytes": 2054,
+          "sha256": "6d4f9724fb6613b1b218eff821f895f69a993267ba58c6b48af4fa98f584c7f7"
+        },
+        "run/model.pt": {
+          "bytes": 96131,
+          "sha256": "3dc48b17a76fa1e456cdec5680d600d76af750adf05c9e09668749d508c8cf97"
+        }
+      },
+      "replay": {
+        "name": "cdlno_ns_identity",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "chunk": 0,
+            "classname": "model.CDLNO_Temporal_Structured_Mesh_2D.Model"
+          },
+          {
+            "chunk": 1,
+            "classname": "model.CDLNO_Temporal_Structured_Mesh_2D.Model"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": [
+          "full",
+          "no_sa"
+        ]
+      }
+    },
+    {
+      "name": "transolver_ns_original",
+      "task": "ns",
+      "family": "Transolver",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 10,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": true,
+        "H": 64,
+        "W": 64
+      },
+      "device": "cuda:0",
+      "parameters": 14345,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_ns_original/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 967189,
+          "sha256": "23002e629089f244c4fb530d491c3d0e20e6ad24e7004fced6a7bc7e242d4ac3"
+        },
+        "metadata.json": {
+          "bytes": 35511,
+          "sha256": "836012c53a232e5443b0fb8ff5d11c5917f8befc41b5c340abd815a47a9d38aa"
+        }
+      },
+      "replay": {
+        "name": "transolver_ns_original",
+        "status": "passed",
+        "device": "cuda:0",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [],
+        "explicit_mode_conflicts_rejected": []
+      }
+    },
+    {
+      "name": "cdlno_plasticity_full",
+      "task": "plasticity",
+      "family": "CDLNO",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 1,
+        "out_dim": 4,
+        "Time_Input": true,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 101,
+        "W": 31,
+        "task_name": "plasticity",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "full"
+      },
+      "device": "cpu",
+      "parameters": 11028,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_plasticity_full/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 466529,
+          "sha256": "e652e33e20965ff53745f9c58ccf3b542c25d2311e0aff02d9c13fb2f3de91f1"
+        },
+        "metadata.json": {
+          "bytes": 47594,
+          "sha256": "0d69db186dbac96f7e9a8cc58f4328690e9eb1cc285ae4bf06d7ae3e235b0f55"
+        },
+        "run/architecture.json": {
+          "bytes": 2121,
+          "sha256": "a6e6f01bea3eea414504ebdee3842ee5e0502cfe60342b1ab395be3a43453088"
+        },
+        "run/model.pt": {
+          "bytes": 111843,
+          "sha256": "8a3f599052463c1dfac36d188b0764495f377268116b16766998c6671f5a0b3e"
+        }
+      },
+      "replay": {
+        "name": "cdlno_plasticity_full",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "chunk": 0,
+            "classname": "model.CDLNO_Temporal_Structured_Mesh_2D.Model"
+          },
+          {
+            "chunk": 1,
+            "classname": "model.CDLNO_Temporal_Structured_Mesh_2D.Model"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": [
+          "no_sa",
+          "identity"
+        ]
+      }
+    },
+    {
+      "name": "cdlno_plasticity_no_sa",
+      "task": "plasticity",
+      "family": "CDLNO",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 1,
+        "out_dim": 4,
+        "Time_Input": true,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 101,
+        "W": 31,
+        "task_name": "plasticity",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "no_sa"
+      },
+      "device": "cpu",
+      "parameters": 10468,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_plasticity_no_sa/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 452193,
+          "sha256": "31f3a026294afaf28a57f8f96ffd10d1c0dc4c537f9eec67bf53645001780cb8"
+        },
+        "metadata.json": {
+          "bytes": 44091,
+          "sha256": "dead8f3f04b663b20fd089e95d34aa6d2133ae6eb2bf5b54e6810a612c9027a2"
+        },
+        "run/architecture.json": {
+          "bytes": 2130,
+          "sha256": "b405eb338391e224fc8d5591feb183d4e4398afde7b0318c17fee742af55d919"
+        },
+        "run/model.pt": {
+          "bytes": 104099,
+          "sha256": "d3b883e3df721c67835d3080a4d0652980f309a6ea57e028d801819175eb2c57"
+        }
+      },
+      "replay": {
+        "name": "cdlno_plasticity_no_sa",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "chunk": 0,
+            "classname": "model.CDLNO_Temporal_Structured_Mesh_2D.Model"
+          },
+          {
+            "chunk": 1,
+            "classname": "model.CDLNO_Temporal_Structured_Mesh_2D.Model"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": [
+          "full",
+          "identity"
+        ]
+      }
+    },
+    {
+      "name": "cdlno_plasticity_identity",
+      "task": "plasticity",
+      "family": "CDLNO",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 1,
+        "out_dim": 4,
+        "Time_Input": true,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 101,
+        "W": 31,
+        "task_name": "plasticity",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "identity"
+      },
+      "device": "cpu",
+      "parameters": 9316,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_plasticity_identity/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 430897,
+          "sha256": "7834acf44f7ce04c0de62bd86f8fd34295f5a0c6f96925003d2401151c36944e"
+        },
+        "metadata.json": {
+          "bytes": 39816,
+          "sha256": "5b21718140dea466c2ad33f2260d6af1dd3d29c95bc5e412e67eab21cb3e3ed7"
+        },
+        "run/architecture.json": {
+          "bytes": 2142,
+          "sha256": "2113a05bc0d35d824b2c2d2e1c5f5b85a66d7c6b3e979a5b08d99747d4575796"
+        },
+        "run/model.pt": {
+          "bytes": 93299,
+          "sha256": "43b4c545f72fd49804809907fd8a074250cf6694c1e67ceb246040883091d0ac"
+        }
+      },
+      "replay": {
+        "name": "cdlno_plasticity_identity",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "chunk": 0,
+            "classname": "model.CDLNO_Temporal_Structured_Mesh_2D.Model"
+          },
+          {
+            "chunk": 1,
+            "classname": "model.CDLNO_Temporal_Structured_Mesh_2D.Model"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": [
+          "full",
+          "no_sa"
+        ]
+      }
+    },
+    {
+      "name": "transolver_plasticity_original",
+      "task": "plasticity",
+      "family": "Transolver",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 1,
+        "out_dim": 4,
+        "Time_Input": true,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 101,
+        "W": 31
+      },
+      "device": "cuda:0",
+      "parameters": 13380,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_plasticity_original/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 459071,
+          "sha256": "8c4fd087626bd45d83115dbc4606a22f4bfd301e3f51407379010f7d9c630f2e"
+        },
+        "metadata.json": {
+          "bytes": 36280,
+          "sha256": "8f4cb26372d0d57c365d0aebcb6d9a6ab9bb109a2adc4682b7810e7c7420eebc"
+        }
+      },
+      "replay": {
+        "name": "transolver_plasticity_original",
+        "status": "passed",
+        "device": "cuda:0",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [],
+        "explicit_mode_conflicts_rejected": []
+      }
+    },
+    {
+      "name": "core_full_off",
+      "task": "core",
+      "family": "CDLNO",
+      "configuration": {
+        "L": 8,
+        "F": 2,
+        "M": 4,
+        "d_model": 8,
+        "num_heads": 2,
+        "output_dim": 2,
+        "front_latent_mode": "full",
+        "cdpa_mode": "off"
+      },
+      "device": "cpu",
+      "parameters": 8602,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_full_off/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 179801,
+          "sha256": "b05c708642a335be0238ff4e6be5310a9b9d10df27353561aa359fa6cc9cafde"
+        },
+        "metadata.json": {
+          "bytes": 39464,
+          "sha256": "050574178860ae2529913ff918e2dae650ba13fba9c3e77a7a9e8cc0df0db113"
+        }
+      },
+      "replay": {
+        "name": "core_full_off",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [],
+        "explicit_mode_conflicts_rejected": []
+      }
+    },
+    {
+      "name": "core_full_entry",
+      "task": "core",
+      "family": "CDLNO",
+      "configuration": {
+        "L": 8,
+        "F": 2,
+        "M": 4,
+        "d_model": 8,
+        "num_heads": 2,
+        "output_dim": 2,
+        "front_latent_mode": "full",
+        "cdpa_mode": "entry"
+      },
+      "device": "cpu",
+      "parameters": 8914,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_full_entry/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 188269,
+          "sha256": "90abf645db2d766b98af86f16e5608db24fea2ea88049c395cf0665332624e3c"
+        },
+        "metadata.json": {
+          "bytes": 41589,
+          "sha256": "1997449d2e1951d2346b75d67ed4bbd5bdc68555b52e66741824c70a0be8979b"
+        }
+      },
+      "replay": {
+        "name": "core_full_entry",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [],
+        "explicit_mode_conflicts_rejected": []
+      }
+    },
+    {
+      "name": "core_full_every_block",
+      "task": "core",
+      "family": "CDLNO",
+      "configuration": {
+        "L": 8,
+        "F": 2,
+        "M": 4,
+        "d_model": 8,
+        "num_heads": 2,
+        "output_dim": 2,
+        "front_latent_mode": "full",
+        "cdpa_mode": "every_block"
+      },
+      "device": "cpu",
+      "parameters": 10474,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_full_every_block/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 230865,
+          "sha256": "0bea98407e19499b6cc21f203b851963c741bb27b9c2896afdf2eebab59f35f1"
+        },
+        "metadata.json": {
+          "bytes": 52203,
+          "sha256": "ca20d9e4e1d15d8ec94fe15c8ba7a81c5a0f041ec0c5858364dd5329588d46a5"
+        }
+      },
+      "replay": {
+        "name": "core_full_every_block",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [],
+        "explicit_mode_conflicts_rejected": []
+      }
+    },
+    {
+      "name": "core_no_sa_off",
+      "task": "core",
+      "family": "CDLNO",
+      "configuration": {
+        "L": 8,
+        "F": 2,
+        "M": 4,
+        "d_model": 8,
+        "num_heads": 2,
+        "output_dim": 2,
+        "front_latent_mode": "no_sa",
+        "cdpa_mode": "off"
+      },
+      "device": "cpu",
+      "parameters": 8042,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_no_sa_off/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 165593,
+          "sha256": "39751d6121cf11ac6f3b1a965af8db8c6a2faff7a44ebad03e9f8a1afd88ea8d"
+        },
+        "metadata.json": {
+          "bytes": 36033,
+          "sha256": "6ae254c91e4796ae1f9d1676b691e57a41b7db4f4c5b4e95767b5dd4758d6988"
+        }
+      },
+      "replay": {
+        "name": "core_no_sa_off",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [],
+        "explicit_mode_conflicts_rejected": []
+      }
+    },
+    {
+      "name": "core_no_sa_entry",
+      "task": "core",
+      "family": "CDLNO",
+      "configuration": {
+        "L": 8,
+        "F": 2,
+        "M": 4,
+        "d_model": 8,
+        "num_heads": 2,
+        "output_dim": 2,
+        "front_latent_mode": "no_sa",
+        "cdpa_mode": "entry"
+      },
+      "device": "cpu",
+      "parameters": 8354,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_no_sa_entry/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 174125,
+          "sha256": "c02bc5ea2885e536262811c2297697dc41e4c40798a61566c857e1d8c1f1b0c2"
+        },
+        "metadata.json": {
+          "bytes": 38158,
+          "sha256": "ca3c73a253a43470ae4def033e42a25ad510bce75dbc3c7fa91e776b86c9d966"
+        }
+      },
+      "replay": {
+        "name": "core_no_sa_entry",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [],
+        "explicit_mode_conflicts_rejected": []
+      }
+    },
+    {
+      "name": "core_no_sa_every_block",
+      "task": "core",
+      "family": "CDLNO",
+      "configuration": {
+        "L": 8,
+        "F": 2,
+        "M": 4,
+        "d_model": 8,
+        "num_heads": 2,
+        "output_dim": 2,
+        "front_latent_mode": "no_sa",
+        "cdpa_mode": "every_block"
+      },
+      "device": "cpu",
+      "parameters": 9914,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_no_sa_every_block/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 216721,
+          "sha256": "08074d3c0a44242e0dc02c0dabcbee88c007ded5df75e75534140d3e9f3bbe85"
+        },
+        "metadata.json": {
+          "bytes": 48771,
+          "sha256": "7a4b82fa4610f902056b505c9aedae00eef5910988e4e4bb39b6c4b3c873db84"
+        }
+      },
+      "replay": {
+        "name": "core_no_sa_every_block",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [],
+        "explicit_mode_conflicts_rejected": []
+      }
+    },
+    {
+      "name": "core_identity_off",
+      "task": "core",
+      "family": "CDLNO",
+      "configuration": {
+        "L": 8,
+        "F": 2,
+        "M": 4,
+        "d_model": 8,
+        "num_heads": 2,
+        "output_dim": 2,
+        "front_latent_mode": "identity",
+        "cdpa_mode": "off"
+      },
+      "device": "cpu",
+      "parameters": 6890,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_identity_off/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 144489,
+          "sha256": "e05f7588356dad35bfa74a5f1e53566303aa96c391e42ae6e50e5cb0d67b6a2f"
+        },
+        "metadata.json": {
+          "bytes": 31850,
+          "sha256": "a8cc6aa7d56e865d5414986465b25f7b0827e8a9ccbee0ea80f3c8cb497fbc9c"
+        }
+      },
+      "replay": {
+        "name": "core_identity_off",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [],
+        "explicit_mode_conflicts_rejected": []
+      }
+    },
+    {
+      "name": "core_identity_entry",
+      "task": "core",
+      "family": "CDLNO",
+      "configuration": {
+        "L": 8,
+        "F": 2,
+        "M": 4,
+        "d_model": 8,
+        "num_heads": 2,
+        "output_dim": 2,
+        "front_latent_mode": "identity",
+        "cdpa_mode": "entry"
+      },
+      "device": "cpu",
+      "parameters": 7202,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_identity_entry/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 153021,
+          "sha256": "7461932788324f7dc69fcd490a4503add3e77378fe163dbd179063323022eb51"
+        },
+        "metadata.json": {
+          "bytes": 33975,
+          "sha256": "95511f8979cc27a69dc3570c0a0a85f320e579c228c5aa6d823ddfa35cea23a1"
+        }
+      },
+      "replay": {
+        "name": "core_identity_entry",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [],
+        "explicit_mode_conflicts_rejected": []
+      }
+    },
+    {
+      "name": "core_identity_every_block",
+      "task": "core",
+      "family": "CDLNO",
+      "configuration": {
+        "L": 8,
+        "F": 2,
+        "M": 4,
+        "d_model": 8,
+        "num_heads": 2,
+        "output_dim": 2,
+        "front_latent_mode": "identity",
+        "cdpa_mode": "every_block"
+      },
+      "device": "cpu",
+      "parameters": 8762,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_identity_every_block/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 195617,
+          "sha256": "78d07c9d0c5078a1e4fccc0b5fc8142526286cdb289a4d431f52dee4cab1fcf7"
+        },
+        "metadata.json": {
+          "bytes": 44588,
+          "sha256": "a98de8bd07eaaade4edfccc7e5275062047af916702fe5c40c816d9373d4d035"
+        }
+      },
+      "replay": {
+        "name": "core_identity_every_block",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [],
+        "explicit_mode_conflicts_rejected": []
+      }
+    },
+    {
+      "name": "cdlno_car_full",
+      "task": "car",
+      "family": "CDLNO",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "full"
+      },
+      "device": "cpu",
+      "parameters": 9204,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_car_full/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 198917,
+          "sha256": "e47ee5911eaef1512d95a0e182695e1f1ff47d7fb23e52eaf93aa7383e4a5257"
+        },
+        "metadata.json": {
+          "bytes": 44806,
+          "sha256": "5669b43344c425c79cd334d05eae8c10c17ac4d9cb49035eee858e95a0d18439"
+        },
+        "run/architecture.json": {
+          "bytes": 2258,
+          "sha256": "957bfe6a0e22dd1b566c973742870e2e1f00a049c019a88a46d70068b7698be4"
+        },
+        "run/model_200.pth": {
+          "bytes": 138443,
+          "sha256": "2fd66505a877b94424f18940776707745c7a47fe32ceed3419522181a82f6414"
+        }
+      },
+      "replay": {
+        "name": "cdlno_car_full",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "chunk": 0,
+            "classname": "models.CDLNO.Model"
+          },
+          {
+            "chunk": 1,
+            "classname": "models.CDLNO.Model"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": [
+          "no_sa",
+          "identity"
+        ]
+      }
+    },
+    {
+      "name": "cdlno_car_no_sa",
+      "task": "car",
+      "family": "CDLNO",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "no_sa"
+      },
+      "device": "cpu",
+      "parameters": 8644,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_car_no_sa/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 184581,
+          "sha256": "e2b6c98d5c1b535544a3bbbd96997a8d4db564b704f57b8e1ae4f6eb80b806c4"
+        },
+        "metadata.json": {
+          "bytes": 41297,
+          "sha256": "e13e054187e51389e0597965d018de67d95c6593c805675d6e24d46e9c152172"
+        },
+        "run/architecture.json": {
+          "bytes": 2261,
+          "sha256": "70633150530bdfc17a288ec26ee51389d4147dfdb88e4c833cd4f29fee9b2e63"
+        },
+        "run/model_200.pth": {
+          "bytes": 127883,
+          "sha256": "ef703ac4c411f9415ed821f86d58d9d18346b9c73882642ec7d1557c8dad9766"
+        }
+      },
+      "replay": {
+        "name": "cdlno_car_no_sa",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "chunk": 0,
+            "classname": "models.CDLNO.Model"
+          },
+          {
+            "chunk": 1,
+            "classname": "models.CDLNO.Model"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": [
+          "full",
+          "identity"
+        ]
+      }
+    },
+    {
+      "name": "cdlno_car_identity",
+      "task": "car",
+      "family": "CDLNO",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "identity"
+      },
+      "device": "cpu",
+      "parameters": 7492,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_car_identity/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 163285,
+          "sha256": "b336e04a6ec2392521b99c0ab66f57d6bdda63fdadbf8f88c8b20b99af590267"
+        },
+        "metadata.json": {
+          "bytes": 37020,
+          "sha256": "18cff53bf48c589c47eb294a3a2b091bb554418c0a50b6aa918f7445f692fea3"
+        },
+        "run/architecture.json": {
+          "bytes": 2270,
+          "sha256": "52a0f5ad7fc98e8d27ff38036da73afeee38eaa513500347e024f63fbab7d61c"
+        },
+        "run/model_200.pth": {
+          "bytes": 114315,
+          "sha256": "c324227aae57050dd2f65e78033832e6977486062981136cbd8320b0d17dc4d7"
+        }
+      },
+      "replay": {
+        "name": "cdlno_car_identity",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "chunk": 0,
+            "classname": "models.CDLNO.Model"
+          },
+          {
+            "chunk": 1,
+            "classname": "models.CDLNO.Model"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": [
+          "full",
+          "no_sa"
+        ]
+      }
+    },
+    {
+      "name": "transolver_car_original",
+      "task": "car",
+      "family": "Transolver",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 7,
+        "fun_dim": 0,
+        "out_dim": 4,
+        "ref": 8,
+        "unified_pos": false
+      },
+      "device": "cuda:0",
+      "parameters": 5108,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_car_original/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 144513,
+          "sha256": "ee8e1c70ca31e6004eaae56752ce74138af388d8ebd01396961de1b360545b84"
+        },
+        "metadata.json": {
+          "bytes": 35067,
+          "sha256": "9b0b02cb85211bdbe60277b24fa4e3e8c9f50eca55375f9961d5c53235d31971"
+        },
+        "model_object.pt": {
+          "bytes": 109976,
+          "sha256": "49e42a08bd38f048b1d7033da7a889c5b920d9bfd9a54b1fe7e351f7e30829a2"
+        }
+      },
+      "replay": {
+        "name": "transolver_car_original",
+        "status": "passed",
+        "device": "cuda:0",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "kind": "trusted original whole object"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": []
+      }
+    },
+    {
+      "name": "cdlno_airfrans_full",
+      "task": "airfrans",
+      "family": "CDLNO",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "full"
+      },
+      "device": "cpu",
+      "parameters": 10228,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfrans_full/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 206981,
+          "sha256": "7cfcd01332f8226cbb517bd88df4a07031f3ba381e52ca9ba0afaee7e0674cea"
+        },
+        "metadata.json": {
+          "bytes": 44825,
+          "sha256": "811a07c52a9e6d61b304cf397fdb1bd5a00f8b3c5cd90c4f7347624630d36f90"
+        },
+        "run/CDLNO": {
+          "bytes": 135951,
+          "sha256": "7bbbbefb12e940f7d35817ad944e63f6e0b4c3f5e49eb7e4c6bcec3302cd893a"
+        },
+        "run/architecture.json": {
+          "bytes": 2403,
+          "sha256": "8d60c36451050dee0ad66df7c81b0f419b24f5c0e88d2503c9aa98b0be48253d"
+        },
+        "run/member_000/model": {
+          "bytes": 135887,
+          "sha256": "f7a5243f4c6052cf92fa07ebc012fa46eebdd162c46979b0fd1252dae267dd5e"
+        }
+      },
+      "replay": {
+        "name": "cdlno_airfrans_full",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "chunk": 0,
+            "classname": "cdlno.airfrans.AirfRANSModel"
+          },
+          {
+            "chunk": 0,
+            "classname": "cdlno.airfrans.AirfRANSModel"
+          },
+          {
+            "chunk": 1,
+            "classname": "cdlno.airfrans.AirfRANSModel"
+          },
+          {
+            "chunk": 1,
+            "classname": "cdlno.airfrans.AirfRANSModel"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": [
+          "no_sa",
+          "identity"
+        ]
+      }
+    },
+    {
+      "name": "cdlno_airfrans_no_sa",
+      "task": "airfrans",
+      "family": "CDLNO",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "no_sa"
+      },
+      "device": "cpu",
+      "parameters": 9668,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfrans_no_sa/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 192645,
+          "sha256": "e188ed2359aa8e68320650b1d0386a16159963bcea45fce99fc5f1019408529e"
+        },
+        "metadata.json": {
+          "bytes": 41315,
+          "sha256": "a734659431fca549930ec7ae11e05b12951da73163a47fc93328eeb2b0b3b416"
+        },
+        "run/CDLNO": {
+          "bytes": 125903,
+          "sha256": "f8fe5dce641e4f322177baca24355afa9d24dc90c3d4a99810ec2d694b2404a2"
+        },
+        "run/architecture.json": {
+          "bytes": 2406,
+          "sha256": "0e5ca0f9a15be68efe850ca052105d606389c44f7f29b4f4ae7f4c443dd0cf37"
+        },
+        "run/member_000/model": {
+          "bytes": 125903,
+          "sha256": "dd8d44c79bc002fd99d3a7f4533f8e438aa688a5efc19a2938bde02624d29c9b"
+        }
+      },
+      "replay": {
+        "name": "cdlno_airfrans_no_sa",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "chunk": 0,
+            "classname": "cdlno.airfrans.AirfRANSModel"
+          },
+          {
+            "chunk": 0,
+            "classname": "cdlno.airfrans.AirfRANSModel"
+          },
+          {
+            "chunk": 1,
+            "classname": "cdlno.airfrans.AirfRANSModel"
+          },
+          {
+            "chunk": 1,
+            "classname": "cdlno.airfrans.AirfRANSModel"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": [
+          "full",
+          "identity"
+        ]
+      }
+    },
+    {
+      "name": "cdlno_airfrans_identity",
+      "task": "airfrans",
+      "family": "CDLNO",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "identity"
+      },
+      "device": "cpu",
+      "parameters": 8516,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfrans_identity/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 171349,
+          "sha256": "8a3dcde7c128d409ea71f0e66ca6e9ab76667edbd4934bf48e93c0c030832308"
+        },
+        "metadata.json": {
+          "bytes": 37038,
+          "sha256": "89dff4e1229de5ae24df5a9e64bc08be3863f68b1bd9c4592795a26767f45985"
+        },
+        "run/CDLNO": {
+          "bytes": 113183,
+          "sha256": "68f9b13bf7267cf312d90be62456f3864f76589590285f3469c23adcf887c69b"
+        },
+        "run/architecture.json": {
+          "bytes": 2415,
+          "sha256": "465f9a677f98d9f1f9340abb4cb8d174894a9fee78483a9f8d2ac9b08bc0766c"
+        },
+        "run/member_000/model": {
+          "bytes": 113183,
+          "sha256": "00eeb3417cbf33ad4ba8a02dce114819fd5f3d93e1c2a6e4dfd682bea1518ff9"
+        }
+      },
+      "replay": {
+        "name": "cdlno_airfrans_identity",
+        "status": "passed",
+        "device": "cpu",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "chunk": 0,
+            "classname": "cdlno.airfrans.AirfRANSModel"
+          },
+          {
+            "chunk": 0,
+            "classname": "cdlno.airfrans.AirfRANSModel"
+          },
+          {
+            "chunk": 1,
+            "classname": "cdlno.airfrans.AirfRANSModel"
+          },
+          {
+            "chunk": 1,
+            "classname": "cdlno.airfrans.AirfRANSModel"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": [
+          "full",
+          "no_sa"
+        ]
+      }
+    },
+    {
+      "name": "transolver_airfrans_original",
+      "task": "airfrans",
+      "family": "Transolver",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 7,
+        "fun_dim": 0,
+        "out_dim": 4,
+        "ref": 8,
+        "unified_pos": true
+      },
+      "device": "cuda:0",
+      "parameters": 8372,
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_airfrans_original/metadata.json",
+      "artifacts": {
+        "fixture.pt": {
+          "bytes": 172609,
+          "sha256": "ea126feac026ec3ec6835290cc89232b0d503d7053f5fbe64a779b697067b1d3"
+        },
+        "metadata.json": {
+          "bytes": 41768,
+          "sha256": "fefc5fc4b5b6225e3962fa808838e2be8350f77ceb2871b0573636cb92c5061a"
+        },
+        "model_list.pt": {
+          "bytes": 142106,
+          "sha256": "800aca0126f252c0d2849327bb5b2a3e659691aacb0aa63e4498311ce0658671"
+        },
+        "model_object.pt": {
+          "bytes": 142520,
+          "sha256": "427efb492a664d8ce686c48cec3c4f7da74d429e748dc51019e57b7adcba3317"
+        }
+      },
+      "replay": {
+        "name": "transolver_airfrans_original",
+        "status": "passed",
+        "device": "cuda:0",
+        "tolerance": {
+          "atol": 0.0,
+          "rtol": 0.0
+        },
+        "max_output_abs": 0.0,
+        "input_and_parameter_gradients": "compared including None",
+        "roundtrips": [
+          {
+            "kind": "trusted original whole object"
+          },
+          {
+            "kind": "trusted original list"
+          }
+        ],
+        "explicit_mode_conflicts_rejected": []
+      }
+    }
+  ],
+  "origin": "Current accepted working model fixtures captured before K1; not trained checkpoints.",
+  "historical_pre_A1_artifacts": {
+    "path": "/home/hwz/CDLNO-artifacts/front-a1-before-_okzkms0",
+    "present": true,
+    "K0_replayed": false
+  },
+  "limits": [
+    "No real data/training/accuracy evidence. Diagnostic squared-output gradients, no optimizer steps.",
+    "Same-device same-backend replay uses exact zero tolerance. Cross chunk uses atol=1e-5/rtol=3e-4.",
+    "These artifacts do not prove every historical checkpoint is compatible. Preserve actual pre-A1 fixtures separately."
+  ]
+}

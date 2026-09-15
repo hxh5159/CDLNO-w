@@ -1,5 +1,11 @@
 # CDLNO 实施状态
 
+## 2026-09-15：临时插入的 Darcy 消融启动脚本请求完成
+
+新增 `tran_evaluate/ablation/no_sa/` 与 `identity/`，各含 train/eval/train_eval 三个薄包装。只向已有 Darcy 启动器传入对应 front_latent_mode，余参最后覆盖；F2/L8/P6、entry CDPA、Darcy 模型/训练预设与 `output/darcy/<timestamp>` 规则保持。组合脚本复用现有训练成功才评估及同目录逻辑；独立 eval 须指定已有目录。新增说明与 [实际核查结果](../tran_evaluate/ablation/verification.json)。
+
+验证：六个脚本 `bash -n` 通过；10次 `--dry-run` 产生16条命令，经原 Darcy parser AST及安全 `cdlno_entry.parse_args` 校验通过（eval parser仅使用临时架构sidecar）；两次缺少eval目录负向检查通过。外部含空格cwd、用户余参覆盖、两步同目录均核对。没有导入exp或运行模型/数据/训练/GPU；本次不作新的权重加载或模型验收声明。现有模型、配置、数据、训练/评估入口、依赖及旧启动器未改；既有K0文档与夹具保留，不推进K1。新增6个shell及README/核查JSON，现有文档仅增量记录。
+
 ## 2026-09-15：统一实验目录与记录完成，待审查
 
 用户批准的新范围已完成：八任务CDLNO默认 `output/<dataset>/<UTC timestamp>`，有效参数解析后/数据加载前预留目录写config/log；真实model后补total/trainable/architecture/adapter/optimizer和实际协议。训练history/results、每次eval独立子目录+根索引；old runs显式加载、sidecar/config不改写，strict和原checkpoint格式不变。全模式适用，模型/数据/优化/时间/指标计算冻结。见 [报告](CDLNO_EXPERIMENT_OUTPUTS_REPORT.md)、[命令](CDLNO_EXPERIMENT_OUTPUTS.md)、[证据](output_audit/)。

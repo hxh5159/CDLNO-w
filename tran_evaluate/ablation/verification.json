@@ -1,0 +1,164 @@
+{
+  "status": "passed",
+  "shell_syntax_files": 6,
+  "dry_run_invocations": 10,
+  "generated_commands_and_real_parser_checks": 16,
+  "missing_eval_run_rejections": 2,
+  "caller_directory": "temporary directory with spaces, outside repository",
+  "configured_python": "/nonexistent/no-python-must-run (not executed by dry-run)",
+  "validation_python": "3.13.9",
+  "validation": "bash -n; shell --dry-run; AST-only original parser + safe cdlno_entry.parse_args; temporary architecture sidecars for eval parser only",
+  "data_model_training_gpu_checkpoint_execution": "not run: launcher-only change",
+  "cases": [
+    {
+      "directory_mode": "no_sa",
+      "script": "train",
+      "extra": [],
+      "effective_mode": "no_sa",
+      "actions": [
+        0
+      ],
+      "same_run": true,
+      "status": "passed"
+    },
+    {
+      "directory_mode": "no_sa",
+      "script": "eval",
+      "extra": [
+        "--cdlno-run-dir",
+        "existing run"
+      ],
+      "effective_mode": "no_sa",
+      "actions": [
+        1
+      ],
+      "same_run": true,
+      "status": "passed"
+    },
+    {
+      "directory_mode": "no_sa",
+      "script": "train_eval",
+      "extra": [],
+      "effective_mode": "no_sa",
+      "actions": [
+        0,
+        1
+      ],
+      "same_run": true,
+      "status": "passed"
+    },
+    {
+      "directory_mode": "no_sa",
+      "script": "train_eval",
+      "extra": [
+        "--gpu",
+        "2",
+        "--n-layers=8",
+        "--front-blocks",
+        "3",
+        "--cdpa-mode=off",
+        "--data_path",
+        "data with spaces",
+        "--cdlno-run-dir",
+        "custom run"
+      ],
+      "effective_mode": "no_sa",
+      "actions": [
+        0,
+        1
+      ],
+      "same_run": true,
+      "status": "passed"
+    },
+    {
+      "directory_mode": "no_sa",
+      "script": "train_eval",
+      "extra": [
+        "--front-latent-mode",
+        "identity"
+      ],
+      "effective_mode": "identity",
+      "actions": [
+        0,
+        1
+      ],
+      "same_run": true,
+      "status": "passed"
+    },
+    {
+      "directory_mode": "identity",
+      "script": "train",
+      "extra": [],
+      "effective_mode": "identity",
+      "actions": [
+        0
+      ],
+      "same_run": true,
+      "status": "passed"
+    },
+    {
+      "directory_mode": "identity",
+      "script": "eval",
+      "extra": [
+        "--cdlno-run-dir",
+        "existing run"
+      ],
+      "effective_mode": "identity",
+      "actions": [
+        1
+      ],
+      "same_run": true,
+      "status": "passed"
+    },
+    {
+      "directory_mode": "identity",
+      "script": "train_eval",
+      "extra": [],
+      "effective_mode": "identity",
+      "actions": [
+        0,
+        1
+      ],
+      "same_run": true,
+      "status": "passed"
+    },
+    {
+      "directory_mode": "identity",
+      "script": "train_eval",
+      "extra": [
+        "--gpu",
+        "2",
+        "--n-layers=8",
+        "--front-blocks",
+        "3",
+        "--cdpa-mode=off",
+        "--data_path",
+        "data with spaces",
+        "--cdlno-run-dir",
+        "custom run"
+      ],
+      "effective_mode": "identity",
+      "actions": [
+        0,
+        1
+      ],
+      "same_run": true,
+      "status": "passed"
+    },
+    {
+      "directory_mode": "identity",
+      "script": "train_eval",
+      "extra": [
+        "--front-latent-mode",
+        "no_sa"
+      ],
+      "effective_mode": "no_sa",
+      "actions": [
+        0,
+        1
+      ],
+      "same_run": true,
+      "status": "passed"
+    }
+  ]
+}

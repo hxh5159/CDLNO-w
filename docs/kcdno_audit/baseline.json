@@ -1,0 +1,1628 @@
+{
+  "baseline": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve",
+  "head": "9f72946e0adbfe27ba0b75b1646fa697ae16d3df",
+  "branch": "main",
+  "origin": "https://github.com/hxh5159/CDLNO-w.git",
+  "start_status": "clean (recorded before any K0 additions)",
+  "snapshot_status": "?? docs/KCDNO_IMPLEMENTATION_STATUS.md\n?? docs/KCDNO_REFERENCE_AUDIT.md\n?? docs/kcdno_audit/fixture_index.json\n?? docs/kcdno_audit/fixtures/cdlno_airfoil_full/io.pt\n?? docs/kcdno_audit/fixtures/cdlno_airfoil_full/state_dict.pt\n?? docs/kcdno_audit/fixtures/cdlno_airfoil_identity/io.pt\n?? docs/kcdno_audit/fixtures/cdlno_airfoil_identity/state_dict.pt\n?? docs/kcdno_audit/fixtures/cdlno_airfoil_no_sa/io.pt\n?? docs/kcdno_audit/fixtures/cdlno_airfoil_no_sa/state_dict.pt\n?? docs/kcdno_audit/fixtures/cdlno_core_full/io.pt\n?? docs/kcdno_audit/fixtures/cdlno_core_full/state_dict.pt\n?? docs/kcdno_audit/fixtures/cdlno_core_identity/io.pt\n?? docs/kcdno_audit/fixtures/cdlno_core_identity/state_dict.pt\n?? docs/kcdno_audit/fixtures/cdlno_core_no_sa/io.pt\n?? docs/kcdno_audit/fixtures/cdlno_core_no_sa/state_dict.pt\n?? docs/kcdno_audit/fixtures/cdlno_darcy_full/io.pt\n?? docs/kcdno_audit/fixtures/cdlno_darcy_full/state_dict.pt\n?? docs/kcdno_audit/fixtures/cdlno_darcy_identity/io.pt\n?? docs/kcdno_audit/fixtures/cdlno_darcy_identity/state_dict.pt\n?? docs/kcdno_audit/fixtures/cdlno_darcy_no_sa/io.pt\n?? docs/kcdno_audit/fixtures/cdlno_darcy_no_sa/state_dict.pt\n?? docs/kcdno_audit/fixtures/cdlno_elasticity_full/io.pt\n?? docs/kcdno_audit/fixtures/cdlno_elasticity_full/state_dict.pt\n?? docs/kcdno_audit/fixtures/cdlno_elasticity_identity/io.pt\n?? docs/kcdno_audit/fixtures/cdlno_elasticity_identity/state_dict.pt\n?? docs/kcdno_audit/fixtures/cdlno_elasticity_no_sa/io.pt\n?? docs/kcdno_audit/fixtures/cdlno_elasticity_no_sa/state_dict.pt\n?? docs/kcdno_audit/fixtures/cdlno_ns_full/io.pt\n?? docs/kcdno_audit/fixtures/cdlno_ns_full/state_dict.pt\n?? docs/kcdno_audit/fixtures/cdlno_ns_identity/io.pt\n?? docs/kcdno_audit/fixtures/cdlno_ns_identity/state_dict.pt\n?? docs/kcdno_audit/fixtures/cdlno_ns_no_sa/io.pt\n?? docs/kcdno_audit/fixtures/cdlno_ns_no_sa/state_dict.pt\n?? docs/kcdno_audit/fixtures/cdlno_pipe_full/io.pt\n?? docs/kcdno_audit/fixtures/cdlno_pipe_full/state_dict.pt\n?? docs/kcdno_audit/fixtures/cdlno_pipe_identity/io.pt\n?? docs/kcdno_audit/fixtures/cdlno_pipe_identity/state_dict.pt\n?? docs/kcdno_audit/fixtures/cdlno_pipe_no_sa/io.pt\n?? docs/kcdno_audit/fixtures/cdlno_pipe_no_sa/state_dict.pt\n?? docs/kcdno_audit/fixtures/cdlno_plasticity_full/io.pt\n?? docs/kcdno_audit/fixtures/cdlno_plasticity_full/state_dict.pt\n?? docs/kcdno_audit/fixtures/cdlno_plasticity_identity/io.pt\n?? docs/kcdno_audit/fixtures/cdlno_plasticity_identity/state_dict.pt\n?? docs/kcdno_audit/fixtures/cdlno_plasticity_no_sa/io.pt\n?? docs/kcdno_audit/fixtures/cdlno_plasticity_no_sa/state_dict.pt\n?? docs/kcdno_audit/fixtures/manifest.json\n?? docs/kcdno_audit/fixtures/transolver_irregular/io.pt\n?? docs/kcdno_audit/fixtures/transolver_irregular/state_dict.pt\n?? docs/kcdno_audit/make_regression_fixtures.py\n",
+  "tracked_files": {
+    ".gitignore": {
+      "sha256": "177afeabbbade7e4fcaa624dbf16ce988f59e7a84262bc12b89918abdf7b9b02",
+      "bytes": 3148
+    },
+    "AGENTS.md": {
+      "sha256": "dd98cf6da03211ca75fea6c88320e075c79c1b175b41c04b23c5893993cf9d82",
+      "bytes": 56272
+    },
+    "Airfoil-Design-AirfRANS/LICENSE": {
+      "sha256": "05ba154a27eeb81940385d278f8b7cd6f37729df050a3a9803113f686fbd40d4",
+      "bytes": 25275
+    },
+    "Airfoil-Design-AirfRANS/README.md": {
+      "sha256": "aca7176a916b7cf765f6165e2516822f018cb951f46d24d66b3b927460224f57",
+      "bytes": 3552
+    },
+    "Airfoil-Design-AirfRANS/cdlno_entry.py": {
+      "sha256": "92ee65ae80b1a7567691b1b80fecf8eb0661ddea8a352c9502378cb99e0efabd",
+      "bytes": 9854
+    },
+    "Airfoil-Design-AirfRANS/configs/CDLNO/airfrans.json": {
+      "sha256": "e16fd7676802043549372a1de71926bd1f032586e04fc45d4e56e83b692c5401",
+      "bytes": 532
+    },
+    "Airfoil-Design-AirfRANS/dataset/dataset.py": {
+      "sha256": "b38770f711cabb7c8cfeb23100e14eb07dd3119c2a5ccc685ec559f00b3c78ca",
+      "bytes": 13635
+    },
+    "Airfoil-Design-AirfRANS/dataset/dataset_stats.ipynb": {
+      "sha256": "f0c015015f9275ff3709868c5c1ac573a19b712137b1c753442ff1fa78ace161",
+      "bytes": 3205
+    },
+    "Airfoil-Design-AirfRANS/fig/results.png": {
+      "sha256": "d8d92e76d8bab5782f31d8c71477e0273e2070f2b1b140ddb918b3b0a8dec5da",
+      "bytes": 353866
+    },
+    "Airfoil-Design-AirfRANS/fig/task.png": {
+      "sha256": "acecd3496d81f26fdaf0c043814ce15b18111a5aeac450748605e6b5056603cf",
+      "bytes": 531193
+    },
+    "Airfoil-Design-AirfRANS/main.py": {
+      "sha256": "6ed2a518716d51f5057de9adf588a4fe8a664b7165d12cf66c8a7b706b60d45d",
+      "bytes": 6675
+    },
+    "Airfoil-Design-AirfRANS/main_evaluation.py": {
+      "sha256": "5ba55884ad523b41bc6e15b5b6df33b6f05728d6234bca53903b6bbd634b2866",
+      "bytes": 3844
+    },
+    "Airfoil-Design-AirfRANS/models/CDLNO.py": {
+      "sha256": "d5c16ef4cd152c3a11c0d7362f5bf88eeeab3a7f3f17ed7566fce05183a978ab",
+      "bytes": 135
+    },
+    "Airfoil-Design-AirfRANS/models/GUNet.py": {
+      "sha256": "6218a72d071b265140371dac8d2586d0d10edf9803cecd16e1a6ddb2f385963c",
+      "bytes": 7572
+    },
+    "Airfoil-Design-AirfRANS/models/GraphSAGE.py": {
+      "sha256": "562738fafff0b9cf5cd3d90577197e243961b01742626debb19c0a14eac3db65",
+      "bytes": 1792
+    },
+    "Airfoil-Design-AirfRANS/models/MLP.py": {
+      "sha256": "7c34b97acaf3d26bd04570abf93b4a1291d6ca08fda1b2a749fc9180b0d7c72f",
+      "bytes": 2246
+    },
+    "Airfoil-Design-AirfRANS/models/NN.py": {
+      "sha256": "5dcd2b3ee2f192a7891c35ffef6fbe74aa2d509a08432577a95bdf0c57ea9345",
+      "bytes": 742
+    },
+    "Airfoil-Design-AirfRANS/models/PointNet.py": {
+      "sha256": "825750d49f8dbad9e3d7cfa3c0f45bcdf19645c9c2696ae8fc3843147cd25313",
+      "bytes": 1487
+    },
+    "Airfoil-Design-AirfRANS/models/Transolver.py": {
+      "sha256": "1d0c1b932411ac408d8d00ca047d7f875c3176e7b001db802d30c065a7416d74",
+      "bytes": 8301
+    },
+    "Airfoil-Design-AirfRANS/params.yaml": {
+      "sha256": "8658fb7162061c5e9f41618e17eeafeec6031d6b61e78d2676a7764e2cf69ef5",
+      "bytes": 1180
+    },
+    "Airfoil-Design-AirfRANS/requirements.txt": {
+      "sha256": "5453b38b9bb483de4c1a7e17f8b54c80d362bb7d246ec5429ad609aef3952576",
+      "bytes": 68
+    },
+    "Airfoil-Design-AirfRANS/scripts/CDLNO.sh": {
+      "sha256": "2b63bf44426f42ea1a384f710c6e9b7b85a23e3e68bb935611485192e49dcaff",
+      "bytes": 686
+    },
+    "Airfoil-Design-AirfRANS/scripts/CDLNO_Evaluation.sh": {
+      "sha256": "9dba0dd3ec7e4cfd70a0d8e92b220990a229c063307a85ba737290e226f8b949",
+      "bytes": 658
+    },
+    "Airfoil-Design-AirfRANS/scripts/Evaluation.sh": {
+      "sha256": "e6b1145f678f58d346209f091b89c82e573b9724f19db71a6881729b163c2d27",
+      "bytes": 78
+    },
+    "Airfoil-Design-AirfRANS/scripts/GraphSAGE.sh": {
+      "sha256": "e8892e4a82e62dde5767b68af89db6a2d38de55dc2d32c95ca0ca49397d760e0",
+      "bytes": 110
+    },
+    "Airfoil-Design-AirfRANS/scripts/Transolver.sh": {
+      "sha256": "80175ed6f8c66ee47e12046c86df06943e1fa533efb0b77cf8a7bd73a907f430",
+      "bytes": 111
+    },
+    "Airfoil-Design-AirfRANS/train.py": {
+      "sha256": "f8898d30f93282d1981eef6a24c55bfdaf8665c6a3e68304bf6d3ca2a45499b6",
+      "bytes": 17018
+    },
+    "Airfoil-Design-AirfRANS/utils/metrics.py": {
+      "sha256": "ee53a3da2a29da9df0063f9f02da0efb0a7f35833b08ceb02a5908fbb3e7e39d",
+      "bytes": 19029
+    },
+    "Airfoil-Design-AirfRANS/utils/metrics_NACA.py": {
+      "sha256": "61bbb5968a64cc28ca090245f3bec1d5d176e5d314c887152db7ae86a6184cd3",
+      "bytes": 7834
+    },
+    "Airfoil-Design-AirfRANS/utils/naca_generator.py": {
+      "sha256": "303e0ed4761b959292078c0287eef64a6b65ac91671b871e7008b737e01e3b6e",
+      "bytes": 4076
+    },
+    "Airfoil-Design-AirfRANS/utils/reorganize.py": {
+      "sha256": "6cdd18acb5370b907e2a18d9eda7f7bc0bd85cce9316167000d888f30dc36605",
+      "bytes": 442
+    },
+    "Car-Design-ShapeNetCar/README.md": {
+      "sha256": "3dc841d84472d817aba0c24b74b128156ff4163dc3b4f94bf827a5a8093ab158",
+      "bytes": 3735
+    },
+    "Car-Design-ShapeNetCar/configs/CDLNO/shapenet_car.json": {
+      "sha256": "a5e6910dd3445b94b1b5e4e3165c3cf21046c8ad71333c914626e0decd5a483e",
+      "bytes": 467
+    },
+    "Car-Design-ShapeNetCar/dataset/dataset.py": {
+      "sha256": "9f3cb4f16655cc59a7b8134e69aba88bd6bc5434a8093d4edce14bcb1878ea78",
+      "bytes": 16643
+    },
+    "Car-Design-ShapeNetCar/dataset/load_dataset.py": {
+      "sha256": "e4071f35ef2985f193f00609ba174e8b8dba990fd778a640825aa061758ff410",
+      "bytes": 2159
+    },
+    "Car-Design-ShapeNetCar/fig/car_slice_surf.png": {
+      "sha256": "058d1ece16806589201e6011538ea6e4bd2bab25780559c076d302ed8f355406",
+      "bytes": 840428
+    },
+    "Car-Design-ShapeNetCar/fig/case_study.png": {
+      "sha256": "fca3097b54fff66100e3eeeb34cc78264847d320ef1412e6c7f88f50c93ed130",
+      "bytes": 273342
+    },
+    "Car-Design-ShapeNetCar/fig/results.png": {
+      "sha256": "a5a25e62ec1a26d31377887d7e05cc5a2329fd454611ac3a36bc409dc1803e3b",
+      "bytes": 297941
+    },
+    "Car-Design-ShapeNetCar/fig/task.png": {
+      "sha256": "c578fbc167a8da02b5b89ef93c717d59f64507bdc1c5c66cf5b63014988c90c9",
+      "bytes": 292640
+    },
+    "Car-Design-ShapeNetCar/main.py": {
+      "sha256": "c7c4487007a49dacdad4d3a98768ed4d19d62c66262365aad71c93a8cc63d4e4",
+      "bytes": 3045
+    },
+    "Car-Design-ShapeNetCar/main_evaluation.py": {
+      "sha256": "288344925402c86c14734b405a7797142b26154f4847ca2ccaf0ceb73f96b89d",
+      "bytes": 5955
+    },
+    "Car-Design-ShapeNetCar/models/CDLNO.py": {
+      "sha256": "3ac12891e508b4e47ecfd8f35d0169981e88ec9d8fb986460d71cda9dcbaad5f",
+      "bytes": 4754
+    },
+    "Car-Design-ShapeNetCar/models/Transolver.py": {
+      "sha256": "9dbea9edae30b0d8484a458b4bdb9b33427e9fda815c8011d64f19fb50e14ffa",
+      "bytes": 8465
+    },
+    "Car-Design-ShapeNetCar/models/cdlno_run.py": {
+      "sha256": "14054efc6bac0da83933b5dbde8e0127fae9860de4f2a7dca3943645f8320346",
+      "bytes": 9167
+    },
+    "Car-Design-ShapeNetCar/requirements.txt": {
+      "sha256": "d904801a2579545e7d766b4c709c2c8a57bbb888303b4aa7eadec0b7709ff9d6",
+      "bytes": 51
+    },
+    "Car-Design-ShapeNetCar/scripts/CDLNO.sh": {
+      "sha256": "a0906cdb2da18fca7b83599c8a6374c05c5eb5a6d396863d140f49669c8ac30e",
+      "bytes": 531
+    },
+    "Car-Design-ShapeNetCar/scripts/CDLNO_Evaluation.sh": {
+      "sha256": "c0778bb6eeef6053135e17d7dddb9fc449d35c3ccdb8fbb4392cab62152cf3ba",
+      "bytes": 462
+    },
+    "Car-Design-ShapeNetCar/scripts/Evaluation.sh": {
+      "sha256": "962b0741edbd6f206b864e88a5c8bfe2215f1060361c589e4aa3bdb5acb60a5a",
+      "bytes": 193
+    },
+    "Car-Design-ShapeNetCar/scripts/Transolver.sh": {
+      "sha256": "eb32cec4c8aa5d2bce3181cd80dc923da27fca40cc8785f510201c859f903402",
+      "bytes": 183
+    },
+    "Car-Design-ShapeNetCar/train.py": {
+      "sha256": "a53b992a06be3e32bff84689baeed2b808131fdd3d831f6a96ebad3dee6c19f8",
+      "bytes": 5020
+    },
+    "Car-Design-ShapeNetCar/utils/drag_coefficient.py": {
+      "sha256": "3fb491b272c6fac9a07c1f4bc864a5db1cc8afef861364df9a1b2496e45386f2",
+      "bytes": 8737
+    },
+    "LICENSE": {
+      "sha256": "2c919cd03fa823bf7eefc00a957ff8324c865cd22aa5285e563dc4b558084f25",
+      "bytes": 1084
+    },
+    "PDE-Solving-StandardBenchmark/README.md": {
+      "sha256": "3bc13ffa5598b1fe5594e9b8194ea0966c1bc196118160e9c3c2a97dad244014",
+      "bytes": 4437
+    },
+    "PDE-Solving-StandardBenchmark/cdlno_entry.py": {
+      "sha256": "c0d916685b6670d495d4ce91b123c28137d0feb03390730f17cd5f980fc4e618",
+      "bytes": 7257
+    },
+    "PDE-Solving-StandardBenchmark/configs/CDLNO/airfoil.json": {
+      "sha256": "b772ba436d8a5d04c0f6874d8095f8a4ac926b4c24268699beeea0267112aba6",
+      "bytes": 468
+    },
+    "PDE-Solving-StandardBenchmark/configs/CDLNO/darcy.json": {
+      "sha256": "fdceb009139a00ca6d487e189e0197b8b5fe03e70055ed4834cede0bcf717c22",
+      "bytes": 466
+    },
+    "PDE-Solving-StandardBenchmark/configs/CDLNO/elasticity.json": {
+      "sha256": "a8f601e059e3d871cbdf9aa8aa2696e08fe870d1a71cd4c34ec5120363161a8a",
+      "bytes": 471
+    },
+    "PDE-Solving-StandardBenchmark/configs/CDLNO/ns.json": {
+      "sha256": "ae1bb8769a99ed3474bfb262861e718664934a7a961e7302adb53b044efa962b",
+      "bytes": 464
+    },
+    "PDE-Solving-StandardBenchmark/configs/CDLNO/pipe.json": {
+      "sha256": "d74529c26972f49db5525fd7dea77109b57569642567ccf0d49e10b6d23d0569",
+      "bytes": 465
+    },
+    "PDE-Solving-StandardBenchmark/configs/CDLNO/plasticity.json": {
+      "sha256": "d839c722b33d0b1c080d7533d6dcecd603f530ab75004ce0410a93080806346c",
+      "bytes": 471
+    },
+    "PDE-Solving-StandardBenchmark/exp_airfoil.py": {
+      "sha256": "42dfe674425dbc075129e537931eb681bbb663afcce7df5a805c837b650b1c80",
+      "bytes": 12092
+    },
+    "PDE-Solving-StandardBenchmark/exp_darcy.py": {
+      "sha256": "b572bc4fdfd31748dd3002ba897e2a2e7313758cbce6eb263ea38f0b7fe52e1a",
+      "bytes": 13214
+    },
+    "PDE-Solving-StandardBenchmark/exp_elas.py": {
+      "sha256": "b148cb6a32de461a6313b6485a1e5edce6327fb4b85d3d003f55d70061975651",
+      "bytes": 10460
+    },
+    "PDE-Solving-StandardBenchmark/exp_ns.py": {
+      "sha256": "6073dcca2cc2764c0d97ff54cbd43e4e0072609b8ae588555aace5b3b76b9054",
+      "bytes": 12548
+    },
+    "PDE-Solving-StandardBenchmark/exp_pipe.py": {
+      "sha256": "e838f07aba668032eded03ce0b5204122107877b671130af0def080bc627b747",
+      "bytes": 12682
+    },
+    "PDE-Solving-StandardBenchmark/exp_plas.py": {
+      "sha256": "145f6eae3a2bf7d4c82f6e73ec69173acf121dc5442f20b63c70ec8ae7544ec5",
+      "bytes": 14286
+    },
+    "PDE-Solving-StandardBenchmark/fig/scalibility.png": {
+      "sha256": "e38375549329cd319604376b1f3701c8d1852e5439df7343c485bd7ed32bdb88",
+      "bytes": 180266
+    },
+    "PDE-Solving-StandardBenchmark/fig/showcase.png": {
+      "sha256": "c5c2e2c7888c7777e522af0253d81544bacd67b735e96112269a90cb7418d1af",
+      "bytes": 1585299
+    },
+    "PDE-Solving-StandardBenchmark/fig/standard_benchmark.png": {
+      "sha256": "ce962239b90e637be97def92b509e26d39e92283ae4bb6019428ba61c4fe9cbb",
+      "bytes": 609941
+    },
+    "PDE-Solving-StandardBenchmark/model/CDLNO_Irregular_Mesh.py": {
+      "sha256": "962bf6f9f475ba2ccc56993e19c160be983eefdd3928869d0dcba70fe1b87809",
+      "bytes": 178
+    },
+    "PDE-Solving-StandardBenchmark/model/CDLNO_Structured_Mesh_2D.py": {
+      "sha256": "7a151a1ccba8cb129b858d550f129b3a2112462cb72d72b1bac63a8af258d876",
+      "bytes": 193
+    },
+    "PDE-Solving-StandardBenchmark/model/CDLNO_Temporal_Structured_Mesh_2D.py": {
+      "sha256": "89d9a6eb45098f166f1f5cc462131b33841c017cd87076637c38a4cab524bd9e",
+      "bytes": 172
+    },
+    "PDE-Solving-StandardBenchmark/model/Embedding.py": {
+      "sha256": "1371e3c234d2d29be783ee817ecc7e65e8e0b36024b95b6c3c256b2054a9720d",
+      "bytes": 2938
+    },
+    "PDE-Solving-StandardBenchmark/model/Physics_Attention.py": {
+      "sha256": "4fc710f6f96788fb59cb19fab8d64873d3d16e9e182f12a544d451c74c548cc7",
+      "bytes": 7989
+    },
+    "PDE-Solving-StandardBenchmark/model/Transolver_Irregular_Mesh.py": {
+      "sha256": "5259759f7ecc6a954c8442ac8359990b9f242f1437c452c69e5e0f03549b5311",
+      "bytes": 6096
+    },
+    "PDE-Solving-StandardBenchmark/model/Transolver_Structured_Mesh_2D.py": {
+      "sha256": "d4b0db8a52c26ba6433f45a232947b380dfbaa4a31eac413a5e03fbef151acfc",
+      "bytes": 6828
+    },
+    "PDE-Solving-StandardBenchmark/model/Transolver_Structured_Mesh_3D.py": {
+      "sha256": "8422abe388aab493a3d7673184bf9c59c5b49019d462631d38473f7cd848f314",
+      "bytes": 7768
+    },
+    "PDE-Solving-StandardBenchmark/model_dict.py": {
+      "sha256": "00807561c54ea2eb74a1e09f2413510766e335b1eda03cc026f810d678726531",
+      "bytes": 1044
+    },
+    "PDE-Solving-StandardBenchmark/requirements.txt": {
+      "sha256": "822f7a8bd6676370c74598f46c6ccdf554ab835bd50dba3232a915be6c5bf645",
+      "bytes": 75
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Airfoil.sh": {
+      "sha256": "f305804fcd736a15902223464db24af1d34a459a6ac0d359b103ca066649ebdc",
+      "bytes": 653
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Airfoil_Eval.sh": {
+      "sha256": "daa0f793f1b0bef25fe3fef4781c22f324641a6e2e28f9401343de2b6a532a53",
+      "bytes": 653
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Darcy.sh": {
+      "sha256": "1350efb64d7bac0c407a41d49c110fbc7c14eb9494a5d943d29a72cc6f384e81",
+      "bytes": 648
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Darcy_Eval.sh": {
+      "sha256": "b703989a4d5e6a795d131ad3017bb983736b2d1ce1e56bdc16161f870ad101aa",
+      "bytes": 648
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Elas.sh": {
+      "sha256": "d91d2486113fd52031f759305478b0d3f342b34cb00565a67fc070dd2df762ad",
+      "bytes": 632
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Elas_Eval.sh": {
+      "sha256": "25ba4d871f82f997428084bd3dcb53a76e62674bff00f722caeababca7d62e9f",
+      "bytes": 632
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_NS.sh": {
+      "sha256": "cc8e8e989c922dcad9c39597a9e608ae623d6b92b71c7c58cd9e084414f7d536",
+      "bytes": 509
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_NS_Eval.sh": {
+      "sha256": "f18dd5858df03d793de0a2e4c19f9e291c406d9d0403214a9d03269b31c9cba4",
+      "bytes": 509
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Pipe.sh": {
+      "sha256": "b63ae43947c9eabb8e5048247a2d6cf778bacf539739a00daf388df6fad13ea0",
+      "bytes": 650
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Pipe_Eval.sh": {
+      "sha256": "e91d15c580de9dcd81b1bd0236ff1b3a964ecabfa27b3a948fdfd13ef43def1b",
+      "bytes": 650
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Plasticity.sh": {
+      "sha256": "daf979ea820aece00ca33da78ef9fd0f85313aa1f8ea3a76d6bbd07b18971365",
+      "bytes": 516
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Plasticity_Eval.sh": {
+      "sha256": "ccf1d6d71bb9d5daaec4607832607d0c8998ab94bc8f569b80eac1bfbc67d1a5",
+      "bytes": 516
+    },
+    "PDE-Solving-StandardBenchmark/scripts/Transolver_Airfoil.sh": {
+      "sha256": "e7e32cb24fbbce134fc33e88a0a174046efd77e564b5e257d79b1b51578ed524",
+      "bytes": 258
+    },
+    "PDE-Solving-StandardBenchmark/scripts/Transolver_Darcy.sh": {
+      "sha256": "c0d6241baea9eb4dfb899559dd57f3006ae090384fe13ef4ac48e793f5681156",
+      "bytes": 269
+    },
+    "PDE-Solving-StandardBenchmark/scripts/Transolver_Elas.sh": {
+      "sha256": "997b306121224e8ad8b7c69287489c595e803dab993f1e8e24c24c88acf7b6b6",
+      "bytes": 248
+    },
+    "PDE-Solving-StandardBenchmark/scripts/Transolver_NS.sh": {
+      "sha256": "0c1758806c5a5c57f8cd013d5c5900ce17172cfaf3ef60c993e39a7c647460d6",
+      "bytes": 228
+    },
+    "PDE-Solving-StandardBenchmark/scripts/Transolver_Pipe.sh": {
+      "sha256": "6c2a3c99c475539d6b16443d06780882b2d6b1678549d14fedb0847cb6603b07",
+      "bytes": 270
+    },
+    "PDE-Solving-StandardBenchmark/scripts/Transolver_Plas.sh": {
+      "sha256": "011e25f5862199ff86536cef7cd0b4a1bf2c555ec933d2b0f0816ae732f0d337",
+      "bytes": 254
+    },
+    "PDE-Solving-StandardBenchmark/utils/normalizer.py": {
+      "sha256": "d8eea799d6bad852854e9e58fdb705676fd3d75ed77ce3e01bcdd45295689a7b",
+      "bytes": 3444
+    },
+    "PDE-Solving-StandardBenchmark/utils/testloss.py": {
+      "sha256": "1a520c0b9c27fe4eaba27e1c72217ba375c2749dee7c04cd6acffeb3d3303bff",
+      "bytes": 1293
+    },
+    "PLAN_CDLNO/CDPA_Transolver_Implementation_Plan_v1_2.md": {
+      "sha256": "768368989c12e31d8f38eb98863b62c5df691a3b03934b8cd11ca98aea527584",
+      "bytes": 76686
+    },
+    "PLAN_CDLNO/CDPA_v1_1/CDPA_Transolver_Implementation_Plan_v1_1.md": {
+      "sha256": "5bacfd1abf346a3ae3edf554726518c53446eb2c21b0997e4452dc2a2d12c718",
+      "bytes": 72435
+    },
+    "PLAN_CDLNO/CDPA_v1_1/README.md": {
+      "sha256": "3f2f2838345f2ee817a291cd4811c6844eec6a3bc22224342135f922d05029be",
+      "bytes": 4706
+    },
+    "PLAN_CDLNO/CDPA_v1_1/check_cdpa_environment.py": {
+      "sha256": "9c37bc6683f694698e98818d9aac54eea1fe49c586f07a8cc5e600eb544380a8",
+      "bytes": 18169
+    },
+    "PLAN_CDLNO/CDPA_v1_1/constraints-cdpa-cu128.txt": {
+      "sha256": "0f5f6b4d45d325ce1ad919dc5d5b1045055ee2e4b0cfde19633be1c5609a4f62",
+      "bytes": 841
+    },
+    "PLAN_CDLNO/CDPA_v1_1/requirements-cdpa-cu128.txt": {
+      "sha256": "5053dc13c39c382b552de4f9d45ffb102b3dcf8047f5a6f2b61099afced7c15c",
+      "bytes": 1999
+    },
+    "PLAN_CDLNO/\u6bd4\u8f83\u6a21\u578b\u67b6\u6784.pdf": {
+      "sha256": "bf6dd80940df07df92e160f6eac00a1a0634fe7e1e0c1e5e65295b8ce23b33de",
+      "bytes": 2630420
+    },
+    "PLAN_KCDNO/KCDNO_Model_Specification_v1.md": {
+      "sha256": "7efe5ac05b9cabe35734020adf004886acd7492b535a32bcad8f5201823a5e70",
+      "bytes": 30942
+    },
+    "Physics_Attention.py": {
+      "sha256": "f7feffd40e21863a2bd5809d9548a3417a7221a817f9e675ea969712c1d45a36",
+      "bytes": 7992
+    },
+    "README.md": {
+      "sha256": "5e32c016910e2f8a1aaa7c3925ced776fff470072c087b0f9166ad1078fa0092",
+      "bytes": 17483
+    },
+    "cdlno/__init__.py": {
+      "sha256": "aa7e4e1d615e8a74bcb17899b526e2cfe09f9080754b2e48dcf5507cdddb0d7e",
+      "bytes": 601
+    },
+    "cdlno/airfrans.py": {
+      "sha256": "2e8bca413035807277d60cea9c64cae28f2f8067cb82d5053b4d29f2334b62b5",
+      "bytes": 5358
+    },
+    "cdlno/cdpa.py": {
+      "sha256": "eb6f515508479066fe2a2086b70929b93914de218aaf55347ecaa71ebe05c4fa",
+      "bytes": 6225
+    },
+    "cdlno/checkpoint.py": {
+      "sha256": "6e50e2d9e0514ba5c6beb2a289447ba8a1b171f067e44f179ce4fd955651fad9",
+      "bytes": 6339
+    },
+    "cdlno/config.py": {
+      "sha256": "88da555b449857b96d08a721e38e229ef2274b63f66f00b9ec08dad4bb9db18d",
+      "bytes": 8581
+    },
+    "cdlno/core.py": {
+      "sha256": "0b8565fe66d90f1c2e77e2147dfeb5a249220d5fc51d9a6784d0eab4085a23be",
+      "bytes": 5154
+    },
+    "cdlno/experiment.py": {
+      "sha256": "d79d1e6f664d5443c7eb0501bdfaf3d25214420f89437dd9e3e24377159c7dca",
+      "bytes": 13213
+    },
+    "cdlno/modules.py": {
+      "sha256": "ceca8a7efd17e06693905030a7cec19f3c533c2770e6458852a93089dd2de99a",
+      "bytes": 18094
+    },
+    "cdlno/standard.py": {
+      "sha256": "ee9a547ded0fef9a46229d88c8c90ed0b86caf57a7c0387993d0a1471610f42e",
+      "bytes": 13092
+    },
+    "cdlno/training_observer.py": {
+      "sha256": "6241bbc5b9bf61813b8045e0cedb49441f518aac4b67cea0c40b39315fff7af5",
+      "bytes": 3600
+    },
+    "cdlno/training_state.py": {
+      "sha256": "4c6d83a7b5053889b5228ebfeef9149bf4d9966c5420ae0a0dc5847842496b63",
+      "bytes": 34305
+    },
+    "cdlno/visualization.py": {
+      "sha256": "bfebdd05728ae6aed41e03fcab9ee4d80e99305072db23c74750ba267cd5cb36",
+      "bytes": 9584
+    },
+    "docs/CDLNO_EXPERIMENT_OUTPUTS.md": {
+      "sha256": "e46501e0a254ff288a14b947627a6f8836c580abbf13b11f8f72f01a4d4df550",
+      "bytes": 8956
+    },
+    "docs/CDLNO_EXPERIMENT_OUTPUTS_REPORT.md": {
+      "sha256": "d1c41ea960c2caae88486149ed9262381b9653bae2a231e41dd72b3c3d1fbdab",
+      "bytes": 10295
+    },
+    "docs/CDLNO_FRONT_ABLATION.md": {
+      "sha256": "e0a5e87acdabf59ea88268217a7a86a851da90d1cb2b57759a59367a99dd0cbf",
+      "bytes": 40426
+    },
+    "docs/CDLNO_FRONT_ABLATION_A1.md": {
+      "sha256": "8da7600344e8a6f01ef97406eb4f87a8f9f6cacee38e9a0efc1e7c5074674f3a",
+      "bytes": 18796
+    },
+    "docs/CDLNO_FRONT_ABLATION_A2.md": {
+      "sha256": "a634a5e4680b49e77557ec6500787e7e8450e974fedd1c490ce56a552ff738de",
+      "bytes": 13949
+    },
+    "docs/CDLNO_FRONT_ABLATION_A2_COMMANDS.md": {
+      "sha256": "fab13ee4f49cb2b849c9ae214951f6b150ba97e5c976b106f35bdf4353c71d7f",
+      "bytes": 7072
+    },
+    "docs/CDLNO_FRONT_ABLATION_A3.md": {
+      "sha256": "89b17d9d47abeb07ec3fc3032c9e60ad54d5d540f8c0e85110a57d5edce8c9f8",
+      "bytes": 17291
+    },
+    "docs/CDLNO_FRONT_ABLATION_A4.md": {
+      "sha256": "00bdf27a2e0f2e9ca5998d2a273157a69ced2503cd23e3ecac968fd7b81af74f",
+      "bytes": 21219
+    },
+    "docs/CDLNO_IMPLEMENTATION_REPORT.md": {
+      "sha256": "ea19ed40b0eac53c77bf2602b0517bf73a2de489b8c8d5456bce71c8c849dd79",
+      "bytes": 21814
+    },
+    "docs/CDLNO_IMPLEMENTATION_STATUS.md": {
+      "sha256": "ca830490346e11e4cea670e2e2702d3d65b9d609b6a0a8861adbaa91800ed25f",
+      "bytes": 60523
+    },
+    "docs/CDLNO_PERFORMANCE_TOOLS.md": {
+      "sha256": "92128d0b1e677143351ddb79e4fc5436a38cc6e5016f17066b605ecbbb6c9d90",
+      "bytes": 10459
+    },
+    "docs/CDLNO_PHASE2_MODULES.md": {
+      "sha256": "78b6c802a420547c4f9815b40297e789858a76972ae3adddfbc3c3f0a26b28ce",
+      "bytes": 12424
+    },
+    "docs/CDLNO_PHASE3_CDPA.md": {
+      "sha256": "c6614180eaea3746102e31c37a877f581141fa147021dae3455e6cfe13174c63",
+      "bytes": 14437
+    },
+    "docs/CDLNO_PHASE4_CORE.md": {
+      "sha256": "0e52d708e1697ccfba6310d461776178a2552b4a6e21d26225e60f053e8b07dd",
+      "bytes": 22757
+    },
+    "docs/CDLNO_PHASE5_STATIC_TASKS.md": {
+      "sha256": "2918c2e471bbe1f17cb44dd9b08595f14a844cc2b9feaf7f10007a9b4b72ebbc",
+      "bytes": 15019
+    },
+    "docs/CDLNO_PHASE6_TEMPORAL_TASKS.md": {
+      "sha256": "01800f5e9f129ea8e2c9bb0a8248b9b8d2c42114162c6aaf71fd0f43652c18f6",
+      "bytes": 6276
+    },
+    "docs/CDLNO_PHASE7_SHAPENET_CAR.md": {
+      "sha256": "d7ce4a0c5899f47a11ac3357b1416f57ed981acd87865569284d36c34b3e12d0",
+      "bytes": 11009
+    },
+    "docs/CDLNO_PHASE8_AIRFRANS.md": {
+      "sha256": "ad34667ba3c4b982c3bf19e9e29bc6361a2704d7982f3247f18147018b9337b2",
+      "bytes": 11671
+    },
+    "docs/CDLNO_PHASE9_PERFORMANCE.md": {
+      "sha256": "ce3a330fd0ddb9c46aa128c4630c0082510f3d49687080cb2ffb1a3366a3d187",
+      "bytes": 15252
+    },
+    "docs/CDLNO_REFERENCE_AUDIT.md": {
+      "sha256": "384983c64fa431655304b40e40f75045da9a7d3a582961635a742d96150492e2",
+      "bytes": 26821
+    },
+    "docs/CDLNO_REMOTE_LAUNCHERS.md": {
+      "sha256": "dee7bd8210ef42657e4f807ec031400daa6a61509d575d2bdf16fb4a505ba9f8",
+      "bytes": 10224
+    },
+    "docs/CDLNO_REQUIREMENTS_MATRIX.md": {
+      "sha256": "3c0de9cd7b9fcb244bedb9f01ffae87392dc1f5e47d28755d984725d0dfa7740",
+      "bytes": 21948
+    },
+    "docs/CDLNO_SEQUENTIAL_LAUNCH.md": {
+      "sha256": "a47cd2ff33e1a1f725281435d56b734e749b5d379500660adfb1afcc032d180c",
+      "bytes": 4759
+    },
+    "docs/CDLNO_TASK_LAUNCHERS.md": {
+      "sha256": "ab70e3e2c753f9c1569ae70655264fd77d20a52e132e1409fb3d35d5fea36ede",
+      "bytes": 8450
+    },
+    "docs/CDLNO_THIRD_PARTY_NOTICES.md": {
+      "sha256": "9463334eb5fbcf60b675d327cda6a69be48a2cfbf7275910e847b870a7af3f48",
+      "bytes": 4826
+    },
+    "docs/CDLNO_TRAINING_LAUNCH_REVIEW.md": {
+      "sha256": "ef37436a5386217d6cc35798284b4a831bf0c1c586958c8ad95aa8189bd39a82",
+      "bytes": 11367
+    },
+    "docs/CDLNO_VISUALIZATION_RESUME_PLAN.md": {
+      "sha256": "57596b39080a6698a4ad61c09e0ccfd572f09b3d19f4892869d49523501d48a4",
+      "bytes": 29247
+    },
+    "docs/CDLNO_VISUALIZATION_RESUME_V1.md": {
+      "sha256": "2ecb8c42b0a34f59bed0c1308946a299cec54b1b476719d7e22139e27dddea80",
+      "bytes": 14660
+    },
+    "docs/final_audit/delivery-checks.json": {
+      "sha256": "ce4d8fbbe8da6ac1751d21196f80045b3d7e308fd181b9876d4459917a6e89a6",
+      "bytes": 4709
+    },
+    "docs/final_audit/diff-baseline-location.json": {
+      "sha256": "929ad5d898f317e3b0ed390db0df66f480cd56955e4ee06a2671f985feeee127",
+      "bytes": 310
+    },
+    "docs/final_audit/diff-inventory.json": {
+      "sha256": "a497bc3f508d36cfe7276e024bc94897d35234d9d8c24d5ba9094599891f88ee",
+      "bytes": 4010
+    },
+    "docs/final_audit/environment.json": {
+      "sha256": "a61b5c16b008c8d0ac7e2bd9a4c72c7c9e24ccef01948b066164cd78aec41297",
+      "bytes": 791
+    },
+    "docs/final_audit/evidence-sha256.json": {
+      "sha256": "add39962baca7913e23914b49726bba7a6576d3a278fc82ea0114f11d04efc5a",
+      "bytes": 1461
+    },
+    "docs/final_audit/freeze-check.json": {
+      "sha256": "e712ae7b0ddb56bb21f52acd9eee4c1c3d1f58af77410bf368c79cb9a044a359",
+      "bytes": 65813
+    },
+    "docs/final_audit/implementation-vs-baseline.patch": {
+      "sha256": "fdaccaddbf267e3e31dff23548427fc8e42ac002b3dea87c970592bf07d63adf",
+      "bytes": 416806
+    },
+    "docs/final_audit/ipot-source.json": {
+      "sha256": "ec621ae1487c1d7e11d71356645a822792ede675939f4429f1885ad7b46ef17e",
+      "bytes": 1500
+    },
+    "docs/final_audit/lrsa-source.json": {
+      "sha256": "8d3f25e8c8a9656bb399b6a935aafc912f9d296d1507b5e0938d9085caa7428d",
+      "bytes": 915
+    },
+    "docs/final_audit/phase10-changes.patch": {
+      "sha256": "e9269671ae7be2f74e35ea789c2ba5d78aa2fd4eec71412031c42bfe5cce5dab",
+      "bytes": 90876
+    },
+    "docs/final_audit/phase10-start.json": {
+      "sha256": "aaeefa892951c977ad1336392964a11eca1562fe22749d0ba15a6f99e03a2085",
+      "bytes": 18402
+    },
+    "docs/front_ablation_audit/a0-documents.patch": {
+      "sha256": "fea413bcf4e18d315e5ce47c00a2b1a93b7645c3621a1b2cf5ceccc9fa38c2a7",
+      "bytes": 49665
+    },
+    "docs/front_ablation_audit/a0-start.json": {
+      "sha256": "c565c153e14e9d5d01b66592fb3d49f914ea8a8a3ddd19f99a18a5b749f32544",
+      "bytes": 23905
+    },
+    "docs/front_ablation_audit/a1/a1-changes.patch": {
+      "sha256": "aab8128d83bd8d3b11ec8bdeca2984394e4e6b6002ec94b5b311af5bb7d612d5",
+      "bytes": 35022
+    },
+    "docs/front_ablation_audit/a1/audit_scope.py": {
+      "sha256": "77d0746aa014eba13ce81ad96480835ed2f7647774441a30696c3b6436ae2588",
+      "bytes": 6306
+    },
+    "docs/front_ablation_audit/a1/baseline.json": {
+      "sha256": "09fbded0c768b664dddc1fd659c94e7fa58270ef55f78c3cccfd5a6bd9adc589",
+      "bytes": 1162
+    },
+    "docs/front_ablation_audit/a1/before-airfrans.json": {
+      "sha256": "66754968b219d7b2a8ce30628b88e34d635f4c5be73ddf9ffa1b7ccb04147a2d",
+      "bytes": 22161
+    },
+    "docs/front_ablation_audit/a1/before-car.json": {
+      "sha256": "04488fed154505e31a301e6a8adfb79fea740601895d8584237b85d76f16b16e",
+      "bytes": 21962
+    },
+    "docs/front_ablation_audit/a1/before-core.json": {
+      "sha256": "e4021b385a33ee045af12ed2412e5e68cbdcc2a9877f4813ffbb6e0516fe721d",
+      "bytes": 106208
+    },
+    "docs/front_ablation_audit/a1/capture_before.py": {
+      "sha256": "31b1b940304a40732ec8664fdd481002d36de395789c4f5408b173e0001f8360",
+      "bytes": 5979
+    },
+    "docs/front_ablation_audit/a1/check_gpu.py": {
+      "sha256": "2c29ec2862a79eb196d35ad32cca8056cefafa21def12fb4e78c8d32bf586c9c",
+      "bytes": 2487
+    },
+    "docs/front_ablation_audit/a1/freeze.json": {
+      "sha256": "0f71ff70c64729236edf14db479725521366de4896292eb942409f0e6eadb690",
+      "bytes": 29100
+    },
+    "docs/front_ablation_audit/a1/full-airfrans.json": {
+      "sha256": "a40765a8ef7c98bfeec998d2273c7233f2f6acaac6b6d6c0df75b76f0ff27fd2",
+      "bytes": 787
+    },
+    "docs/front_ablation_audit/a1/full-car.json": {
+      "sha256": "a6fa9cb276082fead91da4de59179e60749b10f7eae69528b18d65d69e9bfc4e",
+      "bytes": 782
+    },
+    "docs/front_ablation_audit/a1/full-core.json": {
+      "sha256": "c9878b5f9a09370bdc90bafe3d54451dfd955219d1428e5434b166d23a75e8b9",
+      "bytes": 3837
+    },
+    "docs/front_ablation_audit/a1/gpu.json": {
+      "sha256": "f89a1b3bbb45b515b735cec5274568c76d89d06eabd7f31009ddd60cb8535471",
+      "bytes": 714
+    },
+    "docs/front_ablation_audit/a1/regression-initial.txt": {
+      "sha256": "42ebc564634377c536e52a485424dcb0405a8f2abfcf91a9263b0692fa7f28f5",
+      "bytes": 24349
+    },
+    "docs/front_ablation_audit/a1/regression.txt": {
+      "sha256": "d0c97176cbb12c32069f3de35b4fa2ea646a47bce2584b2904ef08fb5145b190",
+      "bytes": 21831
+    },
+    "docs/front_ablation_audit/a1/start.json": {
+      "sha256": "95c7f4075cf4159da53b478c54671dd5626924af894b706491d03639ab29a075",
+      "bytes": 25562
+    },
+    "docs/front_ablation_audit/a1/targeted-initial.txt": {
+      "sha256": "ed267a6d8d9adb573b43234831b09c7e6e2b8330e3d1a7866536d8660730bb36",
+      "bytes": 2338
+    },
+    "docs/front_ablation_audit/a1/verify_before.py": {
+      "sha256": "8e4c6843fe576bd4509b86a98e72e914632736f381fb807d7a53136745742e53",
+      "bytes": 5213
+    },
+    "docs/front_ablation_audit/a2/a2-changes.patch": {
+      "sha256": "d974fd7941b30baf989cd708a680b491b940964510d578fe751e2ccbdfd70e0f",
+      "bytes": 47862
+    },
+    "docs/front_ablation_audit/a2/audit_scope.py": {
+      "sha256": "d82f15e8566737013756ae9fd7e1cef1b714d73dccc1806932bb7f131529a336",
+      "bytes": 6149
+    },
+    "docs/front_ablation_audit/a2/before-presets.json": {
+      "sha256": "aca343e43ab9fc5b29b6e2556ea3281b72e1db250694470e46223b09d7341418",
+      "bytes": 4404
+    },
+    "docs/front_ablation_audit/a2/commands.json": {
+      "sha256": "f7e84e60287afa69381a71ad9f283a027cb6435c61fea81af2a751cf0f6d3e8c",
+      "bytes": 63015
+    },
+    "docs/front_ablation_audit/a2/freeze.json": {
+      "sha256": "a06cc013ded90ff232b71dd2fde7be481ecfe0be7879e936c9ef0edb5433e17c",
+      "bytes": 32888
+    },
+    "docs/front_ablation_audit/a2/full-airfrans.json": {
+      "sha256": "a40765a8ef7c98bfeec998d2273c7233f2f6acaac6b6d6c0df75b76f0ff27fd2",
+      "bytes": 787
+    },
+    "docs/front_ablation_audit/a2/full-car.json": {
+      "sha256": "a6fa9cb276082fead91da4de59179e60749b10f7eae69528b18d65d69e9bfc4e",
+      "bytes": 782
+    },
+    "docs/front_ablation_audit/a2/full-core.json": {
+      "sha256": "c9878b5f9a09370bdc90bafe3d54451dfd955219d1428e5434b166d23a75e8b9",
+      "bytes": 3837
+    },
+    "docs/front_ablation_audit/a2/regression-before-final-review.txt": {
+      "sha256": "6242a533f0c4d47a6116b7e22e77d82ead9fc0ed9d3ff585f2a737acccae5451",
+      "bytes": 23187
+    },
+    "docs/front_ablation_audit/a2/regression-final.txt": {
+      "sha256": "142df454e8eb1260038adefaecd8d375f0704f97c42aa268c3fa1b7910501ebe",
+      "bytes": 23187
+    },
+    "docs/front_ablation_audit/a2/regression-initial.txt": {
+      "sha256": "b21424de47d5d729013a5410a8494776a89f80907e029349e79be9b4ab3683b2",
+      "bytes": 28966
+    },
+    "docs/front_ablation_audit/a2/start.json": {
+      "sha256": "2103d130a84dcad3795cf55ceb64e3b09038f0e3efa3128a29271d7f4cf2049e",
+      "bytes": 28114
+    },
+    "docs/front_ablation_audit/a2/targeted-final.txt": {
+      "sha256": "767bbbfbe5491f7522f8c1556c80e203c30ab77253057fbd09f121ead903bb6e",
+      "bytes": 1731
+    },
+    "docs/front_ablation_audit/a2/targeted-initial.txt": {
+      "sha256": "059e781120b3d4933452a212a48240f42ea8f0c2f61d992fdf8d3af6d63c6edb",
+      "bytes": 29054
+    },
+    "docs/front_ablation_audit/a2/targeted.txt": {
+      "sha256": "9dcdf839a46202749a900e18da221343b4028236000818e0f216c7b87d3c279b",
+      "bytes": 1563
+    },
+    "docs/front_ablation_audit/a3/a3-changes.patch": {
+      "sha256": "1095eabec6e284ebec2166db372874341fbd5335ae653237cff31217905d1203",
+      "bytes": 54370
+    },
+    "docs/front_ablation_audit/a3/audit_scope.py": {
+      "sha256": "a5334b5c88f322bbc9a532f92e3f8058050f0f2589a84acbd1b40d6deec2780e",
+      "bytes": 3018
+    },
+    "docs/front_ablation_audit/a3/environment.json": {
+      "sha256": "82afddcb83d4e184063e35e8bb3a9c853ec096a026865fb0e0a26188e2779601",
+      "bytes": 266
+    },
+    "docs/front_ablation_audit/a3/executed-standard-fragments.json": {
+      "sha256": "1a6bc9846265771365399fb2b057e50f109abdf767c00e320bb1b6eb67ad8ebb",
+      "bytes": 6151
+    },
+    "docs/front_ablation_audit/a3/freeze.json": {
+      "sha256": "37e5b4349d158f2f0a1e6d02f0377203c11a9f949804d1cd5cf9254fe825a32b",
+      "bytes": 16283
+    },
+    "docs/front_ablation_audit/a3/full-airfrans.json": {
+      "sha256": "a40765a8ef7c98bfeec998d2273c7233f2f6acaac6b6d6c0df75b76f0ff27fd2",
+      "bytes": 787
+    },
+    "docs/front_ablation_audit/a3/full-car.json": {
+      "sha256": "a6fa9cb276082fead91da4de59179e60749b10f7eae69528b18d65d69e9bfc4e",
+      "bytes": 782
+    },
+    "docs/front_ablation_audit/a3/full-core.json": {
+      "sha256": "c9878b5f9a09370bdc90bafe3d54451dfd955219d1428e5434b166d23a75e8b9",
+      "bytes": 3837
+    },
+    "docs/front_ablation_audit/a3/start.json": {
+      "sha256": "4ceb2ee81c5b9e602b8d0dac6f3d8d73e45cfe57e58bf09064eb636b36bbed35",
+      "bytes": 31149
+    },
+    "docs/front_ablation_audit/a3/training-cases.json": {
+      "sha256": "f5bd82142fecc05fe371b89c7f63010f8fefc2e112b2b02ae0afaf6d8e24ad33",
+      "bytes": 21202
+    },
+    "docs/front_ablation_audit/a3/verification-summary.json": {
+      "sha256": "3018b6c8a920bb72d8a73f90313ab57bd42240b961ec46f0cdf68b9b1d56d3c5",
+      "bytes": 1849
+    },
+    "docs/front_ablation_audit/a4/a4-changes.patch": {
+      "sha256": "770747d441424b661d5d656ca2b608bc22cd6aea1b640d5b61f5fa0f1f020677",
+      "bytes": 79555
+    },
+    "docs/front_ablation_audit/a4/audit_scope.py": {
+      "sha256": "cfd6435a652f8262858efded4959775e9b0668ef9203511c00677946aa785f9b",
+      "bytes": 7521
+    },
+    "docs/front_ablation_audit/a4/commands.json": {
+      "sha256": "8cbbbea0f460fde3ab4eff6ed9c271d8cc7fb6f1f7118340a86f71218557566c",
+      "bytes": 68082
+    },
+    "docs/front_ablation_audit/a4/commands.txt": {
+      "sha256": "ae265811f9ff20bd284b372add8bb4c56b2fe60026b8db202d8e2c5799491df3",
+      "bytes": 363
+    },
+    "docs/front_ablation_audit/a4/cpu-full.json": {
+      "sha256": "b1b70a8c66032195fcc07bf5afeef624001ee724b656db4b472c6bbc80cd77e5",
+      "bytes": 399704
+    },
+    "docs/front_ablation_audit/a4/cpu-identity.json": {
+      "sha256": "05dc9cf19f3275d85833a3b1b382f846cf81640b751bfeb0391de6363573bee1",
+      "bytes": 361320
+    },
+    "docs/front_ablation_audit/a4/cpu-no_sa.json": {
+      "sha256": "726b5eac065968c7bc2c03f91871caeed5a0956294254ec7ff9962e234eaf391",
+      "bytes": 373780
+    },
+    "docs/front_ablation_audit/a4/freeze.json": {
+      "sha256": "9e47705cc92abbe8d3d4de34945790cadd2b7b06b63326bda6f28e3e4d0aee38",
+      "bytes": 21357
+    },
+    "docs/front_ablation_audit/a4/front-ablation-runtime.patch": {
+      "sha256": "08f7eb6a0ee7de43b52a8e98973b180300fa52d686880958ee7455c37a926aa7",
+      "bytes": 44638
+    },
+    "docs/front_ablation_audit/a4/full-before.json": {
+      "sha256": "cab5dc2933b9b8d3a81baa89d0f917bd9d1813ecf954b68331a21815b1efd9d5",
+      "bytes": 141297
+    },
+    "docs/front_ablation_audit/a4/gpu-airfoil-matched-full.json": {
+      "sha256": "b226dbe9cc91b7d47bc13a408ce689ea1a4b25b273d2216682480eb591fe8e3b",
+      "bytes": 50626
+    },
+    "docs/front_ablation_audit/a4/gpu-airfoil-matched-identity.json": {
+      "sha256": "9cdb2d1ce65ae9b443b655ec965e5831e468a1b277ac6cef1280f8c3a17683a3",
+      "bytes": 45966
+    },
+    "docs/front_ablation_audit/a4/gpu-airfoil-matched-no_sa.json": {
+      "sha256": "7310a815772f7d16423b71393d93db59e19d3f2c4934cbb1bb0f7d2ebf321c53",
+      "bytes": 47388
+    },
+    "docs/front_ablation_audit/a4/gpu-elasticity-task-full.json": {
+      "sha256": "fab99360893bd450aafb19c57afa354b48b78bd6c39cda98407ca4eeec8db38d",
+      "bytes": 237376
+    },
+    "docs/front_ablation_audit/a4/gpu-elasticity-task-identity.json": {
+      "sha256": "12226e469fd475ca6c2b9f16da8eeb272332c8db1569b4b6da8eac031de4bb29",
+      "bytes": 44785
+    },
+    "docs/front_ablation_audit/a4/gpu-elasticity-task-no_sa.json": {
+      "sha256": "002a33891bf9dd45c8938ed8776519c5c25fa9706c6db94acca5c1632c81d884",
+      "bytes": 46179
+    },
+    "docs/front_ablation_audit/a4/performance-commands.json": {
+      "sha256": "d5d39cde97d14c32551309c24e809a5327ad37555111ac64253b0416b15e0f18",
+      "bytes": 6287
+    },
+    "docs/front_ablation_audit/a4/performance-targeted.txt": {
+      "sha256": "d92a659e5224e1e2446fe12be5193ec23fdbc401dc5f102e595a7b5d03464598",
+      "bytes": 2858
+    },
+    "docs/front_ablation_audit/a4/regression-final.txt": {
+      "sha256": "ddd2b994fbe7bead633f45e77584f9fc20ecdcdbe2a960162c2d8f10cdfff429",
+      "bytes": 30259
+    },
+    "docs/front_ablation_audit/a4/results.json": {
+      "sha256": "6c3ecc7ff092a1cd65a91ed059c066f93bf109a07aa82447298a96dd462a629c",
+      "bytes": 572
+    },
+    "docs/front_ablation_audit/a4/run_performance.py": {
+      "sha256": "4a165ca7c6fafc4ee0c1bd1b91f936a8cd1a3e11c7e72cace4e206a5acea37b5",
+      "bytes": 2197
+    },
+    "docs/front_ablation_audit/a4/scope-final.txt": {
+      "sha256": "fa6c79c9cace73f2c8f146c2a7ad4e6ff1bfa6b046ebcdd5231d6cb9216d8c52",
+      "bytes": 707
+    },
+    "docs/front_ablation_audit/a4/start.json": {
+      "sha256": "30296cb076b140841adaf4a6fde69d44b4eccb73ee9eb6c37591faf70959c34c",
+      "bytes": 35059
+    },
+    "docs/front_ablation_audit/a4/summarize.py": {
+      "sha256": "4ea07a25151c6f40f71e326d0370c69208494ffff6cb976305796972afa0a2e3",
+      "bytes": 3553
+    },
+    "docs/front_ablation_audit/a4/summary.json": {
+      "sha256": "264631b34b1d8035d9eff7aa2ca32b47e26109fb81dcffb209015a373c086d53",
+      "bytes": 81714
+    },
+    "docs/front_ablation_audit/a4/summary.txt": {
+      "sha256": "a62362ec20fbbe9e8f1de894685c42c6b719f6615f06ba0d7f044e99e46ee742",
+      "bytes": 1692
+    },
+    "docs/front_ablation_audit/a4/verify_commands.py": {
+      "sha256": "db95f7f79b687cd9d5263b282c65fccca9649e138e714c86040968288c1abacd",
+      "bytes": 2621
+    },
+    "docs/front_ablation_audit/delivery-check.json": {
+      "sha256": "43a30e6af22474710524c6f586e5d17e167dc6a6eb635562b25a1c693e150951",
+      "bytes": 1136
+    },
+    "docs/front_ablation_audit/static-results.json": {
+      "sha256": "456b945a0ea342cfb767f6c1a2de0184368fbf06994f28db0b64c1f3ed437446",
+      "bytes": 14546
+    },
+    "docs/front_ablation_audit/static_check.txt": {
+      "sha256": "a8a6103b23464ba0e624936153c1879288134507be64a1c06b34447a2a01c11b",
+      "bytes": 8551
+    },
+    "docs/output_audit/changes.json": {
+      "sha256": "2b182648a794f279d6ae1dbfb9fe2c7fd8fb627368cb6491e0c0927f09f58e81",
+      "bytes": 10733
+    },
+    "docs/output_audit/environment.json": {
+      "sha256": "de865411ee1af26b51f85fc6646adf68d7b3672a058f2d4407e6586964837667",
+      "bytes": 276
+    },
+    "docs/output_audit/final-regression.txt": {
+      "sha256": "a0f252cebb7e10d05a25547a38ae1dc32ac190c5a1cec6739fbf90e5ea438de3",
+      "bytes": 32778
+    },
+    "docs/output_audit/final-snapshot-check.txt": {
+      "sha256": "659301c8dcfe4e7ab31d1412379484226d5f48050179f7078f74a881edd935ae",
+      "bytes": 558
+    },
+    "docs/output_audit/first-regression.txt": {
+      "sha256": "61e0da5e956a875e8f9e69c8a2b9af956816b5bf2043f3a395d1148a9c5bdec1",
+      "bytes": 37933
+    },
+    "docs/output_audit/freeze.json": {
+      "sha256": "f6cac07aa4865bcf6fe0b151c780f436965e6cf33f2ad4ee7f4ed37707923fb2",
+      "bytes": 5247
+    },
+    "docs/output_audit/incremental.patch": {
+      "sha256": "00bca4d0e830bef93e509ce1622afe9abf328f4ab5e02a831555a3aa72f15b66",
+      "bytes": 123934
+    },
+    "docs/output_audit/record-tests.txt": {
+      "sha256": "41b4a76a1134a6bd1cf114b263959156e5d38c515d2eb528bec5662518e81cc1",
+      "bytes": 2894
+    },
+    "docs/output_audit/shell-syntax.json": {
+      "sha256": "9b2f79baaf2bceeac6077fadef4121a85375f0d7853509b513d59bf988df6d5f",
+      "bytes": 379
+    },
+    "docs/output_audit/upstream-freeze.txt": {
+      "sha256": "1a5aac3e772278298a2500dc733277cb232051095f57bc26a14fe7c7a63d90c4",
+      "bytes": 1520
+    },
+    "docs/performance/phase9/airfoil-matched.json": {
+      "sha256": "c664f33680c85779c8c2662c242c70ca6ae017c90db7279627b83fc8b8dbd71d",
+      "bytes": 477630
+    },
+    "docs/performance/phase9/airfoil-task.json": {
+      "sha256": "c6922cbdd0e1e40468cc312b8626041497690ccda2c9faafb84c91ed5575b230",
+      "bytes": 204241
+    },
+    "docs/performance/phase9/continuation-baseline.json": {
+      "sha256": "288568f43d659168d9acf52e5523931ea01ef3a8191ceb0a4bd7a4b03400699d",
+      "bytes": 17240
+    },
+    "docs/performance/phase9/elasticity-matched.json": {
+      "sha256": "a1f940dc3df72e34b09d07c716b517e70382e2927a7ac03391369034d11bbb2f",
+      "bytes": 463884
+    },
+    "docs/performance/phase9/freeze-check.json": {
+      "sha256": "91fade4bbf3cdb38ee63b542ee3c7a84d273b63c9abf68216f39b7b311052900",
+      "bytes": 341
+    },
+    "docs/remote_launch_audit/delivery-checks.json": {
+      "sha256": "193b0724e77dfd25d6cba6b92e41e04bd8cfe99d447444997cb903516005d375",
+      "bytes": 135
+    },
+    "docs/remote_launch_audit/freeze-check.json": {
+      "sha256": "23b3644497aef94621cf031d02547ac597d0b95a12c788c86e0e6372cbed6473",
+      "bytes": 473
+    },
+    "docs/remote_launch_audit/launcher-checks.json": {
+      "sha256": "cc7489519da3e20f46cd4245113868a2de7dc3ee0d8dcb0740d920a37a44d6b9",
+      "bytes": 34122
+    },
+    "docs/remote_launch_audit/remote-launch-changes.patch": {
+      "sha256": "3dbd995bcd2e80f2c4f5d00bda2b2c07f56da7654c051f0a25e13adef120301e",
+      "bytes": 72097
+    },
+    "docs/remote_launch_audit/start.json": {
+      "sha256": "7f0205b75086bab4b936ecda00c6b4fcff2d3ef1d54eb811df8060f83c045abc",
+      "bytes": 166592
+    },
+    "docs/remote_launch_audit/verify_remote_launchers.py": {
+      "sha256": "e19d343859ae872b7e50566dbe29464561666865e5319ebfb8d80339d28ccd02",
+      "bytes": 8725
+    },
+    "docs/sequential_launch_audit/freeze.json": {
+      "sha256": "686ca5a3c1f3be3bfad485afeea3ee70b084b4f00b6f9b3e3975ad58fa1007c3",
+      "bytes": 788
+    },
+    "docs/sequential_launch_audit/results.json": {
+      "sha256": "80b2cce5e97c80fe2b653b277066104c2ac8f6c70c87b73d74364384df40a1df",
+      "bytes": 73531
+    },
+    "docs/sequential_launch_audit/start.json": {
+      "sha256": "0f777dc6c12fb482aaf3d168df4ed0c356cd74ed7d14e0764afa2e72a2f8020b",
+      "bytes": 24788
+    },
+    "docs/sequential_launch_audit/verify.py": {
+      "sha256": "6d4952e79279f4f0f64f9924703d7e44622efd280b2da4fb37b57298e05de2b7",
+      "bytes": 7125
+    },
+    "docs/training_launch_audit/changed-files-before.json": {
+      "sha256": "54c171ed2aa27602fb646ee312650bdadf1ab8cfdf92e2345160884c228a415e",
+      "bytes": 130181
+    },
+    "docs/training_launch_audit/delivery-checks.json": {
+      "sha256": "92350e73e84997af60ecac47b601d66e81c60fa11e718b40d1719cf54aba5263",
+      "bytes": 106
+    },
+    "docs/training_launch_audit/freeze-check.json": {
+      "sha256": "7fa7db74fffd8a6e0e7666870e81a0861d270b1922197938497080fd4c48b8e2",
+      "bytes": 4200
+    },
+    "docs/training_launch_audit/launch-changes.patch": {
+      "sha256": "6b3d1cb3d995516d0b39156f08ce8dfe6630dfc061fd444c938d210df0bda43d",
+      "bytes": 46630
+    },
+    "docs/training_launch_audit/launcher-checks.json": {
+      "sha256": "53f795b2460c8a68c639d50abc50d8b4404c0fffd3fb3db7e38dcbadee0d22dd",
+      "bytes": 8039
+    },
+    "docs/training_launch_audit/paper-excerpts.json": {
+      "sha256": "31715bde4d9aa61aec2fb51b011e3f955051fae3029c023ecf4747eb75790018",
+      "bytes": 14719
+    },
+    "docs/training_launch_audit/start.json": {
+      "sha256": "8d1d8bcc7864d737a7e51d53afe97a92e4ed207991721bc3c46a4822426259be",
+      "bytes": 19548
+    },
+    "docs/training_launch_audit/verify_launchers.py": {
+      "sha256": "950e27d9f748aa5122967442c7a723036adc10bb78e2e067d1afacc45c7dcc93",
+      "bytes": 6264
+    },
+    "docs/viz_resume_audit/paper_sources.json": {
+      "sha256": "60607c468611c5c21afc47c0964d04255b0953839740ac958d8c8c6f67304461",
+      "bytes": 6701
+    },
+    "docs/viz_resume_audit/planning_audit.json": {
+      "sha256": "132f930127a2a146bb9d93732e13a006c58c536e0292b99872aadaa30dfb0784",
+      "bytes": 516
+    },
+    "docs/viz_resume_audit/planning_start.json": {
+      "sha256": "4e2c010a9306f446d20978fc5706feaa63bcfffba6e87085cb5890996e26530f",
+      "bytes": 32779
+    },
+    "docs/viz_resume_audit/v1/audit_scope.py": {
+      "sha256": "09144d9cf5a8a22b5b51a833e1608e67e1eefbbb3dda1f2c27853ed5e503708f",
+      "bytes": 3785
+    },
+    "docs/viz_resume_audit/v1/environment.json": {
+      "sha256": "28c1466694c70dc40147640644a45b29be4f778d48780739db1ecd5f11453c64",
+      "bytes": 268
+    },
+    "docs/viz_resume_audit/v1/freeze.json": {
+      "sha256": "a59581c94b082a7fe843522c5e094debe78380ff4efc79d1284292c8e817b6d6",
+      "bytes": 16269
+    },
+    "docs/viz_resume_audit/v1/render-demo.json": {
+      "sha256": "8433fb0d9682855a8cd7cadcd35fe38109a7dcda48c93519ba40a05b761ea618",
+      "bytes": 1520
+    },
+    "docs/viz_resume_audit/v1/render_demo.py": {
+      "sha256": "4676ba269d7dc9938adb017c424cbbb164b07e4ae0ee6f4f6e2fa021d01f3ed6",
+      "bytes": 2201
+    },
+    "docs/viz_resume_audit/v1/results.json": {
+      "sha256": "fee8927b541b7376f7e0f3ba9393116de9e1af43959f586274780c3ef0881555",
+      "bytes": 607
+    },
+    "docs/viz_resume_audit/v1/start.json": {
+      "sha256": "cba6e4df51a2bbff4ff60354127faea1d386cf900b38200d48e15b72d9d87bc8",
+      "bytes": 33327
+    },
+    "docs/viz_resume_audit/v1/v1-changes.patch": {
+      "sha256": "e13a2a4f6d2afe75ed3bfc0c78743b57630d8f4ed83a4058f1a26bfee2d3b009",
+      "bytes": 103403
+    },
+    "memory/2026-09-13-cdpa-plan-and-reference-audit.md": {
+      "sha256": "819b22e7abe1909c02c471fd8c28c63c6cc99b533593522802ae3d1aef8763bd",
+      "bytes": 6606
+    },
+    "memory/2026-09-13-exported-conversation-review.md": {
+      "sha256": "338b88a1b16a8350c806e095032cccb8f57949ae69331cebb3bdeacaf63b65c5",
+      "bytes": 21117
+    },
+    "memory/README.md": {
+      "sha256": "9ad6cb0e4b4be07f987f2d6c15439e5cc9a6974cc0cbc381fd89b605d847f21a",
+      "bytes": 2157
+    },
+    "memory/current-state.md": {
+      "sha256": "7ddf189542e66fc67329d59353ebc5077931d7c9a0b01d09291ca2e61ec70bdd",
+      "bytes": 69034
+    },
+    "path.sh": {
+      "sha256": "153163c1535a74dc4802e59590b2ec9815b0d166dc5d534d66fc6b38f596a87c",
+      "bytes": 1820
+    },
+    "pic/Transolver.png": {
+      "sha256": "9cfdf9d020883e869692756b5bbe4334306dc73fece376028f8d16bfa36b604c",
+      "bytes": 621751
+    },
+    "pic/physical_states.png": {
+      "sha256": "82417b3e07efd4a5b274f05b423a00be93bc86dcc6999d2b3c9e2e138ed9652a",
+      "bytes": 676370
+    },
+    "pic/showcases.png": {
+      "sha256": "d1add94bf9f45f71bbfde6a681a8b5b3bd936ecf7bc21e84fa1daa57afda0848",
+      "bytes": 589165
+    },
+    "pyproject.toml": {
+      "sha256": "34430853bae8ed064a44a999bbfe563321a75010144aceccc2d807c4ba3efbd2",
+      "bytes": 305
+    },
+    "tests/cdpa_reference.py": {
+      "sha256": "a110768c375a7cecedf4d7bf175191b262197d66b325248d72fdccbe7bcdb9f8",
+      "bytes": 2969
+    },
+    "tests/output_recording_projection.py": {
+      "sha256": "aca1c9aceb97428e3e4c9ca6ef26cae0716b964c4b9358f55f587153272c825b",
+      "bytes": 2616
+    },
+    "tests/test_airfrans.py": {
+      "sha256": "dd29f04f52103f3d1d46b0cfea8cbe2af4cf28d297993d351946ee0fa25506d1",
+      "bytes": 24989
+    },
+    "tests/test_cdpa.py": {
+      "sha256": "d65fbbf05b02b9d7a48f3da9490c49860da676653049023f7998abef16f47dec",
+      "bytes": 27985
+    },
+    "tests/test_core.py": {
+      "sha256": "c30bf6f4f23ec3f96fc0f82412ff6e3b59045b9050ef2b2c94627ae6875b74e1",
+      "bytes": 23658
+    },
+    "tests/test_core_config.py": {
+      "sha256": "2f0c117810984734a40d708f3a99f604e68f34f38e1c37c014b47ede3dce73e4",
+      "bytes": 11009
+    },
+    "tests/test_experiment_records.py": {
+      "sha256": "bb29d1ca3aac5eadb91d1cbfe060289dced1054f6b315f55eb252bcb3af25131",
+      "bytes": 21439
+    },
+    "tests/test_front_ablation.py": {
+      "sha256": "5f45a15380edb912f673b89b0396a5efc2c375be167033537f423029fee812ca",
+      "bytes": 21973
+    },
+    "tests/test_front_task_modes.py": {
+      "sha256": "f73a0b32536e9b8471d0c971909279938e5fe7726b34515c5dc2554a1e0967c2",
+      "bytes": 21131
+    },
+    "tests/test_front_training.py": {
+      "sha256": "9f487f59dc6c04f4977a020d39c6d56e50e5990d21e07acec02949429f8eea6d",
+      "bytes": 22438
+    },
+    "tests/test_lrsa_reference.py": {
+      "sha256": "73c4d7a6436852b2e0bf45e9795eb829f8d86c4c401e24e0989df7dbb32d5f39",
+      "bytes": 5724
+    },
+    "tests/test_modules.py": {
+      "sha256": "6ef4b528d093a2258b4c84fe542e960e2e5df21b7d1e0fc0ac51f5510eb0bd6d",
+      "bytes": 25781
+    },
+    "tests/test_performance.py": {
+      "sha256": "b4adbca94705e116562b4d715d26375ceee1e783caed7060a0dd8eca23a6b552",
+      "bytes": 20082
+    },
+    "tests/test_shapenet_car.py": {
+      "sha256": "3d206da3872f8f179b0801b3bbe078518143f8939ce3ef99f2b6ad6ba777b217",
+      "bytes": 24113
+    },
+    "tests/test_static_standard.py": {
+      "sha256": "f217c877b67764d3f64e0597c51d4e3422534f4726ec17a75692296ff7855c48",
+      "bytes": 27158
+    },
+    "tests/test_temporal_standard.py": {
+      "sha256": "49c1f435c12d80b15b2c96f1092f1a32bc826ca8aaaa347c3e2488eceff3b1ec",
+      "bytes": 11718
+    },
+    "tests/test_training_state.py": {
+      "sha256": "5b535086e5e751a91dbdca4b380b9211f56bc992cf64f4d4ad719a3a4566f736",
+      "bytes": 24113
+    },
+    "tests/test_visualization.py": {
+      "sha256": "b4a0e88c728563e7e8d71a92df95877647b3726f3cf169cacbe983b6d4869d14",
+      "bytes": 4305
+    },
+    "tools/cdlno_benchmark.py": {
+      "sha256": "0eb71b8879015686ba05bc40461048b989ccde2f66e91657263a4e1470fde1b8",
+      "bytes": 9951
+    },
+    "tools/cdlno_environment_preflight.py": {
+      "sha256": "cbddb72d8a3491e1d2d44deecd125e544f687a8806232d9990a1f08ed5074084",
+      "bytes": 1915
+    },
+    "tools/cdlno_perf/__init__.py": {
+      "sha256": "f37d530c1f97443000442a1c750108754095403278d9360a99ff9bc7f469289e",
+      "bytes": 82
+    },
+    "tools/cdlno_perf/costs.py": {
+      "sha256": "c687ce303bd17391f88824fecc085473ee6001fb9f05cc5ac7bc8053d47fc7fe",
+      "bytes": 11689
+    },
+    "tools/cdlno_perf/measure.py": {
+      "sha256": "83c871d50da19deddf26ca0afb128254069f998dc48353e6815da9bb63264847",
+      "bytes": 13371
+    },
+    "tools/cdlno_perf/models.py": {
+      "sha256": "fc523a6055610de25c2539099d54b8d07e865f224a1d8f66f32ca95a043feaa2",
+      "bytes": 11162
+    },
+    "tran_evaluate/README.md": {
+      "sha256": "b5cfa3ed9a215dbf2bc975702cbd59d8dc4281af99f19df65733cbfce2a954a9",
+      "bytes": 17795
+    },
+    "tran_evaluate/_common.sh": {
+      "sha256": "dd6409998725ae9f053aad1b0db74e236596514c94e2767774a1b0681714779e",
+      "bytes": 5696
+    },
+    "tran_evaluate/_standard.sh": {
+      "sha256": "9f7690e15d95c8dd04549c421664f4895e34e68c86dd1c6c5e7898ee18febcca",
+      "bytes": 3035
+    },
+    "tran_evaluate/airfoil.sh": {
+      "sha256": "4a5d1596fa2e473fa69cb0a46dbe29a6dd71900947a4c385c885c798a254104e",
+      "bytes": 169
+    },
+    "tran_evaluate/airfrans.sh": {
+      "sha256": "b3634006874e74fa3588a70855263b3abce90c3377f120f61f9fa57eefb1de92",
+      "bytes": 2357
+    },
+    "tran_evaluate/car.sh": {
+      "sha256": "f6f28e7a8edcbd7aadccdafc53669d7c861873f1486ab4baa4ba858f445c6d21",
+      "bytes": 2227
+    },
+    "tran_evaluate/check_car_eval.py": {
+      "sha256": "a2bf1cbc643ba27c828fcd461e8a35d6a1301efb97825f015fdacd1435a14a54",
+      "bytes": 2509
+    },
+    "tran_evaluate/darcy.sh": {
+      "sha256": "8f717553ecbc86f777113288a669d6aac2983708faffb1943c8b3b7e399275e3",
+      "bytes": 167
+    },
+    "tran_evaluate/elasticity.sh": {
+      "sha256": "25ab6e5ae42efc9736b29c6d553940e6f866f82313e57bea4cf06c7cb1e2369b",
+      "bytes": 172
+    },
+    "tran_evaluate/inspect_data.py": {
+      "sha256": "09102d1bcc8b30310a3238fc6fdac756053f55f8d50627f9454db93b36b4b376",
+      "bytes": 11556
+    },
+    "tran_evaluate/inspect_data.sh": {
+      "sha256": "fddf695de854eda5582159c27193a15d84b5bfb1b48e7d2b0bff70710b369961",
+      "bytes": 1657
+    },
+    "tran_evaluate/ns.sh": {
+      "sha256": "fe4ae30955ff9c030d0480b8e9458770a901229b8024264dc0fe3f71960c6ad9",
+      "bytes": 164
+    },
+    "tran_evaluate/pipe.sh": {
+      "sha256": "45dd772c36cc56429451554ff22febdcc1a1c318564d4a59dd4bcfa55b9bb72b",
+      "bytes": 166
+    },
+    "tran_evaluate/plasticity.sh": {
+      "sha256": "7c6cd3aebf50a70500a5666f3dc5bd632c5ea3f2f14d7db49abfc9a75b4edfa9",
+      "bytes": 172
+    },
+    "tran_evaluate/train_eval.sh": {
+      "sha256": "a7f6218d577713c8c0a23810e07d098f7de9f9513097ec2f9669ebaa1ec69298",
+      "bytes": 3948
+    }
+  },
+  "copied_text_sources": [
+    ".gitignore",
+    "AGENTS.md",
+    "Airfoil-Design-AirfRANS/LICENSE",
+    "Airfoil-Design-AirfRANS/README.md",
+    "Airfoil-Design-AirfRANS/cdlno_entry.py",
+    "Airfoil-Design-AirfRANS/configs/CDLNO/airfrans.json",
+    "Airfoil-Design-AirfRANS/dataset/dataset.py",
+    "Airfoil-Design-AirfRANS/main.py",
+    "Airfoil-Design-AirfRANS/main_evaluation.py",
+    "Airfoil-Design-AirfRANS/models/CDLNO.py",
+    "Airfoil-Design-AirfRANS/models/GUNet.py",
+    "Airfoil-Design-AirfRANS/models/GraphSAGE.py",
+    "Airfoil-Design-AirfRANS/models/MLP.py",
+    "Airfoil-Design-AirfRANS/models/NN.py",
+    "Airfoil-Design-AirfRANS/models/PointNet.py",
+    "Airfoil-Design-AirfRANS/models/Transolver.py",
+    "Airfoil-Design-AirfRANS/params.yaml",
+    "Airfoil-Design-AirfRANS/requirements.txt",
+    "Airfoil-Design-AirfRANS/scripts/CDLNO.sh",
+    "Airfoil-Design-AirfRANS/scripts/CDLNO_Evaluation.sh",
+    "Airfoil-Design-AirfRANS/scripts/Evaluation.sh",
+    "Airfoil-Design-AirfRANS/scripts/GraphSAGE.sh",
+    "Airfoil-Design-AirfRANS/scripts/Transolver.sh",
+    "Airfoil-Design-AirfRANS/train.py",
+    "Airfoil-Design-AirfRANS/utils/metrics.py",
+    "Airfoil-Design-AirfRANS/utils/metrics_NACA.py",
+    "Airfoil-Design-AirfRANS/utils/naca_generator.py",
+    "Airfoil-Design-AirfRANS/utils/reorganize.py",
+    "Car-Design-ShapeNetCar/README.md",
+    "Car-Design-ShapeNetCar/configs/CDLNO/shapenet_car.json",
+    "Car-Design-ShapeNetCar/dataset/dataset.py",
+    "Car-Design-ShapeNetCar/dataset/load_dataset.py",
+    "Car-Design-ShapeNetCar/main.py",
+    "Car-Design-ShapeNetCar/main_evaluation.py",
+    "Car-Design-ShapeNetCar/models/CDLNO.py",
+    "Car-Design-ShapeNetCar/models/Transolver.py",
+    "Car-Design-ShapeNetCar/models/cdlno_run.py",
+    "Car-Design-ShapeNetCar/requirements.txt",
+    "Car-Design-ShapeNetCar/scripts/CDLNO.sh",
+    "Car-Design-ShapeNetCar/scripts/CDLNO_Evaluation.sh",
+    "Car-Design-ShapeNetCar/scripts/Evaluation.sh",
+    "Car-Design-ShapeNetCar/scripts/Transolver.sh",
+    "Car-Design-ShapeNetCar/train.py",
+    "Car-Design-ShapeNetCar/utils/drag_coefficient.py",
+    "LICENSE",
+    "PDE-Solving-StandardBenchmark/README.md",
+    "PDE-Solving-StandardBenchmark/cdlno_entry.py",
+    "PDE-Solving-StandardBenchmark/configs/CDLNO/airfoil.json",
+    "PDE-Solving-StandardBenchmark/configs/CDLNO/darcy.json",
+    "PDE-Solving-StandardBenchmark/configs/CDLNO/elasticity.json",
+    "PDE-Solving-StandardBenchmark/configs/CDLNO/ns.json",
+    "PDE-Solving-StandardBenchmark/configs/CDLNO/pipe.json",
+    "PDE-Solving-StandardBenchmark/configs/CDLNO/plasticity.json",
+    "PDE-Solving-StandardBenchmark/exp_airfoil.py",
+    "PDE-Solving-StandardBenchmark/exp_darcy.py",
+    "PDE-Solving-StandardBenchmark/exp_elas.py",
+    "PDE-Solving-StandardBenchmark/exp_ns.py",
+    "PDE-Solving-StandardBenchmark/exp_pipe.py",
+    "PDE-Solving-StandardBenchmark/exp_plas.py",
+    "PDE-Solving-StandardBenchmark/model/CDLNO_Irregular_Mesh.py",
+    "PDE-Solving-StandardBenchmark/model/CDLNO_Structured_Mesh_2D.py",
+    "PDE-Solving-StandardBenchmark/model/CDLNO_Temporal_Structured_Mesh_2D.py",
+    "PDE-Solving-StandardBenchmark/model/Embedding.py",
+    "PDE-Solving-StandardBenchmark/model/Physics_Attention.py",
+    "PDE-Solving-StandardBenchmark/model/Transolver_Irregular_Mesh.py",
+    "PDE-Solving-StandardBenchmark/model/Transolver_Structured_Mesh_2D.py",
+    "PDE-Solving-StandardBenchmark/model/Transolver_Structured_Mesh_3D.py",
+    "PDE-Solving-StandardBenchmark/model_dict.py",
+    "PDE-Solving-StandardBenchmark/requirements.txt",
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Airfoil.sh",
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Airfoil_Eval.sh",
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Darcy.sh",
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Darcy_Eval.sh",
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Elas.sh",
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Elas_Eval.sh",
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_NS.sh",
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_NS_Eval.sh",
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Pipe.sh",
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Pipe_Eval.sh",
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Plasticity.sh",
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Plasticity_Eval.sh",
+    "PDE-Solving-StandardBenchmark/scripts/Transolver_Airfoil.sh",
+    "PDE-Solving-StandardBenchmark/scripts/Transolver_Darcy.sh",
+    "PDE-Solving-StandardBenchmark/scripts/Transolver_Elas.sh",
+    "PDE-Solving-StandardBenchmark/scripts/Transolver_NS.sh",
+    "PDE-Solving-StandardBenchmark/scripts/Transolver_Pipe.sh",
+    "PDE-Solving-StandardBenchmark/scripts/Transolver_Plas.sh",
+    "PDE-Solving-StandardBenchmark/utils/normalizer.py",
+    "PDE-Solving-StandardBenchmark/utils/testloss.py",
+    "PLAN_CDLNO/CDPA_Transolver_Implementation_Plan_v1_2.md",
+    "PLAN_CDLNO/CDPA_v1_1/CDPA_Transolver_Implementation_Plan_v1_1.md",
+    "PLAN_CDLNO/CDPA_v1_1/README.md",
+    "PLAN_CDLNO/CDPA_v1_1/check_cdpa_environment.py",
+    "PLAN_CDLNO/CDPA_v1_1/constraints-cdpa-cu128.txt",
+    "PLAN_CDLNO/CDPA_v1_1/requirements-cdpa-cu128.txt",
+    "PLAN_KCDNO/KCDNO_Model_Specification_v1.md",
+    "Physics_Attention.py",
+    "README.md",
+    "cdlno/__init__.py",
+    "cdlno/airfrans.py",
+    "cdlno/cdpa.py",
+    "cdlno/checkpoint.py",
+    "cdlno/config.py",
+    "cdlno/core.py",
+    "cdlno/experiment.py",
+    "cdlno/modules.py",
+    "cdlno/standard.py",
+    "cdlno/training_observer.py",
+    "cdlno/training_state.py",
+    "cdlno/visualization.py",
+    "docs/CDLNO_EXPERIMENT_OUTPUTS.md",
+    "docs/CDLNO_EXPERIMENT_OUTPUTS_REPORT.md",
+    "docs/CDLNO_FRONT_ABLATION.md",
+    "docs/CDLNO_FRONT_ABLATION_A1.md",
+    "docs/CDLNO_FRONT_ABLATION_A2.md",
+    "docs/CDLNO_FRONT_ABLATION_A2_COMMANDS.md",
+    "docs/CDLNO_FRONT_ABLATION_A3.md",
+    "docs/CDLNO_FRONT_ABLATION_A4.md",
+    "docs/CDLNO_IMPLEMENTATION_REPORT.md",
+    "docs/CDLNO_IMPLEMENTATION_STATUS.md",
+    "docs/CDLNO_PERFORMANCE_TOOLS.md",
+    "docs/CDLNO_PHASE2_MODULES.md",
+    "docs/CDLNO_PHASE3_CDPA.md",
+    "docs/CDLNO_PHASE4_CORE.md",
+    "docs/CDLNO_PHASE5_STATIC_TASKS.md",
+    "docs/CDLNO_PHASE6_TEMPORAL_TASKS.md",
+    "docs/CDLNO_PHASE7_SHAPENET_CAR.md",
+    "docs/CDLNO_PHASE8_AIRFRANS.md",
+    "docs/CDLNO_PHASE9_PERFORMANCE.md",
+    "docs/CDLNO_REFERENCE_AUDIT.md",
+    "docs/CDLNO_REMOTE_LAUNCHERS.md",
+    "docs/CDLNO_REQUIREMENTS_MATRIX.md",
+    "docs/CDLNO_SEQUENTIAL_LAUNCH.md",
+    "docs/CDLNO_TASK_LAUNCHERS.md",
+    "docs/CDLNO_THIRD_PARTY_NOTICES.md",
+    "docs/CDLNO_TRAINING_LAUNCH_REVIEW.md",
+    "docs/CDLNO_VISUALIZATION_RESUME_PLAN.md",
+    "docs/CDLNO_VISUALIZATION_RESUME_V1.md",
+    "docs/final_audit/delivery-checks.json",
+    "docs/final_audit/diff-baseline-location.json",
+    "docs/final_audit/diff-inventory.json",
+    "docs/final_audit/environment.json",
+    "docs/final_audit/evidence-sha256.json",
+    "docs/final_audit/freeze-check.json",
+    "docs/final_audit/ipot-source.json",
+    "docs/final_audit/lrsa-source.json",
+    "docs/final_audit/phase10-start.json",
+    "docs/front_ablation_audit/a0-start.json",
+    "docs/front_ablation_audit/a1/audit_scope.py",
+    "docs/front_ablation_audit/a1/baseline.json",
+    "docs/front_ablation_audit/a1/before-airfrans.json",
+    "docs/front_ablation_audit/a1/before-car.json",
+    "docs/front_ablation_audit/a1/before-core.json",
+    "docs/front_ablation_audit/a1/capture_before.py",
+    "docs/front_ablation_audit/a1/check_gpu.py",
+    "docs/front_ablation_audit/a1/freeze.json",
+    "docs/front_ablation_audit/a1/full-airfrans.json",
+    "docs/front_ablation_audit/a1/full-car.json",
+    "docs/front_ablation_audit/a1/full-core.json",
+    "docs/front_ablation_audit/a1/gpu.json",
+    "docs/front_ablation_audit/a1/regression-initial.txt",
+    "docs/front_ablation_audit/a1/regression.txt",
+    "docs/front_ablation_audit/a1/start.json",
+    "docs/front_ablation_audit/a1/targeted-initial.txt",
+    "docs/front_ablation_audit/a1/verify_before.py",
+    "docs/front_ablation_audit/a2/audit_scope.py",
+    "docs/front_ablation_audit/a2/before-presets.json",
+    "docs/front_ablation_audit/a2/commands.json",
+    "docs/front_ablation_audit/a2/freeze.json",
+    "docs/front_ablation_audit/a2/full-airfrans.json",
+    "docs/front_ablation_audit/a2/full-car.json",
+    "docs/front_ablation_audit/a2/full-core.json",
+    "docs/front_ablation_audit/a2/regression-before-final-review.txt",
+    "docs/front_ablation_audit/a2/regression-final.txt",
+    "docs/front_ablation_audit/a2/regression-initial.txt",
+    "docs/front_ablation_audit/a2/start.json",
+    "docs/front_ablation_audit/a2/targeted-final.txt",
+    "docs/front_ablation_audit/a2/targeted-initial.txt",
+    "docs/front_ablation_audit/a2/targeted.txt",
+    "docs/front_ablation_audit/a3/audit_scope.py",
+    "docs/front_ablation_audit/a3/environment.json",
+    "docs/front_ablation_audit/a3/executed-standard-fragments.json",
+    "docs/front_ablation_audit/a3/freeze.json",
+    "docs/front_ablation_audit/a3/full-airfrans.json",
+    "docs/front_ablation_audit/a3/full-car.json",
+    "docs/front_ablation_audit/a3/full-core.json",
+    "docs/front_ablation_audit/a3/start.json",
+    "docs/front_ablation_audit/a3/training-cases.json",
+    "docs/front_ablation_audit/a3/verification-summary.json",
+    "docs/front_ablation_audit/a4/audit_scope.py",
+    "docs/front_ablation_audit/a4/commands.json",
+    "docs/front_ablation_audit/a4/commands.txt",
+    "docs/front_ablation_audit/a4/cpu-full.json",
+    "docs/front_ablation_audit/a4/cpu-identity.json",
+    "docs/front_ablation_audit/a4/cpu-no_sa.json",
+    "docs/front_ablation_audit/a4/freeze.json",
+    "docs/front_ablation_audit/a4/full-before.json",
+    "docs/front_ablation_audit/a4/gpu-airfoil-matched-full.json",
+    "docs/front_ablation_audit/a4/gpu-airfoil-matched-identity.json",
+    "docs/front_ablation_audit/a4/gpu-airfoil-matched-no_sa.json",
+    "docs/front_ablation_audit/a4/gpu-elasticity-task-full.json",
+    "docs/front_ablation_audit/a4/gpu-elasticity-task-identity.json",
+    "docs/front_ablation_audit/a4/gpu-elasticity-task-no_sa.json",
+    "docs/front_ablation_audit/a4/performance-commands.json",
+    "docs/front_ablation_audit/a4/performance-targeted.txt",
+    "docs/front_ablation_audit/a4/regression-final.txt",
+    "docs/front_ablation_audit/a4/results.json",
+    "docs/front_ablation_audit/a4/run_performance.py",
+    "docs/front_ablation_audit/a4/scope-final.txt",
+    "docs/front_ablation_audit/a4/start.json",
+    "docs/front_ablation_audit/a4/summarize.py",
+    "docs/front_ablation_audit/a4/summary.json",
+    "docs/front_ablation_audit/a4/summary.txt",
+    "docs/front_ablation_audit/a4/verify_commands.py",
+    "docs/front_ablation_audit/delivery-check.json",
+    "docs/front_ablation_audit/static-results.json",
+    "docs/front_ablation_audit/static_check.txt",
+    "docs/output_audit/changes.json",
+    "docs/output_audit/environment.json",
+    "docs/output_audit/final-regression.txt",
+    "docs/output_audit/final-snapshot-check.txt",
+    "docs/output_audit/first-regression.txt",
+    "docs/output_audit/freeze.json",
+    "docs/output_audit/record-tests.txt",
+    "docs/output_audit/shell-syntax.json",
+    "docs/output_audit/upstream-freeze.txt",
+    "docs/performance/phase9/airfoil-matched.json",
+    "docs/performance/phase9/airfoil-task.json",
+    "docs/performance/phase9/continuation-baseline.json",
+    "docs/performance/phase9/elasticity-matched.json",
+    "docs/performance/phase9/freeze-check.json",
+    "docs/remote_launch_audit/delivery-checks.json",
+    "docs/remote_launch_audit/freeze-check.json",
+    "docs/remote_launch_audit/launcher-checks.json",
+    "docs/remote_launch_audit/start.json",
+    "docs/remote_launch_audit/verify_remote_launchers.py",
+    "docs/sequential_launch_audit/freeze.json",
+    "docs/sequential_launch_audit/results.json",
+    "docs/sequential_launch_audit/start.json",
+    "docs/sequential_launch_audit/verify.py",
+    "docs/training_launch_audit/changed-files-before.json",
+    "docs/training_launch_audit/delivery-checks.json",
+    "docs/training_launch_audit/freeze-check.json",
+    "docs/training_launch_audit/launcher-checks.json",
+    "docs/training_launch_audit/paper-excerpts.json",
+    "docs/training_launch_audit/start.json",
+    "docs/training_launch_audit/verify_launchers.py",
+    "docs/viz_resume_audit/paper_sources.json",
+    "docs/viz_resume_audit/planning_audit.json",
+    "docs/viz_resume_audit/planning_start.json",
+    "docs/viz_resume_audit/v1/audit_scope.py",
+    "docs/viz_resume_audit/v1/environment.json",
+    "docs/viz_resume_audit/v1/freeze.json",
+    "docs/viz_resume_audit/v1/render-demo.json",
+    "docs/viz_resume_audit/v1/render_demo.py",
+    "docs/viz_resume_audit/v1/results.json",
+    "docs/viz_resume_audit/v1/start.json",
+    "memory/2026-09-13-cdpa-plan-and-reference-audit.md",
+    "memory/2026-09-13-exported-conversation-review.md",
+    "memory/README.md",
+    "memory/current-state.md",
+    "path.sh",
+    "pyproject.toml",
+    "tests/cdpa_reference.py",
+    "tests/output_recording_projection.py",
+    "tests/test_airfrans.py",
+    "tests/test_cdpa.py",
+    "tests/test_core.py",
+    "tests/test_core_config.py",
+    "tests/test_experiment_records.py",
+    "tests/test_front_ablation.py",
+    "tests/test_front_task_modes.py",
+    "tests/test_front_training.py",
+    "tests/test_lrsa_reference.py",
+    "tests/test_modules.py",
+    "tests/test_performance.py",
+    "tests/test_shapenet_car.py",
+    "tests/test_static_standard.py",
+    "tests/test_temporal_standard.py",
+    "tests/test_training_state.py",
+    "tests/test_visualization.py",
+    "tools/cdlno_benchmark.py",
+    "tools/cdlno_environment_preflight.py",
+    "tools/cdlno_perf/__init__.py",
+    "tools/cdlno_perf/costs.py",
+    "tools/cdlno_perf/measure.py",
+    "tools/cdlno_perf/models.py",
+    "tran_evaluate/README.md",
+    "tran_evaluate/_common.sh",
+    "tran_evaluate/_standard.sh",
+    "tran_evaluate/airfoil.sh",
+    "tran_evaluate/airfrans.sh",
+    "tran_evaluate/car.sh",
+    "tran_evaluate/check_car_eval.py",
+    "tran_evaluate/darcy.sh",
+    "tran_evaluate/elasticity.sh",
+    "tran_evaluate/inspect_data.py",
+    "tran_evaluate/inspect_data.sh",
+    "tran_evaluate/ns.sh",
+    "tran_evaluate/pipe.sh",
+    "tran_evaluate/plasticity.sh",
+    "tran_evaluate/train_eval.sh"
+  ],
+  "tracked_diff": "",
+  "staged_diff": ""
+}

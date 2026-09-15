@@ -1,0 +1,45 @@
+{
+  "environment": {
+    "python": "3.13.9",
+    "torch": "2.13.0+cu130",
+    "cuda_build": "13.0",
+    "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+    "sdpa": "MATH forced",
+    "dtype": "float32",
+    "threads": 1,
+    "tf32": false,
+    "amp": false,
+    "compile": false,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": true,
+    "cwd": "/home/hwz/CDLNO/Airfoil-Design-AirfRANS",
+    "package": "/home/hwz/CDLNO/cdlno/__init__.py"
+  },
+  "action": "capture",
+  "rows": [
+    {
+      "name": "cdlno_airfrans_full",
+      "status": "captured",
+      "device": "cpu",
+      "parameters": 10228
+    },
+    {
+      "name": "cdlno_airfrans_no_sa",
+      "status": "captured",
+      "device": "cpu",
+      "parameters": 9668
+    },
+    {
+      "name": "cdlno_airfrans_identity",
+      "status": "captured",
+      "device": "cpu",
+      "parameters": 8516
+    },
+    {
+      "name": "transolver_airfrans_original",
+      "status": "captured",
+      "device": "cuda:0",
+      "parameters": 8372
+    }
+  ]
+}

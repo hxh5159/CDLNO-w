@@ -1,0 +1,26 @@
+{
+  "superseded_draft": {
+    "description": "Initial 22-record audit generator was insufficient (no actual output replay or industrial coverage). Its binaries were moved outside the repo and are not final acceptance.",
+    "artifacts": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/superseded-k0-partial-fixtures",
+    "failures": [
+      "AttributeError: directly constructing StaticStandardModel without its concrete wrapper structured_adapter attribute",
+      "ValueError: NS requires (64,64), initial draft attempted (5,7)",
+      "NameError in draft audit variable after changing its case list"
+    ],
+    "scope": "Only newly authored audit script was corrected; no production edits. Real wrapper classes and original temporal grids used in final fixtures."
+  },
+  "tool_rejection": {
+    "action": "rm -rf docs/kcdno_audit/fixtures && regenerate",
+    "reason": "execution policy rejected rm-f-style commands",
+    "result": "No deletion occurred. Superseded agent-generated fixtures subsequently preserved by moving to isolated external audit artifact directory."
+  },
+  "final": {
+    "capture": "41/41 successful",
+    "replay": "41/41 same weights, outputs and diagnostic gradients successful",
+    "static_tests": "7/7 successful, 1.221 seconds",
+    "cli": "3/3 project processes successful; 8 tasks and 24 mode train/eval pairs",
+    "gpu": "8 original Transolver synthetic fixtures on actual local CUDA, no source adaptation",
+    "production_changes": 0,
+    "real_training": "not run"
+  }
+}

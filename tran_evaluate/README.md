@@ -1,5 +1,7 @@
 # CDLNO 远端八任务训练与评估
 
+新增 Darcy 两种前段消融专用脚本：[`ablation/no_sa/`](ablation/no_sa/) 和 [`ablation/identity/`](ablation/identity/)，各有 `train.sh`、`eval.sh`、`train_eval.sh`。例如 `bash tran_evaluate/ablation/no_sa/train_eval.sh --gpu 0`。默认 F2/L8、entry CDPA，保留现有 Darcy 配置与输出记录，详见 [消融说明](ablation/README.md)。
+
 更新（2026-09-15，统一实验记录）：新训练默认 `output/<数据集>/<UTC时间戳>/`，启动数据读取前创建 `config.json` 与日志；真实模型构造后补全参数量。训练/评估分别记入结果 JSON，复评使用独立子目录。八任务和三种前段模式均适用。详见 [目录、命令与边界](../docs/CDLNO_EXPERIMENT_OUTPUTS.md)。下述历史 A1/A2 目录规则由本次规则替代。
 
 更新（补充A2）：八任务已接入 `--front-latent-mode full|no_sa|identity`。不传时新训练仍full；评估可从显式已有run的sidecar恢复mode，显式冲突拒绝。当前统一按时间戳创建目录；旧实验通过显式路径加载。`train_eval.sh TASK --front-latent-mode no_sa` 支持同配置训练后评估，余参仍最后覆盖。见 [八任务三模式命令](../docs/CDLNO_FRONT_ABLATION_A2_COMMANDS.md) 和 [A2报告](../docs/CDLNO_FRONT_ABLATION_A2.md)。以下A1及更早“尚未接入”状态保留为历史，当前以本段为准。
