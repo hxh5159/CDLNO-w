@@ -24,8 +24,11 @@ def get_nb_trainable_params(model):
     return sum([np.prod(p.size()) for p in model_parameters])
 
 
-def train(device, model, train_loader, optimizer, scheduler, criterion='MSE', reg=1):
+def train(device, model, train_loader, optimizer, scheduler, criterion='MSE', reg=1, msar_metrics=None):
     model.train()
+    msar_training = getattr(getattr(model, 'config', None), 'family', None) == 'msar_lno'
+    if msar_training:
+        from cdlno.msar_lno.objective import training_forward, training_objective
     avg_loss_per_var = torch.zeros(4, device=device)
     avg_loss = 0
     avg_loss_surf_var = torch.zeros(4, device=device)
@@ -38,7 +41,11 @@ def train(device, model, train_loader, optimizer, scheduler, criterion='MSE', re
         data_clone = data.clone()
         data_clone = data_clone.to(device)
         optimizer.zero_grad()
-        out = model(data_clone)
+        if msar_training:
+            msar_forward = training_forward(model, data_clone)
+            out = msar_forward.prediction
+        else:
+            out = model(data_clone)
         targets = data_clone.y
 
         if criterion == 'MSE' or criterion == 'MSE_weighted':
@@ -52,10 +59,17 @@ def train(device, model, train_loader, optimizer, scheduler, criterion='MSE', re
         loss_surf = loss_surf_var.mean()
         loss_vol = loss_vol_var.mean()
 
-        if criterion == 'MSE_weighted':
-            (loss_vol + reg * loss_surf).backward()
+        if msar_training:
+            msar_loss = training_objective(loss_vol + reg * loss_surf if criterion == 'MSE_weighted' else total_loss, msar_forward)
+            if msar_metrics is not None:
+                msar_metrics.add(msar_loss)
+            msar_loss.total.backward()
+            del msar_forward, msar_loss
         else:
-            total_loss.backward()
+            if criterion == 'MSE_weighted':
+                (loss_vol + reg * loss_surf).backward()
+            else:
+                total_loss.backward()
 
         optimizer.step()
         scheduler.step()
@@ -119,7 +133,7 @@ class NumpyEncoder(json.JSONEncoder):
 
 
 def main(device, train_dataset, val_dataset, Net, hparams, path, criterion='MSE', reg=1, val_iter=10,
-         name_mod='GraphSAGE', val_sample=True, record=None, record_member=0):
+         name_mod='GraphSAGE', val_sample=True, record=None, record_member=0, visualization_norm=None):
     '''
         Args:
         device (str): device on which you want to do the computation.
@@ -136,6 +150,9 @@ def main(device, train_dataset, val_dataset, Net, hparams, path, criterion='MSE'
     Path(path).mkdir(parents=True, exist_ok=True)
 
     model = Net.to(device)
+    msar_training = getattr(getattr(model, 'config', None), 'family', None) == 'msar_lno'
+    if msar_training:
+        from cdlno.msar_lno.objective import ObjectiveMetrics
     optimizer = torch.optim.Adam(model.parameters(), lr=hparams['lr'])
     lr_scheduler = torch.optim.lr_scheduler.OneCycleLR(
         optimizer,
@@ -177,8 +194,16 @@ def main(device, train_dataset, val_dataset, Net, hparams, path, criterion='MSE'
         train_loader = DataLoader(train_dataset_sampled, batch_size=hparams['batch_size'], shuffle=True)
         del (train_dataset_sampled)
 
-        train_loss, _, loss_surf_var, loss_vol_var, loss_surf, loss_vol = train(device, model, train_loader, optimizer,
-                                                                                lr_scheduler, criterion, reg=reg)
+        if msar_training:
+            msar_metrics = ObjectiveMetrics()
+            train_loss, _, loss_surf_var, loss_vol_var, loss_surf, loss_vol = train(device, model, train_loader, optimizer,
+                                                                                    lr_scheduler, criterion, reg=reg, msar_metrics=msar_metrics)
+            msar_values = msar_metrics.values()
+            print('MSAR objective (step mean):', msar_values,
+                  'coverage:', model.training_config.effective_coverage_mode)
+        else:
+            train_loss, _, loss_surf_var, loss_vol_var, loss_surf, loss_vol = train(device, model, train_loader, optimizer,
+                                                                                    lr_scheduler, criterion, reg=reg)
         print('epoch: ' + str(epoch))
         print('train_loss： ' + str(train_loss))
         print('loss_vol： ' + str(loss_vol))
@@ -269,7 +294,12 @@ def main(device, train_dataset, val_dataset, Net, hparams, path, criterion='MSE'
                                         validation_surface_mse=val_surf, validation_volume_mse=val_vol,
                                         validation_surface_per_channel=val_surf_var,
                                         validation_volume_per_channel=val_vol_var)
+            if msar_training:
+                recorded_metrics.update(msar_values, coverage_mode=model.training_config.effective_coverage_mode,
+                             objective_reduction='mean-over-optimizer-steps')
             record.record_epoch(epoch + 1, recorded_metrics, member=record_member)
+            record.visualize(model, epoch + 1, hparams['nb_epochs'], member=record_member,
+                             dataset=val_dataset, coef_norm=visualization_norm, hparams=hparams)
 
     loss_surf_var_list = np.array(loss_surf_var_list)
     loss_vol_var_list = np.array(loss_vol_var_list)

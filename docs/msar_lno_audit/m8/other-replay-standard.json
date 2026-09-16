@@ -1,0 +1,223 @@
+[
+  {
+    "name": "Transolver_Structured_Mesh_3D",
+    "status": "passed",
+    "config": {
+      "space_dim": 3,
+      "fun_dim": 1,
+      "out_dim": 1,
+      "H": 3,
+      "W": 5,
+      "D": 2,
+      "n_hidden": 8,
+      "n_head": 2,
+      "slice_num": 4,
+      "n_layers": 2,
+      "unified_pos": false,
+      "dropout": 0
+    },
+    "class_path": "model.Transolver_Structured_Mesh_3D.Model",
+    "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/other-models/Transolver_Structured_Mesh_3D/fixture.pt",
+    "keys_shapes": {
+      "placeholder": [
+        8
+      ],
+      "preprocess.linear_pre.0.weight": [
+        16,
+        4
+      ],
+      "preprocess.linear_pre.0.bias": [
+        16
+      ],
+      "preprocess.linear_post.weight": [
+        8,
+        16
+      ],
+      "preprocess.linear_post.bias": [
+        8
+      ],
+      "blocks.0.ln_1.weight": [
+        8
+      ],
+      "blocks.0.ln_1.bias": [
+        8
+      ],
+      "blocks.0.Attn.temperature": [
+        1,
+        2,
+        1,
+        1
+      ],
+      "blocks.0.Attn.in_project_x.weight": [
+        8,
+        8,
+        3,
+        3,
+        3
+      ],
+      "blocks.0.Attn.in_project_x.bias": [
+        8
+      ],
+      "blocks.0.Attn.in_project_fx.weight": [
+        8,
+        8,
+        3,
+        3,
+        3
+      ],
+      "blocks.0.Attn.in_project_fx.bias": [
+        8
+      ],
+      "blocks.0.Attn.in_project_slice.weight": [
+        4,
+        4
+      ],
+      "blocks.0.Attn.in_project_slice.bias": [
+        4
+      ],
+      "blocks.0.Attn.to_q.weight": [
+        4,
+        4
+      ],
+      "blocks.0.Attn.to_k.weight": [
+        4,
+        4
+      ],
+      "blocks.0.Attn.to_v.weight": [
+        4,
+        4
+      ],
+      "blocks.0.Attn.to_out.0.weight": [
+        8,
+        8
+      ],
+      "blocks.0.Attn.to_out.0.bias": [
+        8
+      ],
+      "blocks.0.ln_2.weight": [
+        8
+      ],
+      "blocks.0.ln_2.bias": [
+        8
+      ],
+      "blocks.0.mlp.linear_pre.0.weight": [
+        8,
+        8
+      ],
+      "blocks.0.mlp.linear_pre.0.bias": [
+        8
+      ],
+      "blocks.0.mlp.linear_post.weight": [
+        8,
+        8
+      ],
+      "blocks.0.mlp.linear_post.bias": [
+        8
+      ],
+      "blocks.1.ln_1.weight": [
+        8
+      ],
+      "blocks.1.ln_1.bias": [
+        8
+      ],
+      "blocks.1.Attn.temperature": [
+        1,
+        2,
+        1,
+        1
+      ],
+      "blocks.1.Attn.in_project_x.weight": [
+        8,
+        8,
+        3,
+        3,
+        3
+      ],
+      "blocks.1.Attn.in_project_x.bias": [
+        8
+      ],
+      "blocks.1.Attn.in_project_fx.weight": [
+        8,
+        8,
+        3,
+        3,
+        3
+      ],
+      "blocks.1.Attn.in_project_fx.bias": [
+        8
+      ],
+      "blocks.1.Attn.in_project_slice.weight": [
+        4,
+        4
+      ],
+      "blocks.1.Attn.in_project_slice.bias": [
+        4
+      ],
+      "blocks.1.Attn.to_q.weight": [
+        4,
+        4
+      ],
+      "blocks.1.Attn.to_k.weight": [
+        4,
+        4
+      ],
+      "blocks.1.Attn.to_v.weight": [
+        4,
+        4
+      ],
+      "blocks.1.Attn.to_out.0.weight": [
+        8,
+        8
+      ],
+      "blocks.1.Attn.to_out.0.bias": [
+        8
+      ],
+      "blocks.1.ln_2.weight": [
+        8
+      ],
+      "blocks.1.ln_2.bias": [
+        8
+      ],
+      "blocks.1.mlp.linear_pre.0.weight": [
+        8,
+        8
+      ],
+      "blocks.1.mlp.linear_pre.0.bias": [
+        8
+      ],
+      "blocks.1.mlp.linear_post.weight": [
+        8,
+        8
+      ],
+      "blocks.1.mlp.linear_post.bias": [
+        8
+      ],
+      "blocks.1.ln_3.weight": [
+        8
+      ],
+      "blocks.1.ln_3.bias": [
+        8
+      ],
+      "blocks.1.mlp2.weight": [
+        1,
+        8
+      ],
+      "blocks.1.mlp2.bias": [
+        1
+      ]
+    },
+    "hashes": {
+      "fixture.pt": "0d5c7ab92fdef0b3abd0b375158e11781b28c794869a577d5bbf3d1b2ded25d4"
+    },
+    "output_shape": [
+      2,
+      30,
+      1
+    ],
+    "device": "cpu",
+    "dtype": "float32",
+    "atol": 0,
+    "rtol": 0,
+    "scope": "post-M1 current synthetic reference; not historic training weights; no real graph construction"
+  }
+]

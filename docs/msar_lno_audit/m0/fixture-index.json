@@ -1,0 +1,4260 @@
+{
+  "schema": "msar-retroactive-m0-v1",
+  "chronology": "M1 already existed; this M0 never reconstructs or backdates an old baseline",
+  "passed_fixtures": 75,
+  "groups": {
+    "k0": 41,
+    "pre_m1_core": 6,
+    "wrappers": 24,
+    "other_models": 4
+  },
+  "k0_files_rechecked": 136,
+  "checked_file_count": 182,
+  "records": [
+    {
+      "name": "cdlno_darcy_full",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_darcy_full/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_darcy_full/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 1,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": true,
+        "H": 5,
+        "W": 7,
+        "task_name": "darcy",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "full"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "cdlno_darcy_no_sa",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_darcy_no_sa/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_darcy_no_sa/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 1,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": true,
+        "H": 5,
+        "W": 7,
+        "task_name": "darcy",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "no_sa"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "cdlno_darcy_identity",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_darcy_identity/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_darcy_identity/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 1,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": true,
+        "H": 5,
+        "W": 7,
+        "task_name": "darcy",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "identity"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "transolver_darcy_original",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_darcy_original/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_darcy_original/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 1,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": true,
+        "H": 5,
+        "W": 7
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cuda:0",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "cdlno_elasticity_full",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_elasticity_full/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_elasticity_full/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "task_name": "elasticity",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "full"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "cdlno_elasticity_no_sa",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_elasticity_no_sa/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_elasticity_no_sa/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "task_name": "elasticity",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "no_sa"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "cdlno_elasticity_identity",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_elasticity_identity/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_elasticity_identity/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "task_name": "elasticity",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "identity"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "transolver_elasticity_original",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_elasticity_original/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_elasticity_original/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cuda:0",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "cdlno_airfoil_full",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfoil_full/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfoil_full/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 5,
+        "W": 7,
+        "task_name": "airfoil",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "full"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "cdlno_airfoil_no_sa",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfoil_no_sa/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfoil_no_sa/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 5,
+        "W": 7,
+        "task_name": "airfoil",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "no_sa"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "cdlno_airfoil_identity",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfoil_identity/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfoil_identity/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 5,
+        "W": 7,
+        "task_name": "airfoil",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "identity"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "transolver_airfoil_original",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_airfoil_original/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_airfoil_original/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 5,
+        "W": 7
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cuda:0",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "cdlno_pipe_full",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_pipe_full/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_pipe_full/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 5,
+        "W": 7,
+        "task_name": "pipe",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "full"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "cdlno_pipe_no_sa",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_pipe_no_sa/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_pipe_no_sa/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 5,
+        "W": 7,
+        "task_name": "pipe",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "no_sa"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "cdlno_pipe_identity",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_pipe_identity/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_pipe_identity/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 5,
+        "W": 7,
+        "task_name": "pipe",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "identity"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "transolver_pipe_original",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_pipe_original/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_pipe_original/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 5,
+        "W": 7
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cuda:0",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "cdlno_ns_full",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_ns_full/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_ns_full/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 10,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": true,
+        "H": 64,
+        "W": 64,
+        "task_name": "ns",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "full"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "cdlno_ns_no_sa",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_ns_no_sa/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_ns_no_sa/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 10,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": true,
+        "H": 64,
+        "W": 64,
+        "task_name": "ns",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "no_sa"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "cdlno_ns_identity",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_ns_identity/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_ns_identity/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 10,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": true,
+        "H": 64,
+        "W": 64,
+        "task_name": "ns",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "identity"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "transolver_ns_original",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_ns_original/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_ns_original/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 10,
+        "out_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": true,
+        "H": 64,
+        "W": 64
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cuda:0",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "cdlno_plasticity_full",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_plasticity_full/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_plasticity_full/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 1,
+        "out_dim": 4,
+        "Time_Input": true,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 101,
+        "W": 31,
+        "task_name": "plasticity",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "full"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "cdlno_plasticity_no_sa",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_plasticity_no_sa/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_plasticity_no_sa/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 1,
+        "out_dim": 4,
+        "Time_Input": true,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 101,
+        "W": 31,
+        "task_name": "plasticity",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "no_sa"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "cdlno_plasticity_identity",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_plasticity_identity/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_plasticity_identity/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 1,
+        "out_dim": 4,
+        "Time_Input": true,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 101,
+        "W": 31,
+        "task_name": "plasticity",
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "identity"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "transolver_plasticity_original",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_plasticity_original/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_plasticity_original/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 2,
+        "fun_dim": 1,
+        "out_dim": 4,
+        "Time_Input": true,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 101,
+        "W": 31
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cuda:0",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "core_full_off",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_full_off/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_full_off/metadata.json",
+      "configuration": {
+        "L": 8,
+        "F": 2,
+        "M": 4,
+        "d_model": 8,
+        "num_heads": 2,
+        "output_dim": 2,
+        "front_latent_mode": "full",
+        "cdpa_mode": "off"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "core_full_entry",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_full_entry/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_full_entry/metadata.json",
+      "configuration": {
+        "L": 8,
+        "F": 2,
+        "M": 4,
+        "d_model": 8,
+        "num_heads": 2,
+        "output_dim": 2,
+        "front_latent_mode": "full",
+        "cdpa_mode": "entry"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "core_full_every_block",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_full_every_block/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_full_every_block/metadata.json",
+      "configuration": {
+        "L": 8,
+        "F": 2,
+        "M": 4,
+        "d_model": 8,
+        "num_heads": 2,
+        "output_dim": 2,
+        "front_latent_mode": "full",
+        "cdpa_mode": "every_block"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "core_no_sa_off",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_no_sa_off/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_no_sa_off/metadata.json",
+      "configuration": {
+        "L": 8,
+        "F": 2,
+        "M": 4,
+        "d_model": 8,
+        "num_heads": 2,
+        "output_dim": 2,
+        "front_latent_mode": "no_sa",
+        "cdpa_mode": "off"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "core_no_sa_entry",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_no_sa_entry/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_no_sa_entry/metadata.json",
+      "configuration": {
+        "L": 8,
+        "F": 2,
+        "M": 4,
+        "d_model": 8,
+        "num_heads": 2,
+        "output_dim": 2,
+        "front_latent_mode": "no_sa",
+        "cdpa_mode": "entry"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "core_no_sa_every_block",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_no_sa_every_block/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_no_sa_every_block/metadata.json",
+      "configuration": {
+        "L": 8,
+        "F": 2,
+        "M": 4,
+        "d_model": 8,
+        "num_heads": 2,
+        "output_dim": 2,
+        "front_latent_mode": "no_sa",
+        "cdpa_mode": "every_block"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "core_identity_off",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_identity_off/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_identity_off/metadata.json",
+      "configuration": {
+        "L": 8,
+        "F": 2,
+        "M": 4,
+        "d_model": 8,
+        "num_heads": 2,
+        "output_dim": 2,
+        "front_latent_mode": "identity",
+        "cdpa_mode": "off"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "core_identity_entry",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_identity_entry/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_identity_entry/metadata.json",
+      "configuration": {
+        "L": 8,
+        "F": 2,
+        "M": 4,
+        "d_model": 8,
+        "num_heads": 2,
+        "output_dim": 2,
+        "front_latent_mode": "identity",
+        "cdpa_mode": "entry"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "core_identity_every_block",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_identity_every_block/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_identity_every_block/metadata.json",
+      "configuration": {
+        "L": 8,
+        "F": 2,
+        "M": 4,
+        "d_model": 8,
+        "num_heads": 2,
+        "output_dim": 2,
+        "front_latent_mode": "identity",
+        "cdpa_mode": "every_block"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "cdlno_car_full",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_car_full/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_car_full/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "full"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "cdlno_car_no_sa",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_car_no_sa/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_car_no_sa/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "no_sa"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "cdlno_car_identity",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_car_identity/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_car_identity/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "identity"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "transolver_car_original",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_car_original/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_car_original/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 7,
+        "fun_dim": 0,
+        "out_dim": 4,
+        "ref": 8,
+        "unified_pos": false
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cuda:0",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "cdlno_airfrans_full",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfrans_full/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfrans_full/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "full"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "cdlno_airfrans_no_sa",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfrans_no_sa/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfrans_no_sa/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "no_sa"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "cdlno_airfrans_identity",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfrans_identity/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfrans_identity/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "front_blocks": 2,
+        "latent_ffn_ratio": 2,
+        "cdpa_mode": "entry",
+        "cdpa_source_chunk_size": 0,
+        "front_latent_mode": "identity"
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "transolver_airfrans_original",
+      "chronology": "genuine pre-K1 / pre-M1",
+      "fixture": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_airfrans_original/fixture.pt",
+      "metadata": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_airfrans_original/metadata.json",
+      "configuration": {
+        "n_hidden": 8,
+        "n_layers": 8,
+        "n_head": 2,
+        "mlp_ratio": 2,
+        "slice_num": 4,
+        "dropout": 0.0,
+        "space_dim": 7,
+        "fun_dim": 0,
+        "out_dim": 4,
+        "ref": 8,
+        "unified_pos": true
+      },
+      "reference_index": "docs/kcdno_audit/fixture_index.json",
+      "replay": "docs/msar_lno_audit/m0/k0-replay.json",
+      "status": "passed",
+      "device": "cuda:0",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "name": "kcdno_all_point_ffn",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m1-before-n7y0eg1j/current-fixtures/kcdno_all_point_ffn.pt",
+      "sha256": "07882ec511969208b8d65bfac261d2a8532ab2b6e4a61358fae1294e9ad4fcc1",
+      "config": {
+        "family": "kcdno",
+        "architecture_version": "kcdno-core-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "kernel_rank": 3,
+        "history_mode": "all",
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "point_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "kernel_phi": "elu_plus_one",
+        "kernel_clamp": 1e-06,
+        "kernel_denominator_eps": 1e-06,
+        "kernel_projection_bias": false,
+        "gate_parameterization": "unconstrained_scalar",
+        "attention_dropout": 0.0
+      },
+      "dtype": "float32",
+      "device": "cpu",
+      "backend": "math",
+      "atol": 0,
+      "rtol": 0,
+      "chronology": "genuine pre-M1 current core",
+      "status": "passed",
+      "reference_index": "docs/msar_lno_audit/m1/fixture-index.json",
+      "replay": "docs/msar_lno_audit/m0/current-core-replay.json"
+    },
+    {
+      "name": "kcdno_all_conv_ffn",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m1-before-n7y0eg1j/current-fixtures/kcdno_all_conv_ffn.pt",
+      "sha256": "e511c9b2156d973e5445d2d057d5949d4843103c766a98c8726080287151a440",
+      "config": {
+        "family": "kcdno",
+        "architecture_version": "kcdno-core-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "kernel_rank": 3,
+        "history_mode": "all",
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "conv_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "kernel_phi": "elu_plus_one",
+        "kernel_clamp": 1e-06,
+        "kernel_denominator_eps": 1e-06,
+        "kernel_projection_bias": false,
+        "gate_parameterization": "unconstrained_scalar",
+        "attention_dropout": 0.0
+      },
+      "dtype": "float32",
+      "device": "cpu",
+      "backend": "math",
+      "atol": 0,
+      "rtol": 0,
+      "chronology": "genuine pre-M1 current core",
+      "status": "passed",
+      "reference_index": "docs/msar_lno_audit/m1/fixture-index.json",
+      "replay": "docs/msar_lno_audit/m0/current-core-replay.json"
+    },
+    {
+      "name": "kcdno_off_point_ffn",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m1-before-n7y0eg1j/current-fixtures/kcdno_off_point_ffn.pt",
+      "sha256": "939b796412857606ecfe90c3ffa6993db7819ef3179fa026ded8262750f49317",
+      "config": {
+        "family": "kcdno",
+        "architecture_version": "kcdno-core-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "kernel_rank": 3,
+        "history_mode": "off",
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "point_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "kernel_phi": "elu_plus_one",
+        "kernel_clamp": 1e-06,
+        "kernel_denominator_eps": 1e-06,
+        "kernel_projection_bias": false,
+        "gate_parameterization": "unconstrained_scalar",
+        "attention_dropout": 0.0
+      },
+      "dtype": "float32",
+      "device": "cpu",
+      "backend": "math",
+      "atol": 0,
+      "rtol": 0,
+      "chronology": "genuine pre-M1 current core",
+      "status": "passed",
+      "reference_index": "docs/msar_lno_audit/m1/fixture-index.json",
+      "replay": "docs/msar_lno_audit/m0/current-core-replay.json"
+    },
+    {
+      "name": "kcdno_off_conv_ffn",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m1-before-n7y0eg1j/current-fixtures/kcdno_off_conv_ffn.pt",
+      "sha256": "8ef50a220fdf91810f9d7f49264916b9fe54d1c702dac1da273fe76c5a4062c5",
+      "config": {
+        "family": "kcdno",
+        "architecture_version": "kcdno-core-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "kernel_rank": 3,
+        "history_mode": "off",
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "conv_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "kernel_phi": "elu_plus_one",
+        "kernel_clamp": 1e-06,
+        "kernel_denominator_eps": 1e-06,
+        "kernel_projection_bias": false,
+        "gate_parameterization": "unconstrained_scalar",
+        "attention_dropout": 0.0
+      },
+      "dtype": "float32",
+      "device": "cpu",
+      "backend": "math",
+      "atol": 0,
+      "rtol": 0,
+      "chronology": "genuine pre-M1 current core",
+      "status": "passed",
+      "reference_index": "docs/msar_lno_audit/m1/fixture-index.json",
+      "replay": "docs/msar_lno_audit/m0/current-core-replay.json"
+    },
+    {
+      "name": "lrsa_matched_point_ffn",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m1-before-n7y0eg1j/current-fixtures/lrsa_matched_point_ffn.pt",
+      "sha256": "62c5972349287d5d66b16aa93d3183cfe7df3f6898f2058ce51dc30fdfcd64a1",
+      "config": {
+        "family": "lrsa_matched",
+        "architecture_version": "lrsa-matched-full-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "point_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "attention_dropout": 0.0,
+        "latent_processor": "full"
+      },
+      "dtype": "float32",
+      "device": "cpu",
+      "backend": "math",
+      "atol": 0,
+      "rtol": 0,
+      "chronology": "genuine pre-M1 current core",
+      "status": "passed",
+      "reference_index": "docs/msar_lno_audit/m1/fixture-index.json",
+      "replay": "docs/msar_lno_audit/m0/current-core-replay.json"
+    },
+    {
+      "name": "lrsa_matched_conv_ffn",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m1-before-n7y0eg1j/current-fixtures/lrsa_matched_conv_ffn.pt",
+      "sha256": "1206013fc6020bc2bc7ddae1149c17c6fd4caf3009174a7aaf04b0ffecb5a85e",
+      "config": {
+        "family": "lrsa_matched",
+        "architecture_version": "lrsa-matched-full-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "conv_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "attention_dropout": 0.0,
+        "latent_processor": "full"
+      },
+      "dtype": "float32",
+      "device": "cpu",
+      "backend": "math",
+      "atol": 0,
+      "rtol": 0,
+      "chronology": "genuine pre-M1 current core",
+      "status": "passed",
+      "reference_index": "docs/msar_lno_audit/m1/fixture-index.json",
+      "replay": "docs/msar_lno_audit/m0/current-core-replay.json"
+    },
+    {
+      "name": "darcy_all",
+      "status": "passed",
+      "action": "replay",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/darcy_all/fixture.pt",
+      "class_path": "cdlno.kcdno.standard.StandardModel",
+      "config": {
+        "family": "kcdno",
+        "architecture_version": "kcdno-core-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "kernel_rank": 3,
+        "history_mode": "all",
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "conv_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "kernel_phi": "elu_plus_one",
+        "kernel_clamp": 1e-06,
+        "kernel_denominator_eps": 1e-06,
+        "kernel_projection_bias": false,
+        "gate_parameterization": "unconstrained_scalar",
+        "attention_dropout": 0.0
+      },
+      "adapter": {
+        "version": "kcdno-standard-v1",
+        "task": "darcy",
+        "space_dim": 2,
+        "fun_dim": 1,
+        "output_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": true,
+        "placeholder": false,
+        "stem_width": 65,
+        "grid_shape": [
+          5,
+          7
+        ],
+        "position_rule": "baseline-structured-index",
+        "output_head": "layernorm-linear-v1"
+      },
+      "output_shape": [
+        2,
+        35,
+        1
+      ],
+      "atol": 0,
+      "rtol": 0,
+      "dtype": "float32",
+      "backend": "math",
+      "device": "cpu",
+      "sha256": {
+        "fixture.pt": "4ecf459abe8d27fba273c91d9265f3bdb5f8e2bd9b940fef1dfcf3d4fc387e54"
+      },
+      "checkpoint_formats": [
+        "state_dict"
+      ],
+      "evidence": "same weights and fixed synthetic inputs; no task data/loss/optimizer/resume claim",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/wrappers-capture.json",
+      "replay": "docs/msar_lno_audit/m0/wrappers-replay.json"
+    },
+    {
+      "name": "darcy_off",
+      "status": "passed",
+      "action": "replay",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/darcy_off/fixture.pt",
+      "class_path": "cdlno.kcdno.standard.StandardModel",
+      "config": {
+        "family": "kcdno",
+        "architecture_version": "kcdno-core-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "kernel_rank": 3,
+        "history_mode": "off",
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "conv_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "kernel_phi": "elu_plus_one",
+        "kernel_clamp": 1e-06,
+        "kernel_denominator_eps": 1e-06,
+        "kernel_projection_bias": false,
+        "gate_parameterization": "unconstrained_scalar",
+        "attention_dropout": 0.0
+      },
+      "adapter": {
+        "version": "kcdno-standard-v1",
+        "task": "darcy",
+        "space_dim": 2,
+        "fun_dim": 1,
+        "output_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": true,
+        "placeholder": false,
+        "stem_width": 65,
+        "grid_shape": [
+          5,
+          7
+        ],
+        "position_rule": "baseline-structured-index",
+        "output_head": "layernorm-linear-v1"
+      },
+      "output_shape": [
+        2,
+        35,
+        1
+      ],
+      "atol": 0,
+      "rtol": 0,
+      "dtype": "float32",
+      "backend": "math",
+      "device": "cpu",
+      "sha256": {
+        "fixture.pt": "682546c3a80255fe9cf021f34c4362dd0494fd4a99f2db8c7cc4d81320d5ffea"
+      },
+      "checkpoint_formats": [
+        "state_dict"
+      ],
+      "evidence": "same weights and fixed synthetic inputs; no task data/loss/optimizer/resume claim",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/wrappers-capture.json",
+      "replay": "docs/msar_lno_audit/m0/wrappers-replay.json"
+    },
+    {
+      "name": "darcy_matched",
+      "status": "passed",
+      "action": "replay",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/darcy_matched/fixture.pt",
+      "class_path": "cdlno.kcdno.standard.StandardModel",
+      "config": {
+        "family": "lrsa_matched",
+        "architecture_version": "lrsa-matched-full-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "conv_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "attention_dropout": 0.0,
+        "latent_processor": "full"
+      },
+      "adapter": {
+        "version": "kcdno-standard-v1",
+        "task": "darcy",
+        "space_dim": 2,
+        "fun_dim": 1,
+        "output_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": true,
+        "placeholder": false,
+        "stem_width": 65,
+        "grid_shape": [
+          5,
+          7
+        ],
+        "position_rule": "baseline-structured-index",
+        "output_head": "layernorm-linear-v1"
+      },
+      "output_shape": [
+        2,
+        35,
+        1
+      ],
+      "atol": 0,
+      "rtol": 0,
+      "dtype": "float32",
+      "backend": "math",
+      "device": "cpu",
+      "sha256": {
+        "fixture.pt": "d06fc65d8ce8edfa393e9c36f391516421f3fe0ec2024d91ec2f4fcbeb58ebac"
+      },
+      "checkpoint_formats": [
+        "state_dict"
+      ],
+      "evidence": "same weights and fixed synthetic inputs; no task data/loss/optimizer/resume claim",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/wrappers-capture.json",
+      "replay": "docs/msar_lno_audit/m0/wrappers-replay.json"
+    },
+    {
+      "name": "elasticity_all",
+      "status": "passed",
+      "action": "replay",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/elasticity_all/fixture.pt",
+      "class_path": "cdlno.kcdno.standard.StandardModel",
+      "config": {
+        "family": "kcdno",
+        "architecture_version": "kcdno-core-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "kernel_rank": 3,
+        "history_mode": "all",
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "point_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "kernel_phi": "elu_plus_one",
+        "kernel_clamp": 1e-06,
+        "kernel_denominator_eps": 1e-06,
+        "kernel_projection_bias": false,
+        "gate_parameterization": "unconstrained_scalar",
+        "attention_dropout": 0.0
+      },
+      "adapter": {
+        "version": "kcdno-standard-v1",
+        "task": "elasticity",
+        "space_dim": 2,
+        "fun_dim": 0,
+        "output_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "placeholder": true,
+        "stem_width": 2,
+        "grid_shape": null,
+        "position_rule": "original-coordinates",
+        "output_head": "layernorm-linear-v1"
+      },
+      "output_shape": [
+        2,
+        11,
+        1
+      ],
+      "atol": 0,
+      "rtol": 0,
+      "dtype": "float32",
+      "backend": "math",
+      "device": "cpu",
+      "sha256": {
+        "fixture.pt": "234cd273df0ece7251721a7e42c71647cb5275461fde8e501bbe55d5223d5a47"
+      },
+      "checkpoint_formats": [
+        "state_dict"
+      ],
+      "evidence": "same weights and fixed synthetic inputs; no task data/loss/optimizer/resume claim",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/wrappers-capture.json",
+      "replay": "docs/msar_lno_audit/m0/wrappers-replay.json"
+    },
+    {
+      "name": "elasticity_off",
+      "status": "passed",
+      "action": "replay",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/elasticity_off/fixture.pt",
+      "class_path": "cdlno.kcdno.standard.StandardModel",
+      "config": {
+        "family": "kcdno",
+        "architecture_version": "kcdno-core-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "kernel_rank": 3,
+        "history_mode": "off",
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "point_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "kernel_phi": "elu_plus_one",
+        "kernel_clamp": 1e-06,
+        "kernel_denominator_eps": 1e-06,
+        "kernel_projection_bias": false,
+        "gate_parameterization": "unconstrained_scalar",
+        "attention_dropout": 0.0
+      },
+      "adapter": {
+        "version": "kcdno-standard-v1",
+        "task": "elasticity",
+        "space_dim": 2,
+        "fun_dim": 0,
+        "output_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "placeholder": true,
+        "stem_width": 2,
+        "grid_shape": null,
+        "position_rule": "original-coordinates",
+        "output_head": "layernorm-linear-v1"
+      },
+      "output_shape": [
+        2,
+        11,
+        1
+      ],
+      "atol": 0,
+      "rtol": 0,
+      "dtype": "float32",
+      "backend": "math",
+      "device": "cpu",
+      "sha256": {
+        "fixture.pt": "9996826ff80690319b43bdf1b65baa5d77e906250a0affa75c39c04628fd6773"
+      },
+      "checkpoint_formats": [
+        "state_dict"
+      ],
+      "evidence": "same weights and fixed synthetic inputs; no task data/loss/optimizer/resume claim",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/wrappers-capture.json",
+      "replay": "docs/msar_lno_audit/m0/wrappers-replay.json"
+    },
+    {
+      "name": "elasticity_matched",
+      "status": "passed",
+      "action": "replay",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/elasticity_matched/fixture.pt",
+      "class_path": "cdlno.kcdno.standard.StandardModel",
+      "config": {
+        "family": "lrsa_matched",
+        "architecture_version": "lrsa-matched-full-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "point_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "attention_dropout": 0.0,
+        "latent_processor": "full"
+      },
+      "adapter": {
+        "version": "kcdno-standard-v1",
+        "task": "elasticity",
+        "space_dim": 2,
+        "fun_dim": 0,
+        "output_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "placeholder": true,
+        "stem_width": 2,
+        "grid_shape": null,
+        "position_rule": "original-coordinates",
+        "output_head": "layernorm-linear-v1"
+      },
+      "output_shape": [
+        2,
+        11,
+        1
+      ],
+      "atol": 0,
+      "rtol": 0,
+      "dtype": "float32",
+      "backend": "math",
+      "device": "cpu",
+      "sha256": {
+        "fixture.pt": "2b78e552240b29a6633f81e6a325177ef9afe4c7fec260af345bce3b9d1bf909"
+      },
+      "checkpoint_formats": [
+        "state_dict"
+      ],
+      "evidence": "same weights and fixed synthetic inputs; no task data/loss/optimizer/resume claim",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/wrappers-capture.json",
+      "replay": "docs/msar_lno_audit/m0/wrappers-replay.json"
+    },
+    {
+      "name": "airfoil_all",
+      "status": "passed",
+      "action": "replay",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/airfoil_all/fixture.pt",
+      "class_path": "cdlno.kcdno.standard.StandardModel",
+      "config": {
+        "family": "kcdno",
+        "architecture_version": "kcdno-core-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "kernel_rank": 3,
+        "history_mode": "all",
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "conv_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "kernel_phi": "elu_plus_one",
+        "kernel_clamp": 1e-06,
+        "kernel_denominator_eps": 1e-06,
+        "kernel_projection_bias": false,
+        "gate_parameterization": "unconstrained_scalar",
+        "attention_dropout": 0.0
+      },
+      "adapter": {
+        "version": "kcdno-standard-v1",
+        "task": "airfoil",
+        "space_dim": 2,
+        "fun_dim": 0,
+        "output_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "placeholder": true,
+        "stem_width": 2,
+        "grid_shape": [
+          5,
+          7
+        ],
+        "position_rule": "original-coordinates",
+        "output_head": "layernorm-linear-v1"
+      },
+      "output_shape": [
+        2,
+        35,
+        1
+      ],
+      "atol": 0,
+      "rtol": 0,
+      "dtype": "float32",
+      "backend": "math",
+      "device": "cpu",
+      "sha256": {
+        "fixture.pt": "f9c0fa317f1c68dacf0777c6fb8292e0fdeda9bebbeb60be7fd36fdfdbdfbd69"
+      },
+      "checkpoint_formats": [
+        "state_dict"
+      ],
+      "evidence": "same weights and fixed synthetic inputs; no task data/loss/optimizer/resume claim",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/wrappers-capture.json",
+      "replay": "docs/msar_lno_audit/m0/wrappers-replay.json"
+    },
+    {
+      "name": "airfoil_off",
+      "status": "passed",
+      "action": "replay",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/airfoil_off/fixture.pt",
+      "class_path": "cdlno.kcdno.standard.StandardModel",
+      "config": {
+        "family": "kcdno",
+        "architecture_version": "kcdno-core-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "kernel_rank": 3,
+        "history_mode": "off",
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "conv_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "kernel_phi": "elu_plus_one",
+        "kernel_clamp": 1e-06,
+        "kernel_denominator_eps": 1e-06,
+        "kernel_projection_bias": false,
+        "gate_parameterization": "unconstrained_scalar",
+        "attention_dropout": 0.0
+      },
+      "adapter": {
+        "version": "kcdno-standard-v1",
+        "task": "airfoil",
+        "space_dim": 2,
+        "fun_dim": 0,
+        "output_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "placeholder": true,
+        "stem_width": 2,
+        "grid_shape": [
+          5,
+          7
+        ],
+        "position_rule": "original-coordinates",
+        "output_head": "layernorm-linear-v1"
+      },
+      "output_shape": [
+        2,
+        35,
+        1
+      ],
+      "atol": 0,
+      "rtol": 0,
+      "dtype": "float32",
+      "backend": "math",
+      "device": "cpu",
+      "sha256": {
+        "fixture.pt": "d5165d471bf74cf8f5a0ddf343097d9f01153276ac5d3e37918e2a04b811e6f6"
+      },
+      "checkpoint_formats": [
+        "state_dict"
+      ],
+      "evidence": "same weights and fixed synthetic inputs; no task data/loss/optimizer/resume claim",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/wrappers-capture.json",
+      "replay": "docs/msar_lno_audit/m0/wrappers-replay.json"
+    },
+    {
+      "name": "airfoil_matched",
+      "status": "passed",
+      "action": "replay",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/airfoil_matched/fixture.pt",
+      "class_path": "cdlno.kcdno.standard.StandardModel",
+      "config": {
+        "family": "lrsa_matched",
+        "architecture_version": "lrsa-matched-full-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "conv_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "attention_dropout": 0.0,
+        "latent_processor": "full"
+      },
+      "adapter": {
+        "version": "kcdno-standard-v1",
+        "task": "airfoil",
+        "space_dim": 2,
+        "fun_dim": 0,
+        "output_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "placeholder": true,
+        "stem_width": 2,
+        "grid_shape": [
+          5,
+          7
+        ],
+        "position_rule": "original-coordinates",
+        "output_head": "layernorm-linear-v1"
+      },
+      "output_shape": [
+        2,
+        35,
+        1
+      ],
+      "atol": 0,
+      "rtol": 0,
+      "dtype": "float32",
+      "backend": "math",
+      "device": "cpu",
+      "sha256": {
+        "fixture.pt": "c85a89b7f3e20da6ac463f43f0a29dcfaaf850c037c92fc1ca2726bcb878b823"
+      },
+      "checkpoint_formats": [
+        "state_dict"
+      ],
+      "evidence": "same weights and fixed synthetic inputs; no task data/loss/optimizer/resume claim",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/wrappers-capture.json",
+      "replay": "docs/msar_lno_audit/m0/wrappers-replay.json"
+    },
+    {
+      "name": "pipe_all",
+      "status": "passed",
+      "action": "replay",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/pipe_all/fixture.pt",
+      "class_path": "cdlno.kcdno.standard.StandardModel",
+      "config": {
+        "family": "kcdno",
+        "architecture_version": "kcdno-core-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "kernel_rank": 3,
+        "history_mode": "all",
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "conv_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "kernel_phi": "elu_plus_one",
+        "kernel_clamp": 1e-06,
+        "kernel_denominator_eps": 1e-06,
+        "kernel_projection_bias": false,
+        "gate_parameterization": "unconstrained_scalar",
+        "attention_dropout": 0.0
+      },
+      "adapter": {
+        "version": "kcdno-standard-v1",
+        "task": "pipe",
+        "space_dim": 2,
+        "fun_dim": 0,
+        "output_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "placeholder": true,
+        "stem_width": 2,
+        "grid_shape": [
+          5,
+          7
+        ],
+        "position_rule": "original-coordinates",
+        "output_head": "layernorm-linear-v1"
+      },
+      "output_shape": [
+        2,
+        35,
+        1
+      ],
+      "atol": 0,
+      "rtol": 0,
+      "dtype": "float32",
+      "backend": "math",
+      "device": "cpu",
+      "sha256": {
+        "fixture.pt": "3b9764fb2e5a3baa15f1ba5811bcfb486722335d8c25944dfb6bd4c32abe53ba"
+      },
+      "checkpoint_formats": [
+        "state_dict"
+      ],
+      "evidence": "same weights and fixed synthetic inputs; no task data/loss/optimizer/resume claim",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/wrappers-capture.json",
+      "replay": "docs/msar_lno_audit/m0/wrappers-replay.json"
+    },
+    {
+      "name": "pipe_off",
+      "status": "passed",
+      "action": "replay",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/pipe_off/fixture.pt",
+      "class_path": "cdlno.kcdno.standard.StandardModel",
+      "config": {
+        "family": "kcdno",
+        "architecture_version": "kcdno-core-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "kernel_rank": 3,
+        "history_mode": "off",
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "conv_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "kernel_phi": "elu_plus_one",
+        "kernel_clamp": 1e-06,
+        "kernel_denominator_eps": 1e-06,
+        "kernel_projection_bias": false,
+        "gate_parameterization": "unconstrained_scalar",
+        "attention_dropout": 0.0
+      },
+      "adapter": {
+        "version": "kcdno-standard-v1",
+        "task": "pipe",
+        "space_dim": 2,
+        "fun_dim": 0,
+        "output_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "placeholder": true,
+        "stem_width": 2,
+        "grid_shape": [
+          5,
+          7
+        ],
+        "position_rule": "original-coordinates",
+        "output_head": "layernorm-linear-v1"
+      },
+      "output_shape": [
+        2,
+        35,
+        1
+      ],
+      "atol": 0,
+      "rtol": 0,
+      "dtype": "float32",
+      "backend": "math",
+      "device": "cpu",
+      "sha256": {
+        "fixture.pt": "990804131d5f66de4e5eb13da652ac9213978c6c82004b14d632c162beaf8733"
+      },
+      "checkpoint_formats": [
+        "state_dict"
+      ],
+      "evidence": "same weights and fixed synthetic inputs; no task data/loss/optimizer/resume claim",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/wrappers-capture.json",
+      "replay": "docs/msar_lno_audit/m0/wrappers-replay.json"
+    },
+    {
+      "name": "pipe_matched",
+      "status": "passed",
+      "action": "replay",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/pipe_matched/fixture.pt",
+      "class_path": "cdlno.kcdno.standard.StandardModel",
+      "config": {
+        "family": "lrsa_matched",
+        "architecture_version": "lrsa-matched-full-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "conv_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "attention_dropout": 0.0,
+        "latent_processor": "full"
+      },
+      "adapter": {
+        "version": "kcdno-standard-v1",
+        "task": "pipe",
+        "space_dim": 2,
+        "fun_dim": 0,
+        "output_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "placeholder": true,
+        "stem_width": 2,
+        "grid_shape": [
+          5,
+          7
+        ],
+        "position_rule": "original-coordinates",
+        "output_head": "layernorm-linear-v1"
+      },
+      "output_shape": [
+        2,
+        35,
+        1
+      ],
+      "atol": 0,
+      "rtol": 0,
+      "dtype": "float32",
+      "backend": "math",
+      "device": "cpu",
+      "sha256": {
+        "fixture.pt": "e08d3716b002ada3b84760eb428d5d1607ac090efb14631439874254a8946f8a"
+      },
+      "checkpoint_formats": [
+        "state_dict"
+      ],
+      "evidence": "same weights and fixed synthetic inputs; no task data/loss/optimizer/resume claim",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/wrappers-capture.json",
+      "replay": "docs/msar_lno_audit/m0/wrappers-replay.json"
+    },
+    {
+      "name": "ns_all",
+      "status": "passed",
+      "action": "replay",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/ns_all/fixture.pt",
+      "class_path": "cdlno.kcdno.standard.StandardModel",
+      "config": {
+        "family": "kcdno",
+        "architecture_version": "kcdno-core-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "kernel_rank": 3,
+        "history_mode": "all",
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "conv_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "kernel_phi": "elu_plus_one",
+        "kernel_clamp": 1e-06,
+        "kernel_denominator_eps": 1e-06,
+        "kernel_projection_bias": false,
+        "gate_parameterization": "unconstrained_scalar",
+        "attention_dropout": 0.0
+      },
+      "adapter": {
+        "version": "kcdno-standard-v1",
+        "task": "ns",
+        "space_dim": 2,
+        "fun_dim": 10,
+        "output_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": true,
+        "placeholder": false,
+        "stem_width": 74,
+        "grid_shape": [
+          64,
+          64
+        ],
+        "position_rule": "baseline-structured-index",
+        "output_head": "layernorm-linear-v1"
+      },
+      "output_shape": [
+        1,
+        4096,
+        1
+      ],
+      "atol": 0,
+      "rtol": 0,
+      "dtype": "float32",
+      "backend": "math",
+      "device": "cpu",
+      "sha256": {
+        "fixture.pt": "9baca6af552d0ec718f3ad9d04a1e614d3f0ca6c3629bac7af5a1ae6b217cc74"
+      },
+      "checkpoint_formats": [
+        "state_dict"
+      ],
+      "evidence": "same weights and fixed synthetic inputs; no task data/loss/optimizer/resume claim",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/wrappers-capture.json",
+      "replay": "docs/msar_lno_audit/m0/wrappers-replay.json"
+    },
+    {
+      "name": "ns_off",
+      "status": "passed",
+      "action": "replay",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/ns_off/fixture.pt",
+      "class_path": "cdlno.kcdno.standard.StandardModel",
+      "config": {
+        "family": "kcdno",
+        "architecture_version": "kcdno-core-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "kernel_rank": 3,
+        "history_mode": "off",
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "conv_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "kernel_phi": "elu_plus_one",
+        "kernel_clamp": 1e-06,
+        "kernel_denominator_eps": 1e-06,
+        "kernel_projection_bias": false,
+        "gate_parameterization": "unconstrained_scalar",
+        "attention_dropout": 0.0
+      },
+      "adapter": {
+        "version": "kcdno-standard-v1",
+        "task": "ns",
+        "space_dim": 2,
+        "fun_dim": 10,
+        "output_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": true,
+        "placeholder": false,
+        "stem_width": 74,
+        "grid_shape": [
+          64,
+          64
+        ],
+        "position_rule": "baseline-structured-index",
+        "output_head": "layernorm-linear-v1"
+      },
+      "output_shape": [
+        1,
+        4096,
+        1
+      ],
+      "atol": 0,
+      "rtol": 0,
+      "dtype": "float32",
+      "backend": "math",
+      "device": "cpu",
+      "sha256": {
+        "fixture.pt": "1473f9c48dbded0bba4003d602bd4080247b87578b315be6aeecd93e6e2f1151"
+      },
+      "checkpoint_formats": [
+        "state_dict"
+      ],
+      "evidence": "same weights and fixed synthetic inputs; no task data/loss/optimizer/resume claim",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/wrappers-capture.json",
+      "replay": "docs/msar_lno_audit/m0/wrappers-replay.json"
+    },
+    {
+      "name": "ns_matched",
+      "status": "passed",
+      "action": "replay",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/ns_matched/fixture.pt",
+      "class_path": "cdlno.kcdno.standard.StandardModel",
+      "config": {
+        "family": "lrsa_matched",
+        "architecture_version": "lrsa-matched-full-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "conv_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "attention_dropout": 0.0,
+        "latent_processor": "full"
+      },
+      "adapter": {
+        "version": "kcdno-standard-v1",
+        "task": "ns",
+        "space_dim": 2,
+        "fun_dim": 10,
+        "output_dim": 1,
+        "Time_Input": false,
+        "ref": 8,
+        "unified_pos": true,
+        "placeholder": false,
+        "stem_width": 74,
+        "grid_shape": [
+          64,
+          64
+        ],
+        "position_rule": "baseline-structured-index",
+        "output_head": "layernorm-linear-v1"
+      },
+      "output_shape": [
+        1,
+        4096,
+        1
+      ],
+      "atol": 0,
+      "rtol": 0,
+      "dtype": "float32",
+      "backend": "math",
+      "device": "cpu",
+      "sha256": {
+        "fixture.pt": "eec544e74d0ddf9112f249f3e2f3a031f3271d6817329e90ffcd0f9d647b90fb"
+      },
+      "checkpoint_formats": [
+        "state_dict"
+      ],
+      "evidence": "same weights and fixed synthetic inputs; no task data/loss/optimizer/resume claim",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/wrappers-capture.json",
+      "replay": "docs/msar_lno_audit/m0/wrappers-replay.json"
+    },
+    {
+      "name": "plasticity_all",
+      "status": "passed",
+      "action": "replay",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/plasticity_all/fixture.pt",
+      "class_path": "cdlno.kcdno.standard.StandardModel",
+      "config": {
+        "family": "kcdno",
+        "architecture_version": "kcdno-core-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "kernel_rank": 3,
+        "history_mode": "all",
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "conv_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "kernel_phi": "elu_plus_one",
+        "kernel_clamp": 1e-06,
+        "kernel_denominator_eps": 1e-06,
+        "kernel_projection_bias": false,
+        "gate_parameterization": "unconstrained_scalar",
+        "attention_dropout": 0.0
+      },
+      "adapter": {
+        "version": "kcdno-standard-v1",
+        "task": "plasticity",
+        "space_dim": 2,
+        "fun_dim": 1,
+        "output_dim": 4,
+        "Time_Input": true,
+        "ref": 8,
+        "unified_pos": false,
+        "placeholder": false,
+        "stem_width": 3,
+        "grid_shape": [
+          101,
+          31
+        ],
+        "position_rule": "original-coordinates",
+        "output_head": "layernorm-linear-v1"
+      },
+      "output_shape": [
+        1,
+        3131,
+        4
+      ],
+      "atol": 0,
+      "rtol": 0,
+      "dtype": "float32",
+      "backend": "math",
+      "device": "cpu",
+      "sha256": {
+        "fixture.pt": "bf7d7a03974c3c97fe582f5157669161d54c4ceb5f4593a2d10aede5bf228002"
+      },
+      "checkpoint_formats": [
+        "state_dict"
+      ],
+      "evidence": "same weights and fixed synthetic inputs; no task data/loss/optimizer/resume claim",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/wrappers-capture.json",
+      "replay": "docs/msar_lno_audit/m0/wrappers-replay.json"
+    },
+    {
+      "name": "plasticity_off",
+      "status": "passed",
+      "action": "replay",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/plasticity_off/fixture.pt",
+      "class_path": "cdlno.kcdno.standard.StandardModel",
+      "config": {
+        "family": "kcdno",
+        "architecture_version": "kcdno-core-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "kernel_rank": 3,
+        "history_mode": "off",
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "conv_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "kernel_phi": "elu_plus_one",
+        "kernel_clamp": 1e-06,
+        "kernel_denominator_eps": 1e-06,
+        "kernel_projection_bias": false,
+        "gate_parameterization": "unconstrained_scalar",
+        "attention_dropout": 0.0
+      },
+      "adapter": {
+        "version": "kcdno-standard-v1",
+        "task": "plasticity",
+        "space_dim": 2,
+        "fun_dim": 1,
+        "output_dim": 4,
+        "Time_Input": true,
+        "ref": 8,
+        "unified_pos": false,
+        "placeholder": false,
+        "stem_width": 3,
+        "grid_shape": [
+          101,
+          31
+        ],
+        "position_rule": "original-coordinates",
+        "output_head": "layernorm-linear-v1"
+      },
+      "output_shape": [
+        1,
+        3131,
+        4
+      ],
+      "atol": 0,
+      "rtol": 0,
+      "dtype": "float32",
+      "backend": "math",
+      "device": "cpu",
+      "sha256": {
+        "fixture.pt": "074279ab8caff86de54628ef460e16111675fc95618e6007fc7183b1bb12aff3"
+      },
+      "checkpoint_formats": [
+        "state_dict"
+      ],
+      "evidence": "same weights and fixed synthetic inputs; no task data/loss/optimizer/resume claim",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/wrappers-capture.json",
+      "replay": "docs/msar_lno_audit/m0/wrappers-replay.json"
+    },
+    {
+      "name": "plasticity_matched",
+      "status": "passed",
+      "action": "replay",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/plasticity_matched/fixture.pt",
+      "class_path": "cdlno.kcdno.standard.StandardModel",
+      "config": {
+        "family": "lrsa_matched",
+        "architecture_version": "lrsa-matched-full-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "conv_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "attention_dropout": 0.0,
+        "latent_processor": "full"
+      },
+      "adapter": {
+        "version": "kcdno-standard-v1",
+        "task": "plasticity",
+        "space_dim": 2,
+        "fun_dim": 1,
+        "output_dim": 4,
+        "Time_Input": true,
+        "ref": 8,
+        "unified_pos": false,
+        "placeholder": false,
+        "stem_width": 3,
+        "grid_shape": [
+          101,
+          31
+        ],
+        "position_rule": "original-coordinates",
+        "output_head": "layernorm-linear-v1"
+      },
+      "output_shape": [
+        1,
+        3131,
+        4
+      ],
+      "atol": 0,
+      "rtol": 0,
+      "dtype": "float32",
+      "backend": "math",
+      "device": "cpu",
+      "sha256": {
+        "fixture.pt": "3fd621b596d87d70390e08252db0d2b42763bcf586359795006c8207534de581"
+      },
+      "checkpoint_formats": [
+        "state_dict"
+      ],
+      "evidence": "same weights and fixed synthetic inputs; no task data/loss/optimizer/resume claim",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/wrappers-capture.json",
+      "replay": "docs/msar_lno_audit/m0/wrappers-replay.json"
+    },
+    {
+      "name": "car_all",
+      "status": "passed",
+      "action": "replay",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/car_all/fixture.pt",
+      "class_path": "models.KCDNO.Model",
+      "config": {
+        "family": "kcdno",
+        "architecture_version": "kcdno-core-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "kernel_rank": 3,
+        "history_mode": "all",
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "point_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "kernel_phi": "elu_plus_one",
+        "kernel_clamp": 1e-06,
+        "kernel_denominator_eps": 1e-06,
+        "kernel_projection_bias": false,
+        "gate_parameterization": "unconstrained_scalar",
+        "attention_dropout": 0.0
+      },
+      "adapter": {
+        "version": "kcdno-shapenet-car-v1",
+        "input_channels": 7,
+        "stem_width": 7,
+        "input_order": [
+          "xyz3",
+          "sdf1",
+          "normal3"
+        ],
+        "output_order": [
+          "velocity3",
+          "pressure1"
+        ],
+        "output_channels": 4,
+        "placeholder": true,
+        "Time_Input": false,
+        "unified_pos": false,
+        "geometry_encoder": false,
+        "batch_policy": "single-graph",
+        "output_head": "layernorm-linear-v1"
+      },
+      "output_shape": [
+        13,
+        4
+      ],
+      "atol": 0,
+      "rtol": 0,
+      "dtype": "float32",
+      "backend": "math",
+      "device": "cpu",
+      "sha256": {
+        "fixture.pt": "952b24eb60609192c841b7dc801426f45027101e5245acc2dda27b6e0a97a31e",
+        "whole.pt": "5272c8edb09574809603abd38a25d91bdefe9de3afb2efa5814d6882017895c4"
+      },
+      "checkpoint_formats": [
+        "state_dict",
+        "whole_model"
+      ],
+      "evidence": "same weights and fixed synthetic inputs; no task data/loss/optimizer/resume claim",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/wrappers-capture.json",
+      "replay": "docs/msar_lno_audit/m0/wrappers-replay.json"
+    },
+    {
+      "name": "car_off",
+      "status": "passed",
+      "action": "replay",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/car_off/fixture.pt",
+      "class_path": "models.KCDNO.Model",
+      "config": {
+        "family": "kcdno",
+        "architecture_version": "kcdno-core-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "kernel_rank": 3,
+        "history_mode": "off",
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "point_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "kernel_phi": "elu_plus_one",
+        "kernel_clamp": 1e-06,
+        "kernel_denominator_eps": 1e-06,
+        "kernel_projection_bias": false,
+        "gate_parameterization": "unconstrained_scalar",
+        "attention_dropout": 0.0
+      },
+      "adapter": {
+        "version": "kcdno-shapenet-car-v1",
+        "input_channels": 7,
+        "stem_width": 7,
+        "input_order": [
+          "xyz3",
+          "sdf1",
+          "normal3"
+        ],
+        "output_order": [
+          "velocity3",
+          "pressure1"
+        ],
+        "output_channels": 4,
+        "placeholder": true,
+        "Time_Input": false,
+        "unified_pos": false,
+        "geometry_encoder": false,
+        "batch_policy": "single-graph",
+        "output_head": "layernorm-linear-v1"
+      },
+      "output_shape": [
+        13,
+        4
+      ],
+      "atol": 0,
+      "rtol": 0,
+      "dtype": "float32",
+      "backend": "math",
+      "device": "cpu",
+      "sha256": {
+        "fixture.pt": "dcdf72d5c141eaf284dbf94f9965adf7c35bbd6d217b4b88a4d4e1ec29c3e9d3",
+        "whole.pt": "7513c3a848e267882eec682d4fe8a93b62b0918a8a0c95d70ce6bec8e54de4d6"
+      },
+      "checkpoint_formats": [
+        "state_dict",
+        "whole_model"
+      ],
+      "evidence": "same weights and fixed synthetic inputs; no task data/loss/optimizer/resume claim",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/wrappers-capture.json",
+      "replay": "docs/msar_lno_audit/m0/wrappers-replay.json"
+    },
+    {
+      "name": "car_matched",
+      "status": "passed",
+      "action": "replay",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/car_matched/fixture.pt",
+      "class_path": "models.KCDNO.Model",
+      "config": {
+        "family": "lrsa_matched",
+        "architecture_version": "lrsa-matched-full-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "point_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "attention_dropout": 0.0,
+        "latent_processor": "full"
+      },
+      "adapter": {
+        "version": "kcdno-shapenet-car-v1",
+        "input_channels": 7,
+        "stem_width": 7,
+        "input_order": [
+          "xyz3",
+          "sdf1",
+          "normal3"
+        ],
+        "output_order": [
+          "velocity3",
+          "pressure1"
+        ],
+        "output_channels": 4,
+        "placeholder": true,
+        "Time_Input": false,
+        "unified_pos": false,
+        "geometry_encoder": false,
+        "batch_policy": "single-graph",
+        "output_head": "layernorm-linear-v1"
+      },
+      "output_shape": [
+        13,
+        4
+      ],
+      "atol": 0,
+      "rtol": 0,
+      "dtype": "float32",
+      "backend": "math",
+      "device": "cpu",
+      "sha256": {
+        "fixture.pt": "bc810d1e9a9b2d34090d133457cc5f32ca7c1fa65033dbe54d443fd1904d5b87",
+        "whole.pt": "075abab3c4f8c4a4281d2bb6c4408d0cb9fb935a159b16fc4a7380bd41b706cd"
+      },
+      "checkpoint_formats": [
+        "state_dict",
+        "whole_model"
+      ],
+      "evidence": "same weights and fixed synthetic inputs; no task data/loss/optimizer/resume claim",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/wrappers-capture.json",
+      "replay": "docs/msar_lno_audit/m0/wrappers-replay.json"
+    },
+    {
+      "name": "airfrans_all",
+      "status": "passed",
+      "action": "replay",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/airfrans_all/fixture.pt",
+      "class_path": "cdlno.kcdno.airfrans.AirfRANSModel",
+      "config": {
+        "family": "kcdno",
+        "architecture_version": "kcdno-core-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "kernel_rank": 3,
+        "history_mode": "all",
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "point_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "kernel_phi": "elu_plus_one",
+        "kernel_clamp": 1e-06,
+        "kernel_denominator_eps": 1e-06,
+        "kernel_projection_bias": false,
+        "gate_parameterization": "unconstrained_scalar",
+        "attention_dropout": 0.0
+      },
+      "adapter": {
+        "version": "kcdno-airfrans-v1",
+        "input_channels": 7,
+        "stem_width": 71,
+        "input_order": [
+          "xy2",
+          "Uinf2",
+          "sdf1",
+          "normal2"
+        ],
+        "output_order": [
+          "vx",
+          "vy",
+          "p",
+          "nut"
+        ],
+        "output_channels": 4,
+        "ref": 8,
+        "reference_domain": [
+          [
+            -2.0,
+            4.0
+          ],
+          [
+            -1.5,
+            1.5
+          ]
+        ],
+        "reference_rule": "append-distances-from-data.pos",
+        "placeholder": true,
+        "Time_Input": false,
+        "batch_policy": "single-graph-sampled-ptr-v1",
+        "output_head": "layernorm-linear-v1"
+      },
+      "output_shape": [
+        13,
+        4
+      ],
+      "atol": 0,
+      "rtol": 0,
+      "dtype": "float32",
+      "backend": "math",
+      "device": "cpu",
+      "sha256": {
+        "fixture.pt": "fd15d53857e3f5c39f258f77aa93ebf24307abdb4f16fb691249360e959a25f7",
+        "list.pt": "75ab003d2ea9b92abbcab629cefb3564d552ad4a634d820f4027ff4e85b0f66a",
+        "whole.pt": "fcd56273535f05a57f117939fa1de14d93e7b5248981b4b072be271f2cce04bb"
+      },
+      "checkpoint_formats": [
+        "state_dict",
+        "whole_model",
+        "model_list"
+      ],
+      "evidence": "same weights and fixed synthetic inputs; no task data/loss/optimizer/resume claim",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/wrappers-capture.json",
+      "replay": "docs/msar_lno_audit/m0/wrappers-replay.json"
+    },
+    {
+      "name": "airfrans_off",
+      "status": "passed",
+      "action": "replay",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/airfrans_off/fixture.pt",
+      "class_path": "cdlno.kcdno.airfrans.AirfRANSModel",
+      "config": {
+        "family": "kcdno",
+        "architecture_version": "kcdno-core-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "kernel_rank": 3,
+        "history_mode": "off",
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "point_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "kernel_phi": "elu_plus_one",
+        "kernel_clamp": 1e-06,
+        "kernel_denominator_eps": 1e-06,
+        "kernel_projection_bias": false,
+        "gate_parameterization": "unconstrained_scalar",
+        "attention_dropout": 0.0
+      },
+      "adapter": {
+        "version": "kcdno-airfrans-v1",
+        "input_channels": 7,
+        "stem_width": 71,
+        "input_order": [
+          "xy2",
+          "Uinf2",
+          "sdf1",
+          "normal2"
+        ],
+        "output_order": [
+          "vx",
+          "vy",
+          "p",
+          "nut"
+        ],
+        "output_channels": 4,
+        "ref": 8,
+        "reference_domain": [
+          [
+            -2.0,
+            4.0
+          ],
+          [
+            -1.5,
+            1.5
+          ]
+        ],
+        "reference_rule": "append-distances-from-data.pos",
+        "placeholder": true,
+        "Time_Input": false,
+        "batch_policy": "single-graph-sampled-ptr-v1",
+        "output_head": "layernorm-linear-v1"
+      },
+      "output_shape": [
+        13,
+        4
+      ],
+      "atol": 0,
+      "rtol": 0,
+      "dtype": "float32",
+      "backend": "math",
+      "device": "cpu",
+      "sha256": {
+        "fixture.pt": "2b7b2d2fd9ca9ca009fba94115da274ac71981c0e8aecd21407cda39391747a6",
+        "list.pt": "7ea18b1ac67045ba67a8fef0648c18ec71b6220f6c317ae0ec7794309e945256",
+        "whole.pt": "2f17b90fb211fad6a291fcb68aa294f817b5e1a2bb19c96ec58921997b90879b"
+      },
+      "checkpoint_formats": [
+        "state_dict",
+        "whole_model",
+        "model_list"
+      ],
+      "evidence": "same weights and fixed synthetic inputs; no task data/loss/optimizer/resume claim",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/wrappers-capture.json",
+      "replay": "docs/msar_lno_audit/m0/wrappers-replay.json"
+    },
+    {
+      "name": "airfrans_matched",
+      "status": "passed",
+      "action": "replay",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/airfrans_matched/fixture.pt",
+      "class_path": "cdlno.kcdno.airfrans.AirfRANSModel",
+      "config": {
+        "family": "lrsa_matched",
+        "architecture_version": "lrsa-matched-full-v1",
+        "L": 2,
+        "d": 8,
+        "h": 2,
+        "M": 4,
+        "ffn1_hidden": 16,
+        "ffn2_hidden": 16,
+        "point_hidden": 16,
+        "latent_activation": "gelu",
+        "point_activation": "gelu",
+        "point_module": "point_ffn",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "attention_dropout": 0.0,
+        "latent_processor": "full"
+      },
+      "adapter": {
+        "version": "kcdno-airfrans-v1",
+        "input_channels": 7,
+        "stem_width": 71,
+        "input_order": [
+          "xy2",
+          "Uinf2",
+          "sdf1",
+          "normal2"
+        ],
+        "output_order": [
+          "vx",
+          "vy",
+          "p",
+          "nut"
+        ],
+        "output_channels": 4,
+        "ref": 8,
+        "reference_domain": [
+          [
+            -2.0,
+            4.0
+          ],
+          [
+            -1.5,
+            1.5
+          ]
+        ],
+        "reference_rule": "append-distances-from-data.pos",
+        "placeholder": true,
+        "Time_Input": false,
+        "batch_policy": "single-graph-sampled-ptr-v1",
+        "output_head": "layernorm-linear-v1"
+      },
+      "output_shape": [
+        13,
+        4
+      ],
+      "atol": 0,
+      "rtol": 0,
+      "dtype": "float32",
+      "backend": "math",
+      "device": "cpu",
+      "sha256": {
+        "fixture.pt": "6100a9a84371258d63f35deb1a84d913d7c781ee9d28de77fa909e8bc751d5c3",
+        "list.pt": "51d5f4423859659be003bc938d8f9426243cfbf8139c43a390afb45ef0ed0f65",
+        "whole.pt": "4a69d6b11da794c65ee29fa18653b913ed110f48d1521ee625f0999ff387fe35"
+      },
+      "checkpoint_formats": [
+        "state_dict",
+        "whole_model",
+        "model_list"
+      ],
+      "evidence": "same weights and fixed synthetic inputs; no task data/loss/optimizer/resume claim",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/wrappers-capture.json",
+      "replay": "docs/msar_lno_audit/m0/wrappers-replay.json"
+    },
+    {
+      "name": "MLP",
+      "status": "passed",
+      "config": {
+        "encoder": [
+          7,
+          64,
+          64,
+          8
+        ],
+        "decoder": [
+          8,
+          64,
+          64,
+          4
+        ],
+        "nb_hidden_layers": 3,
+        "size_hidden_layers": 64,
+        "batch_size": 1,
+        "nb_epochs": 398,
+        "lr": 0.001,
+        "bn_bool": true,
+        "subsampling": 32000
+      },
+      "class_path": "models.NN.NN",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/other-models/MLP/fixture.pt",
+      "hashes": {
+        "list.pt": "6bd25a6cbcd4dc2af80b418eb94ebff4f0eba0720a5b69b3a5c900176735efae",
+        "fixture.pt": "a649f2a071064bcb481bf0551a05f69ef3880db39790e254d7c8a8f7555d9512"
+      },
+      "output_shape": [
+        13,
+        4
+      ],
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0,
+      "scope": "post-M1 current synthetic reference; not historic training weights; no real graph construction",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/other-capture.json",
+      "replay": "docs/msar_lno_audit/m0/other-replay.json"
+    },
+    {
+      "name": "PointNet",
+      "status": "passed",
+      "config": {
+        "encoder": [
+          7,
+          64,
+          64,
+          8
+        ],
+        "decoder": [
+          8,
+          64,
+          64,
+          4
+        ],
+        "base_nb": 8,
+        "batch_size": 1,
+        "nb_epochs": 398,
+        "lr": 0.001,
+        "subsampling": 32000
+      },
+      "class_path": "models.PointNet.PointNet",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/other-models/PointNet/fixture.pt",
+      "hashes": {
+        "list.pt": "49a406625539c690fa1ee69750869d6061a3ee3a59d34a9f98e72d622514108e",
+        "fixture.pt": "07e1bb93bcc38f4425af438b6f58d14590c143c5031791fe6b743b407340b6c4"
+      },
+      "output_shape": [
+        13,
+        4
+      ],
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0,
+      "scope": "post-M1 current synthetic reference; not historic training weights; no real graph construction",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/other-capture.json",
+      "replay": "docs/msar_lno_audit/m0/other-replay.json"
+    },
+    {
+      "name": "GraphSAGE",
+      "status": "passed",
+      "config": {
+        "encoder": [
+          7,
+          64,
+          64,
+          8
+        ],
+        "decoder": [
+          8,
+          64,
+          64,
+          4
+        ],
+        "nb_hidden_layers": 3,
+        "size_hidden_layers": 64,
+        "batch_size": 1,
+        "nb_epochs": 398,
+        "lr": 0.001,
+        "max_neighbors": 64,
+        "bn_bool": true,
+        "subsampling": 32000,
+        "r": 0.05
+      },
+      "class_path": "models.GraphSAGE.GraphSAGE",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/other-models/GraphSAGE/fixture.pt",
+      "hashes": {
+        "list.pt": "99ec89e197f1cfb9fd74d3f241e89fde0d62af8dfd7a227928818e1741ddd088",
+        "fixture.pt": "4fd85c1341f9c11d8478bf5f64fff0d0e2836514d9dedc5fefc56b8d2970c885"
+      },
+      "output_shape": [
+        13,
+        4
+      ],
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0,
+      "scope": "post-M1 current synthetic reference; not historic training weights; no real graph construction",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/other-capture.json",
+      "replay": "docs/msar_lno_audit/m0/other-replay.json"
+    },
+    {
+      "name": "Transolver_Structured_Mesh_3D",
+      "status": "passed",
+      "config": {
+        "space_dim": 3,
+        "fun_dim": 1,
+        "out_dim": 1,
+        "H": 3,
+        "W": 5,
+        "D": 2,
+        "n_hidden": 8,
+        "n_head": 2,
+        "slice_num": 4,
+        "n_layers": 2,
+        "unified_pos": false,
+        "dropout": 0
+      },
+      "class_path": "model.Transolver_Structured_Mesh_3D.Model",
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/other-models/Transolver_Structured_Mesh_3D/fixture.pt",
+      "hashes": {
+        "fixture.pt": "0d5c7ab92fdef0b3abd0b375158e11781b28c794869a577d5bbf3d1b2ded25d4"
+      },
+      "output_shape": [
+        2,
+        30,
+        1
+      ],
+      "device": "cpu",
+      "dtype": "float32",
+      "atol": 0,
+      "rtol": 0,
+      "scope": "post-M1 current synthetic reference; not historic training weights; no real graph construction",
+      "chronology": "post-M1, pre-MSAR model; captured during retroactive M0",
+      "reference_index": "docs/msar_lno_audit/m0/other-capture.json",
+      "replay": "docs/msar_lno_audit/m0/other-replay.json"
+    }
+  ],
+  "integrity_files": [
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_darcy_full/fixture.pt",
+      "sha256": "b7841cac84adcb2b84c97b146bfa985d2e1678a89f681e0d37b4732867b4dcf6",
+      "bytes": 220919
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_darcy_full/metadata.json",
+      "sha256": "2489ff6255a9fbca3d732f10f9caf9b0fbba110faa4b83337463f9a83fd6a1b4",
+      "bytes": 46644
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_darcy_full/run/architecture.json",
+      "sha256": "88c6849d9a1bfd17523c77fa338160b2a8557fc898e7f4755a06b0aa617c6c2c",
+      "bytes": 1959
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_darcy_full/run/model.pt",
+      "sha256": "72390314a5540bf7140f74502d5b453eb90aea9d959c86ce8a61c3be075acecb",
+      "bytes": 114099
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_darcy_no_sa/fixture.pt",
+      "sha256": "f0865b724d77cd7eaa8cc8bd44ea7406b5d4ec5418c781dc0912e8a153905941",
+      "bytes": 206583
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_darcy_no_sa/metadata.json",
+      "sha256": "327431c69be7a5f053e2ce53ee2a36638956c88802e58893384dc9eec1793895",
+      "bytes": 43141
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_darcy_no_sa/run/architecture.json",
+      "sha256": "59438d1f31fe63710f8a8830b3f24fde5ba3e8f690cd345e1487cbf8bc872b61",
+      "bytes": 1968
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_darcy_no_sa/run/model.pt",
+      "sha256": "15f0e83ec328cb0bbb278a16235372a7705ba22205198416f410810820797fa4",
+      "bytes": 106355
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_darcy_identity/fixture.pt",
+      "sha256": "88ac48285bf4fc820bce238a743396bf999d1a9857fd600db21f33d2e570fcec",
+      "bytes": 185223
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_darcy_identity/metadata.json",
+      "sha256": "cce5b9c62ebe5ea8e18bdd77d65e75a68a593f234e90eb772d16d2e4981931cc",
+      "bytes": 38867
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_darcy_identity/run/architecture.json",
+      "sha256": "fc3434eb4cec1cc1e7e3480b19a4fd7e42936bf11b1277492925b9003adfbdfb",
+      "bytes": 1980
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_darcy_identity/run/model.pt",
+      "sha256": "5843a71aff34722e8e7728b8846c6f114357186ad427c15ba50edacad5be0282",
+      "bytes": 95555
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_darcy_original/fixture.pt",
+      "sha256": "5ae087d1c593500011d596293def1cc0f8d2c2b2fbf4ec7ad24b715efc4d436b",
+      "bytes": 213653
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_darcy_original/metadata.json",
+      "sha256": "5b0598d268b48b9aa76dd0a456a09ab500ace2c24c86e392a87953e2fe31a3df",
+      "bytes": 35512
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_elasticity_full/fixture.pt",
+      "sha256": "c385ce29aaeb1b074cbe255231dbb51eeff14cb1d7b5df41a6b9d39bdb4ef22f",
+      "bytes": 231641
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_elasticity_full/metadata.json",
+      "sha256": "7ef60c481b745b51fe02323265c1e6f51ae2fc8717824946ecfb4c0404d44422",
+      "bytes": 44854
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_elasticity_full/run/architecture.json",
+      "sha256": "c5eab3bf3ad42ce3e88036431cde4d80a40393c559de748a85576d53ac67c1ad",
+      "bytes": 1964
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_elasticity_full/run/model.pt",
+      "sha256": "2de505f8279442a37e89ac4adccb75e059d4bdcc83ec70c8e041fc8cf8c52073",
+      "bytes": 100435
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_elasticity_no_sa/fixture.pt",
+      "sha256": "d9af12f7bd9986a04a8c7f153b8f3be03da5611cef888719de2a26061bd6e675",
+      "bytes": 217305
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_elasticity_no_sa/metadata.json",
+      "sha256": "59c3f50c6eb44db4b88feb246972834ec4c757e7da72d9cfe5aa007d74d463f6",
+      "bytes": 41351
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_elasticity_no_sa/run/architecture.json",
+      "sha256": "949d7113b37a30a88b0670072adbc1c32a2985fb542360cb00da7cc901298f95",
+      "bytes": 1973
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_elasticity_no_sa/run/model.pt",
+      "sha256": "8ad41014cff27cc689b67f1ed982f50525e9714da858eca4228ed83ea94ce489",
+      "bytes": 92691
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_elasticity_identity/fixture.pt",
+      "sha256": "4436994b5a2ef0e4b48202fa637490ee0e51d722457bd87140c59469f39cdf20",
+      "bytes": 196009
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_elasticity_identity/metadata.json",
+      "sha256": "33e6073cf381cda74e85c59c3d26c146b330a8c2145541160c91630a052c1ff2",
+      "bytes": 37077
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_elasticity_identity/run/architecture.json",
+      "sha256": "72ddbe1224646c75d577d1f6eae343a5aab15ea199b3278eb0ce15f0fa71993d",
+      "bytes": 1985
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_elasticity_identity/run/model.pt",
+      "sha256": "373a6a7029734865dc08e91bc145d5bd6eb40f453a81bffefd678a7e9a63250f",
+      "bytes": 81955
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_elasticity_original/fixture.pt",
+      "sha256": "7c0c32722088044363e1242d7f3ff2b49c0b525a121f1c214dc7dbdabd8d9f27",
+      "bytes": 177237
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_elasticity_original/metadata.json",
+      "sha256": "aec6735e0d36f7355a69d7756b6f3d284a67929ad4d23a60d2799dd5cbfecd5f",
+      "bytes": 35134
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfoil_full/fixture.pt",
+      "sha256": "ca4146f531b3454b68121a8c4a681d3da14c5c6283b799d60a0f1d8026bd7f81",
+      "bytes": 213173
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfoil_full/metadata.json",
+      "sha256": "f89e0d86907448087e82cbe1b0eda73bfa217b39dcebbd4c6701e0e21f1f79bc",
+      "bytes": 46852
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfoil_full/run/architecture.json",
+      "sha256": "2fd7e02d8a2b4815362398b5d625afa634b2c762ac92b2f9b776e5b4c561f760",
+      "bytes": 1982
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfoil_full/run/model.pt",
+      "sha256": "761c71f7b1803386884fef838d373d101e3855cbbf148f72d70cf17b28801260",
+      "bytes": 110319
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfoil_no_sa/fixture.pt",
+      "sha256": "094cdb8bd819417c5200a5be4a3fc193ce0001b50661dcd2941df574e2798286",
+      "bytes": 198837
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfoil_no_sa/metadata.json",
+      "sha256": "45267e84a3984180c2a99e208fdf8e169a425b689a4ce3a8ec0ecb50447119e6",
+      "bytes": 43349
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfoil_no_sa/run/architecture.json",
+      "sha256": "57eac7c1f725695727f9d7f0fd93280e13f8e6b09f64487286e6689c1f9ec53c",
+      "bytes": 1991
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfoil_no_sa/run/model.pt",
+      "sha256": "8f169dc13895c02fc372f363f532afc659562d2d09201196d33979b81cd495d5",
+      "bytes": 102575
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfoil_identity/fixture.pt",
+      "sha256": "c8c22708bc0675d76647a198ed7a2a1929e7b2ac4a4343ac9d18d80fb33c3a1a",
+      "bytes": 177541
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfoil_identity/metadata.json",
+      "sha256": "11db28d698002a7ce1107b62d4c13ec95867ec8fd4f37b6375561284d15e29bb",
+      "bytes": 39074
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfoil_identity/run/architecture.json",
+      "sha256": "056701057cfa708a072a2e055736f517828d0af35f1acbade5a23ce3522248af",
+      "bytes": 2003
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfoil_identity/run/model.pt",
+      "sha256": "7aed388b969d9207daaac212c1287a24abdd7673b6b2d426d9cae8bd1fe82071",
+      "bytes": 91839
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_airfoil_original/fixture.pt",
+      "sha256": "b18afbb3461ad4995fbdb1c6b214d784bf9b764ffd0d4168197ac564c775956a",
+      "bytes": 205525
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_airfoil_original/metadata.json",
+      "sha256": "37f73d06e493a3d8cde5bafd572f9b36fab33d620bb78cb1675f611d54b4d4c7",
+      "bytes": 35516
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_pipe_full/fixture.pt",
+      "sha256": "10fe09b2f0fb33d4be87e42c8abc7d4972975e850e9dae186ab5ddf7666d5144",
+      "bytes": 213173
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_pipe_full/metadata.json",
+      "sha256": "c2c6612c6554a670110b21f729cf64e2172241194fbe6ada93949f42e7e6c52a",
+      "bytes": 46823
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_pipe_full/run/architecture.json",
+      "sha256": "6944430fc29a10cf36cbba50d718dbe18fb7e607cda7a791c86d74d3b4999e9f",
+      "bytes": 1962
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_pipe_full/run/model.pt",
+      "sha256": "5fcf5a93f34033b673b7c42b3cdde7d4a6dda753c2c62227a47724eb41cc0fa4",
+      "bytes": 110319
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_pipe_no_sa/fixture.pt",
+      "sha256": "e91678d203dc09526dbed11552a1b7a311f80b9bbbe7fbc7896e22b58fae4c6e",
+      "bytes": 198837
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_pipe_no_sa/metadata.json",
+      "sha256": "718ffc63204507f0a6285e5f60f816d80b8fc245d90e7706ba792d7c534bcca7",
+      "bytes": 43320
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_pipe_no_sa/run/architecture.json",
+      "sha256": "42095d31abd8d18a333abeb11934870cb8417b2fdc7649d8486da7f17410007c",
+      "bytes": 1971
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_pipe_no_sa/run/model.pt",
+      "sha256": "7e5e465089da2ca4fecf791f1872866e08ec1c2112c11c3985d9ed1bb3e655b7",
+      "bytes": 102575
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_pipe_identity/fixture.pt",
+      "sha256": "fb24cea386bcd4d78b001a4419fa119fc46f9b0e6df63b3ecff600ccc2d1607b",
+      "bytes": 177541
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_pipe_identity/metadata.json",
+      "sha256": "5c09e2532c6061ba10cfbc3abacf92dd976d17118339d377e1cedc7fb4023444",
+      "bytes": 39045
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_pipe_identity/run/architecture.json",
+      "sha256": "680c00735d45ea2d6c333cc2e12fae7141f58b3005e52b86646a34f5b86bf241",
+      "bytes": 1983
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_pipe_identity/run/model.pt",
+      "sha256": "432d5394b93294b0a8ecdb6706ce5ea26c563272628cbe35a7e61ffc2215562c",
+      "bytes": 91839
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_pipe_original/fixture.pt",
+      "sha256": "adf4dbb339e6290a4e2be5de98d587ee09b7ceb64c27a36bb4415141332ba68a",
+      "bytes": 205525
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_pipe_original/metadata.json",
+      "sha256": "f5ed524954676c8107d0242f52a046487265b9b5639a6a1d364bea414302d657",
+      "bytes": 35510
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_ns_full/fixture.pt",
+      "sha256": "ba8c2ca5b9cba5f5ff8fe375b8f5f4e04b10985ae5548fa6e52c54d87319b14c",
+      "bytes": 974455
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_ns_full/metadata.json",
+      "sha256": "b4c9f4a5e722cb3893ba47839ea21a77980ba0cfe293ee8e6a55c6990478b5ae",
+      "bytes": 46731
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_ns_full/run/architecture.json",
+      "sha256": "465c7f5354645a42fe3598a960e8334b521c6bc88edf9d037075e2c41b223a87",
+      "bytes": 2033
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_ns_full/run/model.pt",
+      "sha256": "3b0518e6df2de0c060c2ab72ee31841c01eda52f699f3e7ef32e6944dc41a184",
+      "bytes": 114675
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_ns_no_sa/fixture.pt",
+      "sha256": "88cb2e671910ef211412d9a3a04c0b244dce85980ff1e33eafe89c6f2819f699",
+      "bytes": 960119
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_ns_no_sa/metadata.json",
+      "sha256": "6ab5b849edf282c804593a69f8eafc8a609ff556fd00e3a9005e444cb4363344",
+      "bytes": 43228
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_ns_no_sa/run/architecture.json",
+      "sha256": "53abb2b8ae489eceeea86d6d95cff745776565d2e6dded34430912243fec516b",
+      "bytes": 2042
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_ns_no_sa/run/model.pt",
+      "sha256": "58606514c560750339c7420051918863ff184300512361485648587c17e4bf1c",
+      "bytes": 106931
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_ns_identity/fixture.pt",
+      "sha256": "cef0652da35f8f1b46724c62691dacaa5464551df0b24b6498a33c59b4bdc945",
+      "bytes": 938823
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_ns_identity/metadata.json",
+      "sha256": "5d545726fa2aa70f527acfb1e1619bca1f9a4139af1afa2147e5db6538e66611",
+      "bytes": 38954
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_ns_identity/run/architecture.json",
+      "sha256": "6d4f9724fb6613b1b218eff821f895f69a993267ba58c6b48af4fa98f584c7f7",
+      "bytes": 2054
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_ns_identity/run/model.pt",
+      "sha256": "3dc48b17a76fa1e456cdec5680d600d76af750adf05c9e09668749d508c8cf97",
+      "bytes": 96131
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_ns_original/fixture.pt",
+      "sha256": "23002e629089f244c4fb530d491c3d0e20e6ad24e7004fced6a7bc7e242d4ac3",
+      "bytes": 967189
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_ns_original/metadata.json",
+      "sha256": "836012c53a232e5443b0fb8ff5d11c5917f8befc41b5c340abd815a47a9d38aa",
+      "bytes": 35511
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_plasticity_full/fixture.pt",
+      "sha256": "e652e33e20965ff53745f9c58ccf3b542c25d2311e0aff02d9c13fb2f3de91f1",
+      "bytes": 466529
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_plasticity_full/metadata.json",
+      "sha256": "0d69db186dbac96f7e9a8cc58f4328690e9eb1cc285ae4bf06d7ae3e235b0f55",
+      "bytes": 47594
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_plasticity_full/run/architecture.json",
+      "sha256": "a6e6f01bea3eea414504ebdee3842ee5e0502cfe60342b1ab395be3a43453088",
+      "bytes": 2121
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_plasticity_full/run/model.pt",
+      "sha256": "8a3f599052463c1dfac36d188b0764495f377268116b16766998c6671f5a0b3e",
+      "bytes": 111843
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_plasticity_no_sa/fixture.pt",
+      "sha256": "31f3a026294afaf28a57f8f96ffd10d1c0dc4c537f9eec67bf53645001780cb8",
+      "bytes": 452193
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_plasticity_no_sa/metadata.json",
+      "sha256": "dead8f3f04b663b20fd089e95d34aa6d2133ae6eb2bf5b54e6810a612c9027a2",
+      "bytes": 44091
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_plasticity_no_sa/run/architecture.json",
+      "sha256": "b405eb338391e224fc8d5591feb183d4e4398afde7b0318c17fee742af55d919",
+      "bytes": 2130
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_plasticity_no_sa/run/model.pt",
+      "sha256": "d3b883e3df721c67835d3080a4d0652980f309a6ea57e028d801819175eb2c57",
+      "bytes": 104099
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_plasticity_identity/fixture.pt",
+      "sha256": "7834acf44f7ce04c0de62bd86f8fd34295f5a0c6f96925003d2401151c36944e",
+      "bytes": 430897
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_plasticity_identity/metadata.json",
+      "sha256": "5b21718140dea466c2ad33f2260d6af1dd3d29c95bc5e412e67eab21cb3e3ed7",
+      "bytes": 39816
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_plasticity_identity/run/architecture.json",
+      "sha256": "2113a05bc0d35d824b2c2d2e1c5f5b85a66d7c6b3e979a5b08d99747d4575796",
+      "bytes": 2142
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_plasticity_identity/run/model.pt",
+      "sha256": "43b4c545f72fd49804809907fd8a074250cf6694c1e67ceb246040883091d0ac",
+      "bytes": 93299
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_plasticity_original/fixture.pt",
+      "sha256": "8c4fd087626bd45d83115dbc4606a22f4bfd301e3f51407379010f7d9c630f2e",
+      "bytes": 459071
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_plasticity_original/metadata.json",
+      "sha256": "8f4cb26372d0d57c365d0aebcb6d9a6ab9bb109a2adc4682b7810e7c7420eebc",
+      "bytes": 36280
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_full_off/fixture.pt",
+      "sha256": "b05c708642a335be0238ff4e6be5310a9b9d10df27353561aa359fa6cc9cafde",
+      "bytes": 179801
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_full_off/metadata.json",
+      "sha256": "050574178860ae2529913ff918e2dae650ba13fba9c3e77a7a9e8cc0df0db113",
+      "bytes": 39464
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_full_entry/fixture.pt",
+      "sha256": "90abf645db2d766b98af86f16e5608db24fea2ea88049c395cf0665332624e3c",
+      "bytes": 188269
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_full_entry/metadata.json",
+      "sha256": "1997449d2e1951d2346b75d67ed4bbd5bdc68555b52e66741824c70a0be8979b",
+      "bytes": 41589
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_full_every_block/fixture.pt",
+      "sha256": "0bea98407e19499b6cc21f203b851963c741bb27b9c2896afdf2eebab59f35f1",
+      "bytes": 230865
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_full_every_block/metadata.json",
+      "sha256": "ca20d9e4e1d15d8ec94fe15c8ba7a81c5a0f041ec0c5858364dd5329588d46a5",
+      "bytes": 52203
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_no_sa_off/fixture.pt",
+      "sha256": "39751d6121cf11ac6f3b1a965af8db8c6a2faff7a44ebad03e9f8a1afd88ea8d",
+      "bytes": 165593
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_no_sa_off/metadata.json",
+      "sha256": "6ae254c91e4796ae1f9d1676b691e57a41b7db4f4c5b4e95767b5dd4758d6988",
+      "bytes": 36033
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_no_sa_entry/fixture.pt",
+      "sha256": "c02bc5ea2885e536262811c2297697dc41e4c40798a61566c857e1d8c1f1b0c2",
+      "bytes": 174125
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_no_sa_entry/metadata.json",
+      "sha256": "ca3c73a253a43470ae4def033e42a25ad510bce75dbc3c7fa91e776b86c9d966",
+      "bytes": 38158
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_no_sa_every_block/fixture.pt",
+      "sha256": "08074d3c0a44242e0dc02c0dabcbee88c007ded5df75e75534140d3e9f3bbe85",
+      "bytes": 216721
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_no_sa_every_block/metadata.json",
+      "sha256": "7a4b82fa4610f902056b505c9aedae00eef5910988e4e4bb39b6c4b3c873db84",
+      "bytes": 48771
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_identity_off/fixture.pt",
+      "sha256": "e05f7588356dad35bfa74a5f1e53566303aa96c391e42ae6e50e5cb0d67b6a2f",
+      "bytes": 144489
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_identity_off/metadata.json",
+      "sha256": "a8cc6aa7d56e865d5414986465b25f7b0827e8a9ccbee0ea80f3c8cb497fbc9c",
+      "bytes": 31850
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_identity_entry/fixture.pt",
+      "sha256": "7461932788324f7dc69fcd490a4503add3e77378fe163dbd179063323022eb51",
+      "bytes": 153021
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_identity_entry/metadata.json",
+      "sha256": "95511f8979cc27a69dc3570c0a0a85f320e579c228c5aa6d823ddfa35cea23a1",
+      "bytes": 33975
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_identity_every_block/fixture.pt",
+      "sha256": "78d07c9d0c5078a1e4fccc0b5fc8142526286cdb289a4d431f52dee4cab1fcf7",
+      "bytes": 195617
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/core_identity_every_block/metadata.json",
+      "sha256": "a98de8bd07eaaade4edfccc7e5275062047af916702fe5c40c816d9373d4d035",
+      "bytes": 44588
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_car_full/fixture.pt",
+      "sha256": "e47ee5911eaef1512d95a0e182695e1f1ff47d7fb23e52eaf93aa7383e4a5257",
+      "bytes": 198917
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_car_full/metadata.json",
+      "sha256": "5669b43344c425c79cd334d05eae8c10c17ac4d9cb49035eee858e95a0d18439",
+      "bytes": 44806
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_car_full/run/architecture.json",
+      "sha256": "957bfe6a0e22dd1b566c973742870e2e1f00a049c019a88a46d70068b7698be4",
+      "bytes": 2258
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_car_full/run/model_200.pth",
+      "sha256": "2fd66505a877b94424f18940776707745c7a47fe32ceed3419522181a82f6414",
+      "bytes": 138443
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_car_no_sa/fixture.pt",
+      "sha256": "e2b6c98d5c1b535544a3bbbd96997a8d4db564b704f57b8e1ae4f6eb80b806c4",
+      "bytes": 184581
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_car_no_sa/metadata.json",
+      "sha256": "e13e054187e51389e0597965d018de67d95c6593c805675d6e24d46e9c152172",
+      "bytes": 41297
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_car_no_sa/run/architecture.json",
+      "sha256": "70633150530bdfc17a288ec26ee51389d4147dfdb88e4c833cd4f29fee9b2e63",
+      "bytes": 2261
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_car_no_sa/run/model_200.pth",
+      "sha256": "ef703ac4c411f9415ed821f86d58d9d18346b9c73882642ec7d1557c8dad9766",
+      "bytes": 127883
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_car_identity/fixture.pt",
+      "sha256": "b336e04a6ec2392521b99c0ab66f57d6bdda63fdadbf8f88c8b20b99af590267",
+      "bytes": 163285
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_car_identity/metadata.json",
+      "sha256": "18cff53bf48c589c47eb294a3a2b091bb554418c0a50b6aa918f7445f692fea3",
+      "bytes": 37020
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_car_identity/run/architecture.json",
+      "sha256": "52a0f5ad7fc98e8d27ff38036da73afeee38eaa513500347e024f63fbab7d61c",
+      "bytes": 2270
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_car_identity/run/model_200.pth",
+      "sha256": "c324227aae57050dd2f65e78033832e6977486062981136cbd8320b0d17dc4d7",
+      "bytes": 114315
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_car_original/fixture.pt",
+      "sha256": "ee8e1c70ca31e6004eaae56752ce74138af388d8ebd01396961de1b360545b84",
+      "bytes": 144513
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_car_original/metadata.json",
+      "sha256": "9b0b02cb85211bdbe60277b24fa4e3e8c9f50eca55375f9961d5c53235d31971",
+      "bytes": 35067
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_car_original/model_object.pt",
+      "sha256": "49e42a08bd38f048b1d7033da7a889c5b920d9bfd9a54b1fe7e351f7e30829a2",
+      "bytes": 109976
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfrans_full/fixture.pt",
+      "sha256": "7cfcd01332f8226cbb517bd88df4a07031f3ba381e52ca9ba0afaee7e0674cea",
+      "bytes": 206981
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfrans_full/metadata.json",
+      "sha256": "811a07c52a9e6d61b304cf397fdb1bd5a00f8b3c5cd90c4f7347624630d36f90",
+      "bytes": 44825
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfrans_full/run/CDLNO",
+      "sha256": "7bbbbefb12e940f7d35817ad944e63f6e0b4c3f5e49eb7e4c6bcec3302cd893a",
+      "bytes": 135951
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfrans_full/run/architecture.json",
+      "sha256": "8d60c36451050dee0ad66df7c81b0f419b24f5c0e88d2503c9aa98b0be48253d",
+      "bytes": 2403
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfrans_full/run/member_000/model",
+      "sha256": "f7a5243f4c6052cf92fa07ebc012fa46eebdd162c46979b0fd1252dae267dd5e",
+      "bytes": 135887
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfrans_no_sa/fixture.pt",
+      "sha256": "e188ed2359aa8e68320650b1d0386a16159963bcea45fce99fc5f1019408529e",
+      "bytes": 192645
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfrans_no_sa/metadata.json",
+      "sha256": "a734659431fca549930ec7ae11e05b12951da73163a47fc93328eeb2b0b3b416",
+      "bytes": 41315
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfrans_no_sa/run/CDLNO",
+      "sha256": "f8fe5dce641e4f322177baca24355afa9d24dc90c3d4a99810ec2d694b2404a2",
+      "bytes": 125903
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfrans_no_sa/run/architecture.json",
+      "sha256": "0e5ca0f9a15be68efe850ca052105d606389c44f7f29b4f4ae7f4c443dd0cf37",
+      "bytes": 2406
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfrans_no_sa/run/member_000/model",
+      "sha256": "dd8d44c79bc002fd99d3a7f4533f8e438aa688a5efc19a2938bde02624d29c9b",
+      "bytes": 125903
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfrans_identity/fixture.pt",
+      "sha256": "8a3dcde7c128d409ea71f0e66ca6e9ab76667edbd4934bf48e93c0c030832308",
+      "bytes": 171349
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfrans_identity/metadata.json",
+      "sha256": "89dff4e1229de5ae24df5a9e64bc08be3863f68b1bd9c4592795a26767f45985",
+      "bytes": 37038
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfrans_identity/run/CDLNO",
+      "sha256": "68f9b13bf7267cf312d90be62456f3864f76589590285f3469c23adcf887c69b",
+      "bytes": 113183
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfrans_identity/run/architecture.json",
+      "sha256": "465f9a677f98d9f1f9340abb4cb8d174894a9fee78483a9f8d2ac9b08bc0766c",
+      "bytes": 2415
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/cdlno_airfrans_identity/run/member_000/model",
+      "sha256": "00eeb3417cbf33ad4ba8a02dce114819fd5f3d93e1c2a6e4dfd682bea1518ff9",
+      "bytes": 113183
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_airfrans_original/fixture.pt",
+      "sha256": "ea126feac026ec3ec6835290cc89232b0d503d7053f5fbe64a779b697067b1d3",
+      "bytes": 172609
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_airfrans_original/metadata.json",
+      "sha256": "fefc5fc4b5b6225e3962fa808838e2be8350f77ceb2871b0573636cb92c5061a",
+      "bytes": 41768
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_airfrans_original/model_list.pt",
+      "sha256": "800aca0126f252c0d2849327bb5b2a3e659691aacb0aa63e4498311ce0658671",
+      "bytes": 142106
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures/transolver_airfrans_original/model_object.pt",
+      "sha256": "427efb492a664d8ce686c48cec3c4f7da74d429e748dc51019e57b7adcba3317",
+      "bytes": 142520
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m1-before-n7y0eg1j/current-fixtures/kcdno_all_point_ffn.pt",
+      "sha256": "07882ec511969208b8d65bfac261d2a8532ab2b6e4a61358fae1294e9ad4fcc1",
+      "bytes": 40142
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m1-before-n7y0eg1j/current-fixtures/kcdno_all_conv_ffn.pt",
+      "sha256": "e511c9b2156d973e5445d2d057d5949d4843103c766a98c8726080287151a440",
+      "bytes": 46652
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m1-before-n7y0eg1j/current-fixtures/kcdno_off_point_ffn.pt",
+      "sha256": "939b796412857606ecfe90c3ffa6993db7819ef3179fa026ded8262750f49317",
+      "bytes": 37667
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m1-before-n7y0eg1j/current-fixtures/kcdno_off_conv_ffn.pt",
+      "sha256": "8ef50a220fdf91810f9d7f49264916b9fe54d1c702dac1da273fe76c5a4062c5",
+      "bytes": 44113
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m1-before-n7y0eg1j/current-fixtures/lrsa_matched_point_ffn.pt",
+      "sha256": "62c5972349287d5d66b16aa93d3183cfe7df3f6898f2058ce51dc30fdfcd64a1",
+      "bytes": 45299
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m1-before-n7y0eg1j/current-fixtures/lrsa_matched_conv_ffn.pt",
+      "sha256": "1206013fc6020bc2bc7ddae1149c17c6fd4caf3009174a7aaf04b0ffecb5a85e",
+      "bytes": 51809
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/darcy_all/fixture.pt",
+      "sha256": "4ecf459abe8d27fba273c91d9265f3bdb5f8e2bd9b940fef1dfcf3d4fc387e54",
+      "bytes": 51681
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/darcy_off/fixture.pt",
+      "sha256": "682546c3a80255fe9cf021f34c4362dd0494fd4a99f2db8c7cc4d81320d5ffea",
+      "bytes": 49078
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/darcy_matched/fixture.pt",
+      "sha256": "d06fc65d8ce8edfa393e9c36f391516421f3fe0ec2024d91ec2f4fcbeb58ebac",
+      "bytes": 56902
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/elasticity_all/fixture.pt",
+      "sha256": "234cd273df0ece7251721a7e42c71647cb5275461fde8e501bbe55d5223d5a47",
+      "bytes": 40243
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/elasticity_off/fixture.pt",
+      "sha256": "9996826ff80690319b43bdf1b65baa5d77e906250a0affa75c39c04628fd6773",
+      "bytes": 37704
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/elasticity_matched/fixture.pt",
+      "sha256": "2b78e552240b29a6633f81e6a325177ef9afe4c7fec260af345bce3b9d1bf909",
+      "bytes": 45464
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/airfoil_all/fixture.pt",
+      "sha256": "f9c0fa317f1c68dacf0777c6fb8292e0fdeda9bebbeb60be7fd36fdfdbdfbd69",
+      "bytes": 47393
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/airfoil_off/fixture.pt",
+      "sha256": "d5165d471bf74cf8f5a0ddf343097d9f01153276ac5d3e37918e2a04b811e6f6",
+      "bytes": 44790
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/airfoil_matched/fixture.pt",
+      "sha256": "c85a89b7f3e20da6ac463f43f0a29dcfaaf850c037c92fc1ca2726bcb878b823",
+      "bytes": 52614
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/pipe_all/fixture.pt",
+      "sha256": "3b9764fb2e5a3baa15f1ba5811bcfb486722335d8c25944dfb6bd4c32abe53ba",
+      "bytes": 47393
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/pipe_off/fixture.pt",
+      "sha256": "990804131d5f66de4e5eb13da652ac9213978c6c82004b14d632c162beaf8733",
+      "bytes": 44790
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/pipe_matched/fixture.pt",
+      "sha256": "e08d3716b002ada3b84760eb428d5d1607ac090efb14631439874254a8946f8a",
+      "bytes": 52614
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/ns_all/fixture.pt",
+      "sha256": "9baca6af552d0ec718f3ad9d04a1e614d3f0ca6c3629bac7af5a1ae6b217cc74",
+      "bytes": 264097
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/ns_off/fixture.pt",
+      "sha256": "1473f9c48dbded0bba4003d602bd4080247b87578b315be6aeecd93e6e2f1151",
+      "bytes": 261558
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/ns_matched/fixture.pt",
+      "sha256": "eec544e74d0ddf9112f249f3e2f3a031f3271d6817329e90ffcd0f9d647b90fb",
+      "bytes": 269318
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/plasticity_all/fixture.pt",
+      "sha256": "bf7d7a03974c3c97fe582f5157669161d54c4ceb5f4593a2d10aede5bf228002",
+      "bytes": 136466
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/plasticity_off/fixture.pt",
+      "sha256": "074279ab8caff86de54628ef460e16111675fc95618e6007fc7183b1bb12aff3",
+      "bytes": 133927
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/plasticity_matched/fixture.pt",
+      "sha256": "3fd621b596d87d70390e08252db0d2b42763bcf586359795006c8207534de581",
+      "bytes": 141687
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/car_all/fixture.pt",
+      "sha256": "952b24eb60609192c841b7dc801426f45027101e5245acc2dda27b6e0a97a31e",
+      "bytes": 43108
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/car_all/whole.pt",
+      "sha256": "5272c8edb09574809603abd38a25d91bdefe9de3afb2efa5814d6882017895c4",
+      "bytes": 51449
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/car_off/fixture.pt",
+      "sha256": "dcdf72d5c141eaf284dbf94f9965adf7c35bbd6d217b4b88a4d4e1ec29c3e9d3",
+      "bytes": 40505
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/car_off/whole.pt",
+      "sha256": "7513c3a848e267882eec682d4fe8a93b62b0918a8a0c95d70ce6bec8e54de4d6",
+      "bytes": 47630
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/car_matched/fixture.pt",
+      "sha256": "bc810d1e9a9b2d34090d133457cc5f32ca7c1fa65033dbe54d443fd1904d5b87",
+      "bytes": 48265
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/car_matched/whole.pt",
+      "sha256": "075abab3c4f8c4a4281d2bb6c4408d0cb9fb935a159b16fc4a7380bd41b706cd",
+      "bytes": 58270
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/airfrans_all/fixture.pt",
+      "sha256": "fd15d53857e3f5c39f258f77aa93ebf24307abdb4f16fb691249360e959a25f7",
+      "bytes": 47268
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/airfrans_all/list.pt",
+      "sha256": "75ab003d2ea9b92abbcab629cefb3564d552ad4a634d820f4027ff4e85b0f66a",
+      "bytes": 56374
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/airfrans_all/whole.pt",
+      "sha256": "fcd56273535f05a57f117939fa1de14d93e7b5248981b4b072be271f2cce04bb",
+      "bytes": 56374
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/airfrans_off/fixture.pt",
+      "sha256": "2b7b2d2fd9ca9ca009fba94115da274ac71981c0e8aecd21407cda39391747a6",
+      "bytes": 44729
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/airfrans_off/list.pt",
+      "sha256": "7ea18b1ac67045ba67a8fef0648c18ec71b6220f6c317ae0ec7794309e945256",
+      "bytes": 52619
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/airfrans_off/whole.pt",
+      "sha256": "2f17b90fb211fad6a291fcb68aa294f817b5e1a2bb19c96ec58921997b90879b",
+      "bytes": 52619
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/airfrans_matched/fixture.pt",
+      "sha256": "6100a9a84371258d63f35deb1a84d913d7c781ee9d28de77fa909e8bc751d5c3",
+      "bytes": 52489
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/airfrans_matched/list.pt",
+      "sha256": "51d5f4423859659be003bc938d8f9426243cfbf8139c43a390afb45ef0ed0f65",
+      "bytes": 63259
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers/airfrans_matched/whole.pt",
+      "sha256": "4a69d6b11da794c65ee29fa18653b913ed110f48d1521ee625f0999ff387fe35",
+      "bytes": 63259
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/other-models/MLP/list.pt",
+      "sha256": "6bd25a6cbcd4dc2af80b418eb94ebff4f0eba0720a5b69b3a5c900176735efae",
+      "bytes": 95637
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/other-models/MLP/fixture.pt",
+      "sha256": "a649f2a071064bcb481bf0551a05f69ef3880db39790e254d7c8a8f7555d9512",
+      "bytes": 92224
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/other-models/PointNet/list.pt",
+      "sha256": "49a406625539c690fa1ee69750869d6061a3ee3a59d34a9f98e72d622514108e",
+      "bytes": 320201
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/other-models/PointNet/fixture.pt",
+      "sha256": "07e1bb93bcc38f4425af438b6f58d14590c143c5031791fe6b743b407340b6c4",
+      "bytes": 314996
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/other-models/GraphSAGE/list.pt",
+      "sha256": "99ec89e197f1cfb9fd74d3f241e89fde0d62af8dfd7a227928818e1741ddd088",
+      "bytes": 140425
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/other-models/GraphSAGE/fixture.pt",
+      "sha256": "4fd85c1341f9c11d8478bf5f64fff0d0e2836514d9dedc5fefc56b8d2970c885",
+      "bytes": 130868
+    },
+    {
+      "path": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/other-models/Transolver_Structured_Mesh_3D/fixture.pt",
+      "sha256": "0d5c7ab92fdef0b3abd0b375158e11781b28c794869a577d5bbf3d1b2ded25d4",
+      "bytes": 50183
+    }
+  ],
+  "not_run": [
+    {
+      "name": "GUNet",
+      "status": "not_run",
+      "reason": "real torch_cluster absent; multiscale radius/nearest graph path unavailable"
+    }
+  ],
+  "limits": [
+    "Temporary same-weight real-model references, not trained historical checkpoints.",
+    "Only inherited K0 references include diagnostic gradients.",
+    "No real data, convergence, full graph sampling, or remote runtime acceptance.",
+    "State keys/shapes, saved inputs/outputs and full configs reside in linked evidence and fixtures."
+  ]
+}

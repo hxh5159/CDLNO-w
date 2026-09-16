@@ -1,0 +1,689 @@
+[
+  {
+    "project": "air",
+    "cwd": "/home/hwz/CDLNO/Airfoil-Design-AirfRANS",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "/home/hwz/CDLNO/docs/msar_lno_audit/m0/other_model_fixtures.py",
+      "replay",
+      "--project",
+      "air",
+      "--artifacts",
+      "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/other-models",
+      "--result",
+      "/home/hwz/CDLNO/docs/msar_lno_audit/m8/other-replay-air.json"
+    ],
+    "returncode": 0,
+    "rows": [
+      {
+        "name": "MLP",
+        "status": "passed",
+        "config": {
+          "encoder": [
+            7,
+            64,
+            64,
+            8
+          ],
+          "decoder": [
+            8,
+            64,
+            64,
+            4
+          ],
+          "nb_hidden_layers": 3,
+          "size_hidden_layers": 64,
+          "batch_size": 1,
+          "nb_epochs": 398,
+          "lr": 0.001,
+          "bn_bool": true,
+          "subsampling": 32000
+        },
+        "class_path": "models.NN.NN",
+        "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/other-models/MLP/fixture.pt",
+        "keys_shapes": {
+          "encoder.lins.0.weight": [
+            64,
+            7
+          ],
+          "encoder.lins.0.bias": [
+            64
+          ],
+          "encoder.lins.1.weight": [
+            64,
+            64
+          ],
+          "encoder.lins.1.bias": [
+            64
+          ],
+          "encoder.lins.2.weight": [
+            8,
+            64
+          ],
+          "encoder.lins.2.bias": [
+            8
+          ],
+          "decoder.lins.0.weight": [
+            64,
+            8
+          ],
+          "decoder.lins.0.bias": [
+            64
+          ],
+          "decoder.lins.1.weight": [
+            64,
+            64
+          ],
+          "decoder.lins.1.bias": [
+            64
+          ],
+          "decoder.lins.2.weight": [
+            4,
+            64
+          ],
+          "decoder.lins.2.bias": [
+            4
+          ],
+          "nn.lins.0.weight": [
+            64,
+            8
+          ],
+          "nn.lins.0.bias": [
+            64
+          ],
+          "nn.lins.1.weight": [
+            64,
+            64
+          ],
+          "nn.lins.1.bias": [
+            64
+          ],
+          "nn.lins.2.weight": [
+            64,
+            64
+          ],
+          "nn.lins.2.bias": [
+            64
+          ],
+          "nn.lins.3.weight": [
+            8,
+            64
+          ],
+          "nn.lins.3.bias": [
+            8
+          ],
+          "nn.norms.0.weight": [
+            64
+          ],
+          "nn.norms.0.bias": [
+            64
+          ],
+          "nn.norms.1.weight": [
+            64
+          ],
+          "nn.norms.1.bias": [
+            64
+          ],
+          "nn.norms.2.weight": [
+            64
+          ],
+          "nn.norms.2.bias": [
+            64
+          ]
+        },
+        "hashes": {
+          "list.pt": "6bd25a6cbcd4dc2af80b418eb94ebff4f0eba0720a5b69b3a5c900176735efae",
+          "fixture.pt": "a649f2a071064bcb481bf0551a05f69ef3880db39790e254d7c8a8f7555d9512"
+        },
+        "output_shape": [
+          13,
+          4
+        ],
+        "device": "cpu",
+        "dtype": "float32",
+        "atol": 0,
+        "rtol": 0,
+        "scope": "post-M1 current synthetic reference; not historic training weights; no real graph construction"
+      },
+      {
+        "name": "PointNet",
+        "status": "passed",
+        "config": {
+          "encoder": [
+            7,
+            64,
+            64,
+            8
+          ],
+          "decoder": [
+            8,
+            64,
+            64,
+            4
+          ],
+          "base_nb": 8,
+          "batch_size": 1,
+          "nb_epochs": 398,
+          "lr": 0.001,
+          "subsampling": 32000
+        },
+        "class_path": "models.PointNet.PointNet",
+        "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/other-models/PointNet/fixture.pt",
+        "keys_shapes": {
+          "in_block.lins.0.weight": [
+            8,
+            8
+          ],
+          "in_block.lins.0.bias": [
+            8
+          ],
+          "in_block.lins.1.weight": [
+            16,
+            8
+          ],
+          "in_block.lins.1.bias": [
+            16
+          ],
+          "max_block.lins.0.weight": [
+            32,
+            16
+          ],
+          "max_block.lins.0.bias": [
+            32
+          ],
+          "max_block.lins.1.weight": [
+            64,
+            32
+          ],
+          "max_block.lins.1.bias": [
+            64
+          ],
+          "max_block.lins.2.weight": [
+            256,
+            64
+          ],
+          "max_block.lins.2.bias": [
+            256
+          ],
+          "out_block.lins.0.weight": [
+            128,
+            272
+          ],
+          "out_block.lins.0.bias": [
+            128
+          ],
+          "out_block.lins.1.weight": [
+            64,
+            128
+          ],
+          "out_block.lins.1.bias": [
+            64
+          ],
+          "out_block.lins.2.weight": [
+            32,
+            64
+          ],
+          "out_block.lins.2.bias": [
+            32
+          ],
+          "encoder.lins.0.weight": [
+            64,
+            7
+          ],
+          "encoder.lins.0.bias": [
+            64
+          ],
+          "encoder.lins.1.weight": [
+            64,
+            64
+          ],
+          "encoder.lins.1.bias": [
+            64
+          ],
+          "encoder.lins.2.weight": [
+            8,
+            64
+          ],
+          "encoder.lins.2.bias": [
+            8
+          ],
+          "decoder.lins.0.weight": [
+            64,
+            8
+          ],
+          "decoder.lins.0.bias": [
+            64
+          ],
+          "decoder.lins.1.weight": [
+            64,
+            64
+          ],
+          "decoder.lins.1.bias": [
+            64
+          ],
+          "decoder.lins.2.weight": [
+            4,
+            64
+          ],
+          "decoder.lins.2.bias": [
+            4
+          ],
+          "fcfinal.weight": [
+            8,
+            32
+          ],
+          "fcfinal.bias": [
+            8
+          ]
+        },
+        "hashes": {
+          "list.pt": "49a406625539c690fa1ee69750869d6061a3ee3a59d34a9f98e72d622514108e",
+          "fixture.pt": "07e1bb93bcc38f4425af438b6f58d14590c143c5031791fe6b743b407340b6c4"
+        },
+        "output_shape": [
+          13,
+          4
+        ],
+        "device": "cpu",
+        "dtype": "float32",
+        "atol": 0,
+        "rtol": 0,
+        "scope": "post-M1 current synthetic reference; not historic training weights; no real graph construction"
+      },
+      {
+        "name": "GraphSAGE",
+        "status": "passed",
+        "config": {
+          "encoder": [
+            7,
+            64,
+            64,
+            8
+          ],
+          "decoder": [
+            8,
+            64,
+            64,
+            4
+          ],
+          "nb_hidden_layers": 3,
+          "size_hidden_layers": 64,
+          "batch_size": 1,
+          "nb_epochs": 398,
+          "lr": 0.001,
+          "max_neighbors": 64,
+          "bn_bool": true,
+          "subsampling": 32000,
+          "r": 0.05
+        },
+        "class_path": "models.GraphSAGE.GraphSAGE",
+        "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/other-models/GraphSAGE/fixture.pt",
+        "keys_shapes": {
+          "encoder.lins.0.weight": [
+            64,
+            7
+          ],
+          "encoder.lins.0.bias": [
+            64
+          ],
+          "encoder.lins.1.weight": [
+            64,
+            64
+          ],
+          "encoder.lins.1.bias": [
+            64
+          ],
+          "encoder.lins.2.weight": [
+            8,
+            64
+          ],
+          "encoder.lins.2.bias": [
+            8
+          ],
+          "decoder.lins.0.weight": [
+            64,
+            8
+          ],
+          "decoder.lins.0.bias": [
+            64
+          ],
+          "decoder.lins.1.weight": [
+            64,
+            64
+          ],
+          "decoder.lins.1.bias": [
+            64
+          ],
+          "decoder.lins.2.weight": [
+            4,
+            64
+          ],
+          "decoder.lins.2.bias": [
+            4
+          ],
+          "in_layer.lin_l.weight": [
+            64,
+            8
+          ],
+          "in_layer.lin_l.bias": [
+            64
+          ],
+          "in_layer.lin_r.weight": [
+            64,
+            8
+          ],
+          "hidden_layers.0.lin_l.weight": [
+            64,
+            64
+          ],
+          "hidden_layers.0.lin_l.bias": [
+            64
+          ],
+          "hidden_layers.0.lin_r.weight": [
+            64,
+            64
+          ],
+          "hidden_layers.1.lin_l.weight": [
+            64,
+            64
+          ],
+          "hidden_layers.1.lin_l.bias": [
+            64
+          ],
+          "hidden_layers.1.lin_r.weight": [
+            64,
+            64
+          ],
+          "out_layer.lin_l.weight": [
+            8,
+            64
+          ],
+          "out_layer.lin_l.bias": [
+            8
+          ],
+          "out_layer.lin_r.weight": [
+            8,
+            64
+          ],
+          "bn.0.weight": [
+            64
+          ],
+          "bn.0.bias": [
+            64
+          ],
+          "bn.1.weight": [
+            64
+          ],
+          "bn.1.bias": [
+            64
+          ],
+          "bn.2.weight": [
+            64
+          ],
+          "bn.2.bias": [
+            64
+          ]
+        },
+        "hashes": {
+          "list.pt": "99ec89e197f1cfb9fd74d3f241e89fde0d62af8dfd7a227928818e1741ddd088",
+          "fixture.pt": "4fd85c1341f9c11d8478bf5f64fff0d0e2836514d9dedc5fefc56b8d2970c885"
+        },
+        "output_shape": [
+          13,
+          4
+        ],
+        "device": "cpu",
+        "dtype": "float32",
+        "atol": 0,
+        "rtol": 0,
+        "scope": "post-M1 current synthetic reference; not historic training weights; no real graph construction"
+      },
+      {
+        "name": "GUNet",
+        "status": "not_run",
+        "reason": "real torch_cluster absent; multiscale radius/nearest graph path unavailable"
+      }
+    ]
+  },
+  {
+    "project": "standard",
+    "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "/home/hwz/CDLNO/docs/msar_lno_audit/m0/other_model_fixtures.py",
+      "replay",
+      "--project",
+      "standard",
+      "--artifacts",
+      "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/other-models",
+      "--result",
+      "/home/hwz/CDLNO/docs/msar_lno_audit/m8/other-replay-standard.json"
+    ],
+    "returncode": 0,
+    "rows": [
+      {
+        "name": "Transolver_Structured_Mesh_3D",
+        "status": "passed",
+        "config": {
+          "space_dim": 3,
+          "fun_dim": 1,
+          "out_dim": 1,
+          "H": 3,
+          "W": 5,
+          "D": 2,
+          "n_hidden": 8,
+          "n_head": 2,
+          "slice_num": 4,
+          "n_layers": 2,
+          "unified_pos": false,
+          "dropout": 0
+        },
+        "class_path": "model.Transolver_Structured_Mesh_3D.Model",
+        "fixture": "/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/other-models/Transolver_Structured_Mesh_3D/fixture.pt",
+        "keys_shapes": {
+          "placeholder": [
+            8
+          ],
+          "preprocess.linear_pre.0.weight": [
+            16,
+            4
+          ],
+          "preprocess.linear_pre.0.bias": [
+            16
+          ],
+          "preprocess.linear_post.weight": [
+            8,
+            16
+          ],
+          "preprocess.linear_post.bias": [
+            8
+          ],
+          "blocks.0.ln_1.weight": [
+            8
+          ],
+          "blocks.0.ln_1.bias": [
+            8
+          ],
+          "blocks.0.Attn.temperature": [
+            1,
+            2,
+            1,
+            1
+          ],
+          "blocks.0.Attn.in_project_x.weight": [
+            8,
+            8,
+            3,
+            3,
+            3
+          ],
+          "blocks.0.Attn.in_project_x.bias": [
+            8
+          ],
+          "blocks.0.Attn.in_project_fx.weight": [
+            8,
+            8,
+            3,
+            3,
+            3
+          ],
+          "blocks.0.Attn.in_project_fx.bias": [
+            8
+          ],
+          "blocks.0.Attn.in_project_slice.weight": [
+            4,
+            4
+          ],
+          "blocks.0.Attn.in_project_slice.bias": [
+            4
+          ],
+          "blocks.0.Attn.to_q.weight": [
+            4,
+            4
+          ],
+          "blocks.0.Attn.to_k.weight": [
+            4,
+            4
+          ],
+          "blocks.0.Attn.to_v.weight": [
+            4,
+            4
+          ],
+          "blocks.0.Attn.to_out.0.weight": [
+            8,
+            8
+          ],
+          "blocks.0.Attn.to_out.0.bias": [
+            8
+          ],
+          "blocks.0.ln_2.weight": [
+            8
+          ],
+          "blocks.0.ln_2.bias": [
+            8
+          ],
+          "blocks.0.mlp.linear_pre.0.weight": [
+            8,
+            8
+          ],
+          "blocks.0.mlp.linear_pre.0.bias": [
+            8
+          ],
+          "blocks.0.mlp.linear_post.weight": [
+            8,
+            8
+          ],
+          "blocks.0.mlp.linear_post.bias": [
+            8
+          ],
+          "blocks.1.ln_1.weight": [
+            8
+          ],
+          "blocks.1.ln_1.bias": [
+            8
+          ],
+          "blocks.1.Attn.temperature": [
+            1,
+            2,
+            1,
+            1
+          ],
+          "blocks.1.Attn.in_project_x.weight": [
+            8,
+            8,
+            3,
+            3,
+            3
+          ],
+          "blocks.1.Attn.in_project_x.bias": [
+            8
+          ],
+          "blocks.1.Attn.in_project_fx.weight": [
+            8,
+            8,
+            3,
+            3,
+            3
+          ],
+          "blocks.1.Attn.in_project_fx.bias": [
+            8
+          ],
+          "blocks.1.Attn.in_project_slice.weight": [
+            4,
+            4
+          ],
+          "blocks.1.Attn.in_project_slice.bias": [
+            4
+          ],
+          "blocks.1.Attn.to_q.weight": [
+            4,
+            4
+          ],
+          "blocks.1.Attn.to_k.weight": [
+            4,
+            4
+          ],
+          "blocks.1.Attn.to_v.weight": [
+            4,
+            4
+          ],
+          "blocks.1.Attn.to_out.0.weight": [
+            8,
+            8
+          ],
+          "blocks.1.Attn.to_out.0.bias": [
+            8
+          ],
+          "blocks.1.ln_2.weight": [
+            8
+          ],
+          "blocks.1.ln_2.bias": [
+            8
+          ],
+          "blocks.1.mlp.linear_pre.0.weight": [
+            8,
+            8
+          ],
+          "blocks.1.mlp.linear_pre.0.bias": [
+            8
+          ],
+          "blocks.1.mlp.linear_post.weight": [
+            8,
+            8
+          ],
+          "blocks.1.mlp.linear_post.bias": [
+            8
+          ],
+          "blocks.1.ln_3.weight": [
+            8
+          ],
+          "blocks.1.ln_3.bias": [
+            8
+          ],
+          "blocks.1.mlp2.weight": [
+            1,
+            8
+          ],
+          "blocks.1.mlp2.bias": [
+            1
+          ]
+        },
+        "hashes": {
+          "fixture.pt": "0d5c7ab92fdef0b3abd0b375158e11781b28c794869a577d5bbf3d1b2ded25d4"
+        },
+        "output_shape": [
+          2,
+          30,
+          1
+        ],
+        "device": "cpu",
+        "dtype": "float32",
+        "atol": 0,
+        "rtol": 0,
+        "scope": "post-M1 current synthetic reference; not historic training weights; no real graph construction"
+      }
+    ]
+  }
+]

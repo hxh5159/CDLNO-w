@@ -1,5 +1,54 @@
 # KCDNO 实施状态
 
+## 2026-09-16：离线报告按每task最后验证损失选择单个seed完成
+
+三个show入口现在每个数据集仅展示最后一次记录的验证损失最小的run/seed；PDE六任务独立选取，一张2×3训练汇总、一张2×3独立评价汇总。selection.json/CSV记录所有候选的seed、loss、真实验证epoch、权重/成员、选择或排除理由；曲线/复制场图/评价仅使用获选run。绝不取历史最好epoch或用正式测试值选seed。Car/Air按正确分项和保存权重派生目标；Air398轮最后验证390如实记录；缺损/非有限/未完成run不退回更早好值，legacy缺状态明确标注。
+
+[报告](CDLNO_RESULT_REPORTS.md)、[用法](../tran_evaluate/show/README.md)、[证据](show_audit/selection/)。14/14定向测试通过，6task×3seed记录夹具、工业加权/多成员/稀疏验证、失败/NaN/缺项、同值规则、dry-run、只复制获选run、源文件/旧报告hash与ZIP检查；实际渲染并查看两张六子图。149个既有生产/启动文件和3个show shell与本轮快照字节一致。没有模型/训练/数据/checkpoint/依赖改动，未访问远端实际结果，未训练或commit/push。历史交付原样保留。本阶段结束，未执行下一阶段。
+
+## 2026-09-16：三子项目离线结果报告脚本完成
+
+新增tran_evaluate/show下Car-Design-ShapeNetCar.sh、Airfoil-Design-AirfRANS.sh、PDE-Solving-StandardBenchmark.sh，复用_report.py。读取原训练JSONL/独立评估JSON/数值数组及已存场图，在实际远端子项目result_visualizations下创建独立时间戳文件夹+ZIP：loss/分项/step-full曲线、测试指标、Air升阻力配对与Cp/Cf、原场图、PDF/600dpiPNG/图注/CSV/LaTeX表/离线HTML。按run/member/seed/fold/评估次数隔离，不混平均、不平滑、不把验证当测试。
+
+报告[CDLNO_RESULT_REPORTS.md](CDLNO_RESULT_REPORTS.md)，用法[show/README](../tran_evaluate/show/README.md)。8项定向测试通过，模拟带空格远端目录/外部cwd、三实际shell、八任务结果夹具、原文件hash、稀疏epoch、失败/缺项、数组轴、真实图/PDF字体与ZIP均检查；实际查看合成格式示例。149个原生产/启动文件byte不变。新工具不导入Torch/模型/exp、不读取真实数据/checkpoint、不安装依赖；源文件和已有修改保留。远端真实训练产物未访问，缺记录不能从权重恢复。无真实训练或commit/push。本阶段结束，未执行下一阶段。
+
+
+## 2026-09-16：八任务每50轮可视化完成
+
+当前明确请求授权可视化接入，见[交付/使用/论文依据](CDLNO_PERIODIC_VISUALIZATION.md)和[证据](periodic_visualization_audit/)。CDLNO所有既有模式、KCDNO all/off、lrsa_matched的八任务在完成50/100/...及最后epoch自动输出固定前两个held-out案例；PDF/600dpi PNG、原始NPZ、固定色标、英文/LaTeX caption及单例诊断。NS预测回填10步、Plasticity20个独立T；Car surf压力/volume薄层速度；Air原数量固定抽样+真实radius_graph，明确不是正式scatter平均评价。原Transolver分支保持现状。
+
+完整287tests/319.519s无fail/error，3个skip（2个Air torch_cluster依赖项+外部LRSA未指定）；LRSA之后实际补跑2/2精确通过。最终绘图11tests/17.178s仅1个Air建图skip；Car原train.main合成完整epoch实际出图且权重/RNG精确，Air真实PyG已抽样输入/原weighted loss片段通过但完整采样链未运行。CPU观察器前后及下一步optimizer/scheduler/RNG精确；有限GPU FP32/math/TF32off、确定性测试设置下下一步精确。初次GPU未固定确定性零容差失败约1.9e-9及旧Car pos2测试夹具问题如实记录，没有改生产后端或模型。
+
+161个保护生产文件byte相同、9个完整入口/训练AST剥离精确新增观察调用后相同；快照`/home/hwz/CDLNO-artifacts/visualization-before-133lyhbo/source`保留。模型/数据/loss/采样/时间循环/optimizer/scheduler/原checkpoint保存协议未变，既有seed修复保留。当前只完成可视化，不将旧V1归档基础宣传为八任务resume完成。无真实数据/训练/远端2.11cu128或真实论文案例验收，无commit/push/安装依赖。原历史状态如下保留。
+
+本阶段结束，未执行下一阶段。
+
+
+## 远端seed解析失败的交付核查（2026-09-16）
+
+用户远端run_seed已传seed，但旧parser拒绝`--seed 0`。本地用HEAD旧parser复现exit2，
+当前parser接受`--seed 0 --gpu 1`；不导入exp或读取数据。提供仅含标准parser、
+新家族seed helper、experiment seed记录三个文件的[最小补丁](kcdno_audit/seed_suite/seed-support.patch)，
+独立副本apply-check/apply后3文件与当前实现逐字节相同。未修改模型/数据/循环，
+未新增研究功能或运行训练；远端尚需同步，不宣称已修复远端文件。
+具体上传/只读核查方法见[KCDNO_SEED_SUITE.md](KCDNO_SEED_SUITE.md)。
+
+## 六标准任务单seed队列完成（2026-09-16）
+
+新增[run_seed.sh](../tran_evaluate/kcdlno/run_seed.sh)，选择0/1/2之一，严格按
+darcy→airfoil→plasticity→elasticity→ns→pipe，各任务train→eval→即时输出带seed结果，
+然后才进入下一任务。每任务独立带seed时间戳目录，seed_summary和队列summary增量保存；
+失败停止并保留既有结果。可选seed在标准新家族helper真实设置Python/NumPy/torch
+CPU/CUDA RNG，子进程PYTHONHASHSEED也设置；记录进入原初始化元数据、配置与结果。
+省略seed的旧命令不重置RNG；旧模型和六exp/数据/时间循环/预设/原启动脚本未改。
+
+定向8/8（6.169s）及旧记录2/2（10.901s）通过：六任务三seed重复初始化精确一致、
+不同seed权重不同、strict/checkpoint/sidecar、逐任务报告、故障停止、60条命令预览。
+195个已有源文件192未变，仅3个seed/记录helper有授权差异。初次一项测试误用35点
+配5×5模型，改为实际H×W后通过，未放松生产合同。
+无真实训练/数据读取/GPU重复性或远端验收；不新增resume/确定性后端设置。
+详见[报告及命令](KCDNO_SEED_SUITE.md)。本阶段结束，未执行下一阶段。
+
 ## KCDNO 八任务启动包装（2026-09-16）
 
 新增 `tran_evaluate/kcdlno/`，为 Darcy、Elasticity、Airfoil、Pipe、Navier–Stokes、

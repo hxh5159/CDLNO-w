@@ -1,0 +1,17 @@
+{
+  "family": "msar_lno",
+  "task": "car",
+  "profile": "light",
+  "objective": {
+    "coverage_mode": "floor",
+    "coverage_weight": 0.01,
+    "coverage_kappa": 0.2,
+    "coverage_eps": 1e-06,
+    "diagnostics": false
+  },
+  "training": {
+    "lr": 0.001,
+    "batch_size": 1,
+    "nb_epochs": 200
+  }
+}

@@ -1,0 +1,888 @@
+diff --git a/Airfoil-Design-AirfRANS/main.py b/Airfoil-Design-AirfRANS/main.py
+index 811dc17..09b5008 100644
+--- a/Airfoil-Design-AirfRANS/main.py
++++ b/Airfoil-Design-AirfRANS/main.py
+@@ -125,7 +125,7 @@ for i in range(args.nmodel):
+     print('start training')
+     model = train.main(device, train_dataset, val_dataset, model, hparams, log_path,
+                        criterion='MSE_weighted', val_iter=10, reg=args.weight, name_mod=args.model, val_sample=True,
+-                       **(dict(record=cdlno_run.recorder, record_member=i) if cdlno_run is not None else {}))
++                       **(dict(record=cdlno_run.recorder, record_member=i, visualization_norm=coef_norm) if cdlno_run is not None else {}))
+     print('end training')
+     models.append(model)
+ torch.save(models, cdlno_run.checkpoint if cdlno_run is not None else osp.join(args.save_path, args.task, args.model, args.model))
+diff --git a/Airfoil-Design-AirfRANS/train.py b/Airfoil-Design-AirfRANS/train.py
+index 491c408..27435eb 100644
+--- a/Airfoil-Design-AirfRANS/train.py
++++ b/Airfoil-Design-AirfRANS/train.py
+@@ -119,7 +119,7 @@ class NumpyEncoder(json.JSONEncoder):
+ 
+ 
+ def main(device, train_dataset, val_dataset, Net, hparams, path, criterion='MSE', reg=1, val_iter=10,
+-         name_mod='GraphSAGE', val_sample=True, record=None, record_member=0):
++         name_mod='GraphSAGE', val_sample=True, record=None, record_member=0, visualization_norm=None):
+     '''
+         Args:
+         device (str): device on which you want to do the computation.
+@@ -270,6 +270,8 @@ def main(device, train_dataset, val_dataset, Net, hparams, path, criterion='MSE'
+                                         validation_surface_per_channel=val_surf_var,
+                                         validation_volume_per_channel=val_vol_var)
+             record.record_epoch(epoch + 1, recorded_metrics, member=record_member)
++            record.visualize(model, epoch + 1, hparams['nb_epochs'], member=record_member,
++                             dataset=val_dataset, coef_norm=visualization_norm, hparams=hparams)
+ 
+     loss_surf_var_list = np.array(loss_surf_var_list)
+     loss_vol_var_list = np.array(loss_vol_var_list)
+diff --git a/Car-Design-ShapeNetCar/train.py b/Car-Design-ShapeNetCar/train.py
+index b3e64c3..51e271a 100644
+--- a/Car-Design-ShapeNetCar/train.py
++++ b/Car-Design-ShapeNetCar/train.py
+@@ -114,6 +114,7 @@ def main(device, train_dataset, val_dataset, Net, hparams, path, reg=1, val_iter
+                 metrics.update(validation_pressure_mse=loss_velo, validation_velocity_mse=loss_press,
+                                upstream_validation_log_value=val_loss)
+             record.record_epoch(epoch + 1, metrics)
++            record.visualize(model, epoch + 1, hparams['nb_epochs'], dataset=val_dataset, coef_norm=coef_norm)
+ 
+     end = time.time()
+     time_elapsed = end - start
+diff --git a/PDE-Solving-StandardBenchmark/cdlno_entry.py b/PDE-Solving-StandardBenchmark/cdlno_entry.py
+index b06a52b..2b25b19 100644
+--- a/PDE-Solving-StandardBenchmark/cdlno_entry.py
++++ b/PDE-Solving-StandardBenchmark/cdlno_entry.py
+@@ -20,6 +20,8 @@ def parse_args(parser, task, argv=None):
+     parser.add_argument('--kernel-rank', '--kernel_rank', type=int, default=16)
+     parser.add_argument('--history-mode', '--history_mode', choices=('all', 'off'), default='all')
+     parser.add_argument('--kcdno-run-dir', type=Path, default=None)
++    parser.add_argument('--seed', type=int, default=argparse.SUPPRESS,
++                        help='optional RNG seed for kcdno/lrsa_matched standard tasks')
+     parser.add_argument('--front-latent-mode', '--front_latent_mode',
+                         choices=('full', 'no_sa', 'identity'), default=None)
+     parser.add_argument('--front-blocks', type=int, default=2)
+@@ -33,6 +35,8 @@ def parse_args(parser, task, argv=None):
+     if args.model in ('kcdno', 'lrsa_matched'):
+         from cdlno.kcdno.entry import resolve_args
+         return resolve_args(parser, args, task, tokens)
++    if hasattr(args, 'seed'):
++        parser.error('--seed is only supported for kcdno/lrsa_matched standard tasks')
+     if args.model != 'CDLNO':
+         return args
+     # Discover explicit options with argparse itself, including --flag=value
+diff --git a/PDE-Solving-StandardBenchmark/exp_airfoil.py b/PDE-Solving-StandardBenchmark/exp_airfoil.py
+index ee935bc..cf90c62 100644
+--- a/PDE-Solving-StandardBenchmark/exp_airfoil.py
++++ b/PDE-Solving-StandardBenchmark/exp_airfoil.py
+@@ -256,6 +256,8 @@ def main():
+             print("rel_err:{}".format(rel_err))
+             if cdlno_run is not None and cdlno_run.recorder is not None:
+                 cdlno_run.recorder.record_epoch(ep + 1, dict(train_loss=train_loss, validation_relative_l2=rel_err))
++                cdlno_run.recorder.visualize(model, ep + 1, args.epochs, dataset=test_loader.dataset,
++                                           grid_shape=(s1, s2))
+ 
+             if ep % 100 == 0:
+                 if cdlno_run is not None:
+diff --git a/PDE-Solving-StandardBenchmark/exp_darcy.py b/PDE-Solving-StandardBenchmark/exp_darcy.py
+index dcdab35..e75b777 100644
+--- a/PDE-Solving-StandardBenchmark/exp_darcy.py
++++ b/PDE-Solving-StandardBenchmark/exp_darcy.py
+@@ -298,6 +298,8 @@ def main():
+             print("rel_err:{}".format(rel_err))
+             if cdlno_run is not None and cdlno_run.recorder is not None:
+                 cdlno_run.recorder.record_epoch(ep + 1, dict(train_loss=train_loss, validation_relative_l2=rel_err, derivative_regularizer=reg))
++                cdlno_run.recorder.visualize(model, ep + 1, args.epochs, dataset=test_loader.dataset,
++                                           grid_shape=(s, s), output_normalizer=y_normalizer)
+ 
+             if ep % 100 == 0:
+                 if cdlno_run is not None:
+diff --git a/PDE-Solving-StandardBenchmark/exp_elas.py b/PDE-Solving-StandardBenchmark/exp_elas.py
+index 06eeb2d..64d4ab2 100644
+--- a/PDE-Solving-StandardBenchmark/exp_elas.py
++++ b/PDE-Solving-StandardBenchmark/exp_elas.py
+@@ -233,6 +233,8 @@ def main():
+             print("rel_err : {}".format(rel_err))
+             if cdlno_run is not None and cdlno_run.recorder is not None:
+                 cdlno_run.recorder.record_epoch(ep + 1, dict(train_loss=train_loss, validation_relative_l2=rel_err))
++                cdlno_run.recorder.visualize(model, ep + 1, args.epochs, dataset=test_loader.dataset,
++                                           output_normalizer=y_normalizer)
+ 
+             if ep % 100 == 0:
+                 if cdlno_run is not None:
+diff --git a/PDE-Solving-StandardBenchmark/exp_ns.py b/PDE-Solving-StandardBenchmark/exp_ns.py
+index fcfcbbd..541580d 100644
+--- a/PDE-Solving-StandardBenchmark/exp_ns.py
++++ b/PDE-Solving-StandardBenchmark/exp_ns.py
+@@ -271,6 +271,8 @@ def main():
+ 
+             if cdlno_run is not None and cdlno_run.recorder is not None:
+                 cdlno_run.recorder.record_epoch(ep + 1, dict(train_step_loss=train_l2_step / ntrain / (T / step), test_step_loss=test_l2_step / ntest / (T / step), test_full_loss=test_l2_full / ntest, train_full_loss=train_l2_full / ntrain))
++                cdlno_run.recorder.visualize(model, ep + 1, args.epochs, dataset=test_loader.dataset,
++                                           grid_shape=(h, h))
+             if ep % 100 == 0:
+                 if cdlno_run is not None:
+                     cdlno_run.save(model)
+diff --git a/PDE-Solving-StandardBenchmark/exp_pipe.py b/PDE-Solving-StandardBenchmark/exp_pipe.py
+index 9cb8374..19695d2 100644
+--- a/PDE-Solving-StandardBenchmark/exp_pipe.py
++++ b/PDE-Solving-StandardBenchmark/exp_pipe.py
+@@ -279,6 +279,8 @@ def main():
+             print("rel_err:{}".format(rel_err))
+             if cdlno_run is not None and cdlno_run.recorder is not None:
+                 cdlno_run.recorder.record_epoch(ep + 1, dict(train_loss=train_loss, validation_relative_l2=rel_err))
++                cdlno_run.recorder.visualize(model, ep + 1, args.epochs, dataset=test_loader.dataset,
++                                           grid_shape=(s1, s2), output_normalizer=y_normalizer, coordinate_normalizer=x_normalizer)
+ 
+             if ep % 100 == 0:
+                 if cdlno_run is not None:
+diff --git a/PDE-Solving-StandardBenchmark/exp_plas.py b/PDE-Solving-StandardBenchmark/exp_plas.py
+index 6a287eb..a01d759 100644
+--- a/PDE-Solving-StandardBenchmark/exp_plas.py
++++ b/PDE-Solving-StandardBenchmark/exp_plas.py
+@@ -322,6 +322,8 @@ def main():
+                                                                                                              test_l2_full / ntest))
+             if cdlno_run is not None and cdlno_run.recorder is not None:
+                 cdlno_run.recorder.record_epoch(ep + 1, dict(train_step_loss=train_l2_step / ntrain / T, test_step_loss=test_l2_step / ntest / T, test_full_loss=test_l2_full / ntest))
++                cdlno_run.recorder.visualize(model, ep + 1, args.epochs, dataset=test_loader.dataset,
++                                           grid_shape=(s1, s2))
+             if ep % 100 == 0:
+                 if cdlno_run is not None:
+                     cdlno_run.save(model)
+diff --git a/cdlno/experiment.py b/cdlno/experiment.py
+index 3e8d265..eb6eda9 100644
+--- a/cdlno/experiment.py
++++ b/cdlno/experiment.py
+@@ -133,6 +133,8 @@ class Experiment:
+         self.clock = time.monotonic()
+         self.result = dict(status='running', phase='startup', task=task,
+                            started_at_utc=self.started, pid=os.getpid(), metrics={})
++        if self.family in ('kcdno', 'lrsa_matched') and getattr(args, 'seed', None) is not None:
++            self.result['seed'] = args.seed
+         self.config = dict(schema_version=1, task=task, model=self.family, run_directory=str(self.directory),
+                            started_at_utc=self.started, resolved_arguments=_json(vars(args)),
+                            hparams=_json(hparams), parameter_count_status='pending_model_construction',
+@@ -156,6 +158,8 @@ class Experiment:
+         atexit.register(self._unfinished)
+         print(self.family + ' experiment:', self.directory)
+         print(self.family + ' phase:', 'evaluation' if evaluation else 'training')
++        if 'seed' in self.result:
++            print(self.family + ' seed:', self.result['seed'])
+ 
+     @staticmethod
+     def _environment():
+@@ -254,6 +258,23 @@ class Experiment:
+         self.result['metrics'].update(_json(metrics))
+         self._write_result()
+ 
++    def visualize(self, model, completed_epoch, total_epochs, *, member=0, **task_inputs):
++        """Optional diagnostic side effect; never part of the training objective."""
++        if self.evaluation:
++            return
++        from .periodic_visualization import PeriodicFields, due
++        if not due(completed_epoch, total_epochs):
++            return
++        if not hasattr(self, '_field_visualizers'):
++            self._field_visualizers = {}
++        if member not in self._field_visualizers:
++            name = {'kcdno':'KCDNO', 'lrsa_matched':'LRSA matched', 'CDLNO':'CDLNO'}[self.family]
++            self._field_visualizers[member] = PeriodicFields(self.directory, self.task, name,
++                                                           seed=getattr(self.args, 'seed', None), member=member)
++        event = self._field_visualizers[member].after_epoch(model, completed_epoch, total_epochs, **task_inputs)
++        self.result.setdefault('visualization_events', []).append(event)
++        self._write_result()
++
+     def record_air_scores(self, result_dir):
+         """Import the evaluator's exact structured output, never rederive metrics."""
+         path = Path(result_dir) / 'score.json'
+diff --git a/cdlno/kcdno/entry.py b/cdlno/kcdno/entry.py
+index 9a67067..b886868 100644
+--- a/cdlno/kcdno/entry.py
++++ b/cdlno/kcdno/entry.py
+@@ -2,12 +2,14 @@
+ from __future__ import annotations
+ 
+ import hashlib
++import argparse
+ import json
+ import os
+ from pathlib import Path
+ import re
+ 
+-from .config import KCDNORuntimeConfig
++from .config import KCDNOInitializationConfig, KCDNORuntimeConfig
++from .matched_config import MatchedInitialization
+ from .metadata import KCDNOMetadataMismatch, save_metadata
+ from .options import explicit_arguments
+ 
+@@ -24,6 +26,24 @@ def add_arguments(parser):
+     parser.add_argument('--kernel-rank', '--kernel_rank', type=int, default=16)
+     parser.add_argument('--history-mode', '--history_mode', choices=('all', 'off'), default='all')
+     parser.add_argument('--kcdno-run-dir', type=Path, default=None)
++    parser.add_argument('--seed', type=int, default=argparse.SUPPRESS,
++                        help='optional RNG seed for kcdno/lrsa_matched standard tasks')
++
++
++def seed_process(seed, gpu):
++    """Seed before data iteration/model construction; leave backend choices intact."""
++    if type(seed) is not int or not 0 <= seed < 2**32:
++        raise ValueError('seed must be an integer in [0, 2**32)')
++    # The original entries set this too, but do so after argument resolution.
++    # Select the same GPU before any torch/CUDA seeding in this optional path.
++    os.environ['CUDA_VISIBLE_DEVICES'] = str(gpu)
++    import random
++    import numpy as np
++    import torch
++    random.seed(seed)
++    np.random.seed(seed)
++    torch.manual_seed(seed)
++    torch.cuda.manual_seed_all(seed)
+ 
+ 
+ def task_record(path):
+@@ -41,6 +61,8 @@ def resolve_args(parser, args, task, tokens, *, evaluation=None):
+     if task not in STANDARD_TASKS:
+         raise ValueError('KCDNO task entry not integrated: ' + task)
+     explicit = explicit_arguments(parser, tokens)
++    if 'seed' in explicit and (type(args.seed) is not int or not 0 <= args.seed < 2**32):
++        parser.error('seed must be an integer in [0, 2**32)')
+     args.kcdno_task, args.kcdno_family = task, args.model
+     evaluation = bool(args.eval) if evaluation is None else evaluation
+     args.kcdno_evaluation = evaluation
+@@ -58,6 +80,8 @@ def resolve_args(parser, args, task, tokens, *, evaluation=None):
+         saved = task_record(args.kcdno_run_dir)
+         if saved['task'] != task:
+             raise KCDNOMetadataMismatch('task sidecar task mismatch')
++        if 'seed' not in explicit and saved['arguments'].get('seed') is not None:
++            args.seed = saved['arguments']['seed']
+         # Restore input layout and conditioning before any dataset is read.
+         for name in ('ref', 'unified_pos', 'downsample', 'ntrain'):
+             if name in saved['arguments']:
+@@ -79,6 +103,8 @@ def resolve_args(parser, args, task, tokens, *, evaluation=None):
+         proposed = new_run_path(output, task, cfg)
+         digest = hashlib.sha256(json.dumps(cfg.to_dict(), sort_keys=True).encode()).hexdigest()[:10]
+         args.kcdno_run_dir = proposed.parent / args.profile / (proposed.name + '_' + digest)
++    if getattr(args, 'seed', None) is not None:
++        seed_process(args.seed, args.gpu)
+     return args
+ 
+ 
+@@ -96,8 +122,11 @@ class StandardRun:
+         self.evaluation = args.kcdno_evaluation
+         self.directory = Path(args.kcdno_run_dir).resolve()
+         self.recorder = session(args)
++        initialization_type = (KCDNOInitializationConfig if model.config.family == 'kcdno'
++                               else MatchedInitialization)
+         self.metadata = make_metadata(task=args.kcdno_task, architecture=model.config,
+             checkpoint_format='state_dict', profile=args.profile,
++            initialization=initialization_type(seed=getattr(args, 'seed', None)),
+             runtime=KCDNORuntimeConfig(device=str(next(model.parameters()).device),
+                                       batch_size=args.batch_size, dtype=str(next(model.parameters()).dtype).removeprefix('torch.')))
+         self.adapter = model.adapter_architecture()
+diff --git a/cdlno/visualization.py b/cdlno/visualization.py
+index 492140f..1153543 100644
+--- a/cdlno/visualization.py
++++ b/cdlno/visualization.py
+@@ -12,6 +12,15 @@ from pathlib import Path
+ import numpy as np
+ 
+ 
++# 7.16 inches = 181.9 mm, suitable for a two-column manuscript figure.
++# STIX is bundled with Matplotlib, so no system Times font or TeX is required.
++PUBLICATION_STYLE = {'font.family': 'STIXGeneral', 'mathtext.fontset': 'stix',
++    'font.size': 8, 'axes.titlesize': 9, 'axes.labelsize': 8,
++    'xtick.labelsize': 7, 'ytick.labelsize': 7, 'legend.fontsize': 7,
++    'axes.linewidth': .6, 'lines.linewidth': 1., 'pdf.fonttype': 42,
++    'ps.fonttype': 42, 'savefig.facecolor': 'white', 'figure.facecolor': 'white'}
++
++
+ def _array(value):
+     # Duck-type torch tensors so importing visualization does not import torch.
+     if hasattr(value, 'detach'):
+@@ -80,7 +89,8 @@ def fixed_scales(path, truth, prediction, channel_names):
+ 
+ def render_fields(directory, *, coordinates, truth, prediction, channel_names,
+                   scales, task, case_id, completed_epoch, grid_shape=None,
+-                  display_mask=None, units=None, view=(20., -60.), metadata=None):
++                  display_mask=None, units=None, view=(20., -60.), metadata=None,
++                  model_name='CDLNO', prediction_coordinates=None, coordinate_labels=('$x$', '$y$')):
+     """Write scalar-channel GT/pred/absolute-error panels + original arrays.
+ 
+     Structured panels preserve explicit [H,W] point order and physical xy.
+@@ -102,6 +112,8 @@ def render_fields(directory, *, coordinates, truth, prediction, channel_names,
+     units = [''] * gt.shape[1] if units is None else list(units)
+     if len(units) != gt.shape[1]:
+         raise ValueError('units must match channels')
++    if len(coordinate_labels) != 2:
++        raise ValueError('two coordinate labels required for the displayed plane')
+     mask = np.ones(xyz.shape[0], dtype=bool) if display_mask is None else np.array(display_mask, copy=True)
+     if mask.shape != (xyz.shape[0],) or mask.dtype != np.bool_ or not mask.any():
+         raise ValueError('display_mask must be nonempty boolean [N]')
+@@ -110,6 +122,9 @@ def render_fields(directory, *, coordinates, truth, prediction, channel_names,
+                 or np.prod(grid_shape) != xyz.shape[0] or xyz.shape[1] != 2 or not mask.all()):
+             raise ValueError('structured field requires explicit H,W with N=H*W and unmasked xy')
+     error = np.abs(pred.astype(np.float64) - gt.astype(np.float64))
++    pred_xyz = xyz if prediction_coordinates is None else _array(prediction_coordinates)
++    if pred_xyz.shape != xyz.shape:
++        raise ValueError('prediction coordinates must preserve point correspondence')
+     metrics = []
+     for c, (name, scale) in enumerate(zip(channel_names, scales)):
+         denominator = np.linalg.norm(gt[:, c].astype(np.float64))
+@@ -119,53 +134,123 @@ def render_fields(directory, *, coordinates, truth, prediction, channel_names,
+             maximum_absolute_error=float(error[:, c].max()),
+             prediction_outside_color_fraction=float(np.mean((pred[:, c] < scale.minimum) | (pred[:, c] > scale.maximum))),
+             error_above_color_fraction=float(np.mean(error[:, c] > scale.error_maximum)),
++            displayed_prediction_outside_color_fraction=float(np.mean((pred[mask, c] < scale.minimum) | (pred[mask, c] > scale.maximum))),
++            displayed_error_above_color_fraction=float(np.mean(error[mask, c] > scale.error_maximum)),
++            displayed_mse=float(np.mean(error[mask, c]**2)),
++            displayed_relative_l2=(None if np.linalg.norm(gt[mask, c]) == 0 else
++                float(np.linalg.norm(error[mask, c])/np.linalg.norm(gt[mask, c]))),
+             color_scale=scale.to_dict()))
+     record = dict(version=1, task=task, case_id=case_id, completed_epoch=completed_epoch,
+         shape=list(gt.shape), grid_shape=None if grid_shape is None else list(grid_shape),
+         coordinates_dimension=xyz.shape[1], displayed_points=int(mask.sum()),
+         scalar_error='abs(prediction-truth)', channel_metrics=metrics, view=list(view),
+-        supplied_metadata=metadata or {})
++        supplied_metadata=metadata or {}, model_name=model_name,
++        typography=PUBLICATION_STYLE, figure_width_inches=7.16, png_dpi=600,
++        prediction_geometry='separate' if prediction_coordinates is not None else 'shared',
++        error_geometry='ground_truth')
++    record['coordinate_labels'] = list(coordinate_labels)
+     # Fail on invalid metadata before creating output files.
+     encoded = json.dumps(record, indent=2, allow_nan=False) + '\n'
+     directory = Path(directory)
+     directory.mkdir(parents=True, exist_ok=False)
+     from matplotlib.figure import Figure
+     from matplotlib.backends.backend_agg import FigureCanvasAgg
+-    # Object API: no global backend/rcParams/pyplot figure registry mutation.
+-    figure = Figure(figsize=(12, 3.5 * gt.shape[1]), layout='constrained')
+-    FigureCanvasAgg(figure)
+-    try:
+-        for c, name in enumerate(channel_names):
+-            scale = scales[c]
+-            for col, (label, values) in enumerate((('Ground truth', gt[:, c]), ('CDLNO prediction', pred[:, c]), ('Absolute error', error[:, c]))):
+-                ax = figure.add_subplot(gt.shape[1], 3, c*3+col+1, projection='3d' if xyz.shape[1] == 3 else None)
+-                lo, hi = (0., scale.error_maximum) if col == 2 else (scale.minimum, scale.maximum)
+-                color = 'magma' if col == 2 else 'viridis'
+-                if grid_shape is not None:
+-                    artist = ax.pcolormesh(xyz[:, 0].reshape(grid_shape), xyz[:, 1].reshape(grid_shape),
+-                        values.reshape(grid_shape), shading='nearest', cmap=color, vmin=lo, vmax=hi, rasterized=True)
+-                    ax.set_aspect('equal')
+-                elif xyz.shape[1] == 2:
+-                    artist = ax.scatter(xyz[mask, 0], xyz[mask, 1], c=values[mask], s=6,
+-                        cmap=color, vmin=lo, vmax=hi, rasterized=True)
+-                    ax.set_aspect('equal')
+-                else:
+-                    artist = ax.scatter(xyz[mask, 0], xyz[mask, 1], xyz[mask, 2], c=values[mask], s=3,
+-                        cmap=color, vmin=lo, vmax=hi, depthshade=False, rasterized=True)
+-                    ax.view_init(elev=view[0], azim=view[1])
+-                    ax.set_box_aspect(np.maximum(np.ptp(xyz[mask], axis=0), 1e-12))
+-                title = f'{name}: {label}'
+-                if col == 2:
+-                    relative = metrics[c]['relative_l2']
+-                    title += '\nrelative L2 = ' + ('undefined (zero truth)' if relative is None else f'{relative:.3g}')
+-                ax.set_title(title)
+-                figure.colorbar(artist, ax=ax, label=units[c], shrink=.8)
+-        figure.suptitle(f'{task} | {case_id} | completed epoch {completed_epoch}')
+-        figure.savefig(directory / 'fields.png', dpi=300, bbox_inches='tight', pad_inches=.15)
+-        figure.savefig(directory / 'fields.pdf', dpi=300, bbox_inches='tight', pad_inches=.15)
+-        np.savez_compressed(directory / 'fields.npz', coordinates=xyz, truth=gt, prediction=pred,
+-                            absolute_error=error, display_mask=mask, channel_names=np.array(channel_names))
+-        (directory / 'metadata.json').write_text(encoded, encoding='utf-8')
+-    finally:
+-        figure.clear()
++    import matplotlib as mpl
++    # rc_context restores all font/export settings even if rendering fails.
++    with mpl.rc_context(PUBLICATION_STYLE):
++        figure = Figure(figsize=(7.16, 2.25 * gt.shape[1]), layout='constrained')
++        FigureCanvasAgg(figure)
++        try:
++            _draw_fields(figure, xyz, pred_xyz, gt, pred, error, mask, channel_names,
++                         scales, units, grid_shape, view, model_name, coordinate_labels)
++            figure.savefig(directory / 'fields.png', dpi=600, bbox_inches='tight', pad_inches=.03)
++            figure.savefig(directory / 'fields.pdf', dpi=600, bbox_inches='tight', pad_inches=.03)
++        finally:
++            figure.clear()
++    np.savez_compressed(directory / 'fields.npz', coordinates=xyz, prediction_coordinates=pred_xyz,
++                        truth=gt, prediction=pred, absolute_error=error, signed_error=pred-gt,
++                        display_mask=mask, channel_names=np.array(channel_names))
++    (directory / 'metadata.json').write_text(encoded, encoding='utf-8')
++    caption = (f'{model_name} predictions for {task}, case {case_id}, after {completed_epoch} training epochs. '
++               'Each row shows (left) reference, (middle) prediction, and (right) pointwise absolute error. '
++               'Reference and prediction share a color scale; error uses its own scale. '
++               'Color limits are fixed across the recorded epochs. '
++               'Field values and any saturated colors are documented in the accompanying arrays and metadata.')
++    if prediction_coordinates is not None:
++        caption += ' Reference and prediction use their respective deformed coordinates; errors use reference coordinates with the original node correspondence.'
++    if not mask.all():
++        caption += ' Only the stated geometric mask is displayed; it is not a change to model inputs.'
++    details = (metadata or {}).get('caption_note', '')
++    if (metadata or {}).get('seed') is not None:
++        caption += f" Training seed: {metadata['seed']}."
++    if details:
++        caption += ' ' + details
++    (directory / 'caption.txt').write_text(caption + '\n', encoding='utf-8')
++    # Escape text for a copyable LaTeX caption without requiring a TeX runtime.
++    escapes = {'\\': r'\textbackslash{}', '&': r'\&', '%': r'\%', '$': r'\$', '#': r'\#',
++               '_': r'\_', '{': r'\{', '}': r'\}'}
++    latex = ''.join(escapes.get(char, char) for char in caption)
++    (directory / 'caption.tex').write_text('\\caption{' + latex + '}\n', encoding='utf-8')
+     return record
++
++
++def _draw_fields(figure, xyz, pred_xyz, gt, pred, error, mask, channel_names,
++                 scales, units, grid_shape, view, model_name, coordinate_labels):
++    for c, name in enumerate(channel_names):
++        scale = scales[c]
++        for col, (label, values) in enumerate((('Reference', gt[:, c]), (model_name, pred[:, c]), ('Absolute error', error[:, c]))):
++            coords = pred_xyz if col == 1 else xyz
++            ax = figure.add_subplot(gt.shape[1], 3, c*3+col+1, projection='3d' if xyz.shape[1] == 3 else None)
++            lo, hi = (0., scale.error_maximum) if col == 2 else (scale.minimum, scale.maximum)
++            color = 'OrRd' if col == 2 else ('RdBu_r' if lo < 0 < hi else 'viridis')
++            if grid_shape is not None:
++                artist = ax.pcolormesh(coords[:, 0].reshape(grid_shape), coords[:, 1].reshape(grid_shape),
++                    values.reshape(grid_shape), shading='gouraud', cmap=color, vmin=lo, vmax=hi, rasterized=True)
++                ax.set_aspect('equal')
++            elif xyz.shape[1] == 2:
++                artist = ax.scatter(coords[mask, 0], coords[mask, 1], c=values[mask], s=2,
++                    linewidths=0, cmap=color, vmin=lo, vmax=hi, rasterized=True)
++                ax.set_aspect('equal')
++            else:
++                artist = ax.scatter(coords[mask, 0], coords[mask, 1], coords[mask, 2], c=values[mask], s=1.2,
++                    linewidths=0, cmap=color, vmin=lo, vmax=hi, depthshade=False, rasterized=True)
++                ax.view_init(elev=view[0], azim=view[1])
++                ax.set_proj_type('ortho')
++                ax.set_box_aspect(np.maximum(np.ptp(xyz[mask], axis=0), 1e-12))
++                ax.set_axis_off()
++            if xyz.shape[1] == 2:
++                joint = np.concatenate((xyz[mask], pred_xyz[mask]))
++                ax.set_xlim(*_range(joint[:, 0].min(), joint[:, 0].max()))
++                ax.set_ylim(*_range(joint[:, 1].min(), joint[:, 1].max()))
++                ax.set_xlabel(coordinate_labels[0]); ax.set_ylabel(coordinate_labels[1])
++                ax.tick_params(length=2, pad=2)
++            ax.set_title(f'({chr(97+c*3+col)}) {label}\n{name}', pad=4)
++            figure.colorbar(artist, ax=ax, label=units[c], shrink=.8,
++                           pad=.025, fraction=.045, extend='max' if col == 2 else 'both')
++
++
++def render_curves(directory, x, series, *, xlabel, ylabel):
++    """Pure diagnostic curve export, with exactly the supplied numerical values."""
++    from matplotlib.figure import Figure
++    from matplotlib.backends.backend_agg import FigureCanvasAgg
++    import matplotlib as mpl
++    directory = Path(directory)
++    directory.mkdir(parents=True, exist_ok=False)
++    x = _array(x)
++    values = {name: _array(value) for name, value in series.items()}
++    if any(value.shape != x.shape for value in values.values()):
++        raise ValueError('curve x and y shapes must match')
++    with mpl.rc_context(PUBLICATION_STYLE):
++        fig = Figure(figsize=(3.5, 2.3), layout='constrained')
++        FigureCanvasAgg(fig)
++        try:
++            ax = fig.add_subplot(111)
++            for name, value in values.items():
++                ax.plot(x, value, marker='o', markersize=2, label=name)
++            ax.set_xlabel(xlabel); ax.set_ylabel(ylabel)
++            ax.legend(frameon=False); ax.grid(alpha=.2)
++            for ext in ('pdf', 'png'):
++                fig.savefig(directory / ('curve.' + ext), dpi=600, bbox_inches='tight', pad_inches=.03)
++            np.savez_compressed(directory / 'curve.npz', x=x, **values)
++        finally:
++            fig.clear()
+diff --git a/docs/CDLNO_IMPLEMENTATION_STATUS.md b/docs/CDLNO_IMPLEMENTATION_STATUS.md
+index 6f60ddb..4902fa3 100644
+--- a/docs/CDLNO_IMPLEMENTATION_STATUS.md
++++ b/docs/CDLNO_IMPLEMENTATION_STATUS.md
+@@ -1,5 +1,41 @@
+ # CDLNO 实施状态
+ 
++## 2026-09-16：独立 MSAR-LNO M2 原语完成
++
++仅新增MSAR五组件/显式no-grad诊断、独立reference和新测试，未组装core或接任务训练。旧共享数学、M1配置、factory、所有数据/训练/评估/依赖/已有测试字节不变；51定向测试与75个M0同权重夹具回放通过，182个旧夹具文件hash保持。有限本机FP32/FP16/BF16 AMP执行通过；远端/真实数据/GUNet图链未验收。见[独立报告](MSAR_LNO_M2_PRIMITIVES.md)及[STATUS](MSAR_LNO_IMPLEMENTATION_STATUS.md)。以下旧历史原样保留，无commit/push或真实训练。**本M阶段结束，未执行下一阶段。**
++
++## 2026-09-16：MSAR-LNO M0 补审完成，原生产保持
++
++按用户最新要求，在先前M1之后补做完整仓库审计，未重做M1或实施下一阶段。见[独立审计](MSAR_LNO_REFERENCE_AUDIT.md)、[独立STATUS](MSAR_LNO_IMPLEMENTATION_STATUS.md)、[夹具索引](msar_lno_audit/m0/fixture-index.json)。653文件清单、八任务/现有模型/复用映射已记录；75个旧模型同权重夹具精确回放，完整316 tests无失败/错误、2个Air torch_cluster相关skip。M1配置与实际仓库无已发现阻断冲突，但没有MSAR数学模型或任务入口。所有既有模型、配置实现、factory、训练/评估/数据/依赖和已有测试保持；新文件仅审计/独立夹具，历史状态保留。远端和真实数据未验收，无训练/安装/commit/push。**本M阶段结束，未执行下一阶段。**
++
++## 2026-09-16：独立 MSAR-LNO M1 配置基础完成
++
++本轮只新增 `cdlno.msar_lno` 配置/family/metadata/路径协议与针对性验证；旧 CDLNO/KCDNO/Transolver、八任务生产入口、训练/数据/依赖/原测试保持不变。32项配置回归和41+6旧模型同权重回放通过。缺失的MSAR M0报告/索引及未接模型/训练边界已如实记录，详见[独立STATUS](MSAR_LNO_IMPLEMENTATION_STATUS.md)和[M1报告](MSAR_LNO_M1_CONFIGURATION.md)。保留本文件以下全部历史；未执行M2、真实训练或commit/push。本M阶段结束，未执行下一阶段。
++
++## 2026-09-16：离线报告按每task最后验证损失选择单个seed完成
++
++三个show入口现在每个数据集仅展示最后一次记录的验证损失最小的run/seed；PDE六任务独立选取，一张2×3训练汇总、一张2×3独立评价汇总。selection.json/CSV记录所有候选的seed、loss、真实验证epoch、权重/成员、选择或排除理由；曲线/复制场图/评价仅使用获选run。绝不取历史最好epoch或用正式测试值选seed。Car/Air按正确分项和保存权重派生目标；Air398轮最后验证390如实记录；缺损/非有限/未完成run不退回更早好值，legacy缺状态明确标注。
++
++[报告](CDLNO_RESULT_REPORTS.md)、[用法](../tran_evaluate/show/README.md)、[证据](show_audit/selection/)。14/14定向测试通过，6task×3seed记录夹具、工业加权/多成员/稀疏验证、失败/NaN/缺项、同值规则、dry-run、只复制获选run、源文件/旧报告hash与ZIP检查；实际渲染并查看两张六子图。149个既有生产/启动文件和3个show shell与本轮快照字节一致。没有模型/训练/数据/checkpoint/依赖改动，未访问远端实际结果，未训练或commit/push。历史交付原样保留。本阶段结束，未执行下一阶段。
++
++## 2026-09-16：三子项目离线结果报告脚本完成
++
++新增tran_evaluate/show下Car-Design-ShapeNetCar.sh、Airfoil-Design-AirfRANS.sh、PDE-Solving-StandardBenchmark.sh，复用_report.py。读取原训练JSONL/独立评估JSON/数值数组及已存场图，在实际远端子项目result_visualizations下创建独立时间戳文件夹+ZIP：loss/分项/step-full曲线、测试指标、Air升阻力配对与Cp/Cf、原场图、PDF/600dpiPNG/图注/CSV/LaTeX表/离线HTML。按run/member/seed/fold/评估次数隔离，不混平均、不平滑、不把验证当测试。
++
++报告[CDLNO_RESULT_REPORTS.md](CDLNO_RESULT_REPORTS.md)，用法[show/README](../tran_evaluate/show/README.md)。8项定向测试通过，模拟带空格远端目录/外部cwd、三实际shell、八任务结果夹具、原文件hash、稀疏epoch、失败/缺项、数组轴、真实图/PDF字体与ZIP均检查；实际查看合成格式示例。149个原生产/启动文件byte不变。新工具不导入Torch/模型/exp、不读取真实数据/checkpoint、不安装依赖；源文件和已有修改保留。远端真实训练产物未访问，缺记录不能从权重恢复。无真实训练或commit/push。本阶段结束，未执行下一阶段。
++
++
++## 2026-09-16：八任务每50轮可视化完成
++
++当前明确请求授权可视化接入，见[交付/使用/论文依据](CDLNO_PERIODIC_VISUALIZATION.md)和[证据](periodic_visualization_audit/)。CDLNO所有既有模式、KCDNO all/off、lrsa_matched的八任务在完成50/100/...及最后epoch自动输出固定前两个held-out案例；PDF/600dpi PNG、原始NPZ、固定色标、英文/LaTeX caption及单例诊断。NS预测回填10步、Plasticity20个独立T；Car surf压力/volume薄层速度；Air原数量固定抽样+真实radius_graph，明确不是正式scatter平均评价。原Transolver分支保持现状。
++
++完整287tests/319.519s无fail/error，3个skip（2个Air torch_cluster依赖项+外部LRSA未指定）；LRSA之后实际补跑2/2精确通过。最终绘图11tests/17.178s仅1个Air建图skip；Car原train.main合成完整epoch实际出图且权重/RNG精确，Air真实PyG已抽样输入/原weighted loss片段通过但完整采样链未运行。CPU观察器前后及下一步optimizer/scheduler/RNG精确；有限GPU FP32/math/TF32off、确定性测试设置下下一步精确。初次GPU未固定确定性零容差失败约1.9e-9及旧Car pos2测试夹具问题如实记录，没有改生产后端或模型。
++
++161个保护生产文件byte相同、9个完整入口/训练AST剥离精确新增观察调用后相同；快照`/home/hwz/CDLNO-artifacts/visualization-before-133lyhbo/source`保留。模型/数据/loss/采样/时间循环/optimizer/scheduler/原checkpoint保存协议未变，既有seed修复保留。当前只完成可视化，不将旧V1归档基础宣传为八任务resume完成。无真实数据/训练/远端2.11cu128或真实论文案例验收，无commit/push/安装依赖。原历史状态如下保留。
++
++本阶段结束，未执行下一阶段。
++
++
+ ## 2026-09-15：临时插入的 Darcy 消融启动脚本请求完成
+ 
+ 新增 `tran_evaluate/ablation/no_sa/` 与 `identity/`，各含 train/eval/train_eval 三个薄包装。只向已有 Darcy 启动器传入对应 front_latent_mode，余参最后覆盖；F2/L8/P6、entry CDPA、Darcy 模型/训练预设与 `output/darcy/<timestamp>` 规则保持。组合脚本复用现有训练成功才评估及同目录逻辑；独立 eval 须指定已有目录。新增说明与 [实际核查结果](../tran_evaluate/ablation/verification.json)。
+@@ -423,6 +459,10 @@ F. 五项优先自审完成，没有遗留架构/接口缺陷。效率并非一
+ 
+ ## 独立KCDNO交付关联（2026-09-16）
+ 
++后续按用户要求新增六任务单seed队列及可选seed记录/设置，详见
++[KCDNO_SEED_SUITE.md](KCDNO_SEED_SUITE.md)。10项定向回归通过；旧CDLNO省略seed的
++命令、模型数学、数据/训练循环不变，未启动真实训练。
++
+ 独立K4–K10按用户连续授权完成，详见[KCDNO最终报告](KCDNO_IMPLEMENTATION_REPORT.md)。旧CDLNO/A阶段图与checkpoint规则保留，41份K0原权重回放精确一致；新家族接入不改变原数据/loss/时间循环。旧V2–V5任务resume未因此补齐，未启动真实训练。
+ 
+ 用户另行要求的 `tran_evaluate/kcdlno/` 八数据集脚本已补充，复用现有KCDNO入口。
+diff --git a/docs/KCDNO_IMPLEMENTATION_STATUS.md b/docs/KCDNO_IMPLEMENTATION_STATUS.md
+index d12cc9b..7b29a7f 100644
+--- a/docs/KCDNO_IMPLEMENTATION_STATUS.md
++++ b/docs/KCDNO_IMPLEMENTATION_STATUS.md
+@@ -1,5 +1,54 @@
+ # KCDNO 实施状态
+ 
++## 2026-09-16：离线报告按每task最后验证损失选择单个seed完成
++
++三个show入口现在每个数据集仅展示最后一次记录的验证损失最小的run/seed；PDE六任务独立选取，一张2×3训练汇总、一张2×3独立评价汇总。selection.json/CSV记录所有候选的seed、loss、真实验证epoch、权重/成员、选择或排除理由；曲线/复制场图/评价仅使用获选run。绝不取历史最好epoch或用正式测试值选seed。Car/Air按正确分项和保存权重派生目标；Air398轮最后验证390如实记录；缺损/非有限/未完成run不退回更早好值，legacy缺状态明确标注。
++
++[报告](CDLNO_RESULT_REPORTS.md)、[用法](../tran_evaluate/show/README.md)、[证据](show_audit/selection/)。14/14定向测试通过，6task×3seed记录夹具、工业加权/多成员/稀疏验证、失败/NaN/缺项、同值规则、dry-run、只复制获选run、源文件/旧报告hash与ZIP检查；实际渲染并查看两张六子图。149个既有生产/启动文件和3个show shell与本轮快照字节一致。没有模型/训练/数据/checkpoint/依赖改动，未访问远端实际结果，未训练或commit/push。历史交付原样保留。本阶段结束，未执行下一阶段。
++
++## 2026-09-16：三子项目离线结果报告脚本完成
++
++新增tran_evaluate/show下Car-Design-ShapeNetCar.sh、Airfoil-Design-AirfRANS.sh、PDE-Solving-StandardBenchmark.sh，复用_report.py。读取原训练JSONL/独立评估JSON/数值数组及已存场图，在实际远端子项目result_visualizations下创建独立时间戳文件夹+ZIP：loss/分项/step-full曲线、测试指标、Air升阻力配对与Cp/Cf、原场图、PDF/600dpiPNG/图注/CSV/LaTeX表/离线HTML。按run/member/seed/fold/评估次数隔离，不混平均、不平滑、不把验证当测试。
++
++报告[CDLNO_RESULT_REPORTS.md](CDLNO_RESULT_REPORTS.md)，用法[show/README](../tran_evaluate/show/README.md)。8项定向测试通过，模拟带空格远端目录/外部cwd、三实际shell、八任务结果夹具、原文件hash、稀疏epoch、失败/缺项、数组轴、真实图/PDF字体与ZIP均检查；实际查看合成格式示例。149个原生产/启动文件byte不变。新工具不导入Torch/模型/exp、不读取真实数据/checkpoint、不安装依赖；源文件和已有修改保留。远端真实训练产物未访问，缺记录不能从权重恢复。无真实训练或commit/push。本阶段结束，未执行下一阶段。
++
++
++## 2026-09-16：八任务每50轮可视化完成
++
++当前明确请求授权可视化接入，见[交付/使用/论文依据](CDLNO_PERIODIC_VISUALIZATION.md)和[证据](periodic_visualization_audit/)。CDLNO所有既有模式、KCDNO all/off、lrsa_matched的八任务在完成50/100/...及最后epoch自动输出固定前两个held-out案例；PDF/600dpi PNG、原始NPZ、固定色标、英文/LaTeX caption及单例诊断。NS预测回填10步、Plasticity20个独立T；Car surf压力/volume薄层速度；Air原数量固定抽样+真实radius_graph，明确不是正式scatter平均评价。原Transolver分支保持现状。
++
++完整287tests/319.519s无fail/error，3个skip（2个Air torch_cluster依赖项+外部LRSA未指定）；LRSA之后实际补跑2/2精确通过。最终绘图11tests/17.178s仅1个Air建图skip；Car原train.main合成完整epoch实际出图且权重/RNG精确，Air真实PyG已抽样输入/原weighted loss片段通过但完整采样链未运行。CPU观察器前后及下一步optimizer/scheduler/RNG精确；有限GPU FP32/math/TF32off、确定性测试设置下下一步精确。初次GPU未固定确定性零容差失败约1.9e-9及旧Car pos2测试夹具问题如实记录，没有改生产后端或模型。
++
++161个保护生产文件byte相同、9个完整入口/训练AST剥离精确新增观察调用后相同；快照`/home/hwz/CDLNO-artifacts/visualization-before-133lyhbo/source`保留。模型/数据/loss/采样/时间循环/optimizer/scheduler/原checkpoint保存协议未变，既有seed修复保留。当前只完成可视化，不将旧V1归档基础宣传为八任务resume完成。无真实数据/训练/远端2.11cu128或真实论文案例验收，无commit/push/安装依赖。原历史状态如下保留。
++
++本阶段结束，未执行下一阶段。
++
++
++## 远端seed解析失败的交付核查（2026-09-16）
++
++用户远端run_seed已传seed，但旧parser拒绝`--seed 0`。本地用HEAD旧parser复现exit2，
++当前parser接受`--seed 0 --gpu 1`；不导入exp或读取数据。提供仅含标准parser、
++新家族seed helper、experiment seed记录三个文件的[最小补丁](kcdno_audit/seed_suite/seed-support.patch)，
++独立副本apply-check/apply后3文件与当前实现逐字节相同。未修改模型/数据/循环，
++未新增研究功能或运行训练；远端尚需同步，不宣称已修复远端文件。
++具体上传/只读核查方法见[KCDNO_SEED_SUITE.md](KCDNO_SEED_SUITE.md)。
++
++## 六标准任务单seed队列完成（2026-09-16）
++
++新增[run_seed.sh](../tran_evaluate/kcdlno/run_seed.sh)，选择0/1/2之一，严格按
++darcy→airfoil→plasticity→elasticity→ns→pipe，各任务train→eval→即时输出带seed结果，
++然后才进入下一任务。每任务独立带seed时间戳目录，seed_summary和队列summary增量保存；
++失败停止并保留既有结果。可选seed在标准新家族helper真实设置Python/NumPy/torch
++CPU/CUDA RNG，子进程PYTHONHASHSEED也设置；记录进入原初始化元数据、配置与结果。
++省略seed的旧命令不重置RNG；旧模型和六exp/数据/时间循环/预设/原启动脚本未改。
++
++定向8/8（6.169s）及旧记录2/2（10.901s）通过：六任务三seed重复初始化精确一致、
++不同seed权重不同、strict/checkpoint/sidecar、逐任务报告、故障停止、60条命令预览。
++195个已有源文件192未变，仅3个seed/记录helper有授权差异。初次一项测试误用35点
++配5×5模型，改为实际H×W后通过，未放松生产合同。
++无真实训练/数据读取/GPU重复性或远端验收；不新增resume/确定性后端设置。
++详见[报告及命令](KCDNO_SEED_SUITE.md)。本阶段结束，未执行下一阶段。
++
+ ## KCDNO 八任务启动包装（2026-09-16）
+ 
+ 新增 `tran_evaluate/kcdlno/`，为 Darcy、Elasticity、Airfoil、Pipe、Navier–Stokes、
+diff --git a/memory/current-state.md b/memory/current-state.md
+index 3d71d7e..23c076f 100644
+--- a/memory/current-state.md
++++ b/memory/current-state.md
+@@ -1,5 +1,87 @@
++# 最新：MSAR-LNO M2原语完成，等待审查（2026-09-16）
++
++只实施M2，读docs/MSAR_LNO_M2_PRIMITIVES.md和MSAR_LNO_IMPLEMENTATION_STATUS.md。
++新增cdlno/msar_lno/modules.py五组件、独立tests/msar_reference.py及test_msar_modules.py。
++Down只有训练+return_aux+coverage有效才显式A；off/weight0/eval走SDPA；P直接Q，无Wq。
++双FFN-SA三残差完整，Up纯branch，fusion只有w且固定2/raw values/零初始，coverage source求和、
++batch/层均值且FP32关闭autocast。可选诊断no-grad显式调用，不持久存A/损失图。
++20新+18旧公共+13 M1=51测试通过；75 M0同权重回放精确，182夹具hash不变。
++有限本机FP32/FP16/BF16 AMP通过；远端/真实数据/完整模型和任务接入未执行。
++起点695文件除3份状态/记忆文档增量外均冻结；快照msar-m2-before-bovueh8k保留。
++未改共享源码、M1、factory、任务/数据/训练/评估/依赖/已有测试；无安装/commit/push。
++没有core，下一阶段须明确授权。本M阶段结束，未执行下一阶段。
++
++# 最新：MSAR-LNO M0补审完成，M1保持，等待审查（2026-09-16）
++
++用户纠正阶段顺序：本轮仅M0审计，核对已有M1兼容，不修改M1或实施M2。
++读docs/MSAR_LNO_REFERENCE_AUDIT.md、MSAR_LNO_IMPLEMENTATION_STATUS.md及
++docs/msar_lno_audit/m0/{READING_LEDGER.md,fixture-index.json,freeze.json,regression.log}。
++653文件静态清单/合同；75同权重回放（41旧K0+6真正pre-M1+24新wrapper+4其他旧模型）精确。
++316tests/576.961s零fail/error，2个Air torch_cluster依赖skip；GUNet图链亦未运行。
++M1无已发现阻断冲突，仍仅配置；Down mask/A须新family独立实现，旧block/readout不直接复用，
++AttnRes按每尺度只有w且总3d约束使用无新增scale评分RMS，pointwise_mlp不是final点残差。
++本轮快照/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s与pre-M1/K0等产物均须保留。
++没有生产/原测试改动或依赖安装，无真实训练/远端验收/commit/push。后续只执行明确点名阶段。
++以下M1早于M0的记录原样保留，不能倒填时间。本M阶段结束，未执行下一阶段。
++
++# 最新：MSAR-LNO M1配置基础完成，等待审查（2026-09-16）
++
++仅M1获授权，见docs/MSAR_LNO_IMPLEMENTATION_STATUS.md和docs/MSAR_LNO_M1_CONFIGURATION.md。
++新cdlno.msar_lno提供family=msar_lno、Light/Full四级配置、显式CLI解析协议、coverage目标/运行记录、
++严格sidecar及family/profile/effective-coverage隔离路径。没有MSAR模型/辅助loss实现，没有八任务接入。
++旧生产代码/原测试/数据/依赖不改。32配置测试和41 K0+6修改前KCDNO/matched核心同权重回放全部通过。
++快照/home/hwz/CDLNO-artifacts/msar-m1-before-n7y0eg1j与既有K0夹具须保留。
++用户已批准M0，但本工作区没有MSAR M0报告/索引；报告明确该证据缺口，不把本轮源码索引冒充完整M0。
++无真实训练/下载/安装/commit/push；未执行M2。继续工作需用户明确下一M阶段。
++
++# 最新：离线报告仅展示各task最后验证损失最小的seed（2026-09-16）
++
++读取docs/CDLNO_RESULT_REPORTS.md最新补充和tran_evaluate/show/README.md。show三个脚本命令不变，
++共享_report.py先按显式筛选纳入候选，再每个task选单run。last validation不是best-ever；不使用
++独立test成绩选seed。PDE六task分别选取，pde_selected_training/evaluation各一张2×3图。
++selection.json/CSV保留全部候选理由，其余图表/场图只来自获选run；源实验/其他seed/旧报告不修改。
++工业使用正确分项+保存权重；Air按最后真实验证epoch和run内成员均值；缺损/非有限/未完成不参选；
++legacy无status但有历史可参选且标未核实。混设置会提示，可用model/run-dir限定比较组。
++14/14定向检查通过，真实PDF/PNG/HTML/ZIP渲染查看，149生产/启动+3show shell字节未变。
++证据docs/show_audit/selection；快照/tmp/show-selection-before-cdua003g。只处理结果文件，
++不改模型/数据/训练/依赖，未访问远端真实产物或训练。本阶段结束，未执行下一阶段。
++
++# 最新：离线训练/测试报告脚本交付（2026-09-16）
++
++只新增tran_evaluate/show的三个子项目shell与共享_report.py、测试/文档。默认实际checkout
++output/runs/project metrics+scores，子项目result_visualizations时间戳目录+ZIP。训练loss、
++独立eval、Air系数配对/CpCf、已有周期场图、CSV/LaTeX/HTML/来源hash；保持seed/fold/member/
++evaluation分开，不平滑不补造。原149个生产/启动文件byte未变，8个定向测试通过，模拟远端
++带空格路径和真实shell，已看合成格式示例。无模型导入/GPU依赖/真实训练/远端真实产物验收。
++阅读docs/CDLNO_RESULT_REPORTS.md及tran_evaluate/show/README.md。当前任务完成即停止。
++
++# 最新：八任务每50轮场图已接入（2026-09-16）
++
++当前请求只授权可视化，不是resume或架构改动。读docs/CDLNO_PERIODIC_VISUALIZATION.md。
++CDLNO/KCDNO/lrsa_matched八任务记录器每50completed epoch+final导出2固定held-out案例，
++paper-style PDF/600dpiPNG/NPZ/英文与LaTeX caption，原Transolver维持原路径。
++9个entry/train只增加观测调用+Air归一化转发；161保护文件byte同预快照
++/home/hwz/CDLNO-artifacts/visualization-before-133lyhbo/source，保留seed等已有修改。
++287tests无fail/error，Air缺torch_cluster两项skip、LRSA缺env项随后2tests补跑通过。
++最终focused11tests仅Air建图skip；Car原完整合成epochs出图、权重/RNG精确，GPU有限确定性
++测试后nextstep精确（最初未固定确定性1.9e-9差有记录）。无真实数据/训练或远端验收。
++可视化已集成不等于旧V2–V5全部完成；checkpoint/resume保存逻辑未改。详细证据在
++/docs/periodic_visualization_audit，用户当前任务完成后停止，不自动后续阶段。
++
+ # 最新KCDNO交付状态（2026-09-16）
+ 
++远端报unrecognized --seed0：本地旧parser可复现，当前parser已支持。只同步两个新脚本
++不够，还要三个Python helper（PDE/cdlno_entry、cdlno/kcdno/entry、cdlno/experiment）。
++新增docs/kcdno_audit/seed_suite/seed-support.patch，已对独立旧副本apply-check/apply验证；
++上传方法和无数据parser核查在KCDNO_SEED_SUITE.md。远端未访问/未自动修改，无实际训练。
++
++最新额外任务：六标准任务单seed队列已完成。`tran_evaluate/kcdlno/run_seed.sh 0|1|2`
++按darcy→airfoil→plasticity→elasticity→ns→pipe，每任务train/eval/带seed即时输出后再下一个。
++标准新家族helper可选真实RNG种子、初始化/config/result记录；不传seed保持旧行为。
++报告docs/KCDNO_SEED_SUITE.md；8+2定向检查通过，195旧源文件192不变（3seed/记录helper），
++模型/六exp/预设/旧脚本未改，无实际训练/新增GPU/远端验收。结果记录/失败停止和60条
++安全命令预览通过；默认GPU0，保持原训练协议，无新增resume。之前记录保留如下。
++
+ 新增 `tran_evaluate/kcdlno/` 八个数据集薄启动脚本，复用现有 `kcdno` 入口并支持
+ train/eval/train_eval、all/off/lrsa_matched 和 dry-run；最终9语法+120保护性分发检查
+ 通过（112条命令预览），173已有源码/脚本hash不变。帮助解析初次误入Darcy数据入口、
+diff --git a/tests/output_recording_projection.py b/tests/output_recording_projection.py
+index 7d1e3d9..178baad 100644
+--- a/tests/output_recording_projection.py
++++ b/tests/output_recording_projection.py
+@@ -15,7 +15,7 @@ class WithoutRecording(ast.NodeTransformer):
+                 'cdlno_run.recorder.attach_model', 'cdlno_run.recorder.update_protocol',
+                 'cdlno_run.recorder.record_training_setup',
+                 'cdlno_run.recorder.record_epoch', 'cdlno_run.recorder.record_metrics',
+-                'cdlno_run.recorder.record_air_scores'}:
++                'cdlno_run.recorder.record_air_scores', 'cdlno_run.recorder.visualize'}:
+                 return None
+         return self.generic_visit(node)
+ 
+@@ -58,12 +58,12 @@ class WithoutRecording(ast.NodeTransformer):
+                 and ast.unparse(kw.value.test) == 'cdlno_run is not None'
+                 and isinstance(kw.value.body, ast.Call)
+                 and ast.unparse(kw.value.body.func) == 'dict'
+-                and {k.arg for k in kw.value.body.keywords} <= {'record', 'record_member'})]
++                and {k.arg for k in kw.value.body.keywords} <= {'record', 'record_member', 'visualization_norm'})]
+         return self.generic_visit(node)
+ 
+     def visit_FunctionDef(self, node):
+         if node.name == 'main':
+-            while node.args.args and node.args.args[-1].arg in ('record', 'record_member'):
++            while node.args.args and node.args.args[-1].arg in ('record', 'record_member', 'visualization_norm'):
+                 node.args.args.pop()
+                 node.args.defaults.pop()
+         return self.generic_visit(node)
+diff --git a/tests/test_experiment_records.py b/tests/test_experiment_records.py
+index dd57f4f..5f5f054 100644
+--- a/tests/test_experiment_records.py
++++ b/tests/test_experiment_records.py
+@@ -202,7 +202,7 @@ print('startup log is preserved')
+                         self.skipTest('real radius_graph dependency unavailable: '+str(exc))
+                 a=task_modes.parse(task,[*task_modes.SMALL,*task_modes.run_option(task,Path(temp)/'recorded')])
+                 initial=task_modes.build(task,a)
+-                graph=Data(x=torch.randn(13,7),pos=torch.randn(13,2),y=torch.randn(13,4),surf=torch.arange(13)%2==0)
++                graph=Data(x=torch.randn(13,7),pos=torch.randn(13,3 if task=='car' else 2),y=torch.randn(13,4),surf=torch.arange(13)%2==0)
+                 dataset=[(graph,torch.randn(7,3))]*2 if task=='car' else [graph,graph.clone()]
+                 hparams=dict(lr=.001,batch_size=1,nb_epochs=2,subsampling=13,r=2.,max_neighbors=8)
+                 outputs=[];rngs=[]
+@@ -236,6 +236,7 @@ print('startup log is preserved')
+                                     self.assertEqual(metrics['train_surface_mse'],float(values[4]))
+                                     self.assertEqual(metrics['train_volume_mse'],float(values[5]))
+                                     self.assertEqual(metrics['train_loss'],float(.5*values[4]+values[5]))
++                            self.assertEqual(record.result['visualization_events'][-1]['status'],'completed')
+                             finish(a)
+                     finally:
+                         if record and not record.closed:record.finish(status='failed')
+@@ -266,7 +267,8 @@ print('startup log is preserved')
+                     if p.grad is not None:torch.testing.assert_close(p.grad,q.grad,atol=1e-6,rtol=1e-5)
+                 scope=dict(record=r,record_member=0,epoch=0,train_loss=values[0],loss_surf_var=values[2],
+                            loss_vol_var=values[3],loss_surf=values[4],loss_vol=values[5],criterion='MSE_weighted',
+-                           reg=.5,val_iter=None)
++                           reg=.5,val_iter=None,model=m,hparams={'nb_epochs':4},
++                           val_dataset=[graph],visualization_norm=None)
+                 tree=ast.parse((ROOT/'Airfoil-Design-AirfRANS/train.py').read_text())
+                 main=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='main')
+                 epoch=next(n for n in main.body if isinstance(n,ast.For))
+diff --git a/tests/test_kcdno_airfrans.py b/tests/test_kcdno_airfrans.py
+index 0bc3c34..a2561cb 100644
+--- a/tests/test_kcdno_airfrans.py
++++ b/tests/test_kcdno_airfrans.py
+@@ -38,7 +38,10 @@ class AirKCDNO(unittest.TestCase):
+         snapshot=Path(json.loads((ROOT/'docs/kcdno_audit/k7/before.json').read_text())['source_snapshot'])/'Airfoil-Design-AirfRANS'
+         for name in ('main.py','main_evaluation.py'):
+             self.assertEqual(ast.dump(strip_new(ast.parse((AIR/name).read_text()))),ast.dump(ast.parse((snapshot/name).read_text())))
+-        for name in ('train.py','utils/metrics.py','dataset/dataset.py'):
++        from visualization_projection import strip_visualization
++        self.assertEqual(ast.dump(strip_visualization(ast.parse((AIR/'train.py').read_text()))),
++                         ast.dump(ast.parse((snapshot/'train.py').read_text())))
++        for name in ('utils/metrics.py','dataset/dataset.py'):
+             self.assertEqual((AIR/name).read_bytes(),(snapshot/name).read_bytes())
+         saved=yaml.safe_load((snapshot/'params.yaml').read_text());current=yaml.safe_load((AIR/'params.yaml').read_text())
+         self.assertEqual({k:v for k,v in current.items() if k not in ('kcdno','lrsa_matched')},saved)
+diff --git a/tests/test_kcdno_car.py b/tests/test_kcdno_car.py
+index d29d6f6..a3fa39e 100644
+--- a/tests/test_kcdno_car.py
++++ b/tests/test_kcdno_car.py
+@@ -38,7 +38,9 @@ class CarKCDNO(unittest.TestCase):
+         before=json.loads((ROOT/'docs/kcdno_audit/k6/before.json').read_text());snap=Path(before['source_snapshot'])
+         for name in ('main.py','main_evaluation.py'):
+             self.assertEqual(ast.dump(strip_new(ast.parse((CAR/name).read_text()))),ast.dump(ast.parse((snap/'Car-Design-ShapeNetCar'/name).read_text())))
+-        self.assertEqual((CAR/'train.py').read_bytes(),(snap/'Car-Design-ShapeNetCar/train.py').read_bytes())
++        from visualization_projection import strip_visualization
++        self.assertEqual(ast.dump(strip_visualization(ast.parse((CAR/'train.py').read_text()))),
++                         ast.dump(ast.parse((snap/'Car-Design-ShapeNetCar/train.py').read_text())))
+         with self.assertRaises(ValueError):arguments(['--batch_size','2'])
+         with self.assertRaises(ValueError):arguments(['--front_latent_mode','no_sa'])
+ 
+diff --git a/tests/test_kcdno_tasks.py b/tests/test_kcdno_tasks.py
+index bf9a0f9..68577c4 100644
+--- a/tests/test_kcdno_tasks.py
++++ b/tests/test_kcdno_tasks.py
+@@ -64,6 +64,8 @@ def sample(model,batch=2):
+ 
+ 
+ def strip_new(tree):
++    from visualization_projection import strip_visualization
++    tree = strip_visualization(tree)
+     class Strip(ast.NodeTransformer):
+         def visit_ImportFrom(self,n):
+             return None if n.module=='kcdno_entry' else n
+diff --git a/tran_evaluate/README.md b/tran_evaluate/README.md
+index 786b2d8..6e5b310 100644
+--- a/tran_evaluate/README.md
++++ b/tran_evaluate/README.md
+@@ -1,5 +1,10 @@
+ # CDLNO 远端八任务训练与评估
+ 
++## 每50轮自动可视化（2026-09-16）
++
++同步最新Python实现后，CDLNO/KCDNO/lrsa_matched八任务的现有训练命令自动在完成50、100…轮及最后一轮出图，无需新CLI参数。每run内为`visualizations/member_000/epoch_0050/case_000/`，输出论文排版PDF、600dpi PNG、原始NPZ和英文/LaTeX图注，固定前两个held-out案例与跨epoch色标。AirfRANS每成员独立，固定抽样诊断不替代正式反复采样评价；依赖或绘图错误记录在events/train_results中。原Transolver分支维持原行为。详见[完整说明、论文依据和验证范围](../docs/CDLNO_PERIODIC_VISUALIZATION.md)。本次没有改变checkpoint或增加任务resume；已运行的旧进程不会自动加载新功能。
++
++
+ 新增 Darcy 两种前段消融专用脚本：[`ablation/no_sa/`](ablation/no_sa/) 和 [`ablation/identity/`](ablation/identity/)，各有 `train.sh`、`eval.sh`、`train_eval.sh`。例如 `bash tran_evaluate/ablation/no_sa/train_eval.sh --gpu 0`。默认 F2/L8、entry CDPA，保留现有 Darcy 配置与输出记录，详见 [消融说明](ablation/README.md)。
+ 
+ 更新（2026-09-15，统一实验记录）：新训练默认 `output/<数据集>/<UTC时间戳>/`，启动数据读取前创建 `config.json` 与日志；真实模型构造后补全参数量。训练/评估分别记入结果 JSON，复评使用独立子目录。八任务和三种前段模式均适用。详见 [目录、命令与边界](../docs/CDLNO_EXPERIMENT_OUTPUTS.md)。下述历史 A1/A2 目录规则由本次规则替代。
+diff --git a/tran_evaluate/kcdlno/README.md b/tran_evaluate/kcdlno/README.md
+index 635183a..872b355 100644
+--- a/tran_evaluate/kcdlno/README.md
++++ b/tran_evaluate/kcdlno/README.md
+@@ -1,5 +1,10 @@
+ # KCDLNO/KCDNO 八任务启动脚本
+ 
++## 每50轮自动可视化（2026-09-16）
++
++同步最新Python实现后，CDLNO/KCDNO/lrsa_matched八任务的现有训练命令自动在完成50、100…轮及最后一轮出图，无需新CLI参数。每run内为`visualizations/member_000/epoch_0050/case_000/`，输出论文排版PDF、600dpi PNG、原始NPZ和英文/LaTeX图注，固定前两个held-out案例与跨epoch色标。AirfRANS每成员独立，固定抽样诊断不替代正式反复采样评价；依赖或绘图错误记录在events/train_results中。原Transolver分支维持原行为。详见[完整说明、论文依据和验证范围](../../docs/CDLNO_PERIODIC_VISUALIZATION.md)。本次没有改变checkpoint或增加任务resume；已运行的旧进程不会自动加载新功能。
++
++
+ 此目录提供每个数据集一个薄包装。仓库中实际注册的模型 family 是
+ `kcdno`（KCDNO）；目录名 `kcdlno` 只是本组启动脚本的名称，不改变模型注册。
+ 包装复用 `tran_evaluate/kcdno/` 的已验证入口、profile、checkpoint 和原任务协议，
+@@ -18,6 +23,58 @@ CUDA_VISIBLE_DEVICES=0 bash tran_evaluate/kcdlno/car.sh train_eval
+ CUDA_VISIBLE_DEVICES=0 bash tran_evaluate/kcdlno/airfrans.sh train_eval
+ ```
+ 
++## 六个标准任务：选择一个 seed 连续训练和评估
++
++新增 `run_seed.sh`。每次选择 **0、1 或 2 中的一个 seed**，按
++**darcy → airfoil → plas（plasticity）→ elas（elasticity）→ ns → pipe** 运行。
++每个任务均执行“训练 → 立即评估 → 打印带 seed 的结果”，然后才进入下一任务。
++任一训练、评估或结果读取失败都会停止，已经完成的结果保留。
++
++```bash
++# 以下各行是独立选择，不会自动遍历三个 seed。
++bash tran_evaluate/kcdlno/run_seed.sh 0 --gpu 0
++bash tran_evaluate/kcdlno/run_seed.sh 1 --gpu 0
++bash tran_evaluate/kcdlno/run_seed.sh 2 --gpu 0
++
++# 等价的命名参数；先预览全部 12 条命令：
++bash tran_evaluate/kcdlno/run_seed.sh --seed 0 --gpu 0 --dry-run
++
++# 交互终端不带参数启动时，会提示输入 0、1 或 2：
++bash tran_evaluate/kcdlno/run_seed.sh
++```
++
++六个任务分别在新的进程里设置同一个 seed，包括 Python `random`、NumPy、
++PyTorch CPU/CUDA RNG；子进程启动前还设置 `PYTHONHASHSEED`。
++保持各任务原训练预设和损失/时间协议：PDE 默认500 epochs，batch分别为
++Darcy4、Airfoil4、Plasticity8、Elasticity1、NS2、Pipe8。
++仍使用 `kcdno_v1`、L8/r16/history all；`--gpu` 默认0。
++该队列只接收 seed、gpu 和 dry-run；数据路径继续用 `path.sh`/各任务 `CDLNO_*`
++环境变量，输出根用 `CDLNO_RUNS_ROOT`。其他结构消融或自定义超参可继续使用单任务脚本。
++
++每个任务目录为 `output/<task>/kcdno/<UTC时间戳>_seed<N>_<唯一标识>/`，不同任务
++共享本次队列标识但分别保存训练及评估文件。入口在读取数据前创建任务目录和配置；
++脚本不会提前创建这些必须由入口排他预留的任务目录。
++
++- `config.json` 的 `resolved_arguments.seed`、`task.json` 及 `architecture.json`
++  的 `initialization.seed` 记录真实使用的 seed；seed 不属于架构形状字段。
++- 原 `train_results.json`、`eval_results.json`/各次 `results.json` 新增 seed 标识。
++- 每次评估成功后，立即打印该任务和 seed、原训练末轮指标、原独立评估指标，
++  并写入该任务的 `seed_summary.json`。指标直接读取已有 JSON，不从日志猜数或重算 loss。
++- `output/_seed_suites/kcdno/<同一标识>/summary.json` 在每次任务完成后更新，
++  包含 seed、任务顺序、已完成结果及当前任务/阶段。失败时保留此前结果和错误位置。
++
++标准任务的独立脚本现在也可显式 `--seed 0`；不传 seed 的旧训练命令保留原 RNG
++行为。单独评估若省略 seed，读取此次训练的记录恢复；历史未记录 seed 的 run 不补造
++种子。新 seed 选项仅用于标准任务的新家族，原 Transolver/CDLNO 分支不受其影响。
++不同 seed 的权重形状相同，可以正常 strict 加载；本功能不增加 resume。
++
++`--dry-run` 只运行标准库编写的调度程序及命令预览，不读取数据、不调用 exp、
++不创建结果目录。实际 CPU 小模型初始化/strict加载及队列检查见
++[seed验证报告](../../docs/KCDNO_SEED_SUITE.md)。本次未执行实际数据训练；保持已有
++SDPA/cuDNN/TF32设置，没有启用强制确定性算法，因此不承诺不同GPU/backend之间逐位一致。
++
++## 单个任务
++
+ 每条命令对应一个独立实验，按需选择执行。无参数或 `--help` 只显示用法。
+ 追加 `--dry-run` 只预览命令；直接传 `--dry-run` 也会预览训练和评估两步。
+ 

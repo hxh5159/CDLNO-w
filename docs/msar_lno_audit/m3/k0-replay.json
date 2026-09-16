@@ -1,0 +1,975 @@
+[
+  {
+    "project": "standard",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "/home/hwz/CDLNO/docs/kcdno_audit/make_regression_fixtures.py",
+      "replay",
+      "--artifacts",
+      "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures",
+      "--result",
+      "/home/hwz/CDLNO/docs/msar_lno_audit/m3/k0-replay-standard.json",
+      "--project",
+      "standard"
+    ],
+    "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+    "returncode": 0,
+    "result": "/home/hwz/CDLNO/docs/msar_lno_audit/m3/k0-replay-standard.json",
+    "summary": {
+      "environment": {
+        "python": "3.13.9",
+        "torch": "2.13.0+cu130",
+        "cuda_build": "13.0",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "sdpa": "MATH forced",
+        "dtype": "float32",
+        "threads": 1,
+        "tf32": false,
+        "amp": false,
+        "compile": false,
+        "cudnn_benchmark": false,
+        "cudnn_deterministic": true,
+        "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+        "package": "/home/hwz/CDLNO/cdlno/__init__.py"
+      },
+      "action": "replay",
+      "rows": [
+        {
+          "name": "cdlno_darcy_full",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "chunk": 0,
+              "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+            },
+            {
+              "chunk": 1,
+              "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": [
+            "no_sa",
+            "identity"
+          ]
+        },
+        {
+          "name": "cdlno_darcy_no_sa",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "chunk": 0,
+              "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+            },
+            {
+              "chunk": 1,
+              "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": [
+            "full",
+            "identity"
+          ]
+        },
+        {
+          "name": "cdlno_darcy_identity",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "chunk": 0,
+              "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+            },
+            {
+              "chunk": 1,
+              "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": [
+            "full",
+            "no_sa"
+          ]
+        },
+        {
+          "name": "transolver_darcy_original",
+          "status": "passed",
+          "device": "cuda:0",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [],
+          "explicit_mode_conflicts_rejected": []
+        },
+        {
+          "name": "cdlno_elasticity_full",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "chunk": 0,
+              "classname": "model.CDLNO_Irregular_Mesh.Model"
+            },
+            {
+              "chunk": 1,
+              "classname": "model.CDLNO_Irregular_Mesh.Model"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": [
+            "no_sa",
+            "identity"
+          ]
+        },
+        {
+          "name": "cdlno_elasticity_no_sa",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "chunk": 0,
+              "classname": "model.CDLNO_Irregular_Mesh.Model"
+            },
+            {
+              "chunk": 1,
+              "classname": "model.CDLNO_Irregular_Mesh.Model"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": [
+            "full",
+            "identity"
+          ]
+        },
+        {
+          "name": "cdlno_elasticity_identity",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "chunk": 0,
+              "classname": "model.CDLNO_Irregular_Mesh.Model"
+            },
+            {
+              "chunk": 1,
+              "classname": "model.CDLNO_Irregular_Mesh.Model"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": [
+            "full",
+            "no_sa"
+          ]
+        },
+        {
+          "name": "transolver_elasticity_original",
+          "status": "passed",
+          "device": "cuda:0",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [],
+          "explicit_mode_conflicts_rejected": []
+        },
+        {
+          "name": "cdlno_airfoil_full",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "chunk": 0,
+              "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+            },
+            {
+              "chunk": 1,
+              "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": [
+            "no_sa",
+            "identity"
+          ]
+        },
+        {
+          "name": "cdlno_airfoil_no_sa",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "chunk": 0,
+              "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+            },
+            {
+              "chunk": 1,
+              "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": [
+            "full",
+            "identity"
+          ]
+        },
+        {
+          "name": "cdlno_airfoil_identity",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "chunk": 0,
+              "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+            },
+            {
+              "chunk": 1,
+              "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": [
+            "full",
+            "no_sa"
+          ]
+        },
+        {
+          "name": "transolver_airfoil_original",
+          "status": "passed",
+          "device": "cuda:0",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [],
+          "explicit_mode_conflicts_rejected": []
+        },
+        {
+          "name": "cdlno_pipe_full",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "chunk": 0,
+              "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+            },
+            {
+              "chunk": 1,
+              "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": [
+            "no_sa",
+            "identity"
+          ]
+        },
+        {
+          "name": "cdlno_pipe_no_sa",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "chunk": 0,
+              "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+            },
+            {
+              "chunk": 1,
+              "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": [
+            "full",
+            "identity"
+          ]
+        },
+        {
+          "name": "cdlno_pipe_identity",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "chunk": 0,
+              "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+            },
+            {
+              "chunk": 1,
+              "classname": "model.CDLNO_Structured_Mesh_2D.Model"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": [
+            "full",
+            "no_sa"
+          ]
+        },
+        {
+          "name": "transolver_pipe_original",
+          "status": "passed",
+          "device": "cuda:0",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [],
+          "explicit_mode_conflicts_rejected": []
+        },
+        {
+          "name": "cdlno_ns_full",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "chunk": 0,
+              "classname": "model.CDLNO_Temporal_Structured_Mesh_2D.Model"
+            },
+            {
+              "chunk": 1,
+              "classname": "model.CDLNO_Temporal_Structured_Mesh_2D.Model"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": [
+            "no_sa",
+            "identity"
+          ]
+        },
+        {
+          "name": "cdlno_ns_no_sa",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "chunk": 0,
+              "classname": "model.CDLNO_Temporal_Structured_Mesh_2D.Model"
+            },
+            {
+              "chunk": 1,
+              "classname": "model.CDLNO_Temporal_Structured_Mesh_2D.Model"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": [
+            "full",
+            "identity"
+          ]
+        },
+        {
+          "name": "cdlno_ns_identity",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "chunk": 0,
+              "classname": "model.CDLNO_Temporal_Structured_Mesh_2D.Model"
+            },
+            {
+              "chunk": 1,
+              "classname": "model.CDLNO_Temporal_Structured_Mesh_2D.Model"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": [
+            "full",
+            "no_sa"
+          ]
+        },
+        {
+          "name": "transolver_ns_original",
+          "status": "passed",
+          "device": "cuda:0",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [],
+          "explicit_mode_conflicts_rejected": []
+        },
+        {
+          "name": "cdlno_plasticity_full",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "chunk": 0,
+              "classname": "model.CDLNO_Temporal_Structured_Mesh_2D.Model"
+            },
+            {
+              "chunk": 1,
+              "classname": "model.CDLNO_Temporal_Structured_Mesh_2D.Model"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": [
+            "no_sa",
+            "identity"
+          ]
+        },
+        {
+          "name": "cdlno_plasticity_no_sa",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "chunk": 0,
+              "classname": "model.CDLNO_Temporal_Structured_Mesh_2D.Model"
+            },
+            {
+              "chunk": 1,
+              "classname": "model.CDLNO_Temporal_Structured_Mesh_2D.Model"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": [
+            "full",
+            "identity"
+          ]
+        },
+        {
+          "name": "cdlno_plasticity_identity",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "chunk": 0,
+              "classname": "model.CDLNO_Temporal_Structured_Mesh_2D.Model"
+            },
+            {
+              "chunk": 1,
+              "classname": "model.CDLNO_Temporal_Structured_Mesh_2D.Model"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": [
+            "full",
+            "no_sa"
+          ]
+        },
+        {
+          "name": "transolver_plasticity_original",
+          "status": "passed",
+          "device": "cuda:0",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [],
+          "explicit_mode_conflicts_rejected": []
+        },
+        {
+          "name": "core_full_off",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [],
+          "explicit_mode_conflicts_rejected": []
+        },
+        {
+          "name": "core_full_entry",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [],
+          "explicit_mode_conflicts_rejected": []
+        },
+        {
+          "name": "core_full_every_block",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [],
+          "explicit_mode_conflicts_rejected": []
+        },
+        {
+          "name": "core_no_sa_off",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [],
+          "explicit_mode_conflicts_rejected": []
+        },
+        {
+          "name": "core_no_sa_entry",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [],
+          "explicit_mode_conflicts_rejected": []
+        },
+        {
+          "name": "core_no_sa_every_block",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [],
+          "explicit_mode_conflicts_rejected": []
+        },
+        {
+          "name": "core_identity_off",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [],
+          "explicit_mode_conflicts_rejected": []
+        },
+        {
+          "name": "core_identity_entry",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [],
+          "explicit_mode_conflicts_rejected": []
+        },
+        {
+          "name": "core_identity_every_block",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [],
+          "explicit_mode_conflicts_rejected": []
+        }
+      ]
+    }
+  },
+  {
+    "project": "car",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "/home/hwz/CDLNO/docs/kcdno_audit/make_regression_fixtures.py",
+      "replay",
+      "--artifacts",
+      "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures",
+      "--result",
+      "/home/hwz/CDLNO/docs/msar_lno_audit/m3/k0-replay-car.json",
+      "--project",
+      "car"
+    ],
+    "cwd": "/home/hwz/CDLNO/Car-Design-ShapeNetCar",
+    "returncode": 0,
+    "result": "/home/hwz/CDLNO/docs/msar_lno_audit/m3/k0-replay-car.json",
+    "summary": {
+      "environment": {
+        "python": "3.13.9",
+        "torch": "2.13.0+cu130",
+        "cuda_build": "13.0",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "sdpa": "MATH forced",
+        "dtype": "float32",
+        "threads": 1,
+        "tf32": false,
+        "amp": false,
+        "compile": false,
+        "cudnn_benchmark": false,
+        "cudnn_deterministic": true,
+        "cwd": "/home/hwz/CDLNO/Car-Design-ShapeNetCar",
+        "package": "/home/hwz/CDLNO/cdlno/__init__.py"
+      },
+      "action": "replay",
+      "rows": [
+        {
+          "name": "cdlno_car_full",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "chunk": 0,
+              "classname": "models.CDLNO.Model"
+            },
+            {
+              "chunk": 1,
+              "classname": "models.CDLNO.Model"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": [
+            "no_sa",
+            "identity"
+          ]
+        },
+        {
+          "name": "cdlno_car_no_sa",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "chunk": 0,
+              "classname": "models.CDLNO.Model"
+            },
+            {
+              "chunk": 1,
+              "classname": "models.CDLNO.Model"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": [
+            "full",
+            "identity"
+          ]
+        },
+        {
+          "name": "cdlno_car_identity",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "chunk": 0,
+              "classname": "models.CDLNO.Model"
+            },
+            {
+              "chunk": 1,
+              "classname": "models.CDLNO.Model"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": [
+            "full",
+            "no_sa"
+          ]
+        },
+        {
+          "name": "transolver_car_original",
+          "status": "passed",
+          "device": "cuda:0",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "kind": "trusted original whole object"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": []
+        }
+      ]
+    }
+  },
+  {
+    "project": "airfrans",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "/home/hwz/CDLNO/docs/kcdno_audit/make_regression_fixtures.py",
+      "replay",
+      "--artifacts",
+      "/home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures",
+      "--result",
+      "/home/hwz/CDLNO/docs/msar_lno_audit/m3/k0-replay-airfrans.json",
+      "--project",
+      "airfrans"
+    ],
+    "cwd": "/home/hwz/CDLNO/Airfoil-Design-AirfRANS",
+    "returncode": 0,
+    "result": "/home/hwz/CDLNO/docs/msar_lno_audit/m3/k0-replay-airfrans.json",
+    "summary": {
+      "environment": {
+        "python": "3.13.9",
+        "torch": "2.13.0+cu130",
+        "cuda_build": "13.0",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "sdpa": "MATH forced",
+        "dtype": "float32",
+        "threads": 1,
+        "tf32": false,
+        "amp": false,
+        "compile": false,
+        "cudnn_benchmark": false,
+        "cudnn_deterministic": true,
+        "cwd": "/home/hwz/CDLNO/Airfoil-Design-AirfRANS",
+        "package": "/home/hwz/CDLNO/cdlno/__init__.py"
+      },
+      "action": "replay",
+      "rows": [
+        {
+          "name": "cdlno_airfrans_full",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "chunk": 0,
+              "classname": "cdlno.airfrans.AirfRANSModel"
+            },
+            {
+              "chunk": 0,
+              "classname": "cdlno.airfrans.AirfRANSModel"
+            },
+            {
+              "chunk": 1,
+              "classname": "cdlno.airfrans.AirfRANSModel"
+            },
+            {
+              "chunk": 1,
+              "classname": "cdlno.airfrans.AirfRANSModel"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": [
+            "no_sa",
+            "identity"
+          ]
+        },
+        {
+          "name": "cdlno_airfrans_no_sa",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "chunk": 0,
+              "classname": "cdlno.airfrans.AirfRANSModel"
+            },
+            {
+              "chunk": 0,
+              "classname": "cdlno.airfrans.AirfRANSModel"
+            },
+            {
+              "chunk": 1,
+              "classname": "cdlno.airfrans.AirfRANSModel"
+            },
+            {
+              "chunk": 1,
+              "classname": "cdlno.airfrans.AirfRANSModel"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": [
+            "full",
+            "identity"
+          ]
+        },
+        {
+          "name": "cdlno_airfrans_identity",
+          "status": "passed",
+          "device": "cpu",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "chunk": 0,
+              "classname": "cdlno.airfrans.AirfRANSModel"
+            },
+            {
+              "chunk": 0,
+              "classname": "cdlno.airfrans.AirfRANSModel"
+            },
+            {
+              "chunk": 1,
+              "classname": "cdlno.airfrans.AirfRANSModel"
+            },
+            {
+              "chunk": 1,
+              "classname": "cdlno.airfrans.AirfRANSModel"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": [
+            "full",
+            "no_sa"
+          ]
+        },
+        {
+          "name": "transolver_airfrans_original",
+          "status": "passed",
+          "device": "cuda:0",
+          "tolerance": {
+            "atol": 0.0,
+            "rtol": 0.0
+          },
+          "max_output_abs": 0.0,
+          "input_and_parameter_gradients": "compared including None",
+          "roundtrips": [
+            {
+              "kind": "trusted original whole object"
+            },
+            {
+              "kind": "trusted original list"
+            }
+          ],
+          "explicit_mode_conflicts_rejected": []
+        }
+      ]
+    }
+  }
+]

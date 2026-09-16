@@ -20,6 +20,8 @@ def parse_args(parser, task, argv=None):
     parser.add_argument('--kernel-rank', '--kernel_rank', type=int, default=16)
     parser.add_argument('--history-mode', '--history_mode', choices=('all', 'off'), default='all')
     parser.add_argument('--kcdno-run-dir', type=Path, default=None)
+    parser.add_argument('--seed', type=int, default=argparse.SUPPRESS,
+                        help='optional RNG seed for kcdno/lrsa_matched standard tasks')
     parser.add_argument('--front-latent-mode', '--front_latent_mode',
                         choices=('full', 'no_sa', 'identity'), default=None)
     parser.add_argument('--front-blocks', type=int, default=2)
@@ -29,10 +31,18 @@ def parse_args(parser, task, argv=None):
     parser.add_argument('--cdlno-run-dir', type=Path, default=None,
                         help='new training directory, or existing checkpoint directory for eval')
     tokens = sys.argv[1:] if argv is None else list(argv)
+    selector = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
+    selector.add_argument('--model')
+    selected, _ = selector.parse_known_args(tokens)
+    if selected.model == 'msar_lno':
+        from cdlno.msar_lno.standard_entry import parse_args as parse_msar_args
+        return parse_msar_args(parser, task, tokens)
     args = parser.parse_args(tokens)
     if args.model in ('kcdno', 'lrsa_matched'):
         from cdlno.kcdno.entry import resolve_args
         return resolve_args(parser, args, task, tokens)
+    if hasattr(args, 'seed'):
+        parser.error('--seed is only supported for kcdno/lrsa_matched standard tasks')
     if args.model != 'CDLNO':
         return args
     # Discover explicit options with argparse itself, including --flag=value

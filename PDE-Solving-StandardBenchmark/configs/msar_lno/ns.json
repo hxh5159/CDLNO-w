@@ -1,0 +1,23 @@
+{
+  "family": "msar_lno",
+  "task": "ns",
+  "profile": "light",
+  "training": {
+    "lr": 0.001,
+    "epochs": 500,
+    "batch_size": 2,
+    "weight_decay": 1e-05,
+    "max_grad_norm": null
+  },
+  "adapter": {
+    "ref": 8,
+    "unified_pos": 1
+  },
+  "objective": {
+    "coverage_mode": "floor",
+    "coverage_weight": 0.01,
+    "coverage_kappa": 0.2,
+    "coverage_eps": 1e-06,
+    "diagnostics": false
+  }
+}

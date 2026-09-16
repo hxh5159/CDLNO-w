@@ -38,10 +38,14 @@ class AirKCDNO(unittest.TestCase):
         snapshot=Path(json.loads((ROOT/'docs/kcdno_audit/k7/before.json').read_text())['source_snapshot'])/'Airfoil-Design-AirfRANS'
         for name in ('main.py','main_evaluation.py'):
             self.assertEqual(ast.dump(strip_new(ast.parse((AIR/name).read_text()))),ast.dump(ast.parse((snapshot/name).read_text())))
-        for name in ('train.py','utils/metrics.py','dataset/dataset.py'):
+        from visualization_projection import strip_visualization
+        from msar_entry_projection import strip_msar
+        self.assertEqual(ast.dump(strip_visualization(strip_msar(ast.parse((AIR/'train.py').read_text())))),
+                         ast.dump(ast.parse((snapshot/'train.py').read_text())))
+        for name in ('utils/metrics.py','dataset/dataset.py'):
             self.assertEqual((AIR/name).read_bytes(),(snapshot/name).read_bytes())
         saved=yaml.safe_load((snapshot/'params.yaml').read_text());current=yaml.safe_load((AIR/'params.yaml').read_text())
-        self.assertEqual({k:v for k,v in current.items() if k not in ('kcdno','lrsa_matched')},saved)
+        self.assertEqual({k:v for k,v in current.items() if k not in ('kcdno','lrsa_matched','msar_lno')},saved)
         self.assertEqual(current['kcdno'],saved['Transolver'])
         with self.assertRaises(ValueError):arguments(['--batch_size','2'])
         with self.assertRaises(ValueError):arguments(['--front_latent_mode','full'])

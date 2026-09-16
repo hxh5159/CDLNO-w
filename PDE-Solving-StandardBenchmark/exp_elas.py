@@ -43,6 +43,12 @@ if args.model in ('kcdno', 'lrsa_matched'):
     from cdlno.experiment import start as start_experiment, finish as finish_experiment
     start_experiment(args, args.kcdno_task, evaluation=bool(args.eval))
 
+if args.model == 'msar_lno':
+    from msar_entry import model_kwargs as msar_model_kwargs, StandardRun as MSARRun
+    from msar_entry import training_forward, training_objective, ObjectiveMetrics
+    from cdlno.experiment import start as start_experiment, finish as finish_experiment
+    start_experiment(args, args.msar_task, evaluation=bool(args.eval))
+
 os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
 
 
@@ -109,6 +115,11 @@ def main():
     elif args.model in ('kcdno', 'lrsa_matched'):
         model = get_model(args).Model(**kcdno_model_kwargs(args)).cuda()
         cdlno_run = KCDNORun(args, model)
+        if cdlno_run.recorder is not None:
+            cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest))
+    elif args.model == 'msar_lno':
+        model = get_model(args).Model(**msar_model_kwargs(args)).cuda()
+        cdlno_run = MSARRun(args, model)
         if cdlno_run.recorder is not None:
             cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest))
     else:
@@ -198,17 +209,28 @@ def main():
         for ep in range(args.epochs):
 
             model.train()
+            if args.model == 'msar_lno':
+                msar_epoch = ObjectiveMetrics()
             train_loss = 0
 
             for pos, fx, y in train_loader:
 
                 x, fx, y = pos.cuda(), fx.cuda(), y.cuda()  # x:B,N,2  fx:B,N,2  y:B,N,
                 optimizer.zero_grad()
-                out = model(x, None).squeeze(-1)
+                if args.model == 'msar_lno':
+                    msar_forward = training_forward(model, x, None)
+                    out = msar_forward.prediction.squeeze(-1)
+                else:
+                    out = model(x, None).squeeze(-1)
                 out = y_normalizer.decode(out)
                 y = y_normalizer.decode(y)
                 loss = myloss(out, y)
-                loss.backward()
+                if args.model == 'msar_lno':
+                    msar_loss = training_objective(loss, msar_forward)
+                    msar_epoch.add(msar_loss)
+                    msar_loss.total.backward()
+                else:
+                    loss.backward()
 
                 if args.max_grad_norm is not None:
                     torch.nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)
@@ -232,7 +254,12 @@ def main():
             rel_err /= ntest
             print("rel_err : {}".format(rel_err))
             if cdlno_run is not None and cdlno_run.recorder is not None:
-                cdlno_run.recorder.record_epoch(ep + 1, dict(train_loss=train_loss, validation_relative_l2=rel_err))
+                if args.model == 'msar_lno':
+                    cdlno_run.record_objective(ep + 1, msar_epoch, dict(train_loss=train_loss, validation_relative_l2=rel_err))
+                else:
+                    cdlno_run.recorder.record_epoch(ep + 1, dict(train_loss=train_loss, validation_relative_l2=rel_err))
+                cdlno_run.recorder.visualize(model, ep + 1, args.epochs, dataset=test_loader.dataset,
+                                           output_normalizer=y_normalizer)
 
             if ep % 100 == 0:
                 if cdlno_run is not None:
@@ -257,4 +284,6 @@ if __name__ == "__main__":
     if args.model == 'CDLNO':
         finish_experiment(args)
     if args.model in ('kcdno', 'lrsa_matched'):
+        finish_experiment(args)
+    if args.model == 'msar_lno':
         finish_experiment(args)

@@ -1,0 +1,71 @@
+{
+  "task": "elasticity",
+  "profile": "full",
+  "architecture": {
+    "family": "msar_lno",
+    "architecture_version": "msar-lno-core-v1",
+    "num_latents": [
+      1024,
+      512,
+      256,
+      128
+    ],
+    "d": 192,
+    "heads": [
+      4,
+      4,
+      8,
+      8
+    ],
+    "encoder_depths": [
+      3,
+      1,
+      1,
+      1
+    ],
+    "decoder_depths": [
+      3,
+      1,
+      1,
+      1
+    ],
+    "latent_ffn_ratio": 2,
+    "activation": "gelu",
+    "norm": "rmsnorm",
+    "qk_norm": "per_head_rmsnorm",
+    "output_norm": "layernorm",
+    "norm_eps": 1e-06,
+    "point_module": "pointwise_mlp",
+    "fusion": "query_aligned_two_source_attnres",
+    "fusion_scale": 2.0
+  },
+  "training": {
+    "coverage_mode": "floor",
+    "coverage_weight": 0.01,
+    "coverage_kappa": 0.2,
+    "coverage_eps": 1e-06,
+    "diagnostics": false
+  },
+  "effective_coverage_mode": "floor",
+  "profile_overrides": [],
+  "proposed_run_path": "output/elasticity/msar_lno/full/coverage_floor/20260916T110825137523Z_0939beb79a43",
+  "input_layout": {
+    "input_tokens": 972,
+    "num_latents": [
+      1024,
+      512,
+      256,
+      128
+    ],
+    "first_down_expands": true,
+    "token_path": [
+      972,
+      1024,
+      512,
+      256,
+      128
+    ],
+    "note": "M1>N is a legal latent expansion; no token count was clipped"
+  },
+  "scope": "configuration only; no MSAR model/weights/training/auxiliary computation in M1"
+}

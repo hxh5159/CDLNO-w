@@ -40,6 +40,12 @@ if args.model in ('kcdno', 'lrsa_matched'):
     from cdlno.experiment import start as start_experiment, finish as finish_experiment
     start_experiment(args, args.kcdno_task, evaluation=bool(args.eval))
 
+if args.model == 'msar_lno':
+    from msar_entry import model_kwargs as msar_model_kwargs, StandardRun as MSARRun
+    from msar_entry import training_forward, training_objective, rollout_objective, ObjectiveMetrics
+    from cdlno.experiment import start as start_experiment, finish as finish_experiment
+    start_experiment(args, args.msar_task, evaluation=bool(args.eval))
+
 os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
 
 data_path = args.data_path + '/NavierStokes_V1e-5_N1200_T20/NavierStokes_V1e-5_N1200_T20.mat'
@@ -119,6 +125,11 @@ def main():
     elif args.model in ('kcdno', 'lrsa_matched'):
         model = get_model(args).Model(H=h, W=h, **kcdno_model_kwargs(args)).cuda()
         cdlno_run = KCDNORun(args, model)
+        if cdlno_run.recorder is not None:
+            cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest, input_steps=T_in, output_steps=T, step=step))
+    elif args.model == 'msar_lno':
+        model = get_model(args).Model(H=h, W=h, **msar_model_kwargs(args)).cuda()
+        cdlno_run = MSARRun(args, model)
         if cdlno_run.recorder is not None:
             cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest, input_steps=T_in, output_steps=T, step=step))
     else:
@@ -214,17 +225,26 @@ def main():
         for ep in range(args.epochs):
 
             model.train()
+            if args.model == 'msar_lno':
+                msar_epoch = ObjectiveMetrics()
             train_l2_step = 0
             train_l2_full = 0
 
             for x, fx, yy in train_loader:
                 loss = 0
+                if args.model == 'msar_lno':
+                    msar_forwards = []
                 x, fx, yy = x.cuda(), fx.cuda(), yy.cuda()  # x: B,4096,2    fx: B,4096,T   y: B,4096,T
                 bsz = x.shape[0]
 
                 for t in range(0, T, step):
                     y = yy[..., t:t + step]
-                    im = model(x, fx=fx)  # B , 4096 , 1
+                    if args.model == 'msar_lno':
+                        msar_forward = training_forward(model, x, fx=fx)
+                        msar_forwards.append(msar_forward)
+                        im = msar_forward.prediction
+                    else:
+                        im = model(x, fx=fx)  # B , 4096 , 1
                     loss += myloss(im.reshape(bsz, -1), y.reshape(bsz, -1))
                     if t == 0:
                         pred = im
@@ -235,7 +255,13 @@ def main():
                 train_l2_step += loss.item()
                 train_l2_full += myloss(pred.reshape(bsz, -1), yy.reshape(bsz, -1)).item()
                 optimizer.zero_grad()
-                loss.backward()
+                if args.model == 'msar_lno':
+                    msar_loss = rollout_objective(loss, tuple(msar_forwards))
+                    del msar_forwards
+                    msar_epoch.add(msar_loss)
+                    msar_loss.total.backward()
+                else:
+                    loss.backward()
                 if args.max_grad_norm is not None:
                     torch.nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)
                 optimizer.step()
@@ -270,7 +296,12 @@ def main():
                         test_l2_full / ntest))
 
             if cdlno_run is not None and cdlno_run.recorder is not None:
-                cdlno_run.recorder.record_epoch(ep + 1, dict(train_step_loss=train_l2_step / ntrain / (T / step), test_step_loss=test_l2_step / ntest / (T / step), test_full_loss=test_l2_full / ntest, train_full_loss=train_l2_full / ntrain))
+                if args.model == 'msar_lno':
+                    cdlno_run.record_objective(ep + 1, msar_epoch, dict(train_step_loss=train_l2_step / ntrain / (T / step), test_step_loss=test_l2_step / ntest / (T / step), test_full_loss=test_l2_full / ntest, train_full_loss=train_l2_full / ntrain))
+                else:
+                    cdlno_run.recorder.record_epoch(ep + 1, dict(train_step_loss=train_l2_step / ntrain / (T / step), test_step_loss=test_l2_step / ntest / (T / step), test_full_loss=test_l2_full / ntest, train_full_loss=train_l2_full / ntrain))
+                cdlno_run.recorder.visualize(model, ep + 1, args.epochs, dataset=test_loader.dataset,
+                                           grid_shape=(h, h))
             if ep % 100 == 0:
                 if cdlno_run is not None:
                     cdlno_run.save(model)
@@ -297,4 +328,6 @@ if __name__ == "__main__":
     if args.model == 'CDLNO':
         finish_experiment(args)
     if args.model in ('kcdno', 'lrsa_matched'):
+        finish_experiment(args)
+    if args.model == 'msar_lno':
         finish_experiment(args)

@@ -1,0 +1,53 @@
+{
+  "stage": "M3",
+  "suites": [
+    {
+      "log": "core-tests.log",
+      "tests": 16,
+      "seconds": 7.11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "log": "modules-tests.log",
+      "tests": 20,
+      "seconds": 1.946,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "log": "config-tests.log",
+      "tests": 13,
+      "seconds": 0.344,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "tests": 49,
+  "new_core_fixtures": 2,
+  "fresh_old_replay": 47,
+  "retained_old_evidence": 28,
+  "old_fixture_hashes": 182,
+  "parameter_scope": "Core with output_dim=4, no task input lift",
+  "light_parameters": 1691260,
+  "full_parameters": 6737140,
+  "environment": {
+    "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "available": true,
+    "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+    "pyg": "2.3.1"
+  },
+  "gpu": "Small-core CUDA MATH FP32/FP16 AMP/BF16 AMP finite training and off/floor prediction parity passed.",
+  "not_run": [
+    "Task production/factory/data/loss integration",
+    "Real data/training/convergence/accuracy",
+    "Remote Python3.10/torch2.11/cu128",
+    "Full-size task GPU/other backend performance"
+  ],
+  "next_stage_executed": false
+}

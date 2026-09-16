@@ -1,0 +1,1688 @@
+--- before/PDE-Solving-StandardBenchmark/cdlno_entry.py
++++ after/PDE-Solving-StandardBenchmark/cdlno_entry.py
+@@ -31,6 +31,12 @@
+     parser.add_argument('--cdlno-run-dir', type=Path, default=None,
+                         help='new training directory, or existing checkpoint directory for eval')
+     tokens = sys.argv[1:] if argv is None else list(argv)
++    selector = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
++    selector.add_argument('--model')
++    selected, _ = selector.parse_known_args(tokens)
++    if selected.model == 'msar_lno':
++        from cdlno.msar_lno.standard_entry import parse_args as parse_msar_args
++        return parse_msar_args(parser, task, tokens)
+     args = parser.parse_args(tokens)
+     if args.model in ('kcdno', 'lrsa_matched'):
+         from cdlno.kcdno.entry import resolve_args
+--- before/PDE-Solving-StandardBenchmark/configs/msar_lno/airfoil.json
++++ after/PDE-Solving-StandardBenchmark/configs/msar_lno/airfoil.json
+@@ -0,0 +1,23 @@
++{
++  "family": "msar_lno",
++  "task": "airfoil",
++  "profile": "light",
++  "training": {
++    "lr": 0.001,
++    "epochs": 500,
++    "batch_size": 4,
++    "weight_decay": 1e-05,
++    "max_grad_norm": 0.1
++  },
++  "adapter": {
++    "ref": 8,
++    "unified_pos": 0
++  },
++  "objective": {
++    "coverage_mode": "floor",
++    "coverage_weight": 0.01,
++    "coverage_kappa": 0.2,
++    "coverage_eps": 1e-06,
++    "diagnostics": false
++  }
++}
+--- before/PDE-Solving-StandardBenchmark/configs/msar_lno/darcy.json
++++ after/PDE-Solving-StandardBenchmark/configs/msar_lno/darcy.json
+@@ -0,0 +1,23 @@
++{
++  "family": "msar_lno",
++  "task": "darcy",
++  "profile": "light",
++  "training": {
++    "lr": 0.001,
++    "epochs": 500,
++    "batch_size": 4,
++    "weight_decay": 1e-05,
++    "max_grad_norm": 0.1
++  },
++  "adapter": {
++    "ref": 8,
++    "unified_pos": 1
++  },
++  "objective": {
++    "coverage_mode": "floor",
++    "coverage_weight": 0.01,
++    "coverage_kappa": 0.2,
++    "coverage_eps": 1e-06,
++    "diagnostics": false
++  }
++}
+--- before/PDE-Solving-StandardBenchmark/configs/msar_lno/elasticity.json
++++ after/PDE-Solving-StandardBenchmark/configs/msar_lno/elasticity.json
+@@ -0,0 +1,23 @@
++{
++  "family": "msar_lno",
++  "task": "elasticity",
++  "profile": "light",
++  "training": {
++    "lr": 0.001,
++    "epochs": 500,
++    "batch_size": 1,
++    "weight_decay": 1e-05,
++    "max_grad_norm": 0.1
++  },
++  "adapter": {
++    "ref": 8,
++    "unified_pos": 0
++  },
++  "objective": {
++    "coverage_mode": "floor",
++    "coverage_weight": 0.01,
++    "coverage_kappa": 0.2,
++    "coverage_eps": 1e-06,
++    "diagnostics": false
++  }
++}
+--- before/PDE-Solving-StandardBenchmark/configs/msar_lno/pipe.json
++++ after/PDE-Solving-StandardBenchmark/configs/msar_lno/pipe.json
+@@ -0,0 +1,23 @@
++{
++  "family": "msar_lno",
++  "task": "pipe",
++  "profile": "light",
++  "training": {
++    "lr": 0.001,
++    "epochs": 500,
++    "batch_size": 8,
++    "weight_decay": 1e-05,
++    "max_grad_norm": 0.1
++  },
++  "adapter": {
++    "ref": 8,
++    "unified_pos": 0
++  },
++  "objective": {
++    "coverage_mode": "floor",
++    "coverage_weight": 0.01,
++    "coverage_kappa": 0.2,
++    "coverage_eps": 1e-06,
++    "diagnostics": false
++  }
++}
+--- before/PDE-Solving-StandardBenchmark/exp_airfoil.py
++++ after/PDE-Solving-StandardBenchmark/exp_airfoil.py
+@@ -42,6 +42,12 @@
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     start_experiment(args, args.kcdno_task, evaluation=bool(args.eval))
+ 
++if args.model == 'msar_lno':
++    from msar_entry import model_kwargs as msar_model_kwargs, StandardRun as MSARRun
++    from msar_entry import training_forward, training_objective, ObjectiveMetrics
++    from cdlno.experiment import start as start_experiment, finish as finish_experiment
++    start_experiment(args, args.msar_task, evaluation=bool(args.eval))
++
+ os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
+ 
+ 
+@@ -117,6 +123,11 @@
+     elif args.model in ('kcdno', 'lrsa_matched'):
+         model = get_model(args).Model(H=s1, W=s2, **kcdno_model_kwargs(args)).cuda()
+         cdlno_run = KCDNORun(args, model)
++        if cdlno_run.recorder is not None:
++            cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest))
++    elif args.model == 'msar_lno':
++        model = get_model(args).Model(H=s1, W=s2, **msar_model_kwargs(args)).cuda()
++        cdlno_run = MSARRun(args, model)
+         if cdlno_run.recorder is not None:
+             cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest))
+     else:
+@@ -223,15 +234,26 @@
+         for ep in range(args.epochs):
+ 
+             model.train()
++            if args.model == 'msar_lno':
++                msar_epoch = ObjectiveMetrics()
+             train_loss = 0
+ 
+             for pos, fx, y in train_loader:
+ 
+                 x, fx, y = pos.cuda(), fx.cuda(), y.cuda()  # x:B,N,2  fx:B,N,2  y:B,N
+                 optimizer.zero_grad()
+-                out = model(x, None).squeeze(-1)
++                if args.model == 'msar_lno':
++                    msar_forward = training_forward(model, x, None)
++                    out = msar_forward.prediction.squeeze(-1)
++                else:
++                    out = model(x, None).squeeze(-1)
+                 loss = myloss(out, y)
+-                loss.backward()
++                if args.model == 'msar_lno':
++                    msar_loss = training_objective(loss, msar_forward)
++                    msar_epoch.add(msar_loss)
++                    msar_loss.total.backward()
++                else:
++                    loss.backward()
+ 
+                 if args.max_grad_norm is not None:
+                     torch.nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)
+@@ -255,7 +277,10 @@
+             rel_err /= ntest
+             print("rel_err:{}".format(rel_err))
+             if cdlno_run is not None and cdlno_run.recorder is not None:
+-                cdlno_run.recorder.record_epoch(ep + 1, dict(train_loss=train_loss, validation_relative_l2=rel_err))
++                if args.model == 'msar_lno':
++                    cdlno_run.record_objective(ep + 1, msar_epoch, dict(train_loss=train_loss, validation_relative_l2=rel_err))
++                else:
++                    cdlno_run.recorder.record_epoch(ep + 1, dict(train_loss=train_loss, validation_relative_l2=rel_err))
+                 cdlno_run.recorder.visualize(model, ep + 1, args.epochs, dataset=test_loader.dataset,
+                                            grid_shape=(s1, s2))
+ 
+@@ -283,3 +308,5 @@
+         finish_experiment(args)
+     if args.model in ('kcdno', 'lrsa_matched'):
+         finish_experiment(args)
++    if args.model == 'msar_lno':
++        finish_experiment(args)
+--- before/PDE-Solving-StandardBenchmark/exp_darcy.py
++++ after/PDE-Solving-StandardBenchmark/exp_darcy.py
+@@ -44,6 +44,12 @@
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     start_experiment(args, args.kcdno_task, evaluation=bool(args.eval))
+ 
++if args.model == 'msar_lno':
++    from msar_entry import model_kwargs as msar_model_kwargs, StandardRun as MSARRun
++    from msar_entry import training_forward, training_objective, ObjectiveMetrics
++    from cdlno.experiment import start as start_experiment, finish as finish_experiment
++    start_experiment(args, args.msar_task, evaluation=bool(args.eval))
++
+ os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
+ 
+ train_path = args.data_path + '/piececonst_r421_N1024_smooth1.mat'
+@@ -145,6 +151,11 @@
+     elif args.model in ('kcdno', 'lrsa_matched'):
+         model = get_model(args).Model(H=s, W=s, **kcdno_model_kwargs(args)).cuda()
+         cdlno_run = KCDNORun(args, model)
++        if cdlno_run.recorder is not None:
++            cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest))
++    elif args.model == 'msar_lno':
++        model = get_model(args).Model(H=s, W=s, **msar_model_kwargs(args)).cuda()
++        cdlno_run = MSARRun(args, model)
+         if cdlno_run.recorder is not None:
+             cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest))
+     else:
+@@ -245,13 +256,19 @@
+     else:
+         for ep in range(args.epochs):
+             model.train()
++            if args.model == 'msar_lno':
++                msar_epoch = ObjectiveMetrics()
+             train_loss = 0
+             reg = 0
+             for x, fx, y in train_loader:
+                 x, fx, y = x.cuda(), fx.cuda(), y.cuda()
+                 optimizer.zero_grad()
+ 
+-                out = model(x, fx=fx.unsqueeze(-1)).squeeze(-1)  # B, N , 2, fx: B, N, y: B, N
++                if args.model == 'msar_lno':
++                    msar_forward = training_forward(model, x, fx=fx.unsqueeze(-1))
++                    out = msar_forward.prediction.squeeze(-1)
++                else:
++                    out = model(x, fx=fx.unsqueeze(-1)).squeeze(-1)  # B, N , 2, fx: B, N, y: B, N
+                 out = y_normalizer.decode(out)
+                 y = y_normalizer.decode(y)
+ 
+@@ -265,7 +282,12 @@
+                 pred_grad_x, pred_grad_y = central_diff(out, dx, s)
+                 deriv_loss = de_x(pred_grad_x, gt_grad_x) + de_y(pred_grad_y, gt_grad_y)
+                 loss = 0.1 * deriv_loss + l2loss
+-                loss.backward()
++                if args.model == 'msar_lno':
++                    msar_loss = training_objective(loss, msar_forward)
++                    msar_epoch.add(msar_loss)
++                    msar_loss.total.backward()
++                else:
++                    loss.backward()
+ 
+                 if args.max_grad_norm is not None:
+                     torch.nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)
+@@ -297,7 +319,10 @@
+             rel_err /= ntest
+             print("rel_err:{}".format(rel_err))
+             if cdlno_run is not None and cdlno_run.recorder is not None:
+-                cdlno_run.recorder.record_epoch(ep + 1, dict(train_loss=train_loss, validation_relative_l2=rel_err, derivative_regularizer=reg))
++                if args.model == 'msar_lno':
++                    cdlno_run.record_objective(ep + 1, msar_epoch, dict(train_loss=train_loss, validation_relative_l2=rel_err, derivative_regularizer=reg))
++                else:
++                    cdlno_run.recorder.record_epoch(ep + 1, dict(train_loss=train_loss, validation_relative_l2=rel_err, derivative_regularizer=reg))
+                 cdlno_run.recorder.visualize(model, ep + 1, args.epochs, dataset=test_loader.dataset,
+                                            grid_shape=(s, s), output_normalizer=y_normalizer)
+ 
+@@ -325,3 +350,5 @@
+         finish_experiment(args)
+     if args.model in ('kcdno', 'lrsa_matched'):
+         finish_experiment(args)
++    if args.model == 'msar_lno':
++        finish_experiment(args)
+--- before/PDE-Solving-StandardBenchmark/exp_elas.py
++++ after/PDE-Solving-StandardBenchmark/exp_elas.py
+@@ -43,6 +43,12 @@
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     start_experiment(args, args.kcdno_task, evaluation=bool(args.eval))
+ 
++if args.model == 'msar_lno':
++    from msar_entry import model_kwargs as msar_model_kwargs, StandardRun as MSARRun
++    from msar_entry import training_forward, training_objective, ObjectiveMetrics
++    from cdlno.experiment import start as start_experiment, finish as finish_experiment
++    start_experiment(args, args.msar_task, evaluation=bool(args.eval))
++
+ os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
+ 
+ 
+@@ -111,6 +117,11 @@
+         cdlno_run = KCDNORun(args, model)
+         if cdlno_run.recorder is not None:
+             cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest))
++    elif args.model == 'msar_lno':
++        model = get_model(args).Model(**msar_model_kwargs(args)).cuda()
++        cdlno_run = MSARRun(args, model)
++        if cdlno_run.recorder is not None:
++            cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest))
+     else:
+         model = get_model(args).Model(space_dim=2,
+                                       n_layers=args.n_layers,
+@@ -198,17 +209,28 @@
+         for ep in range(args.epochs):
+ 
+             model.train()
++            if args.model == 'msar_lno':
++                msar_epoch = ObjectiveMetrics()
+             train_loss = 0
+ 
+             for pos, fx, y in train_loader:
+ 
+                 x, fx, y = pos.cuda(), fx.cuda(), y.cuda()  # x:B,N,2  fx:B,N,2  y:B,N,
+                 optimizer.zero_grad()
+-                out = model(x, None).squeeze(-1)
++                if args.model == 'msar_lno':
++                    msar_forward = training_forward(model, x, None)
++                    out = msar_forward.prediction.squeeze(-1)
++                else:
++                    out = model(x, None).squeeze(-1)
+                 out = y_normalizer.decode(out)
+                 y = y_normalizer.decode(y)
+                 loss = myloss(out, y)
+-                loss.backward()
++                if args.model == 'msar_lno':
++                    msar_loss = training_objective(loss, msar_forward)
++                    msar_epoch.add(msar_loss)
++                    msar_loss.total.backward()
++                else:
++                    loss.backward()
+ 
+                 if args.max_grad_norm is not None:
+                     torch.nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)
+@@ -232,7 +254,10 @@
+             rel_err /= ntest
+             print("rel_err : {}".format(rel_err))
+             if cdlno_run is not None and cdlno_run.recorder is not None:
+-                cdlno_run.recorder.record_epoch(ep + 1, dict(train_loss=train_loss, validation_relative_l2=rel_err))
++                if args.model == 'msar_lno':
++                    cdlno_run.record_objective(ep + 1, msar_epoch, dict(train_loss=train_loss, validation_relative_l2=rel_err))
++                else:
++                    cdlno_run.recorder.record_epoch(ep + 1, dict(train_loss=train_loss, validation_relative_l2=rel_err))
+                 cdlno_run.recorder.visualize(model, ep + 1, args.epochs, dataset=test_loader.dataset,
+                                            output_normalizer=y_normalizer)
+ 
+@@ -260,3 +285,5 @@
+         finish_experiment(args)
+     if args.model in ('kcdno', 'lrsa_matched'):
+         finish_experiment(args)
++    if args.model == 'msar_lno':
++        finish_experiment(args)
+--- before/PDE-Solving-StandardBenchmark/exp_pipe.py
++++ after/PDE-Solving-StandardBenchmark/exp_pipe.py
+@@ -37,6 +37,12 @@
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     start_experiment(args, args.kcdno_task, evaluation=bool(args.eval))
+ 
++if args.model == 'msar_lno':
++    from msar_entry import model_kwargs as msar_model_kwargs, StandardRun as MSARRun
++    from msar_entry import training_forward, training_objective, ObjectiveMetrics
++    from cdlno.experiment import start as start_experiment, finish as finish_experiment
++    start_experiment(args, args.msar_task, evaluation=bool(args.eval))
++
+ os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
+ 
+ import numpy as np
+@@ -129,6 +135,11 @@
+     elif args.model in ('kcdno', 'lrsa_matched'):
+         model = get_model(args).Model(H=s1, W=s2, **kcdno_model_kwargs(args)).cuda()
+         cdlno_run = KCDNORun(args, model)
++        if cdlno_run.recorder is not None:
++            cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest))
++    elif args.model == 'msar_lno':
++        model = get_model(args).Model(H=s1, W=s2, **msar_model_kwargs(args)).cuda()
++        cdlno_run = MSARRun(args, model)
+         if cdlno_run.recorder is not None:
+             cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest))
+     else:
+@@ -240,19 +251,30 @@
+         for ep in range(args.epochs):
+ 
+             model.train()
++            if args.model == 'msar_lno':
++                msar_epoch = ObjectiveMetrics()
+             train_loss = 0
+ 
+             for pos, fx, y in train_loader:
+ 
+                 x, fx, y = pos.cuda(), fx.cuda(), y.cuda()  # x:B,N,2  fx:B,N,2  y:B,N
+                 optimizer.zero_grad()
+-                out = model(x, None).squeeze(-1)
++                if args.model == 'msar_lno':
++                    msar_forward = training_forward(model, x, None)
++                    out = msar_forward.prediction.squeeze(-1)
++                else:
++                    out = model(x, None).squeeze(-1)
+ 
+                 out = y_normalizer.decode(out)
+                 y = y_normalizer.decode(y)
+ 
+                 loss = myloss(out, y)
+-                loss.backward()
++                if args.model == 'msar_lno':
++                    msar_loss = training_objective(loss, msar_forward)
++                    msar_epoch.add(msar_loss)
++                    msar_loss.total.backward()
++                else:
++                    loss.backward()
+ 
+                 # print("loss:{}".format(loss.item()/batch_size))
+                 if args.max_grad_norm is not None:
+@@ -278,7 +300,10 @@
+             rel_err /= ntest
+             print("rel_err:{}".format(rel_err))
+             if cdlno_run is not None and cdlno_run.recorder is not None:
+-                cdlno_run.recorder.record_epoch(ep + 1, dict(train_loss=train_loss, validation_relative_l2=rel_err))
++                if args.model == 'msar_lno':
++                    cdlno_run.record_objective(ep + 1, msar_epoch, dict(train_loss=train_loss, validation_relative_l2=rel_err))
++                else:
++                    cdlno_run.recorder.record_epoch(ep + 1, dict(train_loss=train_loss, validation_relative_l2=rel_err))
+                 cdlno_run.recorder.visualize(model, ep + 1, args.epochs, dataset=test_loader.dataset,
+                                            grid_shape=(s1, s2), output_normalizer=y_normalizer, coordinate_normalizer=x_normalizer)
+ 
+@@ -306,3 +331,5 @@
+         finish_experiment(args)
+     if args.model in ('kcdno', 'lrsa_matched'):
+         finish_experiment(args)
++    if args.model == 'msar_lno':
++        finish_experiment(args)
+--- before/PDE-Solving-StandardBenchmark/model/MSAR_Standard.py
++++ after/PDE-Solving-StandardBenchmark/model/MSAR_Standard.py
+@@ -0,0 +1,2 @@
++"""Stable static-task factory export; pickle path lives in the shared package."""
++from cdlno.msar_lno.standard import StaticModel as Model
+--- before/PDE-Solving-StandardBenchmark/model_dict.py
++++ after/PDE-Solving-StandardBenchmark/model_dict.py
+@@ -3,6 +3,9 @@
+ 
+ def get_model(args):
+     if args.model == 'msar_lno':
++        if getattr(args, 'msar_task', None) in ('darcy', 'elasticity', 'airfoil', 'pipe'):
++            from model import MSAR_Standard
++            return MSAR_Standard
+         from model import MSAR_LNO
+         return MSAR_LNO
+     if args.model in ('kcdno', 'lrsa_matched'):
+--- before/PDE-Solving-StandardBenchmark/msar_entry.py
++++ after/PDE-Solving-StandardBenchmark/msar_entry.py
+@@ -0,0 +1,3 @@
++"""Static MSAR task integration; no data imports or experiment execution."""
++from cdlno.msar_lno.standard_entry import model_kwargs, StandardRun
++from cdlno.msar_lno.objective import training_forward, training_objective, ObjectiveMetrics
+--- before/cdlno/experiment.py
++++ after/cdlno/experiment.py
+@@ -117,6 +117,8 @@
+         self.family = getattr(args, 'kcdno_family', 'CDLNO')
+         self.run_key = ('kcdno_run_dir' if hasattr(args, 'kcdno_family') else
+                         ('cdlno_run_dir' if hasattr(args, 'cdlno_run_dir') else 'run_dir'))
++        if getattr(args, 'msar_family', None) == 'msar_lno':
++            self.family, self.run_key = 'msar_lno', 'msar_run_dir'
+         requested = getattr(args, self.run_key)
+         self.directory = Path(requested).resolve() if requested is not None else default_directory(task)
+         if evaluation:
+@@ -134,6 +136,8 @@
+         self.result = dict(status='running', phase='startup', task=task,
+                            started_at_utc=self.started, pid=os.getpid(), metrics={})
+         if self.family in ('kcdno', 'lrsa_matched') and getattr(args, 'seed', None) is not None:
++            self.result['seed'] = args.seed
++        if self.family == 'msar_lno' and getattr(args, 'seed', None) is not None:
+             self.result['seed'] = args.seed
+         self.config = dict(schema_version=1, task=task, model=self.family, run_directory=str(self.directory),
+                            started_at_utc=self.started, resolved_arguments=_json(vars(args)),
+@@ -268,7 +272,7 @@
+         if not hasattr(self, '_field_visualizers'):
+             self._field_visualizers = {}
+         if member not in self._field_visualizers:
+-            name = {'kcdno':'KCDNO', 'lrsa_matched':'LRSA matched', 'CDLNO':'CDLNO'}[self.family]
++            name = {'kcdno':'KCDNO', 'lrsa_matched':'LRSA matched', 'CDLNO':'CDLNO', 'msar_lno':'MSAR-LNO'}[self.family]
+             self._field_visualizers[member] = PeriodicFields(self.directory, self.task, name,
+                                                            seed=getattr(self.args, 'seed', None), member=member)
+         event = self._field_visualizers[member].after_epoch(model, completed_epoch, total_epochs, **task_inputs)
+--- before/cdlno/msar_lno/objective.py
++++ after/cdlno/msar_lno/objective.py
+@@ -86,3 +86,25 @@
+     raw = aux.coverage_mean
+     weighted = cfg.coverage_weight * raw
+     return MSARLoss(pde_loss, raw, weighted, pde_loss + weighted, True)
++
++
++class ObjectiveMetrics:
++    """One epoch's detached per-step objective means, never model-owned state.
++
++    Original task train_loss keeps its original per-sample reduction separately.
++    These four metrics use the same step denominator to preserve total=PDE+aux.
++    """
++    def __init__(self):
++        self.totals = None
++        self.steps = 0
++
++    def add(self, loss: MSARLoss):
++        values = torch.stack(tuple(loss.log_values().values()))
++        self.totals = values if self.totals is None else self.totals + values
++        self.steps += 1
++
++    def values(self):
++        if not self.steps:
++            raise ValueError('cannot record an epoch with no training steps')
++        means = (self.totals / self.steps).cpu().tolist()
++        return dict(zip(('objective_pde', 'coverage_raw', 'coverage_weighted', 'objective_total'), means))
+--- before/cdlno/msar_lno/standard.py
++++ after/cdlno/msar_lno/standard.py
+@@ -0,0 +1,88 @@
++"""Four static task field adapters; all MSAR lift/head computation is pointwise."""
++from __future__ import annotations
++
++import torch
++from torch import Tensor, nn
++
++from ..modules import _check_grid, _init_linear
++from ..standard import STATIC_TASKS, _grid
++from .config import MSARArchitectureConfig, MSARTrainingConfig
++from .core import MSARLNO
++
++
++class StaticModel(nn.Module):
++    """Original x/fx contract -> pointwise lift -> MSAR core (owns the head).
++
++    structured describes the input layout only, never a convolution. Darcy's
++    reference distances use the accepted index-grid order; other tasks use the
++    original coordinates, including Pipe's already-normalized coordinates.
++    """
++    def __init__(self, *, config: MSARArchitectureConfig, task_name: str,
++                 training_config: MSARTrainingConfig | None = None,
++                 H=None, W=None, ref=8, unified_pos=None):
++        super().__init__()
++        if type(config) is not MSARArchitectureConfig:
++            raise ValueError('MSARArchitectureConfig required')
++        config.validate()
++        if task_name not in STATIC_TASKS:
++            raise ValueError('MSAR static adapter supports only darcy/elasticity/airfoil/pipe')
++        task = STATIC_TASKS[task_name]
++        self.structured = task['structured']
++        if self.structured:
++            _check_grid((H, W), H * W if type(H) is int and type(W) is int else 0)
++        elif H is not None or W is not None:
++            raise ValueError('Elasticity must omit H/W')
++        if type(ref) is not int or ref != 8:
++            raise ValueError('static task reference contract requires ref=8')
++        if unified_pos is None:
++            unified_pos = task['unified_pos']
++        if type(unified_pos) not in (int, bool) or unified_pos != task['unified_pos']:
++            raise ValueError('unified_pos must preserve the original task coordinate contract')
++        cfg = MSARTrainingConfig() if training_config is None else training_config
++        if type(cfg) is not MSARTrainingConfig:
++            raise ValueError('MSARTrainingConfig required')
++        cfg.validate()
++        self.config, self.training_config = config, cfg
++        self.task_name, self.H, self.W, self.ref = task_name, H, W, ref
++        self.unified_pos, self.fun_dim = bool(unified_pos), task['fun_dim']
++        self.out_dim, self.Time_Input = 1, False
++        stem = (ref * ref if self.unified_pos else 2) + self.fun_dim
++        self.preprocess = nn.Sequential(nn.Linear(stem, 2*config.d), nn.GELU(), nn.Linear(2*config.d, config.d))
++        _init_linear(self.preprocess[0]); _init_linear(self.preprocess[2])
++        if not self.fun_dim:
++            self.placeholder = nn.Parameter(torch.rand(config.d) / config.d)
++        if self.unified_pos:
++            pos = (_grid(H, W)[:, None] - _grid(ref, ref)[None]).square().sum(-1).sqrt()
++            self.register_buffer('pos', pos.unsqueeze(0), persistent=False)
++        self.core = MSARLNO(config, output_dim=1, training_config=cfg)
++        # Core already owns the final LN+Linear. No extra head/recursive init.
++
++    def adapter_architecture(self):
++        return dict(version='msar-static-standard-v1', task=self.task_name, space_dim=2,
++                    fun_dim=self.fun_dim, output_dim=1, Time_Input=False, ref=self.ref,
++                    unified_pos=self.unified_pos, placeholder=not bool(self.fun_dim),
++                    stem_width=self.preprocess[0].in_features,
++                    grid_shape=[self.H, self.W] if self.structured else None,
++                    position_rule='baseline-structured-index' if self.unified_pos else 'original-coordinates',
++                    lift='pointwise-linear-gelu-linear-2d-v1', output_head='core-layernorm-linear-v1')
++
++    def forward(self, x, fx, T=None, *, return_aux=False, training_config=None):
++        if (not isinstance(x, Tensor) or not x.is_floating_point() or x.ndim != 3
++                or x.shape[-1] != 2 or min(x.shape[:2]) < 1):
++            raise ValueError('x must be nonempty floating [B,N,2]')
++        if self.structured and x.shape[1] != self.H * self.W:
++            raise ValueError('N must preserve H*W')
++        if T is not None:
++            raise ValueError('static tasks have no time condition')
++        if self.fun_dim:
++            if not isinstance(fx, Tensor) or fx.shape != (*x.shape[:2], 1):
++                raise ValueError('Darcy requires fx[B,N,1]')
++            if fx.device != x.device or fx.dtype != x.dtype:
++                raise ValueError('fx and x must share floating dtype/device')
++        elif fx is not None:
++            raise ValueError('this static task requires fx=None')
++        pos = self.pos.to(dtype=x.dtype).expand(x.shape[0], -1, -1) if self.unified_pos else x
++        lifted = self.preprocess(torch.cat((pos, fx), -1) if fx is not None else pos)
++        if not self.fun_dim:
++            lifted = lifted + self.placeholder[None, None]
++        return self.core(lifted, return_aux=return_aux, training_config=training_config)
+--- before/cdlno/msar_lno/standard_entry.py
++++ after/cdlno/msar_lno/standard_entry.py
+@@ -0,0 +1,175 @@
++"""MSAR static task resolution, observation, and strict state_dict Run.
++
++No data imports, resume, optimizer changes, or modifications to old selectors.
++"""
++from __future__ import annotations
++
++import json
++import os
++from pathlib import Path
++
++from .config import FAMILY, MSARArchitectureConfig, MSARTrainingConfig, MSARRuntimeConfig, input_layout
++from .metadata import (MSARMetadata, MSARMetadataMismatch, load_metadata, save_metadata,
++                       resolve_evaluation, new_run_path)
++from .options import parser_for_family, explicit_arguments, resolve_training
++from .standard import StaticModel
++
++ROOT = Path(__file__).resolve().parents[2]
++TASKS = ('darcy', 'elasticity', 'airfoil', 'pipe')
++_INPUT_OPTIONS = ('ref', 'unified_pos', 'downsample', 'downsamplex', 'downsampley', 'ntrain')
++
++
++def task_record(directory):
++    record = json.loads((Path(directory) / 'task.json').read_text())
++    fields = {'schema_version', 'family', 'task', 'adapter', 'arguments'}
++    if (type(record) is not dict or record.keys() != fields
++            or type(record['schema_version']) is not int or record['schema_version'] != 1
++            or record['family'] != FAMILY or record['task'] not in TASKS
++            or type(record['adapter']) is not dict or type(record['arguments']) is not dict):
++        raise MSARMetadataMismatch('invalid MSAR static task sidecar')
++    return record
++
++
++def parse_args(parser, task, tokens):
++    if task not in TASKS:
++        raise ValueError('MSAR task not integrated in M5: ' + task)
++    parser = parser_for_family(parser, FAMILY)
++    parser.add_argument('--msar-run-dir', type=Path, default=None,
++                        help='new training directory, or explicit saved run for evaluation')
++    args = parser.parse_args(tokens)
++    explicit = explicit_arguments(parser, tokens)
++    args.msar_task, args.msar_family, args.msar_evaluation = task, FAMILY, bool(args.eval)
++    preset = json.loads((ROOT / 'PDE-Solving-StandardBenchmark/configs/msar_lno' / (task+'.json')).read_text())
++    if preset['family'] != FAMILY or preset['task'] != task:
++        raise ValueError('MSAR task preset family/task mismatch')
++    objective_defaults = MSARTrainingConfig.from_dict(preset['objective']).to_dict()
++    for name, value in (preset['training'] | preset['adapter']).items():
++        if name not in explicit:
++            setattr(args, name, value)
++    if args.msar_evaluation:
++        if args.msar_run_dir is None:
++            parser.error('MSAR eval requires --msar-run-dir for an existing run')
++        resolution = resolve_evaluation(args.msar_run_dir / 'architecture.json', explicit, task=task)
++        saved = resolution.saved
++        if saved.checkpoint_format != 'state_dict':
++            raise MSARMetadataMismatch('static tasks require state_dict')
++        record = task_record(args.msar_run_dir)
++        if record['task'] != task:
++            raise MSARMetadataMismatch('task sidecar task mismatch')
++        for name in _INPUT_OPTIONS:
++            if hasattr(args, name):
++                if name not in record['arguments']:
++                    raise MSARMetadataMismatch('missing saved task input option: ' + name)
++                if name in explicit and explicit[name] != record['arguments'][name]:
++                    raise MSARMetadataMismatch('task input configuration mismatch: ' + name)
++                setattr(args, name, record['arguments'][name])
++        args.profile = saved.profile
++        architecture, training = saved.architecture, saved.training
++        args.msar_eval_training_overrides = resolution.requested_training.to_dict()
++        args.msar_eval_training_differences = list(resolution.training_differences)
++        if 'seed' not in explicit and record['arguments'].get('seed') is not None:
++            args.seed = record['arguments']['seed']
++    else:
++        resolved = resolve_training(task, dict(profile=preset['profile']) | objective_defaults | explicit)
++        architecture, training = resolved.architecture, resolved.training
++        args.profile = resolved.profile
++        if args.msar_run_dir is None:
++            output = Path(os.environ.get('CDLNO_RUNS_ROOT', ROOT / 'output'))
++            args.msar_run_dir = new_run_path(output, resolved, save_name=explicit.get('save_name'))
++    if args.ref != 8 or args.unified_pos != preset['adapter']['unified_pos']:
++        raise ValueError('MSAR must preserve the original reference/coordinate convention')
++    # Record actual resolved fields, but never reinterpret old L/F/P/M as MSAR.
++    args.msar_architecture, args.msar_training = architecture.to_dict(), training.to_dict()
++    if 'save_name' in explicit:
++        # Reuse the family path helper's filename validation, even for an explicit run path.
++        from .profiles import ResolvedMSARConfig
++        new_run_path('.', ResolvedMSARConfig(task, args.profile, architecture, training), save_name=args.save_name)
++    if getattr(args, 'seed', None) is not None:
++        from ..kcdno.entry import seed_process
++        seed_process(args.seed, args.gpu)
++    return args
++
++
++def model_kwargs(args):
++    if args.model != FAMILY or getattr(args, 'msar_task', None) not in TASKS:
++        raise ValueError('MSAR static model_kwargs requires an explicitly resolved static task')
++    return dict(config=MSARArchitectureConfig.from_dict(args.msar_architecture),
++                training_config=MSARTrainingConfig.from_dict(args.msar_training),
++                task_name=args.msar_task, ref=args.ref, unified_pos=args.unified_pos)
++
++
++class StandardRun:
++    """Original bare model.pt protocol; read-first metadata, immutable eval sidecars."""
++    def __init__(self, args, model):
++        from ..experiment import session, reserve_directory, timestamp
++        self.args, self.evaluation = args, args.msar_evaluation
++        self.directory = Path(args.msar_run_dir).resolve()
++        self.recorder = session(args)
++        self.architecture = MSARArchitectureConfig.from_dict(args.msar_architecture)
++        self.training_config = MSARTrainingConfig.from_dict(args.msar_training)
++        self._check_model(model)
++        if self.evaluation:
++            self.validate(model)
++        else:
++            parameter = next(model.parameters())
++            metadata = MSARMetadata(args.msar_task, self.architecture, 'state_dict', args.profile,
++                training=self.training_config, runtime=MSARRuntimeConfig(device=str(parameter.device),
++                    dtype=str(parameter.dtype).removeprefix('torch.'), batch_size=args.batch_size))
++            reserve_directory(args, self.directory)
++            save_metadata(self.sidecar, metadata)
++            record = dict(schema_version=1, family=FAMILY, task=args.msar_task,
++                adapter=model.adapter_architecture(),
++                arguments={k:str(v) if isinstance(v, Path) else v for k,v in vars(args).items()})
++            with (self.directory/'task.json').open('x', encoding='utf-8') as stream:
++                json.dump(record, stream, indent=2, allow_nan=False)
++                stream.write('\n')
++        self.result_dir = str(self.directory / ('eval_' + timestamp())) + '/'
++        if self.recorder is not None:
++            self.recorder.attach_model(model)
++            self.result_dir = self.recorder.result_dir
++        print('MSAR-LNO run:', self.directory, self.architecture.to_dict(), model.adapter_architecture())
++        print('MSAR coverage:', self.training_config.to_dict(), 'effective:', self.training_config.effective_coverage_mode)
++        # Static point count is known from the original grid or Elasticity's fixed data contract.
++        n = model.H * model.W if model.structured else 972
++        print('MSAR input layout:', input_layout(self.architecture, n))
++
++    @property
++    def sidecar(self):return self.directory/'architecture.json'
++
++    @property
++    def checkpoint(self):return self.directory/'model.pt'
++
++    def _check_model(self, model):
++        if (type(model) is not StaticModel or model.config != self.architecture
++                or model.core.config != self.architecture or model.training_config != self.training_config
++                or model.core.training_config != self.training_config or model.task_name != self.args.msar_task):
++            raise MSARMetadataMismatch('MSAR static wrapper/core configuration mismatch')
++
++    def validate(self, model):
++        self._check_model(model)
++        saved, record = load_metadata(self.sidecar), task_record(self.directory)
++        if (saved.task != self.args.msar_task or saved.checkpoint_format != 'state_dict'
++                or saved.architecture != model.config or saved.training != self.training_config
++                or record['task'] != self.args.msar_task or record['adapter'] != model.adapter_architecture()):
++            raise MSARMetadataMismatch('MSAR architecture/training/task wrapper mismatch')
++
++    def save(self, model):
++        import torch
++        if self.evaluation:
++            raise RuntimeError('evaluation must not save weights')
++        self.validate(model)
++        torch.save(model.state_dict(), self.checkpoint)
++
++    def load(self, model):
++        import torch
++        self.validate(model)
++        model.load_state_dict(torch.load(self.checkpoint, weights_only=True,
++                                        map_location=next(model.parameters()).device), strict=True)
++
++    def record_objective(self, epoch, accumulator, original_metrics):
++        metrics = accumulator.values()
++        mode = self.training_config.effective_coverage_mode
++        print(f'Epoch {epoch} MSAR coverage={mode} step-mean objective: {metrics}')
++        if self.recorder is not None:
++            self.recorder.record_epoch(epoch, original_metrics | metrics | dict(
++                coverage_mode=mode, objective_reduction='mean over optimizer steps; original train_loss retains task reduction'))
+--- before/docs/CDLNO_IMPLEMENTATION_STATUS.md
++++ after/docs/CDLNO_IMPLEMENTATION_STATUS.md
+@@ -1,3 +1,16 @@
++# 最新：MSAR-LNO M5四静态任务完成，等待审查（2026-09-17）
++
++仅M5，见[报告/覆盖表](MSAR_LNO_M5_STATIC_TASKS.md)、[命令](../tran_evaluate/msar_lno/README.md)及独立MSAR STATUS。
++四真实exp现已接msar_lno：原坐标/fx/normalizer/loss/调度保留；共用无卷积wrapper+原M3core，Light/Full不裁M。
++M4显式coverage adapter只进新family；off/weight0严格原LPDE，四项目标step均值与原train_loss分开标注。
++原state_dict频率、read-first/strict加载/sidecar不覆盖与early输出目录记录；新JSON/薄脚本齐备，无新增resume。
++MSAR82项通过，相关旧79项零fail/error、2处Air torch_cluster skip；四任务floor/off原loss合成步/评估/往返通过。
++正式Full Elasticity N972/M1024前向通过；四任务小GPU原loss step、新cwd严格加载、24train/eval parser预览通过。
++旧65夹具与M3两core本轮零容差回放，其他10旧夹具沿M4有效证据；182旧artifact hash保持。
++快照msar-m5-before-2jli41sc/source保留；四旧入口完整AST不变，旧数学/数据/依赖冻结。
++没有真实数据/训练或远端验收；NS/Plasticity/Car/AirfRANS MSAR仍未接入。无commit/push/PR/安装。
++本M阶段结束，未执行下一阶段。
++
+ # 最新：MSAR-LNO M4公共接入基础完成，等待审查（2026-09-16）
+ 
+ 仅M4。详见[报告](MSAR_LNO_M4_INTEGRATION.md)与[独立STATUS](MSAR_LNO_IMPLEMENTATION_STATUS.md)。
+--- before/docs/MSAR_LNO_IMPLEMENTATION_STATUS.md
++++ after/docs/MSAR_LNO_IMPLEMENTATION_STATUS.md
+@@ -1,4 +1,19 @@
+ # MSAR-LNO 实施状态
++
++## 2026-09-17：M5 四静态任务接入完成，等待审查
++
++M4已审查通过；本轮仅M5。Darcy/Elasticity/Airfoil/Pipe现已在真实exp入口接入msar_lno的CLI、factory、共用逐点wrapper、原LPDE+coverage、评估、严格state_dict和既有输出记录。NS/Plasticity/Car/AirfRANS尚未接入MSAR，未执行M6。
++
++- 新`cdlno.msar_lno.standard.StaticModel`保留Darcy ref64+coeff和其余fx=None/placeholder；core自带唯一输出head，无Conv、额外head或递归初始化。四任务共享代码、参数对象独立；Light默认d96/M512…，Full d192/M1024…，不按N裁剪。
++- `standard_entry.StandardRun`沿用裸model.pt及原频率，先读保存的resolved结构/输入合同，再校验显式覆盖；coverage差异允许纯eval，旧训练config/sidecar不改写，无新增resume。自动目录含task/family/profile/coverage；显式save_name/run目录防覆盖。原epoch/batch/lr/AdamW/scheduler/clip/normalizer/数据/指标保持。
++- 真实训练分支调用M4显式adapter；原loss语句不改，off/weight0的total就是LPDE且不请求A。新四项日志按optimizer step求均值；原train_loss按原定义保留。JSON objective或CLI均可开关，用户参数最后覆盖；周期可视化复用既有预测路径。
++- [M5报告与八任务覆盖表](MSAR_LNO_M5_STATIC_TASKS.md)、[四任务×Light on/off/Full命令](../tran_evaluate/msar_lno/README.md)、[summary](msar_lno_audit/m5/summary.json)、[freeze](msar_lno_audit/m5/freeze.json)。MSAR82/82通过（含15个新M5方法）；相关旧79项零失败/错误，2处Air torch_cluster依赖skip，其中1处为子用例。
++- 四任务×floor/off合成原loss完整batch、反传/optimizer/scheduler、原eval片段和strict checkpoint通过。正式N用小d/M独立layout检查；5×7非方形wrapper通过，Darcy完整导数loss沿原方形合同用7×7。正式Full Elasticity N972/M1024前向通过；正式profile反传未运行，不将小模型训练步冒充正式大网格训练。
++- 新四任务小GPU FP32 MATH原loss step、新进程原PDE cwd严格加载、12train+12eval真实parser预览、early记录/四项目标/两次eval不覆盖通过。新MSAR可视化dispatch检查eval状态/RNG/权重不变，实际renderer继承原验证。M2/M3有限AMP也重跑；远端2.11/cu128、真实数据读取/训练/收敛、MSAR工业PyG未运行。
++- 本轮65份旧模型（K0 41+K/matched wrapper24）同权重CPU FP32 MATH零容差回放，M3 Light/Full两份core精确回放；其余未触及10份沿用M4。182旧artifact hash保持。707文件快照`/home/hwz/CDLNO-artifacts/msar-m5-before-2jli41sc/source`；四完整旧入口移除新增family分支后AST精确相等，旧模型/共享数学、M1/M2/M3数学、数据和依赖冻结，所有先存用户修改保留。
++
++初次失败仅为新测试AST定位、Darcy矩形夹具、子进程backend未统一及旧冻结投影未识别新分支；修正测试后零容差通过，未改模型来迁就测试。实际原eval仍有继承的固定绘图网格限制，未声称所有非默认downsample导出已验收。无下载/真实训练/安装/commit/push/PR。**本M阶段结束，未执行下一阶段。**
++
+ 
+ ## 2026-09-16：M4 模型选择、显式训练目标和checkpoint基础完成，等待审查
+ 
+--- before/docs/MSAR_LNO_M5_STATIC_TASKS.md
++++ after/docs/MSAR_LNO_M5_STATIC_TASKS.md
+@@ -0,0 +1,121 @@
++# MSAR-LNO M5：四个静态任务接入
++
++2026-09-17，仅M5。M4已获用户审查通过；本轮在`main@9c5569e059eca8d57f5321fdbf0c0dc4aeb40860`的现有未提交工作上增量实现，未reset/commit/push/PR。起点见[before](msar_lno_audit/m5/before.json)和[先存diff](msar_lno_audit/m5/preexisting.patch)，707个文本文件快照位于`/home/hwz/CDLNO-artifacts/msar-m5-before-2jli41sc/source`。此前M0—M4、CDLNO/KCDNO、seed、可视化及输出记录工作均保留。
++
++## A. 完成范围与任务覆盖
++
++`msar_lno`现已接入Darcy、Elasticity、Airfoil、Pipe的**实际CLI、factory、模型wrapper、训练loss、原eval、严格checkpoint和输出记录**。默认Light，Full可显式选择。NS、Plasticity、Car和AirfRANS没有接入MSAR；标准时间入口显式请求MSAR会报“not integrated in M5”，不暗中使用不适配core。
++
++| 任务 | 实际入口 / 调用 | 输入提升和输出 | 本轮合成原loss训练步 | eval / checkpoint |
++|---|---|---|---|---|
++| Darcy | `exp_darcy.py`；`model(x,fx.unsqueeze(-1))` | 原索引网格ref64距离替换xy，拼coeff1，stem65，无placeholder；输出[B,N,1] | floor/off，B2/7×7/d8；decode后field relative-L2 +0.1×原边界处理/中心差分derivative-L2；1 backward/optimizer/scheduler | 原decode/relative-L2片段、同权重strict往返通过 |
++| Elasticity | `exp_elas.py`；`model(x,None)` | 原xy2、逐点MLP+placeholder；输出[B,N,1] | floor/off，B2/N35/d8；原target decode和relative-L2；Cosine仍在epoch外层步进 | 原eval片段、同权重strict往返通过 |
++| Airfoil | `exp_airfoil.py`；`model(x,None)` | 原物理xy2、逐点MLP+placeholder；输出[B,N,1] Mach | floor/off，B2/5×7/d8；原relative-L2；1 optimizer/OneCycle step | 原eval片段、同权重strict往返通过 |
++| Pipe | `exp_pipe.py`；`model(x,None)` | 原入口的normalized xy2、逐点MLP+placeholder；输出[B,N,1] | floor/off，B2/5×7/d8；保留x/y normalizer和target decode；1 optimizer/OneCycle step | 原decode/eval片段、同权重strict往返通过 |
++| NS / Plasticity | 未接入 | M6依赖：时间输入与rollout/逐T语义 | 未运行MSAR | 未运行MSAR |
++| Car / AirfRANS | 未接入 | M7依赖：真实PyG/单图及工业wrapper | 未运行MSAR | M4只有core协议基础，不能算任务通过 |
++
++表中训练步使用明确的缩小测试结构`d8/M=[7,5,3,2]/heads=[2,2,4,4]`，双depth仍[3,1,1,1]，没有修改正式Light/Full。四任务正式网格N7225/972/11271/16641以小d/M单独完成layout forward。Darcy wrapper另以5×7验证，**原Darcy导数函数按方形resolution计算，所以完整loss检查用7×7；没有为了测试改原公式**。
++
++正式Light Elasticity（d96/M512…）在N35、正式Full Elasticity（d192/M1024…）在真实N972完成构造/前向：M1>N仍为1024，未裁剪。实测含lift/head的参数量分别1,710,169和6,811,825；这些是Elasticity的参数，非全部任务通用数。本轮这两个正式尺寸检查没有反传，训练步证据来自完整拓扑的小模型。
++
++## B. 实际文件与复用
++
++| 文件/符号 | 本轮变化及理由 |
++|---|---|
++| `cdlno/msar_lno/standard.py::StaticModel`（新） | 四任务共用wrapper；复用已确认`STATIC_TASKS`的字段合同、`_grid`与普通Linear初始化，不继承旧d/h/M；独立逐点lift+现有MSAR core |
++| `model/MSAR_Standard.py`（新）、`model_dict.py` | 对已解析的四静态任务导出StaticModel；保留M4无task时的真实lifted-core导出，旧factory分支不变 |
++| `cdlno/msar_lno/standard_entry.py`（新）、子项目`msar_entry.py`（新） | 新family参数解析/Run/严格metadata；复用M1解析与metadata、M4训练adapter、既有输出记录 |
++| `PDE.../cdlno_entry.py` | 仅选中msar_lno后复制parser并解析新参数；旧parser默认值/kwargs不变 |
++| 四个`exp_*.py` | 添加独立启动/构造、训练forward/aux backward和四项日志分支；旧调用保留在else。eval预测语句、data、normalizer、原loss、optimizer/scheduler/clip/epoch/采样/图表语句不改 |
++| `cdlno/msar_lno/objective.py::ObjectiveMetrics` | 逐epoch、调用者持有的detach累计；四项使用相同优化步分母，无model.last_loss/跨forward状态 |
++| `cdlno/experiment.py` | 最小新增family/run_key/seed记录与显示名；复用原early config/参数量/history/独立eval目录及周期可视化 |
++| `configs/msar_lno/{darcy,elasticity,airfoil,pipe}.json`（新） | 完整复制既有训练/坐标预设；结构默认profile=light；objective独立floor/.01/.2/eps1e-6/diagnostics=false，可被显式CLI覆盖 |
++| `tran_evaluate/msar_lno/`（新） | 四薄脚本+共享`_static.sh`复用原dispatcher；只设置model/profile/eval/data路径，不将M/d写成显式CLI |
++| 测试/文档 | 新`test_msar_static.py`和`msar_entry_projection.py`；既有静态/K/front/输出/可视化冻结检查精确移除新家族分支，再继续原断言；更新报告、覆盖表、STATUS和memory |
++
++M1配置数学、M2原语、M3core、M4core checkpoint、所有旧模型/共享数学、所有依赖保持字节不变。没有重复四套模型数学。新family完全没有Conv1d/2d/3d、旧ConvFFN或N点SA；规则网格H/W仍保留为数据布局/坐标合同。
++
++[本轮diff](msar_lno_audit/m5/stage.patch)相对于M5起点，避免把已有用户修改误归本轮。[freeze](msar_lno_audit/m5/freeze.json)记录完整旧入口AST比较与未变文件hash。
++
++## C. 模型、loss和日志合同
++
++统一wrapper执行：
++
++```text
++原坐标/条件约定 → Linear(stem,2d) → GELU → Linear(2d,d)
++                  → 仅fx=None任务加原placeholder
++                  → M3四级MSARLNO（包含唯一最终LN+Linear head）
++```
++
++没有额外wrapper head，没有在构造末尾递归初始化core。静态T非None、错误fx/坐标通道、N!=H×W明确拒绝；Elasticity支持不同N。Darcy的reference来自原索引网格，未重新用任意物理x计算reference。
++
++训练每次调用：`training_forward`显式得到prediction/aux → 执行原任务LPDE → `training_objective(LPDE,forward).total.backward()`。因此
++
++`Ltotal = LPDE + coverage_weight * mean_l(raw_coverage_l)`。
++
++off/weight0不请求Down的A，total为原LPDE同一张量；eval和可视化仍直接调用预测Tensor，不计算coverage。默认diagnostics关闭。训练反传、scheduler与梯度裁剪次数/位置均通过真实batch AST核对。
++
++原train_loss保持原按ntrain归一的统计（Darcy保留field项与独立derivative_regularizer）。新增`objective_pde/coverage_raw/coverage_weighted/objective_total`统一记录**每优化步均值**，日志同时写coverage_mode和reduction文字；PDE项保留原batch求和尺度，没有为了日志重标定训练目标。epoch累计只保存detach标量，不持有计算图。默认floor低于已满足的覆盖时raw=0是合法结果；有限GPU连接测试另用kappa1检查活跃floor路径，不改正式默认值。
++
++## D. 配置、输出与加载
++
++训练优先级为显式CLI > 所选新结构profile / 新任务JSON目标默认 > 新family默认。旧n_layers/n_hidden/slice_num的parser默认仍存在于旧Namespace协议中，但不会进入MSAR结构；实际结构以`msar_architecture`/metadata完整resolved值为准。选择Full不会被旧d64/M32覆盖。显式旧front/rear/CDPA/kernel/层数/dropout等不适用选项仍按M1报错。
++
++正式训练预设保持：epochs500、lr.001、weight_decay1e-5、clip.1；batch Darcy4/Elasticity1/Airfoil4/Pipe8；Elasticity Cosine、其他OneCycle。数据、split、通道、ntrain、点序和normalizer不变。
++
++训练在数据读取前通过既有Experiment创建`output/<task>/msar_lno/<light|full>/coverage_<floor|off>/<UTC+uuid>`，写config/log/status；参数量构造后实测。显式save_name保留独占leaf；显式run路径继续exclusive防覆盖。每epoch记录原指标及新增四项目标；沿原观察工具保留50完成epoch/final可视化。
++
++MSAR静态Run保存裸`model.pt` state_dict、完整`architecture.json`及`task.json` wrapper/输入合同。eval先读取已有结构和训练目标，再校验显式覆盖，并恢复ref/unified_pos/downsample(x/y)/ntrain等正常量。错误结构、wrapper网格或缺必要字段拒绝，不补缺失架构，不丢参数，不使用strict=False。显式coverage变化仅记录为eval请求差异，预测路径不受其影响；训练config、两sidecar、train_results在两次eval后逐字节不变。新进程在原PDE cwd四wrapper同权重严格加载通过。
++
++保存频率沿原`ep %100==0`及final，不新增resume；这些文件没有optimizer/scheduler/RNG状态，不能宣称断点续训。旧整对象/列表路径完全未改，工业任务留M7。原eval图表仍有固定网格尺寸的继承限制；非默认downsample下的全部实际绘图未验收，本阶段没有擅改绘图或数据协议。
++
++## E. 实际命令、结果和限制
++
++本机Python3.13.9/torch2.13.0+cu130/CUDA13.0/RTX5090 Laptop/PyG2.3.1；未安装依赖。[environment](msar_lno_audit/m5/environment.json)、[summary](msar_lno_audit/m5/summary.json)、[逐case记录](msar_lno_audit/m5/task-cases.json)、[fixture索引](msar_lno_audit/m5/fixture-index.json)。
++
++| 检查 | 实际结果 |
++|---|---|
++| MSAR M1—M5 | 82/82，22.268s，零失败/错误/skip；含15个新M5方法；[log](msar_lno_audit/m5/msar-tests-final.log) |
++| 相关旧任务/输出/可视化 | 79项，68.121s，零失败/错误；两处AirfRANS因缺torch_cluster跳过（其中一个为子用例）；[log](msar_lno_audit/m5/old-tests-final.log) |
++| 同权重旧模型 | 本轮重新回放K0 41 + K/matched任务wrapper24 =65份，CPU FP32 MATH、atol=rtol=0；其余未触及10份沿用M4证据。182旧fixture文件hash全数复核不变 |
++| 已接受MSAR core | 正式Light/Full两份M3固定输入、同一权重、eval和floor输出重新精确回放 |
++| 新wrapper训练/eval/checkpoint | 四任务×floor/off八case实际原loss、backward/step/原eval片段/strict往返通过；数据是合成张量 |
++| CLI/脚本 | 12个train dry-run、12个已有checkpoint的eval dry-run均由真实parser检查；无Python exp执行/真实数据读取 |
++| 新wrapper GPU | 四任务小模型FP32 MATH原loss训练步通过；非正式大模型epoch性能测试；M2/M3既有有限AMP检查也随套件运行 |
++| 观察与记录 | early config/实测参数/四项目标/history/两次eval不覆盖通过；MSAR可视化调用以捕获render参数验证eval状态/RNG/权重不变，已有renderer测试保持 |
++
++本轮没有真实数据下载/读取/训练/收敛/准确率或远端torch2.11/cu128验收，没有新MSAR工业PyG集成、完整大任务AMP矩阵或新性能结论。
++
++首轮新测试有两处夹具问题：用不同AST树寻找同一Elasticity循环、误以为原Darcy入口可传独立H/W；分别改为同树定位和独立wrapper的5×7检查。随后fresh-cwd零容差比较因子进程未锁定MATH出现最大约6.98e-10差异，统一backend后零容差通过，没有放宽容差或改模型。旧记录冻结测试初次未识别新分支，补充显式分支投影后完整旧AST相等。初次失败日志保留，最终日志覆盖修正结果，不将失败写成已通过。
++
++执行命令（根目录；完整stdout/stderr保存在相应log）：
++
++```bash
++MSAR_M5_RESULTS=docs/msar_lno_audit/m5/task-cases.json python -B -m unittest discover -s tests -p 'test_msar*.py' -v
++PYTHONPATH=tests:. python -B -m unittest test_static_standard test_kcdno_tasks test_front_training test_experiment_records test_periodic_visualization -v
++python -B docs/kcdno_audit/make_regression_fixtures.py replay --artifacts /home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures --result docs/msar_lno_audit/m5/k0-replay.json
++python -B docs/msar_lno_audit/m0/wrapper_fixtures.py replay --artifacts /home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers --result docs/msar_lno_audit/m5/wrapper-replay.json
++python -B docs/msar_lno_audit/m3/core_fixtures.py replay --artifacts /home/hwz/CDLNO-artifacts/msar-m3-before-jx4v53vh/post-m3-core --result docs/msar_lno_audit/m5/msar-core-replay.json
++```
++
++本机artifacts路径用于复核已有同权重证据；远端需迁移夹具并替换路径，不重新随机生成“旧基准”。
++
++## F. 可运行命令与自审
++
++[四任务×Light on/off/Full训练及评估模板](../tran_evaluate/msar_lno/README.md)使用实际脚本、真实选项、用户参数最后覆盖。远端先切换到实际checkout根目录，例如：
++
++```bash
++# 仅预览
++bash tran_evaluate/msar_lno/darcy.sh train --profile light --coverage-mode floor --gpu 0 --dry-run
++# 用户自行运行时：同一run训练成功后评估
++RUN="$PWD/output/elasticity/msar_lno/full/coverage_floor/$(date -u +%Y%m%dT%H%M%S%NZ)"
++bash tran_evaluate/msar_lno/elasticity.sh train --profile full --gpu 0 --msar-run-dir "$RUN" &&
++bash tran_evaluate/msar_lno/elasticity.sh eval --gpu 0 --msar-run-dir "$RUN"
++```
++
++这些是交付命令，未在本轮启动真实训练。Airfoil/Pipe及Light off的成对命令见链接中的12格表。
++
++已完成五项自审：四任务字段/坐标/loss及调度顺序；MSAR无卷积/无重复head/无递归重置；off无A和coverage仅新family；read-first/strict/sidecar不覆盖及独立目录；新分支移除后旧入口完整AST与起点相等、旧权重精确回放。未发现需用户裁定的新架构冲突。余项为M6时间任务、M7工业任务及后续综合/成本验证，未借本轮实施。
++
++**本M阶段结束，未执行下一阶段。**
+--- before/docs/msar_lno_audit/m5/finalize_evidence.py
++++ after/docs/msar_lno_audit/m5/finalize_evidence.py
+@@ -0,0 +1,118 @@
++"""M5 source/fixture audit; writes evidence only, never runs task/data entries."""
++import ast
++import difflib
++import hashlib
++import json
++from pathlib import Path
++import re
++import subprocess
++import sys
++
++ROOT=Path(__file__).resolve().parents[3]
++E=Path(__file__).resolve().parent
++sys.path.insert(0,str(ROOT/'tests'))
++from msar_entry_projection import strip_msar
++
++
++def read(path):return json.loads(Path(path).read_text())
++def sha(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
++def write(name,data):(E/name).write_text(json.dumps(data,indent=2,ensure_ascii=False)+'\n')
++
++
++def main():
++    before=read(E/'before.json');snapshot=Path(before['archive'])/'source'
++    expected={'PDE-Solving-StandardBenchmark/cdlno_entry.py','PDE-Solving-StandardBenchmark/model_dict.py',
++        *(f'PDE-Solving-StandardBenchmark/exp_{s}.py' for s in ('darcy','elas','airfoil','pipe')),
++        'cdlno/experiment.py','cdlno/msar_lno/objective.py','tests/test_front_training.py',
++        'tests/test_kcdno_tasks.py','tests/test_static_standard.py','tests/output_recording_projection.py',
++        'tests/test_periodic_visualization.py','docs/MSAR_LNO_IMPLEMENTATION_STATUS.md',
++        'docs/CDLNO_IMPLEMENTATION_STATUS.md','memory/current-state.md'}
++    changed=[];unchanged=[]
++    for name,digest in before['files'].items():
++        assert (ROOT/name).is_file(),name
++        (unchanged if sha(ROOT/name)==digest else changed).append(name)
++    assert set(changed)==expected,changed
++    added=['cdlno/msar_lno/standard.py','cdlno/msar_lno/standard_entry.py',
++        'PDE-Solving-StandardBenchmark/msar_entry.py','PDE-Solving-StandardBenchmark/model/MSAR_Standard.py',
++        *(f'PDE-Solving-StandardBenchmark/configs/msar_lno/{s}.json' for s in ('darcy','elasticity','airfoil','pipe')),
++        *(f'tran_evaluate/msar_lno/{s}.sh' for s in ('darcy','elasticity','airfoil','pipe','_static')),
++        'tran_evaluate/msar_lno/README.md','tests/test_msar_static.py','tests/msar_entry_projection.py',
++        'docs/MSAR_LNO_M5_STATIC_TASKS.md','docs/msar_lno_audit/m5/finalize_evidence.py']
++    patch=[]
++    for name in sorted(changed+added):
++        old=(snapshot/name).read_text() if name in before['files'] else ''
++        now=(ROOT/name).read_text()
++        patch.extend(difflib.unified_diff(old.splitlines(True),now.splitlines(True),fromfile='before/'+name,tofile='after/'+name))
++        if name.endswith('.py'):ast.parse(now,feature_version=(3,10))
++        if name.endswith('.sh'):subprocess.run(['bash','-n',str(ROOT/name)],check=True)
++    (E/'stage.patch').write_text(''.join(patch))
++    projected=[]
++    for stem in ('darcy','elas','airfoil','pipe'):
++        name=f'PDE-Solving-StandardBenchmark/exp_{stem}.py'
++        a=ast.dump(strip_msar(ast.parse((ROOT/name).read_text())))
++        b=ast.dump(ast.parse((snapshot/name).read_text()))
++        assert a==b,name
++        projected.append(dict(file=name,pre_M5_ast=hashlib.sha256(b.encode()).hexdigest(),status='exact'))
++    name='PDE-Solving-StandardBenchmark/model_dict.py'
++    now=ast.parse((ROOT/name).read_text());f=next(n for n in now.body if isinstance(n,ast.FunctionDef))
++    nested=f.body[0].body.pop(0)
++    wanted=ast.parse("if getattr(args, 'msar_task', None) in ('darcy', 'elasticity', 'airfoil', 'pipe'):\n    from model import MSAR_Standard\n    return MSAR_Standard").body[0]
++    assert ast.dump(nested)==ast.dump(wanted)
++    assert ast.dump(now)==ast.dump(ast.parse((snapshot/name).read_text()))
++    suites=[]
++    for file,count,skip in [('msar-tests-final.log',82,0),('old-tests-final.log',79,2)]:
++        text=(E/file).read_text();m=re.search(r'Ran (\d+) tests in ([\d.]+)s',text)
++        assert m and int(m[1])==count and '\nOK' in text and 'FAILED' not in text,file
++        suites.append(dict(log=file,tests=count,seconds=float(m[2]),failures=0,errors=0,skip_records=skip))
++    rows=[]
++    for name in ('k0-replay','wrapper-replay'):
++        for group in read(E/(name+'.json')):
++            assert group['returncode']==0
++            for row in group.get('rows',group.get('summary',{}).get('rows',[])):
++                assert row['status']=='passed',row
++                rows.append(dict(group=name,name=row['name'],status='passed',atol=0,rtol=0))
++    assert len(rows)==65
++    oldindex=read(ROOT/'docs/msar_lno_audit/m0/fixture-index.json')
++    for f in oldindex['integrity_files']:assert sha(f['path'])==f['sha256'],f['path']
++    coreindex=read(ROOT/'docs/msar_lno_audit/m3/fixture-index.json')
++    for f in coreindex['records']:assert sha(f['fixture'])==f['sha256'],f['fixture']
++    assert all(r['status']=='passed' for r in read(E/'msar-core-replay.json'))
++    write('fixture-index.json',dict(old_index='docs/msar_lno_audit/m0/fixture-index.json',
++        msar_core_index='docs/msar_lno_audit/m3/fixture-index.json',old_files_verified=182,
++        old_replayed_now=65,msar_core_replayed_now=2,rows=rows,
++        retained_evidence=dict(count=10,source='docs/msar_lno_audit/m4/fixture-index.json',
++            reason='6 K/matched standalone core + 4 other models unchanged; retained M4 exact evidence'),
++        limits='Fixed synthetic same-weight references, not real dataset results or universal historical checkpoint compatibility'))
++    cases=read(E/'task-cases.json')
++    assert sum(bool(r.get('strict_checkpoint')) for r in cases)==8
++    assert sum(r.get('device')=='cuda' for r in cases)==4
++    write('freeze.json',dict(snapshot=str(snapshot),files_at_start=len(before['files']),
++        unchanged_count=len(unchanged),changed=changed,added=added,entries=projected,
++        old_factory_ast='exact after removing validated nested static-task selection',
++        unchanged_sha256={p:before['files'][p] for p in unchanged},
++        changed_sha256={p:sha(ROOT/p) for p in changed+added},
++        frozen='Old model math, MSAR M1/M2/M3 math, data/dependencies, temporal and industrial entries unchanged.'))
++    write('summary.json',dict(stage='M5',environment=read(E/'environment.json'),suites=suites,
++        msar_new_methods=15,old_same_weight_replays=65,msar_core_same_weight_replays=2,
++        preserved_old_artifact_hashes=182,retained_old_evidence=10,
++        static_task_modes=8,shell_train_previews=12,shell_eval_previews=12,
++        fresh_cwd='four real static wrapper strict loads, identical weights, CPU FP32 MATH atol=rtol=0',
++        gpu='4 small-task original loss/optimizer steps, FP32 MATH; limited preexisting M2/M3 AMP tests reran',
++        profile_forward='Real Light Elasticity N35 and Full N972/M1024, CPU, no token clipping, no backward in these two formal cases',
++        checkpoint='bare state_dict plus strict architecture/task sidecars, original save frequency, no optimizer/RNG resume',
++        initial_test_corrections=['one-tree AST identity for Elasticity','separate Darcy rectangular wrapper from square derivative entry',
++                                  'same MATH backend in fresh process without loosening zero tolerance',
++                                  'new-family AST projection in old recording/visualization checks'],
++        not_run=['real data/download/training/convergence/accuracy','remote Python3.10/torch2.11/cu128',
++                 'MSAR temporal/industrial/PyG tasks','formal full-size task training/AMP matrix',
++                 'existing AirfRANS sampled graph checks: torch_cluster missing'],next_stage_executed=False))
++    for doc in ('docs/MSAR_LNO_M5_STATIC_TASKS.md','tran_evaluate/msar_lno/README.md'):
++        path=ROOT/doc
++        for target in re.findall(r'\]\(([^)]+)\)',path.read_text()):
++            if '://' not in target and not target.startswith('#'):assert (path.parent/target.split('#')[0]).exists(),target
++    subprocess.run(['git','diff','--check'],cwd=ROOT,check=True)
++    assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()==before['head']
++    print(json.dumps(dict(changed=changed,unchanged=len(unchanged),tests=[82,79],old_replayed=65,core_replayed=2)))
++
++
++if __name__=='__main__':main()
+--- before/memory/current-state.md
++++ after/memory/current-state.md
+@@ -1,3 +1,16 @@
++# 最新：MSAR-LNO M5四静态任务完成，等待审查（2026-09-17）
++
++仅M5，见[报告/覆盖表](../docs/MSAR_LNO_M5_STATIC_TASKS.md)、[命令](../tran_evaluate/msar_lno/README.md)及独立MSAR STATUS。
++四真实exp现已接msar_lno：原坐标/fx/normalizer/loss/调度保留；共用无卷积wrapper+原M3core，Light/Full不裁M。
++M4显式coverage adapter只进新family；off/weight0严格原LPDE，四项目标step均值与原train_loss分开标注。
++原state_dict频率、read-first/strict加载/sidecar不覆盖与early输出目录记录；新JSON/薄脚本齐备，无新增resume。
++MSAR82项通过，相关旧79项零fail/error、2处Air torch_cluster skip；四任务floor/off原loss合成步/评估/往返通过。
++正式Full Elasticity N972/M1024前向通过；四任务小GPU原loss step、新cwd严格加载、24train/eval parser预览通过。
++旧65夹具与M3两core本轮零容差回放，其他10旧夹具沿M4有效证据；182旧artifact hash保持。
++快照msar-m5-before-2jli41sc/source保留；四旧入口完整AST不变，旧数学/数据/依赖冻结。
++没有真实数据/训练或远端验收；NS/Plasticity/Car/AirfRANS MSAR仍未接入。无commit/push/PR/安装。
++本M阶段结束，未执行下一阶段。
++
+ # 最新：MSAR-LNO M4公共接入基础完成，等待审查（2026-09-16）
+ 
+ 仅M4。详见[报告](../docs/MSAR_LNO_M4_INTEGRATION.md)与[独立STATUS](../docs/MSAR_LNO_IMPLEMENTATION_STATUS.md)。
+--- before/tests/msar_entry_projection.py
++++ after/tests/msar_entry_projection.py
+@@ -0,0 +1,23 @@
++"""Only remove the explicit M5 new-family branches, retaining their legacy else.
++
++The complete projected entries are separately compared to the pre-M5 snapshot.
++Factory mapping is not stripped: it has its own exact branch assertion.
++"""
++import ast
++import copy
++
++
++def strip_msar(tree):
++    class Strip(ast.NodeTransformer):
++        def visit_FunctionDef(self, node):
++            return node if node.name == 'get_model' else self.generic_visit(node)
++        def visit_If(self, node):
++            if ast.unparse(node.test) == "args.model == 'msar_lno'":
++                result=[]
++                for item in node.orelse:
++                    value=self.visit(item)
++                    if isinstance(value,list):result.extend(value)
++                    elif value is not None:result.append(value)
++                return result
++            return self.generic_visit(node)
++    return ast.fix_missing_locations(Strip().visit(copy.deepcopy(tree)))
+--- before/tests/output_recording_projection.py
++++ after/tests/output_recording_projection.py
+@@ -70,4 +70,5 @@
+ 
+ 
+ def strip_recording(tree):
+-    return WithoutRecording().visit(tree)
++    from msar_entry_projection import strip_msar
++    return WithoutRecording().visit(strip_msar(tree))
+--- before/tests/test_front_training.py
++++ after/tests/test_front_training.py
+@@ -57,7 +57,8 @@
+ 
+ 
+ def source(task):
+-    return ast.parse((static.PROJECT / f'exp_{STEMS[task]}.py').read_text())
++    from msar_entry_projection import strip_msar
++    return strip_msar(ast.parse((static.PROJECT / f'exp_{STEMS[task]}.py').read_text()))
+ 
+ 
+ def training_nodes(task):
+--- before/tests/test_kcdno_tasks.py
++++ after/tests/test_kcdno_tasks.py
+@@ -34,7 +34,8 @@
+ 
+ 
+ def tree(task):
+-    return ast.parse((PROJECT / f'exp_{(TASKS | TEMPORAL)[task][0]}.py').read_text())
++    from msar_entry_projection import strip_msar
++    return strip_msar(ast.parse((PROJECT / f'exp_{(TASKS | TEMPORAL)[task][0]}.py').read_text()))
+ 
+ 
+ def arguments(task, flags=()):
+--- before/tests/test_msar_static.py
++++ after/tests/test_msar_static.py
+@@ -0,0 +1,382 @@
++"""M5 real static entries via safe AST fragments; never import exp/main or data."""
++import argparse
++import ast
++from contextlib import redirect_stdout
++import copy
++import io
++import json
++import os
++from pathlib import Path
++import shlex
++import subprocess
++import sys
++import tempfile
++import unittest
++from unittest.mock import patch
++
++import torch
++from torch import nn
++from torch.nn import functional as F
++from torch.nn.attention import SDPBackend, sdpa_kernel
++from einops import rearrange
++
++from test_static_standard import ROOT, PROJECT, parser_for, TestLoss, UnitTransformer
++from cdlno_entry import parse_args
++from model_dict import get_model
++from cdlno.msar_lno.standard_entry import model_kwargs, StandardRun
++from cdlno.msar_lno.standard import StaticModel
++from cdlno.msar_lno.objective import training_forward, training_objective, ObjectiveMetrics
++from cdlno.msar_lno.config import MSARArchitectureConfig, MSARTrainingConfig
++from cdlno.msar_lno.profiles import resolve_profile
++from cdlno.experiment import start, finish
++from msar_entry_projection import strip_msar
++
++TASKS={'darcy':('darcy',85,85,4),'elasticity':('elas',None,None,1),
++       'airfoil':('airfoil',221,51,4),'pipe':('pipe',129,129,8)}
++SMALL=['--d','8','--num-latents','7','5','3','2','--heads','2','2','4','4']
++RECORDS=[]
++
++
++def setUpModule():torch.set_num_threads(1)
++
++
++def tearDownModule():
++    if os.environ.get('MSAR_M5_RESULTS'):
++        Path(os.environ['MSAR_M5_RESULTS']).write_text(json.dumps(RECORDS,indent=2)+'\n')
++
++
++def source(task):return ast.parse((PROJECT/f'exp_{TASKS[task][0]}.py').read_text())
++
++
++def arguments(task,flags=()):
++    return parse_args(parser_for(task),task,['--model','msar_lno',*flags])
++
++
++def construct(task,args,grid=(5,7),real=False):
++    h,w=TASKS[task][1:3] if real else grid
++    branch=next(n for n in ast.walk(source(task)) if isinstance(n,ast.If)
++                and ast.unparse(n.test)=="args.model == 'msar_lno'"
++                and any(isinstance(q,ast.Assign) and ast.unparse(q.targets[0])=='model' for q in n.body))
++    call=branch.body[0].value.func.value # only omit .cuda()
++    return eval(compile(ast.Expression(call),'<actual-msar-constructor>','eval'),
++                dict(args=args,get_model=get_model,msar_model_kwargs=model_kwargs,s=h,s1=h,s2=w))
++
++
++def sample(model,b=2,n=35,device='cpu'):
++    if model.structured:n=model.H*model.W
++    x=torch.randn(b,n,2,device=device)
++    if model.task_name=='pipe':x=UnitTransformer(torch.randn(4,n,2,device=device)).encode(x)
++    fx=torch.randn(b,n,device=device) if model.fun_dim else x.clone()
++    if model.fun_dim:fx=UnitTransformer(torch.randn(4,n,device=device)).encode(fx)
++    return x,fx
++
++
++def train_nodes(task):
++    tree=source(task)
++    loop=next(n for n in ast.walk(tree) if isinstance(n,ast.For) and ast.unparse(n.iter)=='train_loader')
++    nodes=[n for n in loop.body if not (isinstance(n,ast.Assign) and isinstance(n.targets[0],ast.Tuple) and '.cuda()' in ast.unparse(n.value))]
++    assert len(nodes)==len(loop.body)-1
++    if task=='elasticity':
++        epoch=next(n for n in ast.walk(tree) if isinstance(n,ast.For) and loop in n.body)
++        nodes += [n for n in epoch.body if ast.unparse(n)=='scheduler.step()']
++    return nodes
++
++
++def batch(task,model,args,device='cpu'):
++    x,fx=sample(model,device=device);n=x.shape[1]
++    normalizer=UnitTransformer(torch.randn(4,n,device=device))
++    target=torch.randn(2,n,device=device)+2
++    y=target if task=='airfoil' else normalizer.encode(target)
++    optimizer=torch.optim.AdamW(model.parameters(),lr=args.lr,weight_decay=args.weight_decay)
++    scheduler=(torch.optim.lr_scheduler.CosineAnnealingLR(optimizer,T_max=args.epochs) if task=='elasticity' else
++               torch.optim.lr_scheduler.OneCycleLR(optimizer,max_lr=args.lr,epochs=args.epochs,steps_per_epoch=1))
++    scope=dict(args=args,model=model.train(),x=x,fx=fx,y=y,y_normalizer=normalizer,
++        torch=torch,F=F,rearrange=rearrange,myloss=TestLoss(size_average=False),
++        de_x=TestLoss(size_average=False),de_y=TestLoss(size_average=False),s=model.H,dx=1/(model.H or 1),
++        optimizer=optimizer,scheduler=scheduler,train_loss=0.,reg=0.,
++        training_forward=training_forward,training_objective=training_objective,msar_epoch=ObjectiveMetrics())
++    nodes=[]
++    if task=='darcy':nodes.append(next(n for n in source(task).body if isinstance(n,ast.FunctionDef) and n.name=='central_diff'))
++    nodes+=train_nodes(task)
++    before=next(model.parameters()).detach().clone()
++    with patch.object(optimizer,'step',wraps=optimizer.step) as step,patch.object(scheduler,'step',wraps=scheduler.step) as schedule:
++        exec(compile(ast.Module(body=nodes,type_ignores=[]),'<real-msar-static-batch>','exec'),scope)
++        assert step.call_count==schedule.call_count==1
++    assert not torch.equal(before,next(model.parameters()))
++    torch.testing.assert_close(scope['y'],target)
++    return x,fx,target,normalizer,scope
++
++
++class MSARStaticTests(unittest.TestCase):
++    def setUp(self):
++        torch.manual_seed(91705)
++        self.backend=sdpa_kernel(SDPBackend.MATH);self.backend.__enter__()
++        self.addCleanup(self.backend.__exit__,None,None,None)
++
++    def test_real_parsers_defaults_profiles_and_unsupported_tasks(self):
++        for task in TASKS:
++            args=arguments(task)
++            self.assertEqual((args.epochs,args.batch_size,args.lr,args.max_grad_norm),(500,TASKS[task][3],.001,.1))
++            self.assertEqual(args.msar_architecture['d'],96);self.assertEqual(args.msar_architecture['num_latents'],[512,256,128,64])
++            self.assertEqual(args.msar_training['coverage_mode'],'floor')
++            full=arguments(task,['--profile','full']);self.assertEqual(full.msar_architecture['d'],192)
++            custom=arguments(task,['--profile','full',*SMALL,'--coverage-mode','off','--epochs','3'])
++            self.assertEqual(custom.msar_architecture['d'],8);self.assertEqual(custom.epochs,3)
++            self.assertIn('coverage_off',custom.msar_run_dir.parts)
++            self.assertFalse(custom.msar_run_dir.exists())
++            with self.assertRaises(ValueError):arguments(task,['--front-latent-mode','no_sa'])
++            with self.assertRaises(ValueError):arguments(task,['--slice_num','32'])
++            with self.assertRaises(ValueError):arguments(task,['--dropout','0'])
++        from test_kcdno_tasks import arguments as kargs
++        with self.assertRaisesRegex(ValueError,'not integrated'):kargs('ns',['--model','msar_lno'])
++        with self.assertRaisesRegex(ValueError,'not integrated'):kargs('plasticity',['--model','msar_lno'])
++
++    def test_old_parser_defaults_and_no_msar_kwargs(self):
++        for task in TASKS:
++            base=parser_for(task).parse_args([]);actual=parse_args(parser_for(task),task,[])
++            for key,value in vars(base).items():self.assertEqual(getattr(actual,key),value)
++            self.assertFalse(hasattr(actual,'msar_architecture'))
++            with self.assertRaises(ValueError):model_kwargs(actual)
++            # The original parser rejects new options unless msar_lno is selected.
++            with redirect_stdout(io.StringIO()),patch('sys.stderr',new=io.StringIO()),self.assertRaises(SystemExit):
++                parse_args(parser_for(task),task,['--model','kcdno','--coverage-mode','off'])
++
++    def test_experiment_json_objective_and_explicit_cli_priority(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            dest=Path(tmp)/'PDE-Solving-StandardBenchmark/configs/msar_lno'
++            dest.mkdir(parents=True)
++            preset=json.loads((PROJECT/'configs/msar_lno/darcy.json').read_text())
++            preset['objective'].update(coverage_mode='off',coverage_weight=0.)
++            preset['profile']='full';(dest/'darcy.json').write_text(json.dumps(preset))
++            with patch('cdlno.msar_lno.standard_entry.ROOT',Path(tmp)):
++                args=arguments('darcy')
++                self.assertEqual(args.msar_architecture['d'],192)
++                self.assertEqual(args.msar_training['coverage_mode'],'off')
++                args=arguments('darcy',['--profile','light','--coverage-mode','floor','--coverage-weight','.03'])
++                self.assertEqual(args.msar_architecture['d'],96)
++                self.assertEqual(args.msar_training['coverage_mode'],'floor')
++                self.assertEqual(args.msar_training['coverage_weight'],.03)
++
++    def test_input_lifting_conventions_and_no_convolution_or_extra_head(self):
++        from cdlno.standard import _grid
++        for task in TASKS:
++            args=arguments(task,SMALL)
++            model=(get_model(args).Model(H=5,W=7,**model_kwargs(args)) if task=='darcy' else construct(task,args))
++            x,fx=sample(model)
++            field=fx.unsqueeze(-1) if task=='darcy' else None
++            saved={}
++            handle=model.core.register_forward_pre_hook(lambda m,a:saved.update(e0=a[0].detach().clone()))
++            result=model(x,field);handle.remove()
++            if task=='darcy':
++                pos=(_grid(5,7)[:,None]-_grid(8,8)[None]).square().sum(-1).sqrt()[None].expand(2,-1,-1)
++                expected=model.preprocess(torch.cat((pos,field),-1))
++                torch.testing.assert_close(model(x+7,field),result,atol=0,rtol=0)
++            else:expected=model.preprocess(x)+model.placeholder[None,None]
++            torch.testing.assert_close(saved['e0'],expected,atol=0,rtol=0)
++            self.assertEqual(result.shape,(2,35,1))
++            self.assertFalse(any(isinstance(m,(nn.Conv1d,nn.Conv2d,nn.Conv3d)) for m in model.modules()))
++            self.assertFalse(hasattr(model,'output'));self.assertFalse(hasattr(model,'time_fc'))
++            self.assertEqual(hasattr(model,'placeholder'),task!='darcy')
++            with self.assertRaises(ValueError):model(x,field,T=torch.ones(2,1))
++            if model.structured:
++                with self.assertRaisesRegex(ValueError,r'H\*W'):model(x[:,:-1],None if field is None else field[:,:-1])
++            else:self.assertEqual(model(torch.randn(1,19,2),None).shape,(1,19,1))
++
++    def test_four_tasks_real_loss_steps_eval_and_strict_checkpoint(self):
++        for task in TASKS:
++            for mode in ('floor','off'):
++                with self.subTest(task=task,mode=mode),tempfile.TemporaryDirectory() as tmp,redirect_stdout(io.StringIO()):
++                    flags=[*SMALL,'--coverage-mode',mode,'--msar-run-dir',str(Path(tmp)/'run')]
++                    args=arguments(task,flags)
++                    # Original Darcy central_diff is square; wrapper separately tested 5x7.
++                    grid=(7,7) if task=='darcy' else (5,7)
++                    model=construct(task,args,grid=grid)
++                    run=StandardRun(args,model)
++                    x,fx,target,normalizer,scope=batch(task,model,args)
++                    loss=scope['msar_loss']
++                    torch.testing.assert_close(loss.total,scope['loss']+loss.coverage_weighted,atol=0,rtol=0)
++                    if mode=='off':self.assertIs(loss.total,scope['loss'])
++                    for name,p in model.named_parameters():
++                        self.assertIsNotNone(p.grad,name);self.assertTrue(torch.isfinite(p.grad).all(),name)
++                    if task=='darcy':torch.testing.assert_close(scope['loss'],scope['l2loss']+.1*scope['deriv_loss'])
++                    model.eval();field=fx.unsqueeze(-1) if task=='darcy' else None
++                    expected=model(x,field).detach();run.save(model)
++                    # Execute original eval forward/decode/metric statements safely.
++                    loop=next(n for n in ast.walk(source(task)) if isinstance(n,ast.For) and ast.unparse(n.iter)=='test_loader')
++                    enodes=[n for n in loop.body if isinstance(n,ast.Assign) and isinstance(n.targets[0],ast.Name) and n.targets[0].id in ('out','tl')]
++                    scope.update(y=target)
++                    with torch.no_grad():exec(compile(ast.Module(enodes,type_ignores=[]),'<real-static-eval>','exec'),scope)
++                    prediction=expected.squeeze(-1) if task=='airfoil' else normalizer.decode(expected.squeeze(-1))
++                    self.assertAlmostEqual(scope['tl'],TestLoss(size_average=False)(prediction,target).item(),places=6)
++                    frozen={p.name:p.read_bytes() for p in (run.sidecar,run.directory/'task.json')}
++                    ev=arguments(task,['--eval','1','--msar-run-dir',str(run.directory),'--coverage-mode','off' if mode=='floor' else 'floor'])
++                    loaded=construct(task,ev,grid=grid).eval();erun=StandardRun(ev,loaded);erun.load(loaded)
++                    torch.testing.assert_close(loaded(x,field),expected,atol=0,rtol=0)
++                    self.assertEqual(frozen,{p.name:p.read_bytes() for p in (run.sidecar,run.directory/'task.json')})
++                    with self.assertRaises(RuntimeError):erun.save(loaded)
++                    RECORDS.append(dict(task=task,mode=mode,device='cpu',dtype='float32',shape=list(expected.shape),
++                        original_loss='Darcy field+0.1 derivative L2' if task=='darcy' else 'original relative L2',
++                        forward=True,backward=True,step=True,eval=True,strict_checkpoint=True,atol=0,rtol=0))
++
++    def test_weight_zero_no_attention_request_prediction_parity_and_logging(self):
++        args=arguments('airfoil',SMALL);on=construct('airfoil',args).train();off=construct('airfoil',arguments('airfoil',[*SMALL,'--coverage-weight','0'])).train()
++        off.load_state_dict(on.state_dict(),strict=True);x=torch.randn(2,35,2)
++        seen=[];handles=[d.register_forward_pre_hook(lambda m,a,k:seen.append(k),with_kwargs=True) for d in off.core.downs]
++        a=training_forward(on,x,None);b=training_forward(off,x,None)
++        for h in handles:h.remove()
++        self.assertTrue(all(not kw.get('return_aux',False) for kw in seen));self.assertIsNone(b.auxiliary)
++        torch.testing.assert_close(a.prediction,b.prediction,atol=2e-6,rtol=1e-4)
++        pde=b.prediction.square().sum();loss=training_objective(pde,b);self.assertIs(loss.total,pde)
++        stats=ObjectiveMetrics();stats.add(loss);self.assertFalse(stats.totals.requires_grad)
++        values=stats.values();self.assertEqual(values['coverage_raw'],0);self.assertEqual(values['objective_total'],values['objective_pde'])
++
++    def test_real_light_and_full_elasticity_expansion(self):
++        # Full N972 is the actual point contract; weights/token counts are not shrunk.
++        for profile,n in (('light',35),('full',972)):
++            args=arguments('elasticity',['--profile',profile]);model=construct('elasticity',args).eval()
++            with torch.no_grad():result=model(torch.randn(1,n,2),None)
++            self.assertEqual(result.shape,(1,n,1));self.assertTrue(torch.isfinite(result).all())
++            self.assertEqual(model.config,resolve_profile(profile))
++            self.assertEqual(model.core.downs[0].latent_queries.shape,(512 if profile=='light' else 1024,model.config.d))
++            RECORDS.append(dict(profile=profile,task='elasticity',N=n,M1=model.config.num_latents[0],
++                                parameters=sum(p.numel() for p in model.parameters()),device='cpu',forward='passed',backward='not_run'))
++
++    def test_real_N_layout_reduced_dimensions(self):
++        for task in TASKS:
++            model=construct(task,arguments(task,SMALL),real=True).eval();x,fx=sample(model,b=1,n=972)
++            with torch.no_grad():y=model(x,fx.unsqueeze(-1) if task=='darcy' else None)
++            self.assertEqual(y.shape,(1,dict(darcy=7225,elasticity=972,airfoil=11271,pipe=16641)[task],1))
++            RECORDS.append(dict(task=task,real_N=y.shape[1],d=8,grid='original',forward='passed',training='not_run'))
++
++    def test_early_records_objective_history_and_repeated_eval_readonly(self):
++        with tempfile.TemporaryDirectory() as tmp,redirect_stdout(io.StringIO()):
++            args=arguments('pipe',[*SMALL,'--coverage-mode','off','--msar-run-dir',str(Path(tmp)/'run')])
++            record=start(args,'pipe')
++            try:
++                config=json.loads((record.directory/'config.json').read_text())
++                self.assertEqual(config['parameter_count_status'],'pending_model_construction')
++                self.assertEqual(config['model'],'msar_lno')
++                model=construct('pipe',args);run=StandardRun(args,model)
++                *_,scope=batch('pipe',model,args)
++                run.record_objective(1,scope['msar_epoch'],dict(train_loss=scope['train_loss']/2,validation_relative_l2=1.))
++                run.save(model)
++            finally:finish(args)
++            row=json.loads((record.directory/'train_history.jsonl').read_text());self.assertEqual(row['metrics']['coverage_mode'],'off')
++            self.assertIn('objective_total',row['metrics']);self.assertEqual(row['metrics']['coverage_weighted'],0)
++            frozen={n:(record.directory/n).read_bytes() for n in ('architecture.json','task.json','config.json','train_results.json')}
++            for _ in range(2):
++                ev=arguments('pipe',['--eval','1','--msar-run-dir',str(record.directory),'--profile','full'])
++                r=start(ev,'pipe',evaluation=True)
++                try:
++                    m=construct('pipe',ev);erun=StandardRun(ev,m);erun.load(m);r.record_metrics({'relative_l2':.5})
++                finally:finish(ev)
++            self.assertEqual(frozen,{n:(record.directory/n).read_bytes() for n in frozen})
++            self.assertEqual(len(json.loads((record.directory/'eval_results.json').read_text())['evaluations']),2)
++            with self.assertRaises(FileExistsError):start(args,'pipe')
++
++    def test_conflicts_before_loading_no_missing_field_repair_strict_state(self):
++        with tempfile.TemporaryDirectory() as tmp,redirect_stdout(io.StringIO()):
++            args=arguments('darcy',[*SMALL,'--downsample','7','--msar-run-dir',str(Path(tmp)/'run')]);m=construct('darcy',args);run=StandardRun(args,m);run.save(m)
++            common=['--eval','1','--msar-run-dir',str(run.directory)]
++            self.assertEqual(arguments('darcy',common).downsample,7)
++            for flags in (['--d','16'],['--num-latents','8','6','4','2'],['--ref','7'],['--downsample','5']):
++                with patch('torch.load',side_effect=AssertionError('must reject first')),self.assertRaises(ValueError):arguments('darcy',common+flags)
++            wrong=arguments('darcy',common);other=construct('darcy',wrong,grid=(7,5))
++            with self.assertRaisesRegex(ValueError,'wrapper mismatch'):StandardRun(wrong,other)
++            raw=json.loads((run.directory/'task.json').read_text());raw['arguments'].pop('ntrain')
++            (run.directory/'task.json').write_text(json.dumps(raw))
++            with self.assertRaisesRegex(ValueError,'missing saved'):arguments('darcy',common)
++            # Restore the exact field, then exercise the strict payload path.
++            raw['arguments']['ntrain']=1000;(run.directory/'task.json').write_text(json.dumps(raw))
++            ev=arguments('darcy',common);loaded=construct('darcy',ev);erun=StandardRun(ev,loaded)
++            weights=torch.load(run.checkpoint,weights_only=True);weights.pop(next(iter(weights)));torch.save(weights,run.checkpoint)
++            with self.assertRaises(RuntimeError):erun.load(loaded)
++
++    def test_entire_old_entries_project_to_pre_M5_and_presets_match_training(self):
++        before=json.loads((ROOT/'docs/msar_lno_audit/m5/before.json').read_text());snap=Path(before['archive'])/'source'
++        for task in TASKS:
++            path=f'PDE-Solving-StandardBenchmark/exp_{TASKS[task][0]}.py'
++            self.assertEqual(ast.dump(strip_msar(source(task))),ast.dump(ast.parse((snap/path).read_text())))
++            old=json.loads((PROJECT/'configs/kcdno'/f'{task}.json').read_text())
++            new=json.loads((PROJECT/'configs/msar_lno'/f'{task}.json').read_text())
++            self.assertEqual(new['training'],old['training']);self.assertEqual(new['adapter'],old['adapter'])
++        for p in ('exp_ns.py','exp_plas.py'):
++            self.assertEqual((PROJECT/p).read_bytes(),(snap/'PDE-Solving-StandardBenchmark'/p).read_bytes())
++
++    def test_real_shell_options_all_profiles_and_last_override(self):
++        for task in TASKS:
++            script=ROOT/'tran_evaluate/msar_lno'/f'{task}.sh'
++            subprocess.run(['bash','-n',str(script)],check=True)
++            for flags in ([],['--coverage-mode','off','--coverage-weight','0'],['--profile','full']):
++                result=subprocess.run(['bash',str(script),'train',*flags,'--dry-run'],capture_output=True,text=True,check=True)
++                cmd=shlex.split(next(l[9:] for l in result.stdout.splitlines() if l.startswith('Command: ')))
++                args=arguments(task,cmd[3:]);self.assertEqual(args.model,'msar_lno')
++                self.assertNotIn('--slice_num',cmd);self.assertNotIn('--d',cmd)
++                if flags and flags[0]=='--profile':self.assertEqual(args.msar_architecture['d'],192)
++                if flags and flags[0]=='--coverage-mode':self.assertIn('coverage_off',args.msar_run_dir.parts)
++
++    def test_all_eval_shell_modes_read_saved_structure_and_fresh_cwd_load(self):
++        with tempfile.TemporaryDirectory() as tmp,redirect_stdout(io.StringIO()):
++            for task in TASKS:
++                args=arguments(task,[*SMALL,'--msar-run-dir',str(Path(tmp)/task)])
++                model=construct(task,args).eval();run=StandardRun(args,model);run.save(model)
++                for flags in ([],['--coverage-mode','off','--coverage-weight','0'],['--profile','full']):
++                    result=subprocess.run(['bash',str(ROOT/'tran_evaluate/msar_lno'/f'{task}.sh'),'eval',
++                        '--msar-run-dir',str(run.directory),*flags,'--dry-run'],capture_output=True,text=True,check=True)
++                    cmd=shlex.split(next(l[9:] for l in result.stdout.splitlines() if l.startswith('Command: ')))
++                    ev=arguments(task,cmd[3:])
++                    self.assertEqual(ev.msar_architecture,model.config.to_dict())
++                x,fx=sample(model);field=fx.unsqueeze(-1) if task=='darcy' else None
++                torch.save(dict(x=x,fx=field,y=model(x,field).detach()),Path(tmp)/(task+'.pt'))
++            code='''
++import sys,torch
++from pathlib import Path
++from torch.nn.attention import SDPBackend,sdpa_kernel
++from test_msar_static import arguments,construct
++from cdlno.msar_lno.standard_entry import StandardRun
++torch.set_num_threads(1)
++backend=sdpa_kernel(SDPBackend.MATH);backend.__enter__()
++root=Path(sys.argv[1])
++for task in ('darcy','elasticity','airfoil','pipe'):
++    args=arguments(task,['--eval','1','--msar-run-dir',str(root/task)])
++    model=construct(task,args).eval();StandardRun(args,model).load(model)
++    data=torch.load(root/(task+'.pt'),weights_only=True)
++    torch.testing.assert_close(model(data['x'],data['fx']),data['y'],atol=0,rtol=0)
++assert not any(name.startswith('exp_') for name in sys.modules)
++backend.__exit__(None,None,None)
++print('four static wrappers fresh-cwd strict load passed')
++'''
++            result=subprocess.run([sys.executable,'-B','-c',code,tmp],cwd=PROJECT,
++                env=dict(os.environ,PYTHONPATH=str(ROOT)+os.pathsep+str(ROOT/'tests')),capture_output=True,text=True)
++            self.assertEqual(result.returncode,0,result.stderr)
++
++    def test_visualization_eval_only_preserves_rng_training_and_weights(self):
++        # Exercise the inherited observation hook with the actual new wrapper.
++        # Capture rendering inputs rather than testing the established renderer again.
++        with tempfile.TemporaryDirectory() as tmp,redirect_stdout(io.StringIO()):
++            args=arguments('airfoil',[*SMALL,'--msar-run-dir',str(Path(tmp)/'run')]);r=start(args,'airfoil')
++            try:
++                model=construct('airfoil',args).train();StandardRun(args,model)
++                x=torch.randn(2,35,2);target=torch.randn(2,35)
++                dataset=torch.utils.data.TensorDataset(x,x,target)
++                state={k:v.clone() for k,v in model.state_dict().items()};rng=torch.get_rng_state().clone();seen=[]
++                h=model.register_forward_pre_hook(lambda m,a:seen.append(m.training))
++                with patch('cdlno.periodic_visualization.PeriodicFields._render') as render:
++                    r.visualize(model,50,500,dataset=dataset,grid_shape=(5,7))
++                    self.assertTrue(render.called)
++                h.remove();self.assertTrue(seen);self.assertFalse(any(seen));self.assertTrue(model.training)
++                self.assertTrue(torch.equal(rng,torch.get_rng_state()))
++                for k,v in model.state_dict().items():torch.testing.assert_close(v,state[k],atol=0,rtol=0)
++            finally:finish(args)
++
++    @unittest.skipUnless(torch.cuda.is_available(),'CUDA unavailable')
++    def test_four_static_gpu_small_original_loss_steps(self):
++        for task in TASKS:
++            args=arguments(task,[*SMALL,'--coverage-kappa','1']);model=construct(task,args,grid=(7,7) if task=='darcy' else (5,7)).cuda()
++            _,_,_,_,scope=batch(task,model,args,device='cuda')
++            self.assertTrue(torch.isfinite(scope['msar_loss'].total))
++            self.assertTrue(all(p.grad is not None and torch.isfinite(p.grad).all() for p in model.parameters()))
++            RECORDS.append(dict(task=task,device='cuda',dtype='float32',backend='MATH',original_loss_step='passed'))
++
++
++if __name__=='__main__':unittest.main(verbosity=2)
+--- before/tests/test_periodic_visualization.py
++++ after/tests/test_periodic_visualization.py
+@@ -20,6 +20,7 @@
+ from cdlno.periodic_visualization import PeriodicFields, due
+ from cdlno.training_state import capture_rng, restore_rng
+ from visualization_projection import strip_visualization
++from msar_entry_projection import strip_msar
+ 
+ ROOT=Path(__file__).resolve().parents[1]
+ sys.path.insert(0,str(ROOT/'PDE-Solving-StandardBenchmark'))
+@@ -205,7 +206,7 @@
+         for file in files:
+             with self.subTest(file=file):
+                 source=ast.parse((ROOT/file).read_text());old=ast.parse((snapshot/file).read_text())
+-                self.assertEqual(ast.dump(strip_visualization(source)),ast.dump(old))
++                self.assertEqual(ast.dump(strip_visualization(strip_msar(source))),ast.dump(old))
+ 
+     def test_real_export_caption_fonts_and_color_saturation(self):
+         import matplotlib as mpl
+--- before/tests/test_static_standard.py
++++ after/tests/test_static_standard.py
+@@ -53,7 +53,8 @@
+ 
+ 
+ def tree(task):
+-    return ast.parse((PROJECT / f'exp_{TASKS[task][0]}.py').read_text())
++    from msar_entry_projection import strip_msar
++    return strip_msar(ast.parse((PROJECT / f'exp_{TASKS[task][0]}.py').read_text()))
+ 
+ 
+ def parser_for(task):
+@@ -433,7 +434,7 @@
+         # M4 adds exactly one independent lifted-core selection branch. Assert
+         # its entire AST before removing it from the legacy factory comparison.
+         factory = next(n for n in current.body if isinstance(n, ast.FunctionDef) and n.name == 'get_model')
+-        msar = ast.parse("if args.model == 'msar_lno':\n    from model import MSAR_LNO\n    return MSAR_LNO").body[0]
++        msar = ast.parse("if args.model == 'msar_lno':\n    if getattr(args, 'msar_task', None) in ('darcy', 'elasticity', 'airfoil', 'pipe'):\n        from model import MSAR_Standard\n        return MSAR_Standard\n    from model import MSAR_LNO\n    return MSAR_LNO").body[0]
+         self.assertEqual(ast.dump(factory.body[0]), ast.dump(msar))
+         factory.body.pop(0)
+         original = subprocess.check_output(['git','show',f'{UPSTREAM}:PDE-Solving-StandardBenchmark/model_dict.py'], cwd=ROOT, text=True)
+--- before/tran_evaluate/msar_lno/README.md
++++ after/tran_evaluate/msar_lno/README.md
+@@ -0,0 +1,58 @@
++# MSAR-LNO：M5 四个静态任务
++
++可用脚本：`darcy.sh`、`elasticity.sh`、`airfoil.sh`、`pipe.sh`。调用形式是 `bash SCRIPT train|eval [原任务选项和MSAR选项]`，追加 `--dry-run` 只打印命令，不启动Python或访问数据。NS、Plasticity、Car、AirfRANS尚未接入MSAR。
++
++脚本定位其所在checkout并复用 `tran_evaluate/_common.sh`、根 `path.sh` 和原 `exp_*.py`；远端无需使用本机`/home/hwz/CDLNO`路径。原数据路径可通过对应环境变量或最后的`--data_path`覆盖。
++
++| 脚本 | 原入口 | 路径变量 / 原始数据位置 |
++|---|---|---|
++| darcy.sh | exp_darcy.py | `CDLNO_DARCY_ROOT`：包含piececonst两个MAT的目录，默认`CDLNO_FNO_ROOT` |
++| elasticity.sh | exp_elas.py | `CDLNO_ELASTICITY_ROOT`：Elasticity原npy文件目录，默认`CDLNO_FNO_ROOT` |
++| airfoil.sh | exp_airfoil.py | `CDLNO_AIRFOIL_ROOT`：NACA_Cylinder_X/Y/Q.npy目录，默认fno/airfoil/naca |
++| pipe.sh | exp_pipe.py | `CDLNO_PIPE_ROOT`：Pipe_X/Y/Q.npy目录，默认fno/pipe |
++
++默认Light、coverage floor/.01/.2。Full仅改变新profile结构，保留原任务训练预设：500epochs，batch分别4/1/4/8，lr.001，AdamW及原scheduler/clip等。Light/Full不按N裁剪M。`--coverage-mode off --coverage-weight 0`关闭正则；`--coverage-weight 0`也走无A的off路径。结构、训练目标默认还记录在`PDE-Solving-StandardBenchmark/configs/msar_lno/*.json`中；显式CLI最后覆盖。
++
++例如在**实际checkout根目录**：
++
++```bash
++bash tran_evaluate/msar_lno/darcy.sh train --gpu 0 --dry-run
++bash tran_evaluate/msar_lno/elasticity.sh train --profile full --gpu 0 --dry-run
++```
++
++下面函数是可自行执行的训练成功后评估模板。每次创建独立目录，不搜索latest，不覆盖已有run；函数内没有缩小正式profile或epoch。将`TASK`替换成四个脚本名之一，即覆盖相应数据集。
++
++```bash
++# 在实际checkout根目录设置；DATA路径可先在path.sh或环境变量中配置。
++msar_pair() {
++    local task="$1" profile="$2" mode="$3" weight="$4"
++    local run="$PWD/output/$task/msar_lno/$profile/coverage_$mode/$(date -u +%Y%m%dT%H%M%S%NZ)"
++    bash "tran_evaluate/msar_lno/$task.sh" train \
++        --gpu 0 --profile "$profile" --coverage-mode "$mode" --coverage-weight "$weight" \
++        --msar-run-dir "$run" &&
++    bash "tran_evaluate/msar_lno/$task.sh" eval --gpu 0 --msar-run-dir "$run"
++}
++```
++
++四任务×三种设置的调用模板（按需选择，本文不会执行训练）：
++
++| 任务 | Light coverage-on | Light off | Full coverage-on |
++|---|---|---|---|
++| Darcy | `msar_pair darcy light floor 0.01` | `msar_pair darcy light off 0` | `msar_pair darcy full floor 0.01` |
++| Elasticity | `msar_pair elasticity light floor 0.01` | `msar_pair elasticity light off 0` | `msar_pair elasticity full floor 0.01` |
++| Airfoil | `msar_pair airfoil light floor 0.01` | `msar_pair airfoil light off 0` | `msar_pair airfoil full floor 0.01` |
++| Pipe | `msar_pair pipe light floor 0.01` | `msar_pair pipe light off 0` | `msar_pair pipe full floor 0.01` |
++
++也可独立评估：
++
++```bash
++bash tran_evaluate/msar_lno/pipe.sh eval --gpu 0 --msar-run-dir /absolute/path/to/existing/run
++```
++
++评估从run的`architecture.json`和`task.json`恢复保存的结构、训练目标与坐标/ref/downsample/ntrain合同；当前CLI默认Light不会覆盖Full权重。显式d/M/heads或输入合同冲突拒绝；显式coverage差异可用于纯eval，不写回sidecar。不传运行目录的训练自动创建`output/<task>/msar_lno/<profile>/coverage_<floor|off>/<UTC+uuid>`；显式`--save_name`作为该层级下的独占leaf，显式`--msar-run-dir`保持用户指定路径。
++
++输出沿原统一记录协议：数据读取前创建目录/config.json/train.log/train_results.json，参数量在模型构造后实测；每epoch写train_history.jsonl；eval每次新建evaluations/目录。原`train_loss`仍保留任务定义；新日志`objective_pde/coverage_raw/coverage_weighted/objective_total`是**每优化步均值**，同时记录coverage_mode。Darcy的objective_pde包含原`.1*derivative_loss`，其旧train_loss仍仅field relative-L2。
++
++周期可视化沿现有50完成epoch/final观察逻辑，预测调用不计算coverage。保存仍是原六PDE的`ep % 100 == 0`及final裸`model.pt`，不是完整optimizer/RNG断点续训档案，本阶段不改保存频率。原eval绘图的固定网格限制仍在：本阶段没有修改原数据/绘图代码来支持非默认downsample的所有导出图。5×7用于模型合同的合成验证，不是更改正式数据网格。
++
++无数据验证及范围见 [M5报告](../../docs/MSAR_LNO_M5_STATIC_TASKS.md)。真实数据读取、真实训练/收敛、远端torch2.11/cu128未执行。
+--- before/tran_evaluate/msar_lno/_static.sh
++++ after/tran_evaluate/msar_lno/_static.sh
+@@ -0,0 +1,31 @@
++#!/usr/bin/env bash
++set -euo pipefail
++launcher="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++source "$launcher/../_common.sh"
++task="${1:?task required}"; action="${2:?train or eval required}"; shift 2
++case "$task" in
++    darcy) entry=exp_darcy.py; data="${CDLNO_DARCY_ROOT:-}" ;;
++    elasticity) entry=exp_elas.py; data="${CDLNO_ELASTICITY_ROOT:-}" ;;
++    airfoil) entry=exp_airfoil.py; data="${CDLNO_AIRFOIL_ROOT:-}" ;;
++    pipe) entry=exp_pipe.py; data="${CDLNO_PIPE_ROOT:-}" ;;
++    *) printf 'Task not integrated: %s\n' "$task" >&2; exit 2 ;;
++esac
++case "$action" in train) evaluation=0 ;; eval) evaluation=1 ;; *) exit 2 ;; esac
++# Profile, not duplicated explicit dimensions; users can switch it last.
++args=(--model msar_lno --profile light --eval "$evaluation")
++[[ -z "$data" ]] || args+=(--data_path "$data")
++# Resolve the new run flag before the old dispatcher changes working directory.
++user=()
++while (($#)); do
++    case "$1" in
++        --msar-run-dir)
++            value="${2:?missing run directory}"
++            [[ "$value" = /* ]] || value="$PWD/$value"
++            user+=(--msar-run-dir "$value"); shift 2 ;;
++        --msar-run-dir=*)
++            value="${1#*=}"; [[ "$value" = /* ]] || value="$PWD/$value"
++            user+=(--msar-run-dir "$value"); shift ;;
++        *) user+=("$1"); shift ;;
++    esac
++done
++cdlno_dispatch PDE-Solving-StandardBenchmark "$entry" "${args[@]}" "${user[@]}"
+--- before/tran_evaluate/msar_lno/airfoil.sh
++++ after/tran_evaluate/msar_lno/airfoil.sh
+@@ -0,0 +1,4 @@
++#!/usr/bin/env bash
++set -euo pipefail
++launcher="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++exec bash "$launcher/_static.sh" airfoil "$@"
+--- before/tran_evaluate/msar_lno/darcy.sh
++++ after/tran_evaluate/msar_lno/darcy.sh
+@@ -0,0 +1,4 @@
++#!/usr/bin/env bash
++set -euo pipefail
++launcher="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++exec bash "$launcher/_static.sh" darcy "$@"
+--- before/tran_evaluate/msar_lno/elasticity.sh
++++ after/tran_evaluate/msar_lno/elasticity.sh
+@@ -0,0 +1,4 @@
++#!/usr/bin/env bash
++set -euo pipefail
++launcher="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++exec bash "$launcher/_static.sh" elasticity "$@"
+--- before/tran_evaluate/msar_lno/pipe.sh
++++ after/tran_evaluate/msar_lno/pipe.sh
+@@ -0,0 +1,4 @@
++#!/usr/bin/env bash
++set -euo pipefail
++launcher="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++exec bash "$launcher/_static.sh" pipe "$@"

@@ -1,0 +1,703 @@
+--- before/docs/CDLNO_IMPLEMENTATION_STATUS.md
++++ after/docs/CDLNO_IMPLEMENTATION_STATUS.md
+@@ -1,4 +1,14 @@
+-# 最新：独立MSAR-LNO M7工业任务完成，等待审查（2026-09-17）
++# 最新：独立MSAR-LNO M8综合验收完成，等待审查（2026-09-17）
++
++仅M8；M7已批准。新增验证/报告，无生产或旧测试修改。八任务正式Light×off/floor共16例原loss合成训练/eval通过；八任务正式Full单次合成MSE+coverage反传及strict state_dict往返通过（不是Full原loss完整训练）。NS/Plasticity空间N和10/20时间协议保持，工业真PyG单图，小N；真实数据未运行。
++
++新19方法首轮仅过强非零梯度断言失败，修正新测试后定向通过；保留初始日志，不改模型/容差。既有MSAR107方法106通过/1跳过；旧157方法0失败/错误、1子用例跳过，均为Air torch_cluster缺项。75份旧Transolver/CDLNO三模式/KCDNO两模式/matched及其他模型同权重exact，182夹具hash保持。三个cwd新进程选择/工业pickle/strict架构/只读sidecar、coverage/AttnRes边界及拓扑计数通过。
++
++报告[MSAR M8](MSAR_LNO_M8_ACCEPTANCE.md)、[覆盖矩阵](msar_lno_audit/m8/coverage-matrix.json)、[独立STATUS](MSAR_LNO_IMPLEMENTATION_STATUS.md)。同权重off/floor最大差2.235e-7；八任务缩小结构GPU原loss步通过，正式profile GPU/远端Torch2.11cu128/任务AMP/Full原loss更新矩阵/真实数据与完整工业后处理未执行。任务权重仍非完整续训档案，无新resume。
++
++保留837文本快照`/home/hwz/CDLNO-artifacts/msar-m8-before-fhesnwse/source`和用户diff；834起点文件字节不变，仅三状态文件增量。数据/采样/loss/模型/入口/训练语义/依赖/旧测试全冻结，无安装/下载/真实训练/commit/push/PR。已完成5项自审，无本轮生产回归；未执行M9。**本M阶段结束，未执行下一阶段。**
++
++# 历史：独立MSAR-LNO M7工业任务完成，等待审查（2026-09-17）
+ 
+ ## 2026-09-17：MSAR-LNO M7完成，旧模型保持
+ 
+--- before/docs/MSAR_LNO_IMPLEMENTATION_STATUS.md
++++ after/docs/MSAR_LNO_IMPLEMENTATION_STATUS.md
+@@ -1,4 +1,18 @@
+ # MSAR-LNO 实施状态
++
++## 2026-09-17：M8 八任务综合验收完成，等待审查
++
++M7已审查通过；本轮仅M8，生产代码及既有测试均未修改。见[M8报告/覆盖表](MSAR_LNO_M8_ACCEPTANCE.md)、[逐任务矩阵](msar_lno_audit/m8/coverage-matrix.json)、[结果](msar_lno_audit/m8/summary.json)、[冻结](msar_lno_audit/m8/freeze.json)。下面M7及更早条目的未运行结论是各阶段当时状态，以本轮明确执行的项目补充。
++
++- 八任务正式Light（d96、M512/256/128/64）各完成off/floor原loss合成forward/backward/optimizer/eval，共16例。四静态任务小N，NS保留N4096/10步，Plasticity保留N3131/20时间更新，Car/Air真PyG单图N19。正式Full（d192、M1024/512/256/128）八任务各完成单次合成MSE+coverage反传、eval、strict state_dict零容差往返；没有声称Full原loss完整训练矩阵通过。
++- 同权重off/floor预测最大绝对差2.235e-7（atol2e-6/rtol1e-4）。off/weight0的total就是原LPDE对象且不请求coverage A；floor正确加权。默认kappa.2本次Light初始raw均0；kappa1针对性检查显示四Down图连接/有限梯度、每个真实Down在变化source上有效非零梯度，无decoder/AttnRes aux梯度。最深层初始合法零梯度不当作断图。
++- 实际Light hook计数Down4/Up4/PairFusion3/latent block12，SA12/FFN24；三w0融合exact E+U、source轴2/slot对应/梯度通过；无Conv/history/CDPA/kernel/N点SA，参数/storage独立。mask、batch、M1>N、连续两次独立backward/无跨调用aux状态均通过。
++- 新19方法首轮18通过/1个测试断言失败（错误要求每层每次非零），修正新测试后对应1项重跑通过，分别耗时97.619s/0.122s；没有生产修复或扩大容差。既有MSAR107方法106通过/1跳过，126.930s；旧157方法0失败/错误、1个Air子用例跳过，181.846s。两处跳过均为原torch_cluster缺失，不冒充执行。
++- M0全部可用75份原固定输入/同一权重夹具本轮重放exact（K0 41、K/matched wrapper24、core6、其他4），182旧artifact hash不变。旧GUNet缺torch_cluster仍未执行。三项目cwd新进程factory/选择、strict或原整对象/列表加载、错误架构拒绝、eval不覆写sidecar通过；任务checkpoint协议用M5—M7小结构重跑，Full纯state另测，不新增resume。
++- 本机Python3.13.9/Torch2.13+cu130/PyG2.3.1/RTX5090 Laptop。八任务缩小d8的GPU FP32原loss步骤通过；M2/M3有限AMP重跑通过。正式Light/Full任务GPU、远端2.11/cu128、Full原loss优化矩阵、完整工业抽样/物理指标、真实数据读取/训练/收敛均未执行，报告含远端无数据补充命令。
++- 837起点文本快照`/home/hwz/CDLNO-artifacts/msar-m8-before-fhesnwse/source`及用户diff保留；834既有文件字节相同，只增量更新三份STATUS/memory。仅新增测试、报告与审计证据；模型/factory/配置/数据/loss/时间循环/optimizer/依赖/旧测试不改。未下载/安装/真实训练/commit/push/PR，未执行M9。
++
++**本M阶段结束，未执行下一阶段。**
+ 
+ ## 2026-09-17：M7 ShapeNet-Car / AirfRANS接入完成，等待审查
+ 
+--- before/docs/MSAR_LNO_M8_ACCEPTANCE.md
++++ after/docs/MSAR_LNO_M8_ACCEPTANCE.md
+@@ -0,0 +1,165 @@
++# MSAR-LNO M8：八任务综合可执行验收
++
++2026-09-17，仅M8；M7已批准。起点为`main@9c5569e059eca8d57f5321fdbf0c0dc4aeb40860`及全部既有未提交工作。按[M0实际映射](MSAR_LNO_REFERENCE_AUDIT.md)复用[M5](MSAR_LNO_M5_STATIC_TASKS.md)、[M6](MSAR_LNO_M6_TEMPORAL_TASKS.md)、[M7](MSAR_LNO_M7_INDUSTRIAL_TASKS.md)的真实parser/factory、wrapper、原loss与安全测试片段。本轮没有生产代码修改，没有下载数据、安装依赖、真实训练、commit/push或M9工作。
++
++## A. 覆盖矩阵与证据边界
++
++以下“通过”均指对应的静态或**随机合成输入**检查。正式profile未缩小d/M/depth：Light为d96、M=[512,256,128,64]；Full为d192、M=[1024,512,256,128]；heads=[4,4,8,8]、encoder/decoder depths=[3,1,1,1]。完整逐例配置、实测参数量、objective值和耗时保存在[formal-cases.json](msar_lno_audit/m8/formal-cases.json)；[机器可读覆盖表](msar_lno_audit/m8/coverage-matrix.json)明确区分未执行项。
++
++表中checkpoint的“任务协议”来自本轮重跑的M5—M7小结构d8/M=[7,5,3,2]；正式Full的纯state_dict另逐任务实际往返。**没有将小结构任务checkpoint测试写成正式Light整模型checkpoint验收。**
++
++| 任务 | 静态参数流 | 正式Light合成forward（off/floor） | 原loss连接 | backward / optimizer | eval | checkpoint | 真实PyG | GPU | 真实数据 |
++|---|---|---|---|---|---|---|---|---|---|
++| Darcy | 通过 | B2、7×7、两模式通过 | 原decode、相对L2+0.1导数L2通过 | 两模式通过 | 原decode/相对L2通过 | 原state_dict协议；Full strict通过 | 不适用 | d8原loss步通过 | 未执行 |
++| Elasticity | 通过 | B2、N35、两模式通过 | 原decode/相对L2通过 | 两模式通过 | 原指标通过 | 同上 | 不适用 | d8原loss步通过 | 未执行 |
++| Airfoil | 通过 | B2、5×7、两模式通过 | 原相对L2通过 | 两模式通过 | 原指标通过 | 同上 | 不适用 | d8原loss步通过 | 未执行 |
++| Pipe | 通过 | B2、5×7、两模式通过 | 原坐标normalizer、decode/相对L2通过 | 两模式通过 | 原指标通过 | 同上 | 不适用 | d8原loss步通过 | 未执行 |
++| NS | 通过 | B1、N4096、fx10→out1、两模式通过 | 原10步真值回填求和loss通过 | 两模式各10 forward→1次更新通过 | 10步预测回填通过 | 原state_dict协议；Full strict通过 | 不适用 | d8原10步更新通过 | 未执行 |
++| Plasticity | 通过 | B1、N3131、fx1/T[B,1]→out4、两模式通过 | 原20个时间点loss通过 | 两模式各20次更新、batch末1 scheduler通过 | 原20时间点通过 | 同上 | 不适用 | d8原20步更新通过 | 未执行 |
++| ShapeNet-Car | 通过 | 真Data/Batch tuple、单图N19、两模式通过 | 原全点速度MSE+reg×表面压力MSE通过 | 两模式通过 | 原`train.test`通过 | 整对象任务协议；Full strict通过 | 通过，单图/可变N/多图拒绝 | d8真PyG原loss步通过 | 未执行 |
++| AirfRANS | 通过 | 真Data/Batch、单图N19、两模式通过 | 原入口`MSE_weighted`体积+reg×表面通过 | 两模式通过 | 原MSE test通过 | 整成员/列表任务协议；Full strict通过 | 通过，含原sampled ptr/scatter片段 | d8真PyG原loss步通过 | 未执行 |
++
++GPU栏为本机FP32/MATH、缩小d/M的真实模型合成训练步，**不是正式Light/Full GPU矩阵**。新正式profile矩阵使用CPU FP32/MATH、TF32关闭、dropout不存在。每任务保存了实际resolved结构。工业loss直接调用可安全导入的原`train.train/test`；六PDE执行原训练batch与eval语句的AST，只替换合成输入/设备传输，不import顶层读取数据的exp/main。没有另外编写近似loss冒充原链路。
++
++正式Full八任务都完成实际参数构造、单次forward、**明确标注的合成MSE+coverage backward**、eval及同结构严格state_dict保存/加载，输出零容差相等；另检查缺key拒绝。Full没有运行原loss完整时间循环/optimizer矩阵。NS/Plasticity wrapper固定原网格，因此没有为了减小N改生产合同，而是保留真实空间N、减为B1/单次forward；其余任务减小N。
++
++| 任务 | Light实际参数量 | Full实际参数量 | Full测试N / 输出shape | Full M1>N |
++|---|---:|---:|---|---|
++| Darcy | 1,722,169 | 6,835,825 | 49 / [1,49,1] | 是 |
++| Elasticity | 1,710,169 | 6,811,825 | 35 / [1,35,1] | 是 |
++| Airfoil | 1,710,169 | 6,811,825 | 35 / [1,35,1] | 是 |
++| Pipe | 1,710,169 | 6,811,825 | 35 / [1,35,1] | 是 |
++| NS | 1,723,897 | 6,839,281 | 4096 / [1,4096,1] | 否 |
++| Plasticity | 1,729,180 | 6,886,708 | 3131 / [1,3131,4] | 否 |
++| Car | 1,711,420 | 6,814,324 | 19 / [19,4] | 是 |
++| AirfRANS | 1,723,708 | 6,838,900 | 19 / [19,4] | 是 |
++
++本轮还重跑M5的正式N布局检查：Darcy7225、Elasticity972、Airfoil11271、Pipe16641，使用d8，不是满宽训练；正式Full Elasticity N972前向也重跑。Darcy原导数loss要求方网格，原loss步用7×7，独立wrapper继续以5×7验证没有sqrt(N)依赖。Car/Air新正式profile为N19，M7 N11/23变长/排列/单图边界也重跑；没有声称真实完整工业网格训练通过。
++
++## B. 公式、执行计数与针对性边界
++
++| 合同 | 实际实现/测试映射 | 本轮结果 |
++|---|---|---|
++| 同结构同权重off/floor | `tests/test_msar_acceptance.py::FormalTaskAcceptance.run_light`显式复制同一state；`training_forward`只选aux路径 | 八任务两模式预测最大绝对差2.2351741790771484e-7；atol2e-6/rtol1e-4通过 |
++| off或weight0 | `objective.training_objective`返回同一个LPDE对象；M2测试禁止显式Tensor.softmax并确认Down走SDPA；M4测试Down不请求aux | 不计算coverage、不创建额外coverage A/图；eval始终只预测。此处不对SDPA后端内部临时存储作性能推断 |
++| floor | `CoverageFloorLoss`：head平均、latent平均、有效source求和、batch均值；core四层均值；`total=PDE+weight*raw` | FP32 raw有限；加权只一次。默认kappa=.2的本次Light随机输入均满足floor，raw=0，并非没有调用coverage |
++| 有效coverage梯度 | `AblationClosure.test_boundary_aux_isolation_and_coverage_dependency`；复用M2独立oracle | core四级Down的query/key梯度均连接且有限；kappa1下逐个真实Down输入变化的source，验证source/query/key均有非零梯度。无decoder/Up/AttnRes/head的aux梯度 |
++| 时间聚合 | `rollout_objective`与原NS/Plasticity时间片段 | NS：Σ10 LPDE + weight×mean10(mean4 raw)；Plasticity：每时间更新LPDE+weight×mean4 raw。原更新/回填/调度不变 |
++| 三个AttnRes | `PairwiseAttnResFusion`；`test_three_fusions_source_axis_token_specific_weights_and_gradients`逐个独立公式核对 | 每个只有w；w0时exact E+U、E/U直接Jacobian均1、w有效梯度；非零w时alpha[B,M,2]沿source softmax、每token不同、打乱U改变结果；无gamma/projection/history |
++| 完整执行拓扑 | `test_formal_light_execution_counts_slot_fusion_and_storage`的真实hook | Down4、Up4、PairFusion3、latent blocks12、SA12（512×6/256×2/128×2/64×2）、FFN24；N35处没有SA；无Conv/CDPA/kernel/history/bridge；参数对象/storage独立 |
++| aux/diagnostics生命周期 | 新边界测试+M3/M4 interleaved/cross-call测试 | B1/2、N3/11/35、无mask/部分mask、空mask拒绝、kappa0/weight0/off通过；完成一次backward后再次独立forward/backward通过，无前次输入梯度连接或module-owned统计；diagnostics无梯度且只返回小统计 |
++| 非法结构与mask | 本轮重跑`test_msar_config`、`test_msar_modules`、`test_msar_core` | 非法长度/宽度/heads/depth/family/目标字段/形状/mask明确拒绝；M1>N不截断；工业多图拒绝 |
++
++[边界数值证据](msar_lno_audit/m8/boundary-cases.json)保留各层raw及query/key梯度最大值。首轮新边界测试错误地要求每层每次都非零；最深层在初始化下slot相同、raw=0，合法零梯度触发该断言。修正仅涉及本轮新测试：先检查所有层图连接/有限，再用每个真实Down的变化source检查有效梯度。**没有改模型、权重初始化、coverage公式/默认或数值容差来通过测试。** 初始失败日志保留。
++
++## C. Checkpoint、原cwd与旧模型回归
++
++M5—M7的真实task parser、factory、train/eval选择、sidecar先读后校验、coverage纯eval覆盖、重复eval文件只读及错误family/shape/key拒绝全部重跑。原PDE、Car、Air三个工作目录启动新Python进程：标准/时间模型strict加载、工业稳定`cdlno.msar_lno.industrial.{CarModel,AirfRANSModel}`整对象/成员列表加载均通过；没有import exp/main来取接口。新MSAR类未侵入旧pickle路径。
++
++保存协议不变：六PDE裸state_dict；Car整模型；Air成员整对象及模型列表。本轮Full纯state_dict往返是独立数值验证，不替代工业生产整对象协议，也不新增resume。这些任务权重/整模型仍不是完整optimizer/scheduler/RNG续训档案。
++
++[M0夹具索引及本轮回放](msar_lno_audit/m8/fixture-index.json)：**75份使用原保存权重和原固定输入的夹具精确通过，atol=rtol=0**，182个原夹具文件SHA256不变。
++
++| 夹具组 | 数量 | 实际范围 |
++|---|---:|---|
++| K0基准 | 41 | 原Transolver、CDLNO full/no_sa/identity，点/卷积/时间/工业，含原checkpoint和必要梯度检查 |
++| M0任务wrapper | 24 | 八任务KCDNO all/off、matched LRSA的同权重输出/类路径/状态schema/协议 |
++| pre-M1核心 | 6 | KCDNO all/off、matched LRSA，point/conv |
++| M0其他现有模型 | 4 | Air MLP/PointNet/GraphSAGE、标准3D Transolver |
++
++GUNet原夹具因缺torch_cluster未生成，本轮仍明确未执行，未用新随机权重替代。夹具是历史代码上构造的合成参考，不能证明所有外部历史训练checkpoint兼容。旧CLI defaults、原loss、旧factory不接收新kwargs由旧157方法及MSAR107方法中的冻结/选择测试验证。本轮全部既有生产及测试文件字节保持，是相对于已接受M7工作区的增量结论；旧阶段更早的冻结依据另保留。
++
++## D. 命令、环境与实际结果
++
++环境：[environment.json](msar_lno_audit/m8/environment.json)。Python3.13.9、Torch2.13.0+cu130、CUDA13.0、PyG2.3.1、RTX5090 Laptop；torch_cluster缺失。没有安装或变更依赖。这不是远端Python3.10/Torch2.11/CUDA12.8的运行证据。
++
++| 实际执行 | 结果 | 耗时 |
++|---|---|---:|
++| 新M8套件首轮 | 19方法：18通过；1个上述测试断言失败 | 97.619s |
++| 修正后的边界方法定向重跑 | 1/1通过；新19方法无遗留失败（分两次，未冒充单次全绿） | 0.122s |
++| 既有M1—M7 MSAR套件 | 107方法，106通过、1跳过：Air完整抽样epoch缺torch_cluster | 126.930s |
++| 旧模型/任务/记录套件 | 157方法，0失败/错误；1个Air抽样epoch子用例跳过 | 181.846s |
++| 41+24+6+4旧夹具 | 75/75精确；GUNet未执行单列 | 35.16+14.89+3.13+10.08s |
++
++耗时是本机测试进程/审计用时，部分独立进程并行执行，不能相加当总墙钟时间或解读为模型benchmark。M2/M3 GPU FP16/BF16原语/core检查随套件重跑通过；八任务仅缩小结构FP32原loss GPU通过，不等于正式profile或任务AMP全链验收。
++
++在仓库根目录实际执行的主要命令如下，完整日志及结果见[证据目录](msar_lno_audit/m8/)与[summary](msar_lno_audit/m8/summary.json)：
++
++```bash
++MSAR_M8_RESULTS=docs/msar_lno_audit/m8/formal-cases.json \
++PYTHONPATH=tests:. python -B -m unittest test_msar_acceptance -v \
++  > docs/msar_lno_audit/m8/formal-tests-initial.log 2>&1
++
++MSAR_M8_RESULTS=docs/msar_lno_audit/m8/boundary-cases.json \
++PYTHONPATH=tests:. python -B -m unittest \
++  test_msar_acceptance.AblationClosure.test_boundary_aux_isolation_and_coverage_dependency -v \
++  > docs/msar_lno_audit/m8/boundary-correction.log 2>&1
++
++PYTHONPATH=tests:. python -B -m unittest \
++  test_msar_config test_msar_modules test_msar_core test_msar_integration \
++  test_msar_static test_msar_temporal test_msar_industrial -v \
++  > docs/msar_lno_audit/m8/accepted-msar-tests.log 2>&1
++
++PYTHONPATH=tests:. python -B -m unittest \
++  test_static_standard test_temporal_standard test_shapenet_car test_airfrans \
++  test_front_ablation test_front_task_modes test_front_training \
++  test_kcdno_config test_kcdno_tasks test_kcdno_temporal test_kcdno_car \
++  test_kcdno_airfrans test_kcdno_matched test_kcdno_delivery \
++  test_experiment_records -v > docs/msar_lno_audit/m8/legacy-tests.log 2>&1
++
++python -B docs/kcdno_audit/make_regression_fixtures.py replay \
++  --artifacts /home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures \
++  --result docs/msar_lno_audit/m8/k0-replay.json
++python -B docs/msar_lno_audit/m0/wrapper_fixtures.py replay \
++  --artifacts /home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers \
++  --result docs/msar_lno_audit/m8/wrapper-replay.json
++python -B docs/msar_lno_audit/m1/replay_current.py replay \
++  --artifacts /home/hwz/CDLNO-artifacts/msar-m1-before-n7y0eg1j/current-fixtures \
++  --result docs/msar_lno_audit/m8/old-core-replay.json
++python -B docs/msar_lno_audit/m0/other_model_fixtures.py replay \
++  --artifacts /home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/other-models \
++  --result docs/msar_lno_audit/m8/other-replay.json
++python -B docs/msar_lno_audit/m8/finalize_evidence.py
++```
++
++四条夹具replay实际外层使用`/usr/bin/time -p`并分别重定向至`k0-replay.log`、`wrappers-replay.log`、`core-replay.log`、`other-replay.log`，工具内部记录各项目新进程的command/cwd。不要覆盖本轮证据以“修正”历史失败；重跑请使用新的输出路径。
++
++远端补充检查（以下**本轮未在远端执行**）：在远端实际checkout根目录运行，不需要本机绝对路径，不会加载真实数据；先保留既有能运行Car的环境。正式profile测试为合成单batch/短时间协议，工业单图仍小N。
++
++```bash
++python -B - <<'PY'
++import sys, importlib.util, torch
++import torch_geometric
++print(sys.version, torch.__version__, torch.version.cuda, torch_geometric.__version__)
++print('cuda_available:', torch.cuda.is_available())
++if torch.cuda.is_available(): print(torch.cuda.get_device_name(0))
++print('torch_cluster:', importlib.util.find_spec('torch_cluster') is not None)
++PY
++
++# 独立新目录保护已有结果。GPU不可用会标记跳过，不是GPU通过。
++msar_check_dir=$(mktemp -d "${TMPDIR:-/tmp}/msar-m8-remote.XXXXXX")
++MSAR_M8_DEVICE=cuda MSAR_M8_RESULTS="$msar_check_dir/formal-cases.json" \
++PYTHONPATH=tests:. python -B -m unittest test_msar_acceptance -v \
++  > "$msar_check_dir/acceptance.log" 2>&1
++
++# 安全入口、三项目cwd checkpoint；最后一项有torch_cluster才运行原合成抽样epoch。
++PYTHONPATH=tests:. python -B -m unittest -v \
++  test_msar_static.MSARStaticTests.test_all_eval_shell_modes_read_saved_structure_and_fresh_cwd_load \
++  test_msar_temporal.MSARTemporalTests.test_shell_modes_fresh_cwd_loading_and_readonly_records \
++  test_msar_industrial.IndustrialMSAR.test_checkpoint_whole_list_member_readfirst_and_fresh_cwd \
++  test_msar_industrial.IndustrialMSAR.test_air_original_sampled_epoch_when_extension_available
++```
++
++完整历史冻结套件/75份旧夹具回放需要另行复制原索引指向的**同一份外置快照及权重**；仅复制代码不足，不应现场重新随机初始化来代替旧基准。上面远端定向命令不依赖这些外置夹具。实际数据训练/评估脚本仍见[八任务现有命令](../tran_evaluate/msar_lno/README.md)，本轮没有运行。
++
++## E. 增量文件、冻结与自审
++
++新增`tests/test_msar_acceptance.py`：16个正式profile任务方法及3个边界/拓扑方法，复用既有M5—M7 helper；没有建立另一套训练框架。新增本报告与`docs/msar_lno_audit/m8/finalize_evidence.py`及结果证据；三个既有STATUS/memory文件只追加本轮记录。没有修改已有测试逻辑。
++
++起点837文本文件快照`/home/hwz/CDLNO-artifacts/msar-m8-before-fhesnwse/source`和用户原diff保留，[before](msar_lno_audit/m8/before.json)、[preexisting.patch](msar_lno_audit/m8/preexisting.patch)、[阶段diff](msar_lno_audit/m8/stage.patch)、[freeze](msar_lno_audit/m8/freeze.json)分开记录。834个起点文件字节相同，只有上述3个状态文档变化；生产模型/配置/factory/CLI/数据/采样/loss/时间循环/optimizer/scheduler/指标/输出/依赖全部不改。新测试权重仅临时目录保存，不自动提交二进制或覆盖实验结果。
++
++已自审五项：①正式profile与小结构证据分开，Full没有虚构原loss训练；②四Down coverage梯度、合法零梯度及无decoder辅助项；③三PairFusion公式/slot/source轴和执行计数；④新cwd严格checkpoint/先读配置/只读sidecar；⑤旧同权重、文件hash、CLI/loss与用户diff保持。没有发现本轮引入的生产回归或需要用户裁定的架构冲突。
++
++剩余限制：远端2.11/cu128、正式profile GPU/任务AMP/backend/compile矩阵、Full原loss完整更新矩阵、真实数据读取/训练/收敛/准确率均未执行。Air完整抽样epoch/radius_graph/VTK/forces受原torch_cluster缺项限制；Car实际drag/原固定路径fold0及既有日志缺陷保留。M8结果不保证实际数据集精度、显存或速度，也不扩大checkpoint续训能力。
++
++**本M阶段结束，未执行下一阶段。**
+--- before/docs/msar_lno_audit/m8/finalize_evidence.py
++++ after/docs/msar_lno_audit/m8/finalize_evidence.py
+@@ -0,0 +1,148 @@
++"""M8 result/freeze index; reads existing evidence, never imports a task entry."""
++import ast
++import difflib
++import hashlib
++import json
++from pathlib import Path
++import re
++import subprocess
++
++ROOT = Path(__file__).resolve().parents[3]
++E = Path(__file__).resolve().parent
++TASKS = ('darcy', 'elasticity', 'airfoil', 'pipe', 'ns', 'plasticity', 'car', 'airfrans')
++
++
++def read(path): return json.loads(Path(path).read_text())
++def sha(path): return hashlib.sha256(Path(path).read_bytes()).hexdigest()
++def write(name, value): (E / name).write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n')
++
++
++def main():
++    before = read(E / 'before.json')
++    snapshot = Path(before['archive']) / 'source'
++    changed, unchanged = [], []
++    for name, digest in before['files'].items():
++        assert (ROOT / name).is_file(), name
++        (unchanged if sha(ROOT / name) == digest else changed).append(name)
++    assert set(changed) == {'docs/MSAR_LNO_IMPLEMENTATION_STATUS.md',
++                           'docs/CDLNO_IMPLEMENTATION_STATUS.md', 'memory/current-state.md'}, changed
++    added = ['tests/test_msar_acceptance.py', 'docs/MSAR_LNO_M8_ACCEPTANCE.md',
++             'docs/msar_lno_audit/m8/finalize_evidence.py']
++    patch = []
++    for name in sorted(changed + added):
++        old = (snapshot / name).read_text() if name in before['files'] else ''
++        current = (ROOT / name).read_text()
++        patch.extend(difflib.unified_diff(old.splitlines(True), current.splitlines(True),
++                                         fromfile='before/' + name, tofile='after/' + name))
++        if name.endswith('.py'): ast.parse(current, feature_version=(3, 10))
++    (E / 'stage.patch').write_text(''.join(patch))
++    suites = []
++    for log, count, status in (
++        ('formal-tests-initial.log', 19, 'FAILED (failures=1)'),
++        ('boundary-correction.log', 1, 'OK'),
++        ('accepted-msar-tests.log', 107, 'OK (skipped=1)'),
++        ('legacy-tests.log', 157, 'OK (skipped=1)'),
++    ):
++        text = (E / log).read_text()
++        match = re.search(r'Ran (\d+) tests? in ([\d.]+)s', text)
++        assert match and int(match[1]) == count and '\n' + status in text, log
++        suites.append(dict(log=log,methods=count,seconds=float(match[2]),reported_status=status))
++    initial = (E / 'formal-tests-initial.log').read_text()
++    failures = re.findall(r'^(?:FAIL|ERROR): (\w+) ', initial, re.M)
++    assert failures == ['test_boundary_aux_isolation_and_coverage_dependency'], failures
++    corrected = (E / 'boundary-correction.log').read_text()
++    assert re.search(r'^' + failures[0] + r'.* \.\.\. ok$', corrected, re.M)
++    cases = read(E / 'formal-cases.json')
++    boundaries = read(E / 'boundary-cases.json')
++    assert len(cases) == 26 and len(boundaries) == 1
++    assert boundaries[0]['all_four_Down_connected_finite']
++    assert all(g > 0 for row in boundaries[0]['isolated_Down_source_query_key_nonzero_gradients'] for g in row)
++    matrix = []
++    for task in TASKS:
++        light = [r for r in cases if r.get('task') == task and r['profile'] == 'light']
++        full = [r for r in cases if r.get('task') == task and r['profile'] == 'full']
++        assert {r['mode'] for r in light} == {'off', 'floor'} and len(full) == 1
++        for row in light:
++            assert all(row[k] for k in ('original_loss','backward','optimizer','eval'))
++            assert row['same_weight_off_floor_max_abs_diff'] < 2e-6
++        assert full[0]['strict_state_dict'] and full[0]['backward'] and full[0]['eval']
++        industrial = task in ('car', 'airfrans')
++        matrix.append(dict(task=task,
++            static_parameter_flow='passed; actual parser/factory/CLI defaults/read-first metadata, accepted suite rerun',
++            light=dict(profiles_unmodified=True,cases=light,checkpoint='passed M5-M7 rerun at d8/M7,5,3,2; original save protocol, both modes'),
++            full=dict(case=full[0],original_loss='not_run',optimizer='not_run',
++                      checkpoint='actual Full pure state_dict strict roundtrip; task protocol validation uses reduced config'),
++            real_PyG='passed: real Data/Batch, single graph' if industrial else 'not_applicable',
++            GPU='passed: local reduced d8/M7,5,3,2 original loss steps, FP32 MATH; formal Light/Full GPU not_run',
++            real_data='not_run: reading/training/metrics/convergence/accuracy',
++            limits=('Air complete sampled epoch/radius_graph and VTK/forces not_run (torch_cluster absent)' if task=='airfrans' else
++                    'Car real drag pipeline not_run' if task=='car' else
++                    'NS 10->10 or Plasticity 20 time updates only; Full one-call numerical check' if task in ('ns','plasticity') else
++                    'Formal profiles use small N; canonical N layout separately passed with d8')))
++    write('coverage-matrix.json', dict(stage='M8',rows=matrix,
++        provenance=['formal-cases.json','boundary-cases.json','accepted-msar-tests.log'],
++        numerical_contract='CPU FP32 MATH, TF32 off: off/floor atol2e-6 rtol1e-4; strict Full roundtrip atol=rtol=0',
++        no_actual_dataset_training=True))
++    replays, not_run, replay_times = [], [], []
++    for file, expected, logfile in (
++        ('k0-replay.json',41,'k0-replay.log'),('wrapper-replay.json',24,'wrappers-replay.log'),
++        ('old-core-replay.json',6,'core-replay.log'),('other-replay.json',4,'other-replay.log')):
++        rows = []
++        for item in read(E / file):
++            if 'project' in item:
++                assert item['returncode'] == 0
++                rows.extend(item['summary']['rows'] if 'summary' in item else item['rows'])
++            else: rows.append(item)
++        assert sum(r['status'] == 'passed' for r in rows) == expected
++        for row in rows:
++            if row['status'] == 'not_run':
++                assert row['name'] == 'GUNet'
++                not_run.append(row)
++                continue
++            assert row['status'] == 'passed', row
++            tol = row.get('tolerance',row)
++            assert tol['atol'] == tol['rtol'] == 0, row['name']
++            replays.append(dict(group=file,name=row['name'],status='passed',atol=0,rtol=0))
++        elapsed = re.search(r'^real ([\d.]+)$',(E/logfile).read_text(),re.M)
++        assert elapsed
++        replay_times.append(dict(log=logfile,wall_seconds=float(elapsed[1])))
++    assert len(replays) == 75
++    old = read(ROOT / 'docs/msar_lno_audit/m0/fixture-index.json')
++    for item in old['integrity_files']: assert sha(item['path']) == item['sha256'], item['path']
++    write('fixture-index.json',dict(previous_index='docs/msar_lno_audit/m0/fixture-index.json',
++        same_weight_replays=replays,not_run=not_run,hashes_preserved=len(old['integrity_files']),
++        limits='Current synthetic fixtures using their SAME saved inputs/weights, not proof for all historical trained checkpoints. No regenerated reference or new large binary.'))
++    production = [p for p in unchanged if p.startswith(('cdlno/','PDE-Solving-StandardBenchmark/',
++        'Car-Design-ShapeNetCar/','Airfoil-Design-AirfRANS/','tran_evaluate/','tools/')) and not p.endswith('.md')]
++    write('freeze.json',dict(snapshot=str(snapshot),head=before['head'],branch=before['branch'],
++        files_at_start=len(before['files']),changed=changed,added=added,unchanged_count=len(unchanged),
++        production_task_config_script_tool_unchanged=len(production),
++        unchanged_sha256={p:before['files'][p] for p in unchanged},
++        current_sha256={p:sha(ROOT/p) for p in changed+added},
++        frozen='All pre-M8 production, model, config, task/data/loss/optimizer/time-loop/eval, dependencies and existing tests byte-identical.'))
++    write('summary.json',dict(stage='M8',environment=read(E/'environment.json'),suites=suites,
++        new_test_methods=19,new_final_unresolved=0,new_initial_failure='overstrong every-sample nonzero gradient assertion; corrected test only',
++        accepted_MSAR_methods=107,accepted_MSAR_skipped=1,legacy_methods=157,legacy_skip_records=1,
++        legacy_skip_is_subtest=True,old_same_weight_exact=len(replays),old_hashes_preserved=len(old['integrity_files']),
++        replay_times=replay_times,formal_light_original_loss_train_eval_cases=16,formal_full_forward_backward_strict_states=8,
++        same_weight_off_floor_max_abs=max(r['same_weight_off_floor_max_abs_diff'] for r in cases if r.get('profile')=='light'),
++        default_floor_raw='All 8 Light initial synthetic cases raw=0 at kappa=.2; positive-floor gradient checks separately use kappa=1, no production-default change',
++        auxiliary_boundary=boundaries[0],production_changed=False,real_data_run=False,next_stage_executed=False,
++        not_run=['remote Python3.10/Torch2.11/CUDA12.8','formal Light/Full GPU task matrix',
++                 'Full original-loss temporal loop/optimizer matrix','task AMP/backend/compile matrix',
++                 'full industrial sampled-data/VTK/force pipeline','real data training/convergence/accuracy',
++                 'GUNet fixture (original missing torch_cluster dependency)']))
++    for name in ('docs/MSAR_LNO_M8_ACCEPTANCE.md',):
++        path=ROOT/name
++        for link in re.findall(r'\]\(([^)]+)\)',path.read_text()):
++            if '://' not in link and not link.startswith('#'): assert (path.parent/link.split('#')[0]).exists(),link
++        for block in re.findall(r'```bash\n(.*?)```',path.read_text(),re.S):
++            subprocess.run(['bash','-n'],input=block,text=True,check=True)
++    subprocess.run(['git','diff','--check'],cwd=ROOT,check=True)
++    assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()==before['head']
++    (E/'status-after.txt').write_text(subprocess.check_output(['git','status','--short'],cwd=ROOT,text=True))
++    print(json.dumps(dict(stage='M8',changed=len(changed),added=len(added),unchanged=len(unchanged),
++        formal_cases=24,old_exact=75,old_hashes_preserved=182,unresolved_test_failures=0)))
++
++
++if __name__ == '__main__': main()
+--- before/memory/current-state.md
++++ after/memory/current-state.md
+@@ -1,4 +1,18 @@
+-# 最新：独立MSAR-LNO M7工业任务完成，等待审查（2026-09-17）
++# 最新：MSAR-LNO M8验收完成，等待审查（2026-09-17）
++
++用户批准M7，仅授权M8。本轮不改生产/旧测试；新增`tests/test_msar_acceptance.py`、`docs/MSAR_LNO_M8_ACCEPTANCE.md`、`docs/msar_lno_audit/m8/`，更新独立/旧STATUS。完整矩阵与实际命令见报告，下一阶段M9未执行。
++
++正式Light八任务off/floor原loss合成训练步/eval16例通过；正式Full八任务单forward合成MSE+coverage backward/strict权重零容差往返通过。NS N4096/10步，Plasticity N3131/20更新；其他小N，Car/Air真PyG单图。Full未跑原loss完整优化矩阵。任务checkpoint协议仍按M5—M7小结构重跑，Full纯state另测，不混称正式Light整对象协议验收。
++
++同权重off/floor最大差2.235e-7，容差2e-6/1e-4；默认kappa.2初始raw均0合法。新边界首次过强要求所有层每次非零，最深层均匀slot触发；仅改新测试检查连接/有限，并在四个真实Down变化source上各证非零梯度。无decoder/fusion aux梯度，三w0 Pair exact E+U，执行Down4/Up4/Pair3/block12，连续独立backward不残留。
++
++新19方法首轮18过/1失败97.619s，修正定向1/1过.122s；既有MSAR107项106过/1跳过126.930s；旧157项0fail/error，1 Air抽样子用例跳过181.846s。75旧同权重fixture exact，182外置artifact文件hash相同；GUNet仍缺torch_cluster未执行。三cwd factory/metadata/严格保存协议验证通过，无exp/main import。
++
++本地Py3.13.9/torch2.13cu130/PyG2.3.1/RTX5090Laptop；八任务d8 GPU原loss步及M2/M3有限AMP通过。真实数据/收敛/精度、远端2.11cu128、正式profile GPU/任务AMP、完整工业采样/VTK力系数未执行。旧Car drag固定路径/fold0及日志问题不改，无新resume。
++
++837文本起点`/home/hwz/CDLNO-artifacts/msar-m8-before-fhesnwse/source`保留，834字节不变，仅三状态文档增量，模型/训练/数据/依赖/旧测试全冻结。无commit/push/安装/真实训练。**本M阶段结束，未执行下一阶段。**
++
++# 历史：独立MSAR-LNO M7工业任务完成，等待审查（2026-09-17）
+ 
+ ## 2026-09-17：MSAR-LNO M7完成，旧模型保持
+ 
+--- before/tests/test_msar_acceptance.py
++++ after/tests/test_msar_acceptance.py
+@@ -0,0 +1,320 @@
++"""M8: actual Light/Full task profiles; reuse safe M5-M7 helpers and losses.
++
++No exp/main imports, data downloads, model edits or new training framework.
++Temporal wrappers keep their accepted N=4096/3131. Other tasks use small N.
++Optional MSAR_M8_RESULTS writes per-case evidence; MSAR_M8_DEVICE=cpu|cuda
++selects the formal-profile test device without changing production defaults.
++"""
++from collections import Counter
++from contextlib import redirect_stdout
++from dataclasses import replace
++import ast
++import copy
++import gc
++import io
++import json
++import os
++from pathlib import Path
++import tempfile
++import time
++import unittest
++from unittest.mock import patch
++
++import torch
++from torch import nn
++from torch.nn.attention import sdpa_kernel, SDPBackend
++
++import test_msar_static as static
++import test_msar_temporal as temporal
++import test_msar_industrial as industrial
++from cdlno.modules import _SelfAttention
++from cdlno.msar_lno.core import MSARLNO
++from cdlno.msar_lno.config import MSARTrainingConfig
++from cdlno.msar_lno.objective import training_forward, training_objective, ObjectiveMetrics
++from cdlno.msar_lno.modules import (LearnedQueryDown, QueryAlignedUpCross,
++    LatentFFNSAFFNBlock, PairwiseAttnResFusion, CoverageFloorLoss)
++from cdlno.msar_lno.profiles import resolve_profile
++
++TASKS=tuple(static.TASKS)+tuple(temporal.TEMPORAL)+tuple(industrial.PROJECTS)
++DEVICE=os.environ.get('MSAR_M8_DEVICE','cpu')
++ROWS=[]
++
++
++def record(row):
++    ROWS.append(row)
++    if os.environ.get('MSAR_M8_RESULTS'):
++        Path(os.environ['MSAR_M8_RESULTS']).write_text(json.dumps(ROWS,indent=2)+'\n')
++
++
++def arguments(task,profile='light',mode='floor'):
++    flags=['--profile',profile,'--coverage-mode',mode]
++    if task in static.TASKS:return static.arguments(task,flags)
++    if task in temporal.TEMPORAL:return temporal.arguments(task,flags)
++    return industrial.arguments(task,flags)
++
++
++def construct(task,args):
++    if task in static.TASKS:return static.construct(task,args,grid=(7,7) if task=='darcy' else (5,7))
++    if task in temporal.TEMPORAL:return temporal.construct(task,args)
++    return industrial.CLASSES[task](**industrial.model_kwargs(args))
++
++
++def inputs(task,model):
++    device=next(model.parameters()).device
++    if task in static.TASKS:
++        x,fx=static.sample(model,b=1,device=device)
++        return (x,fx.unsqueeze(-1) if task=='darcy' else None),{}
++    if task in temporal.TEMPORAL:
++        x,fx,_,tim=temporal.sample(task,b=1,steps=1,device=device)
++        return (x,fx),dict(T=tim[:,:1]) if task=='plasticity' else {}
++    graph=industrial.graph(task,19)
++    if task=='car':graph=tuple(g.to(device) for g in graph)
++    else:graph=graph.to(device)
++    return (graph,),{}
++
++
++def original_step_and_eval(task,model,args):
++    """Original losses/time loops; only safe helper AST/data tensors, no trainer rewrite."""
++    device=next(model.parameters()).device
++    if task in static.TASKS:
++        x,fx,target,norm,scope=static.batch(task,model,args,device=device)
++        loop=next(n for n in ast.walk(static.source(task)) if isinstance(n,ast.For) and ast.unparse(n.iter)=='test_loader')
++        nodes=[n for n in loop.body if isinstance(n,ast.Assign) and isinstance(n.targets[0],ast.Name) and n.targets[0].id in ('out','tl')]
++        scope.update(y=target);model.eval()
++        with torch.no_grad():exec(compile(ast.Module(nodes,type_ignores=[]),'<original-static-eval>','exec'),scope)
++        return scope['msar_epoch'].values(),dict(B=2,N=x.shape[1],forwards=1,optimizer_steps=1,eval_metric=scope['tl'])
++    if task in temporal.TEMPORAL:
++        data=temporal.sample(task,b=1,device=device)
++        scope=temporal.train_batch(task,model,args,data)
++        metrics=scope['msar_epoch'].values()
++        # Release training graph references before ten/twenty independent eval calls.
++        del scope
++        result=temporal.evaluate(task,model,data)
++        return metrics,dict(B=1,N=data[0].shape[1],forwards=10 if task=='ns' else 20,
++                            optimizer_steps=1 if task=='ns' else 20,eval_metric=result['test_l2_full'])
++    graph=industrial.graph(task,19);trainer=industrial.trainer(task)
++    optimizer=torch.optim.Adam(model.parameters(),lr=args.lr)
++    scheduler=torch.optim.lr_scheduler.OneCycleLR(optimizer,max_lr=args.lr,total_steps=20)
++    metrics=ObjectiveMetrics();kwargs=dict(reg=args.weight,msar_metrics=metrics)
++    if task=='airfrans':kwargs['criterion']='MSE_weighted'
++    trainer.train(device,model,[graph],optimizer,scheduler,**kwargs)
++    values=trainer.test(device,model,[graph])
++    return metrics.values(),dict(B=1,N=19,forwards=1,optimizer_steps=1,eval_metric=float(values[0]))
++
++
++class FormalTaskAcceptance(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        if DEVICE not in ('cpu','cuda'):raise ValueError('MSAR_M8_DEVICE must be cpu or cuda')
++        if DEVICE=='cuda' and not torch.cuda.is_available():raise unittest.SkipTest('requested CUDA unavailable')
++        cls.threads=torch.get_num_threads();torch.set_num_threads(1)
++        cls.tf32=torch.backends.cuda.matmul.allow_tf32;torch.backends.cuda.matmul.allow_tf32=False
++        cls.math=sdpa_kernel(SDPBackend.MATH);cls.math.__enter__()
++    @classmethod
++    def tearDownClass(cls):
++        cls.math.__exit__(None,None,None);torch.set_num_threads(cls.threads)
++        torch.backends.cuda.matmul.allow_tf32=cls.tf32
++
++    def run_light(self,task):
++        if task in industrial.PROJECTS and not industrial.HAS_PYG:self.skipTest('real PyG unavailable')
++        torch.manual_seed(9180+TASKS.index(task));base=construct(task,arguments(task))
++        initial={k:v.detach().clone() for k,v in base.state_dict().items()}
++        del base
++        for mode in ('off','floor'):
++            with self.subTest(mode=mode):
++                started=time.perf_counter();args=arguments(task,mode=mode)
++                model=construct(task,args).to(DEVICE);model.load_state_dict(initial,strict=True)
++                self.assertEqual(model.config,resolve_profile('light'))
++                call,kwargs=inputs(task,model)
++                # One model, unchanged parameters, same tensors. Train-mode floor
++                # uses explicit A, off uses SDPA. Neither pass performs an update.
++                with torch.no_grad():
++                    on=training_forward(model,*call,training_config=replace(model.training_config,coverage_mode='floor'),**kwargs)
++                    outputs=[];handles=[d.register_forward_hook(lambda m,a,out:outputs.append(out)) for d in model.core.downs]
++                    with patch.object(CoverageFloorLoss,'forward',side_effect=AssertionError('off computed coverage')):
++                        off=training_forward(model,*call,training_config=replace(model.training_config,coverage_mode='off'),**kwargs)
++                    for h in handles:h.remove()
++                    self.assertTrue(all(isinstance(out,torch.Tensor) for out in outputs));self.assertIsNone(off.auxiliary)
++                    maxdiff=(on.prediction-off.prediction).abs().max().item()
++                    torch.testing.assert_close(on.prediction,off.prediction,atol=2e-6,rtol=1e-4)
++                del call,kwargs,on,off,outputs,handles
++                # Identical fixture RNG per mode, explicit common parameter copy above.
++                torch.manual_seed(9190+TASKS.index(task))
++                metrics,details=original_step_and_eval(task,model,args)
++                self.assertTrue(all(torch.isfinite(torch.tensor(v)) for v in metrics.values()))
++                self.assertAlmostEqual(metrics['objective_total'],metrics['objective_pde']+metrics['coverage_weighted'],places=5)
++                self.assertAlmostEqual(metrics['coverage_weighted'],.01*metrics['coverage_raw'],places=6)
++                if mode=='off':self.assertEqual(metrics['objective_total'],metrics['objective_pde'])
++                self.assertTrue(all(p.grad is not None and torch.isfinite(p.grad).all() for p in model.parameters()))
++                self.assertTrue(torch.isfinite(torch.as_tensor(details['eval_metric'])))
++                record(dict(task=task,profile='light',mode=mode,device=DEVICE,dtype='float32',backend='MATH',
++                    architecture=model.config.to_dict(),parameters=sum(p.numel() for p in model.parameters()),
++                    original_loss=True,backward=True,optimizer=True,eval=True,real_PyG=task in industrial.PROJECTS,
++                    same_weight_off_floor_max_abs_diff=maxdiff,atol=2e-6,rtol=1e-4,metrics=metrics,
++                    seconds=time.perf_counter()-started,**details))
++                del model;gc.collect()
++
++    def run_full(self,task):
++        if task in industrial.PROJECTS and not industrial.HAS_PYG:self.skipTest('real PyG unavailable')
++        started=time.perf_counter();torch.manual_seed(9200+TASKS.index(task))
++        args=arguments(task,'full');model=construct(task,args).to(DEVICE)
++        self.assertEqual(model.config,resolve_profile('full'))
++        call,kwargs=inputs(task,model)
++        # Full numerical test deliberately one forward, synthetic MSE, not a
++        # claim of full original temporal loops or industrial sampling epochs.
++        f=training_forward(model,*call,**kwargs)
++        target=torch.randn_like(f.prediction)
++        loss=training_objective((f.prediction-target).square().mean(),f)
++        loss.total.backward()
++        self.assertTrue(all(p.grad is not None and torch.isfinite(p.grad).all() for p in model.parameters()))
++        shape=list(f.prediction.shape);params=sum(p.numel() for p in model.parameters())
++        del f,loss,target;model.zero_grad(set_to_none=True);model.eval()
++        with torch.no_grad():expected=model(*call,**kwargs).detach()
++        with tempfile.TemporaryDirectory() as tmp:
++            path=Path(tmp)/'weights.pt';torch.save(model.state_dict(),path)
++            saved=torch.load(path,weights_only=True,map_location=DEVICE)
++            keys_shapes={k:list(v.shape) for k,v in saved.items()}
++            fresh=construct(task,args).to(DEVICE).eval()
++            fresh.load_state_dict(saved,strict=True)
++            self.assertEqual({k:list(v.shape) for k,v in fresh.state_dict().items()},keys_shapes)
++            with torch.no_grad():actual=fresh(*call,**kwargs)
++            torch.testing.assert_close(actual,expected,atol=0,rtol=0)
++            broken=dict(saved);broken.pop(next(iter(broken)))
++            with self.assertRaises(RuntimeError):fresh.load_state_dict(broken,strict=True)
++            del fresh,saved,broken
++        record(dict(task=task,profile='full',mode='floor',device=DEVICE,dtype='float32',backend='MATH',
++            architecture=model.config.to_dict(),parameters=params,shape=shape,B=1,
++            N=shape[-2],latent_expansion=model.config.num_latents[0]>shape[-2],
++            forward=True,backward=True,loss='explicit synthetic MSE + coverage, NOT original task loss',
++            optimizer=False,strict_state_dict=True,eval=True,checkpoint_atol=0,checkpoint_rtol=0,
++            seconds=time.perf_counter()-started))
++        del model,call,kwargs,actual,expected;gc.collect()
++
++
++def install_task_methods():
++    for task in TASKS:
++        for profile in ('light','full'):
++            def check(self,task=task,profile=profile):getattr(self,'run_'+profile)(task)
++            setattr(FormalTaskAcceptance,'test_'+profile+'_'+task,check)
++install_task_methods()
++
++
++class AblationClosure(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        cls.threads=torch.get_num_threads();torch.set_num_threads(1)
++    @classmethod
++    def tearDownClass(cls):torch.set_num_threads(cls.threads)
++
++    def test_formal_light_execution_counts_slot_fusion_and_storage(self):
++        torch.manual_seed(9280);model=MSARLNO(resolve_profile('light'))
++        counts=Counter();lengths=[];seen_fusion=[];handles=[]
++        classes=(LearnedQueryDown,QueryAlignedUpCross,PairwiseAttnResFusion,LatentFFNSAFFNBlock)
++        for layer in model.modules():
++            if isinstance(layer,classes):
++                handles.append(layer.register_forward_hook(lambda m,a,o:counts.update([type(m).__name__])))
++            if isinstance(layer,_SelfAttention):handles.append(layer.register_forward_pre_hook(lambda m,a:lengths.append(a[0].shape[1])))
++        def fusion_hook(m,a,out):
++            torch.testing.assert_close(out,a[0]+a[1],atol=0,rtol=0);seen_fusion.append(a[0].shape[1])
++        for m in model.fusions:handles.append(m.register_forward_hook(fusion_hook))
++        with torch.no_grad():model(torch.randn(2,35,96))
++        for h in handles:h.remove()
++        self.assertEqual(counts,Counter(LearnedQueryDown=4,QueryAlignedUpCross=4,PairwiseAttnResFusion=3,LatentFFNSAFFNBlock=12))
++        self.assertEqual(Counter(lengths),Counter({512:6,256:2,128:2,64:2}))
++        self.assertEqual(seen_fusion,[128,256,512])
++        self.assertFalse(any(isinstance(m,(nn.Conv1d,nn.Conv2d,nn.Conv3d)) for m in model.modules()))
++        self.assertFalse(any(s in (type(m).__name__+' '+n).lower() for n,m in model.named_modules() for s in ('history','cdpa','kernel','bridge')))
++        named=list(model.named_parameters(remove_duplicate=False))
++        self.assertEqual(len(named),len({id(p) for _,p in named}))
++        self.assertEqual(len(named),len({p.untyped_storage().data_ptr() for _,p in named}))
++        record(dict(check='formal_light_execution',counts=dict(counts),SA_tokens=lengths,point_N=35,fusion_w0_exact=True,independent_storage=True))
++
++    def test_three_fusions_source_axis_token_specific_weights_and_gradients(self):
++        torch.manual_seed(9281);model=MSARLNO(resolve_profile('light'))
++        for index,fusion in enumerate(model.fusions):
++            e=torch.randn(2,9,96,requires_grad=True);u=torch.randn(2,9,96,requires_grad=True)
++            self.assertEqual(list(dict(fusion.named_parameters())),['w'])
++            y=fusion(e,u);torch.testing.assert_close(y,e+u,atol=0,rtol=0)
++            ge,gu,gw=torch.autograd.grad(y.sum(),(e,u,fusion.w))
++            torch.testing.assert_close(ge,torch.ones_like(e),atol=0,rtol=0)
++            torch.testing.assert_close(gu,torch.ones_like(u),atol=0,rtol=0)
++            self.assertGreater(gw.abs().max().item(),0)
++            with torch.no_grad():fusion.w.copy_(torch.linspace(-.25,.3,96))
++            # Independent per-source formula; no production forward/reference helper.
++            scores=[]
++            for raw in (e,u):scores.append(torch.einsum('bmd,d->bm',raw/torch.sqrt(raw.square().mean(-1,keepdim=True)+1e-6),fusion.w))
++            alpha=torch.softmax(torch.stack(scores,dim=-1),dim=-1)
++            self.assertEqual(alpha.shape,(2,9,2))
++            torch.testing.assert_close(alpha.sum(-1),torch.ones(2,9))
++            self.assertGreater((alpha[:,1:]-alpha[:,:-1]).abs().max().item(),.01)
++            expected=2*(alpha[...,0,None]*e+alpha[...,1,None]*u)
++            actual=fusion(e,u);torch.testing.assert_close(actual,expected,atol=2e-6,rtol=1e-5)
++            self.assertFalse(torch.allclose(fusion(e,u.flip(1)),actual))
++            gradients=torch.autograd.grad(actual.square().mean(),(e,u,fusion.w))
++            self.assertTrue(all(torch.isfinite(g).all() and g.abs().max()>0 for g in gradients))
++        record(dict(check='three_fusions',zero_exact=True,source_axis=2,per_token=True,raw_values=True,gradients=['w','E','U'],extra_parameters=False))
++
++    def test_boundary_aux_isolation_and_coverage_dependency(self):
++        torch.manual_seed(9282)
++        model=MSARLNO(resolve_profile('light',d=8,num_latents=[7,5,3,2],heads=[2,2,4,4]),output_dim=2)
++        original_keys={name:set(vars(m)) for name,m in model.named_modules()}
++        gradient_evidence=[]
++        # Complete first backward followed by a new graph with no retain_graph.
++        for index,(b,n,masked) in enumerate(((1,3,False),(2,11,True),(1,35,False))):
++            x=torch.randn(b,n,8,requires_grad=True);mask=torch.ones(b,n,dtype=torch.bool)
++            if masked:mask[:,-3:]=False
++            mask=mask if masked else None
++            cfg=MSARTrainingConfig(coverage_kappa=1,diagnostics=True)
++            model.zero_grad(set_to_none=True)
++            f=training_forward(model,x,training_config=cfg,valid_mask=mask)
++            self.assertTrue(f.auxiliary.coverage_active)
++            self.assertTrue(torch.isfinite(f.auxiliary.coverage_per_level).all())
++            down_leaves=tuple(p for down in model.downs for p in (down.latent_queries,down.to_k.weight))
++            down_grads=torch.autograd.grad(f.auxiliary.coverage_mean,down_leaves,retain_graph=True)
++            # Every Down is connected. At initialization the deepest encoder
++            # slots can be identical: its floor is then satisfied exactly, so
++            # a zero gradient is valid. Test effective gradients below using
++            # each real Down with independently varying source features.
++            self.assertTrue(all(torch.isfinite(g).all() for g in down_grads))
++            gradient_evidence.append(dict(B=b,N=n,raw=f.auxiliary.coverage_per_level.detach().tolist(),
++                query_key_grad_max=[g.detach().abs().max().item() for g in down_grads]))
++            forbidden=tuple(p for group in (model.decoders,model.ups,model.fusions,model.final_up,model.output) for p in group.parameters())
++            grads=torch.autograd.grad(f.auxiliary.coverage_mean,forbidden,allow_unused=True,retain_graph=True)
++            self.assertTrue(all(g is None for g in grads))
++            total=training_objective(f.prediction.square().mean(),f)
++            torch.testing.assert_close(total.total,total.pde+.01*f.auxiliary.coverage_mean,atol=0,rtol=0)
++            total.total.backward();self.assertTrue(torch.isfinite(x.grad).all())
++            for stats in f.auxiliary.diagnostics.values():
++                for row in stats:
++                    self.assertTrue(all(not v.requires_grad and v.numel()<=2*b for v in row.values()))
++            prior=x
++            y=torch.randn(b,n,8,requires_grad=True)
++            next_f=training_forward(model,y,valid_mask=mask)
++            self.assertIsNone(torch.autograd.grad(next_f.prediction.sum(),prior,allow_unused=True,retain_graph=True)[0])
++            training_objective(next_f.prediction.square().mean(),next_f).total.backward()
++            self.assertEqual(original_keys,{name:set(vars(m)) for name,m in model.named_modules()})
++        isolated_gradients=[]
++        for index,down in enumerate(model.downs):
++            source=torch.randn(2,11 if index==0 else model.config.num_latents[index-1],8,requires_grad=True)
++            cfg=MSARTrainingConfig(coverage_kappa=1)
++            _,attention=down(source,return_aux=True,coverage=cfg)
++            raw=CoverageFloorLoss(cfg)(attention)
++            self.assertGreater(raw.item(),0)
++            gradients=torch.autograd.grad(raw,(source,down.latent_queries,down.to_k.weight))
++            self.assertTrue(all(torch.isfinite(g).all() and g.abs().max()>0 for g in gradients))
++            isolated_gradients.append([g.abs().max().item() for g in gradients])
++        for cfg in (MSARTrainingConfig(coverage_kappa=0),MSARTrainingConfig(coverage_weight=0),MSARTrainingConfig(coverage_mode='off')):
++            x=torch.randn(2,11,8)
++            out=training_forward(model,x,training_config=cfg)
++            objective=training_objective(out.prediction.square().mean(),out)
++            self.assertEqual(objective.coverage_raw.item(),0)
++            if not cfg.coverage_enabled:self.assertIs(objective.total,objective.pde)
++            objective.total.backward()
++        with self.assertRaises(ValueError):model(torch.randn(2,11,8),valid_mask=torch.zeros(2,11,dtype=torch.bool))
++        record(dict(check='coverage_graph_boundaries',batches=[1,2],Ns=[3,11,35],mask=['none','partial','empty_rejected'],kappa0=True,weight0=True,off=True,
++                    all_four_Down_connected_finite=True,core_gradients=gradient_evidence,
++                    isolated_Down_source_query_key_nonzero_gradients=isolated_gradients,
++                    decoder_fusion_aux_gradients=None,second_backward_fresh=True,retained_model_state=False))
++
++
++if __name__=='__main__':unittest.main(verbosity=2)

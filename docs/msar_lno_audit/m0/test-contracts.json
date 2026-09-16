@@ -1,0 +1,3379 @@
+{
+  "tests/cdpa_reference.py": [],
+  "tests/kernel_history_reference.py": [],
+  "tests/output_recording_projection.py": [],
+  "tests/test_airfrans.py": [
+    {
+      "name": "test_defaults_modes_gradients_placeholder_initialization",
+      "line": 86,
+      "checks": [
+        "self.assertEqual((a.n_hidden, a.n_heads, a.slice_num, a.n_layers, a.front_blocks), (256, 8, 64, 8, 2))",
+        "self.assertEqual(entry.resolve_hparams(a, hparams())['nb_epochs'], 398)",
+        "self.assertEqual(m.preprocess[0].in_features, 71)",
+        "self.assertFalse(hasattr(m, 'time_fc'))",
+        "self.assertFalse(any((isinstance(n, nn.Conv2d) for n in m.modules())))",
+        "self.assertTrue(((m.placeholder >= 0) & (m.placeholder < 1 / 256)).all())",
+        "self.assertEqual(out.shape, (11, 4))",
+        "self.assertGreater(x.grad.abs().max().item(), 0)",
+        "self.assertGreater(pos.grad.abs().max().item(), 0)",
+        "self.assertIsNotNone(p.grad, name)",
+        "self.assertTrue(torch.isfinite(p.grad).all(), name)",
+        "torch.testing.assert_close(q @ q.T, torch.eye(64), atol=1e-06, rtol=1e-06)",
+        "self.assertEqual(torch.count_nonzero(cdpa.w).item(), 0)"
+      ]
+    },
+    {
+      "name": "test_reference_matches_original_get_grid_and_lifting",
+      "line": 112,
+      "checks": [
+        "self.assertEqual(cpu.count, 1)",
+        "torch.testing.assert_close(seen[0], expected, atol=0, rtol=0)",
+        "self.assertEqual(expected_distance[0, 0, 0].item(), 0)",
+        "self.assertEqual(expected_distance[0, 1, -1].item(), 0)",
+        "self.assertEqual(m.adapter_architecture()['reference_domain'], [[-2.0, 4.0], [-1.5, 1.5]])"
+      ]
+    },
+    {
+      "name": "test_cli_yaml_inheritance_and_explicit_overrides",
+      "line": 146,
+      "checks": [
+        "self.assertEqual({k: v for k, v in current.items() if k not in ('CDLNO', 'kcdno', 'lrsa_matched')}, base)",
+        "self.assertEqual(current['CDLNO'], current['Transolver'])",
+        "self.assertEqual(current['Transolver']['nb_epochs'], 398)",
+        "self.assertEqual(AirfRANSModel(**entry.model_kwargs(a)).config.P, 5)",
+        "self.assertEqual(entry.resolve_hparams(a, hparams())['nb_epochs'], 400)",
+        "self.assertEqual(entry.resolve_hparams(args(), dict(hparams(), nb_epochs=401))['nb_epochs'], 401)",
+        "self.assertEqual({k: getattr(old, k) for k in vars(base_args)}, vars(base_args))",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(SystemExit)",
+        "self.assertEqual((old.model, old.task), ('Transolver', 'full'))"
+      ]
+    },
+    {
+      "name": "test_sidecar_read_first_member_paths_and_runtime",
+      "line": 170,
+      "checks": [
+        "self.assertEqual(len(loaded), 2)",
+        "self.assertEqual(training.sidecar.read_bytes(), before)",
+        "self.assertNotEqual(evaluation.result_dir, run(args(flags, True), True).result_dir)",
+        "self.assertNotEqual(training.member_dir(0), training.member_dir(1))",
+        "forbidden.assert_not_called()",
+        "forbidden.assert_not_called()",
+        "self.assertFalse(training.sidecar.exists())",
+        "self.assertNotEqual(run(automatic).directory, run(automatic).directory)",
+        "self.assertEqual(loading.call_count, 1)",
+        "self.assertEqual(loading.call_args.kwargs, dict(map_location='cpu', weights_only=False))",
+        "torch.testing.assert_close(evaluation.load(member=index)(x), models[index](x), atol=1e-05, rtol=0.0003)",
+        "self.assertEqual(loaded[index].core.source_chunk_size, 1)",
+        "self.assertRaises(FileExistsError)",
+        "self.assertRaises(SidecarMismatch)",
+        "self.assertRaises(FileNotFoundError)",
+        "self.assertTrue((Path(training.member_dir(n)) / 'model').exists())",
+        "forbidden.assert_not_called()",
+        "self.assertRaises(SidecarMismatch)"
+      ]
+    },
+    {
+      "name": "test_checkpoint_list_type_length_and_strict_keys",
+      "line": 216,
+      "checks": [
+        "self.assertRaisesRegex(RuntimeError, 'Missing key')",
+        "self.assertRaises(SidecarMismatch)"
+      ]
+    },
+    {
+      "name": "test_whole_model_and_list_fresh_processes_in_air_cwd",
+      "line": 231,
+      "checks": [
+        "self.assertEqual(result.returncode, 0, result.stdout + result.stderr)"
+      ]
+    },
+    {
+      "name": "test_variable_nodes_batch_and_immutable_fields_no_y_leak",
+      "line": 307,
+      "checks": [
+        "torch.testing.assert_close(m(changed), expected, atol=0, rtol=0)",
+        "torch.testing.assert_close(m(changed), expected, atol=0, rtol=0)",
+        "torch.testing.assert_close(m(Data(x=raw.x[order], pos=raw.pos[order])), expected[order], atol=2e-06, rtol=2e-05)",
+        "self.assertEqual(result.shape, (n, 4))",
+        "torch.testing.assert_close(v, data[k], rtol=0, atol=0)",
+        "self.assertEqual(ptr, data[k].data_ptr())"
+      ]
+    },
+    {
+      "name": "test_sampled_single_graph_ptr_and_multiple_graph_rejection",
+      "line": 326,
+      "checks": [
+        "self.assertEqual(sampled.ptr.tolist(), [0, 29])",
+        "torch.testing.assert_close(m(sampled), m(Data(x=sampled.x, pos=sampled.pos)), atol=0, rtol=0)",
+        "self.assertEqual(sampled.ptr.tolist(), [0, 29])",
+        "self.assertRaisesRegex(ValueError, 'one physical graph')",
+        "self.assertRaises(ValueError)",
+        "self.assertRaisesRegex(ValueError, 'one physical graph')"
+      ]
+    },
+    {
+      "name": "test_original_weighted_loss_train_and_test",
+      "line": 346,
+      "checks": [
+        "self.assertAlmostEqual(float(result[0]), loss.mean().item(), places=6)",
+        "self.assertAlmostEqual(float(result[4]), surface.item(), places=6)",
+        "self.assertAlmostEqual(float(result[5]), volume.item(), places=6)",
+        "self.assertEqual(scheduler.last_epoch, initial_step + 1)",
+        "self.assertFalse(torch.equal(m.placeholder, before))",
+        "self.assertTrue(np.isfinite(training.test('cpu', m, loader)[0]))",
+        "self.assertIsNotNone(p.grad, name)",
+        "self.assertTrue(torch.isfinite(p.grad).all(), name)",
+        "torch.testing.assert_close(p.grad, q.grad, atol=1e-06, rtol=1e-05)"
+      ]
+    },
+    {
+      "name": "test_32000_synthetic_points_small_width_backward",
+      "line": 368,
+      "checks": [
+        "self.assertEqual(out.shape, (32000, 4))",
+        "self.assertTrue(torch.isfinite(data.x.grad).all())"
+      ]
+    },
+    {
+      "name": "test_complete_entry_ast_preserves_original_protocol",
+      "line": 377,
+      "checks": [
+        "self.assertEqual(ast.dump(projected), ast.dump(ast.parse(original(filename))), filename)"
+      ]
+    },
+    {
+      "name": "test_frozen_training_sampling_metrics_and_original_models",
+      "line": 413,
+      "checks": [
+        "self.assertTrue((AIR / 'params.yaml').read_text().startswith(original('params.yaml')))",
+        "self.assertEqual(ast.dump(strip_recording(ast.parse((ROOT / name).read_text()))), ast.dump(ast.parse(expected)), name)",
+        "self.assertEqual((ROOT / name).read_bytes(), expected, name)"
+      ]
+    },
+    {
+      "name": "test_scripts_configuration_and_evaluation_model_selection",
+      "line": 431,
+      "checks": [
+        "self.assertEqual(eval(compile(ast.Expression(selected.value), '<selection>', 'eval'), {'args': args(['--run_dir', '/tmp/r'], True)}), ['CDLNO'])",
+        "self.assertEqual((a.model, a.task, a.n_layers, a.front_blocks), ('CDLNO', 'aoa', 12, 7))",
+        "self.assertEqual(a.my_path, '/custom' if evaluation else '/custom/Dataset')",
+        "self.assertEqual(entry.resolve_hparams(a, hparams())['nb_epochs'], 400)",
+        "self.assertEqual(a.score, 0)"
+      ]
+    }
+  ],
+  "tests/test_cdpa.py": [
+    {
+      "name": "test_reference_does_not_call_production_or_sdpa",
+      "line": 94,
+      "checks": [
+        "self.assertEqual(out.shape, z.shape)",
+        "self.assertEqual(weights.shape, (3, 5, 3))",
+        "self.assertEqual(len(token), 2)"
+      ]
+    },
+    {
+      "name": "test_initialization_and_only_shared_parameters",
+      "line": 104,
+      "checks": [
+        "self.assertEqual(Counter((id(c.args[0]) for c in trunc.call_args_list)), Counter((id(layer.weight) for layer in (module.to_q, module.to_k, module.to_v, module.to_out))))",
+        "self.assertTrue(all((c.kwargs['std'] == 0.02 for c in trunc.call_args_list)))",
+        "torch.testing.assert_close(module.w, torch.zeros(8), atol=0, rtol=0)",
+        "torch.testing.assert_close(module.depth_norm.weight, torch.ones(8), atol=0, rtol=0)",
+        "self.assertFalse(hasattr(module.depth_norm, 'bias'))",
+        "self.assertEqual(module.depth_norm.eps, 1e-06)",
+        "self.assertTrue(all((layer.bias is None for layer in (module.to_q, module.to_k, module.to_v))))",
+        "torch.testing.assert_close(module.to_out.bias, torch.zeros(8), atol=0, rtol=0)",
+        "self.assertEqual(set(dict(module.named_parameters())), {'w', 'ln_q.weight', 'ln_q.bias', 'ln_kv.weight', 'ln_kv.bias', 'to_q.weight', 'to_k.weight', 'to_v.weight', 'to_out.weight', 'to_out.bias', 'depth_norm.weight'})",
+        "self.assertFalse({p.data_ptr() for p in module.parameters()} & {p.data_ptr() for p in another.parameters()})",
+        "self.assertIsInstance(norm, nn.LayerNorm)",
+        "self.assertEqual(norm.eps, 1e-06)",
+        "torch.testing.assert_close(norm.weight, torch.ones(8), atol=0, rtol=0)",
+        "torch.testing.assert_close(norm.bias, torch.zeros(8), atol=0, rtol=0)",
+        "self.assertEqual(ids, [id(p) for p in module.parameters()])"
+      ]
+    },
+    {
+      "name": "test_empty_history_is_exact_identity_without_computation",
+      "line": 133,
+      "checks": [
+        "self.subTest(dtype=dtype, chunk=chunk)",
+        "self.assertIs(out, z)",
+        "torch.testing.assert_close(weights, torch.ones(3, 5, 1), atol=0, rtol=0)",
+        "torch.testing.assert_close(torch.autograd.grad(out.sum(), z)[0], torch.ones_like(z), atol=0, rtol=0)"
+      ]
+    },
+    {
+      "name": "test_uniform_initialization_raw_values_and_no_outer_residual",
+      "line": 148,
+      "checks": [
+        "torch.testing.assert_close(out, expected)",
+        "torch.testing.assert_close(weights, torch.full((3, 5, s + 1), 1 / (s + 1)))",
+        "torch.testing.assert_close(torch.autograd.grad(out.sum(), z, retain_graph=True)[0], torch.full_like(z, 1 / (s + 1)))",
+        "self.assertFalse(torch.allclose(out, z))"
+      ]
+    },
+    {
+      "name": "test_two_softmax_axes_and_tokenwise_weights",
+      "line": 165,
+      "checks": [
+        "torch.testing.assert_close(actual, expected, atol=2e-06, rtol=2e-05)",
+        "torch.testing.assert_close(weights, alpha, atol=2e-06, rtol=2e-05)",
+        "self.assertEqual(weights.shape, (3, 5, 3))",
+        "torch.testing.assert_close(weights.sum(2), torch.ones(3, 5))",
+        "self.assertGreater((weights[:, 1:] - weights[:, :1]).abs().max().item(), 0.01)",
+        "self.assertFalse(torch.allclose(actual, (weights.unsqueeze(-1) * wrong_values).sum(2)))",
+        "self.assertFalse(torch.allclose(actual, actual + z))",
+        "self.assertFalse(torch.allclose(merged, raw[:, :, 1:].mean(2), atol=1e-05, rtol=0.0001))",
+        "self.assertEqual(a.shape, (3, 2, 5, 5))",
+        "torch.testing.assert_close(a.sum(-1), torch.ones(3, 2, 5))"
+      ]
+    },
+    {
+      "name": "test_sdpa_reference_output_and_all_gradients_matrix",
+      "line": 196,
+      "checks": [
+        "self.subTest(dtype=dtype, S=s, nonzero_w=nonzero, chunk=chunk)",
+        "self.assertEqual(actual.dtype, dtype)",
+        "torch.testing.assert_close(weights, alpha, atol=3e-06, rtol=3e-05)",
+        "self.assertParity(actual, expected, leaves(module, z, history))"
+      ]
+    },
+    {
+      "name": "test_chunk_layout_counts_q_once_and_single_global_fusion",
+      "line": 215,
+      "checks": [
+        "self.subTest(S=s, chunk=chunk)",
+        "self.assertEqual(sdpa.call_count, len(sizes))",
+        "self.assertEqual(depth.call_count, 1)",
+        "self.assertIs(depth.call_args.args[0], z)",
+        "self.assertEqual(len(depth.call_args.args[1]), s)",
+        "self.assertEqual(spies[name].call_count, 1)",
+        "self.assertEqual(spies[name].call_count, len(sizes))",
+        "self.assertTrue(all((qkv.shape == (3 * size, 2, 5, 4) for qkv in call.args)))",
+        "self.assertEqual(call.kwargs, dict(dropout_p=0.0, is_causal=False, scale=0.5))"
+      ]
+    },
+    {
+      "name": "test_source_reorder_and_historical_token_permutations",
+      "line": 241,
+      "checks": [
+        "self.assertParity(actual, base, leaves(module, z, history))",
+        "torch.testing.assert_close(weights, base_weights[:, :, [0, *(i + 1 for i in order)]], atol=2e-06, rtol=2e-05)",
+        "self.assertParity(module(z, permuted, source_chunk_size=chunk), base, leaves(module, z, history))"
+      ]
+    },
+    {
+      "name": "test_current_token_permutation_equivariance",
+      "line": 255,
+      "checks": [
+        "self.assertParity(actual, base[:, perm], leaves(module, z, history))",
+        "torch.testing.assert_close(reordered_weights, weights[:, perm], atol=2e-06, rtol=2e-05)"
+      ]
+    },
+    {
+      "name": "test_batch_isolation_forward_and_gradient",
+      "line": 266,
+      "checks": [
+        "self.assertParity(actual, single, leaves(module, z, history))",
+        "torch.testing.assert_close(grad[1:], torch.zeros_like(grad[1:]), atol=0, rtol=0)"
+      ]
+    },
+    {
+      "name": "test_zero_w_gradient_then_updated_w",
+      "line": 278,
+      "checks": [
+        "self.assertFinite([x.grad for x in leaves(module, z, history)])",
+        "torch.testing.assert_close(module.depth_norm.weight.grad, torch.zeros(8), atol=0, rtol=0)",
+        "self.assertGreater(module.w.grad.abs().max().item(), 0)",
+        "self.assertGreater(module.depth_norm.weight.grad.abs().max().item(), 0)",
+        "self.assertTrue(torch.isfinite(module.depth_norm.weight.grad).all().item())",
+        "self.assertGreater(tensor.grad.abs().max().item(), 0)"
+      ]
+    },
+    {
+      "name": "test_depth_fp32_dispatch_under_cpu_autocast",
+      "line": 328,
+      "checks": []
+    },
+    {
+      "name": "test_extreme_magnitudes_and_all_gradients_finite",
+      "line": 331,
+      "checks": [
+        "self.assertFinite((out, *torch.autograd.grad(out.sum(), leaves(module, z, history))))",
+        "self.subTest(scale=scale, chunk=chunk)",
+        "self.assertFinite((out, weights))",
+        "self.assertFinite(grads)"
+      ]
+    },
+    {
+      "name": "test_noncontiguous_inputs_and_minimal_sizes",
+      "line": 351,
+      "checks": [
+        "self.assertFalse(strided(z).is_contiguous())",
+        "self.assertParity(module(strided(z), [strided(t) for t in history], source_chunk_size=2), module(z, history), leaves(module, z, history))",
+        "self.assertParity(module(z1, h1), expected, leaves(module, z1, h1))"
+      ]
+    },
+    {
+      "name": "test_mixed_history_dtypes_preserve_cast_gradients",
+      "line": 364,
+      "checks": [
+        "self.assertParity(module(z, history, source_chunk_size=chunk), expected, leaves(module, z, history), atol=0.0001, rtol=0.01)",
+        "self.assertEqual(actual.dtype, torch.float32)",
+        "self.assertFinite(torch.autograd.grad(actual.sum(), leaves(module, z, history)))"
+      ]
+    },
+    {
+      "name": "test_stateless_calls_input_immutability_and_chunk_weight_loading",
+      "line": 379,
+      "checks": [
+        "torch.testing.assert_close(actual, expected, atol=2e-06, rtol=2e-05)",
+        "self.assertEqual(set(module.__dict__) & {'history', 'aligned', 'weights', 'query', 'key', 'value'}, set())",
+        "self.assertEqual(module.source_chunk_size, 1)",
+        "torch.testing.assert_close(t, saved, atol=0, rtol=0)",
+        "torch.testing.assert_close(value, state[name], atol=0, rtol=0)",
+        "torch.testing.assert_close(restored(z, history), expected, atol=2e-06, rtol=2e-05)"
+      ]
+    },
+    {
+      "name": "test_sidecar_runtime_changes_and_architecture_rejection_without_overwrite",
+      "line": 404,
+      "checks": [
+        "self.assertEqual(path.read_bytes(), saved)",
+        "self.assertEqual(payload['runtime'], runtime.to_dict())",
+        "self.assertEqual(path.read_bytes(), saved)",
+        "self.assertRaises(FileExistsError)",
+        "self.subTest(changes=changes)",
+        "self.assertEqual(path.read_bytes(), saved)",
+        "self.assertRaisesRegex(SidecarMismatch, next(iter(changes)))"
+      ]
+    },
+    {
+      "name": "test_invalid_inputs_rejected_before_projection",
+      "line": 428,
+      "checks": [
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(TypeError)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)"
+      ]
+    },
+    {
+      "name": "test_gpu_fp32_reference_and_fused_sdpa",
+      "line": 464,
+      "checks": [
+        "self.subTest(S=s, chunk=chunk)",
+        "self.assertParity(math_result, expected, leaves(module, z, history), atol=5e-06, rtol=0.0001)",
+        "self.assertParity(module(z, history, source_chunk_size=chunk), math_result, leaves(module, z, history), atol=5e-06, rtol=0.0001)"
+      ]
+    },
+    {
+      "name": "test_gpu_depth_autocast_precision_and_gradients",
+      "line": 478,
+      "checks": [
+        "self.subTest(dtype=dtype)"
+      ]
+    },
+    {
+      "name": "test_gpu_half_bfloat16_outputs_chunks_and_extremes",
+      "line": 485,
+      "checks": [
+        "self.subTest(dtype=dtype, direct_half=direct_half, scale=scale, chunk=chunk)",
+        "self.assertEqual(actual.dtype, z.dtype)",
+        "self.assertEqual(alpha.dtype, torch.float32)",
+        "self.assertFinite((actual, alpha))",
+        "self.assertParity(actual / max(1.0, scale), base / max(1.0, scale), leaves(module, z, history), atol=0.03, rtol=0.04)"
+      ]
+    }
+  ],
+  "tests/test_core.py": [
+    {
+      "name": "test_default_and_42_depth_mode_point_grid_forward_backward_cases",
+      "line": 100,
+      "checks": [
+        "self.assertEqual((default.config.L, default.config.F, default.config.P), (8, 2, 6))",
+        "self.assertEqual(default.config.cdpa_mode, 'entry')",
+        "self.assertEqual(default(torch.randn(1, 7, 64)).shape, (1, 7, 1))",
+        "self.subTest(structured=structured, mode=mode, F=front)",
+        "self.assertIsInstance(y, torch.Tensor)",
+        "self.assertEqual(y.shape, (2, h.shape[1], 3))",
+        "self.assertFinite(y)",
+        "self.assertAllGradients(model, h)"
+      ]
+    },
+    {
+      "name": "test_extended_boundary_and_front_above_six_all_modes",
+      "line": 118,
+      "checks": [
+        "self.subTest(L=total, F=front, mode=mode)",
+        "self.assertEqual(y.shape, (2, 11, 3))",
+        "self.assertEqual(len(model.front_blocks), front)",
+        "self.assertEqual(len(model.latent_blocks), total - front)",
+        "self.assertAllGradients(model, h)"
+      ]
+    },
+    {
+      "name": "test_f0_entry_off_same_weights_exact_outputs_gradients_and_calls",
+      "line": 131,
+      "checks": [
+        "self.assertEqual(set(off.state_dict()), set(entry.state_dict()))",
+        "self.assertFalse(any((isinstance(m, CDPA) for m in entry.modules())))",
+        "torch.testing.assert_close(a, b, atol=0, rtol=0)",
+        "torch.testing.assert_close(x, y, atol=0, rtol=0)",
+        "self.assertEqual(off_shapes, [tuple((tuple(t.shape) for t in c.args[:3])) for c in spy.call_args_list])"
+      ]
+    },
+    {
+      "name": "test_registration_storage_independence_and_single_initialization",
+      "line": 155,
+      "checks": [
+        "self.assertEqual(Counter((c.args[0].data_ptr() for c in trunc.call_args_list)), expected)",
+        "torch.testing.assert_close(fusion.w, torch.zeros_like(fusion.w), atol=0, rtol=0)",
+        "torch.testing.assert_close(fusion.depth_norm.weight, torch.ones_like(fusion.w), atol=0, rtol=0)",
+        "self.assertEqual(list(model.cdpa_at), [str(j) for j in expected])",
+        "self.assertEqual(len(params), len({id(p) for _, p in params}))",
+        "self.assertEqual(len(params), len({p.untyped_storage().data_ptr() for _, p in params}))",
+        "self.assertEqual(len(objects), len({id(x) for x in objects}))",
+        "self.assertFalse(any((isinstance(m, (nn.Conv1d, nn.Conv2d, nn.Conv3d)) for m in module.modules())))"
+      ]
+    },
+    {
+      "name": "test_operation_counts_and_constant_m_all_front_depths",
+      "line": 180,
+      "checks": [
+        "self.assertEqual(counts, {'down_bridge': front + 1, 'up_readout': front + 1, 'latent_sa': cfg.L, 'conv': front + 1})",
+        "self.assertEqual(out.shape, (2, cfg.M, cfg.d_model))"
+      ]
+    },
+    {
+      "name": "test_actual_history_sdpa_counts_chunks_and_each_location_projections",
+      "line": 203,
+      "checks": [
+        "self.assertEqual([s for s, _ in measured.values()], sizes)",
+        "self.assertEqual(sum((s for s, _ in measured.values())), sources)",
+        "self.assertEqual(calls, sum((1 if chunk == 0 else math.ceil(s / chunk) for s in sizes)))",
+        "self.assertEqual(all_sdpa.call_count, 2 * (front + 1) + cfg.L + calls)",
+        "self.assertEqual(sdpa.call_count, groups)",
+        "self.assertEqual(spy.call_count, 1 if name in ('ln_q', 'to_q') else groups, name)",
+        "self.assertEqual(qkv.shape[1:], (cfg.num_heads, cfg.M, cfg.d_model // cfg.num_heads))"
+      ]
+    },
+    {
+      "name": "test_history_objects_timing_readout_and_two_forward_graph_isolation",
+      "line": 267,
+      "checks": [
+        "self.assertSchedule(model, first, h1)",
+        "self.assertSchedule(model, second, h2)",
+        "self.assertTrue({id(t) for t in old}.isdisjoint((id(t) for t in new)))",
+        "self.assertIsNone(torch.autograd.grad(y2.sum(), h1, allow_unused=True, retain_graph=True)[0])",
+        "self.assertIsNone(torch.autograd.grad(y1.sum(), h2, allow_unused=True, retain_graph=True)[0])",
+        "self.assertFinite(h1.grad)",
+        "self.assertFinite(h2.grad)",
+        "torch.testing.assert_close(h1, saved1, atol=0, rtol=0)",
+        "torch.testing.assert_close(h2, saved2, atol=0, rtol=0)",
+        "self.assertEqual(before, {n: set(vars(m)) for n, m in model.named_modules()})",
+        "self.assertFalse(any((isinstance(v, torch.Tensor) for v in vars(module).values())))"
+      ]
+    },
+    {
+      "name": "test_off_discards_t_and_entry_releases_history_after_only_use",
+      "line": 294,
+      "checks": [
+        "self.assertEqual(len(refs), model.config.F)",
+        "self.assertTrue(all(((r() is None) == (mode == 'off') for r in refs)))",
+        "self.assertTrue(all((r() is None for r in refs)))"
+      ]
+    },
+    {
+      "name": "test_explicit_raw_state_schedule_output_and_all_gradient_parity",
+      "line": 313,
+      "checks": [
+        "torch.testing.assert_close(actual, expected, atol=1e-05, rtol=0.0003)",
+        "self.assertFinite(a)",
+        "self.assertFinite(b)",
+        "torch.testing.assert_close(a, b, atol=1e-05, rtol=0.0003)"
+      ]
+    },
+    {
+      "name": "test_direct_history_readout_gradients_zero_w_then_updated_w",
+      "line": 332,
+      "checks": [
+        "self.assertAllGradients(model, h)",
+        "self.assertFinite(gradient)",
+        "self.assertGreater(gradient.abs().max().item(), 0)",
+        "self.assertTrue(all((g.abs().max().item() > 0 for g in direct)))",
+        "torch.testing.assert_close(fusion.depth_norm.weight.grad, torch.zeros_like(fusion.w), atol=0, rtol=0)",
+        "self.assertGreater(fusion.w.grad.abs().max().item(), 0)",
+        "self.assertFinite(fusion.depth_norm.weight.grad)",
+        "self.assertGreater(fusion.depth_norm.weight.grad.abs().max().item(), 0)"
+      ]
+    },
+    {
+      "name": "test_state_dict_roundtrip_actual_chunk_changes_and_all_gradients",
+      "line": 361,
+      "checks": [
+        "torch.testing.assert_close(actual, expected, atol=1e-05, rtol=0.0003)",
+        "torch.testing.assert_close(a, b, atol=1e-05, rtol=0.0003)"
+      ]
+    },
+    {
+      "name": "test_point_order_batch_independence_and_variable_n",
+      "line": 385,
+      "checks": [
+        "torch.testing.assert_close(model(h[:, order]), y[:, order], atol=2e-06, rtol=2e-05)",
+        "torch.testing.assert_close(single, y, atol=2e-06, rtol=2e-05)",
+        "self.assertEqual(model(inputs(model.config, n=17)).shape, (2, 17, 3))"
+      ]
+    },
+    {
+      "name": "test_small_core_fp32_and_amp_modes_point_and_grid",
+      "line": 402,
+      "checks": [
+        "self.subTest(structured=structured, mode=mode, dtype=dtype)",
+        "self.assertTrue(torch.isfinite(y).all().item())",
+        "self.assertEqual(y.shape, (2, h.shape[1], 3))",
+        "self.assertIsNotNone(parameter.grad, name)",
+        "self.assertTrue(torch.isfinite(parameter.grad).all().item(), name)"
+      ]
+    }
+  ],
+  "tests/test_core_config.py": [
+    {
+      "name": "test_illegal_architecture_and_core_policy_rejected",
+      "line": 41,
+      "checks": [
+        "self.assertRaises(TypeError)",
+        "self.subTest(changes=changes)",
+        "self.assertRaises((ValueError, TypeError))"
+      ]
+    },
+    {
+      "name": "test_invalid_input_and_chunk_rejected_before_computation",
+      "line": 71,
+      "checks": [
+        "self.subTest(structured=structured, mode=mode, input_type=type(bad))",
+        "self.subTest(mode=mode, chunk=chunk)",
+        "self.assertRaises((TypeError, ValueError))",
+        "self.assertRaises((TypeError, ValueError))",
+        "self.assertRaises((TypeError, ValueError))"
+      ]
+    },
+    {
+      "name": "test_derived_p_ratios_and_json_grid_roundtrip",
+      "line": 96,
+      "checks": [
+        "self.assertEqual(payload['grid_shape'], [5, 7])",
+        "self.assertNotIn('P', payload)",
+        "self.assertEqual(CDLNOArchitectureConfig.from_dict(payload), cfg)",
+        "self.assertEqual(CDLNOArchitectureConfig.from_dict(dict(payload, P=2)).P, 2)",
+        "self.assertEqual(front.latent_ffn_1.fc1.out_features, 24)",
+        "self.assertEqual(front.latent_ffn_2.fc1.out_features, 24)",
+        "self.assertEqual(front.point_ffn.fc1.out_features, 24)",
+        "self.assertEqual(model.readout.point_ffn.fc1.out_features, 24)",
+        "self.assertEqual(model(torch.randn(2, 35, 8)).shape, (2, 35, 3))",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises((AttributeError, TypeError))",
+        "self.assertEqual(block.ffn.fc_in.out_features, 24)",
+        "self.assertEqual(block.ffn.fc_out.in_features, 12)",
+        "self.assertRaises(TypeError)"
+      ]
+    },
+    {
+      "name": "test_sidecar_runtime_allowed_architecture_rejected_bytes_preserved",
+      "line": 123,
+      "checks": [
+        "self.assertEqual(path.read_bytes(), original)",
+        "self.assertEqual(path.read_bytes(), original)",
+        "self.assertEqual(validate_sidecar(path, cfg, runtime)['architecture'], cfg.to_dict())",
+        "self.assertEqual(path.read_bytes(), original)",
+        "self.assertEqual(compare_architecture(cfg, requested), sorted(changes))",
+        "self.assertEqual(path.read_bytes(), original)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(FileExistsError)",
+        "self.assertRaises(FileNotFoundError)",
+        "self.assertRaises(SidecarMismatch)"
+      ]
+    },
+    {
+      "name": "test_strict_weights_and_existing_sidecar_in_fresh_process",
+      "line": 153,
+      "checks": [
+        "self.assertRaises(RuntimeError)",
+        "self.assertEqual(result.returncode, 0, result.stdout + result.stderr)",
+        "self.assertIn('checkpoint passed', result.stdout)"
+      ]
+    },
+    {
+      "name": "test_three_task_cwd_fresh_imports_without_entry_or_install",
+      "line": 193,
+      "checks": [
+        "self.subTest(cwd=name)",
+        "self.assertEqual(result.returncode, 0, result.stdout + result.stderr)",
+        "self.assertIn('shared core import passed', result.stdout)"
+      ]
+    }
+  ],
+  "tests/test_experiment_records.py": [
+    {
+      "name": "test_all_task_modes_early_config_actual_counts_epochs_repeat_eval_checkpoint",
+      "line": 36,
+      "checks": [
+        "self.subTest(task=task, mode=mode)",
+        "self.assertEqual(results['status'], 'completed')",
+        "self.assertEqual(results['final_recorded_metrics_by_member']['0']['known_metric'], 0.125)",
+        "self.assertEqual(len((path / 'train_history.jsonl').read_text().splitlines()), 1)",
+        "self.assertEqual(len(index), 2)",
+        "self.assertEqual({x['metrics']['attempt'] for x in index}, {0, 1})",
+        "self.assertTrue(all(((path / x['result_file']).with_name('eval.log').exists() for x in index)))",
+        "self.assertTrue((path / 'train.log').exists())",
+        "self.assertEqual(pending['parameter_count_status'], 'pending_model_construction')",
+        "self.assertIsNone(pending['parameters'])",
+        "self.assertEqual(pending['resolved_arguments']['front_latent_mode'], mode)",
+        "self.assertEqual(attached['parameters']['total'], sum((p.numel() for p in model.parameters())))",
+        "self.assertTrue(torch.equal(torch.get_rng_state(), rng_after_step))",
+        "self.assertEqual((path / 'config.json').read_bytes(), saved_config)",
+        "self.assertEqual(run.sidecar.read_bytes(), saved_sidecar)",
+        "self.assertRaises(FileExistsError)",
+        "self.assertTrue(torch.equal(v, model.state_dict()[k]))",
+        "torch.testing.assert_close(actual, expected, atol=1e-05, rtol=0.0003)"
+      ]
+    },
+    {
+      "name": "test_exceptions_and_incomplete_exit_leave_early_records",
+      "line": 104,
+      "checks": [
+        "self.subTest(status=status)",
+        "self.assertEqual(data['status'], status, p.stderr)",
+        "self.assertEqual(data['phase'], 'startup')",
+        "self.assertEqual(json.loads((path / 'config.json').read_text())['parameter_count_status'], 'pending_model_construction')",
+        "self.assertIn('startup log is preserved', log)",
+        "self.assertIn('Traceback', log)"
+      ]
+    },
+    {
+      "name": "test_same_process_only_reservation_and_unique_defaults",
+      "line": 127,
+      "checks": [
+        "self.assertEqual(record.directory.parent, Path(temp) / 'darcy')",
+        "self.assertNotEqual(default_directory('darcy'), record.directory)",
+        "self.assertRaises(FileExistsError)"
+      ]
+    },
+    {
+      "name": "test_entries_early_lifecycle_and_complete_observation_only_ast",
+      "line": 139,
+      "checks": [
+        "self.assertFalse(any((k.startswith('exp_') for k in sys.modules)))",
+        "self.skipTest('pre-change source snapshot absent; set CDLNO_OUTPUT_BASELINE to the preserved artifact')",
+        "self.subTest(path=str(relative))",
+        "self.assertEqual(ast.dump(strip_recording(copy.deepcopy(now))), ast.dump(old))",
+        "self.assertTrue(data_calls)",
+        "self.assertTrue(all((early.lineno < n.lineno for n in data_calls)))",
+        "self.assertTrue(any((ast.unparse(n.func) == 'finish_experiment' for n in calls)))"
+      ]
+    },
+    {
+      "name": "test_all_launch_pairs_same_timestamp_explicit_override_and_no_writes",
+      "line": 161,
+      "checks": [
+        "self.subTest(task=task)",
+        "self.assertNotEqual(p.returncode, 0)",
+        "self.assertIn('Evaluation needs', p.stderr)",
+        "self.assertEqual(p.returncode, 0, p.stderr)",
+        "self.assertEqual(len(commands), 2)",
+        "self.assertEqual(resolved[0], resolved[1])",
+        "self.assertFalse(list(Path(temp).iterdir()))",
+        "self.assertEqual(resolved[0], str(requested))",
+        "self.assertEqual(Path(resolved[0]).parent, Path(temp) / 'output' / task)"
+      ]
+    },
+    {
+      "name": "test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values",
+      "line": 186,
+      "checks": [
+        "self.skipTest('real PyG unavailable')",
+        "self.subTest(task=task)",
+        "self.assertTrue(torch.equal(rngs[0][0], rngs[1][0]))",
+        "self.assertEqual(rngs[0][1], rngs[1][1])",
+        "np.testing.assert_equal(rngs[0][2], rngs[1][2])",
+        "self.assertTrue(torch.equal(outputs[0][key], outputs[1][key]), key)",
+        "self.skipTest('AirfRANS complete sampled epoch not run: torch_cluster is absent; no dependency was installed')",
+        "self.skipTest('real radius_graph dependency unavailable: ' + str(exc))",
+        "self.assertEqual(len(rows), 2)",
+        "self.assertEqual(record.result['visualization_events'][-1]['status'], 'completed')",
+        "self.assertEqual(metrics['train_components']['pressure_mse'], float(values[0]))",
+        "self.assertEqual(metrics['train_components']['velocity_mse'], float(values[1]))",
+        "self.assertEqual(metrics['train_surface_mse'], float(values[4]))",
+        "self.assertEqual(metrics['train_volume_mse'], float(values[5]))",
+        "self.assertEqual(metrics['train_loss'], float(0.5 * values[4] + values[5]))"
+      ]
+    },
+    {
+      "name": "test_air_weighted_loss_and_real_epoch_record_fragment_without_sampling",
+      "line": 249,
+      "checks": [
+        "self.skipTest('real PyG unavailable')",
+        "self.assertAlmostEqual(row['metrics']['train_loss'], expected.item(), places=6)",
+        "self.assertEqual(row['metrics']['criterion'], 'MSE_weighted')",
+        "torch.testing.assert_close(p.grad, q.grad, atol=1e-06, rtol=1e-05)"
+      ]
+    },
+    {
+      "name": "test_recording_lifecycle_in_three_original_fresh_workdirs",
+      "line": 285,
+      "checks": [
+        "self.subTest(project=project)",
+        "self.assertEqual(result.returncode, 0, result.stdout + result.stderr)"
+      ]
+    },
+    {
+      "name": "test_old_runs_without_config_keep_loadable",
+      "line": 309,
+      "checks": [
+        "self.assertFalse((path / 'config.json').exists())",
+        "self.assertFalse((path / 'config.json').exists())",
+        "self.assertEqual(before, run.sidecar.read_bytes())"
+      ]
+    }
+  ],
+  "tests/test_front_ablation.py": [
+    {
+      "name": "test_implicit_explicit_full_same_construction_and_computation",
+      "line": 106,
+      "checks": [
+        "self.assertEqual(config(), config(front_latent_mode='full'))",
+        "self.assertEqual([(n, type(m)) for n, m in default.named_modules()], [(n, type(m)) for n, m in explicit.named_modules()])",
+        "self.assertEqual(list(default.state_dict()), list(explicit.state_dict()))",
+        "torch.testing.assert_close(default.eval()(x), explicit.eval()(x), atol=0, rtol=0)",
+        "torch.testing.assert_close(value, explicit.state_dict()[key], atol=0, rtol=0)"
+      ]
+    },
+    {
+      "name": "test_configuration_validation_roundtrip_and_runtime_separation",
+      "line": 122,
+      "checks": [
+        "self.assertEqual(compare_architecture(config(), config(front_latent_mode='no_sa')), ['front_latent_mode'])",
+        "self.assertNotIn('front_latent_mode', CDLNORuntimeConfig().to_dict())",
+        "self.assertEqual(CDLNOArchitectureConfig.from_dict(json.loads(json.dumps(cfg.to_dict()))), cfg)",
+        "self.assertEqual(pickle.loads(pickle.dumps(cfg)), cfg)",
+        "self.assertEqual(cfg.P, 6)",
+        "self.assertEqual(cfg.history_rule, HISTORY_RULE)",
+        "self.assertRaises(TypeError)",
+        "self.subTest(bad=bad)",
+        "self.assertRaisesRegex(ValueError, 'front_latent_mode')",
+        "self.assertRaisesRegex(ValueError, 'front_latent_mode')"
+      ]
+    },
+    {
+      "name": "test_old_json_alias_strict_modes_and_sidecar_bytes",
+      "line": 140,
+      "checks": [
+        "self.assertEqual(CDLNOArchitectureConfig.from_dict(old), config())",
+        "self.assertEqual(compare_architecture(old, config()), [])",
+        "self.assertRaises(ValueError)",
+        "self.assertEqual(path.read_bytes(), before)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(FileExistsError)",
+        "self.assertEqual(validate_sidecar(fresh, cfg)['architecture'], cfg.to_dict())",
+        "self.assertRaises(SidecarMismatch)"
+      ]
+    },
+    {
+      "name": "test_pickle_layout_rejects_ambiguous_or_unknown_state",
+      "line": 169,
+      "checks": [
+        "self.subTest(state=bad)",
+        "self.assertRaises(ValueError)"
+      ]
+    },
+    {
+      "name": "test_block_formula_outputs_and_gradients_point_and_grid",
+      "line": 181,
+      "checks": [
+        "self.subTest(structured=structured, mode=mode)",
+        "torch.testing.assert_close(a, b, atol=1e-10, rtol=1e-08)",
+        "torch.testing.assert_close(a, b, atol=2e-09, rtol=2e-07)"
+      ]
+    },
+    {
+      "name": "test_exact_sublayer_calls_removed_parameters_and_counts",
+      "line": 197,
+      "checks": [
+        "self.assertEqual(calls, expected)",
+        "self.assertEqual(set(m.state_dict()), {k for k in full.state_dict() if k.split('.')[0] not in REMOVED[mode]})",
+        "self.assertIndependent(m)",
+        "self.assertEqual(sum((p.numel() for p in full.parameters())) - sum((p.numel() for p in m.parameters())), removed_count)",
+        "self.assertNotIn(removed, m._modules)",
+        "self.assertFalse(hasattr(m, removed))"
+      ]
+    },
+    {
+      "name": "test_identity_history_is_live_down_before_up_norm_and_point_nonlinearity",
+      "line": 220,
+      "checks": [
+        "self.assertIs(t, seen['s'])",
+        "self.assertIs(t, seen['up_input'])",
+        "torch.testing.assert_close(t, seen['snapshot'], atol=0, rtol=0)",
+        "self.assertGreater(t.grad.abs().max().item(), 0.0)",
+        "self.assertGreater(m.down.latent_queries.grad.abs().max().item(), 0.0)",
+        "self.assertFiniteGradients(m, x)",
+        "torch.testing.assert_close(t, seen['snapshot'], atol=0, rtol=0)",
+        "self.assertEqual(activation.call_count, 1)",
+        "self.assertEqual(seen['conv_shape'], (2, 8, 5, 7))",
+        "self.assertTrue(seen['point_ln'])",
+        "self.assertEqual(m.point_ffn.conv.groups, 1)"
+      ]
+    },
+    {
+      "name": "test_zero_output_branches_match_ablations_with_copied_weights",
+      "line": 250,
+      "checks": [
+        "self.subTest(mode=mode, structured=structured)",
+        "torch.testing.assert_close(r, a, atol=0, rtol=0)",
+        "torch.testing.assert_close(r, a, atol=2e-09, rtol=2e-07)"
+      ]
+    },
+    {
+      "name": "test_core_depth_modes_finite_gradients_independence_and_active_counts",
+      "line": 273,
+      "checks": [
+        "self.subTest(mode=mode, L=total, F=front, cdpa=cdpa)",
+        "self.assertIndependent(m)",
+        "self.assertEqual(len(m.front_blocks), front)",
+        "self.assertEqual(len(m.latent_blocks), total - front)",
+        "self.assertTrue(all((b.front_latent_mode == mode for b in m.front_blocks)))",
+        "self.assertFiniteGradients(m, x)",
+        "self.assertEqual(y.shape, (2, 35, 3))",
+        "self.assertEqual(counts, dict(down=front + 1, up=front + 1, sa=total if mode == 'full' else total - front, conv=front + 1))",
+        "self.assertEqual(sources, expected)",
+        "self.assertFalse(any((n.startswith('front_blocks.') for n in m.state_dict())))",
+        "self.assertEqual(out.shape, (2, 4, 8))"
+      ]
+    },
+    {
+      "name": "test_f0_modes_same_weights_outputs_gradients_and_parameter_keys",
+      "line": 311,
+      "checks": [
+        "self.assertEqual(list(m.state_dict()), list(baseline.state_dict()))",
+        "torch.testing.assert_close(y, ym, atol=0, rtol=0)",
+        "torch.testing.assert_close(a, b, atol=0, rtol=0)"
+      ]
+    },
+    {
+      "name": "test_ablation_history_unchanged_across_consumers_and_new_forwards",
+      "line": 330,
+      "checks": [
+        "self.assertFalse({id(t) for t in ts} & {id(r[2]) for r in second['front']})",
+        "torch.testing.assert_close(y, y2, atol=0, rtol=0)",
+        "self.assertEqual([id(t) for t in history], [id(t) for t in expected])",
+        "self.assertNotIn(id(current), [id(t) for t in history])",
+        "self.assertIsNotNone(t.grad)",
+        "self.assertTrue(torch.isfinite(t.grad).all())",
+        "torch.testing.assert_close(t, snapshot, atol=0, rtol=0)"
+      ]
+    },
+    {
+      "name": "test_core_explicit_history_reference_and_chunk_parity",
+      "line": 363,
+      "checks": [
+        "torch.testing.assert_close(y, expected, atol=2e-06, rtol=2e-05)",
+        "torch.testing.assert_close(y, yc, atol=2e-06, rtol=2e-05)",
+        "torch.testing.assert_close(a, b, atol=3e-06, rtol=0.0003)"
+      ]
+    },
+    {
+      "name": "test_new_core_checkpoint_roundtrip_each_mode_and_wrong_state_rejected",
+      "line": 381,
+      "checks": [
+        "self.assertEqual(restored.config, cfg)",
+        "self.assertTrue(all((b.front_latent_mode == mode for b in restored.front_blocks)))",
+        "torch.testing.assert_close(model(x), restored(x), atol=0, rtol=0)",
+        "torch.testing.assert_close(model(x), another(x), atol=0, rtol=0)",
+        "self.assertRaises(RuntimeError)",
+        "self.assertRaises(RuntimeError)"
+      ]
+    }
+  ],
+  "tests/test_front_task_modes.py": [
+    {
+      "name": "test_eight_task_three_mode_real_constructor_backward_and_roundtrip",
+      "line": 121,
+      "checks": [
+        "self.subTest(task=task, mode=mode)",
+        "self.assertEqual(m.config.front_latent_mode, mode)",
+        "self.assertTrue(all((b.front_latent_mode == mode for b in m.core.front_blocks)))",
+        "self.assertEqual(output.shape[-1], 4 if task in ('plasticity', 'car', 'airfrans') else 1)",
+        "self.assertEqual(json.loads(before)['architecture']['front_latent_mode'], mode)",
+        "self.assertEqual(json.loads(before)['metadata']['resolved_arguments']['front_latent_mode'], mode)",
+        "self.assertEqual(ev.front_latent_mode, mode)",
+        "torch.testing.assert_close(restored(*args), output, atol=1e-05, rtol=0.0003)",
+        "self.assertEqual(run.sidecar.read_bytes(), before)",
+        "self.assertIsNotNone(p.grad, name)",
+        "self.assertTrue(torch.isfinite(p.grad).all(), name)",
+        "torch.testing.assert_close(evaluation.load(member=0).eval()(*args), output, atol=1e-05, rtol=0.0003)",
+        "unpickle.assert_not_called()",
+        "self.assertRaises(FileExistsError)",
+        "self.assertRaisesRegex(SidecarMismatch, 'front_latent_mode')"
+      ]
+    },
+    {
+      "name": "test_defaults_cli_precedence_frozen_presets_and_legacy_branches",
+      "line": 184,
+      "checks": [
+        "self.assertEqual(a.front_latent_mode, 'full')",
+        "self.assertEqual(a.slice_num, 32 if task == 'pipe' else 64)",
+        "self.assertEqual(parse(task, ['--front-latent-mode=no_sa', '--front_latent_mode', 'identity']).front_latent_mode, 'identity')",
+        "self.assertEqual(now['model'].pop('front_latent_mode'), 'full')",
+        "self.assertEqual(now, before)",
+        "self.assertRaises(SystemExit)",
+        "self.assertNotEqual(result.model, 'CDLNO')"
+      ]
+    },
+    {
+      "name": "test_sidecar_missing_fields_and_unknown_legacy_rejected",
+      "line": 207,
+      "checks": [
+        "self.assertEqual(load_sidecar(path)['architecture']['front_latent_mode'], 'full')",
+        "self.assertEqual(path.read_bytes(), before)",
+        "self.assertEqual(path.read_bytes(), before)",
+        "self.assertRaises(SidecarMismatch)"
+      ]
+    },
+    {
+      "name": "test_industrial_object_modes_configs_and_weights_must_agree",
+      "line": 230,
+      "checks": [
+        "self.assertEqual(run.sidecar.read_bytes(), before)",
+        "self.assertRaises((SidecarMismatch, RuntimeError))"
+      ]
+    },
+    {
+      "name": "test_legacy_industrial_objects_through_actual_run_loaders",
+      "line": 254,
+      "checks": [
+        "unittest.skipUnless(car.HAS_PYG and LEGACY.is_dir(), 'requires real PyG and genuine pre-A1 CDLNO_A1_BASELINE artifacts')",
+        "self.assertTrue(fixture_dir.exists(), 'real pre-A1 artifacts required; do not manufacture legacy objects')",
+        "self.assertEqual(run.sidecar.read_bytes(), before)",
+        "self.assertTrue(all((not hasattr(b, 'front_latent_mode') for b in old.core.front_blocks)))",
+        "torch.testing.assert_close(y, fixture['output'][0], atol=0, rtol=0)"
+      ]
+    },
+    {
+      "name": "test_root_scripts_three_modes_paths_overrides_and_parser",
+      "line": 280,
+      "checks": [
+        "self.assertEqual(Path(implicit).name, 'test_timestamp')",
+        "self.assertEqual(Path(implicit).parent.name, task)",
+        "self.assertEqual(a.front_latent_mode, mode)",
+        "self.assertEqual(a.slice_num, 32 if task == 'pipe' else 64)"
+      ]
+    },
+    {
+      "name": "test_automatic_run_names_explicit_save_name_and_missing_eval",
+      "line": 308,
+      "checks": [
+        "self.assertEqual(len(set(directories)), 3)",
+        "unpickle.assert_not_called()",
+        "self.assertFalse((Path(tmp) / 'absent').exists())",
+        "self.assertEqual(run.directory.parent, Path(tmp) / 'output' / task)",
+        "self.assertRegex(run.directory.name, '^\\\\d{8}T\\\\d{12}Z$')",
+        "self.assertRaises(FileNotFoundError)",
+        "self.assertEqual(named.save_name, 'chosen')"
+      ]
+    },
+    {
+      "name": "test_three_original_workdirs_new_process_import_and_all_mode_loads",
+      "line": 334,
+      "checks": [
+        "self.subTest(project=project)",
+        "self.assertEqual(result.returncode, 0, result.stdout + result.stderr)",
+        "self.skipTest('real PyG unavailable: industrial fresh-process integration not run')"
+      ]
+    }
+  ],
+  "tests/test_front_training.py": [
+    {
+      "name": "test_no_experiment_module_was_imported",
+      "line": 355,
+      "checks": [
+        "self.assertFalse(Path(path).stem.startswith('exp_') or Path(path).name in ('main.py', 'main_evaluation.py'), path)"
+      ]
+    }
+  ],
+  "tests/test_kcdno_airfrans.py": [
+    {
+      "name": "test_defaults_and_exact_frozen_projection",
+      "line": 35,
+      "checks": [
+        "self.assertEqual((a.n_layers, a.n_hidden, a.n_heads, a.slice_num, a.nb_epochs, a.batch_size), (8, 256, 8, 64, 398, 1))",
+        "self.assertEqual(a.slice_num, 32)",
+        "self.assertEqual(ast.dump(strip_visualization(ast.parse((AIR / 'train.py').read_text()))), ast.dump(ast.parse((snapshot / 'train.py').read_text())))",
+        "self.assertEqual({k: v for k, v in current.items() if k not in ('kcdno', 'lrsa_matched')}, saved)",
+        "self.assertEqual(current['kcdno'], saved['Transolver'])",
+        "self.assertEqual(ast.dump(strip_new(ast.parse((AIR / name).read_text()))), ast.dump(ast.parse((snapshot / name).read_text())))",
+        "self.assertEqual((AIR / name).read_bytes(), (snapshot / name).read_bytes())",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)"
+      ]
+    },
+    {
+      "name": "test_real_graph_mask_loss_step_and_list_load",
+      "line": 53,
+      "checks": [
+        "unittest.skipUnless(HAS_PYG, 'real PyG unavailable')",
+        "self.assertTrue(all((p.grad is not None and torch.isfinite(p.grad).all() for p in models[0].parameters())))",
+        "self.assertEqual((ev.nmodel, ev.nb_epochs, ev.history_mode), (2, 3, mode))",
+        "self.assertEqual(before, {f.name: f.read_bytes() for f in (run.sidecar, path / 'task.json')})",
+        "self.assertEqual(result.returncode, 0, result.stdout + result.stderr)",
+        "self.assertEqual(y.shape, (n, 4))",
+        "torch.testing.assert_close(m(g), y, atol=0, rtol=0)",
+        "self.assertEqual(m(part).shape, (3, 4))",
+        "self.assertRaises(ValueError)",
+        "torch.testing.assert_close(loaded[i](graphs[0]), m(graphs[0]), atol=0, rtol=0)",
+        "torch.testing.assert_close(er.load(member=i)(graphs[0]), m(graphs[0]), atol=0, rtol=0)",
+        "torch.testing.assert_close(g[key], old[key], atol=0, rtol=0)",
+        "self.assertRaises(KCDNOMetadataMismatch)"
+      ]
+    }
+  ],
+  "tests/test_kcdno_car.py": [
+    {
+      "name": "test_factory_defaults_and_frozen_sources",
+      "line": 35,
+      "checks": [
+        "self.assertEqual((args.n_hidden, args.n_heads, args.slice_num, args.nb_epochs, args.batch_size), (256, 8, 64, 200, 1))",
+        "self.assertEqual(a.slice_num, 32)",
+        "self.assertEqual(ast.dump(strip_visualization(ast.parse((CAR / 'train.py').read_text()))), ast.dump(ast.parse((snap / 'Car-Design-ShapeNetCar/train.py').read_text())))",
+        "self.assertEqual(ast.dump(strip_new(ast.parse((CAR / name).read_text()))), ast.dump(ast.parse((snap / 'Car-Design-ShapeNetCar' / name).read_text())))",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)"
+      ]
+    },
+    {
+      "name": "test_real_PyG_original_loss_step_and_checkpoints",
+      "line": 48,
+      "checks": [
+        "unittest.skipUnless(HAS_PYG, 'real PyG unavailable')",
+        "self.assertTrue(all((p.grad is not None and torch.isfinite(p.grad).all() for p in model.parameters())))",
+        "self.assertEqual((ev.nb_epochs, ev.history_mode), (3, mode))",
+        "torch.testing.assert_close(loaded(graphs[0]), expected, atol=0, rtol=0)",
+        "self.assertEqual(files, {p.name: p.read_bytes() for p in (run.sidecar, path / 'task.json')})",
+        "self.assertEqual(result.returncode, 0, result.stdout + result.stderr)",
+        "self.assertEqual(out.shape, (n, 4))",
+        "torch.testing.assert_close(model((data, geom)), out, atol=0, rtol=0)",
+        "self.assertRaises(ValueError)",
+        "torch.testing.assert_close(data[key], before[key], atol=0, rtol=0)",
+        "self.assertRaises(KCDNOMetadataMismatch)"
+      ]
+    }
+  ],
+  "tests/test_kcdno_config.py": [
+    {
+      "name": "test_default_and_no_cdlno_fields",
+      "line": 53,
+      "checks": [
+        "self.assertEqual((cfg.family, cfg.L, cfg.kernel_rank, cfg.history_mode), ('kcdno', 8, 16, 'all'))",
+        "self.assertEqual((cfg.ffn1_hidden, cfg.ffn2_hidden, cfg.point_hidden), (256, 256, 256))",
+        "self.assertEqual(cfg.gate_parameterization, 'unconstrained_scalar')",
+        "self.assertEqual(cfg.norm_eps, cfg.kernel_clamp)",
+        "self.assertEqual(cfg.kernel_denominator_eps, 1e-06)",
+        "self.assertEqual((init.gamma_init, init.scorer_init, init.norm_scale_init), (0.1, 0, 1))",
+        "self.assertEqual(init.kernel_init, 'xavier_uniform_gain1')",
+        "self.assertFalse(cfg.kernel_projection_bias)",
+        "self.assertEqual(CDLNOArchitectureConfig().P, 6)",
+        "self.assertNotIn(name, cfg.to_dict())",
+        "self.assertRaises(TypeError)"
+      ]
+    },
+    {
+      "name": "test_integers_and_unsupported_behaviors",
+      "line": 70,
+      "checks": [
+        "self.assertEqual(cfg.ffn1_hidden, 24)",
+        "self.assertEqual(KCDNOArchitectureConfig(L=16).L, 16)",
+        "self.assertRaisesRegex(ValueError, 'divisible')",
+        "self.subTest(name=name)",
+        "self.assertRaises(ValueError)",
+        "self.subTest(name=name, value=value)",
+        "self.assertRaises(ValueError)"
+      ]
+    },
+    {
+      "name": "test_two_profiles_all_eight_tasks",
+      "line": 90,
+      "checks": [
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)",
+        "self.assertEqual((cfg.d, cfg.h, cfg.M, cfg.point_module), (d, want_h, want_m, point))",
+        "self.assertEqual((cfg.L, cfg.kernel_rank, cfg.ffn1_hidden, cfg.ffn2_hidden, cfg.point_hidden), (8, 16, 2 * d, 2 * d, 2 * d))"
+      ]
+    },
+    {
+      "name": "test_explicit_cli_uses_argparse_and_keeps_original_parser",
+      "line": 104,
+      "checks": [
+        "self.assertEqual(explicit_arguments(parser, []), {})",
+        "self.assertEqual((default_cfg.L, default_cfg.d, default_cfg.h, default_cfg.M), (8, 128, 8, 64))",
+        "self.assertEqual((cfg.L, cfg.d, cfg.h, cfg.M, cfg.kernel_rank, cfg.history_mode), (12, 64, 8, 96, 7, 'off'))",
+        "self.assertEqual((cfg.ffn1_hidden, cfg.ffn2_hidden, cfg.point_hidden), (128, 128, 128))",
+        "self.assertEqual({k: v for k, v in now.items() if k != 'gpu'}, {k: v for k, v in defaults.items() if k != 'gpu'})",
+        "self.assertEqual(now['gpu'], '3')",
+        "self.assertEqual(cfg.M, 64 if task == 'pipe' else 32)"
+      ]
+    },
+    {
+      "name": "test_three_original_parser_styles_and_forbidden_explicit_options",
+      "line": 125,
+      "checks": [
+        "self.assertEqual(architecture_overrides({'L': 8, 'n_layers': 8}), {'L': 8})",
+        "self.assertRaisesRegex(ValueError, 'conflicting explicit aliases')",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)",
+        "self.subTest(entry=entry)",
+        "self.assertEqual(explicit_arguments(parser, []), {})",
+        "self.assertEqual((cfg.L, cfg.d, cfg.M), (8, 256, 64))",
+        "self.subTest(key=key)",
+        "self.assertRaisesRegex(ValueError, 'not applicable')",
+        "self.assertRaisesRegex(ValueError, 'not applicable')"
+      ]
+    },
+    {
+      "name": "test_complete_configuration_roundtrips_and_rejects_missing_fields",
+      "line": 146,
+      "checks": [
+        "self.assertEqual(cls.from_dict(json.loads(json.dumps(value.to_dict()))), value)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)",
+        "self.subTest(cls=cls, key=key)",
+        "self.assertRaises(ValueError)"
+      ]
+    },
+    {
+      "name": "test_metadata_formats_roundtrip_for_all_profiles_and_tasks",
+      "line": 159,
+      "checks": [
+        "self.assertEqual(KCDNOMetadata.from_dict(member.to_dict()), member)",
+        "self.assertRaises(ValueError)",
+        "self.assertEqual(load_metadata(path), saved)",
+        "self.assertEqual(checkpoint_family(raw), 'kcdno')",
+        "self.assertEqual(raw['architecture']['family'], 'kcdno')",
+        "self.assertEqual(raw['architecture']['point_hidden'], 2 * saved.architecture.d)"
+      ]
+    },
+    {
+      "name": "test_eval_reconstructs_saved_config_before_explicit_compare",
+      "line": 175,
+      "checks": [
+        "self.assertEqual(path.read_bytes(), before)",
+        "self.assertEqual(resolved.saved, saved)",
+        "self.assertEqual(resolved.runtime_differences, ())",
+        "self.assertEqual(path.read_bytes(), before)",
+        "self.assertEqual(path.read_bytes(), before)",
+        "self.assertRaises(KCDNOMetadataMismatch)",
+        "self.assertRaises(FileNotFoundError)",
+        "self.assertRaises(FileExistsError)",
+        "self.subTest(name=name)",
+        "self.assertRaises(ValueError)"
+      ]
+    },
+    {
+      "name": "test_reproduction_and_runtime_are_not_structure",
+      "line": 196,
+      "checks": [
+        "self.assertEqual(compare_architecture(saved.architecture, different.architecture), [])",
+        "self.assertEqual(result.saved.initialization.gamma_init, -0.2)",
+        "self.assertEqual(result.saved.initialization.initialization_version, 'recorded-other-init')",
+        "self.assertEqual(set(result.runtime_differences), {f.name for f in fields(runtime)})",
+        "self.assertEqual(result.runtime, runtime)",
+        "self.assertEqual(path.read_bytes(), before)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)"
+      ]
+    },
+    {
+      "name": "test_missing_family_stays_legacy_and_never_guessed",
+      "line": 216,
+      "checks": [
+        "self.assertIsNone(checkpoint_family({'architecture': {'family': 'kcdno'}}))",
+        "self.assertEqual(family_for_model_key('kcdno'), 'kcdno')",
+        "self.assertIsNone(family_for_model_key(name))",
+        "self.assertIsNone(checkpoint_family(json.loads(before)))",
+        "self.assertEqual(load_sidecar(path)['architecture']['model_name'], 'CDLNO')",
+        "self.assertEqual(path.read_bytes(), before)",
+        "self.assertIsNone(checkpoint_family(legacy))",
+        "self.assertEqual(load_sidecar(path)['architecture']['front_latent_mode'], 'full')",
+        "self.assertEqual(path.read_bytes(), before)",
+        "self.assertRaises(KCDNOMetadataMismatch)"
+      ]
+    },
+    {
+      "name": "test_tampered_new_sidecar_fields_rejected",
+      "line": 237,
+      "checks": [
+        "self.assertRaises(ValueError)",
+        "self.subTest(key=key)",
+        "self.assertRaises(ValueError)",
+        "self.subTest(family=family)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)"
+      ]
+    },
+    {
+      "name": "test_paths_are_new_family_only_and_no_constructor_placeholder",
+      "line": 252,
+      "checks": [
+        "self.assertFalse(hasattr(package, 'KCDNO'))",
+        "self.assertEqual(list(Path(directory).iterdir()), [])",
+        "self.assertEqual(path.parent, Path(directory) / task / 'kcdno')",
+        "self.assertIn('_L8_', path.name)",
+        "self.assertIn('_r16_all', path.name)",
+        "self.assertFalse(path.exists())"
+      ]
+    },
+    {
+      "name": "test_three_fresh_cwd_config_imports_and_schema_loading_without_torch",
+      "line": 264,
+      "checks": [
+        "self.assertEqual(result.returncode, 0, result.stdout + result.stderr)"
+      ]
+    }
+  ],
+  "tests/test_kcdno_core.py": [
+    {
+      "name": "test_depths_shapes_and_all_active_gradients",
+      "line": 139,
+      "checks": [
+        "self.subTest(L=L, mode=mode)",
+        "self.assertIsInstance(y, torch.Tensor)",
+        "self.assertEqual(y.shape, x.shape)",
+        "self.assertTrue(torch.isfinite(y).all())",
+        "self.assertTrue(torch.isfinite(x.grad).all())",
+        "torch.testing.assert_close(x.detach(), original, atol=0, rtol=0)",
+        "self.assertIsNotNone(p.grad, name)",
+        "self.assertTrue(torch.isfinite(p.grad).all(), name)",
+        "torch.testing.assert_close(b.reader.depth_norm.weight.grad, torch.zeros(d), atol=0, rtol=0)"
+      ]
+    },
+    {
+      "name": "test_default_L8_counts_and_history_boundaries",
+      "line": 166,
+      "checks": [
+        "self.assertEqual(list(one.state_dict()), list(off.state_dict()))",
+        "self.assertFalse(any((isinstance(m, (KernelHistoryReader, KernelHistoryWriter)) for m in one.modules())))",
+        "self.assertEqual(c['sdpa'], 16)",
+        "self.assertEqual(c['logical_reads'], 28 if mode == 'all' else 0)",
+        "self.assertFalse(any((isinstance(m, _SelfAttention) for m in model.modules())))",
+        "self.assertEqual(set(dict(model.named_children())), {'blocks'})",
+        "self.assertEqual(c[key], 8)",
+        "self.assertEqual(c[key], 7 if mode == 'all' else 0, key)",
+        "self.assertEqual(set(dict(block.named_children())), expected)"
+      ]
+    },
+    {
+      "name": "test_initialization_projection_contract_and_parameter_independence",
+      "line": 190,
+      "checks": [
+        "self.assertEqual(trunc.call_count, 4 * 13)",
+        "self.assertEqual(xavier.call_count, 6)",
+        "self.assertEqual(orthogonal.call_count, 4)",
+        "self.assertEqual(len({id(p) for _, p in all_params}), len(all_params))",
+        "self.assertEqual(len({p.untyped_storage().data_ptr() for _, p in all_params}), len(all_params))",
+        "self.assertEqual(len(trunc_ids), len(set(trunc_ids)))",
+        "self.assertFalse(set(trunc_ids) & set(kernel_ids))",
+        "self.assertEqual(call.kwargs, {'gain': 1.0})",
+        "self.assertFalse(hasattr(block.down, 'to_q'))",
+        "torch.testing.assert_close(q @ q.T, torch.eye(3), atol=3e-07, rtol=3e-07)",
+        "self.assertIsNone(block.up.to_q.bias)",
+        "self.assertIsNone(attention.to_k.bias)",
+        "self.assertIsNone(attention.to_v.bias)",
+        "self.assertIsNotNone(attention.to_out.bias)",
+        "self.assertIsInstance(attention.q_norm, RMSNorm)",
+        "self.assertIsInstance(attention.k_norm, RMSNorm)",
+        "self.assertEqual(tuple(ffn.fc1.weight.shape), (16, 8))",
+        "self.assertEqual(tuple(ffn.fc2.weight.shape), (8, 16))",
+        "self.assertIsNotNone(ffn.fc2.bias)",
+        "self.assertIsNone(block.point_ffn.fc1.bias)",
+        "self.assertEqual(block.point_ffn.conv.groups, 1)",
+        "self.assertEqual(block.point_ffn.conv.kernel_size, (3, 3))",
+        "self.assertEqual(block.point_ffn.conv.stride, (1, 1))",
+        "self.assertEqual(block.point_ffn.conv.padding, (1, 1))",
+        "self.assertIsInstance(block.point_ffn.norm, nn.LayerNorm)",
+        "self.assertAlmostEqual(block.reader.gamma.item(), 0.1, places=7)",
+        "self.assertEqual(block.reader.gamma.ndim, 0)",
+        "self.assertEqual(torch.count_nonzero(block.reader.w).item(), 0)",
+        "self.assertIsInstance(ffn, PlainFFN)",
+        "self.assertIsNotNone(ffn.fc1.bias)",
+        "torch.testing.assert_close(m.weight, torch.ones_like(m.weight), atol=0, rtol=0)"
+      ]
+    },
+    {
+      "name": "test_manual_one_two_layer_equations_and_gradients",
+      "line": 242,
+      "checks": [
+        "torch.testing.assert_close(actual.double(), expected, atol=2e-06, rtol=3e-05)",
+        "torch.testing.assert_close(a.double(), e, atol=2e-05, rtol=0.0003)"
+      ]
+    },
+    {
+      "name": "test_raw_T_up_norm_and_causal_tuple_schedule",
+      "line": 276,
+      "checks": [
+        "self.assertTrue(torch.isfinite(final_key_grad).all())",
+        "self.assertGreater(final_key_grad.abs().max().item(), 0.0)",
+        "self.assertIsInstance(incoming, tuple)",
+        "self.assertEqual(len(incoming), i)",
+        "self.assertIs(row['up_input'][0], row['point_norm'])",
+        "self.assertIs(row['up_input'][1], row['up_latent_norm'])",
+        "torch.testing.assert_close(t, row['latent_norm_2_input'][0] + row['latent_ffn_2'], atol=0, rtol=0)",
+        "self.assertTrue(torch.isfinite(g).all())",
+        "self.assertGreater(g.abs().max().item(), 0.0)",
+        "self.assertIs(cache, records[s]['cache'])",
+        "self.assertLess(events.index(('write', s)), events.index(('read', i)))",
+        "self.assertIs(row['writer_input'][0], t)",
+        "torch.testing.assert_close(row['reader_input'][0], row['down'] + row['latent_ffn_1'], atol=0, rtol=0)"
+      ]
+    },
+    {
+      "name": "test_gamma_zero_all_equals_off_same_common_weights_and_cost_differs",
+      "line": 336,
+      "checks": [
+        "torch.testing.assert_close(a, b, atol=0, rtol=0)",
+        "self.assertEqual(active['logical_reads'], 6)",
+        "self.assertEqual(active['writer'], 3)",
+        "self.assertEqual(inactive['logical_reads'], 0)",
+        "self.assertEqual(inactive['writer'], 0)"
+      ]
+    },
+    {
+      "name": "test_forward_isolation_variable_N_and_no_persistent_state",
+      "line": 357,
+      "checks": [
+        "self.assertEqual(other.shape, b.shape)",
+        "torch.testing.assert_close(first, last, atol=0, rtol=0)",
+        "self.assertEqual(len({id(c) for c in caches}), 9)",
+        "torch.testing.assert_close(state, model.state_dict(), atol=0, rtol=0)",
+        "self.assertEqual(list(model.named_buffers()), [])",
+        "self.assertTrue(all((p.grad is not None and torch.isfinite(p.grad).all() for p in model.parameters())))",
+        "torch.testing.assert_close(c.memory, memory, atol=0, rtol=0)",
+        "torch.testing.assert_close(c.mass, mass, atol=0, rtol=0)",
+        "self.assertFalse(isinstance(value, torch.Tensor) and (not isinstance(value, nn.Parameter)))",
+        "self.assertFalse(isinstance(value, list))"
+      ]
+    },
+    {
+      "name": "test_strict_config_weight_roundtrip",
+      "line": 388,
+      "checks": [
+        "torch.testing.assert_close(model(x, grid_shape=grid), clone(x, grid_shape=grid), atol=0, rtol=0)",
+        "self.assertRaises(RuntimeError)",
+        "self.assertRaises(RuntimeError)"
+      ]
+    },
+    {
+      "name": "test_validation_and_grid_contract",
+      "line": 413,
+      "checks": [
+        "self.assertEqual(conv(x, grid_shape=(5, 7)).shape, x.shape)",
+        "self.assertRaises(TypeError)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(TypeError)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)",
+        "self.subTest(kwargs=kwargs)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaisesRegex(ValueError, name)",
+        "self.assertRaises(ValueError)",
+        "self.subTest(grid=grid)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)"
+      ]
+    },
+    {
+      "name": "test_limited_gpu_fp32_and_amp_backward",
+      "line": 447,
+      "checks": [
+        "unittest.skipUnless(torch.cuda.is_available(), 'no actual CUDA GPU')",
+        "torch.testing.assert_close(actual.cpu(), expected, atol=3e-06, rtol=3e-05)",
+        "self.assertTrue(all((p.grad is not None and torch.isfinite(p.grad).all() for p in gpu.parameters())))",
+        "self.assertTrue(torch.isfinite(amp).all())",
+        "self.assertTrue(all((p.grad is not None and torch.isfinite(p.grad).all() for p in gpu.parameters())))",
+        "torch.testing.assert_close(amp.cpu(), expected, atol=0.003, rtol=0.01)"
+      ]
+    }
+  ],
+  "tests/test_kcdno_delivery.py": [
+    {
+      "name": "test_legacy_parser_imports_without_shared_package",
+      "line": 52,
+      "checks": [
+        "self.assertEqual(r.returncode, 0, r.stdout + r.stderr)",
+        "self.assertFalse(any((isinstance(n, ast.ImportFrom) and n.module == 'kcdno_entry' for n in tree.body)))"
+      ]
+    },
+    {
+      "name": "test_temporal_off_model_optimizer_step",
+      "line": 76,
+      "checks": [
+        "self.assertFalse(torch.equal(before, model.output.weight))",
+        "self.assertTrue(all((p.grad is not None and torch.isfinite(p.grad).all() for p in model.parameters())))",
+        "self.assertFalse(any(('reader' in n or 'writer' in n for n, _ in model.named_parameters())))"
+      ]
+    },
+    {
+      "name": "test_fixed_pickle_behavior_and_reference_rejected",
+      "line": 91,
+      "checks": [
+        "self.assertRaisesRegex(ValueError, 'd>=2')",
+        "self.assertRaises(KCDNOMetadataMismatch)"
+      ]
+    },
+    {
+      "name": "test_real_scripts_profiles_train_eval_and_early_records",
+      "line": 107,
+      "checks": [
+        "self.assertEqual(count, 24)",
+        "self.assertEqual((a.n_hidden, a.n_heads, a.slice_num, a.n_layers), (v['d'], v['h'], v['M'], v['L']))",
+        "self.assertEqual(preview.returncode, 0, preview.stderr)",
+        "self.assertEqual(evpreview.returncode, 0, evpreview.stderr)",
+        "self.assertEqual(before, {name: (runpath / name).read_bytes() for name in before})",
+        "self.assertEqual(pending['model'], family)",
+        "self.assertIsNone(pending['parameters'])",
+        "self.assertEqual(ready['parameters']['total'], sum((p.numel() for p in m.parameters())))",
+        "self.assertEqual(ev.kcdno_architecture, a.kcdno_architecture)"
+      ]
+    }
+  ],
+  "tests/test_kcdno_matched.py": [
+    {
+      "name": "test_formula_off_equivalence_full_lock_and_storage",
+      "line": 29,
+      "checks": [
+        "self.assertEqual(retained.keys(), off.state_dict().keys())",
+        "torch.testing.assert_close(full(x, grid_shape=grid), off(x, grid_shape=grid), atol=0, rtol=0)",
+        "self.assertEqual(sum((isinstance(m, _SelfAttention) for m in full.modules())), 2)",
+        "self.assertFalse(any(('reader' in n or 'writer' in n for n, _ in full.named_parameters())))",
+        "self.assertEqual(len(ptrs), len(set(ptrs)))",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)",
+        "self.assertEqual(block.front_latent_mode, 'full')",
+        "self.assertRaises(ValueError)"
+      ]
+    },
+    {
+      "name": "test_six_standard_forward_step_and_strict_checkpoint",
+      "line": 50,
+      "checks": [
+        "self.assertIsInstance(m.core, MatchedLRSA)",
+        "self.assertEqual(m.config.family, 'lrsa_matched')",
+        "self.assertTrue(all((p.grad is not None and torch.isfinite(p.grad).all() for p in m.parameters())))",
+        "torch.testing.assert_close(loaded(*ins), expected, atol=0, rtol=0)",
+        "self.assertEqual(before, r.sidecar.read_bytes())",
+        "self.assertEqual(json.loads(before)['family'], 'lrsa_matched')",
+        "self.assertRaises(KCDNOMetadataMismatch)"
+      ]
+    },
+    {
+      "name": "test_industrial_matched_protocols",
+      "line": 69,
+      "checks": [
+        "unittest.skipUnless(importlib.util.find_spec('torch_geometric') is not None, 'real PyG unavailable')",
+        "self.assertIsInstance(model.core, MatchedLRSA)",
+        "torch.testing.assert_close(loaded(*inputs), expected, atol=0, rtol=0)",
+        "self.assertEqual(before, run.sidecar.read_bytes())",
+        "self.assertEqual(r.returncode, 0, r.stdout + r.stderr)",
+        "self.assertRaises(KCDNOMetadataMismatch)"
+      ]
+    },
+    {
+      "name": "test_air_actual_argv_default_path",
+      "line": 114,
+      "checks": [
+        "self.assertEqual(a.kcdno_family, family)"
+      ]
+    }
+  ],
+  "tests/test_kcdno_performance.py": [
+    {
+      "name": "test_live_point_conv_full_cost_and_counts",
+      "line": 10,
+      "checks": [
+        "self.assertFalse(result['parameters']['missing_grad_names'])",
+        "self.assertFalse(result['parameters']['nonfinite_grad_names'])",
+        "self.assertFalse(any((m._forward_hooks or m._forward_pre_hooks for m in model.modules())))",
+        "self.assertEqual([result['counts'][k] for k in ('kernel_writers', 'kernel_queries', 'kernel_reads', 'kernel_reader_calls')], [7, 7, 28, 7])",
+        "self.assertTrue(any(('.reader' in key for key in result['temporary_materializations'])))"
+      ]
+    },
+    {
+      "name": "test_default_principal_checks_actual_core_parameters",
+      "line": 25,
+      "checks": [
+        "self.assertEqual(f['principal_parameter_reduction'], 495616)",
+        "self.assertAlmostEqual(reduction * 100, 0.196, places=3)",
+        "self.assertEqual(sum((p.numel() for p in m.parameters())) - sum((p.numel() for p in k.parameters())), 495616 + correction)"
+      ]
+    }
+  ],
+  "tests/test_kcdno_seed_suite.py": [
+    {
+      "name": "test_same_seed_replays_six_task_initializations",
+      "line": 45,
+      "checks": [
+        "self.assertEqual(first.keys(), repeat.keys())",
+        "self.assertTrue(all((torch.equal(first[k], repeat[k]) for k in first)), task)",
+        "self.assertEqual(draws[:2], repeat_draws[:2])",
+        "self.assertTrue(torch.equal(draws[2], repeat_draws[2]))",
+        "self.assertTrue(any((not torch.equal(states[a][k], states[b][k]) for k in states[a])), task)"
+      ]
+    },
+    {
+      "name": "test_seed_validation_and_omitted_seed_preserves_rng",
+      "line": 64,
+      "checks": [
+        "self.assertFalse(hasattr(args, 'seed'))",
+        "self.assertEqual(expected[:2], actual[:2])",
+        "self.assertTrue(torch.equal(expected[2], actual[2]))",
+        "self.assertRaises(SystemExit)"
+      ]
+    },
+    {
+      "name": "test_recording_strict_checkpoint_and_eval_seed_recovery",
+      "line": 77,
+      "checks": [
+        "self.assertEqual(json.loads(before[0])['initialization']['seed'], 2)",
+        "self.assertEqual(json.loads(before[1])['resolved_arguments']['seed'], 2)",
+        "self.assertEqual(ev.seed, 2)",
+        "self.assertEqual(before, [p.read_bytes() for p in paths])",
+        "self.assertEqual(summary['seed'], 2)",
+        "self.assertEqual(summary['evaluation_metrics'], {'synthetic_record_only': 0.5})",
+        "self.assertTrue(torch.equal(expected, loaded(x, fx)))",
+        "self.assertRaisesRegex(ValueError, 'different task/seed')"
+      ]
+    },
+    {
+      "name": "test_exact_order_immediate_reports_and_seed_isolation",
+      "line": 135,
+      "checks": [
+        "self.assertEqual(len(tags), 4)",
+        "self.assertEqual(calls, [(task, phase) for task in suite.TASKS for phase in ('train', 'eval')])",
+        "self.assertEqual((report['seed'], report['status']), (seed, 'completed'))",
+        "self.assertEqual([r['task'] for r in report['completed_tasks']], list(suite.TASKS))",
+        "self.assertEqual(suite.run_suite(seed), 0)",
+        "self.assertEqual(result['seed'], seed)",
+        "self.assertEqual(result, saved)",
+        "self.assertIn(f'[seed={seed}] {previous}: training + evaluation completed', output.getvalue())"
+      ]
+    },
+    {
+      "name": "test_failure_stops_at_current_phase_and_keeps_previous_results",
+      "line": 162,
+      "checks": [
+        "self.assertEqual(calls[-1], failure)",
+        "self.assertFalse(any((task == 'plasticity' for task, phase in calls)))",
+        "self.assertEqual(report['status'], 'failed')",
+        "self.assertEqual([r['task'] for r in report['completed_tasks']], ['darcy'])",
+        "self.assertEqual(suite.run_suite(1), 7)"
+      ]
+    },
+    {
+      "name": "test_guarded_real_shell_previews_and_help",
+      "line": 180,
+      "checks": [
+        "self.assertEqual(result.returncode, 0, result.stdout + result.stderr)",
+        "self.assertEqual(result.stdout.count('Command:'), 12)",
+        "self.assertFalse(marker.exists())",
+        "self.assertFalse((root / 'output').exists())",
+        "self.assertEqual(result.returncode, 0 if args else 2)",
+        "self.assertFalse(marker.exists())",
+        "self.assertEqual(result.returncode, code, result.stdout + result.stderr)",
+        "self.assertFalse((root / 'output').exists())"
+      ]
+    }
+  ],
+  "tests/test_kcdno_tasks.py": [
+    {
+      "name": "test_profiles_explicit_overrides_and_frozen_entries",
+      "line": 91,
+      "checks": [
+        "self.assertEqual((args.n_layers, args.n_hidden, args.epochs), (8, 128, 500))",
+        "self.assertEqual(args.slice_num, 32 if task == 'pipe' else 64)",
+        "self.assertEqual(matched.n_heads, 8)",
+        "self.assertEqual(matched.slice_num, 64)",
+        "self.assertEqual((explicit.n_layers, explicit.n_hidden, explicit.slice_num), (2, 8, 3))",
+        "self.assertEqual(ast.dump(strip_new(tree(task))), ast.dump(ast.parse((snapshot / relative).read_text())))",
+        "self.assertRaisesRegex(ValueError, 'not applicable')"
+      ]
+    },
+    {
+      "name": "test_train_eval_roundtrips_and_conflicts",
+      "line": 109,
+      "checks": [
+        "self.subTest(task=task, mode=mode)",
+        "self.assertEqual(hasattr(model, 'placeholder'), not bool(model.fun_dim))",
+        "self.assertFalse(hasattr(model, 'time_fc'))",
+        "self.assertEqual(y.shape, (*x.shape[:2], 1))",
+        "self.assertTrue(all((p.grad is not None and torch.isfinite(p.grad).all() for p in model.parameters())))",
+        "torch.testing.assert_close(loaded(x, fx), expected, atol=0, rtol=0)",
+        "self.assertEqual(files, {p.name: p.read_bytes() for p in (run.sidecar, run.directory / 'task.json')})",
+        "self.assertRaises(RuntimeError)",
+        "self.assertRaises(FileExistsError)",
+        "self.assertRaises(RuntimeError)",
+        "self.assertRaises((KCDNOMetadataMismatch, ValueError))"
+      ]
+    },
+    {
+      "name": "test_real_N_and_original_darcy_decode_loss",
+      "line": 139,
+      "checks": [
+        "torch.testing.assert_close(scope['y'], target)",
+        "self.assertEqual(x.shape[1], dict(darcy=7225, elasticity=972, airfoil=11271, pipe=16641)[task])",
+        "self.assertTrue(torch.isfinite(g).all())",
+        "self.assertGreater(g.abs().max().item(), 0)"
+      ]
+    },
+    {
+      "name": "test_scripts_preserve_profile_and_arguments",
+      "line": 162,
+      "checks": [
+        "self.assertIn('--profile transolver_shape_match', result.stdout)",
+        "self.assertNotIn('--front-blocks', result.stdout)",
+        "self.assertNotIn('--slice_num', result.stdout)",
+        "self.assertNotIn('--n-hidden', result.stdout)",
+        "self.assertEqual((args.profile, args.n_layers, args.n_heads), ('transolver_shape_match', 2, 8))"
+      ]
+    },
+    {
+      "name": "test_other_original_loss_normalizer_statements",
+      "line": 175,
+      "checks": [
+        "torch.testing.assert_close(scope['y'], target)"
+      ]
+    },
+    {
+      "name": "test_fresh_standard_working_directory_loading",
+      "line": 191,
+      "checks": [
+        "self.assertEqual(result.returncode, 0, result.stdout + result.stderr)"
+      ]
+    }
+  ],
+  "tests/test_kcdno_temporal.py": [
+    {
+      "name": "test_defaults_and_complete_frozen_entries",
+      "line": 31,
+      "checks": [
+        "self.assertEqual((args.n_layers, args.n_hidden, args.slice_num, args.batch_size), (8, 256, 64, 2) if task == 'ns' else (8, 128, 64, 8))",
+        "self.assertEqual(args.epochs, 500)",
+        "self.assertEqual(ast.dump(strip_new(tree(task))), ast.dump(ast.parse((Path(before['source_snapshot']) / rel).read_text())))",
+        "self.assertIsNone(args.max_grad_norm)"
+      ]
+    },
+    {
+      "name": "test_original_NS_ten_step_windows_and_cache_isolation",
+      "line": 42,
+      "checks": [
+        "self.assertEqual(model.preprocess[0].in_features, 74)",
+        "self.assertFalse(hasattr(model, 'time_fc'))",
+        "self.assertFalse(hasattr(model, 'placeholder'))",
+        "self.assertEqual(len(observed), 10)",
+        "self.assertEqual(len({id(c) for c in caches}), 10)",
+        "self.assertEqual(scope['pred'].shape, (2, 4096, 10))",
+        "self.assertEqual(len(caches), 10)",
+        "self.assertEqual((update.call_count, schedule.call_count), (1, 1))",
+        "torch.testing.assert_close(observed[t], torch.cat((initial[..., t:], yy[..., :t]), -1), atol=0, rtol=0)",
+        "torch.testing.assert_close(observed[t], expected, atol=0, rtol=0)"
+      ]
+    },
+    {
+      "name": "test_Plasticity_original_twenty_updates_and_time_gradient",
+      "line": 74,
+      "checks": [
+        "self.assertEqual(model.preprocess[0].in_features, 3)",
+        "self.assertTrue(hasattr(model, 'time_fc'))",
+        "self.assertFalse(hasattr(model, 'placeholder'))",
+        "self.assertEqual(out.shape, (2, 3131, 4))",
+        "self.assertFalse(torch.equal(out, model(x, fx, t + 0.4)))",
+        "self.assertTrue(all((torch.isfinite(g).all() and g.abs().max() > 0 for g in grads)))",
+        "self.assertEqual(scope['y'].shape, (2, 3131, 4, 1))",
+        "torch.testing.assert_close(scope['fx'], fx, atol=0, rtol=0)",
+        "self.assertEqual(update.call_count, 20)",
+        "self.assertEqual(schedule.call_count, 1)"
+      ]
+    },
+    {
+      "name": "test_temporal_roundtrips_all_off",
+      "line": 96,
+      "checks": [
+        "torch.testing.assert_close(loaded(x, fx, t), expected, atol=0, rtol=0)",
+        "self.assertEqual(run.sidecar.read_bytes(), side)"
+      ]
+    }
+  ],
+  "tests/test_kernel_history.py": [
+    {
+      "name": "test_double_cached_equals_explicit_kernel_and_all_gradients",
+      "line": 108,
+      "checks": [
+        "self.subTest(b=b, m=m, r=r, s=s)",
+        "self.assertEqual(a.output.dtype, torch.float64)"
+      ]
+    },
+    {
+      "name": "test_independent_oracle_and_double_gradcheck_away_from_boundaries",
+      "line": 123,
+      "checks": [
+        "self.assertGreater((rms_reference(u, nq) @ wq.T).min().item(), 0.5)",
+        "self.assertGreater((rms_reference(t, nk) @ wk.T).min().item(), 0.5)",
+        "self.assertTrue(torch.autograd.gradcheck(lambda *a: compute(*a, explicit=explicit), values, eps=1e-06, atol=1e-05, rtol=0.001))"
+      ]
+    },
+    {
+      "name": "test_production_fp32_against_double_oracle",
+      "line": 147,
+      "checks": [
+        "self.subTest(b=b, m=m, r=r, s=s, trained=trained)"
+      ]
+    },
+    {
+      "name": "test_empty_history_is_exact_identity_without_parameter_work",
+      "line": 159,
+      "checks": [
+        "self.assertEqual(expected.output.dtype, torch.float64)",
+        "self.assertEqual(expected.alpha.shape, (b, 5, 1))",
+        "torch.testing.assert_close(expected.output, u.double(), atol=0, rtol=0)",
+        "self.assertEqual(alpha.shape, (b, 5, 1))",
+        "torch.testing.assert_close(alpha, torch.ones_like(alpha), atol=0, rtol=0)",
+        "torch.testing.assert_close(u.grad, torch.ones_like(u), atol=0, rtol=0)",
+        "self.assertTrue(all((p.grad is None for p in reader.parameters())))",
+        "self.assertIs(out, u)",
+        "self.assertIs(reader(u, []), u)"
+      ]
+    },
+    {
+      "name": "test_initialization_uniform_depth_raw_values_and_unconstrained_gate",
+      "line": 178,
+      "checks": [
+        "self.assertEqual(init.call_count, 2)",
+        "self.assertEqual(set(dict(writer.named_parameters())), {'key_norm.weight', 'to_k.weight'})",
+        "self.assertEqual(set(dict(reader.named_parameters())), {'query_norm.weight', 'to_q.weight', 'depth_norm.weight', 'w', 'gamma'})",
+        "self.assertIsNone(writer.to_k.bias)",
+        "self.assertIsNone(reader.to_q.bias)",
+        "self.assertEqual(reader.gamma.ndim, 0)",
+        "self.assertAlmostEqual(reader.gamma.item(), 0.1, places=7)",
+        "self.assertEqual(call.kwargs, {'gain': 1.0})",
+        "torch.testing.assert_close(norm.weight, torch.ones_like(norm.weight), atol=0, rtol=0)",
+        "self.assertEqual(set(dict(norm.named_parameters())), {'weight'})",
+        "self.assertLessEqual(projection.weight.abs().max().item(), math.sqrt(6 / 11))",
+        "torch.testing.assert_close(alpha, torch.full_like(alpha, 1 / (s + 1)), atol=0, rtol=0)",
+        "torch.testing.assert_close(out.double(), formula, atol=3e-07, rtol=3e-06)",
+        "self.assertGreater((expected.token_weights[0] - expected.token_weights[0].mean(-1, keepdim=True)).abs().max().item(), 0.001)",
+        "torch.testing.assert_close(out.double(), formula, atol=2e-06, rtol=2e-05)"
+      ]
+    },
+    {
+      "name": "test_source_order_and_token_permutations",
+      "line": 208,
+      "checks": [
+        "torch.testing.assert_close(other, out, atol=3e-07, rtol=3e-06)",
+        "torch.testing.assert_close(weights, alpha[:, :, [0, 3, 1, 2]], atol=3e-07, rtol=3e-06)",
+        "torch.testing.assert_close(reader(u, shuffled), out, atol=3e-07, rtol=3e-06)",
+        "torch.testing.assert_close(other, out[:, perm], atol=3e-07, rtol=3e-06)",
+        "torch.testing.assert_close(weights, alpha[:, perm], atol=3e-07, rtol=3e-06)",
+        "self.assertGreater((alpha[0] - alpha[1]).abs().max().item(), 0.001)",
+        "self.assertGreater((alpha[:, 0] - alpha[:, 1]).abs().max().item(), 0.001)"
+      ]
+    },
+    {
+      "name": "test_batch_isolation_values_and_cross_sample_gradients",
+      "line": 225,
+      "checks": [
+        "torch.testing.assert_close(out, torch.cat(singles), atol=3e-07, rtol=3e-06)",
+        "torch.testing.assert_close(grad[1], torch.zeros_like(grad[1]), atol=0, rtol=0)"
+      ]
+    },
+    {
+      "name": "test_isolated_reader_loss_reaches_earliest_writer_and_zero_scorer_norm",
+      "line": 236,
+      "checks": [
+        "torch.testing.assert_close(reader.depth_norm.weight.grad, torch.zeros(8), atol=0, rtol=0)",
+        "self.assertGreater(reader.depth_norm.weight.grad.abs().max().item(), 0)",
+        "self.assertGreater(tensor.grad.abs().max().item(), 0)"
+      ]
+    },
+    {
+      "name": "test_one_source_write_can_feed_independent_readers_with_live_gradients",
+      "line": 250,
+      "checks": [
+        "self.assertEqual(write.call_count, 1)",
+        "self.assertIsNotNone(cache.memory.grad_fn)",
+        "self.assertIsNotNone(cache.mass.grad_fn)",
+        "self.assertGreater(grads[1].abs().max().item(), 0)",
+        "torch.testing.assert_close(actual, ref, atol=5e-06, rtol=0.0001)"
+      ]
+    },
+    {
+      "name": "test_no_inplace_no_cache_attributes_and_parameters_independent",
+      "line": 270,
+      "checks": [
+        "self.assertEqual(len({id(p) for p in params}), len(params))",
+        "self.assertEqual(len({p.untyped_storage().data_ptr() for p in params}), len(params))",
+        "torch.testing.assert_close(a, b, atol=0, rtol=0)",
+        "self.assertFalse(torch.equal(a, other))",
+        "self.assertEqual(set(reader.state_dict()), keys)",
+        "self.assertFalse(list(reader.buffers()))",
+        "self.assertFalse(any((isinstance(v, (torch.Tensor, KernelHistoryCache)) for v in vars(reader).values())))",
+        "torch.testing.assert_close(t, old, atol=0, rtol=0)",
+        "self.assertEqual(t._version, version)",
+        "torch.testing.assert_close(t, old, atol=0, rtol=0)",
+        "self.assertEqual(t._version, version)",
+        "self.assertRaises(AttributeError)"
+      ]
+    },
+    {
+      "name": "test_one_query_no_rekey_no_token_matrix_and_single_source_softmax",
+      "line": 294,
+      "checks": [
+        "self.assertEqual(projection.call_count, 1)",
+        "self.assertIs(projection.call_args.args[1], reader.to_q.weight)",
+        "self.assertEqual(len(softmax), 1)",
+        "self.assertEqual(softmax[0][3][-1], (2, 11, 4))",
+        "self.assertEqual(caches[0].memory.shape, (2, 3, 8))",
+        "self.assertEqual(caches[0].mass.shape, (2, 3))",
+        "self.assertNotEqual(shapes[-1][-2:], (11, 11))"
+      ]
+    },
+    {
+      "name": "test_cpu_autocast_fp32_operations",
+      "line": 333,
+      "checks": []
+    },
+    {
+      "name": "test_gpu_autocast_fp32_operations",
+      "line": 337,
+      "checks": [
+        "unittest.skipUnless(torch.cuda.is_available(), 'CUDA unavailable: K2 GPU AMP not run')",
+        "self.subTest(dtype=dtype, low=low)"
+      ]
+    },
+    {
+      "name": "test_dtype_casts_noncontiguous_and_half_parameter_storage",
+      "line": 345,
+      "checks": [
+        "self.assertEqual(actual[0].dtype, dtype)",
+        "self.assertTrue(all((w(t).memory.dtype == torch.float32 for w, t in zip(ws, ts, strict=True))))"
+      ]
+    },
+    {
+      "name": "test_finite_extremes_clamp_and_denominator",
+      "line": 358,
+      "checks": [
+        "torch.testing.assert_close(cache.mass, torch.full((2, 3), 5e-06), atol=1e-12, rtol=1e-06)",
+        "torch.testing.assert_close(cache.memory, torch.full((2, 3, 4), 1e-05), atol=1e-12, rtol=1e-06)",
+        "torch.testing.assert_close(out, expected, atol=1e-07, rtol=1e-06)",
+        "self.subTest(scale=scale)",
+        "self.assertTrue((cache.mass > 0).all())"
+      ]
+    },
+    {
+      "name": "test_invalid_shapes_cache_contract_and_no_padding_api",
+      "line": 385,
+      "checks": [
+        "self.assertRaises(TypeError)",
+        "self.assertRaises(TypeError)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(TypeError)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)"
+      ]
+    }
+  ],
+  "tests/test_lrsa_reference.py": [
+    {
+      "name": "test_point_front_against_same_configuration",
+      "line": 132,
+      "checks": []
+    },
+    {
+      "name": "test_structured_front_against_same_configuration",
+      "line": 135,
+      "checks": []
+    }
+  ],
+  "tests/test_modules.py": [
+    {
+      "name": "test_norm_formula_outputs_and_gradients",
+      "line": 89,
+      "checks": [
+        "self.subTest(kind=kind)",
+        "self.assertParity(norm(x), ref, (x, *norm.parameters()))"
+      ]
+    },
+    {
+      "name": "test_rms_small_large_zero_and_low_precision",
+      "line": 99,
+      "checks": [
+        "self.subTest(dtype=dtype, scale=scale)",
+        "self.assertEqual(y.dtype, dtype)",
+        "self.assertTrue(torch.isfinite(y).all().item())",
+        "self.assertTrue(torch.isfinite(x.grad).all().item())"
+      ]
+    },
+    {
+      "name": "test_plain_and_geglu_formula",
+      "line": 112,
+      "checks": [
+        "self.subTest(cls=cls.__name__)",
+        "self.assertParity(m(x), ref, (x, *m.parameters()))",
+        "self.assertEqual(m.fc1.out_features, 16)",
+        "self.assertEqual(m.fc_in.out_features, 32)",
+        "self.assertEqual(m.fc_out.in_features, 16)"
+      ]
+    },
+    {
+      "name": "test_sdpa_matches_explicit_attention_and_gradients",
+      "line": 127,
+      "checks": [
+        "self.subTest(module=type(m).__name__, qk_norm=type(m.q_norm).__name__)",
+        "self.assertParity(actual, reference, (*inputs, *m.parameters()))"
+      ]
+    },
+    {
+      "name": "test_front_order_history_object_and_live_gradients",
+      "line": 145,
+      "checks": [
+        "self.subTest(structured=structured)",
+        "self.assertEqual(calls, names)",
+        "self.assertEqual(tuple(y.shape), (2, 35, 16))",
+        "self.assertEqual(tuple(t.shape), (2, 5, 16))",
+        "self.assertIs(t, history_seen[0])",
+        "self.assertGreater(t.grad.abs().max().item(), 0)",
+        "self.assertLiveGradients(block, (x,))",
+        "torch.testing.assert_close(x.detach(), saved, atol=0, rtol=0)",
+        "torch.testing.assert_close(t, t2, atol=0, rtol=0)",
+        "torch.testing.assert_close(y2, y.detach() + 1)"
+      ]
+    },
+    {
+      "name": "test_front_down_zero_and_bridge_query_residual",
+      "line": 179,
+      "checks": [
+        "self.assertFalse(hasattr(front.down, 'to_q'))",
+        "torch.testing.assert_close(front.down(x), torch.zeros(2, 5, 16), atol=0, rtol=0)",
+        "torch.testing.assert_close(bridge(x), bridge.latent_queries.expand(2, -1, -1), atol=0, rtol=0)",
+        "self.assertFalse(any((isinstance(m, (PlainFFN, GEGLUFFN, ConvFFN)) for m in bridge.modules())))",
+        "self.assertFalse(any(('encoder_ff' in name for name, _ in bridge.named_parameters())))"
+      ]
+    },
+    {
+      "name": "test_bridge_formula_and_gradients",
+      "line": 192,
+      "checks": [
+        "self.assertParity(bridge(x), reference, (x, *bridge.parameters()))",
+        "self.assertLiveGradients(bridge, (x,))"
+      ]
+    },
+    {
+      "name": "test_persistent_same_normalized_qkv_and_formula",
+      "line": 202,
+      "checks": [
+        "self.assertEqual(len(norm_calls), 1)",
+        "self.assertEqual(len(seen), 3)",
+        "self.assertTrue(all((x is norm_calls[0] for x in seen)))",
+        "self.assertParity(actual, ref, (z, *m.parameters()))",
+        "self.assertLiveGradients(m, (z,))"
+      ]
+    },
+    {
+      "name": "test_parameter_identity_and_storage_are_independent",
+      "line": 223,
+      "checks": [
+        "self.assertEqual(len(params), len({id(p) for p in params}))",
+        "self.assertEqual(len(params), len({p.data_ptr() for p in params}))",
+        "self.assertIsNot(front1.down.to_k, front1.up.to_k)",
+        "self.assertEqual(sum((isinstance(layer, GEGLUFFN) for layer in m.modules())), 1)",
+        "self.assertFalse(any((isinstance(layer, nn.Conv2d) for layer in m.modules())))",
+        "torch.testing.assert_close(value, snapshot[name], atol=0, rtol=0)"
+      ]
+    },
+    {
+      "name": "test_readout_query_context_residual_and_output_norm",
+      "line": 240,
+      "checks": [
+        "self.assertEqual(tuple(y.shape), (2, 35, 3))",
+        "torch.testing.assert_close(seen[0][0], rms(x, m.query_norm.weight))",
+        "torch.testing.assert_close(seen[0][1], rms(z, m.latent_norm.weight))",
+        "self.assertIsInstance(m.output_norm, nn.LayerNorm)",
+        "torch.testing.assert_close(features, x, atol=0, rtol=0)",
+        "torch.testing.assert_close(m(x, z), linear(layer_norm(x, m.output_norm), m.output))"
+      ]
+    },
+    {
+      "name": "test_readout_formula_and_gradients",
+      "line": 260,
+      "checks": [
+        "self.subTest(structured=structured)",
+        "self.assertParity(m(x, z), ref, (x, z, *m.parameters()))",
+        "self.assertLiveGradients(m, (x, z))"
+      ]
+    },
+    {
+      "name": "test_conv_5_by_7_row_major_channel_mixing",
+      "line": 276,
+      "checks": [
+        "torch.testing.assert_close(seen[0], expected_conv, atol=1e-12, rtol=1e-12)",
+        "self.assertParity(actual, ref, leaves)",
+        "self.assertEqual(m.conv.groups, 1)",
+        "self.assertFalse(noncontiguous.is_contiguous())",
+        "torch.testing.assert_close(m(noncontiguous, (5, 7)), actual)"
+      ]
+    },
+    {
+      "name": "test_point_permutation_latent_permutation_and_batch_isolation",
+      "line": 310,
+      "checks": [
+        "torch.testing.assert_close(yp, y[:, perm], atol=2e-06, rtol=1e-05)",
+        "torch.testing.assert_close(tp, t, atol=2e-06, rtol=1e-05)",
+        "torch.testing.assert_close(readout(x[:, perm], z[:, lp]), out[:, perm], atol=2e-06, rtol=1e-05)",
+        "torch.testing.assert_close(single, y[index:index + 1], atol=2e-06, rtol=1e-05)",
+        "torch.testing.assert_close(single_t, t[index:index + 1], atol=2e-06, rtol=1e-05)"
+      ]
+    },
+    {
+      "name": "test_norm_bias_and_ffn_default_policies",
+      "line": 325,
+      "checks": [
+        "self.assertIsNotNone(attn.to_out.bias)",
+        "self.assertIsNot(attn.q_norm.weight, attn.k_norm.weight)",
+        "self.assertIsInstance(attn.q_norm, nn.Identity)",
+        "self.assertIsInstance(attn.k_norm, nn.Identity)",
+        "self.assertIsInstance(norm, nn.LayerNorm)",
+        "self.assertIsInstance(getattr(front, name), RMSNorm)",
+        "self.assertIsInstance(getattr(readout, name), RMSNorm)",
+        "self.assertIsNone(ffn.fc1.bias)",
+        "self.assertIsNotNone(ffn.fc2.bias)",
+        "self.assertIsInstance(ffn.norm, nn.LayerNorm)",
+        "self.assertEqual(ffn.conv.kernel_size, (3, 3))",
+        "self.assertEqual(ffn.conv.groups, 1)",
+        "self.assertIsInstance(norm, RMSNorm)",
+        "self.assertEqual(tuple(norm.weight.shape), (4,))",
+        "self.assertIsNone(getattr(attn, name).bias)",
+        "self.assertEqual(layer.eps, 1e-06)",
+        "torch.testing.assert_close(layer.weight, torch.ones_like(layer.weight), atol=0, rtol=0)",
+        "torch.testing.assert_close(layer.bias, torch.zeros_like(layer.bias), atol=0, rtol=0)",
+        "torch.testing.assert_close(layer.bias, torch.zeros_like(layer.bias), atol=0, rtol=0)"
+      ]
+    },
+    {
+      "name": "test_initialization_once_queries_and_default_conv",
+      "line": 364,
+      "checks": [
+        "self.assertEqual(set(actual), expected)",
+        "self.assertTrue(all((count == 1 for count in actual.values())))",
+        "self.assertTrue(all((call.kwargs['std'] == 0.02 for call in trunc.call_args_list)))",
+        "self.assertEqual(ortho.call_count, 2)",
+        "self.assertEqual(normal.call_count, 1)",
+        "self.assertEqual(normal.call_args.kwargs['std'], 0.02)",
+        "torch.testing.assert_close(conv.weight, reference_conv.weight, atol=0, rtol=0)",
+        "torch.testing.assert_close(conv.bias, reference_conv.bias, atol=0, rtol=0)",
+        "torch.testing.assert_close(gram, torch.eye(min(count, 16)), atol=1e-06, rtol=1e-06)"
+      ]
+    },
+    {
+      "name": "test_invalid_dimensions_ratios_and_grid_fail_early",
+      "line": 389,
+      "checks": [
+        "down.assert_not_called()",
+        "self.assertRaisesRegex(ValueError, 'batch sizes')",
+        "self.subTest(args=args)",
+        "self.assertRaises(ValueError)",
+        "self.subTest(ratio=ratio)",
+        "self.assertRaises(ValueError)",
+        "self.subTest(grid=grid)",
+        "self.assertRaises(ValueError)"
+      ]
+    },
+    {
+      "name": "test_cpu_autocast_bfloat16_individual_modules",
+      "line": 406,
+      "checks": [
+        "self.subTest(module=type(module).__name__)",
+        "self.assertLiveGradients(module, inputs)",
+        "self.assertTrue(all((torch.isfinite(x).all().item() for x in outputs)))"
+      ]
+    },
+    {
+      "name": "test_small_cuda_fp32_and_amp",
+      "line": 438,
+      "checks": [
+        "unittest.skipUnless(torch.cuda.is_available(), 'CUDA unavailable; GPU module checks not run')",
+        "self.subTest(dtype=dtype, structured=structured)",
+        "self.assertTrue(torch.isfinite(actual).all().item())",
+        "torch.testing.assert_close(actual.float().cpu(), expected, atol=tolerance, rtol=0.02 if dtype else 1e-05)",
+        "self.assertIsNotNone(p.grad)",
+        "self.assertTrue(torch.isfinite(p.grad).all().item())"
+      ]
+    }
+  ],
+  "tests/test_msar_config.py": [
+    {
+      "name": "test_resolved_profiles_all_tasks_and_independent_schema",
+      "line": 58,
+      "checks": [
+        "self.assertEqual(resolve_training('darcy', {}).architecture, MSARArchitectureConfig())",
+        "self.subTest(task=task, profile=profile)",
+        "self.assertEqual(cfg.family, FAMILY)",
+        "self.assertEqual(cfg.d, d)",
+        "self.assertEqual(list(cfg.num_latents), tokens)",
+        "self.assertEqual(cfg.heads, (4, 4, 8, 8))",
+        "self.assertEqual(cfg.encoder_depths, cfg.decoder_depths)",
+        "self.assertEqual(cfg.encoder_depths, (3, 1, 1, 1))",
+        "self.assertEqual(sum(cfg.encoder_depths) + sum(cfg.decoder_depths), 12)",
+        "self.assertEqual(cfg.latent_ffn_hidden, 2 * d)",
+        "self.assertEqual((cfg.activation, cfg.point_module), ('gelu', 'pointwise_mlp'))",
+        "self.assertEqual((resolved.training.coverage_mode, resolved.training.coverage_weight, resolved.training.coverage_kappa), ('floor', 0.01, 0.2))",
+        "self.assertEqual(resolved.to_dict()['profile_overrides'], [])",
+        "self.assertNotIn(key, cfg.to_dict())"
+      ]
+    },
+    {
+      "name": "test_list_shapes_integer_types_and_fixed_depths",
+      "line": 79,
+      "checks": [
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaisesRegex(ValueError, 'v1 requires')",
+        "self.assertRaises(ValueError)",
+        "self.subTest(name=name, value=value)",
+        "self.assertRaisesRegex(ValueError, 'exactly four')",
+        "self.subTest(name=name, invalid=invalid)",
+        "self.assertRaises(ValueError)"
+      ]
+    },
+    {
+      "name": "test_fixed_behaviors_and_json_strict_roundtrip",
+      "line": 96,
+      "checks": [
+        "self.assertEqual(cfg.num_latents, (512, 256, 128, 64))",
+        "self.assertEqual(profile_values()['num_latents'], [512, 256, 128, 64])",
+        "self.assertEqual(cls.from_dict(raw), cfg)",
+        "self.subTest(key=key)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaisesRegex(ValueError, 'unknown')",
+        "self.assertRaisesRegex(ValueError, 'missing')"
+      ]
+    },
+    {
+      "name": "test_training_objective_validation_and_effective_off",
+      "line": 113,
+      "checks": [
+        "self.assertTrue(MSARTrainingConfig(coverage_kappa=0).coverage_enabled)",
+        "self.assertEqual(MSARTrainingConfig(coverage_kappa=1).coverage_kappa, 1)",
+        "self.assertFalse(cfg.coverage_enabled)",
+        "self.assertEqual(cfg.effective_coverage_mode, 'off')",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)",
+        "self.subTest(name=name, value=value)",
+        "self.assertRaises(ValueError)"
+      ]
+    },
+    {
+      "name": "test_expansion_record_does_not_clip_full_or_change_config",
+      "line": 127,
+      "checks": [
+        "self.assertTrue(layout['first_down_expands'])",
+        "self.assertEqual(layout['token_path'], [972, 1024, 512, 256, 128])",
+        "self.assertEqual(cfg.to_dict(), before)",
+        "self.assertFalse(input_layout(cfg, 2048)['first_down_expands'])",
+        "self.assertRaises(ValueError)"
+      ]
+    },
+    {
+      "name": "test_real_parser_styles_cli_priority_and_no_original_mutation",
+      "line": 136,
+      "checks": [
+        "self.subTest(entry=name)",
+        "self.assertEqual(resolved.architecture.d, 96)",
+        "self.assertEqual(resolved.architecture.num_latents, (512, 256, 128, 64))",
+        "self.assertEqual(full.architecture.d, 192)",
+        "self.assertEqual(two.architecture.latent_ffn_hidden, 192)",
+        "self.assertEqual((override.architecture.d, override.architecture.num_latents), (128, (64, 32, 16, 8)))",
+        "self.assertFalse(override.training.coverage_enabled)",
+        "self.assertFalse(override.training.diagnostics)",
+        "self.assertEqual(vars(parser.parse_args(required)), defaults)",
+        "self.assertEqual([(a.dest, a.default, a.choices) for a in parser._actions], before)"
+      ]
+    },
+    {
+      "name": "test_existing_profile_defaults_are_not_promoted_to_explicit",
+      "line": 163,
+      "checks": [
+        "self.assertEqual(explicit_arguments(copy_parser, []), {})",
+        "self.assertEqual(resolve_training('pipe', explicit_arguments(copy_parser, [])).architecture.d, 96)",
+        "self.assertEqual(cfg.architecture.d, 64)",
+        "self.assertEqual(cfg.architecture.num_latents, (1024, 512, 256, 128))",
+        "self.assertEqual(parser.parse_args([]).profile, 'kcdno_v1')",
+        "self.assertRaisesRegex(ValueError, 'not applicable')",
+        "self.assertRaisesRegex(ValueError, 'conflicting')"
+      ]
+    },
+    {
+      "name": "test_old_family_delegation_and_inapplicable_flags",
+      "line": 177,
+      "checks": [
+        "self.assertEqual(family_for_model_key(FAMILY), FAMILY)",
+        "self.assertIsNone(family_for_model_key(key))",
+        "self.assertIsNone(parse_training_options(parser, ['--coverage-mode', 'floor'], task='darcy', model_key=key))",
+        "self.assertRaisesRegex(ValueError, 'unknown')",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)",
+        "self.subTest(key=key)",
+        "self.assertRaisesRegex(ValueError, 'not applicable')",
+        "self.assertRaises(ValueError)"
+      ]
+    },
+    {
+      "name": "test_metadata_all_protocols_roundtrip_without_weight_claims",
+      "line": 193,
+      "checks": [
+        "self.assertEqual(replace(sidecar('airfrans'), checkpoint_format='whole_model').checkpoint_format, 'whole_model')",
+        "self.assertEqual(load_metadata(path), meta)",
+        "self.assertEqual(resolve_evaluation(path, {}, task=task).saved.architecture, meta.architecture)",
+        "self.assertEqual(path.read_bytes(), before)",
+        "self.assertRaises(MSARMetadataMismatch)",
+        "self.assertRaises(FileExistsError)"
+      ]
+    },
+    {
+      "name": "test_evaluation_reads_first_coverage_changes_allowed_structure_conflicts_rejected",
+      "line": 207,
+      "checks": [
+        "self.assertEqual(resolved.saved.architecture.d, 192)",
+        "self.assertEqual(resolved.saved.training.coverage_mode, 'floor')",
+        "self.assertFalse(resolved.requested_training.coverage_enabled)",
+        "self.assertEqual(set(resolved.training_differences), {'coverage_mode', 'coverage_weight'})",
+        "self.assertEqual(set(resolved.runtime_differences), {'device', 'batch_size', 'sdpa_backend'})",
+        "self.assertEqual(path.read_bytes(), before)",
+        "self.assertEqual(resolved.saved.architecture.d, 192)",
+        "self.assertEqual(resolved.requested_profile, 'light')",
+        "self.assertEqual(compare_architecture(saved.architecture, resolve_profile('light')), ['d', 'num_latents'])",
+        "self.assertRaises(FileNotFoundError)",
+        "self.assertEqual(path.read_bytes(), before)",
+        "self.assertRaisesRegex(ValueError, 'task mismatch')",
+        "self.subTest(kw=kw)",
+        "self.assertRaises(ValueError)"
+      ]
+    },
+    {
+      "name": "test_corrupt_metadata_family_schema_and_legacy_dispatch",
+      "line": 229,
+      "checks": [
+        "self.assertIsNone(checkpoint_family({'architecture': {'family': FAMILY}}))",
+        "self.assertEqual(checkpoint_family({'family': 'kcdno'}), 'kcdno')",
+        "self.assertRaises(ValueError)",
+        "self.assertIsNone(checkpoint_family(payload))",
+        "self.assertEqual(load_sidecar(path)['architecture']['model_name'], 'CDLNO')",
+        "self.assertEqual(path.read_bytes(), before)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)"
+      ]
+    },
+    {
+      "name": "test_isolated_paths_named_runs_exclusive_reservation",
+      "line": 251,
+      "checks": [
+        "self.assertEqual(len(set(paths)), 4)",
+        "self.assertIn('coverage_off', new_run_path(directory, resolved).parts)",
+        "self.assertNotEqual(new_run_path(directory, resolved), new_run_path(directory, resolved))",
+        "self.assertEqual(path, Path(directory) / 'darcy' / FAMILY / profile / ('coverage_' + mode) / 'user_seed0')",
+        "self.assertFalse(path.exists())",
+        "self.assertEqual((path / 'keep.txt').read_text(), 'preserve')",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(FileExistsError)"
+      ]
+    },
+    {
+      "name": "test_fresh_cwds_torch_free_import_package_discovery_and_preview",
+      "line": 270,
+      "checks": [
+        "self.assertIn('cdlno.msar_lno', find_packages(ROOT, include=['cdlno*']))",
+        "self.assertEqual(p.returncode, 0, p.stderr)",
+        "self.assertEqual(p.returncode, 0, p.stderr)",
+        "self.assertEqual(data['architecture']['num_latents'][0], 1024)",
+        "self.assertTrue(data['input_layout']['first_down_expands'])",
+        "self.assertEqual(list(Path(directory).iterdir()), [])"
+      ]
+    }
+  ],
+  "tests/test_performance.py": [
+    {
+      "name": "test_matched_composition_head_stem_independence_and_manual_forward",
+      "line": 41,
+      "checks": [
+        "torch.testing.assert_close(matched.preprocess[0].weight, off.preprocess[0].weight, rtol=0, atol=0)",
+        "torch.testing.assert_close(matched.core.output.weight, off.core.readout.output.weight, rtol=0, atol=0)",
+        "torch.testing.assert_close(matched.core.output_norm.weight, off.core.readout.output_norm.weight, rtol=0, atol=0)",
+        "self.assertEqual(matched.core.output_norm.eps, 1e-06)",
+        "self.assertEqual(sum((isinstance(m, LRSAFrontBlock) for m in modules)), 8)",
+        "self.assertEqual(sum((isinstance(m, ConvFFN) for m in modules)), 8)",
+        "self.assertFalse(any((isinstance(m, (IPOTBridge, CDPA, PersistentLatentBlock, LRSAFeatureReadout)) for m in modules)))",
+        "self.assertEqual(len(weights), len({id(p) for _, p in weights}))",
+        "self.assertEqual(len(weights), len({p.untyped_storage().data_ptr() for _, p in weights}))",
+        "torch.testing.assert_close(matched(*args), expected, rtol=0, atol=0)",
+        "self.assertTrue(all((p.grad is not None and torch.isfinite(p.grad).all() for p in matched.parameters())))",
+        "self.assertFalse(any((m._forward_hooks or m._forward_pre_hooks for m in matched.modules())))"
+      ]
+    },
+    {
+      "name": "test_live_counts_formulas_and_chunk_invariant_matrix_cost",
+      "line": 66,
+      "checks": [
+        "self.assertEqual([a['counts'][k] for k in ('down_bridge', 'up_readout', 'latent_sa', 'structured_convffn')], [8, 8, 8, 8])",
+        "self.assertEqual(a['matrix_macs_by_component']['non_cdpa_sdpa_qk_av'], 2 * b * d * (2 * l * n * m + l * m * m))",
+        "self.assertEqual([c[k] for k in ('down_bridge', 'up_readout', 'latent_sa', 'structured_convffn')], [3, 3, 8, 3])",
+        "self.assertEqual(c['cdpa_logical_sources'], sources)",
+        "self.assertEqual(c['cdpa_locations'], locations)",
+        "self.assertEqual(c['history_sdpa_calls'], expected_calls)",
+        "self.assertEqual(c['all_sdpa_calls'], 14 + expected_calls)",
+        "self.assertTrue(all((row['k'][-2] == m for row in a['sdpa'] if '.cdpa_at.' in row['path'])))",
+        "self.assertEqual(attention, 2 * b * d * (2 * (f + 1) * n * m + (l + sources) * m * m))",
+        "self.assertEqual(costs.get('cdpa', 0), b * m * d * d * (locations + 3 * sources))",
+        "self.assertEqual(costs['front_two_latent_ffns'], f * 4 * case.ratio * b * m * d * d)",
+        "self.assertEqual(costs['rear_geglu'], (l - f) * 3 * case.ratio * b * m * d * d)",
+        "self.assertEqual(costs['point_ffn_dense_conv'], 3 * 9 * b * n * d * d)",
+        "self.assertFalse(a['parameters']['missing_grad_names'])",
+        "self.assertFalse(any((mod._forward_hooks or mod._forward_pre_hooks for mod in model.modules())))",
+        "self.assertEqual(a['matrix_macs'], previous)"
+      ]
+    },
+    {
+      "name": "test_projection_ffn_and_dense_conv_all_counted_against_closed_form",
+      "line": 96,
+      "checks": [
+        "self.assertEqual(matched['matrix_macs'], stem + head + l * front + 2 * b * d * (2 * l * n * m + l * m * m))",
+        "self.assertEqual(result['matrix_macs'], expected)"
+      ]
+    },
+    {
+      "name": "test_front_modes_live_counts_whole_model_costs_and_actual_parameters",
+      "line": 112,
+      "checks": [
+        "self.subTest(cdpa=name, mode=mode, chunk=chunk)",
+        "self.assertEqual([c[k] for k in ('front_sa', 'front_latent_ffn', 'rear_sa', 'rear_ffn')], [f if mode == 'full' else 0, 2 * f if mode != 'identity' else 0, l - f, l - f])",
+        "self.assertEqual(c['latent_sa'], sa)",
+        "self.assertEqual([c[k] for k in ('down_bridge', 'up_readout', 'structured_convffn')], [f + 1] * 3)",
+        "self.assertEqual(c['cdpa_logical_sources'], sources)",
+        "self.assertEqual(c['history_sdpa_calls'], calls)",
+        "self.assertEqual(c['all_sdpa_calls'], 2 * (f + 1) + sa + calls)",
+        "self.assertEqual(costs.get('cdpa', 0), b * m * d * d * (locations + 3 * sources))",
+        "self.assertEqual(costs.get('front_two_latent_ffns', 0), 0 if mode == 'identity' else f * 4 * r * b * m * d * d)",
+        "self.assertEqual(costs['rear_geglu'], (l - f) * 3 * r * b * m * d * d)",
+        "self.assertEqual(costs['point_ffn_dense_conv'], (f + 1) * 9 * b * n * d * d)",
+        "self.assertEqual(a['matrix_macs'], full['matrix_macs'] - removed_macs)",
+        "self.assertEqual(a['matrix_flops_2_per_mac'], 2 * a['matrix_macs'])",
+        "self.assertEqual(a['parameters']['registered'], full_parameters - removed_params)",
+        "self.assertEqual(a['parameters']['requires_grad'], sum((p.numel() for p in model.parameters())))",
+        "self.assertEqual(sum(a['parameters']['by_component'].values()), a['parameters']['registered'])",
+        "self.assertFalse(a['parameters']['missing_grad_names'])",
+        "self.assertEqual(a['matrix_macs'], expected)",
+        "self.assertFalse(any(('.latent_sa.' in k for k in model.state_dict())))",
+        "self.assertFalse(any(('latent_ffn_' in k for k in model.state_dict())))"
+      ]
+    },
+    {
+      "name": "test_matched_lrsa_and_transolver_are_full_even_for_ablation_request",
+      "line": 154,
+      "checks": [
+        "self.assertEqual(actual.front_latent_mode, 'full')",
+        "torch.testing.assert_close(model.state_dict(), baseline.state_dict(), atol=0, rtol=0)",
+        "self.assertEqual(model.config.front_latent_mode, 'full')",
+        "self.assertTrue(all((block.front_latent_mode == 'full' for block in model.core.blocks)))",
+        "self.assertEqual([a['counts'][k] for k in ('front_sa', 'front_latent_ffn', 'rear_sa', 'rear_ffn')], [case.L, 2 * case.L, 0, 0])"
+      ]
+    },
+    {
+      "name": "test_transolver_actual_per_head_projection_and_unused_parameters",
+      "line": 169,
+      "checks": [
+        "self.assertTrue(result['parameters']['missing_grad_names'])",
+        "self.assertTrue(all(('mlp_new' in n for n in result['parameters']['missing_grad_names'])))",
+        "self.assertEqual(result['matrix_macs'], expected)",
+        "self.assertEqual(result['counts']['all_sdpa_calls'], 0)",
+        "self.assertEqual(result['counts']['transolver_physics_attention'], 8)"
+      ]
+    },
+    {
+      "name": "test_chunk_same_weights_output_all_gradients_and_memory_ledgers",
+      "line": 185,
+      "checks": [
+        "self.assertEqual(len(set(raw_costs)), 1)",
+        "self.assertEqual(a['storage']['h_f_payload_bytes'], case.B * case.N * case.d * 4)",
+        "self.assertEqual(a['storage']['largest_history_list_payload_bytes'], 7 * case.B * case.M * case.d * 4)",
+        "self.assertGreater(a['storage']['saved_activation_unique_backing_bytes'], 0)",
+        "self.assertTrue(any(('stack' in k and 'cdpa_at' in k for k in a['temporary_materializations'])))",
+        "self.assertTrue(all((row['dtype'] == 'torch.float32' for row in a['depth_work_estimate'])))",
+        "self.assertTrue(compare(ref, actual, 'fp32')['passed'])"
+      ]
+    },
+    {
+      "name": "test_zero_front_extended_depth_and_invalid_inputs",
+      "line": 203,
+      "checks": [
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaisesRegex(ValueError, 'front_latent_mode')",
+        "self.assertRaises(ValueError)",
+        "self.assertEqual(a['counts']['cdpa_logical_sources'], s)",
+        "self.assertEqual(a['counts']['latent_sa'], l if mode == 'full' else l - f)",
+        "self.assertEqual(a['counts']['front_latent_ffn'], 2 * f if mode != 'identity' else 0)"
+      ]
+    },
+    {
+      "name": "test_task_preset_comparison_matches_current_sources",
+      "line": 220,
+      "checks": [
+        "self.assertEqual((old.d, old.h, old.M, old.L, old.B), (get('--n-hidden'), get('--n-heads'), get('--slice_num'), get('--n-layers'), get('--batch-size')))",
+        "self.assertEqual((new.d, new.h, new.M, new.L, new.F), (preset['n_hidden'], preset['n_heads'], preset['slice_num'], preset['n_layers'], preset['front_blocks']))",
+        "self.assertEqual((old.d, old.h, old.M, old.L), (kw['n_hidden'], kw['n_head'], kw['slice_num'], kw['n_layers']))"
+      ]
+    },
+    {
+      "name": "test_all_eight_task_wrapper_and_original_baseline_synthetic_calls",
+      "line": 242,
+      "checks": [
+        "self.assertFalse(any((n.startswith('exp_') for n in sys.modules)))",
+        "self.assertEqual(out.shape, target.shape)",
+        "self.assertTrue(all((torch.isfinite(p.grad).all() for p in model.parameters() if p.grad is not None)))"
+      ]
+    },
+    {
+      "name": "test_initialized_optimizer_timing_quantiles_and_profiler_gap",
+      "line": 257,
+      "checks": [
+        "self.assertTrue(p['observed_sdpa_ops'])",
+        "self.assertFalse(any((m._forward_hooks or m._forward_pre_hooks for m in model.modules())))",
+        "self.assertEqual(r['optimizer']['successful_steps_per_active_parameter'], [4])",
+        "self.assertGreater(r['optimizer']['state_tensor_bytes'], 0)",
+        "self.assertEqual(quantiles([1, 2, 3, 4, 5])['p90_ms'], 4.6)",
+        "self.assertIsNone(r[key]['peak_allocated_bytes'])",
+        "self.assertGreaterEqual(r[key]['p90_ms'], r[key]['median_ms'])"
+      ]
+    },
+    {
+      "name": "test_fresh_cli_no_overwrite_and_python310_syntax",
+      "line": 272,
+      "checks": [
+        "self.assertEqual(result.returncode, 0, result.stderr + result.stdout)",
+        "self.assertFalse(data['errors'])",
+        "self.assertEqual(len(data['results']), 11)",
+        "self.assertTrue(all((r['status'] == 'passed' for r in data['results'])))",
+        "self.assertNotEqual(result.returncode, 0)",
+        "self.assertEqual(path.read_bytes(), content)",
+        "self.assertEqual(result.returncode, 0, result.stderr + result.stdout)",
+        "self.assertEqual(row['config']['front_latent_mode'], 'identity' if row['model'].startswith('cdlno_') else 'full')",
+        "self.assertEqual(row['cost']['counts']['front_latent_ffn'], 0)"
+      ]
+    },
+    {
+      "name": "test_precision_global_settings_restored",
+      "line": 295,
+      "checks": [
+        "self.assertEqual(old, new)",
+        "self.assertEqual(torch.get_float32_matmul_precision(), 'highest')",
+        "self.assertFalse(torch.backends.cudnn.allow_tf32)"
+      ]
+    }
+  ],
+  "tests/test_periodic_visualization.py": [
+    {
+      "name": "test_frequency_static_real_wrappers_and_original_decode",
+      "line": 72,
+      "checks": [
+        "self.assertEqual([e for e in range(1, 104) if due(e, 103)], [50, 100, 103])",
+        "self.assertTrue(due(398, 398))",
+        "self.assertFalse(due(0, 500))",
+        "self.subTest(task=task)",
+        "self.assertIsNone(viz.after_epoch(m, 49, 500, dataset=data, **options))",
+        "render.assert_not_called()",
+        "self.assertEqual(event['status'], 'completed')",
+        "np.testing.assert_allclose(field['prediction'][:, 0], expected[0].numpy(), rtol=1e-06)",
+        "np.testing.assert_array_equal(field['truth'][:, 0], data.tensors[2][0].numpy())",
+        "np.testing.assert_allclose(field['coordinates'], coords[0].numpy())",
+        "self.assertEqual(field['grid_shape'], shape)",
+        "self.assertEqual(scales, {p.name: p.read_bytes() for p in (viz.directory / 'scales').glob('*')})"
+      ]
+    },
+    {
+      "name": "test_NS_prediction_feedback_and_plasticity_twenty_separate_conditions",
+      "line": 99,
+      "checks": [
+        "self.assertEqual(result['status'], 'completed')",
+        "self.assertEqual(len(inputs), 2 * length)",
+        "self.assertEqual(saved['prediction'].shape, (shape[0] * shape[1], 1 if task == 'ns' else 4, length))",
+        "self.assertTree(args[1], expected)",
+        "self.assertTree(args[1], data.tensors[2][case:case + 1])",
+        "self.assertTree(kwargs['T'], data.tensors[1][case:case + 1, t:t + 1])"
+      ]
+    },
+    {
+      "name": "test_observer_exact_training_rng_optimizer_and_failure_isolation",
+      "line": 125,
+      "checks": [
+        "self.assertEqual(event['status'], 'completed')",
+        "self.assertTree(capture_rng(), rng)",
+        "self.assertTree(m.state_dict(), before)",
+        "self.assertEqual(flags, [p.training for p in m.modules()])",
+        "self.assertEqual(event['status'], 'failed')",
+        "self.assertTree(capture_rng(), rng)",
+        "self.assertTree(m.state_dict(), control.state_dict())",
+        "self.assertTree(opt.state_dict(), oc.state_dict())",
+        "self.assertTree(scheduler.state_dict(), sc.state_dict())",
+        "self.assertTree(p.grad, g)",
+        "self.assertLogs('cdlno.periodic_visualization', level='WARNING')"
+      ]
+    },
+    {
+      "name": "test_real_PyG_car_and_air_decoding_masks_inputs",
+      "line": 152,
+      "checks": [
+        "self.assertEqual(event['status'], 'completed')",
+        "np.testing.assert_allclose(saved['truth'], g.y.numpy() * (norm[3] + 1e-08) + norm[2])",
+        "self.skipTest('real PyG absent')",
+        "self.assertTree(g[k], before[k])",
+        "np.testing.assert_array_equal(surface['display_mask'], g.surf.numpy())",
+        "self.assertEqual(surface['coordinates'].shape, (23, 3))",
+        "self.assertFalse(np.any(volume['display_mask'] & g.surf.numpy()))",
+        "self.assertEqual(volume['coordinate_labels'], ('$x$', '$z$'))",
+        "self.assertEqual(render.call_args_list[0].kwargs['prediction'].shape, (23, 4))",
+        "self.assertIn('not the official', render.call_args_list[0].kwargs['metadata']['caption_note'])"
+      ]
+    },
+    {
+      "name": "test_air_real_sampling_graph_dependency",
+      "line": 186,
+      "checks": [
+        "self.assertEqual(event['status'], 'completed')",
+        "self.assertEqual(viz.cases[0][0].x.shape, (19, 7))",
+        "self.skipTest('real torch_cluster missing: AirfRANS sampling/graph integration not executed')"
+      ]
+    },
+    {
+      "name": "test_production_hooks_preserve_complete_AST",
+      "line": 198,
+      "checks": [
+        "self.skipTest('pre-visualization source snapshot absent; set CDLNO_VISUALIZATION_BASELINE')",
+        "self.subTest(file=file)",
+        "self.assertEqual(ast.dump(strip_visualization(source)), ast.dump(old))"
+      ]
+    },
+    {
+      "name": "test_real_export_caption_fonts_and_color_saturation",
+      "line": 210,
+      "checks": [
+        "self.assertEqual(event['status'], 'completed')",
+        "self.assertEqual(style, dict(mpl.rcParams))",
+        "self.assertEqual(info['png_dpi'], 600)",
+        "self.assertEqual(info['typography']['pdf.fonttype'], 42)",
+        "self.assertIn('Training seed: 2.', (path / 'caption.txt').read_text())",
+        "self.assertTrue((path / 'caption.tex').read_text().startswith('\\\\caption{'))",
+        "self.assertTrue((path / 'fields.pdf').read_bytes().startswith(b'%PDF'))",
+        "np.testing.assert_allclose(values['signed_error'], values['prediction'] - values['truth'])"
+      ]
+    },
+    {
+      "name": "test_CDLNO_modes_and_matched_share_observer_without_math_changes",
+      "line": 224,
+      "checks": [
+        "self.assertEqual(event['status'], 'completed')",
+        "self.assertTree(before, m.state_dict())"
+      ]
+    }
+  ],
+  "tests/test_shapenet_car.py": [
+    {
+      "name": "test_defaults_active_parameters_and_three_modes",
+      "line": 80,
+      "checks": [
+        "self.assertEqual((a.n_hidden, a.n_heads, a.slice_num, a.n_layers, a.front_blocks), (256, 8, 64, 8, 2))",
+        "self.assertEqual((a.nb_epochs, a.batch_size, a.lr, a.weight), (200, 1, 0.001, 0.5))",
+        "self.assertEqual(out.shape, (9, 4))",
+        "self.assertFalse(hasattr(m, 'time_fc'))",
+        "self.assertFalse(any((isinstance(n, nn.Conv2d) for n in m.modules())))",
+        "self.assertEqual(m.preprocess[0].in_features, 7)",
+        "self.assertEqual(m.placeholder.shape, (256,))",
+        "self.assertGreater(x.grad.abs().max().item(), 0)",
+        "self.assertGreater(m.placeholder.grad.abs().max().item(), 0)",
+        "self.assertIsNotNone(p.grad, name)",
+        "self.assertTrue(torch.isfinite(p.grad).all(), name)",
+        "self.assertTrue(torch.equal(cdpa.w, torch.zeros_like(cdpa.w)))"
+      ]
+    },
+    {
+      "name": "test_baseline_lifting_placeholder_and_query_initialization",
+      "line": 103,
+      "checks": [
+        "torch.testing.assert_close(captured[0], old.preprocess(x) + old.placeholder[None, None], rtol=0, atol=0)",
+        "self.assertTrue(((m.placeholder >= 0) & (m.placeholder < 1 / 16)).all())",
+        "torch.testing.assert_close(q @ q.T, torch.eye(4), atol=5e-07, rtol=1e-06)"
+      ]
+    },
+    {
+      "name": "test_parser_overrides_legacy_and_invalid_contracts",
+      "line": 123,
+      "checks": [
+        "self.assertEqual((m.config.L, m.config.F, m.config.P, m.config.M), (12, 7, 5, 32))",
+        "self.assertEqual((m.config.ffn_ratio, m.config.latent_ffn_ratio), (3, 4))",
+        "self.assertEqual({k: getattr(old, k) for k in vars(base)}, vars(base))",
+        "self.assertRaises(TypeError)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(SystemExit)"
+      ]
+    },
+    {
+      "name": "test_run_isolation_and_sidecar_before_load",
+      "line": 142,
+      "checks": [
+        "self.assertEqual(json.loads(before)['runtime']['source_chunk_size'], 0)",
+        "self.assertNotEqual(evaluation.result_dir, another.result_dir)",
+        "self.assertEqual(Path(evaluation.result_dir).parent, run.directory)",
+        "self.assertEqual(loaded.core.source_chunk_size, 1)",
+        "torch.testing.assert_close(m((x, None)), loaded((x, None)), atol=1e-05, rtol=0.0003)",
+        "self.assertEqual(run.sidecar.read_bytes(), before)",
+        "self.assertEqual(run.checkpoint.read_bytes(), checkpoint_before)",
+        "self.assertFalse(run.sidecar.exists())",
+        "self.assertRaises(FileExistsError)",
+        "self.assertEqual(loading.call_count, 1)",
+        "self.assertIs(loading.call_args.kwargs['weights_only'], False)",
+        "self.assertEqual(loading.call_args.kwargs['map_location'], torch.device('cpu'))",
+        "forbidden.assert_not_called()",
+        "forbidden.assert_not_called()",
+        "self.assertNotEqual(r1.directory, r2.directory)",
+        "forbidden.assert_not_called()",
+        "self.assertRaises(SidecarMismatch)",
+        "self.assertRaises(FileNotFoundError)",
+        "self.assertRaises(SidecarMismatch)"
+      ]
+    },
+    {
+      "name": "test_checkpoint_rejects_wrong_object_and_missing_weights",
+      "line": 196,
+      "checks": [
+        "self.assertRaises(SidecarMismatch)",
+        "self.assertRaisesRegex(RuntimeError, 'Missing key')"
+      ]
+    },
+    {
+      "name": "test_whole_model_save_and_load_in_separate_car_processes",
+      "line": 211,
+      "checks": [
+        "self.assertEqual(result.returncode, 0, result.stdout + result.stderr)"
+      ]
+    },
+    {
+      "name": "test_variable_n_single_batch_no_mutation_no_label_geometry_read",
+      "line": 280,
+      "checks": [
+        "torch.testing.assert_close(m((modified, object())), expected, rtol=0, atol=0)",
+        "torch.testing.assert_close(m((modified, None)), expected, rtol=0, atol=0)",
+        "torch.testing.assert_close(m((Data(x=raw.x[perm]), None)), expected[perm], atol=2e-06, rtol=2e-05)",
+        "self.assertEqual(out.shape, (n, 4))",
+        "torch.testing.assert_close(data[key], value, atol=0, rtol=0)",
+        "self.assertEqual(data[key].data_ptr(), pointer)"
+      ]
+    },
+    {
+      "name": "test_multigraph_batch_ptr_and_malformed_inputs_rejected",
+      "line": 302,
+      "checks": [
+        "self.assertRaisesRegex(ValueError, 'one physical graph')",
+        "self.assertRaisesRegex(ValueError, 'one physical graph')",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)"
+      ]
+    },
+    {
+      "name": "test_original_train_mask_loss_backward_optimizer_scheduler",
+      "line": 320,
+      "checks": [
+        "self.assertAlmostEqual(lp, pressure.item(), places=6)",
+        "self.assertAlmostEqual(lv, velocity.item(), places=6)",
+        "self.assertEqual(scheduler.last_epoch, start_step + 1)",
+        "self.assertFalse(torch.equal(before, m.preprocess[0].weight))",
+        "self.assertTrue(torch.isfinite(torch.tensor([press, vel])).all())",
+        "self.assertIsNotNone(p.grad, name)",
+        "self.assertTrue(torch.isfinite(p.grad).all(), name)",
+        "torch.testing.assert_close(p.grad, q.grad, atol=1e-06, rtol=1e-05)"
+      ]
+    },
+    {
+      "name": "test_large_synthetic_point_count_and_input_gradients",
+      "line": 349,
+      "checks": [
+        "self.assertEqual(output.shape, (32186, 4))",
+        "self.assertTrue(torch.isfinite(data.x.grad).all())",
+        "self.assertGreater(data.x.grad.abs().max().item(), 0)"
+      ]
+    },
+    {
+      "name": "test_original_entries_project_to_baseline_ast",
+      "line": 361,
+      "checks": [
+        "self.assertEqual(ast.dump(restored), ast.dump(ast.parse(original(filename))), filename)"
+      ]
+    },
+    {
+      "name": "test_frozen_car_and_airfrans_original_files",
+      "line": 402,
+      "checks": [
+        "self.assertEqual(ast.dump(strip_recording(ast.parse((ROOT / name).read_text()))), ast.dump(ast.parse(before)), name)",
+        "self.assertEqual((ROOT / name).read_bytes(), before, name)"
+      ]
+    },
+    {
+      "name": "test_epoch_path_fix_and_launch_arguments",
+      "line": 426,
+      "checks": [
+        "self.assertEqual(f'model_{old.nb_epochs}.pth', 'model_200.0.pth')",
+        "self.assertEqual(f'model_{fixed.nb_epochs}.pth', 'model_200.pth')",
+        "self.assertEqual((resolved.n_layers, resolved.front_blocks, resolved.fold_id), (12, 7, 4))",
+        "self.assertEqual(getattr(default, key), value)",
+        "self.assertEqual(getattr(default, key), value)"
+      ]
+    }
+  ],
+  "tests/test_show_reports.py": [
+    {
+      "name": "test_three_remote_launchers_actual_paths_and_empty_zip",
+      "line": 74,
+      "checks": [
+        "self.assertEqual(p.returncode, 0, p.stderr)",
+        "self.assertEqual(len(bundles), 1)",
+        "self.assertNotIn('/wrong/old/checkout', p.stdout)",
+        "self.assertIn('Runs: 0', p.stdout)",
+        "self.assertTrue(any((n.endswith('/index.html') for n in z.namelist())))"
+      ]
+    },
+    {
+      "name": "test_eight_tasks_read_only_metrics_epochs_eval_attempts",
+      "line": 87,
+      "checks": [
+        "self.assertEqual(hashes(self.repo / 'output'), before)",
+        "self.assertNotIn('torch', report.__dict__)",
+        "self.assertEqual({r['task'] for r in manifest['runs']}, set(tasks))",
+        "self.assertEqual({r['evaluation'] for r in rows}, {'first', 'second'})",
+        "self.assertEqual({r['status'] for r in rows}, {'completed', 'failed'})",
+        "self.assertTrue(all((r['seed'] == '0' for r in rows)))",
+        "self.assertEqual({r['epoch'] for r in hist}, {'1', '10', '50'})"
+      ]
+    },
+    {
+      "name": "test_sparse_validation_and_member_no_blending",
+      "line": 104,
+      "checks": [
+        "self.assertEqual(surface[0][1], [1, 10, 50])",
+        "self.assertEqual(surface[1][1], [1, 50])",
+        "self.assertEqual(surface[1][2], [0.25, 0.005])"
+      ]
+    },
+    {
+      "name": "test_PDE_old_log_fallback_partial_jsonl_and_duplicates",
+      "line": 114,
+      "checks": [
+        "self.assertEqual([r['epoch'] for r in rows], [1, 50])",
+        "self.assertEqual(rows[-1]['metrics']['validation_relative_l2'], 0.2)",
+        "self.assertEqual(rows[0]['metrics']['train_loss'], 0.123456789)",
+        "self.assertTrue(any(('incomplete' in w for w in b.warnings)))"
+      ]
+    },
+    {
+      "name": "test_source_family_seed_filters_no_new_output_on_preview_or_conflict",
+      "line": 123,
+      "checks": [
+        "self.assertEqual(report.infer_task(a, {}, {}, ('car',)), 'darcy')",
+        "self.assertFalse(out.exists())",
+        "self.assertRaises(FileExistsError)",
+        "self.assertRaises(ValueError)"
+      ]
+    },
+    {
+      "name": "test_air_array_axes_safe_loading_and_no_reversed_coefficients",
+      "line": 133,
+      "checks": [
+        "self.assertEqual(rows[0]['channel'], 'drag')",
+        "self.assertEqual(float(rows[0]['reference']), 0.1)",
+        "self.assertEqual(float(rows[3]['reference']), 0.5)",
+        "self.assertEqual(json.loads((out / 'nonfinite.json').read_text())['value'], 'nan')",
+        "self.assertRaises(ValueError)"
+      ]
+    },
+    {
+      "name": "test_real_publication_exports_and_self_contained_archive",
+      "line": 144,
+      "checks": [
+        "self.assertGreaterEqual(len(pdfs), 3)",
+        "self.assertTrue(data.startswith(b'%PDF'))",
+        "self.assertIn(b'/FontFile2', data)",
+        "self.assertTrue(any((p.suffix == '.tex' for p in out.rglob('*'))))",
+        "self.assertIn('seed 0', (out / 'index.html').read_text())",
+        "self.assertGreater(image.width, 900)",
+        "self.assertIsNone(z.testzip())",
+        "self.assertFalse(any((n.endswith(('.pt', '.pth')) for n in z.namelist())))"
+      ]
+    },
+    {
+      "name": "test_existing_fields_are_copied_with_metadata_not_regenerated",
+      "line": 157,
+      "checks": [
+        "self.assertTrue((dest / 'field_snapshots/member_000/epoch_0100/case_000/field/caption.txt').exists())",
+        "self.assertFalse(list(dest.rglob('*.npz')))",
+        "self.assertFalse(list(dest.rglob('epoch_0050')))"
+      ]
+    },
+    {
+      "name": "test_final_validation_winner_per_PDE_task_six_panels_only_selected_assets",
+      "line": 167,
+      "checks": [
+        "self.assertEqual({r['task']: r['seed'] for r in manifest['runs']}, winners)",
+        "self.assertEqual(len(manifest['selection']), 18)",
+        "self.assertEqual(sum((r['selected'] for r in manifest['selection'])), 6)",
+        "self.assertIn([0.8, 0.02], figures['pde_selected_training']['lines'][0])",
+        "self.assertEqual(before, hashes(self.repo))",
+        "self.assertEqual(len(figures[name]['titles']), 6)",
+        "self.assertTrue(rows)",
+        "self.assertEqual(len(dirs), 1)",
+        "self.assertIn(f'seed{seed}', dirs[0].name)",
+        "self.assertIn(f'seed {seed}', next(dirs[0].rglob('caption.txt')).read_text())",
+        "self.assertIsNone(z.testzip())",
+        "self.assertIn(f'seed {winners[task]}', title)",
+        "self.assertEqual(int(row['seed']), winners[row['task']])",
+        "self.assertTrue(names)",
+        "self.assertFalse(any((f'seed{s}_' in n for n in names for s in range(3) if s != winners[task])))"
+      ]
+    },
+    {
+      "name": "test_reject_invalid_final_validation_and_unfinished_without_earlier_fallback",
+      "line": 217,
+      "checks": [
+        "self.assertEqual([item[2]['resolved_arguments']['seed'] for item in selected], [0])",
+        "self.assertEqual(b.selection[1]['validation_epochs'], {'0': 500})",
+        "self.assertFalse(b.selection[1]['eligible'])",
+        "self.assertIn('nonfinite', b.selection[1]['reason'])",
+        "self.assertFalse(b.selection[4]['eligible'])"
+      ]
+    },
+    {
+      "name": "test_corrupt_history_and_legacy_nonfinite_final_are_not_silently_selected",
+      "line": 234,
+      "checks": [
+        "self.assertFalse(record['eligible'])",
+        "self.assertIn('final validation cannot be confirmed', record['reason'])",
+        "self.assertFalse(record['eligible'])",
+        "self.assertEqual(record['validation_epochs'], {'0': 500})"
+      ]
+    },
+    {
+      "name": "test_car_selection_uses_correct_saved_components_and_weight",
+      "line": 246,
+      "checks": [
+        "self.assertEqual(selected[0][2]['resolved_arguments']['seed'], 0)",
+        "self.assertAlmostEqual(b.selection[0]['final_validation_loss'], 0.3)",
+        "self.assertIn('weight/reg', b.selection[2]['reason'])",
+        "self.assertFalse(report.Bundle(args, self.root / 'new').selection_record(run, task, cfg, arch)['eligible'])"
+      ]
+    },
+    {
+      "name": "test_air_sparse_final_validation_multiple_members_and_missing_member",
+      "line": 265,
+      "checks": [
+        "self.assertEqual(selected[0][2]['resolved_arguments']['seed'], 1)",
+        "self.assertAlmostEqual(b.selection[1]['final_validation_loss'], 0.7)",
+        "self.assertEqual(b.selection[1]['validation_epochs'], {'0': 390, '1': 390})",
+        "self.assertEqual(b.selection[1]['last_training_epochs'], {'0': 398, '1': 398})",
+        "self.assertFalse(b.selection[2]['eligible'])",
+        "self.assertIn('member 1', b.selection[2]['reason'])",
+        "self.assertRaisesRegex(ValueError, 'disagree')"
+      ]
+    },
+    {
+      "name": "test_ties_legacy_missing_history_and_dry_run_selection",
+      "line": 286,
+      "checks": [
+        "self.assertEqual(selected[0][0], legacy)",
+        "self.assertTrue(any(('completion unverified' in w for w in b.warnings)))",
+        "self.assertEqual(sum((r['selected'] for r in b.selection)), 1)",
+        "self.assertTrue(all(('tie-break' in r['reason'] for r in b.selection if not r['selected'])))",
+        "self.assertEqual(tied[0][0], copy)",
+        "self.assertIn('SELECTED darcy seed=0', stdout.getvalue())",
+        "self.assertIn('EXCLUDED darcy seed=2', stdout.getvalue())",
+        "self.assertFalse(out.exists())",
+        "self.assertFalse(out.with_suffix('.zip').exists())",
+        "self.assertEqual(before, hashes(self.repo))",
+        "self.assertFalse(report.Bundle(self.args, self.root / 'd').selection_record(legacy, 'darcy', candidates[-1][2], {})['eligible'])"
+      ]
+    }
+  ],
+  "tests/test_static_standard.py": [
+    {
+      "name": "test_defaults_and_explicit_overrides_leave_legacy_parser_unchanged",
+      "line": 110,
+      "checks": [
+        "self.subTest(task=task)",
+        "self.assertEqual((legacy.n_layers, legacy.n_hidden, legacy.slice_num), (3, 64, 32))",
+        "self.assertEqual((args.n_layers, args.front_blocks, args.n_hidden, args.n_heads, args.slice_num), (8, 2, 128, heads, latents))",
+        "self.assertEqual((args.epochs, args.batch_size, args.lr, args.max_grad_norm), (500, batch, 0.001, 0.1))",
+        "self.assertEqual((args.mlp_ratio, args.latent_ffn_ratio, args.cdpa_mode), (2, 2, 'entry'))",
+        "self.assertEqual((changed.n_layers, changed.n_hidden, changed.slice_num, changed.front_blocks, changed.epochs), (3, 64, 32, 0, 7))",
+        "self.assertEqual((model.config.L, model.config.P, model.config.M, model.config.num_heads), (8, 6, latents, heads))",
+        "self.assertEqual(getattr(legacy, name), value)"
+      ]
+    },
+    {
+      "name": "test_four_interfaces_three_modes_backward_placeholder_and_no_time",
+      "line": 129,
+      "checks": [
+        "self.subTest(task=task, mode=mode)",
+        "self.assertEqual(y.shape, (*x.shape[:2], 1))",
+        "self.assertTrue(torch.isfinite(y).all())",
+        "assert_gradients(self, model, active_inputs)",
+        "self.assertEqual(hasattr(model, 'placeholder'), task != 'darcy')",
+        "self.assertFalse(hasattr(model, 'time_fc'))",
+        "self.assertEqual(sum((isinstance(m, ConvFFN) for m in model.modules())), 0 if task == 'elasticity' else 3)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)"
+      ]
+    },
+    {
+      "name": "test_original_lifting_reference_order_coords_and_initialization",
+      "line": 150,
+      "checks": [
+        "self.assertEqual(Counter((call.args[0].data_ptr() for call in calls.call_args_list)), Counter((m.weight.data_ptr() for m in model.modules() if isinstance(m, nn.Linear))))",
+        "self.assertTrue(torch.equal(model.core.cdpa_at['0'].w, torch.zeros(128)))",
+        "torch.testing.assert_close(seen[0], expected, atol=0, rtol=0)",
+        "torch.testing.assert_close(model.pos, position, atol=0, rtol=0)",
+        "self.assertEqual(model.preprocess[0].in_features, 65)",
+        "torch.testing.assert_close(model(x, fx), model(x.flip(1), fx), atol=0, rtol=0)",
+        "self.assertEqual(model.preprocess[0].in_features, 2)"
+      ]
+    },
+    {
+      "name": "test_real_n_with_smaller_width_latents_preserves_layout",
+      "line": 191,
+      "checks": [
+        "self.assertEqual(y.shape, (1, expected_n, 1))",
+        "assert_gradients(self, model, [('fx', fx)] if fx is not None else [('x', x)])"
+      ]
+    },
+    {
+      "name": "test_darcy_exact_training_decode_and_gradient_loss_ast",
+      "line": 202,
+      "checks": [
+        "torch.testing.assert_close(scope['y'], target)",
+        "torch.testing.assert_close(scope['loss'], scope['l2loss'] + 0.1 * scope['deriv_loss'])",
+        "assert_gradients(self, model, [('coeff', coeff)])",
+        "self.assertTrue(torch.isfinite(gradient).all())",
+        "self.assertGreater(gradient.abs().max().item(), 0)"
+      ]
+    },
+    {
+      "name": "test_pipe_and_elasticity_original_normalizer_loss_connections",
+      "line": 232,
+      "checks": [
+        "assert_gradients(self, model, [])"
+      ]
+    },
+    {
+      "name": "test_strict_roundtrip_sidecar_no_overwrite_and_separate_outputs",
+      "line": 245,
+      "checks": [
+        "torch.testing.assert_close(restored(x, fx), expected, atol=1e-05, rtol=0.0003)",
+        "self.assertNotEqual(run.result_dir, evaluation.result_dir)",
+        "self.assertNotEqual(evaluation.result_dir, again.result_dir)",
+        "self.assertEqual(run.sidecar.read_bytes(), sidecar)",
+        "self.assertEqual(run.checkpoint.read_bytes(), state)",
+        "self.assertEqual(run.sidecar.read_bytes(), corrupted)",
+        "self.assertRaises(FileExistsError)",
+        "self.assertRaises(RuntimeError)",
+        "self.assertRaises(RuntimeError)",
+        "self.assertRaises(SidecarMismatch)",
+        "self.assertRaises(SidecarMismatch)",
+        "self.assertRaises(SidecarMismatch)"
+      ]
+    },
+    {
+      "name": "test_automatic_run_names_and_eval_missing_sidecar",
+      "line": 294,
+      "checks": [
+        "self.assertNotEqual(a.directory, b.directory)",
+        "self.assertEqual(a.directory.parent, Path(folder) / 'output' / 'elasticity')",
+        "self.assertRegex(a.directory.name, '^\\\\d{8}T\\\\d{12}Z$')",
+        "self.assertFalse(args.cdlno_run_dir.exists())",
+        "self.assertRaises(FileNotFoundError)"
+      ]
+    },
+    {
+      "name": "test_invalid_runtime_chunk_all_sidecar_boundaries",
+      "line": 314,
+      "checks": [
+        "self.assertFalse(absent.exists())",
+        "self.assertEqual(path.read_bytes(), original)",
+        "self.assertEqual(malformed.read_bytes(), before)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)"
+      ]
+    },
+    {
+      "name": "test_fresh_process_wrapper_checkpoint_restore",
+      "line": 342,
+      "checks": [
+        "self.assertEqual(result.returncode, 0, result.stdout + result.stderr)"
+      ]
+    },
+    {
+      "name": "test_static_wrapper_device_and_amp_backward",
+      "line": 390,
+      "checks": [
+        "unittest.skipUnless(torch.cuda.is_available(), 'GPU unavailable: wrapper GPU checks not run')",
+        "self.subTest(task=task, dtype=dtype)",
+        "self.assertTrue(torch.isfinite(y).all())",
+        "assert_gradients(self, model, [('fx', fx)] if fx is not None else [('x', x)])"
+      ]
+    },
+    {
+      "name": "test_legacy_ast_recovered_exactly_from_limited_branches",
+      "line": 409,
+      "checks": [
+        "self.assertEqual(ast.dump(LegacyProjection().visit(current)), ast.dump(ast.parse(original)))",
+        "self.assertEqual(ast.dump(projected), ast.dump(ast.parse(original)), task)"
+      ]
+    },
+    {
+      "name": "test_scripts_syntax_arguments_and_fresh_imports",
+      "line": 439,
+      "checks": [
+        "self.assertEqual(args.front_blocks, 0)",
+        "self.assertEqual(args.data_path, '/not a dataset/path')",
+        "self.assertEqual((args.model, args.n_layers, args.n_hidden), ('CDLNO', 8, 128))",
+        "self.assertEqual(args.n_heads, TASKS[task][3])",
+        "self.assertEqual(args.slice_num, TASKS[task][4])",
+        "self.assertEqual(args.batch_size, TASKS[task][5])"
+      ]
+    }
+  ],
+  "tests/test_temporal_standard.py": [
+    {
+      "name": "test_defaults_dimensions_and_time_registration",
+      "line": 49,
+      "checks": [
+        "self.assertEqual((a.n_hidden, a.n_layers, a.n_heads, a.slice_num, a.batch_size), (256, 8, 8, 64, 2))",
+        "self.assertEqual((p.n_hidden, p.n_layers, p.n_heads, p.slice_num, p.batch_size), (128, 8, 8, 64, 8))",
+        "self.assertEqual((ns.preprocess[0].in_features, ns.config.output_dim, ns.config.grid_shape), (74, 1, (64, 64)))",
+        "self.assertEqual((pl.preprocess[0].in_features, pl.config.output_dim, pl.config.grid_shape), (3, 4, (101, 31)))",
+        "self.assertIsNone(ns.time_fc)",
+        "self.assertIsNotNone(pl.time_fc)"
+      ]
+    },
+    {
+      "name": "test_ns_original_no_clip_default_and_explicit_override",
+      "line": 56,
+      "checks": [
+        "self.assertIsNone(legacy.max_grad_norm)",
+        "self.assertEqual((legacy.mlp_ratio, legacy.slice_num), (1, 32))",
+        "self.assertIsNone(default.max_grad_norm)",
+        "self.assertEqual((default.mlp_ratio, default.slice_num), (2, 64))",
+        "self.assertEqual(clip.call_count, expected)",
+        "self.assertEqual(clip.call_args.args[1], 0.1)"
+      ]
+    },
+    {
+      "name": "test_ns_teacher_forcing_and_prediction_windows_batched",
+      "line": 73,
+      "checks": [
+        "self.assertEqual(len(calls), 10)",
+        "self.assertEqual(torch.cat(preds, -1).shape, (2, 4096, 10))",
+        "torch.testing.assert_close(fx, truth)",
+        "self.assertEqual(len(calls), 20)",
+        "self.assertEqual(torch.cat(pred, -1).shape, (2, 4096, 10))",
+        "torch.testing.assert_close(fx2, torch.cat(pred, -1))",
+        "self.assertFalse(torch.equal(calls[0], calls[-1]))",
+        "torch.testing.assert_close(fx, torch.cat((initial[..., t:], truth[..., :t]), -1))",
+        "self.assertEqual(backward.call_count, 1)",
+        "self.assertEqual(step.call_count, 1)",
+        "self.assertIsNotNone(p.grad)",
+        "self.assertTrue(torch.isfinite(p.grad).all())",
+        "torch.testing.assert_close(fx2, expected)"
+      ]
+    },
+    {
+      "name": "test_plasticity_time_changes_output_and_time_gradients",
+      "line": 104,
+      "checks": [
+        "self.assertEqual(y.shape, (2, 3131, 4))",
+        "self.assertGreater((y - y2).abs().max().item(), 0)",
+        "self.assertIsNotNone(t.grad)",
+        "self.assertTrue(torch.isfinite(t.grad).all())",
+        "self.assertGreater(t.grad.abs().max().item(), 0)",
+        "self.assertTrue(torch.isfinite(x.grad).all())",
+        "self.assertTrue(torch.isfinite(fx.grad).all())",
+        "self.assertIsNotNone(p.grad, name)",
+        "self.assertTrue(torch.isfinite(p.grad).all(), name)",
+        "self.assertGreater(p.grad.abs().max().item(), 0, name)"
+      ]
+    },
+    {
+      "name": "test_plasticity_twenty_independent_time_steps_and_loss",
+      "line": 115,
+      "checks": [
+        "self.assertEqual(count, 20)"
+      ]
+    },
+    {
+      "name": "test_checkpoint_roundtrip_temporal",
+      "line": 121,
+      "checks": [
+        "torch.testing.assert_close(b(x, fx, t), expected, atol=1e-05, rtol=0.0003)"
+      ]
+    },
+    {
+      "name": "test_original_temporal_loop_ast_contract",
+      "line": 131,
+      "checks": [
+        "self.assertIn('range(0, T, step)' if task == 'ns' else 'range(T)', text)",
+        "self.assertIn('optimizer.zero_grad()', text)",
+        "self.assertIn('loss.backward()', text)",
+        "self.assertIn('torch.cat', text)",
+        "self.assertIn('torch.cat((fx[..., step:], y)', text)",
+        "self.assertIn('torch.cat((fx[..., step:], im)', text)",
+        "self.assertIn('T=input_T', text)",
+        "self.assertIn('optimizer.step()', text)"
+      ]
+    },
+    {
+      "name": "test_model_registry_excludes_unapproved_tasks",
+      "line": 139,
+      "checks": [
+        "self.assertIsNotNone(get_model(Namespace(model='CDLNO', cdlno_task=task)))",
+        "self.assertRaises(ValueError)"
+      ]
+    },
+    {
+      "name": "test_complete_temporal_entries_project_to_baseline_ast",
+      "line": 144,
+      "checks": [
+        "self.assertEqual(ast.dump(projected), ast.dump(ast.parse(original)), task)"
+      ]
+    },
+    {
+      "name": "test_scripts_and_python_syntax",
+      "line": 170,
+      "checks": []
+    }
+  ],
+  "tests/test_training_state.py": [
+    {
+      "name": "test_policy_all_eight_completed_epoch_boundaries_and_final",
+      "line": 141,
+      "checks": [
+        "self.assertFalse(EpochPolicy('ns', 500, visualize_every=0).events(500)['visualize'])",
+        "self.assertTrue(EpochPolicy(task, 3).events(3)['checkpoint'])",
+        "self.assertRaises(ValueError)",
+        "self.subTest(task=task, ep=ep)",
+        "self.assertEqual(result['visualize'], ep % 50 == 0 or ep == total)",
+        "self.assertEqual(result['checkpoint'], ep == total or (task in ('ns', 'car', 'airfrans', 'airfoil') and ep % 100 == 0))"
+      ]
+    },
+    {
+      "name": "test_cpu_fresh_process_continuation_all_modes_both_schedulers",
+      "line": 156,
+      "checks": [
+        "self.subTest(mode=mode, scheduler=schedule)"
+      ]
+    },
+    {
+      "name": "test_gpu_fresh_process_identity_onecycle",
+      "line": 183,
+      "checks": [
+        "unittest.skipUnless(torch.cuda.is_available(), 'GPU continuation not run: CUDA unavailable')"
+      ]
+    },
+    {
+      "name": "test_roundtrip_weights_pair_sidecar_and_structure_unchanged",
+      "line": 186,
+      "checks": [
+        "self.assertEqual(list(pure), keys)",
+        "self.assertTrue(_same(pure, state['model']))",
+        "self.assertEqual({name: id(p) for name, p in self.model.named_parameters()}, objects)",
+        "self.assertEqual((self.path / 'architecture.json').read_bytes(), sidecar)",
+        "self.assertTrue(all((p.grad is None for p in self.model.parameters())))",
+        "self.assertTrue(_same(self.archive.read(self.path / 'checkpoints/latest.json'), state))"
+      ]
+    },
+    {
+      "name": "test_wrong_protocol_normalizer_groups_plan_and_mode_rejected_before_weights",
+      "line": 202,
+      "checks": [
+        "self.assertTrue(_same(original, self.model.state_dict()))",
+        "self.assertRaisesRegex(ResumeError, 'normalizer')",
+        "self.assertRaisesRegex(ResumeError, 'parameter group order')",
+        "self.assertRaisesRegex(ResumeError, 'scheduler')",
+        "self.assertRaisesRegex(ResumeError, 'architecture')",
+        "self.assertRaisesRegex(ResumeError, 'protocol mismatch')"
+      ]
+    },
+    {
+      "name": "test_missing_state_fields_and_bad_weights_cannot_resume",
+      "line": 224,
+      "checks": [
+        "self.assertRaisesRegex(ResumeError, 'checksum')",
+        "self.assertRaisesRegex(ResumeError, 'belong')",
+        "self.assertRaises(ResumeError)",
+        "self.assertRaisesRegex(ResumeError, 'incomplete')",
+        "self.assertRaisesRegex(ResumeError, 'Adam moment')"
+      ]
+    },
+    {
+      "name": "test_failed_second_file_write_preserves_last_commit_and_retry",
+      "line": 256,
+      "checks": [
+        "self.assertEqual((self.path / 'checkpoints/latest.json').read_bytes(), pointer)",
+        "self.assertFalse((self.path / 'checkpoints/epoch_0002.pt').exists())",
+        "self.assertFalse((self.path / 'weights/epoch_0002.pt').exists())",
+        "self.assertFalse((self.path / 'checkpoints/.writer.lock').exists())",
+        "self.assertEqual(self.archive.read(first)['progress']['completed_epochs'], 1)",
+        "self.assertRaises(OSError)",
+        "self.assertRaisesRegex(ResumeError, 'older checkpoint')"
+      ]
+    },
+    {
+      "name": "test_idempotent_final_no_duplicate_or_overwrite",
+      "line": 277,
+      "checks": [
+        "self.assertEqual(self.archive.save(self.model, self.opt, self.sched, **kw), path)",
+        "self.assertEqual(path.read_bytes(), before)",
+        "self.assertEqual(path.stat().st_mtime_ns, mtime)",
+        "self.assertEqual(len(list((self.path / 'checkpoints').glob('*.pt'))), 1)",
+        "self.assertEqual(self.archive.read(self.path / 'checkpoints/final.json')['progress']['completed_epochs'], 4)",
+        "self.assertRaisesRegex(ResumeError, 'different state')"
+      ]
+    },
+    {
+      "name": "test_committed_pair_survives_failed_latest_and_prevents_rollback",
+      "line": 290,
+      "checks": [
+        "self.assertEqual((self.path / 'checkpoints/latest.json').read_bytes(), pointer)",
+        "self.assertEqual(self.archive.read(second)['progress']['completed_epochs'], 2)",
+        "self.assertEqual(second.read_bytes(), before)",
+        "self.assertEqual(self.archive.read(self.path / 'checkpoints/latest.json')['progress']['completed_epochs'], 2)",
+        "self.assertRaises(OSError)",
+        "self.assertRaisesRegex(ResumeError, 'older checkpoint')"
+      ]
+    },
+    {
+      "name": "test_semantically_damaged_state_rejected_before_model_or_rng_mutation",
+      "line": 314,
+      "checks": [
+        "self.assertTrue(_same(weights, self.model.state_dict()))",
+        "self.assertTrue(_same(rng, capture_rng({'loader': self.generator})))",
+        "self.assertRaisesRegex(ResumeError, 'manifest')",
+        "self.assertRaises(ResumeError)"
+      ]
+    },
+    {
+      "name": "test_rng_roundtrip_generators_and_exception_isolation",
+      "line": 334,
+      "checks": [
+        "self.assertTrue(_same(before, capture_rng({'loader': self.generator})))",
+        "self.assertEqual(flags, [m.training for m in self.model.modules()])",
+        "self.assertTrue(_same(weights, self.model.state_dict()))",
+        "self.assertRaisesRegex(RuntimeError, 'plot failed')",
+        "self.assertRaisesRegex(ResumeError, 'generator names')",
+        "self.assertFalse(any((m.training for m in self.model.modules())))"
+      ]
+    },
+    {
+      "name": "test_visualization_enabled_disabled_gives_identical_training",
+      "line": 351,
+      "checks": [
+        "self.assertTrue(_same(outcomes[0], outcomes[1]))"
+      ]
+    },
+    {
+      "name": "test_visualization_failure_still_saves_complete_checkpoint",
+      "line": 372,
+      "checks": [
+        "self.assertIn('headless renderer', logged.output[0])",
+        "self.assertIn('headless renderer failed', result['visualization_error'])",
+        "self.assertTrue(result['checkpoint'].is_file())",
+        "self.assertLogs('cdlno.training_observer', level='WARNING')"
+      ]
+    },
+    {
+      "name": "test_protocol_and_data_order_are_not_model_architecture",
+      "line": 387,
+      "checks": [
+        "self.assertNotEqual(ordered_fingerprint([torch.tensor([1, 2])]), ordered_fingerprint([torch.tensor([2, 1])]))",
+        "self.assertNotEqual(ordered_fingerprint(['ab', 'c']), ordered_fingerprint(['a', 'bc']))",
+        "self.assertNotIn('checkpoint_every', self.model.config.to_dict())",
+        "self.assertRaises(ResumeError)",
+        "self.assertRaises(ResumeError)"
+      ]
+    }
+  ],
+  "tests/test_visualization.py": [
+    {
+      "name": "test_non_square_grid_png_pdf_npz_and_locked_scales",
+      "line": 20,
+      "checks": [
+        "self.assertEqual(scales, again)",
+        "self.assertEqual(scale_path.read_bytes(), before)",
+        "self.assertTrue((case / 'fields.pdf').read_bytes().startswith(b'%PDF'))",
+        "self.assertAlmostEqual(metric['relative_l2'], np.linalg.norm(self.pred - self.gt) / np.linalg.norm(self.gt))",
+        "self.assertEqual(metric['color_scale'], scales[0].to_dict())",
+        "self.assertEqual(json.loads((case / 'metadata.json').read_text())['grid_shape'], [5, 7])",
+        "np.testing.assert_array_equal(saved['truth'].reshape(5, 7), self.gt.reshape(5, 7))",
+        "np.testing.assert_array_equal(saved['coordinates'], self.xyz)",
+        "np.testing.assert_array_equal(saved['prediction'], self.pred)",
+        "np.testing.assert_allclose(saved['absolute_error'], np.abs(self.pred - self.gt))",
+        "self.assertGreater(image.width, 1000)",
+        "self.assertGreater(image.height, 500)",
+        "self.assertRaises(FileExistsError)"
+      ]
+    },
+    {
+      "name": "test_unstructured_three_dimensional_mask_only_affects_rendering",
+      "line": 44,
+      "checks": [
+        "self.assertEqual(result['displayed_points'], 18)",
+        "self.assertGreater(result['channel_metrics'][0]['error_above_color_fraction'], 0)",
+        "self.assertEqual(values['truth'].shape, (35, 1))",
+        "np.testing.assert_array_equal(values['display_mask'], mask)"
+      ]
+    },
+    {
+      "name": "test_zero_truth_nonfinite_channels_grid_and_physical_values",
+      "line": 54,
+      "checks": [
+        "self.assertIsNone(metric['relative_l2'])",
+        "self.assertEqual(metric['relative_l2_status'], 'undefined_zero_target')",
+        "self.assertEqual(metric['error_above_color_fraction'], 1.0)",
+        "self.assertRaisesRegex(ValueError, 'nonfinite')",
+        "self.assertRaises(ValueError)",
+        "self.assertRaises(ValueError)"
+      ]
+    }
+  ],
+  "tests/visualization_projection.py": []
+}

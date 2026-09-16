@@ -1,0 +1,150 @@
+[
+  {
+    "paper": "transolver",
+    "url": "https://arxiv.org/html/2402.02366v2",
+    "sha256": "0bf886aff0921a7260761c1f5b18ac531234e647356e6581e76f28cd43c9ad57",
+    "figures": [
+      {
+        "id": "S4.F7",
+        "caption": "Figure 7: Case study on error maps of different models. Notably, Shape-Net Car requires to predict the surrounding velocity and surface pressure simultaneously. For clearness, we plot the error on volume and surface separately. See Appendix D.2 for more showcases.",
+        "images": [
+          "https://arxiv.org/html/2402.02366v2/showcase_new.png"
+        ],
+        "render_viewed": false
+      },
+      {
+        "id": "A4.F18",
+        "caption": "Figure 18: Showcase comparison with the previous best models: LSM and GNOT. Both prediction results and error maps are provided.",
+        "images": [
+          "https://arxiv.org/html/2402.02366v2/pic/showcase_all.jpg"
+        ],
+        "render_viewed": true
+      }
+    ],
+    "status": "read_html",
+    "reading_scope": "Visualization sections and figure captions re-read; selected rendered figures inspected as contact sheet. Not a full new mathematical review.",
+    "retrieval_date": "2026-09-16",
+    "viewed_figure_sha256": "56365d64bccb120b38e9e0bae649398b6c1a7f942e47bea8be6fccb11484f291",
+    "font_evidence": "Exact family/point size not specified in read captions; STIX 7-9 pt is our design choice, not claimed as paper-exact."
+  },
+  {
+    "paper": "transolver_plus",
+    "url": "https://arxiv.org/html/2502.02414v2",
+    "sha256": "604bdb995ca100cae3adf7616185b23ce8bedb1be5bc8c04a2aa61648ea7abb3",
+    "figures": [
+      {
+        "id": "S5.F6",
+        "caption": "Figure 6: (a) Visualization of slice weight distributions. Transolver++ demonstrates a more diverse pattern than Transolver. (b) Error map of top-3 models on DrivAerNet++ and AirCraft. Transolver++ outperforms other models and captures some subtle variations. (c) Statistics analysis of efficiency in terms of running time and model performance under different scales of input geometries.",
+        "images": [
+          "https://arxiv.org/html/2502.02414v2/slice_visualization.png"
+        ],
+        "render_viewed": false
+      },
+      {
+        "id": "A3.F16",
+        "caption": "Figure 16: Showcase comparison with Transolver on Elasticity and Airfoil. A lighter color in the error map indicates a better performance.",
+        "images": [
+          "https://arxiv.org/html/2502.02414v2/case_study_standard.png"
+        ],
+        "render_viewed": true
+      }
+    ],
+    "status": "read_html",
+    "reading_scope": "Visualization sections and figure captions re-read; selected rendered figures inspected as contact sheet. Not a full new mathematical review.",
+    "retrieval_date": "2026-09-16",
+    "viewed_figure_sha256": "bf10069542f341bd2c047ab8e4670a0b13ed87a6183522b1edf27bfbc52578de",
+    "font_evidence": "Exact family/point size not specified in read captions; STIX 7-9 pt is our design choice, not claimed as paper-exact."
+  },
+  {
+    "paper": "transolver3",
+    "url": "https://arxiv.org/html/2602.04940v2",
+    "sha256": "031d23524d1dd655357ec02f005e16dc5c2a0fc7196a4f24b1bc72499d7f933c",
+    "figures": [
+      {
+        "id": "S4.F7",
+        "caption": "Figure 7 : Case study of error maps on different benchmarks. We plot the error maps of surface pressure on NASA-CRM and AhmedML. For DrivAerML, we plot the surface pressure and the volume velocity simultaneously. See Appendix C.2 for more showcases.",
+        "images": [
+          "https://arxiv.org/html/2602.04940v2/case_study.png"
+        ],
+        "render_viewed": true
+      },
+      {
+        "id": "A3.F13",
+        "caption": "Figure 13 : Showcases comparison with Transolver-3, Transolver++ and AB-UPT on AhmedML x-component of volume velocity 𝒖 \\bm{u} . The figures in the first and second rows represent slices from the side view and the bottom view, respectively.",
+        "images": [
+          "https://arxiv.org/html/2602.04940v2/appendix_case_study_ahmedml_volume.png"
+        ],
+        "render_viewed": false
+      },
+      {
+        "id": "A3.F15",
+        "caption": "Figure 15 : Showcases comparison with Transolver-3, Transolver++ and AB-UPT on DrivAerML x-component of volume velocity 𝒖 \\bm{u} . The figures in the first and second rows represent slices from the side view and the bottom view, respectively.",
+        "images": [
+          "https://arxiv.org/html/2602.04940v2/appendix_case_study_drivaerml_volume.png"
+        ],
+        "render_viewed": false
+      }
+    ],
+    "status": "read_html",
+    "reading_scope": "Visualization sections and figure captions re-read; selected rendered figures inspected as contact sheet. Not a full new mathematical review.",
+    "retrieval_date": "2026-09-16",
+    "viewed_figure_sha256": "1301231468b683799055f77a11423a4929e4996f2881a193ad3eb84fb987fd84",
+    "font_evidence": "Exact family/point size not specified in read captions; STIX 7-9 pt is our design choice, not claimed as paper-exact."
+  },
+  {
+    "paper": "lrsa",
+    "url": "https://arxiv.org/html/2604.03582v1",
+    "sha256": "e327849549d6be8842458a40857c29c8ded7d14486c692f00cb4f3fd30844f6f",
+    "figures": [
+      {
+        "id": "S3.F3",
+        "caption": "Figure 3: Qualitative performance comparison across diverse discretizations. From top-left to bottom-right: Navier-Stokes (regular grid), Elasticity (point cloud), Airfoil and Plasticity (structured grid). Error maps are visualized on the same scale for each task. LRSA yields lower relative errors and preserves sharper physical patterns in high-frequency regions compared to Transolver.",
+        "images": [
+          "https://arxiv.org/html/2604.03582v1/qualitative_v1.1.png"
+        ],
+        "render_viewed": true
+      }
+    ],
+    "status": "read_html",
+    "reading_scope": "Visualization sections and figure captions re-read; selected rendered figures inspected as contact sheet. Not a full new mathematical review.",
+    "retrieval_date": "2026-09-16",
+    "viewed_figure_sha256": "b51bda5ef9981fdaa97eef86441f6387a115b766cd4b8a19b59f6238570accb9",
+    "font_evidence": "Exact family/point size not specified in read captions; STIX 7-9 pt is our design choice, not claimed as paper-exact."
+  },
+  {
+    "paper": "linearno",
+    "url": "https://arxiv.org/html/2511.06294v3",
+    "sha256": "637e2953c0e223df7ffe2be92dd3825fccf55232cd73e2c955935a3944a470fd",
+    "figures": [
+      {
+        "id": "Sx4.F4",
+        "caption": "Figure 4: All experiments are conducted on the Airfoil dataset.\n(a) and (b) show the final-layer slice-Weight matrix W N W_{N} visualizations of LinearNO and Transolver, respectively.\n(c) shows the error distributions of LinearNO (top) and Transolver (middle), with the ground truth shown at the bottom.\n(d) shows the average rank of the attention matrix φ ⁡ ( 𝑸 ) ​ ψ ⊤ ​ ( 𝑲 ) \\varphi(\\bm{Q})\\psi^{\\top}(\\bm{K}) per head at each layer when slice numbers M = 64 M=64 .\n(e) presents the prediction errors of both models under different slice numbers.",
+        "images": [
+          "https://arxiv.org/html/2511.06294v3/slice.png"
+        ],
+        "render_viewed": false
+      },
+      {
+        "id": "Sx14.F9",
+        "caption": "Figure 9: Prediction error on AirfRANS dataset.",
+        "images": [
+          "https://arxiv.org/html/2511.06294v3/Airframs_error.png"
+        ],
+        "render_viewed": true
+      },
+      {
+        "id": "Sx14.F10",
+        "caption": "Figure 10: Example error maps on various datasets.",
+        "images": [
+          "https://arxiv.org/html/2511.06294v3/errormaps.png"
+        ],
+        "render_viewed": false
+      }
+    ],
+    "status": "read_html",
+    "reading_scope": "Visualization sections and figure captions re-read; selected rendered figures inspected as contact sheet. Not a full new mathematical review.",
+    "retrieval_date": "2026-09-16",
+    "viewed_figure_sha256": "f5619579b8065b15c60b7f658e790cdd58fd5f269c4fbedacaaae6901a8aade0",
+    "font_evidence": "Exact family/point size not specified in read captions; STIX 7-9 pt is our design choice, not claimed as paper-exact."
+  }
+]

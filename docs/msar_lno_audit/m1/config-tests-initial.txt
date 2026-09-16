@@ -1,0 +1,54 @@
+test_corrupt_metadata_family_schema_and_legacy_dispatch (test_msar_config.MSARConfigTests.test_corrupt_metadata_family_schema_and_legacy_dispatch) ... ok
+test_evaluation_reads_first_coverage_changes_allowed_structure_conflicts_rejected (test_msar_config.MSARConfigTests.test_evaluation_reads_first_coverage_changes_allowed_structure_conflicts_rejected) ... ok
+test_existing_profile_defaults_are_not_promoted_to_explicit (test_msar_config.MSARConfigTests.test_existing_profile_defaults_are_not_promoted_to_explicit) ... ok
+test_expansion_record_does_not_clip_full_or_change_config (test_msar_config.MSARConfigTests.test_expansion_record_does_not_clip_full_or_change_config) ... ok
+test_fixed_behaviors_and_json_strict_roundtrip (test_msar_config.MSARConfigTests.test_fixed_behaviors_and_json_strict_roundtrip) ... ok
+test_fresh_cwds_torch_free_import_package_discovery_and_preview (test_msar_config.MSARConfigTests.test_fresh_cwds_torch_free_import_package_discovery_and_preview) ... ok
+test_isolated_paths_named_runs_exclusive_reservation (test_msar_config.MSARConfigTests.test_isolated_paths_named_runs_exclusive_reservation) ... ok
+test_list_shapes_integer_types_and_fixed_depths (test_msar_config.MSARConfigTests.test_list_shapes_integer_types_and_fixed_depths) ... ok
+test_metadata_all_protocols_roundtrip_without_weight_claims (test_msar_config.MSARConfigTests.test_metadata_all_protocols_roundtrip_without_weight_claims) ... ok
+test_old_family_delegation_and_inapplicable_flags (test_msar_config.MSARConfigTests.test_old_family_delegation_and_inapplicable_flags) ... ok
+test_real_parser_styles_cli_priority_and_no_original_mutation (test_msar_config.MSARConfigTests.test_real_parser_styles_cli_priority_and_no_original_mutation) ... usage: python -m unittest [-h] [--my_path MY_PATH] [--save_path SAVE_PATH]
+                          [--profile {light,full}] [--d D]
+                          [--num-latents NUM_LATENTS NUM_LATENTS NUM_LATENTS NUM_LATENTS]
+                          [--heads HEADS HEADS HEADS HEADS]
+                          [--encoder-depths ENCODER_DEPTHS ENCODER_DEPTHS ENCODER_DEPTHS ENCODER_DEPTHS]
+                          [--decoder-depths DECODER_DEPTHS DECODER_DEPTHS DECODER_DEPTHS DECODER_DEPTHS]
+                          [--coverage-mode {off,floor}]
+                          [--coverage-weight COVERAGE_WEIGHT]
+                          [--coverage-kappa COVERAGE_KAPPA]
+                          [--coverage-eps COVERAGE_EPS]
+                          [--diagnostics | --no-diagnostics]
+python -m unittest: error: unrecognized arguments: --model msar_lno
+
+  test_real_parser_styles_cli_priority_and_no_original_mutation (test_msar_config.MSARConfigTests.test_real_parser_styles_cli_priority_and_no_original_mutation) (entry='Airfoil-Design-AirfRANS/main_evaluation.py') ... ERROR
+test_resolved_profiles_all_tasks_and_independent_schema (test_msar_config.MSARConfigTests.test_resolved_profiles_all_tasks_and_independent_schema) ... ok
+test_training_objective_validation_and_effective_off (test_msar_config.MSARConfigTests.test_training_objective_validation_and_effective_off) ... ok
+
+======================================================================
+ERROR: test_real_parser_styles_cli_priority_and_no_original_mutation (test_msar_config.MSARConfigTests.test_real_parser_styles_cli_priority_and_no_original_mutation) (entry='Airfoil-Design-AirfRANS/main_evaluation.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_msar_config.py", line 133, in test_real_parser_styles_cli_priority_and_no_original_mutation
+    resolved=parse_training_options(parser,[*required,flag,FAMILY],task='darcy',model_key=FAMILY)
+  File "/home/hwz/CDLNO/cdlno/msar_lno/options.py", line 91, in parse_training_options
+    return resolve_training(task, explicit_arguments(probe, argv))
+                                  ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/hwz/CDLNO/cdlno/kcdno/options.py", line 34, in explicit_arguments
+    return vars(probe.parse_args(list(argv)))
+                ~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/argparse.py", line 1902, in parse_args
+    self.error(msg)
+    ~~~~~~~~~~^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/argparse.py", line 2658, in error
+    self.exit(2, _('%(prog)s: error: %(message)s\n') % args)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/argparse.py", line 2645, in exit
+    _sys.exit(status)
+    ~~~~~~~~~^^^^^^^^
+SystemExit: 2
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.848s
+
+FAILED (errors=1)

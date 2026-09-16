@@ -15,7 +15,7 @@ class WithoutRecording(ast.NodeTransformer):
                 'cdlno_run.recorder.attach_model', 'cdlno_run.recorder.update_protocol',
                 'cdlno_run.recorder.record_training_setup',
                 'cdlno_run.recorder.record_epoch', 'cdlno_run.recorder.record_metrics',
-                'cdlno_run.recorder.record_air_scores'}:
+                'cdlno_run.recorder.record_air_scores', 'cdlno_run.recorder.visualize'}:
                 return None
         return self.generic_visit(node)
 
@@ -58,16 +58,17 @@ class WithoutRecording(ast.NodeTransformer):
                 and ast.unparse(kw.value.test) == 'cdlno_run is not None'
                 and isinstance(kw.value.body, ast.Call)
                 and ast.unparse(kw.value.body.func) == 'dict'
-                and {k.arg for k in kw.value.body.keywords} <= {'record', 'record_member'})]
+                and {k.arg for k in kw.value.body.keywords} <= {'record', 'record_member', 'visualization_norm'})]
         return self.generic_visit(node)
 
     def visit_FunctionDef(self, node):
         if node.name == 'main':
-            while node.args.args and node.args.args[-1].arg in ('record', 'record_member'):
+            while node.args.args and node.args.args[-1].arg in ('record', 'record_member', 'visualization_norm'):
                 node.args.args.pop()
                 node.args.defaults.pop()
         return self.generic_visit(node)
 
 
 def strip_recording(tree):
-    return WithoutRecording().visit(tree)
+    from msar_entry_projection import strip_msar
+    return WithoutRecording().visit(strip_msar(tree))

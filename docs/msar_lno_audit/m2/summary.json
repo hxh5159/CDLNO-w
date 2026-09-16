@@ -1,0 +1,51 @@
+{
+  "stage": "M2",
+  "scope": "atomic modules and independent reference only",
+  "suites": [
+    {
+      "log": "modules-tests.log",
+      "tests": 20,
+      "seconds": 1.94,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "log": "shared-tests.log",
+      "tests": 18,
+      "seconds": 1.485,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "log": "config-tests.log",
+      "tests": 13,
+      "seconds": 0.332,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "test_total": 51,
+  "same_weight_replay_passed": 75,
+  "fixture_files_unchanged": 182,
+  "gpu": "Local CUDA MATH SDPA FP32/FP16 AMP/BF16 AMP finite forward/backward and FP32 aux checks passed",
+  "environment": {
+    "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "available": true,
+    "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+    "pyg": "2.3.1"
+  },
+  "not_run": [
+    "GUNet graph chain (torch_cluster absent)",
+    "Remote torch2.11/cu128",
+    "Full MSAR core/task/loss integration",
+    "Real data/training/convergence/accuracy",
+    "Other GPU backends/full-size performance"
+  ],
+  "old_full_suite": "M0 316-test evidence retained; only affected module/config tests replayed in M2",
+  "next_stage_executed": false
+}

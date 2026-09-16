@@ -1,0 +1,32 @@
+{
+  "config_tests": {
+    "passed": 32,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 16.293,
+    "new_methods": 13,
+    "old_methods": 19
+  },
+  "old_replay": {
+    "total": 41,
+    "passed": 41,
+    "max_output_abs": 0.0,
+    "atol": 0,
+    "rtol": 0
+  },
+  "current_core_replay": {
+    "total": 6,
+    "passed": 6,
+    "atol": 0,
+    "rtol": 0
+  },
+  "missing_evidence": [
+    "MSAR M0 audit/status/fixture index"
+  ],
+  "not_executed": [
+    "MSAR model/auxiliary loss/weights: outside M1",
+    "real data/training",
+    "remote target runtime",
+    "editable installation"
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "stage": "M5",
+  "environment": {
+    "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "available": true,
+    "pyg": "2.3.1",
+    "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU"
+  },
+  "suites": [
+    {
+      "log": "msar-tests-final.log",
+      "tests": 82,
+      "seconds": 22.268,
+      "failures": 0,
+      "errors": 0,
+      "skip_records": 0
+    },
+    {
+      "log": "old-tests-final.log",
+      "tests": 79,
+      "seconds": 68.121,
+      "failures": 0,
+      "errors": 0,
+      "skip_records": 2
+    }
+  ],
+  "msar_new_methods": 15,
+  "old_same_weight_replays": 65,
+  "msar_core_same_weight_replays": 2,
+  "preserved_old_artifact_hashes": 182,
+  "retained_old_evidence": 10,
+  "static_task_modes": 8,
+  "shell_train_previews": 12,
+  "shell_eval_previews": 12,
+  "fresh_cwd": "four real static wrapper strict loads, identical weights, CPU FP32 MATH atol=rtol=0",
+  "gpu": "4 small-task original loss/optimizer steps, FP32 MATH; limited preexisting M2/M3 AMP tests reran",
+  "profile_forward": "Real Light Elasticity N35 and Full N972/M1024, CPU, no token clipping, no backward in these two formal cases",
+  "checkpoint": "bare state_dict plus strict architecture/task sidecars, original save frequency, no optimizer/RNG resume",
+  "initial_test_corrections": [
+    "one-tree AST identity for Elasticity",
+    "separate Darcy rectangular wrapper from square derivative entry",
+    "same MATH backend in fresh process without loosening zero tolerance",
+    "new-family AST projection in old recording/visualization checks"
+  ],
+  "not_run": [
+    "real data/download/training/convergence/accuracy",
+    "remote Python3.10/torch2.11/cu128",
+    "MSAR temporal/industrial/PyG tasks",
+    "formal full-size task training/AMP matrix",
+    "existing AirfRANS sampled graph checks: torch_cluster missing"
+  ],
+  "next_stage_executed": false
+}

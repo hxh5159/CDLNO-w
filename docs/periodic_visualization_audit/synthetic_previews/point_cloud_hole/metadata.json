@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "task": "synthetic layout demonstration",
+  "case_id": "0",
+  "completed_epoch": 50,
+  "shape": [
+    4847,
+    1
+  ],
+  "grid_shape": null,
+  "coordinates_dimension": 2,
+  "displayed_points": 4847,
+  "scalar_error": "abs(prediction-truth)",
+  "channel_metrics": [
+    {
+      "channel": "Scalar field $u$",
+      "unit": "",
+      "relative_l2": 0.03467431619204059,
+      "relative_l2_status": "defined",
+      "maximum_absolute_error": 0.059999994327909034,
+      "prediction_outside_color_fraction": 0.0016505054672993605,
+      "error_above_color_fraction": 0.0,
+      "displayed_prediction_outside_color_fraction": 0.0016505054672993605,
+      "displayed_error_above_color_fraction": 0.0,
+      "displayed_mse": 0.0017637512980365087,
+      "displayed_relative_l2": 0.03467431619204059,
+      "color_scale": {
+        "minimum": 0.6009442586586153,
+        "maximum": 1.925786841976185,
+        "error_maximum": 0.26496851666351395
+      }
+    }
+  ],
+  "view": [
+    20.0,
+    -60.0
+  ],
+  "supplied_metadata": {
+    "seed": 0,
+    "caption_note": "SYNTHETIC ILLUSTRATION ONLY. Analytic fields with prescribed perturbations; not trained-model predictions or dataset measurements."
+  },
+  "model_name": "Synthetic prediction",
+  "typography": {
+    "font.family": "STIXGeneral",
+    "mathtext.fontset": "stix",
+    "font.size": 8,
+    "axes.titlesize": 9,
+    "axes.labelsize": 8,
+    "xtick.labelsize": 7,
+    "ytick.labelsize": 7,
+    "legend.fontsize": 7,
+    "axes.linewidth": 0.6,
+    "lines.linewidth": 1.0,
+    "pdf.fonttype": 42,
+    "ps.fonttype": 42,
+    "savefig.facecolor": "white",
+    "figure.facecolor": "white"
+  },
+  "figure_width_inches": 7.16,
+  "png_dpi": 600,
+  "prediction_geometry": "shared",
+  "error_geometry": "ground_truth",
+  "coordinate_labels": [
+    "$x$",
+    "$y$"
+  ]
+}

@@ -1,5 +1,10 @@
 # CDLNO 远端八任务训练与评估
 
+## 每50轮自动可视化（2026-09-16）
+
+同步最新Python实现后，CDLNO/KCDNO/lrsa_matched八任务的现有训练命令自动在完成50、100…轮及最后一轮出图，无需新CLI参数。每run内为`visualizations/member_000/epoch_0050/case_000/`，输出论文排版PDF、600dpi PNG、原始NPZ和英文/LaTeX图注，固定前两个held-out案例与跨epoch色标。AirfRANS每成员独立，固定抽样诊断不替代正式反复采样评价；依赖或绘图错误记录在events/train_results中。原Transolver分支维持原行为。详见[完整说明、论文依据和验证范围](../docs/CDLNO_PERIODIC_VISUALIZATION.md)。本次没有改变checkpoint或增加任务resume；已运行的旧进程不会自动加载新功能。
+
+
 新增 Darcy 两种前段消融专用脚本：[`ablation/no_sa/`](ablation/no_sa/) 和 [`ablation/identity/`](ablation/identity/)，各有 `train.sh`、`eval.sh`、`train_eval.sh`。例如 `bash tran_evaluate/ablation/no_sa/train_eval.sh --gpu 0`。默认 F2/L8、entry CDPA，保留现有 Darcy 配置与输出记录，详见 [消融说明](ablation/README.md)。
 
 更新（2026-09-15，统一实验记录）：新训练默认 `output/<数据集>/<UTC时间戳>/`，启动数据读取前创建 `config.json` 与日志；真实模型构造后补全参数量。训练/评估分别记入结果 JSON，复评使用独立子目录。八任务和三种前段模式均适用。详见 [目录、命令与边界](../docs/CDLNO_EXPERIMENT_OUTPUTS.md)。下述历史 A1/A2 目录规则由本次规则替代。

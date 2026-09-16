@@ -1,0 +1,53 @@
+{
+  "stage": "M6",
+  "environment": {
+    "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "available": true,
+    "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+    "pyg": "2.3.1"
+  },
+  "suites": [
+    {
+      "log": "msar-tests.log",
+      "tests": 93,
+      "seconds": 38.463,
+      "failures": 0,
+      "errors": 0,
+      "skip_records": 0
+    },
+    {
+      "log": "old-tests.log",
+      "tests": 93,
+      "seconds": 204.05,
+      "failures": 0,
+      "errors": 0,
+      "skip_records": 2
+    }
+  ],
+  "new_methods": 11,
+  "temporal_task_modes": 4,
+  "old_same_weight_replays": 26,
+  "M5_same_weight_replays": 4,
+  "preserved_old_fixture_files": 182,
+  "actual_temporal_loops": "NS 10 forwards/1 backward/optimizer/scheduler; Plasticity 20 forwards/backwards/optimizer, scheduler1",
+  "coverage": "NS original PDE sum + weight * time mean of four-level raw coverage; Plasticity each PDE + weight * its four-level coverage",
+  "shell_train_previews": 6,
+  "shell_eval_previews": 6,
+  "fresh_cwd": "two actual wrappers strict load from original PDE cwd, CPU FP32 MATH, atol=rtol=0",
+  "gpu": "two temporal tasks, actual N, B1/d8/M7,5,3,2, complete original time-loop loss steps, FP32 MATH",
+  "profile_forward": "actual Light/Full, B1/N4096 NS and N3131 Plasticity, CPU forward only",
+  "checkpoint": "bare state_dict model.pt + strict architecture/task metadata, unchanged save cadence, no new resume",
+  "initial_failure": "New negative test used history-mode=2, triggering argparse SystemExit before architecture validation; corrected to valid-but-inapplicable off. No production fix/tolerance change.",
+  "not_run": [
+    "real data reading/download/training/convergence/accuracy",
+    "remote Python3.10/torch2.11/cu128",
+    "formal Light/Full temporal backward/optimizer matrix",
+    "new temporal AMP/backends/compile matrix",
+    "MSAR industrial tasks/PyG integration (M7 not authorized)",
+    "existing AirfRANS sampled tests skipped for absent torch_cluster",
+    "new long-horizon NS experiment (no existing 20/40 CLI/data protocol)"
+  ],
+  "next_stage_executed": false
+}

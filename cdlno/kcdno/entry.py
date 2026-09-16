@@ -2,12 +2,14 @@
 from __future__ import annotations
 
 import hashlib
+import argparse
 import json
 import os
 from pathlib import Path
 import re
 
-from .config import KCDNORuntimeConfig
+from .config import KCDNOInitializationConfig, KCDNORuntimeConfig
+from .matched_config import MatchedInitialization
 from .metadata import KCDNOMetadataMismatch, save_metadata
 from .options import explicit_arguments
 
@@ -24,6 +26,24 @@ def add_arguments(parser):
     parser.add_argument('--kernel-rank', '--kernel_rank', type=int, default=16)
     parser.add_argument('--history-mode', '--history_mode', choices=('all', 'off'), default='all')
     parser.add_argument('--kcdno-run-dir', type=Path, default=None)
+    parser.add_argument('--seed', type=int, default=argparse.SUPPRESS,
+                        help='optional RNG seed for kcdno/lrsa_matched standard tasks')
+
+
+def seed_process(seed, gpu):
+    """Seed before data iteration/model construction; leave backend choices intact."""
+    if type(seed) is not int or not 0 <= seed < 2**32:
+        raise ValueError('seed must be an integer in [0, 2**32)')
+    # The original entries set this too, but do so after argument resolution.
+    # Select the same GPU before any torch/CUDA seeding in this optional path.
+    os.environ['CUDA_VISIBLE_DEVICES'] = str(gpu)
+    import random
+    import numpy as np
+    import torch
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
 
 
 def task_record(path):
@@ -41,6 +61,8 @@ def resolve_args(parser, args, task, tokens, *, evaluation=None):
     if task not in STANDARD_TASKS:
         raise ValueError('KCDNO task entry not integrated: ' + task)
     explicit = explicit_arguments(parser, tokens)
+    if 'seed' in explicit and (type(args.seed) is not int or not 0 <= args.seed < 2**32):
+        parser.error('seed must be an integer in [0, 2**32)')
     args.kcdno_task, args.kcdno_family = task, args.model
     evaluation = bool(args.eval) if evaluation is None else evaluation
     args.kcdno_evaluation = evaluation
@@ -58,6 +80,8 @@ def resolve_args(parser, args, task, tokens, *, evaluation=None):
         saved = task_record(args.kcdno_run_dir)
         if saved['task'] != task:
             raise KCDNOMetadataMismatch('task sidecar task mismatch')
+        if 'seed' not in explicit and saved['arguments'].get('seed') is not None:
+            args.seed = saved['arguments']['seed']
         # Restore input layout and conditioning before any dataset is read.
         for name in ('ref', 'unified_pos', 'downsample', 'ntrain'):
             if name in saved['arguments']:
@@ -79,6 +103,8 @@ def resolve_args(parser, args, task, tokens, *, evaluation=None):
         proposed = new_run_path(output, task, cfg)
         digest = hashlib.sha256(json.dumps(cfg.to_dict(), sort_keys=True).encode()).hexdigest()[:10]
         args.kcdno_run_dir = proposed.parent / args.profile / (proposed.name + '_' + digest)
+    if getattr(args, 'seed', None) is not None:
+        seed_process(args.seed, args.gpu)
     return args
 
 
@@ -96,8 +122,11 @@ class StandardRun:
         self.evaluation = args.kcdno_evaluation
         self.directory = Path(args.kcdno_run_dir).resolve()
         self.recorder = session(args)
+        initialization_type = (KCDNOInitializationConfig if model.config.family == 'kcdno'
+                               else MatchedInitialization)
         self.metadata = make_metadata(task=args.kcdno_task, architecture=model.config,
             checkpoint_format='state_dict', profile=args.profile,
+            initialization=initialization_type(seed=getattr(args, 'seed', None)),
             runtime=KCDNORuntimeConfig(device=str(next(model.parameters()).device),
                                       batch_size=args.batch_size, dtype=str(next(model.parameters()).dtype).removeprefix('torch.')))
         self.adapter = model.adapter_architecture()

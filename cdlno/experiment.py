@@ -117,6 +117,8 @@ class Experiment:
         self.family = getattr(args, 'kcdno_family', 'CDLNO')
         self.run_key = ('kcdno_run_dir' if hasattr(args, 'kcdno_family') else
                         ('cdlno_run_dir' if hasattr(args, 'cdlno_run_dir') else 'run_dir'))
+        if getattr(args, 'msar_family', None) == 'msar_lno':
+            self.family, self.run_key = 'msar_lno', 'msar_run_dir'
         requested = getattr(args, self.run_key)
         self.directory = Path(requested).resolve() if requested is not None else default_directory(task)
         if evaluation:
@@ -133,6 +135,10 @@ class Experiment:
         self.clock = time.monotonic()
         self.result = dict(status='running', phase='startup', task=task,
                            started_at_utc=self.started, pid=os.getpid(), metrics={})
+        if self.family in ('kcdno', 'lrsa_matched') and getattr(args, 'seed', None) is not None:
+            self.result['seed'] = args.seed
+        if self.family == 'msar_lno' and getattr(args, 'seed', None) is not None:
+            self.result['seed'] = args.seed
         self.config = dict(schema_version=1, task=task, model=self.family, run_directory=str(self.directory),
                            started_at_utc=self.started, resolved_arguments=_json(vars(args)),
                            hparams=_json(hparams), parameter_count_status='pending_model_construction',
@@ -156,6 +162,8 @@ class Experiment:
         atexit.register(self._unfinished)
         print(self.family + ' experiment:', self.directory)
         print(self.family + ' phase:', 'evaluation' if evaluation else 'training')
+        if 'seed' in self.result:
+            print(self.family + ' seed:', self.result['seed'])
 
     @staticmethod
     def _environment():
@@ -252,6 +260,23 @@ class Experiment:
 
     def record_metrics(self, metrics):
         self.result['metrics'].update(_json(metrics))
+        self._write_result()
+
+    def visualize(self, model, completed_epoch, total_epochs, *, member=0, **task_inputs):
+        """Optional diagnostic side effect; never part of the training objective."""
+        if self.evaluation:
+            return
+        from .periodic_visualization import PeriodicFields, due
+        if not due(completed_epoch, total_epochs):
+            return
+        if not hasattr(self, '_field_visualizers'):
+            self._field_visualizers = {}
+        if member not in self._field_visualizers:
+            name = {'kcdno':'KCDNO', 'lrsa_matched':'LRSA matched', 'CDLNO':'CDLNO', 'msar_lno':'MSAR-LNO'}[self.family]
+            self._field_visualizers[member] = PeriodicFields(self.directory, self.task, name,
+                                                           seed=getattr(self.args, 'seed', None), member=member)
+        event = self._field_visualizers[member].after_epoch(model, completed_epoch, total_epochs, **task_inputs)
+        self.result.setdefault('visualization_events', []).append(event)
         self._write_result()
 
     def record_air_scores(self, result_dir):

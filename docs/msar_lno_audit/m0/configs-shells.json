@@ -1,0 +1,373 @@
+{
+  "configs": {
+    "Airfoil-Design-AirfRANS/configs/CDLNO/airfrans.json": "{\n  \"task\": \"airfrans\",\n  \"model\": {\n    \"front_latent_mode\": \"full\",\n    \"n_hidden\": 256,\n    \"n_layers\": 8,\n    \"n_heads\": 8,\n    \"slice_num\": 64,\n    \"front_blocks\": 2,\n    \"mlp_ratio\": 2,\n    \"latent_ffn_ratio\": 2,\n    \"dropout\": 0.0,\n    \"cdpa_mode\": \"entry\",\n    \"cdpa_source_chunk_size\": 0\n  },\n  \"training_source\": \"params.yaml:CDLNO (copied from current Transolver)\",\n  \"initial_training\": {\n    \"batch_size\": 1,\n    \"nb_epochs\": 398,\n    \"lr\": 0.001,\n    \"max_neighbors\": 64,\n    \"subsampling\": 32000,\n    \"r\": 0.05\n  }\n}\n",
+    "Airfoil-Design-AirfRANS/params.yaml": "GraphSAGE:\n  encoder: [ 7, 64, 64, 8 ]\n  decoder: [ 8, 64, 64, 4 ]\n\n  nb_hidden_layers: 3\n  size_hidden_layers: 64\n  batch_size: 1\n  nb_epochs: 398\n  lr: 0.001\n  max_neighbors: 64\n  bn_bool: True\n  subsampling: 32000\n  r: 0.05\n\nTransolver:\n  batch_size: 1\n  nb_epochs: 398\n  lr: 0.001\n  max_neighbors: 64\n  subsampling: 32000\n  r: 0.05\n\nPointNet:\n  encoder: [ 7, 64, 64, 8 ]\n  decoder: [ 8, 64, 64, 4 ]\n\n  base_nb: 8\n  batch_size: 1\n  nb_epochs: 398\n  lr: 0.001\n  subsampling: 32000\n\nMLP:\n  encoder: [ 7, 64, 64, 8 ]\n  decoder: [ 8, 64, 64, 4 ]\n\n  nb_hidden_layers: 3\n  size_hidden_layers: 64\n  batch_size: 1\n  nb_epochs: 398\n  lr: 0.001\n  bn_bool: True\n  subsampling: 32000\n\nGUNet:\n  encoder: [ 7, 64, 64, 8 ]\n  decoder: [ 8, 64, 64, 4 ]\n\n  layer: 'SAGE'\n  pool: 'random'\n  nb_scale: 5\n  pool_ratio: [ .5, .5, .5, .5 ]\n  list_r: [ .05, .2, .5, 1, 10 ]\n  size_hidden_layers: 8\n  batchnorm: True\n  res: False\n\n  batch_size: 1\n  nb_epochs: 398\n  lr: 0.001\n  max_neighbors: 64\n  subsampling: 32000\n  r: 0.05\n\n# CDLNO inherits the current Transolver training/data hyperparameters.\nCDLNO:\n  batch_size: 1\n  nb_epochs: 398\n  lr: 0.001\n  max_neighbors: 64\n  subsampling: 32000\n  r: 0.05\n\nkcdno:\n  batch_size: 1\n  nb_epochs: 398\n  lr: 0.001\n  max_neighbors: 64\n  subsampling: 32000\n  r: 0.05\n\nlrsa_matched:\n  batch_size: 1\n  nb_epochs: 398\n  lr: 0.001\n  max_neighbors: 64\n  subsampling: 32000\n  r: 0.05\n",
+    "Car-Design-ShapeNetCar/configs/CDLNO/shapenet_car.json": "{\n  \"task\": \"shapenet-car\",\n  \"model\": {\n    \"front_latent_mode\": \"full\",\n    \"n_hidden\": 256,\n    \"n_layers\": 8,\n    \"n_heads\": 8,\n    \"slice_num\": 64,\n    \"front_blocks\": 2,\n    \"mlp_ratio\": 2,\n    \"latent_ffn_ratio\": 2,\n    \"dropout\": 0.0,\n    \"cdpa_mode\": \"entry\",\n    \"cdpa_source_chunk_size\": 0\n  },\n  \"training\": {\n    \"nb_epochs\": 200,\n    \"batch_size\": 1,\n    \"lr\": 0.001,\n    \"weight\": 0.5,\n    \"fold_id\": 0,\n    \"val_iter\": 10,\n    \"preprocessed\": 1\n  }\n}\n",
+    "Car-Design-ShapeNetCar/configs/kcdno/shapenet_car.json": "{\n  \"family\": \"kcdno\",\n  \"profile\": \"kcdno_v1\",\n  \"task\": \"car\",\n  \"training\": {\n    \"nb_epochs\": 200,\n    \"batch_size\": 1,\n    \"lr\": 0.001,\n    \"weight\": 0.5,\n    \"fold_id\": 0,\n    \"val_iter\": 10,\n    \"preprocessed\": 1\n  }\n}\n",
+    "PDE-Solving-StandardBenchmark/configs/CDLNO/airfoil.json": "{\n  \"task\": \"airfoil\",\n  \"model\": {\n    \"front_latent_mode\": \"full\",\n    \"n_hidden\": 128,\n    \"n_layers\": 8,\n    \"n_heads\": 4,\n    \"slice_num\": 64,\n    \"mlp_ratio\": 2,\n    \"front_blocks\": 2,\n    \"latent_ffn_ratio\": 2,\n    \"cdpa_mode\": \"entry\",\n    \"cdpa_source_chunk_size\": 0,\n    \"dropout\": 0.0,\n    \"unified_pos\": 0,\n    \"ref\": 8\n  },\n  \"training\": {\n    \"lr\": 0.001,\n    \"epochs\": 500,\n    \"batch_size\": 4,\n    \"weight_decay\": 1e-05,\n    \"max_grad_norm\": 0.1\n  }\n}\n",
+    "PDE-Solving-StandardBenchmark/configs/CDLNO/darcy.json": "{\n  \"task\": \"darcy\",\n  \"model\": {\n    \"front_latent_mode\": \"full\",\n    \"n_hidden\": 128,\n    \"n_layers\": 8,\n    \"n_heads\": 8,\n    \"slice_num\": 64,\n    \"mlp_ratio\": 2,\n    \"front_blocks\": 2,\n    \"latent_ffn_ratio\": 2,\n    \"cdpa_mode\": \"entry\",\n    \"cdpa_source_chunk_size\": 0,\n    \"dropout\": 0.0,\n    \"unified_pos\": 1,\n    \"ref\": 8\n  },\n  \"training\": {\n    \"lr\": 0.001,\n    \"epochs\": 500,\n    \"batch_size\": 4,\n    \"weight_decay\": 1e-05,\n    \"max_grad_norm\": 0.1\n  }\n}\n",
+    "PDE-Solving-StandardBenchmark/configs/CDLNO/elasticity.json": "{\n  \"task\": \"elasticity\",\n  \"model\": {\n    \"front_latent_mode\": \"full\",\n    \"n_hidden\": 128,\n    \"n_layers\": 8,\n    \"n_heads\": 8,\n    \"slice_num\": 64,\n    \"mlp_ratio\": 2,\n    \"front_blocks\": 2,\n    \"latent_ffn_ratio\": 2,\n    \"cdpa_mode\": \"entry\",\n    \"cdpa_source_chunk_size\": 0,\n    \"dropout\": 0.0,\n    \"unified_pos\": 0,\n    \"ref\": 8\n  },\n  \"training\": {\n    \"lr\": 0.001,\n    \"epochs\": 500,\n    \"batch_size\": 1,\n    \"weight_decay\": 1e-05,\n    \"max_grad_norm\": 0.1\n  }\n}\n",
+    "PDE-Solving-StandardBenchmark/configs/CDLNO/ns.json": "{\n  \"task\": \"ns\",\n  \"model\": {\n    \"front_latent_mode\": \"full\",\n    \"n_hidden\": 256,\n    \"n_layers\": 8,\n    \"n_heads\": 8,\n    \"slice_num\": 64,\n    \"mlp_ratio\": 2,\n    \"front_blocks\": 2,\n    \"latent_ffn_ratio\": 2,\n    \"cdpa_mode\": \"entry\",\n    \"cdpa_source_chunk_size\": 0,\n    \"dropout\": 0.0,\n    \"unified_pos\": 1,\n    \"ref\": 8\n  },\n  \"training\": {\n    \"lr\": 0.001,\n    \"epochs\": 500,\n    \"batch_size\": 2,\n    \"weight_decay\": 1e-05,\n    \"max_grad_norm\": null\n  }\n}\n",
+    "PDE-Solving-StandardBenchmark/configs/CDLNO/pipe.json": "{\n  \"task\": \"pipe\",\n  \"model\": {\n    \"front_latent_mode\": \"full\",\n    \"n_hidden\": 128,\n    \"n_layers\": 8,\n    \"n_heads\": 4,\n    \"slice_num\": 32,\n    \"mlp_ratio\": 2,\n    \"front_blocks\": 2,\n    \"latent_ffn_ratio\": 2,\n    \"cdpa_mode\": \"entry\",\n    \"cdpa_source_chunk_size\": 0,\n    \"dropout\": 0.0,\n    \"unified_pos\": 0,\n    \"ref\": 8\n  },\n  \"training\": {\n    \"lr\": 0.001,\n    \"epochs\": 500,\n    \"batch_size\": 8,\n    \"weight_decay\": 1e-05,\n    \"max_grad_norm\": 0.1\n  }\n}\n",
+    "PDE-Solving-StandardBenchmark/configs/CDLNO/plasticity.json": "{\n  \"task\": \"plasticity\",\n  \"model\": {\n    \"front_latent_mode\": \"full\",\n    \"n_hidden\": 128,\n    \"n_layers\": 8,\n    \"n_heads\": 8,\n    \"slice_num\": 64,\n    \"mlp_ratio\": 2,\n    \"front_blocks\": 2,\n    \"latent_ffn_ratio\": 2,\n    \"cdpa_mode\": \"entry\",\n    \"cdpa_source_chunk_size\": 0,\n    \"dropout\": 0.0,\n    \"unified_pos\": 0,\n    \"ref\": 8\n  },\n  \"training\": {\n    \"lr\": 0.001,\n    \"epochs\": 500,\n    \"batch_size\": 8,\n    \"weight_decay\": 1e-05,\n    \"max_grad_norm\": 0.1\n  }\n}\n",
+    "PDE-Solving-StandardBenchmark/configs/kcdno/airfoil.json": "{\n  \"family\": \"kcdno\",\n  \"task\": \"airfoil\",\n  \"profile\": \"kcdno_v1\",\n  \"training\": {\n    \"lr\": 0.001,\n    \"epochs\": 500,\n    \"batch_size\": 4,\n    \"weight_decay\": 1e-05,\n    \"max_grad_norm\": 0.1\n  },\n  \"adapter\": {\n    \"ref\": 8,\n    \"unified_pos\": 0\n  }\n}\n",
+    "PDE-Solving-StandardBenchmark/configs/kcdno/darcy.json": "{\n  \"family\": \"kcdno\",\n  \"task\": \"darcy\",\n  \"profile\": \"kcdno_v1\",\n  \"training\": {\n    \"lr\": 0.001,\n    \"epochs\": 500,\n    \"batch_size\": 4,\n    \"weight_decay\": 1e-05,\n    \"max_grad_norm\": 0.1\n  },\n  \"adapter\": {\n    \"ref\": 8,\n    \"unified_pos\": 1\n  }\n}\n",
+    "PDE-Solving-StandardBenchmark/configs/kcdno/elasticity.json": "{\n  \"family\": \"kcdno\",\n  \"task\": \"elasticity\",\n  \"profile\": \"kcdno_v1\",\n  \"training\": {\n    \"lr\": 0.001,\n    \"epochs\": 500,\n    \"batch_size\": 1,\n    \"weight_decay\": 1e-05,\n    \"max_grad_norm\": 0.1\n  },\n  \"adapter\": {\n    \"ref\": 8,\n    \"unified_pos\": 0\n  }\n}\n",
+    "PDE-Solving-StandardBenchmark/configs/kcdno/ns.json": "{\n  \"family\": \"kcdno\",\n  \"task\": \"ns\",\n  \"profile\": \"kcdno_v1\",\n  \"training\": {\n    \"lr\": 0.001,\n    \"epochs\": 500,\n    \"batch_size\": 2,\n    \"weight_decay\": 1e-05,\n    \"max_grad_norm\": null\n  },\n  \"adapter\": {\n    \"ref\": 8,\n    \"unified_pos\": 1\n  }\n}\n",
+    "PDE-Solving-StandardBenchmark/configs/kcdno/pipe.json": "{\n  \"family\": \"kcdno\",\n  \"task\": \"pipe\",\n  \"profile\": \"kcdno_v1\",\n  \"training\": {\n    \"lr\": 0.001,\n    \"epochs\": 500,\n    \"batch_size\": 8,\n    \"weight_decay\": 1e-05,\n    \"max_grad_norm\": 0.1\n  },\n  \"adapter\": {\n    \"ref\": 8,\n    \"unified_pos\": 0\n  }\n}\n",
+    "PDE-Solving-StandardBenchmark/configs/kcdno/plasticity.json": "{\n  \"family\": \"kcdno\",\n  \"task\": \"plasticity\",\n  \"profile\": \"kcdno_v1\",\n  \"training\": {\n    \"lr\": 0.001,\n    \"epochs\": 500,\n    \"batch_size\": 8,\n    \"weight_decay\": 1e-05,\n    \"max_grad_norm\": 0.1\n  },\n  \"adapter\": {\n    \"ref\": 8,\n    \"unified_pos\": 0\n  }\n}\n",
+    "pyproject.toml": "[build-system]\nrequires = [\"setuptools>=68\"]\nbuild-backend = \"setuptools.build_meta\"\n\n[project]\nname = \"cdlno\"\nversion = \"0.1.0\"\ndescription = \"Shared configuration and checkpoint protocol for CDLNO\"\nrequires-python = \">=3.10,<3.12\"\ndependencies = []\n\n[tool.setuptools.packages.find]\ninclude = [\"cdlno*\"]\n"
+  },
+  "shells": {
+    "Airfoil-Design-AirfRANS/scripts/CDLNO.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\n\n# Run from Airfoil-Design-AirfRANS. Training --my_path IS the Dataset directory,\n# e.g. --my_path /data/naca/Dataset. Evaluation uses its parent (see other script).\n# YAML supplies the preserved 398-epoch training protocol; CLI values below\n# make that starting configuration explicit. User overrides are passed last.\npython main.py \\\n  --model CDLNO --task full --nmodel 1 --weight 1 --score 0 \\\n  --save_path runs \\\n  --n_hidden 256 --n_layers 8 --n_heads 8 --slice_num 64 \\\n  --front_blocks 2 --mlp_ratio 2 --latent_ffn_ratio 2 --dropout 0 \\\n  --cdpa_mode entry --cdpa_source_chunk_size 0 \\\n  --nb_epochs 398 --batch_size 1 --lr 0.001 \\\n  \"$@\"\n"
+    },
+    "Airfoil-Design-AirfRANS/scripts/CDLNO_Evaluation.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\n\n# Run from Airfoil-Design-AirfRANS. Evaluation --my_path IS the PARENT of Dataset,\n# e.g. --my_path /data/naca, unlike training's /data/naca/Dataset.\n# Pass --run_dir <printed training run>. Match task/nmodel/budget/architecture;\n# this loads the original whole-model list, then calls the unchanged evaluator.\npython main_evaluation.py \\\n  --model CDLNO --task full --nmodel 1 --weight 1 \\\n  --n_hidden 256 --n_layers 8 --n_heads 8 --slice_num 64 \\\n  --front_blocks 2 --mlp_ratio 2 --latent_ffn_ratio 2 --dropout 0 \\\n  --cdpa_mode entry --cdpa_source_chunk_size 0 \\\n  --nb_epochs 398 --batch_size 1 --lr 0.001 \\\n  \"$@\"\n"
+    },
+    "Airfoil-Design-AirfRANS/scripts/Evaluation.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "export CUDA_VISIBLE_DEVICES=4\n\npython main_evaluation.py --my_path /data/naca/"
+    },
+    "Airfoil-Design-AirfRANS/scripts/GraphSAGE.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "export CUDA_VISIBLE_DEVICES=4\n\npython main.py --model GraphSAGE -t full --my_path /data/naca/Dataset --score 1"
+    },
+    "Airfoil-Design-AirfRANS/scripts/Transolver.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "export CUDA_VISIBLE_DEVICES=6\n\npython main.py --model Transolver -t full --my_path /data/naca/Dataset --score 1"
+    },
+    "Car-Design-ShapeNetCar/scripts/CDLNO.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\n\n# Run from Car-Design-ShapeNetCar; each invocation trains exactly one fold.\n# A new unique run is printed, or pass --run_dir for an explicit new directory.\npython main.py \\\n  --cfd_model CDLNO \\\n  --n_hidden 256 --n_layers 8 --n_heads 8 --slice_num 64 \\\n  --front_blocks 2 --mlp_ratio 2 --latent_ffn_ratio 2 --dropout 0 \\\n  --cdpa_mode entry --cdpa_source_chunk_size 0 \\\n  --fold_id 0 --nb_epochs 200 --batch_size 1 --lr 0.001 --weight 0.5 \\\n  --val_iter 10 --preprocessed 1 --gpu 0 \\\n  \"$@\"\n"
+    },
+    "Car-Design-ShapeNetCar/scripts/CDLNO_Evaluation.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\n\n# Pass --run_dir <the training run printed by CDLNO.sh>.\n# For a custom architecture/fold/epoch, repeat those values after the defaults.\npython main_evaluation.py \\\n  --cfd_model CDLNO \\\n  --n_hidden 256 --n_layers 8 --n_heads 8 --slice_num 64 \\\n  --front_blocks 2 --mlp_ratio 2 --latent_ffn_ratio 2 --dropout 0 \\\n  --cdpa_mode entry --cdpa_source_chunk_size 0 \\\n  --fold_id 0 --nb_epochs 200 --weight 0.5 --gpu 0 \\\n  \"$@\"\n"
+    },
+    "Car-Design-ShapeNetCar/scripts/Evaluation.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "export CUDA_VISIBLE_DEVICES=3\n\npython main_evaluation.py \\\n--cfd_model=Transolver \\\n--data_dir /data/PDE_data/mlcfd_data/training_data \\\n--save_dir /data/PDE_data/mlcfd_data/preprocessed_data \\"
+    },
+    "Car-Design-ShapeNetCar/scripts/Transolver.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "export CUDA_VISIBLE_DEVICES=7\n\npython main.py \\\n--cfd_model=Transolver \\\n--data_dir /data/PDE_data/mlcfd_data/training_data \\\n--save_dir /data/PDE_data/mlcfd_data/preprocessed_data \\\n"
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Airfoil.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\ncdlno_project_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")/..\" && pwd)\"\nexport PYTHONPATH=\"${cdlno_project_dir}/..${PYTHONPATH:+:${PYTHONPATH}}\"\ncd -- \"$cdlno_project_dir\"\npython exp_airfoil.py \\\n  --model CDLNO --gpu 0 \\\n  --n-hidden 128 \\\n  --n-layers 8 \\\n  --n-heads 4 \\\n  --slice_num 64 \\\n  --mlp_ratio 2 \\\n  --front-blocks 2 \\\n  --latent-ffn-ratio 2 \\\n  --cdpa-mode entry \\\n  --cdpa-source-chunk-size 0 \\\n  --dropout 0.0 \\\n  --unified_pos 0 \\\n  --ref 8 \\\n  --lr 0.001 \\\n  --epochs 500 \\\n  --batch-size 4 \\\n  --weight_decay 1e-05 \\\n  --max_grad_norm 0.1 \\\n  --downsamplex 1 --downsampley 1 --eval 0 \\\n  \"$@\"\n"
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Airfoil_Eval.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\ncdlno_project_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")/..\" && pwd)\"\nexport PYTHONPATH=\"${cdlno_project_dir}/..${PYTHONPATH:+:${PYTHONPATH}}\"\ncd -- \"$cdlno_project_dir\"\npython exp_airfoil.py \\\n  --model CDLNO --gpu 0 \\\n  --n-hidden 128 \\\n  --n-layers 8 \\\n  --n-heads 4 \\\n  --slice_num 64 \\\n  --mlp_ratio 2 \\\n  --front-blocks 2 \\\n  --latent-ffn-ratio 2 \\\n  --cdpa-mode entry \\\n  --cdpa-source-chunk-size 0 \\\n  --dropout 0.0 \\\n  --unified_pos 0 \\\n  --ref 8 \\\n  --lr 0.001 \\\n  --epochs 500 \\\n  --batch-size 4 \\\n  --weight_decay 1e-05 \\\n  --max_grad_norm 0.1 \\\n  --downsamplex 1 --downsampley 1 --eval 1 \\\n  \"$@\"\n"
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Darcy.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\ncdlno_project_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")/..\" && pwd)\"\nexport PYTHONPATH=\"${cdlno_project_dir}/..${PYTHONPATH:+:${PYTHONPATH}}\"\ncd -- \"$cdlno_project_dir\"\npython exp_darcy.py \\\n  --model CDLNO --gpu 0 \\\n  --n-hidden 128 \\\n  --n-layers 8 \\\n  --n-heads 8 \\\n  --slice_num 64 \\\n  --mlp_ratio 2 \\\n  --front-blocks 2 \\\n  --latent-ffn-ratio 2 \\\n  --cdpa-mode entry \\\n  --cdpa-source-chunk-size 0 \\\n  --dropout 0.0 \\\n  --unified_pos 1 \\\n  --ref 8 \\\n  --lr 0.001 \\\n  --epochs 500 \\\n  --batch-size 4 \\\n  --weight_decay 1e-05 \\\n  --max_grad_norm 0.1 \\\n  --downsample 5 --ntrain 1000 --eval 0 \\\n  \"$@\"\n"
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Darcy_Eval.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\ncdlno_project_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")/..\" && pwd)\"\nexport PYTHONPATH=\"${cdlno_project_dir}/..${PYTHONPATH:+:${PYTHONPATH}}\"\ncd -- \"$cdlno_project_dir\"\npython exp_darcy.py \\\n  --model CDLNO --gpu 0 \\\n  --n-hidden 128 \\\n  --n-layers 8 \\\n  --n-heads 8 \\\n  --slice_num 64 \\\n  --mlp_ratio 2 \\\n  --front-blocks 2 \\\n  --latent-ffn-ratio 2 \\\n  --cdpa-mode entry \\\n  --cdpa-source-chunk-size 0 \\\n  --dropout 0.0 \\\n  --unified_pos 1 \\\n  --ref 8 \\\n  --lr 0.001 \\\n  --epochs 500 \\\n  --batch-size 4 \\\n  --weight_decay 1e-05 \\\n  --max_grad_norm 0.1 \\\n  --downsample 5 --ntrain 1000 --eval 1 \\\n  \"$@\"\n"
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Elas.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\ncdlno_project_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")/..\" && pwd)\"\nexport PYTHONPATH=\"${cdlno_project_dir}/..${PYTHONPATH:+:${PYTHONPATH}}\"\ncd -- \"$cdlno_project_dir\"\npython exp_elas.py \\\n  --model CDLNO --gpu 0 \\\n  --n-hidden 128 \\\n  --n-layers 8 \\\n  --n-heads 8 \\\n  --slice_num 64 \\\n  --mlp_ratio 2 \\\n  --front-blocks 2 \\\n  --latent-ffn-ratio 2 \\\n  --cdpa-mode entry \\\n  --cdpa-source-chunk-size 0 \\\n  --dropout 0.0 \\\n  --unified_pos 0 \\\n  --ref 8 \\\n  --lr 0.001 \\\n  --epochs 500 \\\n  --batch-size 1 \\\n  --weight_decay 1e-05 \\\n  --max_grad_norm 0.1 \\\n  --ntrain 1000 --eval 0 \\\n  \"$@\"\n"
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Elas_Eval.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\ncdlno_project_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")/..\" && pwd)\"\nexport PYTHONPATH=\"${cdlno_project_dir}/..${PYTHONPATH:+:${PYTHONPATH}}\"\ncd -- \"$cdlno_project_dir\"\npython exp_elas.py \\\n  --model CDLNO --gpu 0 \\\n  --n-hidden 128 \\\n  --n-layers 8 \\\n  --n-heads 8 \\\n  --slice_num 64 \\\n  --mlp_ratio 2 \\\n  --front-blocks 2 \\\n  --latent-ffn-ratio 2 \\\n  --cdpa-mode entry \\\n  --cdpa-source-chunk-size 0 \\\n  --dropout 0.0 \\\n  --unified_pos 0 \\\n  --ref 8 \\\n  --lr 0.001 \\\n  --epochs 500 \\\n  --batch-size 1 \\\n  --weight_decay 1e-05 \\\n  --max_grad_norm 0.1 \\\n  --ntrain 1000 --eval 1 \\\n  \"$@\"\n"
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_NS.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\nproject_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")/..\" && pwd)\"\nexport PYTHONPATH=\"${project_dir}/..${PYTHONPATH:+:${PYTHONPATH}}\"\ncd \"$project_dir\"\npython exp_ns.py --model CDLNO --gpu 0 --n-hidden 256 --n-layers 8 --n-heads 8 --slice_num 64 --mlp_ratio 2 --front-blocks 2 --latent-ffn-ratio 2 --cdpa-mode entry --cdpa-source-chunk-size 0 --dropout 0.0 --unified_pos 1 --ref 8 --lr 0.001 --epochs 500 --batch-size 2 --weight_decay 1e-5 --downsample 1 --eval 0 \"$@\"\n"
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_NS_Eval.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\nproject_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")/..\" && pwd)\"\nexport PYTHONPATH=\"${project_dir}/..${PYTHONPATH:+:${PYTHONPATH}}\"\ncd \"$project_dir\"\npython exp_ns.py --model CDLNO --gpu 0 --n-hidden 256 --n-layers 8 --n-heads 8 --slice_num 64 --mlp_ratio 2 --front-blocks 2 --latent-ffn-ratio 2 --cdpa-mode entry --cdpa-source-chunk-size 0 --dropout 0.0 --unified_pos 1 --ref 8 --lr 0.001 --epochs 500 --batch-size 2 --weight_decay 1e-5 --downsample 1 --eval 1 \"$@\"\n"
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Pipe.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\ncdlno_project_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")/..\" && pwd)\"\nexport PYTHONPATH=\"${cdlno_project_dir}/..${PYTHONPATH:+:${PYTHONPATH}}\"\ncd -- \"$cdlno_project_dir\"\npython exp_pipe.py \\\n  --model CDLNO --gpu 0 \\\n  --n-hidden 128 \\\n  --n-layers 8 \\\n  --n-heads 4 \\\n  --slice_num 32 \\\n  --mlp_ratio 2 \\\n  --front-blocks 2 \\\n  --latent-ffn-ratio 2 \\\n  --cdpa-mode entry \\\n  --cdpa-source-chunk-size 0 \\\n  --dropout 0.0 \\\n  --unified_pos 0 \\\n  --ref 8 \\\n  --lr 0.001 \\\n  --epochs 500 \\\n  --batch-size 8 \\\n  --weight_decay 1e-05 \\\n  --max_grad_norm 0.1 \\\n  --downsamplex 1 --downsampley 1 --eval 0 \\\n  \"$@\"\n"
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Pipe_Eval.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\ncdlno_project_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")/..\" && pwd)\"\nexport PYTHONPATH=\"${cdlno_project_dir}/..${PYTHONPATH:+:${PYTHONPATH}}\"\ncd -- \"$cdlno_project_dir\"\npython exp_pipe.py \\\n  --model CDLNO --gpu 0 \\\n  --n-hidden 128 \\\n  --n-layers 8 \\\n  --n-heads 4 \\\n  --slice_num 32 \\\n  --mlp_ratio 2 \\\n  --front-blocks 2 \\\n  --latent-ffn-ratio 2 \\\n  --cdpa-mode entry \\\n  --cdpa-source-chunk-size 0 \\\n  --dropout 0.0 \\\n  --unified_pos 0 \\\n  --ref 8 \\\n  --lr 0.001 \\\n  --epochs 500 \\\n  --batch-size 8 \\\n  --weight_decay 1e-05 \\\n  --max_grad_norm 0.1 \\\n  --downsamplex 1 --downsampley 1 --eval 1 \\\n  \"$@\"\n"
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Plasticity.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\nproject_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")/..\" && pwd)\"\nexport PYTHONPATH=\"${project_dir}/..${PYTHONPATH:+:${PYTHONPATH}}\"\ncd \"$project_dir\"\npython exp_plas.py --model CDLNO --gpu 0 --n-hidden 128 --n-layers 8 --n-heads 8 --slice_num 64 --mlp_ratio 2 --front-blocks 2 --latent-ffn-ratio 2 --cdpa-mode entry --cdpa-source-chunk-size 0 --dropout 0.0 --unified_pos 0 --ref 8 --lr 0.001 --epochs 500 --batch-size 8 --weight_decay 1e-5 --max_grad_norm 0.1 --eval 0 \"$@\"\n"
+    },
+    "PDE-Solving-StandardBenchmark/scripts/CDLNO_Plasticity_Eval.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\nproject_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")/..\" && pwd)\"\nexport PYTHONPATH=\"${project_dir}/..${PYTHONPATH:+:${PYTHONPATH}}\"\ncd \"$project_dir\"\npython exp_plas.py --model CDLNO --gpu 0 --n-hidden 128 --n-layers 8 --n-heads 8 --slice_num 64 --mlp_ratio 2 --front-blocks 2 --latent-ffn-ratio 2 --cdpa-mode entry --cdpa-source-chunk-size 0 --dropout 0.0 --unified_pos 0 --ref 8 --lr 0.001 --epochs 500 --batch-size 8 --weight_decay 1e-5 --max_grad_norm 0.1 --eval 1 \"$@\"\n"
+    },
+    "PDE-Solving-StandardBenchmark/scripts/Transolver_Airfoil.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "python exp_airfoil.py \\\n--gpu 5 \\\n--model Transolver_Structured_Mesh_2D \\\n--n-hidden 128 \\\n--n-heads 8 \\\n--n-layers 8 \\\n--lr 0.001 \\\n--max_grad_norm 0.1 \\\n--batch-size 4 \\\n--slice_num 64 \\\n--unified_pos 0 \\\n--ref 8 \\\n--eval 0 \\\n--save_name airfoil_Transolver"
+    },
+    "PDE-Solving-StandardBenchmark/scripts/Transolver_Darcy.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "python exp_darcy.py \\\n--gpu 4 \\\n--model Transolver_Structured_Mesh_2D \\\n--n-hidden 128 \\\n--n-heads 8 \\\n--n-layers 8 \\\n--lr 0.001 \\\n--max_grad_norm 0.1 \\\n--batch-size 4 \\\n--slice_num 64 \\\n--unified_pos 1 \\\n--ref 8 \\\n--eval 0 \\\n--downsample 5 \\\n--save_name darcy_UniPDE\n\n"
+    },
+    "PDE-Solving-StandardBenchmark/scripts/Transolver_Elas.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "python exp_elas.py \\\n--gpu 6 \\\n--model Transolver_Irregular_Mesh \\\n--n-hidden 128 \\\n--n-heads 8 \\\n--n-layers 8 \\\n--lr 0.001 \\\n--max_grad_norm 0.1 \\\n--batch-size 1 \\\n--slice_num 64 \\\n--unified_pos 0 \\\n--ref 8 \\\n--eval 0 \\\n--save_name elas_Transolver"
+    },
+    "PDE-Solving-StandardBenchmark/scripts/Transolver_NS.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "python exp_ns.py \\\n--gpu 2 \\\n--model Transolver_Structured_Mesh_2D \\\n--n-hidden 256 \\\n--n-heads 8 \\\n--n-layers 8 \\\n--lr 0.001 \\\n--batch-size 2 \\\n--slice_num 32 \\\n--unified_pos 1 \\\n--ref 8 \\\n--eval 0 \\\n--save_name ns_Transolver\n\n"
+    },
+    "PDE-Solving-StandardBenchmark/scripts/Transolver_Pipe.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "python exp_pipe.py \\\n--gpu 7 \\\n--model Transolver_Structured_Mesh_2D \\\n--n-hidden 128 \\\n--n-heads 8 \\\n--n-layers 8 \\\n--mlp_ratio 2 \\\n--lr 0.001 \\\n--max_grad_norm 0.1 \\\n--batch-size 8 \\\n--slice_num 64 \\\n--unified_pos 0 \\\n--ref 8 \\\n--eval 0 \\\n--save_name pipe_Transolver\n\n"
+    },
+    "PDE-Solving-StandardBenchmark/scripts/Transolver_Plas.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "python exp_plas.py \\\n--gpu 3 \\\n--model Transolver_Structured_Mesh_2D \\\n--n-hidden 128 \\\n--n-heads 8 \\\n--n-layers 8 \\\n--lr 0.001 \\\n--max_grad_norm 0.1 \\\n--batch-size 8 \\\n--slice_num 64 \\\n--unified_pos 0 \\\n--ref 8 \\\n--eval 0 \\\n--save_name plas_Transolver\n\n"
+    },
+    "path.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\n# Source this file; it only sets paths. No install, mkdir, symlink or training.\n# Remote checkout: /inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/transolver/CDLNO-w\n# Locating this file keeps the checkout portable (including local --dry-run).\nexport CDLNO_REPO_ROOT=\"${CDLNO_REPO_ROOT:-$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)}\"\nexport CDLNO_DATA_ROOT=\"${CDLNO_DATA_ROOT:-/inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/data}\"\nexport CDLNO_FNO_ROOT=\"${CDLNO_FNO_ROOT:-${CDLNO_DATA_ROOT}/fno}\"\n\n# These are arguments to the ORIGINAL entries, whose path semantics differ.\nexport CDLNO_DARCY_ROOT=\"${CDLNO_DARCY_ROOT:-${CDLNO_FNO_ROOT}}\"\nexport CDLNO_ELASTICITY_ROOT=\"${CDLNO_ELASTICITY_ROOT:-${CDLNO_FNO_ROOT}}\"\nexport CDLNO_NS_ROOT=\"${CDLNO_NS_ROOT:-${CDLNO_FNO_ROOT}}\"\nexport CDLNO_AIRFOIL_ROOT=\"${CDLNO_AIRFOIL_ROOT:-${CDLNO_FNO_ROOT}/airfoil/naca}\"\nexport CDLNO_PIPE_ROOT=\"${CDLNO_PIPE_ROOT:-${CDLNO_FNO_ROOT}/pipe}\"\nexport CDLNO_PLASTICITY_FILE=\"${CDLNO_PLASTICITY_FILE:-${CDLNO_FNO_ROOT}/plas_N987_T20.mat}\"\n\n# Industrial subdirectories are provisional, NOT observed on the remote host.\n# Run tran_evaluate/inspect_data.sh and set these to the actual locations.\nexport CDLNO_CAR_RAW_ROOT=\"${CDLNO_CAR_RAW_ROOT:-${CDLNO_DATA_ROOT}/mlcfd_data/training_data}\"\nexport CDLNO_CAR_CACHE_ROOT=\"${CDLNO_CAR_CACHE_ROOT:-${CDLNO_DATA_ROOT}/mlcfd_data/preprocessed_data}\"\nexport CDLNO_AIRFRANS_DATASET=\"${CDLNO_AIRFRANS_DATASET:-${CDLNO_DATA_ROOT}/AirfRANS/Dataset}\"\n\nexport CDLNO_RUNS_ROOT=\"${CDLNO_RUNS_ROOT:-${CDLNO_REPO_ROOT}/output}\"\n# Change the tag (or explicit run-dir argument) for each new experiment.\n# CDLNO_RUN_TAG is optional; each new training invocation gets a timestamp.\nexport CDLNO_PYTHON=\"${CDLNO_PYTHON:-python}\"\n"
+    },
+    "tran_evaluate/_common.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\n# Shared command dispatch only; no model, loader, optimizer or time-loop code.\n\ncdlno_common_root=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")/..\" && pwd)\"\nif [[ -f \"$cdlno_common_root/path.sh\" ]]; then\n    source \"$cdlno_common_root/path.sh\"\nfi\n# Keep execution anchored to the checkout containing this dispatcher.  A\n# legacy path.sh may expose REPO=...Transolver_re (or an invalid CDLNO root),\n# which must not redirect the new scripts to a different tree.\ncdlno_repo_root=\"$cdlno_common_root\"\nif [[ -n \"${CDLNO_REPO_ROOT:-}\" && -d \"${CDLNO_REPO_ROOT}/tran_evaluate\" ]]; then\n    cdlno_repo_root=\"$CDLNO_REPO_ROOT\"\nfi\n\n# Compatibility aliases used by the remote path.sh currently in circulation.\nexport CDLNO_DATA_ROOT=\"${CDLNO_DATA_ROOT:-${DATA:-}}\"\nexport CDLNO_FNO_ROOT=\"${CDLNO_FNO_ROOT:-${FNO_DIR:-${CDLNO_DATA_ROOT:+$CDLNO_DATA_ROOT/fno}}}\"\nexport CDLNO_DARCY_ROOT=\"${CDLNO_DARCY_ROOT:-${CDLNO_FNO_ROOT:-}}\"\nexport CDLNO_ELASTICITY_ROOT=\"${CDLNO_ELASTICITY_ROOT:-${CDLNO_FNO_ROOT:-}}\"\nexport CDLNO_NS_ROOT=\"${CDLNO_NS_ROOT:-${CDLNO_FNO_ROOT:-}}\"\nexport CDLNO_AIRFOIL_ROOT=\"${CDLNO_AIRFOIL_ROOT:-${CDLNO_FNO_ROOT:+$CDLNO_FNO_ROOT/airfoil/naca}}\"\nexport CDLNO_PIPE_ROOT=\"${CDLNO_PIPE_ROOT:-${CDLNO_FNO_ROOT:+$CDLNO_FNO_ROOT/pipe}}\"\nexport CDLNO_PLASTICITY_FILE=\"${CDLNO_PLASTICITY_FILE:-${CDLNO_FNO_ROOT:+$CDLNO_FNO_ROOT/plas_N987_T20.mat}}\"\nexport CDLNO_CAR_RAW_ROOT=\"${CDLNO_CAR_RAW_ROOT:-${CAR_DATA_DIR:-}}\"\nexport CDLNO_CAR_CACHE_ROOT=\"${CDLNO_CAR_CACHE_ROOT:-${CAR_SAVE_DIR:-}}\"\nexport CDLNO_AIRFRANS_DATASET=\"${CDLNO_AIRFRANS_DATASET:-${AIRFRANS_DATASET:-}}\"\nexport CDLNO_RUNS_ROOT=\"${CDLNO_RUNS_ROOT:-$cdlno_repo_root/output}\"\n# CDLNO_RUN_TAG is optional; each new training invocation gets a timestamp.\nexport CDLNO_PYTHON=\"${CDLNO_PYTHON:-${PYTHON_BIN:-python}}\"\n\ncdlno_front_run_suffix() {\n    # Only choose the implicit run name; explicit run paths still win last.\n    # Do not inject a mode flag: eval with an explicit run can infer its mode.\n    local selected=full\n    while (($#)); do\n        case \"$1\" in\n            --front-latent-mode|--front_latent_mode)\n                (($# >= 2)) || { printf 'Missing front latent mode\\n' >&2; return 2; }\n                selected=\"$2\"; shift ;;\n            --front-latent-mode=*|--front_latent_mode=*) selected=\"${1#*=}\" ;;\n        esac\n        shift\n    done\n    case \"$selected\" in\n        full) ;;\n        no_sa|identity) printf '_%s' \"$selected\" ;;\n        *) printf 'Invalid front_latent_mode: %s\\n' \"$selected\" >&2; return 2 ;;\n    esac\n}\n\ncdlno_run_path() {\n    local task=\"$1\" action=\"$2\" selected=\"\" flag\n    shift 2\n    while (($#)); do\n        flag=\"$1\"; shift\n        case \"$flag\" in\n            --cdlno-run-dir|--run_dir)\n                (($#)) || { printf 'Missing run directory\\n' >&2; return 2; }\n                selected=\"$1\"; shift ;;\n            --cdlno-run-dir=*|--run_dir=*) selected=\"${flag#*=}\" ;;\n        esac\n    done\n    if [[ -n \"$selected\" ]]; then\n        printf '%s' \"$selected\"\n    elif [[ -n \"${CDLNO_RUN_TAG:-}\" ]]; then\n        printf '%s/%s/%s' \"$CDLNO_RUNS_ROOT\" \"$task\" \"$CDLNO_RUN_TAG\"\n    elif [[ \"$action\" == train ]]; then\n        printf '%s/%s/%s' \"$CDLNO_RUNS_ROOT\" \"$task\" \"$(date -u +%Y%m%dT%H%M%S%6NZ)\"\n    else\n        printf 'Evaluation needs --cdlno-run-dir/--run_dir or an explicit CDLNO_RUN_TAG; no latest-run guessing.\\n' >&2\n        return 2\n    fi\n}\n\ncdlno_dispatch() {\n    local task_project=\"$1\" task_entry=\"$2\"\n    shift 2\n    local task_arg task_flag task_value task_dry_run=0\n    local -a task_args=()\n    # Resolve user paths before changing to the original project working directory.\n    while (($#)); do\n        task_arg=\"$1\"\n        shift\n        case \"$task_arg\" in\n            --dry-run) task_dry_run=1 ;;\n            --data_dir|--save_dir|--run_dir|--data_path|--cdlno-run-dir|--my_path|--save_path)\n                if (($# == 0)) || [[ -z \"$1\" || \"$1\" == --* ]]; then\n                    printf 'Missing value for %s\\n' \"$task_arg\" >&2\n                    return 2\n                fi\n                task_value=\"$1\"\n                shift\n                [[ \"$task_value\" = /* ]] || task_value=\"$PWD/$task_value\"\n                task_args+=(\"$task_arg\" \"$task_value\")\n                ;;\n            --data_dir=*|--save_dir=*|--run_dir=*|--data_path=*|--cdlno-run-dir=*|--my_path=*|--save_path=*)\n                task_flag=\"${task_arg%%=*}\"\n                task_value=\"${task_arg#*=}\"\n                if [[ -z \"$task_value\" ]]; then\n                    printf 'Missing value for %s\\n' \"$task_flag\" >&2\n                    return 2\n                fi\n                [[ \"$task_value\" = /* ]] || task_value=\"$PWD/$task_value\"\n                task_args+=(\"$task_flag=$task_value\")\n                ;;\n            *) task_args+=(\"$task_arg\") ;;\n        esac\n    done\n    local task_python=\"${CDLNO_PYTHON:-python}\"\n    export PYTHONPATH=\"${cdlno_repo_root}${PYTHONPATH:+:${PYTHONPATH}}\"\n    # -u preserves prompt progress/log output; plotting still uses original code.\n    export MPLBACKEND=\"${MPLBACKEND:-Agg}\"\n    printf 'Working directory: %s\\n' \"$cdlno_repo_root/$task_project\"\n    printf 'Command:'\n    printf ' %q' \"$task_python\" -u \"$task_entry\" \"${task_args[@]}\"\n    printf '\\n'\n    if ((task_dry_run)); then\n        printf 'DRY RUN: command only; no Python entry, data, training or evaluation executed.\\n'\n        return 0\n    fi\n    if [[ \"$task_project\" == Car-Design-ShapeNetCar && \"$task_entry\" == main_evaluation.py ]]; then\n        \"$task_python\" -B \"$cdlno_repo_root/tran_evaluate/check_car_eval.py\" \"${task_args[@]}\" || return $?\n    fi\n    cd \"$cdlno_repo_root/$task_project\"\n    exec \"$task_python\" -u \"$task_entry\" \"${task_args[@]}\"\n}\n"
+    },
+    "tran_evaluate/_standard.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\ncdlno_task=\"$1\"\nshift\ncdlno_script_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\ncdlno_repo_root=\"$(cd -- \"$cdlno_script_dir/..\" && pwd)\"\nsource \"$cdlno_script_dir/_common.sh\"\n\ncase \"${1:-help}\" in\n    train) cdlno_eval=0 ;;\n    eval) cdlno_eval=1 ;;\n    help|-h|--help)\n        cat <<USAGE\nUsage: bash tran_evaluate/$cdlno_task.sh train|eval [entry options] [--dry-run]\nCDLNO defaults: L8/F2, entry CDPA, chunk0, FFN ratios2; per-task d/h/M/batch.\nPaths: root path.sh; override --data_path and --cdlno-run-dir as needed.\nDefault: output/$cdlno_task/UTC_TIMESTAMP; eval needs an existing --cdlno-run-dir.\nEach invocation performs one action. Custom architecture requires a new run\nand the same architecture during eval. Arguments supplied last win.\n--dry-run prints the command without Python, data or filesystem writes.\nSee tran_evaluate/README.md; inspect_data.sh checks remote formats read-only.\nUSAGE\n        exit 0 ;;\n    *) printf 'Expected train, eval or help.\\n' >&2; exit 2 ;;\nesac\ncdlno_action=\"$1\"\nshift\n\ncdlno_run=\"$(cdlno_run_path \"$cdlno_task\" \"$cdlno_action\" \"$@\")\"\n\n# Explicit values match the already accepted CDLNO task presets/launchers.\ncdlno_width=128 cdlno_heads=8 cdlno_latents=64 cdlno_unified=0\ncdlno_clip=(--max_grad_norm 0.1)\ncase \"$cdlno_task\" in\n    darcy)\n        cdlno_entry=exp_darcy.py cdlno_batch=4 cdlno_unified=1\n        cdlno_data=\"$CDLNO_DARCY_ROOT\"\n        cdlno_extra=(--downsample 5 --ntrain 1000) ;;\n    elasticity)\n        cdlno_entry=exp_elas.py cdlno_batch=1\n        cdlno_data=\"$CDLNO_ELASTICITY_ROOT\"\n        cdlno_extra=(--ntrain 1000) ;;\n    airfoil)\n        cdlno_entry=exp_airfoil.py cdlno_batch=4 cdlno_heads=4\n        cdlno_data=\"$CDLNO_AIRFOIL_ROOT\"\n        cdlno_extra=(--downsamplex 1 --downsampley 1) ;;\n    pipe)\n        cdlno_entry=exp_pipe.py cdlno_batch=8 cdlno_heads=4 cdlno_latents=32\n        cdlno_data=\"$CDLNO_PIPE_ROOT\"\n        cdlno_extra=(--downsamplex 1 --downsampley 1) ;;\n    ns)\n        cdlno_entry=exp_ns.py cdlno_batch=2 cdlno_width=256 cdlno_unified=1\n        cdlno_data=\"$CDLNO_NS_ROOT\"\n        cdlno_extra=(--downsample 1)\n        # Existing NS preset null resolves to None; 0 is NOT disabled clipping.\n        cdlno_clip=() ;;\n    plasticity)\n        cdlno_entry=exp_plas.py cdlno_batch=8\n        cdlno_data=\"$CDLNO_PLASTICITY_FILE\"\n        cdlno_extra=() ;;\n    *) printf 'Unknown standard task: %s\\n' \"$cdlno_task\" >&2; exit 2 ;;\nesac\n\ncdlno_dispatch PDE-Solving-StandardBenchmark \"$cdlno_entry\" \\\n    --model CDLNO --gpu 0 \\\n    --n-hidden \"$cdlno_width\" --n-layers 8 --n-heads \"$cdlno_heads\" --slice_num \"$cdlno_latents\" \\\n    --mlp_ratio 2 --front-blocks 2 --latent-ffn-ratio 2 \\\n    --cdpa-mode entry --cdpa-source-chunk-size 0 --dropout 0 \\\n    --unified_pos \"$cdlno_unified\" --ref 8 \\\n    --lr 0.001 --epochs 500 --batch-size \"$cdlno_batch\" --weight_decay 1e-5 \\\n    \"${cdlno_clip[@]}\" \"${cdlno_extra[@]}\" \\\n    --data_path \"$cdlno_data\" --cdlno-run-dir \"$cdlno_run\" \\\n    --eval \"$cdlno_eval\" \"$@\"\n"
+    },
+    "tran_evaluate/ablation/identity/eval.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\n# Darcy CDLNO identity; retain the existing task defaults and checkpoint protocol.\nset -euo pipefail\ncdlno_ablation_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nexec bash \"$cdlno_ablation_dir/../../darcy.sh\" eval --front-latent-mode identity \"$@\"\n"
+    },
+    "tran_evaluate/ablation/identity/train.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\n# Darcy CDLNO identity; retain the existing task defaults and checkpoint protocol.\nset -euo pipefail\ncdlno_ablation_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nexec bash \"$cdlno_ablation_dir/../../darcy.sh\" train --front-latent-mode identity \"$@\"\n"
+    },
+    "tran_evaluate/ablation/identity/train_eval.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\n# Darcy CDLNO identity; retain the existing task defaults and checkpoint protocol.\nset -euo pipefail\ncdlno_ablation_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nexec bash \"$cdlno_ablation_dir/../../train_eval.sh\" darcy --front-latent-mode identity \"$@\"\n"
+    },
+    "tran_evaluate/ablation/no_sa/eval.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\n# Darcy CDLNO no_sa; retain the existing task defaults and checkpoint protocol.\nset -euo pipefail\ncdlno_ablation_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nexec bash \"$cdlno_ablation_dir/../../darcy.sh\" eval --front-latent-mode no_sa \"$@\"\n"
+    },
+    "tran_evaluate/ablation/no_sa/train.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\n# Darcy CDLNO no_sa; retain the existing task defaults and checkpoint protocol.\nset -euo pipefail\ncdlno_ablation_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nexec bash \"$cdlno_ablation_dir/../../darcy.sh\" train --front-latent-mode no_sa \"$@\"\n"
+    },
+    "tran_evaluate/ablation/no_sa/train_eval.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\n# Darcy CDLNO no_sa; retain the existing task defaults and checkpoint protocol.\nset -euo pipefail\ncdlno_ablation_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nexec bash \"$cdlno_ablation_dir/../../train_eval.sh\" darcy --front-latent-mode no_sa \"$@\"\n"
+    },
+    "tran_evaluate/airfoil.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\ncdlno_launcher_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nexec bash \"$cdlno_launcher_dir/_standard.sh\" airfoil \"$@\"\n"
+    },
+    "tran_evaluate/airfrans.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\ncdlno_script_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\ncdlno_repo_root=\"$(cd -- \"$cdlno_script_dir/..\" && pwd)\"\nsource \"$cdlno_script_dir/_common.sh\"\ncase \"${1:-help}\" in\n    train) cdlno_entry=main.py ;;\n    eval) cdlno_entry=main_evaluation.py ;;\n    help|-h|--help)\n        cat <<'USAGE'\nUsage: bash tran_evaluate/airfrans.sh train|eval [entry options] [--dry-run]\nCDLNO: d256/h8/L8/F2/M64, FFN ratios2, entry CDPA, chunk0.\nProtocol: full/nmodel1, 398epochs/batch1/lr0.001, original sampling/metrics.\nPaths from path.sh: verify CDLNO_AIRFRANS_DATASET with inspect_data.sh.\nTRAIN --my_path means Dataset itself (contains manifest.json).\nEVAL --my_path means Dataset's PARENT; Dataset must be named exactly Dataset.\nDefault: output/airfrans/UTC_TIMESTAMP; eval needs an existing --run_dir.\nUse --run_dir for another run; repeat task/model/budget settings during eval.\nOriginal entry has no --gpu; use CUDA_VISIBLE_DEVICES to choose a GPU.\nArguments supplied last win. --dry-run never calls Python/data/metrics.\nUSAGE\n        exit 0 ;;\n    *) printf 'Expected train, eval or help.\\n' >&2; exit 2 ;;\nesac\ncdlno_action=\"$1\"\nshift\ncdlno_run=\"$(cdlno_run_path airfrans \"$cdlno_action\" \"$@\")\"\ncdlno_dataset=\"${CDLNO_AIRFRANS_DATASET%/}\"\ncdlno_extra=()\nif [[ \"$cdlno_entry\" == main.py ]]; then\n    cdlno_data_arg=\"$cdlno_dataset\"\n    cdlno_extra=(--score 0)\nelse\n    # The frozen evaluator appends '/Dataset' to --my_path.\n    cdlno_explicit_path=0\n    for cdlno_arg in \"$@\"; do\n        case \"$cdlno_arg\" in --my_path|--my_path=*) cdlno_explicit_path=1 ;; esac\n    done\n    if [[ \"${cdlno_dataset##*/}\" != Dataset ]] && ((cdlno_explicit_path == 0)); then\n        printf 'AirfRANS eval requires CDLNO_AIRFRANS_DATASET ending in /Dataset (original path contract).\\n' >&2\n        exit 2\n    fi\n    cdlno_data_arg=\"$(dirname -- \"$cdlno_dataset\")\"\nfi\ncdlno_dispatch Airfoil-Design-AirfRANS \"$cdlno_entry\" \\\n    --model CDLNO --task full --nmodel 1 --weight 1 \\\n    --n_hidden 256 --n_layers 8 --n_heads 8 --slice_num 64 \\\n    --front_blocks 2 --mlp_ratio 2 --latent_ffn_ratio 2 --dropout 0 \\\n    --cdpa_mode entry --cdpa_source_chunk_size 0 \\\n    --nb_epochs 398 --batch_size 1 --lr 0.001 \\\n    --my_path \"$cdlno_data_arg\" --save_path \"$CDLNO_RUNS_ROOT\" \\\n    --run_dir \"$cdlno_run\" \\\n    \"${cdlno_extra[@]}\" \"$@\"\n"
+    },
+    "tran_evaluate/car.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\n\ncdlno_script_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\ncdlno_repo_root=\"$(cd -- \"$cdlno_script_dir/..\" && pwd)\"\nsource \"$cdlno_script_dir/_common.sh\"\n\ncase \"${1:-help}\" in\n    train) cdlno_entry=main.py ;;\n    eval) cdlno_entry=main_evaluation.py ;;\n    help|-h|--help)\n        cat <<'USAGE'\nUsage: bash tran_evaluate/car.sh train|eval [original entry options] [--dry-run]\n\nCDLNO: d256/h8/L8/F2/M64, FFN ratios2, entry CDPA, chunk0.\nOriginal Car protocol: fold0, epochs200, batch1, Adam/OneCycleLR, reg0.5.\n\nTrain: --data_dir RAW_ROOT --save_dir PREPROCESSED_ROOT --run_dir NEW_RUN\nEval:  --data_dir RAW_ROOT --save_dir PREPROCESSED_ROOT --run_dir EXISTING_RUN\nDefaults come from root path.sh; industrial directories need remote inspection.\nDefault: output/car/UTC_TIMESTAMP; eval needs an existing --run_dir.\n--save_dir means the preprocessed dataset, NOT the model checkpoint directory.\nTraining uses existing preprocessed data by default (--preprocessed 1).\n\nFull original drag evaluation requires fold0 and raw data accessible at\n/data/PDE_data/mlcfd_data/training_data/param0 (hardcoded upstream path).\nRepeat any custom model/fold/epoch settings during eval; chunk may change.\nArguments supplied last override defaults. --dry-run executes no Python/data.\nUse CDLNO_PYTHON=/absolute/path/to/python to select your existing environment.\nSee tran_evaluate/README.md for paths, metrics and inherited limitations.\nUSAGE\n        exit 0 ;;\n    *) printf 'Expected train, eval or help; see %s help\\n' \"$0\" >&2; exit 2 ;;\nesac\ncdlno_action=\"$1\"\nshift\n\ncdlno_run=\"$(cdlno_run_path car \"$cdlno_action\" \"$@\")\"\ncdlno_args=(\n    --data_dir \"$CDLNO_CAR_RAW_ROOT\" --save_dir \"$CDLNO_CAR_CACHE_ROOT\"\n    --run_dir \"$cdlno_run\"\n    --cfd_model CDLNO\n    --n_hidden 256 --n_layers 8 --n_heads 8 --slice_num 64\n    --front_blocks 2 --mlp_ratio 2 --latent_ffn_ratio 2 --dropout 0\n    --cdpa_mode entry --cdpa_source_chunk_size 0\n    --fold_id 0 --nb_epochs 200 --weight 0.5 --r 0.2 --gpu 0\n)\nif [[ \"$cdlno_entry\" == main.py ]]; then\n    cdlno_args+=(--batch_size 1 --lr 0.001 --val_iter 10 --preprocessed 1)\nfi\ncdlno_dispatch Car-Design-ShapeNetCar \"$cdlno_entry\" \"${cdlno_args[@]}\" \"$@\"\n"
+    },
+    "tran_evaluate/darcy.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\ncdlno_launcher_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nexec bash \"$cdlno_launcher_dir/_standard.sh\" darcy \"$@\"\n"
+    },
+    "tran_evaluate/elasticity.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\ncdlno_launcher_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nexec bash \"$cdlno_launcher_dir/_standard.sh\" elasticity \"$@\"\n"
+    },
+    "tran_evaluate/inspect_data.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\ncdlno_inspect_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\ncdlno_script_root=\"$(cd -- \"$cdlno_inspect_dir/..\" && pwd)\"\n\n# `path.sh` is user-owned and older copies use aliases such as DATA,\n# FNO_DIR and CAR_DATA_DIR.  Source it when present, but never require our\n# newer CDLNO_* names to exist.  The inspection script itself must stay tied\n# to the checkout containing this file, even when an old path.sh points REPO\n# at another Transolver checkout.\nif [[ -f \"$cdlno_script_root/path.sh\" ]]; then\n    source \"$cdlno_script_root/path.sh\"\nfi\nexport CDLNO_REPO_ROOT=\"${CDLNO_REPO_ROOT:-$cdlno_script_root}\"\nexport CDLNO_DATA_ROOT=\"${CDLNO_DATA_ROOT:-${DATA:-}}\"\nexport CDLNO_FNO_ROOT=\"${CDLNO_FNO_ROOT:-${FNO_DIR:-${CDLNO_DATA_ROOT:+$CDLNO_DATA_ROOT/fno}}}\"\nexport CDLNO_DARCY_ROOT=\"${CDLNO_DARCY_ROOT:-${CDLNO_FNO_ROOT:-}}\"\nexport CDLNO_ELASTICITY_ROOT=\"${CDLNO_ELASTICITY_ROOT:-${CDLNO_FNO_ROOT:-}}\"\nexport CDLNO_NS_ROOT=\"${CDLNO_NS_ROOT:-${CDLNO_FNO_ROOT:-}}\"\nexport CDLNO_AIRFOIL_ROOT=\"${CDLNO_AIRFOIL_ROOT:-${CDLNO_FNO_ROOT:+$CDLNO_FNO_ROOT/airfoil/naca}}\"\nexport CDLNO_PIPE_ROOT=\"${CDLNO_PIPE_ROOT:-${CDLNO_FNO_ROOT:+$CDLNO_FNO_ROOT/pipe}}\"\nexport CDLNO_PLASTICITY_FILE=\"${CDLNO_PLASTICITY_FILE:-${CDLNO_FNO_ROOT:+$CDLNO_FNO_ROOT/plas_N987_T20.mat}}\"\nexport CDLNO_CAR_RAW_ROOT=\"${CDLNO_CAR_RAW_ROOT:-${CAR_DATA_DIR:-}}\"\nexport CDLNO_CAR_CACHE_ROOT=\"${CDLNO_CAR_CACHE_ROOT:-${CAR_SAVE_DIR:-}}\"\nexport CDLNO_AIRFRANS_DATASET=\"${CDLNO_AIRFRANS_DATASET:-${AIRFRANS_DATASET:-}}\"\nexport CDLNO_PYTHON=\"${CDLNO_PYTHON:-${PYTHON_BIN:-python}}\"\nexec \"$CDLNO_PYTHON\" -B \"$cdlno_inspect_dir/inspect_data.py\" \"$@\"\n"
+    },
+    "tran_evaluate/kcdlno/_task.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\n# Thin per-dataset alias for the verified tran_evaluate/kcdno launchers.\nset -euo pipefail\n\nlauncher=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\ntask=\"${1:?dataset is required}\"\nshift\n\nusage() {\n    cat >&2 <<EOF\nUsage: $task.sh train_eval [all|off|lrsa_matched] [options]\n       $task.sh train [options]\n       $task.sh eval --kcdno-run-dir RUN_DIR [options]\nAppend --dry-run to preview without Python/data access.\nDefaults: model kcdno, profile kcdno_v1, history all.\nSee tran_evaluate/kcdlno/README.md for dataset paths and evaluation limits.\nEOF\n}\n\n(($#)) || { usage; exit 0; }\n# Handle help here: original experiment entries may read data at top level.\nfor arg in \"$@\"; do\n    case \"$arg\" in -h|--help) usage; exit 0 ;; esac\ndone\n\ncase \"$1\" in\n    train|eval)\n        action=\"$1\"\n        shift\n        exec bash \"$launcher/../kcdno/$task.sh\" \"$action\" \"$@\"\n        ;;\n    train_eval)\n        shift\n        ;;\n    --*)\n        # Options alone imply train_eval. Preserve the first option verbatim,\n        # especially --dry-run, which must never be consumed here.\n        ;;\n    *)\n        usage\n        exit 2\n        ;;\nesac\n\nvariant=all\nif (($#)) && [[ \"$1\" == all || \"$1\" == off || \"$1\" == lrsa_matched ]]; then\n    variant=\"$1\"\n    shift\nfi\nexec bash \"$launcher/../kcdno/train_eval.sh\" \"$task\" \"$variant\" \"$@\"\n"
+    },
+    "tran_evaluate/kcdlno/airfoil.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\nexec bash \"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)/_task.sh\" airfoil \"$@\"\n"
+    },
+    "tran_evaluate/kcdlno/airfrans.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\nexec bash \"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)/_task.sh\" airfrans \"$@\"\n"
+    },
+    "tran_evaluate/kcdlno/car.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\nexec bash \"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)/_task.sh\" car \"$@\"\n"
+    },
+    "tran_evaluate/kcdlno/darcy.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\nexec bash \"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)/_task.sh\" darcy \"$@\"\n"
+    },
+    "tran_evaluate/kcdlno/elasticity.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\nexec bash \"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)/_task.sh\" elasticity \"$@\"\n"
+    },
+    "tran_evaluate/kcdlno/ns.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\nexec bash \"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)/_task.sh\" ns \"$@\"\n"
+    },
+    "tran_evaluate/kcdlno/pipe.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\nexec bash \"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)/_task.sh\" pipe \"$@\"\n"
+    },
+    "tran_evaluate/kcdlno/plasticity.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\nexec bash \"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)/_task.sh\" plasticity \"$@\"\n"
+    },
+    "tran_evaluate/kcdlno/run_seed.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\n# One selected seed; each task trains, evaluates and reports before the next.\nset -euo pipefail\nlauncher=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\n\nusage() {\n    cat <<'EOF'\nUsage: bash tran_evaluate/kcdlno/run_seed.sh 0|1|2 [--gpu 0] [--dry-run]\n       bash tran_evaluate/kcdlno/run_seed.sh --seed 0|1|2 [--gpu 0] [--dry-run]\nOrder: darcy -> airfoil -> plas (plasticity) -> elas (elasticity) -> ns -> pipe.\nEach task: train -> eval -> print results with seed -> next task.\nNo arguments: ask for one seed in an interactive terminal.\nUses the existing KCDNO task presets and path.sh; no automatic seed sweep.\nEOF\n}\n\nfor arg in \"$@\"; do\n    case \"$arg\" in -h|--help) usage; exit 0 ;; esac\ndone\nif (($# == 0)); then\n    if [[ -t 0 ]]; then\n        read -r -p 'Choose seed (0, 1, or 2): ' selected_seed\n        set -- --seed \"$selected_seed\"\n    else\n        usage >&2\n        exit 2\n    fi\nfi\ncase \"$1\" in 0|1|2) selected_seed=\"$1\"; shift; set -- --seed \"$selected_seed\" \"$@\" ;; esac\nsource \"$launcher/../_common.sh\"\nexec \"$CDLNO_PYTHON\" -u \"$launcher/_seed_suite.py\" \"$@\"\n"
+    },
+    "tran_evaluate/kcdno/_dispatch.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\n# New-family path flags, using the same installed Python and original cwd.\nset -euo pipefail\nlauncher=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nsource \"$launcher/../_common.sh\"\nproject=\"$1\"; entry=\"$2\"; shift 2\ndry=0; args=()\nwhile (($#)); do\n    arg=\"$1\"; shift\n    case \"$arg\" in\n        --dry-run) dry=1 ;;\n        --kcdno-run-dir|--run_dir|--data_dir|--save_dir|--my_path|--save_path)\n            value=\"${1:?missing path}\"; shift\n            [[ \"$value\" = /* ]] || value=\"$PWD/$value\"\n            args+=(\"$arg\" \"$value\") ;;\n        --kcdno-run-dir=*|--run_dir=*|--data_dir=*|--save_dir=*|--my_path=*|--save_path=*)\n            value=\"${arg#*=}\"; [[ \"$value\" = /* ]] || value=\"$PWD/$value\"\n            args+=(\"${arg%%=*}\" \"$value\") ;;\n        *) args+=(\"$arg\") ;;\n    esac\ndone\nexport PYTHONPATH=\"$cdlno_repo_root${PYTHONPATH:+:$PYTHONPATH}\"\nexport MPLBACKEND=\"${MPLBACKEND:-Agg}\"\nprintf 'Working directory: %s\\n' \"$cdlno_repo_root/$project\"\nprintf 'Command:'; printf ' %q' \"$CDLNO_PYTHON\" -u \"$entry\" \"${args[@]}\"; printf '\\n'\n((dry)) && { printf 'DRY RUN: no Python/data/training/evaluation.\\n'; exit 0; }\ncd \"$cdlno_repo_root/$project\"\nif [[ \"$project\" == Car-Design-ShapeNetCar && \"$entry\" == main_evaluation.py ]]; then\n    \"$CDLNO_PYTHON\" -B -m cdlno.kcdno.car_preflight \"${args[@]}\"\nfi\nexec \"$CDLNO_PYTHON\" -u \"$entry\" \"${args[@]}\"\n"
+    },
+    "tran_evaluate/kcdno/_standard.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\nlauncher=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nsource \"$launcher/../_common.sh\"\ntask=\"${1:?task required}\"; action=\"${2:?train or eval required}\"; shift 2\ncase \"$task\" in\n    darcy) entry=exp_darcy.py; data=\"${CDLNO_DARCY_ROOT:-}\" ;;\n    elasticity) entry=exp_elas.py; data=\"${CDLNO_ELASTICITY_ROOT:-}\" ;;\n    airfoil) entry=exp_airfoil.py; data=\"${CDLNO_AIRFOIL_ROOT:-}\" ;;\n    pipe) entry=exp_pipe.py; data=\"${CDLNO_PIPE_ROOT:-}\" ;;\n    ns) entry=exp_ns.py; data=\"${CDLNO_NS_ROOT:-}\" ;;\n    plasticity) entry=exp_plas.py; data=\"${CDLNO_PLASTICITY_FILE:-}\" ;;\n    *) printf 'Task not integrated: %s\\n' \"$task\" >&2; exit 2 ;;\nesac\ncase \"$action\" in train) evaluation=0 ;; eval) evaluation=1 ;; *) exit 2 ;; esac\n# Profile, not duplicated explicit dimensions; users can switch it last.\nargs=(--model kcdno --profile kcdno_v1 --eval \"$evaluation\")\n[[ -z \"$data\" ]] || args+=(--data_path \"$data\")\n# Resolve the new run flag before the old dispatcher changes working directory.\nuser=()\nwhile (($#)); do\n    case \"$1\" in\n        --kcdno-run-dir)\n            value=\"${2:?missing run directory}\"\n            [[ \"$value\" = /* ]] || value=\"$PWD/$value\"\n            user+=(--kcdno-run-dir \"$value\"); shift 2 ;;\n        --kcdno-run-dir=*)\n            value=\"${1#*=}\"; [[ \"$value\" = /* ]] || value=\"$PWD/$value\"\n            user+=(--kcdno-run-dir \"$value\"); shift ;;\n        *) user+=(\"$1\"); shift ;;\n    esac\ndone\ncdlno_dispatch PDE-Solving-StandardBenchmark \"$entry\" \"${args[@]}\" \"${user[@]}\"\n"
+    },
+    "tran_evaluate/kcdno/airfoil.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\nlauncher=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nexec bash \"$launcher/_standard.sh\" airfoil \"$@\"\n"
+    },
+    "tran_evaluate/kcdno/airfrans.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\nlauncher=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nsource \"$launcher/../_common.sh\"\naction=\"${1:?train or eval required}\"; shift\n# TRAIN my_path = Dataset (manifest.json); EVAL my_path = Dataset's PARENT.\n# No --gpu in this original project; use CUDA_VISIBLE_DEVICES.\ndataset=\"${CDLNO_AIRFRANS_DATASET%/}\"\ncase \"$action\" in\n train) entry=main.py; args=(--score 0 --my_path \"$dataset\") ;;\n eval)\n    entry=main_evaluation.py\n    explicit=0\n    for flag in \"$@\"; do case \"$flag\" in --my_path|--my_path=*) explicit=1 ;; esac; done\n    if [[ \"${dataset##*/}\" != Dataset ]] && ((explicit == 0)); then\n        printf 'AirfRANS eval expects a /Dataset path or explicit --my_path parent.\\n' >&2; exit 2\n    fi\n    args=(--my_path \"$(dirname -- \"$dataset\")\") ;;\n *) exit 2 ;;\nesac\nexec bash \"$launcher/_dispatch.sh\" Airfoil-Design-AirfRANS \"$entry\" --model kcdno --profile kcdno_v1 \"${args[@]}\" \"$@\"\n"
+    },
+    "tran_evaluate/kcdno/car.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\nlauncher=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nsource \"$launcher/../_common.sh\"\naction=\"${1:?train or eval required}\"; shift\ncase \"$action\" in train) entry=main.py ;; eval) entry=main_evaluation.py ;; *) exit 2 ;; esac\nargs=(--cfd_model kcdno --profile kcdno_v1)\n[[ -z \"${CDLNO_CAR_RAW_ROOT:-}\" ]] || args+=(--data_dir \"$CDLNO_CAR_RAW_ROOT\")\n[[ -z \"${CDLNO_CAR_CACHE_ROOT:-}\" ]] || args+=(--save_dir \"$CDLNO_CAR_CACHE_ROOT\")\n# save_dir is preprocessed data. A run is exactly one fold. Full drag evaluation\n# retains the original fixed param0 path; the preflight checks it without data IO.\nexec bash \"$launcher/_dispatch.sh\" Car-Design-ShapeNetCar \"$entry\" \"${args[@]}\" \"$@\"\n"
+    },
+    "tran_evaluate/kcdno/darcy.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\nlauncher=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nexec bash \"$launcher/_standard.sh\" darcy \"$@\"\n"
+    },
+    "tran_evaluate/kcdno/elasticity.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\nlauncher=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nexec bash \"$launcher/_standard.sh\" elasticity \"$@\"\n"
+    },
+    "tran_evaluate/kcdno/ns.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\nlauncher=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nexec bash \"$launcher/_standard.sh\" ns \"$@\"\n"
+    },
+    "tran_evaluate/kcdno/pipe.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\nlauncher=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nexec bash \"$launcher/_standard.sh\" pipe \"$@\"\n"
+    },
+    "tran_evaluate/kcdno/plasticity.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\nlauncher=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nexec bash \"$launcher/_standard.sh\" plasticity \"$@\"\n"
+    },
+    "tran_evaluate/kcdno/train_eval.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\n# Explicit sequential convenience; this script never runs unless called by user.\nset -euo pipefail\nlauncher=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nsource \"$launcher/../_common.sh\"\ntask=\"${1:?Usage: train_eval.sh TASK all|off|lrsa_matched [entry options]}\"\nvariant=\"${2:?choose all|off|lrsa_matched}\"; shift 2\ncase \"$task\" in darcy|elasticity|airfoil|pipe|ns|plasticity|car|airfrans) ;; *) exit 2 ;; esac\nmodel_flag=--model; [[ \"$task\" != car ]] || model_flag=--cfd_model\ncase \"$variant\" in\n all|off) family=kcdno; selection=(\"$model_flag\" kcdno --history-mode \"$variant\") ;;\n lrsa_matched) family=lrsa_matched; selection=(\"$model_flag\" lrsa_matched) ;;\n *) exit 2 ;;\nesac\nrun=\"${CDLNO_RUNS_ROOT:-$cdlno_repo_root/output}/$task/$family/$(date -u +%Y%m%dT%H%M%S)_${variant}_$$\"\nprintf 'Step 1/2: training; proposed run %s (explicit user run overrides it)\\n' \"$run\"\nbash \"$launcher/$task.sh\" train \"${selection[@]}\" --kcdno-run-dir \"$run\" \"$@\"\nprintf 'Step 2/2: evaluation of the same run\\n'\nbash \"$launcher/$task.sh\" eval \"${selection[@]}\" --kcdno-run-dir \"$run\" \"$@\"\n"
+    },
+    "tran_evaluate/ns.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\ncdlno_launcher_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nexec bash \"$cdlno_launcher_dir/_standard.sh\" ns \"$@\"\n"
+    },
+    "tran_evaluate/pipe.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\ncdlno_launcher_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nexec bash \"$cdlno_launcher_dir/_standard.sh\" pipe \"$@\"\n"
+    },
+    "tran_evaluate/plasticity.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\nset -euo pipefail\ncdlno_launcher_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nexec bash \"$cdlno_launcher_dir/_standard.sh\" plasticity \"$@\"\n"
+    },
+    "tran_evaluate/show/Airfoil-Design-AirfRANS.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\n# Offline reports only. Paths follow this checkout, independent of caller cwd.\nset -euo pipefail\nshow_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nexec \"${CDLNO_PYTHON:-python}\" -B \"$show_dir/_report.py\" Airfoil-Design-AirfRANS \"$@\"\n"
+    },
+    "tran_evaluate/show/Car-Design-ShapeNetCar.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\n# Offline reports only. Paths follow this checkout, independent of caller cwd.\nset -euo pipefail\nshow_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nexec \"${CDLNO_PYTHON:-python}\" -B \"$show_dir/_report.py\" Car-Design-ShapeNetCar \"$@\"\n"
+    },
+    "tran_evaluate/show/PDE-Solving-StandardBenchmark.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\n# Offline reports only. Paths follow this checkout, independent of caller cwd.\nset -euo pipefail\nshow_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\nexec \"${CDLNO_PYTHON:-python}\" -B \"$show_dir/_report.py\" PDE-Solving-StandardBenchmark \"$@\"\n"
+    },
+    "tran_evaluate/train_eval.sh": {
+      "returncode": 0,
+      "error": "",
+      "source": "#!/usr/bin/env bash\n# One task, then its evaluation. Reuse the existing launchers and protocols.\nset -euo pipefail\n\ncdlno_pair_dir=\"$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)\"\ncase \"${1:-help}\" in\n    darcy|elasticity|airfoil|pipe|ns|plasticity|car|airfrans) cdlno_pair_task=\"$1\" ;;\n    help|-h|--help)\n        cat <<'USAGE'\nUsage: bash tran_evaluate/train_eval.sh TASK [shared entry options] [--dry-run]\n       [--train-args training-only options] [--eval-args evaluation-only options]\n\nTASK: darcy elasticity airfoil pipe ns plasticity car airfrans\nRuns TASK.sh train first, then TASK.sh eval only if training succeeds.\nBoth commands retain the existing task defaults (CDLNO L8/F2, full front).\nShared options, including custom architecture and run directory, go before\n--train-args/--eval-args. These markers are consumed here, not sent to Python.\nExample: train_eval.sh car --gpu 0 --train-args --preprocessed 1\n\nUses CDLNO_RUN_TAG if set; otherwise generates one tag for this train/eval pair.\nUse --cdlno-run-dir (PDE) or --run_dir (industrial) as a shared option to select\nan explicit NEW directory. Existing runs are rejected by the original helper.\nUse TASK.sh eval separately to evaluate an already trained run.\n--dry-run prints both commands without running Python or creating a run.\n\nAirfRANS: use CUDA_VISIBLE_DEVICES, not --gpu. Set CDLNO_AIRFRANS_DATASET to\n.../Dataset; the task launcher derives distinct train/eval --my_path arguments.\nFor explicit paths use --train-args --my_path .../Dataset and\n--eval-args --my_path ... (the parent). Do not share --my_path for AirfRANS.\nCar: full drag evaluation still requires fold0 and the original fixed raw path;\nsee tran_evaluate/README.md. This wrapper does not change metrics or data paths.\nUSAGE\n        exit 0 ;;\n    *) printf 'Unknown task: %s. Run train_eval.sh help.\\n' \"$1\" >&2; exit 2 ;;\nesac\nshift\n\ncdlno_pair_shared=()\ncdlno_pair_train=()\ncdlno_pair_eval=()\ncdlno_pair_dry=()\ncdlno_pair_section=shared\nfor cdlno_pair_arg in \"$@\"; do\n    case \"$cdlno_pair_arg\" in\n        --train-args) cdlno_pair_section=train; continue ;;\n        --eval-args) cdlno_pair_section=eval; continue ;;\n        --dry-run) cdlno_pair_dry=(--dry-run); continue ;;\n        --eval|--eval=*)\n            printf 'The train/eval action is controlled by this script; omit --eval.\\n' >&2\n            exit 2 ;;\n        --run_dir|--run_dir=*|--cdlno-run-dir|--cdlno-run-dir=*)\n            if [[ \"$cdlno_pair_section\" != shared ]]; then\n                printf 'Put the run directory in shared options so both steps use the same checkpoint.\\n' >&2\n                exit 2\n            fi ;;\n        --my_path|--my_path=*)\n            if [[ \"$cdlno_pair_task\" == airfrans && \"$cdlno_pair_section\" == shared ]]; then\n                printf 'AirfRANS train/eval --my_path differ; use CDLNO_AIRFRANS_DATASET or separate --train-args/--eval-args.\\n' >&2\n                exit 2\n            fi ;;\n    esac\n    case \"$cdlno_pair_section\" in\n        shared) cdlno_pair_shared+=(\"$cdlno_pair_arg\") ;;\n        train) cdlno_pair_train+=(\"$cdlno_pair_arg\") ;;\n        eval) cdlno_pair_eval+=(\"$cdlno_pair_arg\") ;;\n    esac\ndone\n\n# Export once for the two child processes, before their path.sh is sourced.\n# A tag names the experiment; it does not set a random seed.\nexport CDLNO_RUN_TAG=\"${CDLNO_RUN_TAG:-$(date -u +%Y%m%dT%H%M%S%6NZ)}\"\nprintf 'Task: %s | train/eval run tag: %s\\n' \"$cdlno_pair_task\" \"$CDLNO_RUN_TAG\"\nprintf 'Step 1/2: training\\n'\nif bash \"$cdlno_pair_dir/$cdlno_pair_task.sh\" train \\\n        \"${cdlno_pair_shared[@]}\" \"${cdlno_pair_train[@]}\" \"${cdlno_pair_dry[@]}\"; then\n    printf 'Step 2/2: evaluation\\n'\nelse\n    cdlno_pair_status=$?\n    printf 'Training command failed (exit %s); evaluation was not started.\\n' \"$cdlno_pair_status\" >&2\n    exit \"$cdlno_pair_status\"\nfi\nbash \"$cdlno_pair_dir/$cdlno_pair_task.sh\" eval \\\n    \"${cdlno_pair_shared[@]}\" \"${cdlno_pair_eval[@]}\" \"${cdlno_pair_dry[@]}\"\n"
+    }
+  }
+}

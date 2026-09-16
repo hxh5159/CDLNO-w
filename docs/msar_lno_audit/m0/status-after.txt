@@ -1,0 +1,160 @@
+ M Airfoil-Design-AirfRANS/main.py
+ M Airfoil-Design-AirfRANS/train.py
+ M Car-Design-ShapeNetCar/train.py
+ M PDE-Solving-StandardBenchmark/cdlno_entry.py
+ M PDE-Solving-StandardBenchmark/exp_airfoil.py
+ M PDE-Solving-StandardBenchmark/exp_darcy.py
+ M PDE-Solving-StandardBenchmark/exp_elas.py
+ M PDE-Solving-StandardBenchmark/exp_ns.py
+ M PDE-Solving-StandardBenchmark/exp_pipe.py
+ M PDE-Solving-StandardBenchmark/exp_plas.py
+ M cdlno/experiment.py
+ M cdlno/kcdno/entry.py
+ M cdlno/visualization.py
+ M docs/CDLNO_IMPLEMENTATION_STATUS.md
+ M docs/KCDNO_IMPLEMENTATION_STATUS.md
+ M memory/current-state.md
+ M tests/output_recording_projection.py
+ M tests/test_experiment_records.py
+ M tests/test_kcdno_airfrans.py
+ M tests/test_kcdno_car.py
+ M tests/test_kcdno_tasks.py
+ M tran_evaluate/README.md
+ M tran_evaluate/kcdlno/README.md
+?? PLAN_MSAR_LNO/MRSA_LNO_arch.md
+?? PLAN_MSAR_LNO/MSAR_LNO_Codex_Staged_Prompts.md
+?? cdlno/msar_lno/__init__.py
+?? cdlno/msar_lno/__main__.py
+?? cdlno/msar_lno/config.py
+?? cdlno/msar_lno/metadata.py
+?? cdlno/msar_lno/options.py
+?? cdlno/msar_lno/profiles.py
+?? cdlno/msar_lno/registry.py
+?? cdlno/periodic_visualization.py
+?? docs/CDLNO_PERIODIC_VISUALIZATION.md
+?? docs/CDLNO_RESULT_REPORTS.md
+?? docs/KCDNO_SEED_SUITE.md
+?? docs/MSAR_LNO_IMPLEMENTATION_STATUS.md
+?? docs/MSAR_LNO_M1_CONFIGURATION.md
+?? docs/MSAR_LNO_REFERENCE_AUDIT.md
+?? docs/kcdno_audit/seed_suite/freeze.json
+?? docs/kcdno_audit/seed_suite/remote-seed-diagnosis.json
+?? docs/kcdno_audit/seed_suite/seed-support.patch
+?? docs/msar_lno_audit/m0/READING_LEDGER.md
+?? docs/msar_lno_audit/m0/configs-shells.json
+?? docs/msar_lno_audit/m0/current-core-replay.json
+?? docs/msar_lno_audit/m0/document-reading.json
+?? docs/msar_lno_audit/m0/environment.json
+?? docs/msar_lno_audit/m0/finalize_evidence.py
+?? docs/msar_lno_audit/m0/fixture-index.json
+?? docs/msar_lno_audit/m0/freeze.json
+?? docs/msar_lno_audit/m0/inventory.json
+?? docs/msar_lno_audit/m0/inventory.py
+?? docs/msar_lno_audit/m0/k0-replay-airfrans.json
+?? docs/msar_lno_audit/m0/k0-replay-car.json
+?? docs/msar_lno_audit/m0/k0-replay-standard.json
+?? docs/msar_lno_audit/m0/k0-replay.json
+?? docs/msar_lno_audit/m0/other-capture-air.json
+?? docs/msar_lno_audit/m0/other-capture-standard.json
+?? docs/msar_lno_audit/m0/other-capture.json
+?? docs/msar_lno_audit/m0/other-replay-air.json
+?? docs/msar_lno_audit/m0/other-replay-standard.json
+?? docs/msar_lno_audit/m0/other-replay.json
+?? docs/msar_lno_audit/m0/other_model_fixtures.py
+?? docs/msar_lno_audit/m0/preexisting.diff
+?? docs/msar_lno_audit/m0/reading-index.json
+?? docs/msar_lno_audit/m0/review_index.py
+?? docs/msar_lno_audit/m0/rg-files.txt
+?? docs/msar_lno_audit/m0/source-contracts.json
+?? docs/msar_lno_audit/m0/staged-before.diff
+?? docs/msar_lno_audit/m0/status-after.txt
+?? docs/msar_lno_audit/m0/status-before.txt
+?? docs/msar_lno_audit/m0/summary.json
+?? docs/msar_lno_audit/m0/test-contracts.json
+?? docs/msar_lno_audit/m0/tracked-files.txt
+?? docs/msar_lno_audit/m0/wrapper_fixtures.py
+?? docs/msar_lno_audit/m0/wrappers-capture-airfrans.json
+?? docs/msar_lno_audit/m0/wrappers-capture-car.json
+?? docs/msar_lno_audit/m0/wrappers-capture-standard.json
+?? docs/msar_lno_audit/m0/wrappers-capture.json
+?? docs/msar_lno_audit/m0/wrappers-replay-airfrans.json
+?? docs/msar_lno_audit/m0/wrappers-replay-car.json
+?? docs/msar_lno_audit/m0/wrappers-replay-standard.json
+?? docs/msar_lno_audit/m0/wrappers-replay.json
+?? docs/msar_lno_audit/m1/before.json
+?? docs/msar_lno_audit/m1/config-tests-final.txt
+?? docs/msar_lno_audit/m1/config-tests-initial.txt
+?? docs/msar_lno_audit/m1/current-after.json
+?? docs/msar_lno_audit/m1/current-after.txt
+?? docs/msar_lno_audit/m1/current-before.json
+?? docs/msar_lno_audit/m1/environment.json
+?? docs/msar_lno_audit/m1/fixture-hashes.json
+?? docs/msar_lno_audit/m1/fixture-index.json
+?? docs/msar_lno_audit/m1/freeze.json
+?? docs/msar_lno_audit/m1/full-preview.json
+?? docs/msar_lno_audit/m1/inventory.json
+?? docs/msar_lno_audit/m1/light-preview.json
+?? docs/msar_lno_audit/m1/m1-source.patch
+?? docs/msar_lno_audit/m1/no-regularizer-preview.json
+?? docs/msar_lno_audit/m1/old-after-airfrans.json
+?? docs/msar_lno_audit/m1/old-after-car.json
+?? docs/msar_lno_audit/m1/old-after-standard.json
+?? docs/msar_lno_audit/m1/old-after.json
+?? docs/msar_lno_audit/m1/old-after.txt
+?? docs/msar_lno_audit/m1/old-before-airfrans.json
+?? docs/msar_lno_audit/m1/old-before-car.json
+?? docs/msar_lno_audit/m1/old-before-standard.json
+?? docs/msar_lno_audit/m1/old-before.json
+?? docs/msar_lno_audit/m1/old-before.txt
+?? docs/msar_lno_audit/m1/preexisting.diff
+?? docs/msar_lno_audit/m1/replay_current.py
+?? docs/msar_lno_audit/m1/status-before.txt
+?? docs/msar_lno_audit/m1/summary.json
+?? docs/periodic_visualization_audit/freeze.json
+?? docs/periodic_visualization_audit/gpu.json
+?? docs/periodic_visualization_audit/gpu_isolation.py
+?? docs/periodic_visualization_audit/implementation.patch
+?? docs/periodic_visualization_audit/make_demos.py
+?? docs/periodic_visualization_audit/paper_sources.json
+?? docs/periodic_visualization_audit/summary.json
+?? docs/periodic_visualization_audit/synthetic_previews/curved_grid/caption.tex
+?? docs/periodic_visualization_audit/synthetic_previews/curved_grid/caption.txt
+?? docs/periodic_visualization_audit/synthetic_previews/curved_grid/fields.npz
+?? docs/periodic_visualization_audit/synthetic_previews/curved_grid/fields.pdf
+?? docs/periodic_visualization_audit/synthetic_previews/curved_grid/fields.png
+?? docs/periodic_visualization_audit/synthetic_previews/curved_grid/metadata.json
+?? docs/periodic_visualization_audit/synthetic_previews/point_cloud_hole/caption.tex
+?? docs/periodic_visualization_audit/synthetic_previews/point_cloud_hole/caption.txt
+?? docs/periodic_visualization_audit/synthetic_previews/point_cloud_hole/fields.npz
+?? docs/periodic_visualization_audit/synthetic_previews/point_cloud_hole/fields.pdf
+?? docs/periodic_visualization_audit/synthetic_previews/point_cloud_hole/fields.png
+?? docs/periodic_visualization_audit/synthetic_previews/point_cloud_hole/metadata.json
+?? docs/periodic_visualization_audit/synthetic_previews/surface_3d/caption.tex
+?? docs/periodic_visualization_audit/synthetic_previews/surface_3d/caption.txt
+?? docs/periodic_visualization_audit/synthetic_previews/surface_3d/fields.npz
+?? docs/periodic_visualization_audit/synthetic_previews/surface_3d/fields.pdf
+?? docs/periodic_visualization_audit/synthetic_previews/surface_3d/fields.png
+?? docs/periodic_visualization_audit/synthetic_previews/surface_3d/metadata.json
+?? docs/periodic_visualization_audit/synthetic_previews/time_curve/curve.npz
+?? docs/periodic_visualization_audit/synthetic_previews/time_curve/curve.pdf
+?? docs/periodic_visualization_audit/synthetic_previews/time_curve/curve.png
+?? docs/show_audit/freeze.json
+?? docs/show_audit/selection/changes.patch
+?? docs/show_audit/selection/freeze.json
+?? docs/show_audit/selection/render.json
+?? docs/show_audit/selection/test_run.json
+?? docs/show_audit/selection/tests.txt
+?? docs/show_audit/summary.json
+?? docs/show_audit/tests.txt
+?? tests/test_kcdno_seed_suite.py
+?? tests/test_msar_config.py
+?? tests/test_periodic_visualization.py
+?? tests/test_show_reports.py
+?? tests/visualization_projection.py
+?? tran_evaluate/kcdlno/_seed_suite.py
+?? tran_evaluate/kcdlno/run_seed.sh
+?? tran_evaluate/show/Airfoil-Design-AirfRANS.sh
+?? tran_evaluate/show/Car-Design-ShapeNetCar.sh
+?? tran_evaluate/show/PDE-Solving-StandardBenchmark.sh
+?? tran_evaluate/show/README.md
+?? tran_evaluate/show/_report.py

@@ -38,7 +38,10 @@ class CarKCDNO(unittest.TestCase):
         before=json.loads((ROOT/'docs/kcdno_audit/k6/before.json').read_text());snap=Path(before['source_snapshot'])
         for name in ('main.py','main_evaluation.py'):
             self.assertEqual(ast.dump(strip_new(ast.parse((CAR/name).read_text()))),ast.dump(ast.parse((snap/'Car-Design-ShapeNetCar'/name).read_text())))
-        self.assertEqual((CAR/'train.py').read_bytes(),(snap/'Car-Design-ShapeNetCar/train.py').read_bytes())
+        from visualization_projection import strip_visualization
+        from msar_entry_projection import strip_msar
+        self.assertEqual(ast.dump(strip_visualization(strip_msar(ast.parse((CAR/'train.py').read_text())))),
+                         ast.dump(ast.parse((snap/'Car-Design-ShapeNetCar/train.py').read_text())))
         with self.assertRaises(ValueError):arguments(['--batch_size','2'])
         with self.assertRaises(ValueError):arguments(['--front_latent_mode','no_sa'])
 

@@ -1,0 +1,340 @@
+[
+  {
+    "profile": "light_scale1",
+    "component": "LearnedQueryDown",
+    "dim": 96,
+    "heads": 4,
+    "M": 512,
+    "parameters": 76944,
+    "trainable": 76944,
+    "keys_shapes": {
+      "latent_queries": [
+        512,
+        96
+      ],
+      "to_k.weight": [
+        96,
+        96
+      ],
+      "to_v.weight": [
+        96,
+        96
+      ],
+      "to_out.weight": [
+        96,
+        96
+      ],
+      "to_out.bias": [
+        96
+      ],
+      "q_norm.weight": [
+        24
+      ],
+      "k_norm.weight": [
+        24
+      ]
+    }
+  },
+  {
+    "profile": "light_scale1",
+    "component": "LatentFFNSAFFNBlock",
+    "dim": 96,
+    "heads": 4,
+    "M": 512,
+    "parameters": 111600,
+    "trainable": 111600,
+    "keys_shapes": {
+      "norm1.weight": [
+        96
+      ],
+      "ffn1.fc1.weight": [
+        192,
+        96
+      ],
+      "ffn1.fc1.bias": [
+        192
+      ],
+      "ffn1.fc2.weight": [
+        96,
+        192
+      ],
+      "ffn1.fc2.bias": [
+        96
+      ],
+      "norm_sa.weight": [
+        96
+      ],
+      "sa.attn.to_q.weight": [
+        96,
+        96
+      ],
+      "sa.attn.to_k.weight": [
+        96,
+        96
+      ],
+      "sa.attn.to_v.weight": [
+        96,
+        96
+      ],
+      "sa.attn.to_out.weight": [
+        96,
+        96
+      ],
+      "sa.attn.to_out.bias": [
+        96
+      ],
+      "sa.attn.q_norm.weight": [
+        24
+      ],
+      "sa.attn.k_norm.weight": [
+        24
+      ],
+      "norm2.weight": [
+        96
+      ],
+      "ffn2.fc1.weight": [
+        192,
+        96
+      ],
+      "ffn2.fc1.bias": [
+        192
+      ],
+      "ffn2.fc2.weight": [
+        96,
+        192
+      ],
+      "ffn2.fc2.bias": [
+        96
+      ]
+    }
+  },
+  {
+    "profile": "light_scale1",
+    "component": "QueryAlignedUpCross",
+    "dim": 96,
+    "heads": 4,
+    "M": 512,
+    "parameters": 37008,
+    "trainable": 37008,
+    "keys_shapes": {
+      "to_q.weight": [
+        96,
+        96
+      ],
+      "to_k.weight": [
+        96,
+        96
+      ],
+      "to_v.weight": [
+        96,
+        96
+      ],
+      "to_out.weight": [
+        96,
+        96
+      ],
+      "to_out.bias": [
+        96
+      ],
+      "q_norm.weight": [
+        24
+      ],
+      "k_norm.weight": [
+        24
+      ]
+    }
+  },
+  {
+    "profile": "light_scale1",
+    "component": "PairwiseAttnResFusion",
+    "dim": 96,
+    "heads": 4,
+    "M": 512,
+    "parameters": 96,
+    "trainable": 96,
+    "keys_shapes": {
+      "w": [
+        96
+      ]
+    }
+  },
+  {
+    "profile": "light_scale1",
+    "component": "CoverageFloorLoss",
+    "dim": 96,
+    "heads": 4,
+    "M": 512,
+    "parameters": 0,
+    "trainable": 0,
+    "keys_shapes": {}
+  },
+  {
+    "profile": "full_scale1",
+    "component": "LearnedQueryDown",
+    "dim": 192,
+    "heads": 4,
+    "M": 1024,
+    "parameters": 307488,
+    "trainable": 307488,
+    "keys_shapes": {
+      "latent_queries": [
+        1024,
+        192
+      ],
+      "to_k.weight": [
+        192,
+        192
+      ],
+      "to_v.weight": [
+        192,
+        192
+      ],
+      "to_out.weight": [
+        192,
+        192
+      ],
+      "to_out.bias": [
+        192
+      ],
+      "q_norm.weight": [
+        48
+      ],
+      "k_norm.weight": [
+        48
+      ]
+    }
+  },
+  {
+    "profile": "full_scale1",
+    "component": "LatentFFNSAFFNBlock",
+    "dim": 192,
+    "heads": 4,
+    "M": 1024,
+    "parameters": 444384,
+    "trainable": 444384,
+    "keys_shapes": {
+      "norm1.weight": [
+        192
+      ],
+      "ffn1.fc1.weight": [
+        384,
+        192
+      ],
+      "ffn1.fc1.bias": [
+        384
+      ],
+      "ffn1.fc2.weight": [
+        192,
+        384
+      ],
+      "ffn1.fc2.bias": [
+        192
+      ],
+      "norm_sa.weight": [
+        192
+      ],
+      "sa.attn.to_q.weight": [
+        192,
+        192
+      ],
+      "sa.attn.to_k.weight": [
+        192,
+        192
+      ],
+      "sa.attn.to_v.weight": [
+        192,
+        192
+      ],
+      "sa.attn.to_out.weight": [
+        192,
+        192
+      ],
+      "sa.attn.to_out.bias": [
+        192
+      ],
+      "sa.attn.q_norm.weight": [
+        48
+      ],
+      "sa.attn.k_norm.weight": [
+        48
+      ],
+      "norm2.weight": [
+        192
+      ],
+      "ffn2.fc1.weight": [
+        384,
+        192
+      ],
+      "ffn2.fc1.bias": [
+        384
+      ],
+      "ffn2.fc2.weight": [
+        192,
+        384
+      ],
+      "ffn2.fc2.bias": [
+        192
+      ]
+    }
+  },
+  {
+    "profile": "full_scale1",
+    "component": "QueryAlignedUpCross",
+    "dim": 192,
+    "heads": 4,
+    "M": 1024,
+    "parameters": 147744,
+    "trainable": 147744,
+    "keys_shapes": {
+      "to_q.weight": [
+        192,
+        192
+      ],
+      "to_k.weight": [
+        192,
+        192
+      ],
+      "to_v.weight": [
+        192,
+        192
+      ],
+      "to_out.weight": [
+        192,
+        192
+      ],
+      "to_out.bias": [
+        192
+      ],
+      "q_norm.weight": [
+        48
+      ],
+      "k_norm.weight": [
+        48
+      ]
+    }
+  },
+  {
+    "profile": "full_scale1",
+    "component": "PairwiseAttnResFusion",
+    "dim": 192,
+    "heads": 4,
+    "M": 1024,
+    "parameters": 192,
+    "trainable": 192,
+    "keys_shapes": {
+      "w": [
+        192
+      ]
+    }
+  },
+  {
+    "profile": "full_scale1",
+    "component": "CoverageFloorLoss",
+    "dim": 192,
+    "heads": 4,
+    "M": 1024,
+    "parameters": 0,
+    "trainable": 0,
+    "keys_shapes": {}
+  }
+]

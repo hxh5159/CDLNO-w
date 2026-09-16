@@ -53,7 +53,8 @@ def tearDownModule():
 
 
 def tree(task):
-    return ast.parse((PROJECT / f'exp_{TASKS[task][0]}.py').read_text())
+    from msar_entry_projection import strip_msar
+    return strip_msar(ast.parse((PROJECT / f'exp_{TASKS[task][0]}.py').read_text()))
 
 
 def parser_for(task):
@@ -430,6 +431,12 @@ class StaticFrozenChecks(unittest.TestCase):
             projected = LegacyProjection().visit(strip_recording(tree(task)))
             self.assertEqual(ast.dump(projected), ast.dump(ast.parse(original)), task)
         current = strip_recording(ast.parse((PROJECT / 'model_dict.py').read_text()))
+        # M4 adds exactly one independent lifted-core selection branch. Assert
+        # its entire AST before removing it from the legacy factory comparison.
+        factory = next(n for n in current.body if isinstance(n, ast.FunctionDef) and n.name == 'get_model')
+        msar = ast.parse("if args.model == 'msar_lno':\n    if getattr(args, 'msar_task', None) in ('ns', 'plasticity'):\n        from model import MSAR_Temporal\n        return MSAR_Temporal\n    if getattr(args, 'msar_task', None) in ('darcy', 'elasticity', 'airfoil', 'pipe'):\n        from model import MSAR_Standard\n        return MSAR_Standard\n    from model import MSAR_LNO\n    return MSAR_LNO").body[0]
+        self.assertEqual(ast.dump(factory.body[0]), ast.dump(msar))
+        factory.body.pop(0)
         original = subprocess.check_output(['git','show',f'{UPSTREAM}:PDE-Solving-StandardBenchmark/model_dict.py'], cwd=ROOT, text=True)
         self.assertEqual(ast.dump(LegacyProjection().visit(current)), ast.dump(ast.parse(original)))
 

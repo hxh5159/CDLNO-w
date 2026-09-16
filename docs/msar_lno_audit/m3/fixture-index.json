@@ -1,0 +1,122 @@
+{
+  "origin": "New post-M3 real cores with synthetic lifted inputs; not trained weights.",
+  "records": [
+    {
+      "profile": "light",
+      "config": {
+        "family": "msar_lno",
+        "architecture_version": "msar-lno-core-v1",
+        "num_latents": [
+          512,
+          256,
+          128,
+          64
+        ],
+        "d": 96,
+        "heads": [
+          4,
+          4,
+          8,
+          8
+        ],
+        "encoder_depths": [
+          3,
+          1,
+          1,
+          1
+        ],
+        "decoder_depths": [
+          3,
+          1,
+          1,
+          1
+        ],
+        "latent_ffn_ratio": 2,
+        "activation": "gelu",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "point_module": "pointwise_mlp",
+        "fusion": "query_aligned_two_source_attnres",
+        "fusion_scale": 2.0
+      },
+      "output_dim": 4,
+      "input_shape": [
+        2,
+        35,
+        96
+      ],
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m3-before-jx4v53vh/post-m3-core/light.pt",
+      "sha256": "968cbde20f0a0937a6282abbb45e8b9c06c98d60638b7529a99d74c169911e0c",
+      "bytes": 6890697,
+      "dtype": "float32",
+      "device": "cpu",
+      "sdpa": "MATH",
+      "atol": 0,
+      "rtol": 0,
+      "parameters": 1691260
+    },
+    {
+      "profile": "full",
+      "config": {
+        "family": "msar_lno",
+        "architecture_version": "msar-lno-core-v1",
+        "num_latents": [
+          1024,
+          512,
+          256,
+          128
+        ],
+        "d": 192,
+        "heads": [
+          4,
+          4,
+          8,
+          8
+        ],
+        "encoder_depths": [
+          3,
+          1,
+          1,
+          1
+        ],
+        "decoder_depths": [
+          3,
+          1,
+          1,
+          1
+        ],
+        "latent_ffn_ratio": 2,
+        "activation": "gelu",
+        "norm": "rmsnorm",
+        "qk_norm": "per_head_rmsnorm",
+        "output_norm": "layernorm",
+        "norm_eps": 1e-06,
+        "point_module": "pointwise_mlp",
+        "fusion": "query_aligned_two_source_attnres",
+        "fusion_scale": 2.0
+      },
+      "output_dim": 4,
+      "input_shape": [
+        1,
+        7,
+        192
+      ],
+      "fixture": "/home/hwz/CDLNO-artifacts/msar-m3-before-jx4v53vh/post-m3-core/full.pt",
+      "sha256": "09d602b935aecf90fb836f51498d6b52b6df1c0c0fdb033fc7267e8ce96ebf64",
+      "bytes": 27051849,
+      "dtype": "float32",
+      "device": "cpu",
+      "sdpa": "MATH",
+      "atol": 0,
+      "rtol": 0,
+      "parameters": 6737140
+    }
+  ],
+  "detailed_keys_shapes_trace": "docs/msar_lno_audit/m3/core-capture.json",
+  "replay": "docs/msar_lno_audit/m3/core-replay.json",
+  "old_integrity_files_checked": 182,
+  "old_replayed_this_stage": 47,
+  "old_retained_unchanged_evidence": 28
+}

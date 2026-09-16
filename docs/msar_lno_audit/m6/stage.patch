@@ -1,0 +1,1296 @@
+--- before/PDE-Solving-StandardBenchmark/configs/msar_lno/ns.json
++++ after/PDE-Solving-StandardBenchmark/configs/msar_lno/ns.json
+@@ -0,0 +1,23 @@
++{
++  "family": "msar_lno",
++  "task": "ns",
++  "profile": "light",
++  "training": {
++    "lr": 0.001,
++    "epochs": 500,
++    "batch_size": 2,
++    "weight_decay": 1e-05,
++    "max_grad_norm": null
++  },
++  "adapter": {
++    "ref": 8,
++    "unified_pos": 1
++  },
++  "objective": {
++    "coverage_mode": "floor",
++    "coverage_weight": 0.01,
++    "coverage_kappa": 0.2,
++    "coverage_eps": 1e-06,
++    "diagnostics": false
++  }
++}
+--- before/PDE-Solving-StandardBenchmark/configs/msar_lno/plasticity.json
++++ after/PDE-Solving-StandardBenchmark/configs/msar_lno/plasticity.json
+@@ -0,0 +1,23 @@
++{
++  "family": "msar_lno",
++  "task": "plasticity",
++  "profile": "light",
++  "training": {
++    "lr": 0.001,
++    "epochs": 500,
++    "batch_size": 8,
++    "weight_decay": 1e-05,
++    "max_grad_norm": 0.1
++  },
++  "adapter": {
++    "ref": 8,
++    "unified_pos": 0
++  },
++  "objective": {
++    "coverage_mode": "floor",
++    "coverage_weight": 0.01,
++    "coverage_kappa": 0.2,
++    "coverage_eps": 1e-06,
++    "diagnostics": false
++  }
++}
+--- before/PDE-Solving-StandardBenchmark/exp_ns.py
++++ after/PDE-Solving-StandardBenchmark/exp_ns.py
+@@ -40,6 +40,12 @@
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     start_experiment(args, args.kcdno_task, evaluation=bool(args.eval))
+ 
++if args.model == 'msar_lno':
++    from msar_entry import model_kwargs as msar_model_kwargs, StandardRun as MSARRun
++    from msar_entry import training_forward, training_objective, rollout_objective, ObjectiveMetrics
++    from cdlno.experiment import start as start_experiment, finish as finish_experiment
++    start_experiment(args, args.msar_task, evaluation=bool(args.eval))
++
+ os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
+ 
+ data_path = args.data_path + '/NavierStokes_V1e-5_N1200_T20/NavierStokes_V1e-5_N1200_T20.mat'
+@@ -119,6 +125,11 @@
+     elif args.model in ('kcdno', 'lrsa_matched'):
+         model = get_model(args).Model(H=h, W=h, **kcdno_model_kwargs(args)).cuda()
+         cdlno_run = KCDNORun(args, model)
++        if cdlno_run.recorder is not None:
++            cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest, input_steps=T_in, output_steps=T, step=step))
++    elif args.model == 'msar_lno':
++        model = get_model(args).Model(H=h, W=h, **msar_model_kwargs(args)).cuda()
++        cdlno_run = MSARRun(args, model)
+         if cdlno_run.recorder is not None:
+             cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest, input_steps=T_in, output_steps=T, step=step))
+     else:
+@@ -214,17 +225,26 @@
+         for ep in range(args.epochs):
+ 
+             model.train()
++            if args.model == 'msar_lno':
++                msar_epoch = ObjectiveMetrics()
+             train_l2_step = 0
+             train_l2_full = 0
+ 
+             for x, fx, yy in train_loader:
+                 loss = 0
++                if args.model == 'msar_lno':
++                    msar_forwards = []
+                 x, fx, yy = x.cuda(), fx.cuda(), yy.cuda()  # x: B,4096,2    fx: B,4096,T   y: B,4096,T
+                 bsz = x.shape[0]
+ 
+                 for t in range(0, T, step):
+                     y = yy[..., t:t + step]
+-                    im = model(x, fx=fx)  # B , 4096 , 1
++                    if args.model == 'msar_lno':
++                        msar_forward = training_forward(model, x, fx=fx)
++                        msar_forwards.append(msar_forward)
++                        im = msar_forward.prediction
++                    else:
++                        im = model(x, fx=fx)  # B , 4096 , 1
+                     loss += myloss(im.reshape(bsz, -1), y.reshape(bsz, -1))
+                     if t == 0:
+                         pred = im
+@@ -235,7 +255,13 @@
+                 train_l2_step += loss.item()
+                 train_l2_full += myloss(pred.reshape(bsz, -1), yy.reshape(bsz, -1)).item()
+                 optimizer.zero_grad()
+-                loss.backward()
++                if args.model == 'msar_lno':
++                    msar_loss = rollout_objective(loss, tuple(msar_forwards))
++                    del msar_forwards
++                    msar_epoch.add(msar_loss)
++                    msar_loss.total.backward()
++                else:
++                    loss.backward()
+                 if args.max_grad_norm is not None:
+                     torch.nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)
+                 optimizer.step()
+@@ -270,7 +296,10 @@
+                         test_l2_full / ntest))
+ 
+             if cdlno_run is not None and cdlno_run.recorder is not None:
+-                cdlno_run.recorder.record_epoch(ep + 1, dict(train_step_loss=train_l2_step / ntrain / (T / step), test_step_loss=test_l2_step / ntest / (T / step), test_full_loss=test_l2_full / ntest, train_full_loss=train_l2_full / ntrain))
++                if args.model == 'msar_lno':
++                    cdlno_run.record_objective(ep + 1, msar_epoch, dict(train_step_loss=train_l2_step / ntrain / (T / step), test_step_loss=test_l2_step / ntest / (T / step), test_full_loss=test_l2_full / ntest, train_full_loss=train_l2_full / ntrain))
++                else:
++                    cdlno_run.recorder.record_epoch(ep + 1, dict(train_step_loss=train_l2_step / ntrain / (T / step), test_step_loss=test_l2_step / ntest / (T / step), test_full_loss=test_l2_full / ntest, train_full_loss=train_l2_full / ntrain))
+                 cdlno_run.recorder.visualize(model, ep + 1, args.epochs, dataset=test_loader.dataset,
+                                            grid_shape=(h, h))
+             if ep % 100 == 0:
+@@ -300,3 +329,5 @@
+         finish_experiment(args)
+     if args.model in ('kcdno', 'lrsa_matched'):
+         finish_experiment(args)
++    if args.model == 'msar_lno':
++        finish_experiment(args)
+--- before/PDE-Solving-StandardBenchmark/exp_plas.py
++++ after/PDE-Solving-StandardBenchmark/exp_plas.py
+@@ -36,6 +36,12 @@
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     start_experiment(args, args.kcdno_task, evaluation=bool(args.eval))
+ 
++if args.model == 'msar_lno':
++    from msar_entry import model_kwargs as msar_model_kwargs, StandardRun as MSARRun
++    from msar_entry import training_forward, training_objective, rollout_objective, ObjectiveMetrics
++    from cdlno.experiment import start as start_experiment, finish as finish_experiment
++    start_experiment(args, args.msar_task, evaluation=bool(args.eval))
++
+ os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
+ 
+ import numpy as np
+@@ -173,6 +179,11 @@
+         cdlno_run = KCDNORun(args, model)
+         if cdlno_run.recorder is not None:
+             cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest, time_points=T, optimizer_updates_per_batch=T))
++    elif args.model == 'msar_lno':
++        model = get_model(args).Model(H=s1, W=s2, **msar_model_kwargs(args)).cuda()
++        cdlno_run = MSARRun(args, model)
++        if cdlno_run.recorder is not None:
++            cdlno_run.recorder.update_protocol(dict(ntrain=ntrain, ntest=ntest, time_points=T, optimizer_updates_per_batch=T))
+     else:
+         model = get_model(args).Model(space_dim=2,
+                                       n_hidden=args.n_hidden,
+@@ -273,6 +284,8 @@
+         for ep in range(args.epochs):
+ 
+             model.train()
++            if args.model == 'msar_lno':
++                msar_epoch = ObjectiveMetrics()
+             train_l2_step = 0
+ 
+             for x, tim, fx, yy in train_loader:
+@@ -282,12 +295,21 @@
+                 for t in range(T):
+                     y = yy[..., t:t + 1]
+                     input_T = tim[:, t:t + 1].reshape(bsz, 1)  # B,step
+-                    im = model(x, fx, T=input_T)
++                    if args.model == 'msar_lno':
++                        msar_forward = training_forward(model, x, fx, T=input_T)
++                        im = msar_forward.prediction
++                    else:
++                        im = model(x, fx, T=input_T)
+ 
+                     loss = myloss(im.reshape(bsz, -1), y.reshape(bsz, -1))
+                     train_l2_step += loss.item()
+                     optimizer.zero_grad()
+-                    loss.backward()
++                    if args.model == 'msar_lno':
++                        msar_loss = training_objective(loss, msar_forward)
++                        msar_epoch.add(msar_loss)
++                        msar_loss.total.backward()
++                    else:
++                        loss.backward()
+                     if args.max_grad_norm is not None:
+                         torch.nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)
+                     optimizer.step()
+@@ -321,7 +343,10 @@
+                                                                                                              test_l2_step / ntest / T,
+                                                                                                              test_l2_full / ntest))
+             if cdlno_run is not None and cdlno_run.recorder is not None:
+-                cdlno_run.recorder.record_epoch(ep + 1, dict(train_step_loss=train_l2_step / ntrain / T, test_step_loss=test_l2_step / ntest / T, test_full_loss=test_l2_full / ntest))
++                if args.model == 'msar_lno':
++                    cdlno_run.record_objective(ep + 1, msar_epoch, dict(train_step_loss=train_l2_step / ntrain / T, test_step_loss=test_l2_step / ntest / T, test_full_loss=test_l2_full / ntest))
++                else:
++                    cdlno_run.recorder.record_epoch(ep + 1, dict(train_step_loss=train_l2_step / ntrain / T, test_step_loss=test_l2_step / ntest / T, test_full_loss=test_l2_full / ntest))
+                 cdlno_run.recorder.visualize(model, ep + 1, args.epochs, dataset=test_loader.dataset,
+                                            grid_shape=(s1, s2))
+             if ep % 100 == 0:
+@@ -351,3 +376,5 @@
+         finish_experiment(args)
+     if args.model in ('kcdno', 'lrsa_matched'):
+         finish_experiment(args)
++    if args.model == 'msar_lno':
++        finish_experiment(args)
+--- before/PDE-Solving-StandardBenchmark/model/MSAR_Temporal.py
++++ after/PDE-Solving-StandardBenchmark/model/MSAR_Temporal.py
+@@ -0,0 +1,2 @@
++"""Stable shared temporal MSAR class; no dataset or training imports."""
++from cdlno.msar_lno.temporal import TemporalModel as Model
+--- before/PDE-Solving-StandardBenchmark/model_dict.py
++++ after/PDE-Solving-StandardBenchmark/model_dict.py
+@@ -3,6 +3,9 @@
+ 
+ def get_model(args):
+     if args.model == 'msar_lno':
++        if getattr(args, 'msar_task', None) in ('ns', 'plasticity'):
++            from model import MSAR_Temporal
++            return MSAR_Temporal
+         if getattr(args, 'msar_task', None) in ('darcy', 'elasticity', 'airfoil', 'pipe'):
+             from model import MSAR_Standard
+             return MSAR_Standard
+--- before/PDE-Solving-StandardBenchmark/msar_entry.py
++++ after/PDE-Solving-StandardBenchmark/msar_entry.py
+@@ -1,3 +1,4 @@
+-"""Static MSAR task integration; no data imports or experiment execution."""
++"""Standard MSAR task integration; no data imports or experiment execution."""
+ from cdlno.msar_lno.standard_entry import model_kwargs, StandardRun
+ from cdlno.msar_lno.objective import training_forward, training_objective, ObjectiveMetrics
++from cdlno.msar_lno.objective import rollout_objective
+--- before/cdlno/msar_lno/objective.py
++++ after/cdlno/msar_lno/objective.py
+@@ -88,6 +88,29 @@
+     return MSARLoss(pde_loss, raw, weighted, pde_loss + weighted, True)
+ 
+ 
++def rollout_objective(pde_loss: Tensor, forwards: tuple[MSARTrainingForward, ...]) -> MSARLoss:
++    """One NS update: original SUM of PDE losses + weight * MEAN time coverage.
++
++    Every item is an actual forward in this batch's teacher-forced loop. Reuse
++    the single-call adapter's validation; only its raw coverage is aggregated.
++    No time multiplier, PDE rescaling, detach, or model-owned accumulator.
++    Off/weight0 returns the original PDE loss object exactly.
++    """
++    if not isinstance(forwards, tuple) or not forwards:
++        raise ValueError('rollout requires a nonempty tuple of actual training forwards')
++    if any(not isinstance(item, MSARTrainingForward) for item in forwards):
++        raise ValueError('rollout requires MSARTrainingForward records')
++    cfg = forwards[0].training
++    if any(item.training != cfg for item in forwards):
++        raise ValueError('all forwards in one rollout must use the same training objective')
++    pieces = tuple(training_objective(pde_loss, item) for item in forwards)
++    if not cfg.coverage_enabled:
++        return pieces[0]
++    raw = torch.stack([piece.coverage_raw for piece in pieces]).mean()
++    weighted = cfg.coverage_weight * raw
++    return MSARLoss(pde_loss, raw, weighted, pde_loss + weighted, True)
++
++
+ class ObjectiveMetrics:
+     """One epoch's detached per-step objective means, never model-owned state.
+ 
+--- before/cdlno/msar_lno/standard_entry.py
++++ after/cdlno/msar_lno/standard_entry.py
+@@ -1,4 +1,4 @@
+-"""MSAR static task resolution, observation, and strict state_dict Run.
++"""MSAR standard task resolution, observation, and strict state_dict Run.
+ 
+ No data imports, resume, optimizer changes, or modifications to old selectors.
+ """
+@@ -13,9 +13,10 @@
+                        resolve_evaluation, new_run_path)
+ from .options import parser_for_family, explicit_arguments, resolve_training
+ from .standard import StaticModel
++from .temporal import TemporalModel
+ 
+ ROOT = Path(__file__).resolve().parents[2]
+-TASKS = ('darcy', 'elasticity', 'airfoil', 'pipe')
++TASKS = ('darcy', 'elasticity', 'airfoil', 'pipe', 'ns', 'plasticity')
+ _INPUT_OPTIONS = ('ref', 'unified_pos', 'downsample', 'downsamplex', 'downsampley', 'ntrain')
+ 
+ 
+@@ -26,13 +27,13 @@
+             or type(record['schema_version']) is not int or record['schema_version'] != 1
+             or record['family'] != FAMILY or record['task'] not in TASKS
+             or type(record['adapter']) is not dict or type(record['arguments']) is not dict):
+-        raise MSARMetadataMismatch('invalid MSAR static task sidecar')
++        raise MSARMetadataMismatch('invalid MSAR standard task sidecar')
+     return record
+ 
+ 
+ def parse_args(parser, task, tokens):
+     if task not in TASKS:
+-        raise ValueError('MSAR task not integrated in M5: ' + task)
++        raise ValueError('MSAR standard task not integrated: ' + task)
+     parser = parser_for_family(parser, FAMILY)
+     parser.add_argument('--msar-run-dir', type=Path, default=None,
+                         help='new training directory, or explicit saved run for evaluation')
+@@ -52,7 +53,7 @@
+         resolution = resolve_evaluation(args.msar_run_dir / 'architecture.json', explicit, task=task)
+         saved = resolution.saved
+         if saved.checkpoint_format != 'state_dict':
+-            raise MSARMetadataMismatch('static tasks require state_dict')
++            raise MSARMetadataMismatch('standard tasks require state_dict')
+         record = task_record(args.msar_run_dir)
+         if record['task'] != task:
+             raise MSARMetadataMismatch('task sidecar task mismatch')
+@@ -92,7 +93,7 @@
+ 
+ def model_kwargs(args):
+     if args.model != FAMILY or getattr(args, 'msar_task', None) not in TASKS:
+-        raise ValueError('MSAR static model_kwargs requires an explicitly resolved static task')
++        raise ValueError('MSAR standard model_kwargs requires an explicitly resolved task')
+     return dict(config=MSARArchitectureConfig.from_dict(args.msar_architecture),
+                 training_config=MSARTrainingConfig.from_dict(args.msar_training),
+                 task_name=args.msar_task, ref=args.ref, unified_pos=args.unified_pos)
+@@ -129,7 +130,7 @@
+             self.result_dir = self.recorder.result_dir
+         print('MSAR-LNO run:', self.directory, self.architecture.to_dict(), model.adapter_architecture())
+         print('MSAR coverage:', self.training_config.to_dict(), 'effective:', self.training_config.effective_coverage_mode)
+-        # Static point count is known from the original grid or Elasticity's fixed data contract.
++        # Point count is known from the original grid or Elasticity's fixed data contract.
+         n = model.H * model.W if model.structured else 972
+         print('MSAR input layout:', input_layout(self.architecture, n))
+ 
+@@ -140,10 +141,11 @@
+     def checkpoint(self):return self.directory/'model.pt'
+ 
+     def _check_model(self, model):
+-        if (type(model) is not StaticModel or model.config != self.architecture
++        expected = TemporalModel if self.args.msar_task in ('ns', 'plasticity') else StaticModel
++        if (type(model) is not expected or model.config != self.architecture
+                 or model.core.config != self.architecture or model.training_config != self.training_config
+                 or model.core.training_config != self.training_config or model.task_name != self.args.msar_task):
+-            raise MSARMetadataMismatch('MSAR static wrapper/core configuration mismatch')
++            raise MSARMetadataMismatch('MSAR standard wrapper/core configuration mismatch')
+ 
+     def validate(self, model):
+         self._check_model(model)
+@@ -171,5 +173,10 @@
+         mode = self.training_config.effective_coverage_mode
+         print(f'Epoch {epoch} MSAR coverage={mode} step-mean objective: {metrics}')
+         if self.recorder is not None:
++            reduction = 'mean over optimizer steps; original train_loss retains task reduction'
++            if self.args.msar_task == 'ns':
++                reduction = 'PDE=sum over frames per update; coverage=mean over actual forwards and four levels; logs=mean over updates'
++            elif self.args.msar_task == 'plasticity':
++                reduction = 'one PDE+coverage objective per time-point update; coverage=mean over four levels; logs=mean over updates'
+             self.recorder.record_epoch(epoch, original_metrics | metrics | dict(
+-                coverage_mode=mode, objective_reduction='mean over optimizer steps; original train_loss retains task reduction'))
++                coverage_mode=mode, objective_reduction=reduction))
+--- before/cdlno/msar_lno/temporal.py
++++ after/cdlno/msar_lno/temporal.py
+@@ -0,0 +1,98 @@
++"""NS/Plasticity field and time adapters around the unchanged four-scale core.
++
++Each call owns its latent/coverage graph; this wrapper stores no time history.
++Stable class path: cdlno.msar_lno.temporal.TemporalModel.
++"""
++from __future__ import annotations
++
++import torch
++from torch import Tensor, nn
++
++from ..modules import _check_grid, _init_linear
++from ..standard import TEMPORAL_TASKS, _grid
++from .config import MSARArchitectureConfig, MSARTrainingConfig
++from .core import MSARLNO
++
++
++class TemporalModel(nn.Module):
++    def __init__(self, *, config: MSARArchitectureConfig, task_name: str,
++                 training_config: MSARTrainingConfig | None = None,
++                 H=None, W=None, ref=8, unified_pos=None):
++        super().__init__()
++        if type(config) is not MSARArchitectureConfig:
++            raise ValueError('MSARArchitectureConfig required')
++        config.validate()
++        if task_name not in TEMPORAL_TASKS:
++            raise ValueError('MSAR temporal adapter supports only ns/plasticity')
++        task = TEMPORAL_TASKS[task_name]
++        _check_grid((H, W), H * W if type(H) is int and type(W) is int else 0)
++        if (H, W) != task['grid']:
++            raise ValueError(f"{task_name} requires its accepted spatial grid {task['grid']}")
++        if type(ref) is not int or ref != 8:
++            raise ValueError('temporal task reference contract requires ref=8')
++        if unified_pos is None:
++            unified_pos = task['unified_pos']
++        if type(unified_pos) not in (int, bool) or unified_pos != task['unified_pos']:
++            raise ValueError('unified_pos must preserve the original task coordinate contract')
++        cfg = MSARTrainingConfig() if training_config is None else training_config
++        if type(cfg) is not MSARTrainingConfig:
++            raise ValueError('MSARTrainingConfig required')
++        cfg.validate()
++        self.config, self.training_config = config, cfg
++        self.task_name, self.H, self.W, self.ref = task_name, H, W, ref
++        self.structured = True  # Input layout only; never requests convolution.
++        self.unified_pos, self.fun_dim = bool(unified_pos), task['fun_dim']
++        self.out_dim, self.Time_Input = task['out_dim'], task['time_input']
++        if self.Time_Input and config.d < 2:
++            raise ValueError('Plasticity time embedding requires d>=2')
++        stem = (ref * ref if self.unified_pos else 2) + self.fun_dim
++        self.preprocess = nn.Sequential(nn.Linear(stem, 2*config.d), nn.GELU(), nn.Linear(2*config.d, config.d))
++        _init_linear(self.preprocess[0]); _init_linear(self.preprocess[2])
++        if self.unified_pos:
++            pos = (_grid(H, W)[:, None] - _grid(ref, ref)[None]).square().sum(-1).sqrt()
++            self.register_buffer('pos', pos.unsqueeze(0), persistent=False)
++        if self.Time_Input:
++            self.time_fc = nn.Sequential(nn.Linear(config.d, config.d), nn.SiLU(), nn.Linear(config.d, config.d))
++            _init_linear(self.time_fc[0]); _init_linear(self.time_fc[2])
++        self.core = MSARLNO(config, output_dim=self.out_dim, training_config=cfg)
++        # Each primitive initialized itself, and the core owns the only head.
++
++    def adapter_architecture(self):
++        return dict(version='msar-temporal-standard-v1', task=self.task_name, space_dim=2,
++                    fun_dim=self.fun_dim, output_dim=self.out_dim, Time_Input=self.Time_Input,
++                    ref=self.ref, unified_pos=self.unified_pos, placeholder=False,
++                    stem_width=self.preprocess[0].in_features, grid_shape=[self.H, self.W],
++                    position_rule='baseline-structured-index' if self.unified_pos else 'original-coordinates',
++                    time_rule='baseline-sincos-silu-add-v1' if self.Time_Input else 'window10-no-time-embedding',
++                    lift='pointwise-linear-gelu-linear-2d-v1', output_head='core-layernorm-linear-v1')
++
++    def forward(self, x, fx, T=None, *, return_aux=False, training_config=None):
++        if (not isinstance(x, Tensor) or not x.is_floating_point() or x.ndim != 3
++                or x.shape[-1] != 2 or min(x.shape[:2]) < 1):
++            raise ValueError('x must be nonempty floating [B,N,2]')
++        if x.shape[1] != self.H * self.W:
++            raise ValueError('N must preserve spatial H*W; time is not a spatial axis')
++        if not isinstance(fx, Tensor) or fx.shape != (*x.shape[:2], self.fun_dim):
++            raise ValueError(f'{self.task_name} requires fx[B,N,{self.fun_dim}]')
++        if fx.device != x.device or fx.dtype != x.dtype:
++            raise ValueError('fx and x must share floating dtype/device')
++        if self.Time_Input:
++            if not isinstance(T, Tensor) or T.shape != (x.shape[0], 1):
++                raise ValueError('Plasticity requires T[B,1] for one time per sample')
++            if not T.is_floating_point() or T.device != x.device:
++                raise ValueError('T must be floating on x.device')
++        elif T is not None:
++            raise ValueError('NS has no explicit time condition; provide its ten-frame fx window')
++        pos = self.pos.to(dtype=x.dtype).expand(x.shape[0], -1, -1) if self.unified_pos else x
++        lifted = self.preprocess(torch.cat((pos, fx), -1))
++        if self.Time_Input:
++            # Preserve the accepted per-sample frequency, cos/sin order and injection.
++            half = self.config.d // 2
++            freqs = torch.exp(-torch.log(torch.tensor(10000., device=T.device)) *
++                              torch.arange(half, device=T.device, dtype=T.dtype) / half)
++            emb = T[:, :, None] * freqs[None, None, :]
++            emb = torch.cat((torch.cos(emb), torch.sin(emb)), dim=-1)
++            if self.config.d % 2:
++                emb = torch.cat((emb, torch.zeros_like(emb[..., :1])), dim=-1)
++            lifted = lifted + self.time_fc(emb).expand(-1, x.shape[1], -1)
++        return self.core(lifted, return_aux=return_aux, training_config=training_config)
+--- before/docs/CDLNO_IMPLEMENTATION_STATUS.md
++++ after/docs/CDLNO_IMPLEMENTATION_STATUS.md
+@@ -1,4 +1,10 @@
+ # 最新：MSAR-LNO M5四静态任务完成，等待审查（2026-09-17）
++
++## 2026-09-17：独立MSAR-LNO M6完成（旧模型保持）
++
++用户已审查通过M5，本轮仅M6：真实NS/Plasticity入口接入msar_lno Light/Full、coverage开关、时间wrapper、原loss适配和严格state_dict。NS保持10→10 teacher-forcing/预测回填及1次更新，仅新增coverage时间均值；Plasticity保持20次逐T更新及batch末1次scheduler。原数据/normalizer/循环/指标、旧模型数学和命令、M5静态任务不变，无新resume或真实训练。
++
++MSAR93/93通过；相关旧93项零失败/错误、2处原Air torch_cluster skip记录。两时间任务×floor/off真实N合成原loss训练/eval/checkpoint、本地GPU B1/d8 FP32 MATH、正式Light/Full CPU前向通过。26旧同权重+4 M5夹具exact；182旧产物hash保留。真实数据/远端Torch2.11cu128、大profile时间反传及MSAR工业PyG未执行。详见[MSAR M6报告](MSAR_LNO_M6_TEMPORAL_TASKS.md)与[独立STATUS](MSAR_LNO_IMPLEMENTATION_STATUS.md)；所有旧阶段历史保留，未执行M7。**本M阶段结束，未执行下一阶段。**
+ 
+ 仅M5，见[报告/覆盖表](MSAR_LNO_M5_STATIC_TASKS.md)、[命令](../tran_evaluate/msar_lno/README.md)及独立MSAR STATUS。
+ 四真实exp现已接msar_lno：原坐标/fx/normalizer/loss/调度保留；共用无卷积wrapper+原M3core，Light/Full不裁M。
+--- before/docs/MSAR_LNO_IMPLEMENTATION_STATUS.md
++++ after/docs/MSAR_LNO_IMPLEMENTATION_STATUS.md
+@@ -1,4 +1,18 @@
+ # MSAR-LNO 实施状态
++
++## 2026-09-17：M6 NS / Plasticity接入完成，等待审查
++
++M5已审查通过；本轮仅M6。`msar_lno`已接入真实`exp_ns.py`/`exp_plas.py`，新增共享`cdlno.msar_lno.temporal.TemporalModel`及薄factory出口，复用原MSAR四级core/单forward objective/strict Run。六PDE可选Light默认、Full显式、coverage floor/off；Car/AirfRANS未接入MSAR，未执行M7。
++
++- NS保留64×64、fx10、单次out1、ref64+fx stem74；原10帧teacher forcing训练求和loss→1次optimizer/scheduler，eval10帧预测回填。新增`rollout_objective`只对该次更新的实际forward raw coverage取时间均值：原LPDE_sum + weight×mean_q(mean_4levels)。不放大为10份辅助项，不改原PDE尺度。
++- Plasticity保留101×31、fx1、T[B,1]、out4；原sin/cos+SiLU time_fc注入，原随机collate匹配T/label、20次逐时间optimizer/1次batch scheduler。每次LPDE加本次coverage，epoch目标日志按optimizer更新数平均。无卷积、placeholder、跨时间E/D/aux缓存；没有把时间并入N。
++- eval只用prediction，显式模型级诊断开关验证预测不变；按保存结构重建、task/time合同严格校验、无strict=False，coverage差异不阻止纯eval；原裸model.pt保存频率及独立output目录保留，无新resume。六任务命令见[脚本说明](../tran_evaluate/msar_lno/README.md)。
++- [M6报告/覆盖表](MSAR_LNO_M6_TEMPORAL_TASKS.md)、[summary](msar_lno_audit/m6/summary.json)、[冻结](msar_lno_audit/m6/freeze.json)、[夹具](msar_lno_audit/m6/fixture-index.json)。MSAR93/93通过（38.463s，11个M6新方法）；相关旧93项零失败/错误（204.050s），2处原Air torch_cluster skip记录，含1子用例。
++- 两任务×floor/off CPU B2/真实N/d8/M7,5,3,2完成原时间循环和原loss/反传/optimizer/eval/checkpoint。CUDA B1/d8 FP32 MATH两完整时间batch通过。正式Light/Full B1真实N CPU前向通过，参数NS 1,723,897/6,839,281；Plasticity 1,729,180/6,886,708；正式大profile反传未执行。
++- 6train+6eval真实parser预览、两wrapper原PDE cwd新进程strict load、eval sidecar/config字节不变、time条件梯度、无未来标签泄漏、off原loss对象同一、逐forward新图均通过。26份旧同权重夹具（14时间+12标准静态）及4份新捕获pre-M6已接受M5夹具零容差回放；182旧artifact hash保持。
++- 起点784文本快照`/home/hwz/CDLNO-artifacts/msar-m6-before-pqh_ca0e/source`；13已有文件增量修改，其余771字节一致。两完整时间入口去掉显式MSAR分支后AST精确相同；旧模型、M1/M2/M3数学、M5静态wrapper/入口、数据、工业和依赖冻结。保留全部用户工作，HEAD不变，无commit/push/PR/下载/实际训练。
++
++当前NS源码只有已确认10→10，无现成20/40步CLI/标签读取，不虚构长时命令；旧NS命令保留。未验证真实数据/训练/收敛、远端Python3.10/Torch2.11cu128、MSAR工业PyG、任务AMP/compile及大profile完整训练。首轮1个新测试用非法history-mode=2导致argparse提前退出，改合法但不适用的off后通过；生产数学和容差未改。**本M阶段结束，未执行下一阶段。**
+ 
+ ## 2026-09-17：M5 四静态任务接入完成，等待审查
+ 
+--- before/docs/MSAR_LNO_M6_TEMPORAL_TASKS.md
++++ after/docs/MSAR_LNO_M6_TEMPORAL_TASKS.md
+@@ -0,0 +1,128 @@
++# MSAR-LNO M6：Navier–Stokes / Plasticity 时间任务接入
++
++2026-09-17，仅M6。M5已审查通过；基于`main@9c5569e059eca8d57f5321fdbf0c0dc4aeb40860`的已有未提交工作增量修改。读取根AGENTS、[M0实际接口审计](MSAR_LNO_REFERENCE_AUDIT.md)、[M5报告](MSAR_LNO_M5_STATIC_TASKS.md)、MSAR STATUS、memory及当前两时间入口/旧wrapper/配置/测试/启动器，核对总控和`PLAN_MSAR_LNO/MSAR_LNO_Codex_Staged_Prompts.md`的M6；未借旧阶段状态执行下一阶段。
++
++## A. 完成范围与任务覆盖
++
++`msar_lno`现在可通过真实`exp_ns.py`和`exp_plas.py`选择、训练、评估及严格加载。两任务共用独立`TemporalModel`包装已确认的MSAR core；Light默认，Full显式选择，逐点lift/head，无卷积或跨物理时间状态。原数据读取、split、点序、normalizer、loss、时间循环、optimizer/scheduler、裁剪和指标保留。
++
++| 任务 | 实际wrapper输入/输出 | 模型及原loss合成训练步 | 评估与checkpoint | GPU / 真实数据 |
++|---|---|---|---|---|
++| Darcy / Elasticity / Airfoil / Pipe | 原M5合同不变 | M5有效证据保留；本轮M5测试重跑通过 | M5测试及新增4份pre-M6同权重回放通过 | 继承M5；真实数据未运行 |
++| NS | `model(x[B,4096,2], fx[B,4096,10]) → [B,4096,1]` | floor/off；CPU B2/d8；10次forward、逐帧原relative-L2求和、1次backward/optimizer/scheduler通过 | 10次预测回填、原整段metric、严格同权重往返通过 | 本地CUDA B1/d8完整10步通过；真实数据未运行 |
++| Plasticity | `model(x[B,3131,2], fx[B,3131,1], T[B,1]) → [B,3131,4]` | floor/off；CPU B2/d8；20次forward/loss/backward/optimizer、batch末1次scheduler通过 | 原20次独立T调用、拼回[B,N,4,20]、严格同权重往返通过 | 本地CUDA B1/d8完整20时间点通过；真实数据未运行 |
++| ShapeNet-Car / AirfRANS | 未接入MSAR | 未执行；留M7 | 未执行新family工业checkpoint | MSAR真实PyG未执行；不能标为支持完成 |
++
++缩小训练结构显式使用`d8/M=[7,5,3,2]/heads=[2,2,4,4]`，encoder/decoder各[3,1,1,1]，保留全部拓扑；不是正式Light训练结果。空间N仍是真实布局4096/3131，未把时间并入N。另在CPU以正式Light/Full、B1、同样真实N完成构造/前向，未执行这些大结构的完整训练反传：
++
++| 任务 | Light实际参数 | Full实际参数 | N / Full首层M |
++|---|---:|---:|---|
++| NS | 1,723,897 | 6,839,281 | 4096 / 1024 |
++| Plasticity | 1,729,180 | 6,886,708 | 3131 / 1024 |
++
++## B. 文件、符号与接入
++
++| 文件/符号 | 本轮原因与范围 |
++|---|---|
++| `cdlno/msar_lno/temporal.py::TemporalModel`（新增） | 两个时间任务输入提升/时间注入/shape检查/adapter metadata；复用同一个原MSAR core，不复制数学 |
++| `model/MSAR_Temporal.py`（新增）、`model_dict.get_model` | 稳定共享类路径`cdlno.msar_lno.temporal.TemporalModel`，仅新增MSAR时间task选择；M4无task的lifted-core及M5静态选择保留 |
++| `cdlno/msar_lno/standard_entry.py` | 接受两新任务，严格按任务检查StaticModel/TemporalModel；复用M5解析优先级、Run、metadata和独立目录；日志注明时间聚合尺度 |
++| `cdlno/msar_lno/objective.py::rollout_objective`、PDE `msar_entry.py` | NS明确的per-batch tuple聚合；调用M4单forward adapter验证raw coverage，未修改原`training_forward/training_objective` |
++| `exp_ns.py`、`exp_plas.py` | 新family早期记录、模型构造、显式aux、backward目标和四项日志；旧训练/eval完整分支保留 |
++| `configs/msar_lno/{ns,plasticity}.json`（新增） | 独立Light默认、floor/.01/.2；原epochs500、lr.001、weight_decay1e-5、NS batch2/no clip、Plasticity batch8/clip.1 |
++| `tran_evaluate/msar_lno/{ns,plasticity}.sh`（新增）、`_static.sh` | 复用已有远端路径/dispatcher；只加task路由；用户参数最后覆盖，profile不被硬写的旧d/M覆盖 |
++| `tests/test_msar_temporal.py`（新增11方法） | 安全真实parser/构造/训练和eval AST、模型数值、coverage均值、time梯度、无泄漏、checkpoint、脚本/日志/正式结构/GPU |
++| `tests/test_msar_static.py`、`tests/test_static_standard.py` | M5“时间任务未授权”断言更新为M6已支持；精确新增factory分支白名单；时间冻结从字节相等改为移除显式MSAR分支后的完整AST相等 |
++| 文档、STATUS、memory、`docs/msar_lno_audit/m6/` | 增量交付与来源/运行/完整性证据，不改写旧阶段报告 |
++
++本轮13个起点已有文本文件修改、9个新增实现/测试/报告/核查文件（不含生成的log/JSON/patch），其余771个起点文本文件字节相等。起点784文件快照：`/home/hwz/CDLNO-artifacts/msar-m6-before-pqh_ca0e/source`。[before](msar_lno_audit/m6/before.json)、[原有diff](msar_lno_audit/m6/preexisting.patch)、[本轮diff](msar_lno_audit/m6/stage.patch)、[冻结核查](msar_lno_audit/m6/freeze.json)分别保存，未reset/commit/push/PR。
++
++## C. 时间及coverage公式→代码→验证
++
++NS保留索引网格ref8²距离替换xy，再拼10帧，stem74；没有placeholder或time_fc。训练窗口在步t只能包含原输入剩余帧和`yy[..., :t]`，本步之后回填本步真值；eval只回填本步预测。模型每次重新执行4个Down、encoder/decoder和final Up，core没有时间cache。循环次数由原`range(0,T,step)`决定，现有数据协议`T_in=10,T=10,step=1`不变。
++
++令`q`为某一次forward、`B`为该次batch、`j`为有效source，
++
++```text
++c_q = (1/4) Σ_l [(1/B) Σ_b Σ_j relu(kappa*mu_bj - p_qlbj)^2 / (mu_bj+eps)]
++
++NS 单次优化更新：
++LPDE = Σ_(q=1..Q) TestLoss(pred_q, truth_q)          # 原式，TestLoss对batch求和
++C = (1/Q) Σ_(q=1..Q) c_q                           # 实际forward数Q，默认10
++Ltotal = LPDE + coverage_weight * C
++
++Plasticity 每个独立时间点q的更新：
++LPDE_q = TestLoss(pred_q, truth_q)                   # 原式、batch求和
++Ltotal_q = LPDE_q + coverage_weight * c_q
++```
++
++原PDE聚合没有改成时间均值；NS只对新增coverage按实际次数平均，**不是**Σ_q(LPDE_q+weight*c_q)，没有额外Q倍辅助项。Plasticity20次更新仍互相独立，不把每次coverage再除20；epoch目标日志才对这20次更新取均值。coverage自身既定batch/层均值保持，不新增batch倍乘。原`train_step_loss`仍除样本数/时间数；四项目标日志统一以optimizer step计数，因此不能把它们误认为同一归一化的指标。
++
++| 合同 | 实际代码位置 | 验证 |
++|---|---|---|
++| raw每forward新建，NS单更新时间均值 | `core.MSARLNO.forward`（原）、`objective.rollout_objective`（新增）；`exp_ns.main`训练batch创建局部list→tuple聚合后删除 | 10份实际aux均值逐项对照；每份raw的聚合梯度为1/Q；重复同一序列不放大raw；所有Down每步重新执行 |
++| Plasticity时间注入 | `TemporalModel.forward`：原sin/cos频率/顺序→两Linear的SiLU time_fc→逐点加；时间不进N | 原公式独立拼装相等，T及time_fc有限有效梯度，T改变会改变输出，错误shape拒绝 |
++| Plasticity逐时间点更新 | `exp_plas.main`原循环只替换MSAR forward/backward目标 | 原20次optimizer/1次scheduler，原collate按样本置换T及对应label保持匹配，fx不回填预测 |
++| off/weight0 | 原`training_forward`不请求aux；`rollout_objective`返回原LPDE对象 | exact对象同一、无coverage构造；同权重floor/off预测atol2e-6/rtol1e-4 |
++| 评估无aux、无未来真值泄漏 | 两个原eval循环未改；预测Tensor | 断言CoverageFloorLoss不被调用，eval标签加37后预测exact不变；逐窗口比对预测回填 |
++| 调用隔离 | core局部E/D；wrapper仅参数/坐标buffer | eval A→B→A exact；第二forward输出/coverage对第一forward独立输入梯度为None；模块没有新增cache属性 |
++| 诊断显式启用 | 既有`return_aux=True` + `MSARTrainingConfig(diagnostics=True)` | eval不计算coverage；diagnostics为小型no-grad统计，预测exact不变；入口常规eval不自动请求aux |
++
++## D. Checkpoint、命令与实际结果
++
++保持原裸`model.pt` state_dict和`architecture.json`/`task.json`协议，不新增resume或宽松加载。eval先读已存resolved结构和任务输入合同再构造；显式d/M/ref/unified_pos冲突在加载前拒绝；Time_Input错误也在读取weights前拒绝；缺state key严格报错。coverage on/off纯eval差异允许但不写回训练metadata。三次重复eval分别创建结果目录，旧config/sidecar/train_results字节不变。
++
++实际运行目录仍为`output/<task>/msar_lno/<light|full>/coverage_<floor|off>/<timestamp+uuid>`，保留显式save_name/run路径独占保护。早期config记录、实测参数数、train_history/四项目标日志和最终eval结果使用已存在记录器。保存节奏仍是原`ep %100 ==0`及final（零基epoch）；**不是optimizer/scheduler/RNG续训归档**。
++
++[六任务脚本与Light on/off、Full训练后立即评估模板](../tran_evaluate/msar_lno/README.md)已增量更新。实际checkout根目录的无数据预览：
++
++```bash
++bash tran_evaluate/msar_lno/ns.sh train --profile light --coverage-mode floor --gpu 0 --dry-run
++bash tran_evaluate/msar_lno/ns.sh train --profile light --coverage-mode off --coverage-weight 0 --gpu 0 --dry-run
++bash tran_evaluate/msar_lno/plasticity.sh train --profile full --gpu 0 --dry-run
++```
++
++两个脚本均能使用所有三种设置。已有NS命令/预测回填循环不删除；核查实际源码只有10→10协议，**没有现成20/40步CLI及对应标签读取**，因此不虚构`--rollout`选项、不新增长时数据/训练实验。两时间wrapper沿既有NS64×64、Plasticity101×31合同，非默认NS downsample不列为新支持项。
++
++实际执行（所有任务测试只运行合成张量和安全AST片段，没有import exp/main）：
++
++```bash
++MSAR_M6_RESULTS=docs/msar_lno_audit/m6/task-cases.json \
++python -B -m unittest discover -s tests -p 'test_msar*.py' -v
++
++PYTHONPATH=tests:. python -B -m unittest \
++  test_temporal_standard test_kcdno_temporal test_static_standard test_kcdno_tasks \
++  test_front_training test_experiment_records test_periodic_visualization -v
++
++python -B docs/kcdno_audit/replay_subset.py temporal \
++  --result docs/msar_lno_audit/m6/k0-temporal-replay.json
++
++# 在PDE子项目cwd，绝对路径指本次本机审计产物，不是远端训练必需文件。
++PYTHONPATH=/home/hwz/CDLNO python -B \
++  /home/hwz/CDLNO/docs/msar_lno_audit/m0/wrapper_fixtures.py replay --project standard \
++  --artifacts /home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers \
++  --result /home/hwz/CDLNO/docs/msar_lno_audit/m6/wrapper-replay.json
++
++python -B docs/msar_lno_audit/m6/finalize_evidence.py
++```
++
++- MSAR **93/93通过，38.463s**，包含11个M6新方法；相关旧套件**93项，204.050s，零失败/错误、2处skip记录**（一处为子用例，均因原AirfRANS sampled路径缺torch_cluster）。不是单次全仓库测试。
++- [实际任务证据](msar_lno_audit/m6/task-cases.json)：2任务×floor/off、CPU完整原loss/time batch、eval/checkpoint；另2项GPU完整时间batch、4项正式profile前向。
++- 6条train + 6条eval脚本预览经真实parser校验；原PDE cwd的新进程重建两wrapper、strict加载同权重，CPU FP32 MATH `atol=rtol=0`。
++- 修改前旧fixture：K0时间8份（2任务×CDLNO三模式及Transolver）+K/matched标准wrapper18份，**26份exact回放**；其中14份时间、12份静态。另修改前即时捕获4份已接受M5静态wrapper的config/inputs/weights/output，全部exact回放。旧182个夹具文件hash保持，未复制大二进制到仓库。[夹具索引](msar_lno_audit/m6/fixture-index.json)标明来源与未重跑的有效证据；不声称验证所有历史训练checkpoint。
++- 首轮新测试有1个错误：将`--history-mode 2`用于“不适用字段”断言，argparse先因非法choice退出；改用合法但对MSAR不适用的`off`后通过。没有为迁就测试改生产模型或容差，保留[初次日志](msar_lno_audit/m6/initial-tests.log)。
++- [环境](msar_lno_audit/m6/environment.json)：Python3.13.9、Torch2.13.0+cu130/CUDA13.0、RTX5090 Laptop、PyG2.3.1。GPU新检查是B1/d8、真实N、FP32 MATH；M2/M3既有有限AMP检查随套件重跑，**不代表M6任务AMP矩阵通过**。
++
++## E. 旧路径与冻结区段
++
++两完整时间入口去掉显式`args.model == 'msar_lno'`分支后AST与pre-M6精确相同，含loader、normalizer、随机collate、所有训练/eval/绘图、step位置及旧调用。factory仅去掉经精确匹配的MSAR temporal分支后与pre-M6一致。旧CDLNO/Transolver/KCDNO/matched模型数学、MSAR M1/M2/M3数学、M5静态wrapper及4个入口、工业入口和依赖均字节不变；没有移除数据loader工作。旧测试仅精确识别本次授权分支，不扩大忽略区域。
++
++新增回归只使用保存的同一份权重、输入和backend进行比较；不把重新初始化输出当回归。所有先存用户修改保留，HEAD未变，无安装/下载/真实训练。
++
++## F. 自审与剩余边界
++
++已按源码及证据自审5点：时间点/通道/回填窗口；NS coverage时间均值和Plasticity独立更新；Light/Full显式优先及无卷积/无缓存；read-first/strict/eval不可覆盖；完整旧分支AST与同权重输出。未发现本阶段尚待修复的实现缺陷。
++
++未验证：真实文件完整读取、真实数据训练/收敛/精度、远端Python3.10/Torch2.11/cu128、正式大profile时间反传与性能、任务AMP/其他backend/compile、MSAR工业PyG。原固定网格/绘图、原任务不具备完整resume、原AirfRANS torch_cluster缺失是已知边界，本轮未擅自修复或新增实验。M7的工业接口仍待单独授权。
++
++**本M阶段结束，未执行下一阶段。**
+--- before/docs/msar_lno_audit/m6/finalize_evidence.py
++++ after/docs/msar_lno_audit/m6/finalize_evidence.py
+@@ -0,0 +1,122 @@
++"""M6 final source/fixture integrity and executed-result index; no task imports."""
++import ast
++import difflib
++import hashlib
++import json
++from pathlib import Path
++import re
++import subprocess
++import sys
++
++ROOT = Path(__file__).resolve().parents[3]
++E = Path(__file__).resolve().parent
++sys.path.insert(0, str(ROOT/'tests'))
++from msar_entry_projection import strip_msar
++
++
++def read(path): return json.loads(Path(path).read_text())
++def sha(path): return hashlib.sha256(Path(path).read_bytes()).hexdigest()
++def write(name, data): (E/name).write_text(json.dumps(data, indent=2, ensure_ascii=False)+'\n')
++
++
++def main():
++    before=read(E/'before.json');snapshot=Path(before['archive'])/'source'
++    expected={'PDE-Solving-StandardBenchmark/exp_ns.py','PDE-Solving-StandardBenchmark/exp_plas.py',
++        'PDE-Solving-StandardBenchmark/model_dict.py','PDE-Solving-StandardBenchmark/msar_entry.py',
++        'cdlno/msar_lno/standard_entry.py','cdlno/msar_lno/objective.py',
++        'tests/test_msar_static.py','tests/test_static_standard.py',
++        'tran_evaluate/msar_lno/_static.sh','tran_evaluate/msar_lno/README.md',
++        'docs/MSAR_LNO_IMPLEMENTATION_STATUS.md','docs/CDLNO_IMPLEMENTATION_STATUS.md','memory/current-state.md'}
++    changed=[];unchanged=[]
++    for name,digest in before['files'].items():
++        assert (ROOT/name).is_file(),name
++        (unchanged if sha(ROOT/name)==digest else changed).append(name)
++    assert set(changed)==expected,changed
++    added=['cdlno/msar_lno/temporal.py','PDE-Solving-StandardBenchmark/model/MSAR_Temporal.py',
++        'PDE-Solving-StandardBenchmark/configs/msar_lno/ns.json',
++        'PDE-Solving-StandardBenchmark/configs/msar_lno/plasticity.json',
++        'tran_evaluate/msar_lno/ns.sh','tran_evaluate/msar_lno/plasticity.sh',
++        'tests/test_msar_temporal.py','docs/MSAR_LNO_M6_TEMPORAL_TASKS.md',
++        'docs/msar_lno_audit/m6/finalize_evidence.py']
++    patch=[]
++    for name in sorted(changed+added):
++        old=(snapshot/name).read_text() if name in before['files'] else ''
++        now=(ROOT/name).read_text()
++        patch.extend(difflib.unified_diff(old.splitlines(True),now.splitlines(True),fromfile='before/'+name,tofile='after/'+name))
++        if name.endswith('.py'):ast.parse(now,feature_version=(3,10))
++        if name.endswith('.sh'):subprocess.run(['bash','-n',str(ROOT/name)],check=True)
++    (E/'stage.patch').write_text(''.join(patch))
++    projected=[]
++    for stem in ('ns','plas'):
++        name=f'PDE-Solving-StandardBenchmark/exp_{stem}.py'
++        a=ast.dump(strip_msar(ast.parse((ROOT/name).read_text())))
++        b=ast.dump(ast.parse((snapshot/name).read_text()))
++        assert a==b,name
++        projected.append(dict(file=name,pre_M6_ast=hashlib.sha256(b.encode()).hexdigest(),status='exact'))
++    name='PDE-Solving-StandardBenchmark/model_dict.py'
++    now=ast.parse((ROOT/name).read_text());factory=next(n for n in now.body if isinstance(n,ast.FunctionDef))
++    branch=factory.body[0].body.pop(0)
++    wanted=ast.parse("if getattr(args, 'msar_task', None) in ('ns', 'plasticity'):\n    from model import MSAR_Temporal\n    return MSAR_Temporal").body[0]
++    assert ast.dump(branch)==ast.dump(wanted)
++    assert ast.dump(now)==ast.dump(ast.parse((snapshot/name).read_text()))
++    suites=[]
++    for name,count in [('msar-tests.log',93),('old-tests.log',93)]:
++        log=(E/name).read_text();match=re.search(r'Ran (\d+) tests in ([\d.]+)s',log)
++        assert match and int(match[1])==count and '\nOK' in log and 'FAILED' not in log,name
++        skipped=re.search(r'OK \(skipped=(\d+)\)',log)
++        suites.append(dict(log=name,tests=count,seconds=float(match[2]),failures=0,errors=0,
++                           skip_records=int(skipped[1]) if skipped else 0))
++    rows=[]
++    for name,expected_count in [('k0-temporal-replay',8),('wrapper-replay',18)]:
++        group=read(E/(name+'.json'));assert len(group)==expected_count
++        for row in group:
++            assert row['status']=='passed',row
++            rows.append(dict(group=name,name=row['name'],status='passed',atol=0,rtol=0))
++    oldindex=read(ROOT/'docs/msar_lno_audit/m0/fixture-index.json')
++    for item in oldindex['integrity_files']:assert sha(item['path'])==item['sha256'],item['path']
++    statics=read(E/'static-fixtures.json')
++    for item in statics:assert sha(item['path'])==item['sha256'],item['path']
++    write('fixture-index.json',dict(old_index='docs/msar_lno_audit/m0/fixture-index.json',
++        old_artifact_files_preserved=len(oldindex['integrity_files']),old_replayed_now=len(rows),
++        temporal_old_replayed=14,static_K_matched_replayed=12,rows=rows,
++        accepted_M5_pre_M6_new_captures=statics,static_M5_replays=4,
++        retained_evidence='Unaffected old math/core/industrial fixtures retain M4/M5 evidence; not all rerun.',
++        limits='Same saved weights and fixed synthetic inputs; not real trained checkpoints or universal historical compatibility.'))
++    cases=read(E/'task-cases.json')
++    assert sum(bool(row.get('strict_checkpoint')) for row in cases)==4
++    assert sum(row.get('device')=='cuda' for row in cases)==2
++    assert sum(row.get('profile') in ('light','full') for row in cases)==4
++    write('freeze.json',dict(snapshot=str(snapshot),files_at_start=len(before['files']),
++        unchanged_count=len(unchanged),changed=changed,added=added,entries=projected,
++        old_factory_ast='exact after removing the explicitly validated temporal MSAR branch',
++        unchanged_sha256={p:before['files'][p] for p in unchanged},
++        changed_sha256={p:sha(ROOT/p) for p in changed+added},
++        frozen='All old model math, M1/M2/M3 math and M5 static wrapper/entries, data/dependencies and industrial entries unchanged.'))
++    write('summary.json',dict(stage='M6',environment=read(E/'environment.json'),suites=suites,
++        new_methods=11,temporal_task_modes=4,old_same_weight_replays=26,M5_same_weight_replays=4,
++        preserved_old_fixture_files=len(oldindex['integrity_files']),
++        actual_temporal_loops='NS 10 forwards/1 backward/optimizer/scheduler; Plasticity 20 forwards/backwards/optimizer, scheduler1',
++        coverage='NS original PDE sum + weight * time mean of four-level raw coverage; Plasticity each PDE + weight * its four-level coverage',
++        shell_train_previews=6,shell_eval_previews=6,
++        fresh_cwd='two actual wrappers strict load from original PDE cwd, CPU FP32 MATH, atol=rtol=0',
++        gpu='two temporal tasks, actual N, B1/d8/M7,5,3,2, complete original time-loop loss steps, FP32 MATH',
++        profile_forward='actual Light/Full, B1/N4096 NS and N3131 Plasticity, CPU forward only',
++        checkpoint='bare state_dict model.pt + strict architecture/task metadata, unchanged save cadence, no new resume',
++        initial_failure='New negative test used history-mode=2, triggering argparse SystemExit before architecture validation; corrected to valid-but-inapplicable off. No production fix/tolerance change.',
++        not_run=['real data reading/download/training/convergence/accuracy','remote Python3.10/torch2.11/cu128',
++                 'formal Light/Full temporal backward/optimizer matrix','new temporal AMP/backends/compile matrix',
++                 'MSAR industrial tasks/PyG integration (M7 not authorized)',
++                 'existing AirfRANS sampled tests skipped for absent torch_cluster',
++                 'new long-horizon NS experiment (no existing 20/40 CLI/data protocol)'],next_stage_executed=False))
++    for doc in ('docs/MSAR_LNO_M6_TEMPORAL_TASKS.md','tran_evaluate/msar_lno/README.md'):
++        p=ROOT/doc
++        for target in re.findall(r'\]\(([^)]+)\)',p.read_text()):
++            if '://' not in target and not target.startswith('#'):assert (p.parent/target.split('#')[0]).exists(),target
++    subprocess.run(['git','diff','--check'],cwd=ROOT,check=True)
++    assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()==before['head']
++    (E/'status-after.txt').write_text(subprocess.check_output(['git','status','--short'],cwd=ROOT,text=True))
++    print(json.dumps(dict(tests=suites,changed=len(changed),added=len(added),unchanged=len(unchanged),
++                         old_replayed=26,M5_replayed=4),ensure_ascii=False))
++
++
++if __name__=='__main__':main()
+--- before/memory/current-state.md
++++ after/memory/current-state.md
+@@ -1,4 +1,12 @@
+ # 最新：MSAR-LNO M5四静态任务完成，等待审查（2026-09-17）
++
++## 2026-09-17：MSAR-LNO M6完成，等待审查
++
++仅M6；M5已批准。新增`cdlno.msar_lno.temporal.TemporalModel`、NS/Plasticity薄factory/JSON/脚本，接真实两个exp的显式aux/loss/日志；原MSAR core、旧模型/数据数学不变。NS fx10→out1，训练10真值回填/1更新，eval10预测回填；coverage是实际forward×四层均值，仅加一次。Plasticity fx1/T[B,1]→out4，保留20独立optimizer+1 scheduler，每次加入本次coverage；无时间latent/cache、无卷积。默认Light、可Full/off；strict裸state_dict不提供optimizer/RNG resume。
++
++报告`docs/MSAR_LNO_M6_TEMPORAL_TASKS.md`、状态`docs/MSAR_LNO_IMPLEMENTATION_STATUS.md`、命令`tran_evaluate/msar_lno/README.md`、证据`docs/msar_lno_audit/m6/`。最终MSAR93通过、旧93零失败/2skip（Air torch_cluster），新11方法。两任务×floor/off B2真实N小d训练/eval/原loss及checkpoint、两CUDA FP32 MATH完整时间batch、真实Light/Full CPU前向通过；大profile反传/远端2.11cu128/真实数据训练/新工业PyG未执行。26旧+4pre-M6 M5同权重回放exact；182旧artifact hash保留。
++
++保留外部快照`/home/hwz/CDLNO-artifacts/msar-m6-before-pqh_ca0e`（784文本+4新fixture）；两入口去掉MSAR分支完整AST等同pre-M6。起点13已有文件改、771不变；旧用户工作保留。NS实际只有10→10无20/40 CLI，不能虚构长时支持。M7未授权；下一步仅等待用户审查。**本M阶段结束，未执行下一阶段。**
+ 
+ 仅M5，见[报告/覆盖表](../docs/MSAR_LNO_M5_STATIC_TASKS.md)、[命令](../tran_evaluate/msar_lno/README.md)及独立MSAR STATUS。
+ 四真实exp现已接msar_lno：原坐标/fx/normalizer/loss/调度保留；共用无卷积wrapper+原M3core，Light/Full不裁M。
+--- before/tests/test_msar_static.py
++++ after/tests/test_msar_static.py
+@@ -128,8 +128,9 @@
+             with self.assertRaises(ValueError):arguments(task,['--slice_num','32'])
+             with self.assertRaises(ValueError):arguments(task,['--dropout','0'])
+         from test_kcdno_tasks import arguments as kargs
+-        with self.assertRaisesRegex(ValueError,'not integrated'):kargs('ns',['--model','msar_lno'])
+-        with self.assertRaisesRegex(ValueError,'not integrated'):kargs('plasticity',['--model','msar_lno'])
++        # M6 now authorizes the two temporal tasks; static defaults stay above.
++        for task in ('ns', 'plasticity'):
++            self.assertEqual(kargs(task,['--model','msar_lno']).msar_architecture['d'],96)
+ 
+     def test_old_parser_defaults_and_no_msar_kwargs(self):
+         for task in TASKS:
+@@ -301,7 +302,8 @@
+             new=json.loads((PROJECT/'configs/msar_lno'/f'{task}.json').read_text())
+             self.assertEqual(new['training'],old['training']);self.assertEqual(new['adapter'],old['adapter'])
+         for p in ('exp_ns.py','exp_plas.py'):
+-            self.assertEqual((PROJECT/p).read_bytes(),(snap/'PDE-Solving-StandardBenchmark'/p).read_bytes())
++            self.assertEqual(ast.dump(strip_msar(ast.parse((PROJECT/p).read_text()))),
++                             ast.dump(ast.parse((snap/'PDE-Solving-StandardBenchmark'/p).read_text())))
+ 
+     def test_real_shell_options_all_profiles_and_last_override(self):
+         for task in TASKS:
+--- before/tests/test_msar_temporal.py
++++ after/tests/test_msar_temporal.py
+@@ -0,0 +1,402 @@
++"""M6 real temporal loop fragments, synthetic tensors, no exp/data imports."""
++import argparse
++import ast
++from contextlib import redirect_stdout
++from dataclasses import replace
++import hashlib
++import io
++import json
++import os
++from pathlib import Path
++import shlex
++import subprocess
++import sys
++import tempfile
++import unittest
++from unittest.mock import patch
++
++import torch
++from torch import nn
++from torch.nn.attention import SDPBackend, sdpa_kernel
++
++from test_kcdno_tasks import ROOT, PROJECT, TEMPORAL, TestLoss, UnitTransformer
++from test_kcdno_temporal import cpu_statements
++from test_msar_static import SMALL
++from cdlno_entry import parse_args
++from model_dict import get_model
++from cdlno.msar_lno.standard_entry import StandardRun, model_kwargs
++from cdlno.msar_lno.temporal import TemporalModel
++from cdlno.msar_lno.standard import StaticModel
++from cdlno.msar_lno.config import MSARArchitectureConfig, MSARTrainingConfig
++from cdlno.msar_lno.objective import (training_forward, training_objective,
++                                     rollout_objective, ObjectiveMetrics)
++from cdlno.experiment import start, finish
++from msar_entry_projection import strip_msar
++
++RECORDS = []
++
++
++def setUpModule():
++    global previous_threads
++    previous_threads = torch.get_num_threads()
++    torch.set_num_threads(1)
++
++
++def tearDownModule():
++    torch.set_num_threads(previous_threads)
++    if os.environ.get('MSAR_M6_RESULTS'):
++        Path(os.environ['MSAR_M6_RESULTS']).write_text(json.dumps(RECORDS, indent=2)+'\n')
++
++
++def tree(task):
++    return ast.parse((PROJECT / f'exp_{TEMPORAL[task][0]}.py').read_text())
++
++
++def parser_for(task):
++    nodes = [n for n in tree(task).body if
++             (isinstance(n, ast.Assign) and ast.unparse(n.targets[0]) == 'parser') or
++             (isinstance(n, ast.Expr) and isinstance(n.value, ast.Call)
++              and ast.unparse(n.value.func) == 'parser.add_argument')]
++    scope = dict(argparse=argparse)
++    exec(compile(ast.Module(nodes, type_ignores=[]), '<real-temporal-parser>', 'exec'), scope)
++    return scope['parser']
++
++
++def arguments(task, flags=()):
++    return parse_args(parser_for(task), task, ['--model', 'msar_lno', *flags])
++
++
++def construct(task, args):
++    _, h, w = TEMPORAL[task]
++    branch = next(n for n in ast.walk(tree(task)) if isinstance(n, ast.If)
++                  and ast.unparse(n.test) == "args.model == 'msar_lno'"
++                  and any(isinstance(q, ast.Assign) and ast.unparse(q.targets[0]) == 'model' for q in n.body))
++    call = branch.body[0].value.func.value  # Omit only the unconditional .cuda().
++    return eval(compile(ast.Expression(call), '<real-temporal-constructor>', 'eval'),
++                dict(args=args, get_model=get_model, msar_model_kwargs=model_kwargs, h=h, s1=h, s2=w))
++
++
++def sample(task, b=2, steps=None, device='cpu'):
++    n, f, c, times = (4096, 10, 1, 10) if task == 'ns' else (3131, 1, 4, 20)
++    times = times if steps is None else steps
++    x = torch.randn(b, n, 2, device=device)
++    fx = torch.randn(b, n, f, device=device)
++    if task == 'plasticity':
++        # The accepted normalizer operates on fx, not on coordinates or target.
++        fx = UnitTransformer(torch.randn(4, n, 1, device=device)).encode(fx)
++    yy = torch.randn((b, n, times) if task == 'ns' else (b, n, c, times), device=device) + 2
++    tim = torch.stack([torch.linspace(0, 1, times, device=device).roll(i) for i in range(b)])
++    return x, fx, yy, tim
++
++
++def train_batch(task, model, args, data=None):
++    x, fx, yy, tim = sample(task, device=next(model.parameters()).device) if data is None else data
++    optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
++    scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=args.lr,
++                                                   epochs=args.epochs, steps_per_epoch=1)
++    scope = dict(model=model.train(), args=args, x=x, fx=fx.clone(), yy=yy, tim=tim,
++                 T=yy.shape[-1], step=1, torch=torch, optimizer=optimizer, scheduler=scheduler,
++                 myloss=TestLoss(size_average=False), train_l2_step=0., train_l2_full=0.,
++                 training_forward=training_forward, training_objective=training_objective,
++                 rollout_objective=rollout_objective, msar_epoch=ObjectiveMetrics())
++    loop = next(n for n in ast.walk(tree(task)) if isinstance(n, ast.For) and ast.unparse(n.iter) == 'train_loader')
++    with patch.object(optimizer, 'step', wraps=optimizer.step) as update, \
++            patch.object(scheduler, 'step', wraps=scheduler.step) as schedule:
++        exec(cpu_statements(loop.body), scope)
++        assert (update.call_count, schedule.call_count) == ((1, 1) if task == 'ns' else (yy.shape[-1], 1))
++    return scope
++
++
++def evaluate(task, model, data):
++    x, fx, yy, tim = data
++    scope = dict(model=model.eval(), x=x, fx=fx.clone(), yy=yy, tim=tim, T=yy.shape[-1],
++                 step=1, bsz=x.shape[0], torch=torch, myloss=TestLoss(size_average=False),
++                 test_l2_step=0., test_l2_full=0.)
++    loop = next(n for n in ast.walk(tree(task)) if isinstance(n, ast.For) and ast.unparse(n.iter) == 'test_loader')
++    # All temporal forward/refill/metric statements; skip plotting, device transfer, IO.
++    nodes = [n for n in loop.body if isinstance(n, ast.For) or
++             (isinstance(n, ast.Assign) and isinstance(n.targets[0], ast.Name) and n.targets[0].id in ('bsz', 'loss')) or
++             (isinstance(n, ast.AugAssign) and isinstance(n.target, ast.Name) and n.target.id in ('test_l2_step', 'test_l2_full'))]
++    with torch.no_grad():
++        exec(cpu_statements(nodes), scope)
++    return scope
++
++
++class MSARTemporalTests(unittest.TestCase):
++    def setUp(self):
++        torch.manual_seed(91706)
++        backend = sdpa_kernel(SDPBackend.MATH); backend.__enter__()
++        self.addCleanup(backend.__exit__, None, None, None)
++
++    def test_real_defaults_profiles_old_cli_and_frozen_time_regions(self):
++        before = json.loads((ROOT/'docs/msar_lno_audit/m6/before.json').read_text())
++        snapshot = Path(before['archive'])/'source'
++        for task in TEMPORAL:
++            args = arguments(task)
++            self.assertEqual((args.epochs, args.batch_size, args.lr, args.max_grad_norm),
++                             (500, 2, .001, None) if task == 'ns' else (500, 8, .001, .1))
++            self.assertEqual(args.msar_architecture['d'], 96)
++            self.assertEqual(args.msar_architecture['num_latents'], [512,256,128,64])
++            self.assertEqual(arguments(task,['--profile','full']).msar_architecture['d'],192)
++            custom = arguments(task,['--profile','full',*SMALL,'--coverage-mode','off','--epochs','3'])
++            self.assertEqual(custom.msar_architecture['d'],8); self.assertEqual(custom.epochs,3)
++            self.assertIn('coverage_off',custom.msar_run_dir.parts)
++            base = parser_for(task).parse_args([]); actual = parse_args(parser_for(task),task,[])
++            for k,v in vars(base).items(): self.assertEqual(getattr(actual,k),v)
++            self.assertFalse(hasattr(actual,'msar_architecture'))
++            with self.assertRaises(ValueError): model_kwargs(actual)
++            for flag,value in (('--n-layers','2'),('--slice_num','2'),('--history-mode','off')):
++                with self.assertRaisesRegex(ValueError,'not applicable'): arguments(task,[flag,value])
++            path = f'PDE-Solving-StandardBenchmark/exp_{TEMPORAL[task][0]}.py'
++            self.assertEqual(ast.dump(strip_msar(tree(task))),ast.dump(ast.parse((snapshot/path).read_text())))
++            old = json.loads((PROJECT/f'configs/kcdno/{task}.json').read_text())
++            new = json.loads((PROJECT/f'configs/msar_lno/{task}.json').read_text())
++            self.assertEqual(new['training'],old['training']); self.assertEqual(new['adapter'],old['adapter'])
++
++    def test_wrapper_lift_time_condition_and_shape_guards(self):
++        from cdlno.standard import _grid
++        for task in TEMPORAL:
++            m = construct(task,arguments(task,SMALL))
++            x,fx,_,tim = sample(task); t = tim[:,:1].clone().requires_grad_() if task == 'plasticity' else None
++            seen=[]; h=m.core.register_forward_pre_hook(lambda mod,a:seen.append(a[0].detach().clone()))
++            out=m(x,fx,t); h.remove()
++            pos=(_grid(64,64)[:,None]-_grid(8,8)[None]).square().sum(-1).sqrt()[None].expand(2,-1,-1) if task=='ns' else x
++            expected=m.preprocess(torch.cat((pos,fx),-1))
++            if task=='plasticity':
++                frequency=torch.exp(-torch.log(torch.tensor(10000.))*torch.arange(4)/4)
++                embedding=t[:,:,None]*frequency[None,None]
++                expected=expected+m.time_fc(torch.cat((embedding.cos(),embedding.sin()),-1)).expand(-1,3131,-1)
++                gradients=torch.autograd.grad(out.square().sum(),(t,*m.time_fc.parameters()),retain_graph=True)
++                self.assertTrue(all(torch.isfinite(g).all() and g.abs().max()>0 for g in gradients))
++                self.assertFalse(torch.equal(out,m(x,fx,t+.4)))
++            torch.testing.assert_close(seen[0],expected,atol=0,rtol=0)
++            self.assertEqual(out.shape,(2,4096,1) if task=='ns' else (2,3131,4))
++            self.assertEqual(m.preprocess[0].in_features,74 if task=='ns' else 3)
++            self.assertFalse(hasattr(m,'placeholder')); self.assertFalse(hasattr(m,'output'))
++            self.assertFalse(any(isinstance(n,(nn.Conv1d,nn.Conv2d,nn.Conv3d)) for n in m.modules()))
++            with self.assertRaisesRegex(ValueError,r'H\*W'):m(x[:,:-1],fx[:,:-1],t)
++            with self.assertRaises(ValueError):m(x,fx[..., :0],t)
++            with self.assertRaises(ValueError):m(x,fx,torch.ones(2,2))
++            if task=='plasticity':
++                with self.assertRaises(ValueError):m(x,fx)
++
++    def test_actual_time_loops_loss_steps_eval_and_checkpoints(self):
++        for task in TEMPORAL:
++            for mode in ('floor','off'):
++                with self.subTest(task=task,mode=mode),tempfile.TemporaryDirectory() as tmp,redirect_stdout(io.StringIO()):
++                    args=arguments(task,[*SMALL,'--coverage-mode',mode,'--coverage-kappa','1',
++                                         '--msar-run-dir',str(Path(tmp)/'run')])
++                    m=construct(task,args);run=StandardRun(args,m);data=sample(task)
++                    observations=[];aux=[];downs=[[] for _ in range(4)];calls=[]
++                    def observe(mod,a,k):
++                        observations.append((a[1] if len(a)>1 else k['fx']).detach().clone())
++                        calls.append(k.get('T'))
++                    h=m.register_forward_pre_hook(observe,with_kwargs=True)
++                    hh=m.core.register_forward_hook(lambda mod,a,out:aux.append(out))
++                    handles=[down.register_forward_hook(lambda mod,a,out,i=i:downs[i].append(out)) for i,down in enumerate(m.core.downs)]
++                    scope=train_batch(task,m,args,data)
++                    count=10 if task=='ns' else 20
++                    self.assertEqual(len(observations),count)
++                    self.assertTrue(all(len(v)==count and len({id(q) for q in v})==count for v in downs))
++                    self.assertEqual(scope['msar_epoch'].steps,1 if task=='ns' else 20)
++                    for name,p in m.named_parameters():
++                        self.assertIsNotNone(p.grad,name);self.assertTrue(torch.isfinite(p.grad).all(),name)
++                    x,initial,yy,tim=data
++                    for t in range(count):
++                        expected=torch.cat((initial[...,t:],yy[...,:t]),-1) if task=='ns' else initial
++                        torch.testing.assert_close(observations[t],expected,atol=0,rtol=0)
++                        if task=='plasticity':torch.testing.assert_close(calls[t],tim[:,t:t+1],atol=0,rtol=0)
++                    if mode=='off':self.assertIs(scope['msar_loss'].total,scope['loss'])
++                    else:
++                        expected=torch.stack([v.coverage_mean for v in aux]).mean() if task=='ns' else aux[-1].coverage_mean
++                        torch.testing.assert_close(scope['msar_loss'].coverage_raw,expected,atol=0,rtol=0)
++                        self.assertGreater(expected.item(),0)
++                        torch.testing.assert_close(scope['msar_loss'].total,scope['loss']+.01*expected,atol=0,rtol=0)
++                    h.remove();hh.remove()
++                    for h in handles:h.remove()
++                    observations.clear();predictions=[]
++                    h=m.register_forward_pre_hook(observe,with_kwargs=True)
++                    hh=m.register_forward_hook(lambda mod,a,out:predictions.append(out.clone()))
++                    with patch('cdlno.msar_lno.core.CoverageFloorLoss',side_effect=AssertionError('eval coverage')):
++                        result=evaluate(task,m,data)
++                    self.assertEqual(result['pred'].shape,yy.shape)
++                    for t in range(count):
++                        expected=torch.cat((initial[...,t:],*predictions[:t]),-1) if task=='ns' else initial
++                        torch.testing.assert_close(observations[t],expected,atol=0,rtol=0)
++                    h.remove();hh.remove()
++                    torch.testing.assert_close(torch.as_tensor(result['test_l2_full']),
++                        TestLoss(size_average=False)(result['pred'].reshape(2,-1),yy.reshape(2,-1)))
++                    # Changing future evaluation labels cannot affect predictions/refill.
++                    changed=evaluate(task,m,(x,initial,yy+37,tim))
++                    torch.testing.assert_close(result['pred'],changed['pred'],atol=0,rtol=0)
++                    expected=m(x,initial,T=tim[:,:1] if task=='plasticity' else None).detach();run.save(m)
++                    files={p.name:p.read_bytes() for p in (run.sidecar,run.directory/'task.json')}
++                    ev=arguments(task,['--eval','1','--msar-run-dir',str(run.directory),
++                                      '--coverage-mode','off' if mode=='floor' else 'floor'])
++                    loaded=construct(task,ev).eval();erun=StandardRun(ev,loaded);erun.load(loaded)
++                    torch.testing.assert_close(loaded(x,initial,T=tim[:,:1] if task=='plasticity' else None),expected,atol=0,rtol=0)
++                    self.assertEqual(files,{p.name:p.read_bytes() for p in (run.sidecar,run.directory/'task.json')})
++                    RECORDS.append(dict(task=task,mode=mode,device='cpu',dtype='float32',backend='MATH',
++                        spatial_N=x.shape[1],B=2,forwards=count,optimizer_steps=1 if task=='ns' else 20,
++                        scheduler_steps=1,original_loss='TestLoss relative L2, unchanged temporal AST',
++                        eval=True,strict_checkpoint=True,atol=0,rtol=0,coverage='temporal mean' if task=='ns' else 'per time update'))
++
++    def test_rollout_mean_scale_graph_and_no_cached_state(self):
++        m=construct('ns',arguments('ns',[*SMALL,'--coverage-kappa','1'])).train()
++        x,fx,_,_=sample('ns',b=1)
++        records=(training_forward(m,x,fx),training_forward(m,x,fx+1))
++        pde=sum(record.prediction.square().mean() for record in records)
++        loss=rollout_objective(pde,records); repeated=rollout_objective(pde,records*5)
++        torch.testing.assert_close(loss.total,repeated.total,atol=1e-7,rtol=1e-6)
++        for record in records:
++            grad=torch.autograd.grad(loss.coverage_raw,record.auxiliary.coverage_mean,retain_graph=True)[0]
++            torch.testing.assert_close(grad,torch.tensor(.5),atol=0,rtol=0)
++        grads=torch.autograd.grad(loss.coverage_raw,(m.core.downs[0].latent_queries,m.preprocess[0].weight))
++        self.assertTrue(all(torch.isfinite(g).all() and g.abs().max()>0 for g in grads))
++        with self.assertRaises(ValueError):rollout_objective(pde,())
++        with self.assertRaises(ValueError):rollout_objective(pde,(records[0],replace(records[1],training=MSARTrainingConfig(coverage_mode='off'))))
++        keys={name:set(vars(mod)) for name,mod in m.named_modules()}
++        m.eval()
++        with torch.no_grad():
++            a=m(x,fx);m(x,fx+2);again=m(x,fx)
++        torch.testing.assert_close(a,again,atol=0,rtol=0)
++        self.assertEqual(keys,{name:set(vars(mod)) for name,mod in m.named_modules()})
++        # No prior output graph enters a later physical time call.
++        first=fx.clone().requires_grad_();second=fx.clone().requires_grad_()
++        m.train();unused=training_forward(m,x,first);next_call=training_forward(m,x,second)
++        gradient=torch.autograd.grad(next_call.prediction.sum()+next_call.auxiliary.coverage_mean,first,allow_unused=True)[0]
++        self.assertIsNone(gradient)
++
++    def test_off_weight_zero_parity_and_explicit_eval_diagnostics(self):
++        for task in TEMPORAL:
++            m=construct(task,arguments(task,SMALL));x,fx,_,tim=sample(task,b=1)
++            kw=dict(T=tim[:,:1]) if task=='plasticity' else {}
++            on=training_forward(m,x,fx,**kw)
++            for cfg in (replace(m.training_config,coverage_mode='off'),replace(m.training_config,coverage_weight=0)):
++                with patch('cdlno.msar_lno.core.CoverageFloorLoss',side_effect=AssertionError('off coverage')):
++                    off=training_forward(m,x,fx,training_config=cfg,**kw)
++                self.assertIsNone(off.auxiliary)
++                torch.testing.assert_close(off.prediction,on.prediction,atol=2e-6,rtol=1e-4)
++                pde=off.prediction.square().mean()
++                self.assertIs(rollout_objective(pde,(off,off)).total,pde)
++            m.eval()
++            with torch.no_grad(),patch('cdlno.msar_lno.core.CoverageFloorLoss',side_effect=AssertionError('eval coverage')):
++                normal=m(x,fx,**kw)
++                diagnostic=m(x,fx,return_aux=True,training_config=replace(m.training_config,diagnostics=True),**kw)
++            torch.testing.assert_close(normal,diagnostic.prediction,atol=0,rtol=0)
++            self.assertFalse(diagnostic.coverage_active);self.assertEqual(len(diagnostic.diagnostics['encoder']),4)
++
++    def test_plasticity_original_collate_preserves_sample_time_label_pairing(self):
++        function=next(n for n in tree('plasticity').body if isinstance(n,ast.FunctionDef) and n.name=='random_collate_fn')
++        scope=dict(torch=torch);exec(cpu_statements([function]),scope)
++        positions=torch.randn(2,3131,2);fx=torch.randn(2,3131,1)
++        times=torch.arange(20.).repeat(2,1)
++        labels=times[:,None,None,:].expand(-1,3131,4,-1).clone()
++        result=scope['random_collate_fn'](list(zip(positions,times,fx,labels)))
++        torch.testing.assert_close(result[0],positions,atol=0,rtol=0)
++        torch.testing.assert_close(result[2],fx,atol=0,rtol=0)
++        torch.testing.assert_close(result[3][:,0,0],result[1],atol=0,rtol=0)
++        self.assertFalse(torch.equal(result[1][0],result[1][1]))
++        for t in result[1]:torch.testing.assert_close(t.sort().values,times[0],atol=0,rtol=0)
++
++    def test_formal_light_full_construct_and_real_N_forward(self):
++        for task in TEMPORAL:
++            for profile in ('light','full'):
++                m=construct(task,arguments(task,['--profile',profile])).eval()
++                x,fx,_,tim=sample(task,b=1)
++                with torch.no_grad():y=m(x,fx,T=tim[:,:1] if task=='plasticity' else None)
++                self.assertEqual(y.shape,(1,4096,1) if task=='ns' else (1,3131,4))
++                self.assertEqual(m.config.num_latents[0],512 if profile=='light' else 1024)
++                self.assertTrue(torch.isfinite(y).all())
++                RECORDS.append(dict(task=task,profile=profile,N=x.shape[1],M1=m.config.num_latents[0],
++                    parameters=sum(p.numel() for p in m.parameters()),device='cpu',forward='passed',backward='not_run'))
++
++    def test_old_M5_same_weight_fixtures(self):
++        for row in json.loads((ROOT/'docs/msar_lno_audit/m6/static-fixtures.json').read_text()):
++            p=Path(row['path']);self.assertEqual(hashlib.sha256(p.read_bytes()).hexdigest(),row['sha256'])
++            saved=torch.load(p,weights_only=True);a=saved['adapter'];grid=a['grid_shape'] or (None,None)
++            m=StaticModel(config=MSARArchitectureConfig.from_dict(saved['config']),task_name=row['task'],
++                training_config=MSARTrainingConfig.from_dict(saved['training']),H=grid[0],W=grid[1]).eval()
++            m.load_state_dict(saved['state'],strict=True)
++            with torch.no_grad():torch.testing.assert_close(m(saved['x'],saved['fx']),saved['output'],atol=0,rtol=0)
++            self.assertEqual(m.adapter_architecture(),a)
++
++    def test_temporal_conflicts_before_load_and_strict_state(self):
++        with tempfile.TemporaryDirectory() as tmp,redirect_stdout(io.StringIO()):
++            for task in TEMPORAL:
++                args=arguments(task,[*SMALL,'--msar-run-dir',str(Path(tmp)/task)])
++                m=construct(task,args);r=StandardRun(args,m);r.save(m)
++                common=['--eval','1','--msar-run-dir',str(r.directory)]
++                for flags in (['--d','16'],['--num-latents','9','5','3','2'],['--ref','4'],['--unified_pos',str(1-int(m.unified_pos))]):
++                    with patch('torch.load',side_effect=AssertionError('must reject before weights')),self.assertRaises(ValueError):arguments(task,common+flags)
++                with self.assertRaises(ValueError):arguments('plasticity' if task=='ns' else 'ns',common)
++                side=r.directory/'task.json';contents=side.read_bytes();record=json.loads(contents)
++                record['adapter']['Time_Input']=not m.Time_Input;side.write_text(json.dumps(record))
++                ev=arguments(task,common);loaded=construct(task,ev)
++                with patch('torch.load',side_effect=AssertionError('must reject first')),self.assertRaises(ValueError):StandardRun(ev,loaded)
++                side.write_bytes(contents)
++                er=StandardRun(ev,loaded);weights=torch.load(r.checkpoint,weights_only=True)
++                weights.pop(next(iter(weights)));torch.save(weights,r.checkpoint)
++                with self.assertRaises(RuntimeError):er.load(loaded)
++
++    def test_shell_modes_fresh_cwd_loading_and_readonly_records(self):
++        with tempfile.TemporaryDirectory() as tmp,redirect_stdout(io.StringIO()):
++            for task in TEMPORAL:
++                script=ROOT/f'tran_evaluate/msar_lno/{task}.sh'
++                for flags in ([],['--coverage-mode','off','--coverage-weight','0'],['--profile','full']):
++                    result=subprocess.run(['bash',str(script),'train',*flags,'--dry-run'],capture_output=True,text=True,check=True)
++                    tokens=shlex.split(next(l[9:] for l in result.stdout.splitlines() if l.startswith('Command: ')))
++                    a=arguments(task,tokens[3:]);self.assertEqual(a.msar_task,task)
++                    self.assertEqual(a.msar_architecture['d'],192 if '--profile' in flags else 96)
++                    self.assertNotIn('--slice_num',tokens)
++                a=arguments(task,[*SMALL,'--coverage-mode','off','--msar-run-dir',str(Path(tmp)/task)])
++                record=start(a,task)
++                try:
++                    self.assertEqual(json.loads((record.directory/'config.json').read_text())['parameter_count_status'],'pending_model_construction')
++                    m=construct(task,a);r=StandardRun(a,m);data=sample(task,b=1,steps=2)
++                    scope=train_batch(task,m,a,data);r.record_objective(1,scope['msar_epoch'],dict(train_step_loss=scope['train_l2_step']/2));r.save(m)
++                    x,fx,_,tim=data;t=tim[:,:1] if task=='plasticity' else None
++                    torch.save(dict(x=x,fx=fx,t=t,y=m.eval()(x,fx,t).detach()),Path(tmp)/(task+'.pt'))
++                finally:finish(a)
++                metric=json.loads((record.directory/'train_history.jsonl').read_text())['metrics']
++                self.assertEqual(metric['coverage_mode'],'off');self.assertEqual(metric['coverage_raw'],0)
++                frozen={name:(r.directory/name).read_bytes() for name in ('architecture.json','task.json','config.json','train_results.json')}
++                for flags in ([],['--coverage-mode','floor'],['--profile','full']):
++                    result=subprocess.run(['bash',str(script),'eval','--msar-run-dir',str(r.directory),*flags,'--dry-run'],capture_output=True,text=True,check=True)
++                    tokens=shlex.split(next(l[9:] for l in result.stdout.splitlines() if l.startswith('Command: ')))
++                    ev=arguments(task,tokens[3:]);self.assertEqual(ev.msar_architecture,m.config.to_dict())
++                    er=start(ev,task,evaluation=True)
++                    try:loaded=construct(task,ev);StandardRun(ev,loaded).load(loaded);er.record_metrics(dict(test_full_loss=1.))
++                    finally:finish(ev)
++                self.assertEqual(frozen,{name:(r.directory/name).read_bytes() for name in frozen})
++                self.assertEqual(len(json.loads((r.directory/'eval_results.json').read_text())['evaluations']),3)
++            code='''
++import sys,torch
++from pathlib import Path
++from torch.nn.attention import SDPBackend,sdpa_kernel
++from test_msar_temporal import arguments,construct,StandardRun
++torch.set_num_threads(1)
++with sdpa_kernel(SDPBackend.MATH):
++ for task in ('ns','plasticity'):
++  root=Path(sys.argv[1]);a=arguments(task,['--eval','1','--msar-run-dir',str(root/task)])
++  m=construct(task,a).eval();StandardRun(a,m).load(m)
++  v=torch.load(root/(task+'.pt'),weights_only=True)
++  torch.testing.assert_close(m(v['x'],v['fx'],v['t']),v['y'],atol=0,rtol=0)
++assert not any(n.startswith('exp_') for n in sys.modules)
++'''
++            result=subprocess.run([sys.executable,'-B','-c',code,tmp],cwd=PROJECT,
++                env=dict(os.environ,PYTHONPATH=str(ROOT)+os.pathsep+str(ROOT/'tests')),capture_output=True,text=True)
++            self.assertEqual(result.returncode,0,result.stderr)
++
++    @unittest.skipUnless(torch.cuda.is_available(),'CUDA unavailable')
++    def test_gpu_original_temporal_loss_steps(self):
++        for task in TEMPORAL:
++            a=arguments(task,[*SMALL,'--coverage-kappa','1']);m=construct(task,a).cuda()
++            scope=train_batch(task,m,a,sample(task,b=1,device='cuda'))
++            self.assertTrue(torch.isfinite(scope['msar_loss'].total))
++            self.assertTrue(all(p.grad is not None and torch.isfinite(p.grad).all() for p in m.parameters()))
++            RECORDS.append(dict(task=task,device='cuda',dtype='float32',backend='MATH',
++                N=4096 if task=='ns' else 3131,forwards=10 if task=='ns' else 20,original_loss_step='passed'))
++
++
++if __name__=='__main__':unittest.main(verbosity=2)
+--- before/tests/test_static_standard.py
++++ after/tests/test_static_standard.py
+@@ -434,7 +434,7 @@
+         # M4 adds exactly one independent lifted-core selection branch. Assert
+         # its entire AST before removing it from the legacy factory comparison.
+         factory = next(n for n in current.body if isinstance(n, ast.FunctionDef) and n.name == 'get_model')
+-        msar = ast.parse("if args.model == 'msar_lno':\n    if getattr(args, 'msar_task', None) in ('darcy', 'elasticity', 'airfoil', 'pipe'):\n        from model import MSAR_Standard\n        return MSAR_Standard\n    from model import MSAR_LNO\n    return MSAR_LNO").body[0]
++        msar = ast.parse("if args.model == 'msar_lno':\n    if getattr(args, 'msar_task', None) in ('ns', 'plasticity'):\n        from model import MSAR_Temporal\n        return MSAR_Temporal\n    if getattr(args, 'msar_task', None) in ('darcy', 'elasticity', 'airfoil', 'pipe'):\n        from model import MSAR_Standard\n        return MSAR_Standard\n    from model import MSAR_LNO\n    return MSAR_LNO").body[0]
+         self.assertEqual(ast.dump(factory.body[0]), ast.dump(msar))
+         factory.body.pop(0)
+         original = subprocess.check_output(['git','show',f'{UPSTREAM}:PDE-Solving-StandardBenchmark/model_dict.py'], cwd=ROOT, text=True)
+--- before/tran_evaluate/msar_lno/README.md
++++ after/tran_evaluate/msar_lno/README.md
+@@ -1,6 +1,6 @@
+-# MSAR-LNO：M5 四个静态任务
++# MSAR-LNO：M5 静态任务 / M6 时间任务
+ 
+-可用脚本：`darcy.sh`、`elasticity.sh`、`airfoil.sh`、`pipe.sh`。调用形式是 `bash SCRIPT train|eval [原任务选项和MSAR选项]`，追加 `--dry-run` 只打印命令，不启动Python或访问数据。NS、Plasticity、Car、AirfRANS尚未接入MSAR。
++可用脚本：`darcy.sh`、`elasticity.sh`、`airfoil.sh`、`pipe.sh`、`ns.sh`、`plasticity.sh`。调用形式是 `bash SCRIPT train|eval [原任务选项和MSAR选项]`，追加 `--dry-run` 只打印命令，不启动Python或访问数据。Car、AirfRANS尚未接入MSAR。
+ 
+ 脚本定位其所在checkout并复用 `tran_evaluate/_common.sh`、根 `path.sh` 和原 `exp_*.py`；远端无需使用本机`/home/hwz/CDLNO`路径。原数据路径可通过对应环境变量或最后的`--data_path`覆盖。
+ 
+@@ -10,8 +10,12 @@
+ | elasticity.sh | exp_elas.py | `CDLNO_ELASTICITY_ROOT`：Elasticity原npy文件目录，默认`CDLNO_FNO_ROOT` |
+ | airfoil.sh | exp_airfoil.py | `CDLNO_AIRFOIL_ROOT`：NACA_Cylinder_X/Y/Q.npy目录，默认fno/airfoil/naca |
+ | pipe.sh | exp_pipe.py | `CDLNO_PIPE_ROOT`：Pipe_X/Y/Q.npy目录，默认fno/pipe |
++| ns.sh | exp_ns.py | `CDLNO_NS_ROOT`：含NavierStokes_V1e-5_N1200_T20子目录的目录，默认fno |
++| plasticity.sh | exp_plas.py | `CDLNO_PLASTICITY_FILE`：完整plas_N987_T20.mat文件路径 |
+ 
+ 默认Light、coverage floor/.01/.2。Full仅改变新profile结构，保留原任务训练预设：500epochs，batch分别4/1/4/8，lr.001，AdamW及原scheduler/clip等。Light/Full不按N裁剪M。`--coverage-mode off --coverage-weight 0`关闭正则；`--coverage-weight 0`也走无A的off路径。结构、训练目标默认还记录在`PDE-Solving-StandardBenchmark/configs/msar_lno/*.json`中；显式CLI最后覆盖。
++
++M6新增NS batch2、默认不clip；Plasticity batch8、clip0.1，均保留500epochs/lr.001/AdamW/OneCycle。NS一次训练batch内10次forward、一次optimizer/scheduler；Plasticity20个时间点分别optimizer更新，batch末仅一次scheduler。新family没有卷积，也不改变空间点序和时间条件。
+ 
+ 例如在**实际checkout根目录**：
+ 
+@@ -20,7 +24,7 @@
+ bash tran_evaluate/msar_lno/elasticity.sh train --profile full --gpu 0 --dry-run
+ ```
+ 
+-下面函数是可自行执行的训练成功后评估模板。每次创建独立目录，不搜索latest，不覆盖已有run；函数内没有缩小正式profile或epoch。将`TASK`替换成四个脚本名之一，即覆盖相应数据集。
++下面函数是可自行执行的训练成功后评估模板。每次创建独立目录，不搜索latest，不覆盖已有run；函数内没有缩小正式profile或epoch。将`TASK`替换成六个脚本名之一，即覆盖相应数据集。
+ 
+ ```bash
+ # 在实际checkout根目录设置；DATA路径可先在path.sh或环境变量中配置。
+@@ -34,7 +38,7 @@
+ }
+ ```
+ 
+-四任务×三种设置的调用模板（按需选择，本文不会执行训练）：
++六任务×三种设置的调用模板（按需选择，本文不会执行训练）：
+ 
+ | 任务 | Light coverage-on | Light off | Full coverage-on |
+ |---|---|---|---|
+@@ -42,6 +46,8 @@
+ | Elasticity | `msar_pair elasticity light floor 0.01` | `msar_pair elasticity light off 0` | `msar_pair elasticity full floor 0.01` |
+ | Airfoil | `msar_pair airfoil light floor 0.01` | `msar_pair airfoil light off 0` | `msar_pair airfoil full floor 0.01` |
+ | Pipe | `msar_pair pipe light floor 0.01` | `msar_pair pipe light off 0` | `msar_pair pipe full floor 0.01` |
++| NS | `msar_pair ns light floor 0.01` | `msar_pair ns light off 0` | `msar_pair ns full floor 0.01` |
++| Plasticity | `msar_pair plasticity light floor 0.01` | `msar_pair plasticity light off 0` | `msar_pair plasticity full floor 0.01` |
+ 
+ 也可独立评估：
+ 
+@@ -56,3 +62,9 @@
+ 周期可视化沿现有50完成epoch/final观察逻辑，预测调用不计算coverage。保存仍是原六PDE的`ep % 100 == 0`及final裸`model.pt`，不是完整optimizer/RNG断点续训档案，本阶段不改保存频率。原eval绘图的固定网格限制仍在：本阶段没有修改原数据/绘图代码来支持非默认downsample的所有导出图。5×7用于模型合同的合成验证，不是更改正式数据网格。
+ 
+ 无数据验证及范围见 [M5报告](../../docs/MSAR_LNO_M5_STATIC_TASKS.md)。真实数据读取、真实训练/收敛、远端torch2.11/cu128未执行。
++
++M6时间语义及证据见 [M6报告](../../docs/MSAR_LNO_M6_TEMPORAL_TASKS.md)。NS原PDE loss仍为10个逐帧relative-L2之和；每次forward先对四层coverage取均值，再对本次更新内的实际forward取均值，仅加一次`weight * mean_coverage`。因此不会额外乘rollout长度。Plasticity每个时间点的loss只加入该次四层coverage均值；不除以20、不把20次optimizer合并。日志中的四项目标以**优化步**为分母；原`train_step_loss`仍按样本数和时间点数归一，不应与`objective_pde`直接混同。
++
++NS保持现有10帧输入→每次1帧→10帧预测回填评估；现有源码没有可用的20/40步CLI或对应长序列数据读取。本轮不添加不存在的`--rollout`选项或长时实验。CDLNO/KCDNO旧NS命令保留。MSAR时间wrapper沿既有固定网格合同：NS 64×64、Plasticity 101×31；不能把时间拼入N，非默认NS downsample不作为新支持项。
++
++纯eval/周期图始终用预测Tensor，不计算coverage或diagnostics。需要模型级诊断时，显式`model.eval(); model(x, fx, T=..., return_aux=True, training_config=replace(model.training_config, diagnostics=True))`（`replace`来自`dataclasses`）；只返回该次小型no-grad统计，预测不变。训练CLI有`--diagnostics/--no-diagnostics`，默认关闭；现有任务eval循环不会因保存的训练开关自动收集aux，也不输出完整attention矩阵。
+--- before/tran_evaluate/msar_lno/_static.sh
++++ after/tran_evaluate/msar_lno/_static.sh
+@@ -8,6 +8,8 @@
+     elasticity) entry=exp_elas.py; data="${CDLNO_ELASTICITY_ROOT:-}" ;;
+     airfoil) entry=exp_airfoil.py; data="${CDLNO_AIRFOIL_ROOT:-}" ;;
+     pipe) entry=exp_pipe.py; data="${CDLNO_PIPE_ROOT:-}" ;;
++    ns) entry=exp_ns.py; data="${CDLNO_NS_ROOT:-}" ;;
++    plasticity) entry=exp_plas.py; data="${CDLNO_PLASTICITY_FILE:-}" ;;
+     *) printf 'Task not integrated: %s\n' "$task" >&2; exit 2 ;;
+ esac
+ case "$action" in train) evaluation=0 ;; eval) evaluation=1 ;; *) exit 2 ;; esac
+--- before/tran_evaluate/msar_lno/ns.sh
++++ after/tran_evaluate/msar_lno/ns.sh
+@@ -0,0 +1,4 @@
++#!/usr/bin/env bash
++set -euo pipefail
++launcher="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++exec bash "$launcher/_static.sh" ns "$@"
+--- before/tran_evaluate/msar_lno/plasticity.sh
++++ after/tran_evaluate/msar_lno/plasticity.sh
+@@ -0,0 +1,4 @@
++#!/usr/bin/env bash
++set -euo pipefail
++launcher="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++exec bash "$launcher/_static.sh" plasticity "$@"

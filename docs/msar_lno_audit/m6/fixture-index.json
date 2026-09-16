@@ -1,0 +1,232 @@
+{
+  "old_index": "docs/msar_lno_audit/m0/fixture-index.json",
+  "old_artifact_files_preserved": 182,
+  "old_replayed_now": 26,
+  "temporal_old_replayed": 14,
+  "static_K_matched_replayed": 12,
+  "rows": [
+    {
+      "group": "k0-temporal-replay",
+      "name": "cdlno_ns_full",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "group": "k0-temporal-replay",
+      "name": "cdlno_ns_no_sa",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "group": "k0-temporal-replay",
+      "name": "cdlno_ns_identity",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "group": "k0-temporal-replay",
+      "name": "transolver_ns_original",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "group": "k0-temporal-replay",
+      "name": "cdlno_plasticity_full",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "group": "k0-temporal-replay",
+      "name": "cdlno_plasticity_no_sa",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "group": "k0-temporal-replay",
+      "name": "cdlno_plasticity_identity",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "group": "k0-temporal-replay",
+      "name": "transolver_plasticity_original",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "group": "wrapper-replay",
+      "name": "darcy_all",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "group": "wrapper-replay",
+      "name": "darcy_off",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "group": "wrapper-replay",
+      "name": "darcy_matched",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "group": "wrapper-replay",
+      "name": "elasticity_all",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "group": "wrapper-replay",
+      "name": "elasticity_off",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "group": "wrapper-replay",
+      "name": "elasticity_matched",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "group": "wrapper-replay",
+      "name": "airfoil_all",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "group": "wrapper-replay",
+      "name": "airfoil_off",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "group": "wrapper-replay",
+      "name": "airfoil_matched",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "group": "wrapper-replay",
+      "name": "pipe_all",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "group": "wrapper-replay",
+      "name": "pipe_off",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "group": "wrapper-replay",
+      "name": "pipe_matched",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "group": "wrapper-replay",
+      "name": "ns_all",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "group": "wrapper-replay",
+      "name": "ns_off",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "group": "wrapper-replay",
+      "name": "ns_matched",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "group": "wrapper-replay",
+      "name": "plasticity_all",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "group": "wrapper-replay",
+      "name": "plasticity_off",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    },
+    {
+      "group": "wrapper-replay",
+      "name": "plasticity_matched",
+      "status": "passed",
+      "atol": 0,
+      "rtol": 0
+    }
+  ],
+  "accepted_M5_pre_M6_new_captures": [
+    {
+      "task": "darcy",
+      "path": "/home/hwz/CDLNO-artifacts/msar-m6-before-pqh_ca0e/static-fixtures/darcy.pt",
+      "sha256": "1d7e24ae3f94c873beefe5acb5d3a0eb9e591466fd6660155f894cdb42322a13",
+      "atol": 0,
+      "rtol": 0,
+      "backend": "CPU FP32 MATH",
+      "reason": "current accepted M5 pre-M6 weights and outputs"
+    },
+    {
+      "task": "elasticity",
+      "path": "/home/hwz/CDLNO-artifacts/msar-m6-before-pqh_ca0e/static-fixtures/elasticity.pt",
+      "sha256": "cd7d64ad8023403ed399d627a8e37a3f6602742245a3099744cc0b4c72bdb8a4",
+      "atol": 0,
+      "rtol": 0,
+      "backend": "CPU FP32 MATH",
+      "reason": "current accepted M5 pre-M6 weights and outputs"
+    },
+    {
+      "task": "airfoil",
+      "path": "/home/hwz/CDLNO-artifacts/msar-m6-before-pqh_ca0e/static-fixtures/airfoil.pt",
+      "sha256": "af7daea0771ce65f58f5c11ad2481f024c1a3db3cd585bb8bb288b2f34235b73",
+      "atol": 0,
+      "rtol": 0,
+      "backend": "CPU FP32 MATH",
+      "reason": "current accepted M5 pre-M6 weights and outputs"
+    },
+    {
+      "task": "pipe",
+      "path": "/home/hwz/CDLNO-artifacts/msar-m6-before-pqh_ca0e/static-fixtures/pipe.pt",
+      "sha256": "1e3e0d950843e4292c85420e0dc9a0cbf61a08b0bd81e52829b6cc521a65839e",
+      "atol": 0,
+      "rtol": 0,
+      "backend": "CPU FP32 MATH",
+      "reason": "current accepted M5 pre-M6 weights and outputs"
+    }
+  ],
+  "static_M5_replays": 4,
+  "retained_evidence": "Unaffected old math/core/industrial fixtures retain M4/M5 evidence; not all rerun.",
+  "limits": "Same saved weights and fixed synthetic inputs; not real trained checkpoints or universal historical compatibility."
+}

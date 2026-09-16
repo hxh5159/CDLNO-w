@@ -33,6 +33,16 @@ def parse_args(parser, *, evaluation=False, argv=None):
     parser.add_argument('--cdpa_mode', '--cdpa-mode', choices=('off', 'entry', 'every_block'), default=None)
     parser.add_argument('--run_dir', type=Path, default=None,
                         help='new CDLNO training directory, or existing run for evaluation')
+    # Route only an explicitly selected new family; the original parser stays intact.
+    import argparse
+    import sys
+    tokens = sys.argv[1:] if argv is None else argv
+    selector = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
+    selector.add_argument('--cfd_model')
+    selected, _ = selector.parse_known_args(tokens)
+    if selected.cfd_model == 'msar_lno':
+        from cdlno.msar_lno.industrial_entry import parse_args as parse_msar_args
+        return parse_msar_args(parser, tokens, task='car', evaluation=evaluation)
     args = parser.parse_args(argv)
     if args.cfd_model in ('kcdno', 'lrsa_matched'):
         import sys

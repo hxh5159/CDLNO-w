@@ -57,7 +57,8 @@ def execute(nodes, scope, task, label):
 
 
 def source(task):
-    return ast.parse((static.PROJECT / f'exp_{STEMS[task]}.py').read_text())
+    from msar_entry_projection import strip_msar
+    return strip_msar(ast.parse((static.PROJECT / f'exp_{STEMS[task]}.py').read_text()))
 
 
 def training_nodes(task):

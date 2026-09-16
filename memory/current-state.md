@@ -1,4 +1,164 @@
+# 最新：MSAR-LNO M9最终交付完成（2026-09-17）
+
+M8已批准，仅授权M9，本轮已完成成本/有限GPU/独立审查/最终文档，停止。报告`docs/MSAR_LNO_IMPLEMENTATION_REPORT.md`，26条矩阵`docs/MSAR_LNO_REQUIREMENTS_MATRIX.md`，证据`docs/msar_lno_audit/m9/`。模型、任务、数据、旧测试和依赖均无改动；新增性能适配/CLI和6个新测试，只给旧measure.benchmark加可选loss_closure（默认旧MSE不变）。README保留旧文新增MSAR节，八任务训练评估文档补Full off。
+
+真实16个task/profile参数与全矩阵MAC核对完成，覆盖两FFN/全部norm/QKVO/N规模投影；coverage0参数、Pair仅3d。13个GPU行：N972/B1七模型含Light/Full off/floor、Transolver、生产matched全LRSA、KCDNO all；AirN32000/B1四个math MSAR及两个Light efficient。FP32/TF32off/AMPoff/compileoff，warmup5/20 CUDA同步，raw timing/peak/optimizer状态可查。不是等宽/等参数对照或dataset epoch。Light efficient step58.047→61.876ms，峰值351.937→1221.181MiB；normal eval同权重off/floor exact，math本身存权重不能把两backend混同。
+
+性能20方法全过；36独立数学/core过；新增命令方法首次错误helper flags参数，修正测试后过，最终57个不同方法分次通过。32真实train parser、32evaldryrun，未执行真实入口。M8的75同权重/原loss/工业保存证据保留并核对182artifact hash；非M9重放75次。GUNet和完整Air采样torch_cluster限制保留。
+
+快照`/home/hwz/CDLNO-artifacts/msar-m9-before-e8vxz5y5/source`865文本保留；已有6文件变（measure、root/脚本README、3状态memory），859相同。新稳定MSAR类路径/checkpoint协议不改，无新resume。Py3.13.9/Torch2.13cu130/PyG2.3.1/RTX5090Laptop本机证据，目标2.11cu128未验；真实数据完整读取/收敛/准确率/epoch/SOTA/完整工业后处理未执行。无安装/下载/commit/push/真实训练。**本M阶段结束，未执行下一阶段。**
+
+# 历史：MSAR-LNO M8验收完成，等待审查（2026-09-17）
+
+用户批准M7，仅授权M8。本轮不改生产/旧测试；新增`tests/test_msar_acceptance.py`、`docs/MSAR_LNO_M8_ACCEPTANCE.md`、`docs/msar_lno_audit/m8/`，更新独立/旧STATUS。完整矩阵与实际命令见报告，下一阶段M9未执行。
+
+正式Light八任务off/floor原loss合成训练步/eval16例通过；正式Full八任务单forward合成MSE+coverage backward/strict权重零容差往返通过。NS N4096/10步，Plasticity N3131/20更新；其他小N，Car/Air真PyG单图。Full未跑原loss完整优化矩阵。任务checkpoint协议仍按M5—M7小结构重跑，Full纯state另测，不混称正式Light整对象协议验收。
+
+同权重off/floor最大差2.235e-7，容差2e-6/1e-4；默认kappa.2初始raw均0合法。新边界首次过强要求所有层每次非零，最深层均匀slot触发；仅改新测试检查连接/有限，并在四个真实Down变化source上各证非零梯度。无decoder/fusion aux梯度，三w0 Pair exact E+U，执行Down4/Up4/Pair3/block12，连续独立backward不残留。
+
+新19方法首轮18过/1失败97.619s，修正定向1/1过.122s；既有MSAR107项106过/1跳过126.930s；旧157项0fail/error，1 Air抽样子用例跳过181.846s。75旧同权重fixture exact，182外置artifact文件hash相同；GUNet仍缺torch_cluster未执行。三cwd factory/metadata/严格保存协议验证通过，无exp/main import。
+
+本地Py3.13.9/torch2.13cu130/PyG2.3.1/RTX5090Laptop；八任务d8 GPU原loss步及M2/M3有限AMP通过。真实数据/收敛/精度、远端2.11cu128、正式profile GPU/任务AMP、完整工业采样/VTK力系数未执行。旧Car drag固定路径/fold0及日志问题不改，无新resume。
+
+837文本起点`/home/hwz/CDLNO-artifacts/msar-m8-before-fhesnwse/source`保留，834字节不变，仅三状态文档增量，模型/训练/数据/依赖/旧测试全冻结。无commit/push/安装/真实训练。**本M阶段结束，未执行下一阶段。**
+
+# 历史：独立MSAR-LNO M7工业任务完成，等待审查（2026-09-17）
+
+## 2026-09-17：MSAR-LNO M7完成，旧模型保持
+
+仅M7；M6已批准。Car/AirfRANS真实工业入口、独立wrapper/family/Light或Full/coverage显式loss/严格整对象或列表checkpoint已接入。单图batch1、变长N、reference/通道/surf及原加权loss保留；loader图构造/采样/散射/物理指标、旧模型、MSAR数学及PDE入口不改。eval先读架构/任务信息，coverage覆盖只记录请求；旧可信pickle边界不扩大，无新resume。
+
+报告`docs/MSAR_LNO_M7_INDUSTRIAL_TASKS.md`、独立STATUS和八任务命令`tran_evaluate/msar_lno/README.md`、证据`docs/msar_lno_audit/m7/`。MSAR107项106通过/1跳过（Air torch_cluster），166.280s；旧相关90项有两处测试适配问题，修正后定向2项通过，原模型回归无遗留失败，仍2处既有Air skip。14份旧工业同权重exact，182夹具hash保持。真实PyG原loss步骤、Car完整合成epoch、Air记录/scatter片段、同模式checkpoint/新cwd、两工业GPU FP32小结构及正式Light/Full小N前向通过。Air完整采样epoch/VTK指标、真实数据训练/收敛、远端2.11cu128、工业AMP、大profile反传/性能未验证。
+
+保留pre-M7快照`/home/hwz/CDLNO-artifacts/msar-m7-before-bocerv4d/source`和先存用户工作。6个工业完整入口/训练AST剥离精确新分支后与pre-M7相同；788起点文件字节相同。Car原drag固定路径/fold0、原日志压力/速度交换及Air日志拼写缺陷仍保留，不借新模型修复。下一阶段M8未执行，无真实训练/安装/commit/push/PR。**本M阶段结束，未执行下一阶段。**
+
+## 2026-09-17：MSAR-LNO M6完成，等待审查
+
+仅M6；M5已批准。新增`cdlno.msar_lno.temporal.TemporalModel`、NS/Plasticity薄factory/JSON/脚本，接真实两个exp的显式aux/loss/日志；原MSAR core、旧模型/数据数学不变。NS fx10→out1，训练10真值回填/1更新，eval10预测回填；coverage是实际forward×四层均值，仅加一次。Plasticity fx1/T[B,1]→out4，保留20独立optimizer+1 scheduler，每次加入本次coverage；无时间latent/cache、无卷积。默认Light、可Full/off；strict裸state_dict不提供optimizer/RNG resume。
+
+报告`docs/MSAR_LNO_M6_TEMPORAL_TASKS.md`、状态`docs/MSAR_LNO_IMPLEMENTATION_STATUS.md`、命令`tran_evaluate/msar_lno/README.md`、证据`docs/msar_lno_audit/m6/`。最终MSAR93通过、旧93零失败/2skip（Air torch_cluster），新11方法。两任务×floor/off B2真实N小d训练/eval/原loss及checkpoint、两CUDA FP32 MATH完整时间batch、真实Light/Full CPU前向通过；大profile反传/远端2.11cu128/真实数据训练/新工业PyG未执行。26旧+4pre-M6 M5同权重回放exact；182旧artifact hash保留。
+
+保留外部快照`/home/hwz/CDLNO-artifacts/msar-m6-before-pqh_ca0e`（784文本+4新fixture）；两入口去掉MSAR分支完整AST等同pre-M6。起点13已有文件改、771不变；旧用户工作保留。NS实际只有10→10无20/40 CLI，不能虚构长时支持。M7未授权；下一步仅等待用户审查。**本M阶段结束，未执行下一阶段。**
+
+仅M5，见[报告/覆盖表](../docs/MSAR_LNO_M5_STATIC_TASKS.md)、[命令](../tran_evaluate/msar_lno/README.md)及独立MSAR STATUS。
+四真实exp现已接msar_lno：原坐标/fx/normalizer/loss/调度保留；共用无卷积wrapper+原M3core，Light/Full不裁M。
+M4显式coverage adapter只进新family；off/weight0严格原LPDE，四项目标step均值与原train_loss分开标注。
+原state_dict频率、read-first/strict加载/sidecar不覆盖与early输出目录记录；新JSON/薄脚本齐备，无新增resume。
+MSAR82项通过，相关旧79项零fail/error、2处Air torch_cluster skip；四任务floor/off原loss合成步/评估/往返通过。
+正式Full Elasticity N972/M1024前向通过；四任务小GPU原loss step、新cwd严格加载、24train/eval parser预览通过。
+旧65夹具与M3两core本轮零容差回放，其他10旧夹具沿M4有效证据；182旧artifact hash保持。
+快照msar-m5-before-2jli41sc/source保留；四旧入口完整AST不变，旧数学/数据/依赖冻结。
+没有真实数据/训练或远端验收；NS/Plasticity/Car/AirfRANS MSAR仍未接入。无commit/push/PR/安装。
+本M阶段结束，未执行下一阶段。
+
+# 最新：MSAR-LNO M4公共接入基础完成，等待审查（2026-09-16）
+
+仅M4。详见[报告](../docs/MSAR_LNO_M4_INTEGRATION.md)与[独立STATUS](../docs/MSAR_LNO_IMPLEMENTATION_STATUS.md)。
+PDE真实factory独立msar_lno→稳定lifted-core类；family专用kwargs、显式aux/loss与四项日志、严格core state/whole/list checkpoint完成。
+off/weight0直接原LPDE，无A；eval先读sidecar再校验，coverage覆盖不影响纯eval，旧pickle边界和保存格式不变。
+M4最终18项+旧MSAR基础49项+旧入口33项通过；75旧同权重和2份M3 core精确回放，182旧artifact hash保留。
+三cwd加载、本机小CUDA FP32 loss/往返和本轮M2/M3有限AMP通过；所有任务脚本/旧模型/math/数据/依赖本轮未改。
+这不是八任务接入：任务lift/normalizer/原loss/loop/日志/输出Run仍待M5—M7；无新增task resume或真实数据训练。
+保留23处用户先存tracked修改；快照msar-m4-before-i75l1rvp/source。无安装/commit/push/PR。
+本M阶段结束，未执行下一阶段。
+
+# 最新：MSAR-LNO M3四级core完成，等待审查（2026-09-16）
+
+只实施M3。读docs/MSAR_LNO_M3_CORE.md及MSAR_LNO_IMPLEMENTATION_STATUS.md。
+新cdlno.msar_lno.core.MSARLNO接lifted[B,N,d]、内含LN+Linear head；任务lift后续接，勿重复head。
+Down4/Up4、encoder6/decoder6、SA12/FFN24/fusion3；D4直接Decoder4(E4)，3→2→1先Up再fusion再Decoder，
+final无E0skip/point residual。默认Tensor；显式aux为MSARAuxOutput，coverage仅四Down raw mean。
+off/weight0不请求Down A/coverage图；显式diagnostics按no-grad重算或复用观察A，默认不运行且无持久状态。
+16core+20M2+13M1=49测试通过，47旧夹具本轮精确回放，其他28沿用M2；182旧fixture hash不变。
+Light/Full正式参数小N前向和新夹具精确回放；out4无lift时参数1691260/6737140。
+可信whole/list三个原cwd新进程通过，小core本机CUDA FP32/FP16/BF16 AMP通过；远端/真实训练未验收。
+720起点文件仅3状态/记忆增量，M1/M2/共享/旧模型/任务/数据/训练/依赖/已有测试未改。
+快照msar-m3-before-jx4v53vh/source与post-m3-core保留。没有八任务MSAR接入，未执行M4。
+无安装/commit/push/PR/真实训练。本M阶段结束，未执行下一阶段。
+
+# 最新：MSAR-LNO M2原语完成，等待审查（2026-09-16）
+
+只实施M2，读docs/MSAR_LNO_M2_PRIMITIVES.md和MSAR_LNO_IMPLEMENTATION_STATUS.md。
+新增cdlno/msar_lno/modules.py五组件、独立tests/msar_reference.py及test_msar_modules.py。
+Down只有训练+return_aux+coverage有效才显式A；off/weight0/eval走SDPA；P直接Q，无Wq。
+双FFN-SA三残差完整，Up纯branch，fusion只有w且固定2/raw values/零初始，coverage source求和、
+batch/层均值且FP32关闭autocast。可选诊断no-grad显式调用，不持久存A/损失图。
+20新+18旧公共+13 M1=51测试通过；75 M0同权重回放精确，182夹具hash不变。
+有限本机FP32/FP16/BF16 AMP通过；远端/真实数据/完整模型和任务接入未执行。
+起点695文件除3份状态/记忆文档增量外均冻结；快照msar-m2-before-bovueh8k保留。
+未改共享源码、M1、factory、任务/数据/训练/评估/依赖/已有测试；无安装/commit/push。
+没有core，下一阶段须明确授权。本M阶段结束，未执行下一阶段。
+
+# 最新：MSAR-LNO M0补审完成，M1保持，等待审查（2026-09-16）
+
+用户纠正阶段顺序：本轮仅M0审计，核对已有M1兼容，不修改M1或实施M2。
+读docs/MSAR_LNO_REFERENCE_AUDIT.md、MSAR_LNO_IMPLEMENTATION_STATUS.md及
+docs/msar_lno_audit/m0/{READING_LEDGER.md,fixture-index.json,freeze.json,regression.log}。
+653文件静态清单/合同；75同权重回放（41旧K0+6真正pre-M1+24新wrapper+4其他旧模型）精确。
+316tests/576.961s零fail/error，2个Air torch_cluster依赖skip；GUNet图链亦未运行。
+M1无已发现阻断冲突，仍仅配置；Down mask/A须新family独立实现，旧block/readout不直接复用，
+AttnRes按每尺度只有w且总3d约束使用无新增scale评分RMS，pointwise_mlp不是final点残差。
+本轮快照/home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s与pre-M1/K0等产物均须保留。
+没有生产/原测试改动或依赖安装，无真实训练/远端验收/commit/push。后续只执行明确点名阶段。
+以下M1早于M0的记录原样保留，不能倒填时间。本M阶段结束，未执行下一阶段。
+
+# 最新：MSAR-LNO M1配置基础完成，等待审查（2026-09-16）
+
+仅M1获授权，见docs/MSAR_LNO_IMPLEMENTATION_STATUS.md和docs/MSAR_LNO_M1_CONFIGURATION.md。
+新cdlno.msar_lno提供family=msar_lno、Light/Full四级配置、显式CLI解析协议、coverage目标/运行记录、
+严格sidecar及family/profile/effective-coverage隔离路径。没有MSAR模型/辅助loss实现，没有八任务接入。
+旧生产代码/原测试/数据/依赖不改。32配置测试和41 K0+6修改前KCDNO/matched核心同权重回放全部通过。
+快照/home/hwz/CDLNO-artifacts/msar-m1-before-n7y0eg1j与既有K0夹具须保留。
+用户已批准M0，但本工作区没有MSAR M0报告/索引；报告明确该证据缺口，不把本轮源码索引冒充完整M0。
+无真实训练/下载/安装/commit/push；未执行M2。继续工作需用户明确下一M阶段。
+
+# 最新：离线报告仅展示各task最后验证损失最小的seed（2026-09-16）
+
+读取docs/CDLNO_RESULT_REPORTS.md最新补充和tran_evaluate/show/README.md。show三个脚本命令不变，
+共享_report.py先按显式筛选纳入候选，再每个task选单run。last validation不是best-ever；不使用
+独立test成绩选seed。PDE六task分别选取，pde_selected_training/evaluation各一张2×3图。
+selection.json/CSV保留全部候选理由，其余图表/场图只来自获选run；源实验/其他seed/旧报告不修改。
+工业使用正确分项+保存权重；Air按最后真实验证epoch和run内成员均值；缺损/非有限/未完成不参选；
+legacy无status但有历史可参选且标未核实。混设置会提示，可用model/run-dir限定比较组。
+14/14定向检查通过，真实PDF/PNG/HTML/ZIP渲染查看，149生产/启动+3show shell字节未变。
+证据docs/show_audit/selection；快照/tmp/show-selection-before-cdua003g。只处理结果文件，
+不改模型/数据/训练/依赖，未访问远端真实产物或训练。本阶段结束，未执行下一阶段。
+
+# 最新：离线训练/测试报告脚本交付（2026-09-16）
+
+只新增tran_evaluate/show的三个子项目shell与共享_report.py、测试/文档。默认实际checkout
+output/runs/project metrics+scores，子项目result_visualizations时间戳目录+ZIP。训练loss、
+独立eval、Air系数配对/CpCf、已有周期场图、CSV/LaTeX/HTML/来源hash；保持seed/fold/member/
+evaluation分开，不平滑不补造。原149个生产/启动文件byte未变，8个定向测试通过，模拟远端
+带空格路径和真实shell，已看合成格式示例。无模型导入/GPU依赖/真实训练/远端真实产物验收。
+阅读docs/CDLNO_RESULT_REPORTS.md及tran_evaluate/show/README.md。当前任务完成即停止。
+
+# 最新：八任务每50轮场图已接入（2026-09-16）
+
+当前请求只授权可视化，不是resume或架构改动。读docs/CDLNO_PERIODIC_VISUALIZATION.md。
+CDLNO/KCDNO/lrsa_matched八任务记录器每50completed epoch+final导出2固定held-out案例，
+paper-style PDF/600dpiPNG/NPZ/英文与LaTeX caption，原Transolver维持原路径。
+9个entry/train只增加观测调用+Air归一化转发；161保护文件byte同预快照
+/home/hwz/CDLNO-artifacts/visualization-before-133lyhbo/source，保留seed等已有修改。
+287tests无fail/error，Air缺torch_cluster两项skip、LRSA缺env项随后2tests补跑通过。
+最终focused11tests仅Air建图skip；Car原完整合成epochs出图、权重/RNG精确，GPU有限确定性
+测试后nextstep精确（最初未固定确定性1.9e-9差有记录）。无真实数据/训练或远端验收。
+可视化已集成不等于旧V2–V5全部完成；checkpoint/resume保存逻辑未改。详细证据在
+/docs/periodic_visualization_audit，用户当前任务完成后停止，不自动后续阶段。
+
 # 最新KCDNO交付状态（2026-09-16）
+
+远端报unrecognized --seed0：本地旧parser可复现，当前parser已支持。只同步两个新脚本
+不够，还要三个Python helper（PDE/cdlno_entry、cdlno/kcdno/entry、cdlno/experiment）。
+新增docs/kcdno_audit/seed_suite/seed-support.patch，已对独立旧副本apply-check/apply验证；
+上传方法和无数据parser核查在KCDNO_SEED_SUITE.md。远端未访问/未自动修改，无实际训练。
+
+最新额外任务：六标准任务单seed队列已完成。`tran_evaluate/kcdlno/run_seed.sh 0|1|2`
+按darcy→airfoil→plasticity→elasticity→ns→pipe，每任务train/eval/带seed即时输出后再下一个。
+标准新家族helper可选真实RNG种子、初始化/config/result记录；不传seed保持旧行为。
+报告docs/KCDNO_SEED_SUITE.md；8+2定向检查通过，195旧源文件192不变（3seed/记录helper），
+模型/六exp/预设/旧脚本未改，无实际训练/新增GPU/远端验收。结果记录/失败停止和60条
+安全命令预览通过；默认GPU0，保持原训练协议，无新增resume。之前记录保留如下。
 
 新增 `tran_evaluate/kcdlno/` 八个数据集薄启动脚本，复用现有 `kcdno` 入口并支持
 train/eval/train_eval、all/off/lrsa_matched 和 dry-run；最终9语法+120保护性分发检查

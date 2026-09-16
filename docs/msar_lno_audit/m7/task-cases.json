@@ -1,0 +1,198 @@
+[
+  {
+    "task": "airfrans",
+    "mode": "floor",
+    "epoch_record_fragment": true,
+    "repeated_eval": true,
+    "full_sampled_epoch": false,
+    "original_weighted_loss": true
+  },
+  {
+    "task": "airfrans",
+    "mode": "off",
+    "epoch_record_fragment": true,
+    "repeated_eval": true,
+    "full_sampled_epoch": false,
+    "original_weighted_loss": true
+  },
+  {
+    "task": "airfrans",
+    "sampling_scatter": "original AST fragments only",
+    "real_PyG": true,
+    "full_sampled_evaluator": false
+  },
+  {
+    "task": "car",
+    "mode": "floor",
+    "complete_synthetic_epoch": true,
+    "recorded": true,
+    "repeated_eval": true
+  },
+  {
+    "task": "car",
+    "mode": "off",
+    "complete_synthetic_epoch": true,
+    "recorded": true,
+    "repeated_eval": true
+  },
+  {
+    "task": "car",
+    "mode": "floor",
+    "strict_checkpoint": true,
+    "fresh_cwd": true,
+    "atol": 0,
+    "rtol": 0
+  },
+  {
+    "task": "car",
+    "mode": "off",
+    "strict_checkpoint": true,
+    "fresh_cwd": true,
+    "atol": 0,
+    "rtol": 0
+  },
+  {
+    "task": "airfrans",
+    "mode": "floor",
+    "strict_checkpoint": true,
+    "fresh_cwd": true,
+    "atol": 0,
+    "rtol": 0
+  },
+  {
+    "task": "airfrans",
+    "mode": "off",
+    "strict_checkpoint": true,
+    "fresh_cwd": true,
+    "atol": 0,
+    "rtol": 0
+  },
+  {
+    "task": "car",
+    "device": "cuda",
+    "dtype": "float32",
+    "backend": "MATH",
+    "real_PyG": true,
+    "original_loss": true,
+    "objective": {
+      "objective_pde": 1.613865613937378,
+      "coverage_raw": 7.367246780631831e-06,
+      "coverage_weighted": 7.367246723788412e-08,
+      "objective_total": 1.6138657331466675
+    }
+  },
+  {
+    "task": "airfrans",
+    "device": "cuda",
+    "dtype": "float32",
+    "backend": "MATH",
+    "real_PyG": true,
+    "original_loss": true,
+    "objective": {
+      "objective_pde": 1.9109148979187012,
+      "coverage_raw": 1.871724089141935e-05,
+      "coverage_weighted": 1.8717240379828581e-07,
+      "objective_total": 1.9109151363372803
+    }
+  },
+  {
+    "task": "car",
+    "mode": "off",
+    "device": "cpu",
+    "real_PyG": true,
+    "original_loss": true,
+    "optimizer_steps": 1,
+    "eval": true,
+    "objective": {
+      "objective_pde": 1.613865613937378,
+      "coverage_raw": 0.0,
+      "coverage_weighted": 0.0,
+      "objective_total": 1.613865613937378
+    }
+  },
+  {
+    "task": "car",
+    "mode": "floor",
+    "device": "cpu",
+    "real_PyG": true,
+    "original_loss": true,
+    "optimizer_steps": 1,
+    "eval": true,
+    "objective": {
+      "objective_pde": 1.2667853832244873,
+      "coverage_raw": 1.8320342860533856e-06,
+      "coverage_weighted": 1.832034257631676e-08,
+      "objective_total": 1.2667853832244873
+    }
+  },
+  {
+    "task": "airfrans",
+    "mode": "off",
+    "device": "cpu",
+    "real_PyG": true,
+    "original_loss": true,
+    "optimizer_steps": 1,
+    "eval": true,
+    "objective": {
+      "objective_pde": 1.6402747631072998,
+      "coverage_raw": 0.0,
+      "coverage_weighted": 0.0,
+      "objective_total": 1.6402747631072998
+    }
+  },
+  {
+    "task": "airfrans",
+    "mode": "floor",
+    "device": "cpu",
+    "real_PyG": true,
+    "original_loss": true,
+    "optimizer_steps": 1,
+    "eval": true,
+    "objective": {
+      "objective_pde": 1.9463828802108765,
+      "coverage_raw": 7.745534276182298e-06,
+      "coverage_weighted": 7.745533991965203e-08,
+      "objective_total": 1.946382999420166
+    }
+  },
+  {
+    "task": "car",
+    "profile": "light",
+    "N": 11,
+    "latent_expansion": true,
+    "device": "cpu",
+    "parameters": 1711420,
+    "forward": true,
+    "backward": false
+  },
+  {
+    "task": "car",
+    "profile": "full",
+    "N": 11,
+    "latent_expansion": true,
+    "device": "cpu",
+    "parameters": 6814324,
+    "forward": true,
+    "backward": false
+  },
+  {
+    "task": "airfrans",
+    "profile": "light",
+    "N": 11,
+    "latent_expansion": true,
+    "device": "cpu",
+    "parameters": 1723708,
+    "forward": true,
+    "backward": false
+  },
+  {
+    "task": "airfrans",
+    "profile": "full",
+    "N": 11,
+    "latent_expansion": true,
+    "device": "cpu",
+    "parameters": 6838900,
+    "forward": true,
+    "backward": false
+  }
+]

@@ -1,0 +1,62 @@
+{
+  "stage": "M7",
+  "environment": {
+    "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "available": true,
+    "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+    "pyg": "2.3.1",
+    "torch_cluster": false
+  },
+  "suites": [
+    {
+      "log": "msar-tests.log",
+      "methods": 107,
+      "seconds": 166.28,
+      "reported_status": "OK (skipped=1)"
+    },
+    {
+      "log": "old-tests.log",
+      "methods": 90,
+      "seconds": 154.53,
+      "reported_status": "FAILED (failures=1, errors=1, skipped=2)"
+    },
+    {
+      "log": "old-tests-corrections.log",
+      "methods": 2,
+      "seconds": 2.524,
+      "reported_status": "OK"
+    }
+  ],
+  "new_test_methods": 14,
+  "MSAR_passed": 106,
+  "MSAR_skipped": 1,
+  "old_final_unresolved_failures": 0,
+  "old_initial_failures_corrected_in_tests": [
+    "test_air_weighted_loss_and_real_epoch_record_fragment_without_sampling",
+    "test_cli_yaml_inheritance_and_explicit_overrides"
+  ],
+  "old_skip_records": 2,
+  "old_same_weight_exact": 14,
+  "old_fixture_hashes_preserved": 182,
+  "original_loss": "Car velocity-all MSE + reg*surface pressure MSE; Air MSE_weighted volume+reg*surface",
+  "coverage": "Per actual graph forward: weight * four-encoder-Down raw mean. Epoch logging mean per optimizer step.",
+  "checkpoint": "Car whole object; Air whole member and model list, original trusted local boundary; no new resume",
+  "preview_actual_parser": {
+    "train": 6,
+    "eval": 6
+  },
+  "fresh_cwd_graph_loads": 4,
+  "GPU": "2 real PyG synthetic graph original-loss steps, reduced d8/M7,5,3,2 FP32 MATH, no AMP task acceptance",
+  "profiles": "Actual Light and Full parameters/construction/CPU B1 N11 forward, permitted M1>N expansion",
+  "not_run": [
+    "real data reads/download/training/convergence/accuracy",
+    "remote Python3.10/torch2.11/cu128",
+    "Air full sampled epoch/radius_graph/VTK/physical metrics (torch_cluster absent)",
+    "Car real drag postprocessing",
+    "formal full-size industrial profile backward/performance",
+    "industrial AMP/other backend/compile matrix"
+  ],
+  "next_stage_executed": false
+}

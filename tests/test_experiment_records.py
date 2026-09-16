@@ -202,7 +202,7 @@ print('startup log is preserved')
                         self.skipTest('real radius_graph dependency unavailable: '+str(exc))
                 a=task_modes.parse(task,[*task_modes.SMALL,*task_modes.run_option(task,Path(temp)/'recorded')])
                 initial=task_modes.build(task,a)
-                graph=Data(x=torch.randn(13,7),pos=torch.randn(13,2),y=torch.randn(13,4),surf=torch.arange(13)%2==0)
+                graph=Data(x=torch.randn(13,7),pos=torch.randn(13,3 if task=='car' else 2),y=torch.randn(13,4),surf=torch.arange(13)%2==0)
                 dataset=[(graph,torch.randn(7,3))]*2 if task=='car' else [graph,graph.clone()]
                 hparams=dict(lr=.001,batch_size=1,nb_epochs=2,subsampling=13,r=2.,max_neighbors=8)
                 outputs=[];rngs=[]
@@ -236,6 +236,7 @@ print('startup log is preserved')
                                     self.assertEqual(metrics['train_surface_mse'],float(values[4]))
                                     self.assertEqual(metrics['train_volume_mse'],float(values[5]))
                                     self.assertEqual(metrics['train_loss'],float(.5*values[4]+values[5]))
+                            self.assertEqual(record.result['visualization_events'][-1]['status'],'completed')
                             finish(a)
                     finally:
                         if record and not record.closed:record.finish(status='failed')
@@ -266,7 +267,8 @@ print('startup log is preserved')
                     if p.grad is not None:torch.testing.assert_close(p.grad,q.grad,atol=1e-6,rtol=1e-5)
                 scope=dict(record=r,record_member=0,epoch=0,train_loss=values[0],loss_surf_var=values[2],
                            loss_vol_var=values[3],loss_surf=values[4],loss_vol=values[5],criterion='MSE_weighted',
-                           reg=.5,val_iter=None)
+                           reg=.5,val_iter=None,model=m,msar_training=getattr(getattr(m,'config',None),'family',None)=='msar_lno',hparams={'nb_epochs':4},
+                           val_dataset=[graph],visualization_norm=None)
                 tree=ast.parse((ROOT/'Airfoil-Design-AirfRANS/train.py').read_text())
                 main=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='main')
                 epoch=next(n for n in main.body if isinstance(n,ast.For))

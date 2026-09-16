@@ -2,6 +2,15 @@ from model import Transolver_Irregular_Mesh, Transolver_Structured_Mesh_2D, Tran
 
 
 def get_model(args):
+    if args.model == 'msar_lno':
+        if getattr(args, 'msar_task', None) in ('ns', 'plasticity'):
+            from model import MSAR_Temporal
+            return MSAR_Temporal
+        if getattr(args, 'msar_task', None) in ('darcy', 'elasticity', 'airfoil', 'pipe'):
+            from model import MSAR_Standard
+            return MSAR_Standard
+        from model import MSAR_LNO
+        return MSAR_LNO
     if args.model in ('kcdno', 'lrsa_matched'):
         from model import KCDNO
         return KCDNO

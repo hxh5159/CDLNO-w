@@ -1,0 +1,190 @@
+{
+  "stage": "M8",
+  "environment": {
+    "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "cuda_available": true,
+    "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+    "pyg": "2.3.1",
+    "torch_cluster": false
+  },
+  "suites": [
+    {
+      "log": "formal-tests-initial.log",
+      "methods": 19,
+      "seconds": 97.619,
+      "reported_status": "FAILED (failures=1)"
+    },
+    {
+      "log": "boundary-correction.log",
+      "methods": 1,
+      "seconds": 0.122,
+      "reported_status": "OK"
+    },
+    {
+      "log": "accepted-msar-tests.log",
+      "methods": 107,
+      "seconds": 126.93,
+      "reported_status": "OK (skipped=1)"
+    },
+    {
+      "log": "legacy-tests.log",
+      "methods": 157,
+      "seconds": 181.846,
+      "reported_status": "OK (skipped=1)"
+    }
+  ],
+  "new_test_methods": 19,
+  "new_final_unresolved": 0,
+  "new_initial_failure": "overstrong every-sample nonzero gradient assertion; corrected test only",
+  "accepted_MSAR_methods": 107,
+  "accepted_MSAR_skipped": 1,
+  "legacy_methods": 157,
+  "legacy_skip_records": 1,
+  "legacy_skip_is_subtest": true,
+  "old_same_weight_exact": 75,
+  "old_hashes_preserved": 182,
+  "replay_times": [
+    {
+      "log": "k0-replay.log",
+      "wall_seconds": 35.16
+    },
+    {
+      "log": "wrappers-replay.log",
+      "wall_seconds": 14.89
+    },
+    {
+      "log": "core-replay.log",
+      "wall_seconds": 3.13
+    },
+    {
+      "log": "other-replay.log",
+      "wall_seconds": 10.08
+    }
+  ],
+  "formal_light_original_loss_train_eval_cases": 16,
+  "formal_full_forward_backward_strict_states": 8,
+  "same_weight_off_floor_max_abs": 2.2351741790771484e-07,
+  "default_floor_raw": "All 8 Light initial synthetic cases raw=0 at kappa=.2; positive-floor gradient checks separately use kappa=1, no production-default change",
+  "auxiliary_boundary": {
+    "check": "coverage_graph_boundaries",
+    "batches": [
+      1,
+      2
+    ],
+    "Ns": [
+      3,
+      11,
+      35
+    ],
+    "mask": [
+      "none",
+      "partial",
+      "empty_rejected"
+    ],
+    "kappa0": true,
+    "weight0": true,
+    "off": true,
+    "all_four_Down_connected_finite": true,
+    "core_gradients": [
+      {
+        "B": 1,
+        "N": 3,
+        "raw": [
+          0.010874694213271141,
+          0.0006601817440241575,
+          6.8933404991089464e-12,
+          0.0
+        ],
+        "query_key_grad_max": [
+          0.005131184123456478,
+          0.13426758348941803,
+          0.0002563276211731136,
+          0.002965254709124565,
+          1.4286245797467956e-11,
+          1.5901045757882315e-10,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "B": 2,
+        "N": 11,
+        "raw": [
+          0.025019275024533272,
+          0.0005746991955675185,
+          2.469345561362246e-11,
+          0.0
+        ],
+        "query_key_grad_max": [
+          0.006723419763147831,
+          0.13547009229660034,
+          0.00014321804337669164,
+          0.0030080722644925117,
+          9.351830421167051e-11,
+          7.087237463565543e-10,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "B": 1,
+        "N": 35,
+        "raw": [
+          0.016297677531838417,
+          0.002541732043027878,
+          6.664080398621763e-11,
+          0.0
+        ],
+        "query_key_grad_max": [
+          0.0063570118509233,
+          0.09393437206745148,
+          0.0009823244763538241,
+          0.01729782298207283,
+          6.636710625507192e-10,
+          4.305917844504847e-09,
+          0.0,
+          0.0
+        ]
+      }
+    ],
+    "isolated_Down_source_query_key_nonzero_gradients": [
+      [
+        0.0031271816696971655,
+        0.008635642938315868,
+        0.20039261877536774
+      ],
+      [
+        0.007640669122338295,
+        0.015816951170563698,
+        0.3499915897846222
+      ],
+      [
+        0.011306265369057655,
+        0.061701953411102295,
+        0.9996935129165649
+      ],
+      [
+        0.057122163474559784,
+        0.12179872393608093,
+        2.550175189971924
+      ]
+    ],
+    "decoder_fusion_aux_gradients": null,
+    "second_backward_fresh": true,
+    "retained_model_state": false
+  },
+  "production_changed": false,
+  "real_data_run": false,
+  "next_stage_executed": false,
+  "not_run": [
+    "remote Python3.10/Torch2.11/CUDA12.8",
+    "formal Light/Full GPU task matrix",
+    "Full original-loss temporal loop/optimizer matrix",
+    "task AMP/backend/compile matrix",
+    "full industrial sampled-data/VTK/force pipeline",
+    "real data training/convergence/accuracy",
+    "GUNet fixture (original missing torch_cluster dependency)"
+  ]
+}

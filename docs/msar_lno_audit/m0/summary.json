@@ -1,0 +1,69 @@
+{
+  "stage": "M0 retroactive after M1",
+  "date": "2026-09-16",
+  "scope": "Audit, documentation and independent fixtures only; no implementation of M1/M2 or later stages.",
+  "report": "docs/MSAR_LNO_REFERENCE_AUDIT.md",
+  "existing_suite": {
+    "tests": 316,
+    "seconds": 576.961,
+    "failures": 0,
+    "errors": 0,
+    "skip_records": 2,
+    "command": "CDLNO_LRSA_ROOT=/home/hwz/LRSA-Operator python -B -m unittest discover -s tests -p 'test_*.py' -v",
+    "log": "docs/msar_lno_audit/m0/regression.log"
+  },
+  "old_model_regression": {
+    "passed": 75,
+    "groups": {
+      "k0": 41,
+      "pre_m1_core": 6,
+      "wrappers": 24,
+      "other_models": 4
+    },
+    "tolerance": {
+      "atol": 0,
+      "rtol": 0
+    },
+    "integrity_files": 182,
+    "artifact_index": "docs/msar_lno_audit/m0/fixture-index.json"
+  },
+  "static": {
+    "files": 653,
+    "texts": 628,
+    "excluded_binary": 25,
+    "python_files": 157,
+    "shell_syntax_passed": 70,
+    "documents": 67
+  },
+  "freeze": {
+    "unchanged": 650,
+    "changed_incremental_documents": 3,
+    "pre_m1_source_unchanged": 220,
+    "production_changes": 0,
+    "existing_test_changes": 0
+  },
+  "m1_compatibility": {
+    "status": "no blocking incompatibility identified",
+    "config_tests_passed": 13,
+    "scope": "configuration/metadata only; not an MSAR model acceptance",
+    "reviewed": [
+      "Light/Full independent schema",
+      "explicit CLI priority",
+      "coverage separate from architecture",
+      "read-before-compare and no eval sidecar mutation",
+      "independent paths and no placeholder model",
+      "new Down mask/A required",
+      "w-only fusion and no final point residual"
+    ]
+  },
+  "not_run": [
+    "Real task data/training/convergence/accuracy",
+    "Remote Python3.10/torch2.11/cu128",
+    "GUNet radius/nearest graph chain",
+    "Air complete sampled epoch and periodic radius graph integration",
+    "MSAR mathematics/model/auxiliary loss/task integration"
+  ],
+  "local_gpu": "Available; existing small GPU/AMP regressions and original Transolver fixture replay executed.",
+  "audit_helper_issue": "Initial review_index KeyError for binary optional text_read resolved only in new audit script; final full index passed.",
+  "next_stage_executed": false
+}

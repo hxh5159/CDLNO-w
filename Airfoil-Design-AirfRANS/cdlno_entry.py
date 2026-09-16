@@ -39,6 +39,16 @@ def parse_args(parser, *, evaluation=False, argv=None):
     parser.add_argument('--kernel-rank', '--kernel_rank', type=int, default=16)
     parser.add_argument('--history-mode', '--history_mode', choices=('all', 'off'), default='all')
     parser.add_argument('--kcdno-run-dir', type=Path, default=None)
+    # Route only an explicitly selected new family; the original parser stays intact.
+    import argparse
+    import sys
+    tokens = sys.argv[1:] if argv is None else argv
+    selector = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
+    selector.add_argument('--model')
+    selected, _ = selector.parse_known_args(tokens)
+    if selected.model == 'msar_lno':
+        from cdlno.msar_lno.industrial_entry import parse_args as parse_msar_args
+        return parse_msar_args(parser, tokens, task='airfrans', evaluation=evaluation)
     args = parser.parse_args(argv)
     if args.model in ('kcdno', 'lrsa_matched'):
         from cdlno.kcdno.air_entry import resolve_air

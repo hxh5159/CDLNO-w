@@ -1,0 +1,4412 @@
+{
+  "files": [
+    {
+      "path": ".gitignore",
+      "sha256": "177afeabbbade7e4fcaa624dbf16ce988f59e7a84262bc12b89918abdf7b9b02",
+      "tracked": true,
+      "lines": 163,
+      "kind": "other_text"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "dd98cf6da03211ca75fea6c88320e075c79c1b175b41c04b23c5893993cf9d82",
+      "tracked": true,
+      "lines": 245,
+      "kind": "documentation"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/LICENSE",
+      "sha256": "05ba154a27eeb81940385d278f8b7cd6f37729df050a3a9803113f686fbd40d4",
+      "tracked": true,
+      "lines": 540,
+      "kind": "other_text"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/README.md",
+      "sha256": "aca7176a916b7cf765f6165e2516822f018cb951f46d24d66b3b927460224f57",
+      "tracked": true,
+      "lines": 89,
+      "kind": "documentation"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/cdlno_entry.py",
+      "sha256": "55e3408ad5d53dd476731b99722a541a483a9f27cad7ea9fba6829d9387e2709",
+      "tracked": true,
+      "lines": 200,
+      "kind": "source"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/configs/CDLNO/airfrans.json",
+      "sha256": "e16fd7676802043549372a1de71926bd1f032586e04fc45d4e56e83b692c5401",
+      "tracked": true,
+      "lines": 25,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/dataset/dataset.py",
+      "sha256": "b38770f711cabb7c8cfeb23100e14eb07dd3119c2a5ccc685ec559f00b3c78ca",
+      "tracked": true,
+      "lines": 245,
+      "kind": "source"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/dataset/dataset_stats.ipynb",
+      "sha256": "f0c015015f9275ff3709868c5c1ac573a19b712137b1c753442ff1fa78ace161",
+      "tracked": true,
+      "lines": 103,
+      "kind": "other_text"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/kcdno_entry.py",
+      "sha256": "1d84aad42b3f2bfd1e6f49b4efc33a39c88f7dc52e53a467e38dcd3d1a77571e",
+      "tracked": true,
+      "lines": 1,
+      "kind": "source"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/main.py",
+      "sha256": "31c2d966d9528ecb59259ff4d7d29be33bb600336b0492ca3260d3ec7f51499d",
+      "tracked": true,
+      "lines": 171,
+      "kind": "source"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/main_evaluation.py",
+      "sha256": "3b28e206cd81a8b5a8e5f4dff0ab9af190c6124575d8708bd569d78d817a6c71",
+      "tracked": true,
+      "lines": 112,
+      "kind": "source"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/models/CDLNO.py",
+      "sha256": "d5c16ef4cd152c3a11c0d7362f5bf88eeeab3a7f3f17ed7566fce05183a978ab",
+      "tracked": true,
+      "lines": 2,
+      "kind": "source"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/models/GUNet.py",
+      "sha256": "6218a72d071b265140371dac8d2586d0d10edf9803cecd16e1a6ddb2f385963c",
+      "tracked": true,
+      "lines": 221,
+      "kind": "source"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/models/GraphSAGE.py",
+      "sha256": "562738fafff0b9cf5cd3d90577197e243961b01742626debb19c0a14eac3db65",
+      "tracked": true,
+      "lines": 58,
+      "kind": "source"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/models/KCDNO.py",
+      "sha256": "9f85732134354b5e6b4a1cb3208819e1ac4ce9599efb7b1745b1ebf2cf74aaa0",
+      "tracked": true,
+      "lines": 2,
+      "kind": "source"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/models/MLP.py",
+      "sha256": "7c34b97acaf3d26bd04570abf93b4a1291d6ca08fda1b2a749fc9180b0d7c72f",
+      "tracked": true,
+      "lines": 62,
+      "kind": "source"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/models/NN.py",
+      "sha256": "5dcd2b3ee2f192a7891c35ffef6fbe74aa2d509a08432577a95bdf0c57ea9345",
+      "tracked": true,
+      "lines": 25,
+      "kind": "source"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/models/PointNet.py",
+      "sha256": "825750d49f8dbad9e3d7cfa3c0f45bcdf19645c9c2696ae8fc3843147cd25313",
+      "tracked": true,
+      "lines": 45,
+      "kind": "source"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/models/Transolver.py",
+      "sha256": "1d0c1b932411ac408d8d00ca047d7f875c3176e7b001db802d30c065a7416d74",
+      "tracked": true,
+      "lines": 210,
+      "kind": "source"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/params.yaml",
+      "sha256": "53f153b28b596559385ea924b0fbafca2e7a72f2d8747471832273b7023437c0",
+      "tracked": true,
+      "lines": 88,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/requirements.txt",
+      "sha256": "5453b38b9bb483de4c1a7e17f8b54c80d362bb7d246ec5429ad609aef3952576",
+      "tracked": true,
+      "lines": 8,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/scripts/CDLNO.sh",
+      "sha256": "2b63bf44426f42ea1a384f710c6e9b7b85a23e3e68bb935611485192e49dcaff",
+      "tracked": true,
+      "lines": 15,
+      "kind": "source"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/scripts/CDLNO_Evaluation.sh",
+      "sha256": "9dba0dd3ec7e4cfd70a0d8e92b220990a229c063307a85ba737290e226f8b949",
+      "tracked": true,
+      "lines": 14,
+      "kind": "source"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/scripts/Evaluation.sh",
+      "sha256": "e6b1145f678f58d346209f091b89c82e573b9724f19db71a6881729b163c2d27",
+      "tracked": true,
+      "lines": 3,
+      "kind": "source"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/scripts/GraphSAGE.sh",
+      "sha256": "e8892e4a82e62dde5767b68af89db6a2d38de55dc2d32c95ca0ca49397d760e0",
+      "tracked": true,
+      "lines": 3,
+      "kind": "source"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/scripts/Transolver.sh",
+      "sha256": "80175ed6f8c66ee47e12046c86df06943e1fa533efb0b77cf8a7bd73a907f430",
+      "tracked": true,
+      "lines": 3,
+      "kind": "source"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/train.py",
+      "sha256": "bf6c234cf915cdb217f6c97534a93178fd2db3cfc0e6a8b12e9dbad62b2b8f0d",
+      "tracked": true,
+      "lines": 358,
+      "kind": "source"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/utils/metrics.py",
+      "sha256": "ee53a3da2a29da9df0063f9f02da0efb0a7f35833b08ceb02a5908fbb3e7e39d",
+      "tracked": true,
+      "lines": 447,
+      "kind": "source"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/utils/metrics_NACA.py",
+      "sha256": "61bbb5968a64cc28ca090245f3bec1d5d176e5d314c887152db7ae86a6184cd3",
+      "tracked": true,
+      "lines": 221,
+      "kind": "source"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/utils/naca_generator.py",
+      "sha256": "303e0ed4761b959292078c0287eef64a6b65ac91671b871e7008b737e01e3b6e",
+      "tracked": true,
+      "lines": 112,
+      "kind": "source"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/utils/reorganize.py",
+      "sha256": "6cdd18acb5370b907e2a18d9eda7f7bc0bd85cce9316167000d888f30dc36605",
+      "tracked": true,
+      "lines": 14,
+      "kind": "source"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/README.md",
+      "sha256": "3dc841d84472d817aba0c24b74b128156ff4163dc3b4f94bf827a5a8093ab158",
+      "tracked": true,
+      "lines": 100,
+      "kind": "documentation"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/configs/CDLNO/shapenet_car.json",
+      "sha256": "a5e6910dd3445b94b1b5e4e3165c3cf21046c8ad71333c914626e0decd5a483e",
+      "tracked": true,
+      "lines": 25,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/configs/kcdno/shapenet_car.json",
+      "sha256": "d91724425f0bc667a594c1e9bc4363b26b0ceb4ad1521e69602f16cc62fcdea2",
+      "tracked": true,
+      "lines": 14,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/dataset/dataset.py",
+      "sha256": "9f3cb4f16655cc59a7b8134e69aba88bd6bc5434a8093d4edce14bcb1878ea78",
+      "tracked": true,
+      "lines": 408,
+      "kind": "source"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/dataset/load_dataset.py",
+      "sha256": "e4071f35ef2985f193f00609ba174e8b8dba990fd778a640825aa061758ff410",
+      "tracked": true,
+      "lines": 56,
+      "kind": "source"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/kcdno_entry.py",
+      "sha256": "74cbfe8d62f4e2c15d21a932db4ab8ef9a4561ad79ba4a0fe95c0b24762b7ff5",
+      "tracked": true,
+      "lines": 2,
+      "kind": "source"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/main.py",
+      "sha256": "45da983fbfa837e7d080352be0a5425f01e5f3618272d94d5ad03041586b066e",
+      "tracked": true,
+      "lines": 79,
+      "kind": "source"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/main_evaluation.py",
+      "sha256": "3c5512d94a8c03915a44a5d508b2a3619614bceb505fc43ffd9a48b715c0fc21",
+      "tracked": true,
+      "lines": 156,
+      "kind": "source"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/models/CDLNO.py",
+      "sha256": "3ac12891e508b4e47ecfd8f35d0169981e88ec9d8fb986460d71cda9dcbaad5f",
+      "tracked": true,
+      "lines": 101,
+      "kind": "source"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/models/KCDNO.py",
+      "sha256": "b526139652ef1521542044b5353cb8a61a5333bf280d9ddc7c0cce611e6599d9",
+      "tracked": true,
+      "lines": 36,
+      "kind": "source"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/models/Transolver.py",
+      "sha256": "9dbea9edae30b0d8484a458b4bdb9b33427e9fda815c8011d64f19fb50e14ffa",
+      "tracked": true,
+      "lines": 213,
+      "kind": "source"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/models/cdlno_run.py",
+      "sha256": "5b9a01aa64ea744da857581e6bcb62cd88e4a75f863f77b38a8e400bb5c3e395",
+      "tracked": true,
+      "lines": 191,
+      "kind": "source"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/requirements.txt",
+      "sha256": "d904801a2579545e7d766b4c709c2c8a57bbb888303b4aa7eadec0b7709ff9d6",
+      "tracked": true,
+      "lines": 6,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/scripts/CDLNO.sh",
+      "sha256": "a0906cdb2da18fca7b83599c8a6374c05c5eb5a6d396863d140f49669c8ac30e",
+      "tracked": true,
+      "lines": 13,
+      "kind": "source"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/scripts/CDLNO_Evaluation.sh",
+      "sha256": "c0778bb6eeef6053135e17d7dddb9fc449d35c3ccdb8fbb4392cab62152cf3ba",
+      "tracked": true,
+      "lines": 12,
+      "kind": "source"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/scripts/Evaluation.sh",
+      "sha256": "962b0741edbd6f206b864e88a5c8bfe2215f1060361c589e4aa3bdb5acb60a5a",
+      "tracked": true,
+      "lines": 6,
+      "kind": "source"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/scripts/Transolver.sh",
+      "sha256": "eb32cec4c8aa5d2bce3181cd80dc923da27fca40cc8785f510201c859f903402",
+      "tracked": true,
+      "lines": 6,
+      "kind": "source"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/train.py",
+      "sha256": "2b979e131b27b1a0dcdb4f3bd3235f9c063d38982f8173561100b2710db9683b",
+      "tracked": true,
+      "lines": 139,
+      "kind": "source"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/utils/drag_coefficient.py",
+      "sha256": "3fb491b272c6fac9a07c1f4bc864a5db1cc8afef861364df9a1b2496e45386f2",
+      "tracked": true,
+      "lines": 203,
+      "kind": "source"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "2c919cd03fa823bf7eefc00a957ff8324c865cd22aa5285e563dc4b558084f25",
+      "tracked": true,
+      "lines": 21,
+      "kind": "other_text"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/README.md",
+      "sha256": "3bc13ffa5598b1fe5594e9b8194ea0966c1bc196118160e9c3c2a97dad244014",
+      "tracked": true,
+      "lines": 98,
+      "kind": "documentation"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/cdlno_entry.py",
+      "sha256": "72df2eb671486bf15edd5cbc14964ef4da566c6141ffde509ae153a3d4bb5ff6",
+      "tracked": true,
+      "lines": 163,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/configs/CDLNO/airfoil.json",
+      "sha256": "b772ba436d8a5d04c0f6874d8095f8a4ac926b4c24268699beeea0267112aba6",
+      "tracked": true,
+      "lines": 25,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/configs/CDLNO/darcy.json",
+      "sha256": "fdceb009139a00ca6d487e189e0197b8b5fe03e70055ed4834cede0bcf717c22",
+      "tracked": true,
+      "lines": 25,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/configs/CDLNO/elasticity.json",
+      "sha256": "a8f601e059e3d871cbdf9aa8aa2696e08fe870d1a71cd4c34ec5120363161a8a",
+      "tracked": true,
+      "lines": 25,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/configs/CDLNO/ns.json",
+      "sha256": "ae1bb8769a99ed3474bfb262861e718664934a7a961e7302adb53b044efa962b",
+      "tracked": true,
+      "lines": 25,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/configs/CDLNO/pipe.json",
+      "sha256": "d74529c26972f49db5525fd7dea77109b57569642567ccf0d49e10b6d23d0569",
+      "tracked": true,
+      "lines": 25,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/configs/CDLNO/plasticity.json",
+      "sha256": "d839c722b33d0b1c080d7533d6dcecd603f530ab75004ce0410a93080806346c",
+      "tracked": true,
+      "lines": 25,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/configs/kcdno/airfoil.json",
+      "sha256": "b8e190e2119ed775994b107db5a7fcc6d2ac25f3171caf73d7a7fc4cb7c46a28",
+      "tracked": true,
+      "lines": 16,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/configs/kcdno/darcy.json",
+      "sha256": "1f043528aa0d8955688f093845907eb68413fdb6399051b03f552eabcf02bec7",
+      "tracked": true,
+      "lines": 16,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/configs/kcdno/elasticity.json",
+      "sha256": "25b119bc66d47772617cdb3942a143d253d34f4261e5686512483cb4a0ce421c",
+      "tracked": true,
+      "lines": 16,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/configs/kcdno/ns.json",
+      "sha256": "213bf5224237c282eee1b50b0c74f881ba678f2b1940a669b6283ef3f453fa46",
+      "tracked": true,
+      "lines": 16,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/configs/kcdno/pipe.json",
+      "sha256": "001a6d29e5e3b79499e4424ba9ae7e1916979ebd4db434ca4b231dfff3ce870d",
+      "tracked": true,
+      "lines": 16,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/configs/kcdno/plasticity.json",
+      "sha256": "58a8c87714d8eb4ce5771f6f6d541d45fc070bf22e6534710c59aac52890ccc3",
+      "tracked": true,
+      "lines": 16,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/exp_airfoil.py",
+      "sha256": "c8aa7e13d6002d4104169be0f6e9d697a8728d89bf9552fd8ef3667a4abbb4f7",
+      "tracked": true,
+      "lines": 285,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/exp_darcy.py",
+      "sha256": "7de7a5743b70240d2b7eb9424a4430ed4e0fec78667e452354950d5fcec7047c",
+      "tracked": true,
+      "lines": 327,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/exp_elas.py",
+      "sha256": "62c5fd8e0e7b1a8b774c6cd8a513872e18412a440f97c30aea1f34d064455cad",
+      "tracked": true,
+      "lines": 262,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/exp_ns.py",
+      "sha256": "d9116423ffe1aac7c35e50446d0bcd309df37fecf1745d627c3f56099d7ea4f3",
+      "tracked": true,
+      "lines": 302,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/exp_pipe.py",
+      "sha256": "3bb6c019496d75c4ff5334d4000096cae3fba8a610777a4bacbd3ec65189dd46",
+      "tracked": true,
+      "lines": 308,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/exp_plas.py",
+      "sha256": "c139a535e36bff6fd2be7d28717c1847549db7f786e272e4e0f7ed1dc8242639",
+      "tracked": true,
+      "lines": 353,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/kcdno_entry.py",
+      "sha256": "47d308db59c12676a855d43cfc77df8404f2db997cd3fa2cc799380342164fcb",
+      "tracked": true,
+      "lines": 2,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/CDLNO_Irregular_Mesh.py",
+      "sha256": "962bf6f9f475ba2ccc56993e19c160be983eefdd3928869d0dcba70fe1b87809",
+      "tracked": true,
+      "lines": 6,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/CDLNO_Structured_Mesh_2D.py",
+      "sha256": "7a151a1ccba8cb129b858d550f129b3a2112462cb72d72b1bac63a8af258d876",
+      "tracked": true,
+      "lines": 6,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/CDLNO_Temporal_Structured_Mesh_2D.py",
+      "sha256": "89d9a6eb45098f166f1f5cc462131b33841c017cd87076637c38a4cab524bd9e",
+      "tracked": true,
+      "lines": 6,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/Embedding.py",
+      "sha256": "1371e3c234d2d29be783ee817ecc7e65e8e0b36024b95b6c3c256b2054a9720d",
+      "tracked": true,
+      "lines": 85,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/KCDNO.py",
+      "sha256": "208af8b30bfc23849642278fe3ce0b21bcda281696ff3cf748e5ef356c249b43",
+      "tracked": true,
+      "lines": 2,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/Physics_Attention.py",
+      "sha256": "4fc710f6f96788fb59cb19fab8d64873d3d16e9e182f12a544d451c74c548cc7",
+      "tracked": true,
+      "lines": 175,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/Transolver_Irregular_Mesh.py",
+      "sha256": "5259759f7ecc6a954c8442ac8359990b9f242f1437c452c69e5e0f03549b5311",
+      "tracked": true,
+      "lines": 158,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/Transolver_Structured_Mesh_2D.py",
+      "sha256": "d4b0db8a52c26ba6433f45a232947b380dfbaa4a31eac413a5e03fbef151acfc",
+      "tracked": true,
+      "lines": 174,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/Transolver_Structured_Mesh_3D.py",
+      "sha256": "8422abe388aab493a3d7673184bf9c59c5b49019d462631d38473f7cd848f314",
+      "tracked": true,
+      "lines": 191,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model_dict.py",
+      "sha256": "3883ab4a0a4433b0617da2d9f8c399661483ee4e677c423d0cdc39342835e853",
+      "tracked": true,
+      "lines": 25,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/requirements.txt",
+      "sha256": "822f7a8bd6676370c74598f46c6ccdf554ab835bd50dba3232a915be6c5bf645",
+      "tracked": true,
+      "lines": 6,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/scripts/CDLNO_Airfoil.sh",
+      "sha256": "f305804fcd736a15902223464db24af1d34a459a6ac0d359b103ca066649ebdc",
+      "tracked": true,
+      "lines": 26,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/scripts/CDLNO_Airfoil_Eval.sh",
+      "sha256": "daa0f793f1b0bef25fe3fef4781c22f324641a6e2e28f9401343de2b6a532a53",
+      "tracked": true,
+      "lines": 26,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/scripts/CDLNO_Darcy.sh",
+      "sha256": "1350efb64d7bac0c407a41d49c110fbc7c14eb9494a5d943d29a72cc6f384e81",
+      "tracked": true,
+      "lines": 26,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/scripts/CDLNO_Darcy_Eval.sh",
+      "sha256": "b703989a4d5e6a795d131ad3017bb983736b2d1ce1e56bdc16161f870ad101aa",
+      "tracked": true,
+      "lines": 26,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/scripts/CDLNO_Elas.sh",
+      "sha256": "d91d2486113fd52031f759305478b0d3f342b34cb00565a67fc070dd2df762ad",
+      "tracked": true,
+      "lines": 26,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/scripts/CDLNO_Elas_Eval.sh",
+      "sha256": "25ba4d871f82f997428084bd3dcb53a76e62674bff00f722caeababca7d62e9f",
+      "tracked": true,
+      "lines": 26,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/scripts/CDLNO_NS.sh",
+      "sha256": "cc8e8e989c922dcad9c39597a9e608ae623d6b92b71c7c58cd9e084414f7d536",
+      "tracked": true,
+      "lines": 6,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/scripts/CDLNO_NS_Eval.sh",
+      "sha256": "f18dd5858df03d793de0a2e4c19f9e291c406d9d0403214a9d03269b31c9cba4",
+      "tracked": true,
+      "lines": 6,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/scripts/CDLNO_Pipe.sh",
+      "sha256": "b63ae43947c9eabb8e5048247a2d6cf778bacf539739a00daf388df6fad13ea0",
+      "tracked": true,
+      "lines": 26,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/scripts/CDLNO_Pipe_Eval.sh",
+      "sha256": "e91d15c580de9dcd81b1bd0236ff1b3a964ecabfa27b3a948fdfd13ef43def1b",
+      "tracked": true,
+      "lines": 26,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/scripts/CDLNO_Plasticity.sh",
+      "sha256": "daf979ea820aece00ca33da78ef9fd0f85313aa1f8ea3a76d6bbd07b18971365",
+      "tracked": true,
+      "lines": 6,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/scripts/CDLNO_Plasticity_Eval.sh",
+      "sha256": "ccf1d6d71bb9d5daaec4607832607d0c8998ab94bc8f569b80eac1bfbc67d1a5",
+      "tracked": true,
+      "lines": 6,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/scripts/Transolver_Airfoil.sh",
+      "sha256": "e7e32cb24fbbce134fc33e88a0a174046efd77e564b5e257d79b1b51578ed524",
+      "tracked": true,
+      "lines": 14,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/scripts/Transolver_Darcy.sh",
+      "sha256": "c0d6241baea9eb4dfb899559dd57f3006ae090384fe13ef4ac48e793f5681156",
+      "tracked": true,
+      "lines": 16,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/scripts/Transolver_Elas.sh",
+      "sha256": "997b306121224e8ad8b7c69287489c595e803dab993f1e8e24c24c88acf7b6b6",
+      "tracked": true,
+      "lines": 14,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/scripts/Transolver_NS.sh",
+      "sha256": "0c1758806c5a5c57f8cd013d5c5900ce17172cfaf3ef60c993e39a7c647460d6",
+      "tracked": true,
+      "lines": 14,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/scripts/Transolver_Pipe.sh",
+      "sha256": "6c2a3c99c475539d6b16443d06780882b2d6b1678549d14fedb0847cb6603b07",
+      "tracked": true,
+      "lines": 16,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/scripts/Transolver_Plas.sh",
+      "sha256": "011e25f5862199ff86536cef7cd0b4a1bf2c555ec933d2b0f0816ae732f0d337",
+      "tracked": true,
+      "lines": 15,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/utils/normalizer.py",
+      "sha256": "d8eea799d6bad852854e9e58fdb705676fd3d75ed77ce3e01bcdd45295689a7b",
+      "tracked": true,
+      "lines": 114,
+      "kind": "source"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/utils/testloss.py",
+      "sha256": "1a520c0b9c27fe4eaba27e1c72217ba375c2749dee7c04cd6acffeb3d3303bff",
+      "tracked": true,
+      "lines": 45,
+      "kind": "source"
+    },
+    {
+      "path": "PLAN_CDLNO/CDPA_Transolver_Implementation_Plan_v1_2.md",
+      "sha256": "768368989c12e31d8f38eb98863b62c5df691a3b03934b8cd11ca98aea527584",
+      "tracked": true,
+      "lines": 1032,
+      "kind": "documentation"
+    },
+    {
+      "path": "PLAN_CDLNO/CDPA_v1_1/CDPA_Transolver_Implementation_Plan_v1_1.md",
+      "sha256": "5bacfd1abf346a3ae3edf554726518c53446eb2c21b0997e4452dc2a2d12c718",
+      "tracked": true,
+      "lines": 995,
+      "kind": "documentation"
+    },
+    {
+      "path": "PLAN_CDLNO/CDPA_v1_1/README.md",
+      "sha256": "3f2f2838345f2ee817a291cd4811c6844eec6a3bc22224342135f922d05029be",
+      "tracked": true,
+      "lines": 65,
+      "kind": "documentation"
+    },
+    {
+      "path": "PLAN_CDLNO/CDPA_v1_1/check_cdpa_environment.py",
+      "sha256": "9c37bc6683f694698e98818d9aac54eea1fe49c586f07a8cc5e600eb544380a8",
+      "tracked": true,
+      "lines": 380,
+      "kind": "source"
+    },
+    {
+      "path": "PLAN_CDLNO/CDPA_v1_1/constraints-cdpa-cu128.txt",
+      "sha256": "0f5f6b4d45d325ce1ad919dc5d5b1045055ee2e4b0cfde19633be1c5609a4f62",
+      "tracked": true,
+      "lines": 26,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "PLAN_CDLNO/CDPA_v1_1/requirements-cdpa-cu128.txt",
+      "sha256": "5053dc13c39c382b552de4f9d45ffb102b3dcf8047f5a6f2b61099afced7c15c",
+      "tracked": true,
+      "lines": 45,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "PLAN_KCDNO/KCDNO_Codex_Staged_Prompts.md",
+      "sha256": "c7b38454c605f0dfdaf52cf7ca9395155faf4fd8586c2712e3571537aa264e5a",
+      "tracked": true,
+      "lines": 406,
+      "kind": "documentation"
+    },
+    {
+      "path": "PLAN_KCDNO/KCDNO_Model_Specification_v1.md",
+      "sha256": "7efe5ac05b9cabe35734020adf004886acd7492b535a32bcad8f5201823a5e70",
+      "tracked": true,
+      "lines": 512,
+      "kind": "documentation"
+    },
+    {
+      "path": "PLAN_MSAR_LNO/MRSA_LNO_arch.md",
+      "sha256": "871bfdb829f21c9f32f2eb80d0cc69c7376ebf4d8c2e21d97bbaf3dc98d19877",
+      "tracked": false,
+      "lines": 1866,
+      "kind": "documentation"
+    },
+    {
+      "path": "PLAN_MSAR_LNO/MSAR_LNO_Codex_Staged_Prompts.md",
+      "sha256": "3854b1551dc8bb933cd73ab070d051accb65a6074300e47f32318176bf0f8d23",
+      "tracked": false,
+      "lines": 336,
+      "kind": "documentation"
+    },
+    {
+      "path": "Physics_Attention.py",
+      "sha256": "f7feffd40e21863a2bd5809d9548a3417a7221a817f9e675ea969712c1d45a36",
+      "tracked": true,
+      "lines": 178,
+      "kind": "source"
+    },
+    {
+      "path": "README.md",
+      "sha256": "42d1334e8b93b416b9895f8840511ddc3405875e6ee6c939d011607ca317d4b3",
+      "tracked": true,
+      "lines": 273,
+      "kind": "documentation"
+    },
+    {
+      "path": "cdlno/__init__.py",
+      "sha256": "aa7e4e1d615e8a74bcb17899b526e2cfe09f9080754b2e48dcf5507cdddb0d7e",
+      "tracked": true,
+      "lines": 21,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/airfrans.py",
+      "sha256": "2e8bca413035807277d60cea9c64cae28f2f8067cb82d5053b4d29f2334b62b5",
+      "tracked": true,
+      "lines": 101,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/cdpa.py",
+      "sha256": "eb6f515508479066fe2a2086b70929b93914de218aaf55347ecaa71ebe05c4fa",
+      "tracked": true,
+      "lines": 129,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/checkpoint.py",
+      "sha256": "6e50e2d9e0514ba5c6beb2a289447ba8a1b171f067e44f179ce4fd955651fad9",
+      "tracked": true,
+      "lines": 148,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/config.py",
+      "sha256": "88da555b449857b96d08a721e38e229ef2274b63f66f00b9ec08dad4bb9db18d",
+      "tracked": true,
+      "lines": 188,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/core.py",
+      "sha256": "0b8565fe66d90f1c2e77e2147dfeb5a249220d5fc51d9a6784d0eab4085a23be",
+      "tracked": true,
+      "lines": 117,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/experiment.py",
+      "sha256": "1e4dfbc143460ce80e0ad7cd325b564c54fbd828a6e51213af3799f2bc8367a3",
+      "tracked": true,
+      "lines": 326,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/kcdno/__init__.py",
+      "sha256": "ed9285f06b21a936da9f114b4de0c6b7261849fd7b7c776b2b0b989d5f80e5de",
+      "tracked": true,
+      "lines": 7,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/kcdno/air_entry.py",
+      "sha256": "976ae8618393c9872c2e293e2054aecd55347c0c848ec53a6e958516ba700c61",
+      "tracked": true,
+      "lines": 138,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/kcdno/airfrans.py",
+      "sha256": "6ab4292b503058cacfe182ec3a28bbeb4b30dc82f3145df52f0766ca7a5ac6c0",
+      "tracked": true,
+      "lines": 34,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/kcdno/car_preflight.py",
+      "sha256": "81676c488976ed4104ccbb6b385f5923e98887970d32c560c11db2fe57193379",
+      "tracked": true,
+      "lines": 25,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/kcdno/config.py",
+      "sha256": "1b26788d373d6fa5dbfc5c67e0e126ef6bb9e2a6e7d528a09c0a921844a68dfd",
+      "tracked": true,
+      "lines": 171,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/kcdno/core.py",
+      "sha256": "e692cfbaba9b97326d62a148c10e172d530fe75e5c249a5f41474b5f1a7fbd88",
+      "tracked": true,
+      "lines": 129,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/kcdno/entry.py",
+      "sha256": "bd967d2629a73568ba34932a1836305a83c3d45952cdbfc2ea1f48a81e1ea72c",
+      "tracked": true,
+      "lines": 176,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/kcdno/families.py",
+      "sha256": "a567b990ae798b3ae319c5b6f14b3af2e5954f2e1ce1ad54b4bcd022ea9a1039",
+      "tracked": true,
+      "lines": 78,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/kcdno/history.py",
+      "sha256": "5f96b678eeb47574c0067aca5297f3464d139e3d8d62d0b0586ccbad425b019a",
+      "tracked": true,
+      "lines": 140,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/kcdno/industrial_entry.py",
+      "sha256": "a0d5b862b563b2c985c21f64b4c0822cf4645f645e8c87bf335841ec88b3f6d5",
+      "tracked": true,
+      "lines": 126,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/kcdno/loading.py",
+      "sha256": "432e86bc33467ce74c3a6d63c25e16263720f902d91e807052d6e7a6c0a021c2",
+      "tracked": true,
+      "lines": 29,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/kcdno/matched.py",
+      "sha256": "46de6072939da2eae47004cd07a21fbb1834e64c6af90c51a08a9abebc6b0d1d",
+      "tracked": true,
+      "lines": 41,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/kcdno/matched_config.py",
+      "sha256": "b57eb56f5266860a4cfd537ec67732f61323bcc2c447b93581404d9a14712124",
+      "tracked": true,
+      "lines": 94,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/kcdno/metadata.py",
+      "sha256": "6b5b247b6f98be00a99c61fbcb247333d21d72d5ef12d857d7b9807968192bfb",
+      "tracked": true,
+      "lines": 170,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/kcdno/options.py",
+      "sha256": "c008824e9acbe828281be98bd6402eb2455458a1126e09484c874c1cff01c1e2",
+      "tracked": true,
+      "lines": 59,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/kcdno/profiles.py",
+      "sha256": "83d79c263d15be52602529cf44e96b4c00d321e8b7975fb462bf3ee76318826d",
+      "tracked": true,
+      "lines": 36,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/kcdno/standard.py",
+      "sha256": "1ef85128193ec02eeaed45190bf421af6410ad1cad10c50a00ebd62992133720",
+      "tracked": true,
+      "lines": 109,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/modules.py",
+      "sha256": "ceca8a7efd17e06693905030a7cec19f3c533c2770e6458852a93089dd2de99a",
+      "tracked": true,
+      "lines": 466,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/msar_lno/__init__.py",
+      "sha256": "ec35509e4eb2f477d4133a243fe6842ca9eb5a6515e60ac59c1593678fb3e8c7",
+      "tracked": false,
+      "lines": 8,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/msar_lno/__main__.py",
+      "sha256": "36a575e5ac828f27781425efa774fd8ad0b2716ebcfbafccef4d78afb99cd1eb",
+      "tracked": false,
+      "lines": 31,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/msar_lno/config.py",
+      "sha256": "6eefab6de4d5f116d52a78af26e7138e548e6d9b1fea6095f4c63e5d6e3b5d6b",
+      "tracked": false,
+      "lines": 166,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/msar_lno/metadata.py",
+      "sha256": "9fb41a64aec8e330422e6f97f8c7e28ef687cd5d18bd668a7f418f30c82a2ec4",
+      "tracked": false,
+      "lines": 146,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/msar_lno/options.py",
+      "sha256": "e74cd230abef53602d9336c4befaf0b992c6fdd7972b4b146c78c92ee16f500a",
+      "tracked": false,
+      "lines": 94,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/msar_lno/profiles.py",
+      "sha256": "f2172a39409c1380b6c3b3d616c34bb8c2e107b39328d42b3dc39f8d6dbb8d71",
+      "tracked": false,
+      "lines": 39,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/msar_lno/registry.py",
+      "sha256": "7f1a0d22dd29e621901b52d83ca67cdfce995a4e64201c982dc7fb6bf7c7b9ca",
+      "tracked": false,
+      "lines": 14,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/periodic_visualization.py",
+      "sha256": "cfb8041aadf0c6974ebfae1aae03627c040acbb22f0a344829c28a9dbfad61f7",
+      "tracked": false,
+      "lines": 262,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/standard.py",
+      "sha256": "ee9a547ded0fef9a46229d88c8c90ed0b86caf57a7c0387993d0a1471610f42e",
+      "tracked": true,
+      "lines": 244,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/training_observer.py",
+      "sha256": "6241bbc5b9bf61813b8045e0cedb49441f518aac4b67cea0c40b39315fff7af5",
+      "tracked": true,
+      "lines": 69,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/training_state.py",
+      "sha256": "4c6d83a7b5053889b5228ebfeef9149bf4d9966c5420ae0a0dc5847842496b63",
+      "tracked": true,
+      "lines": 637,
+      "kind": "source"
+    },
+    {
+      "path": "cdlno/visualization.py",
+      "sha256": "cec9b01741e897f625b8bb8ebb9e15254fe898f992b3771b45f4053b0c683bb5",
+      "tracked": true,
+      "lines": 256,
+      "kind": "source"
+    },
+    {
+      "path": "docs/CDLNO_EXPERIMENT_OUTPUTS.md",
+      "sha256": "e46501e0a254ff288a14b947627a6f8836c580abbf13b11f8f72f01a4d4df550",
+      "tracked": true,
+      "lines": 107,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_EXPERIMENT_OUTPUTS_REPORT.md",
+      "sha256": "d1c41ea960c2caae88486149ed9262381b9653bae2a231e41dd72b3c3d1fbdab",
+      "tracked": true,
+      "lines": 88,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_FRONT_ABLATION.md",
+      "sha256": "e0a5e87acdabf59ea88268217a7a86a851da90d1cb2b57759a59367a99dd0cbf",
+      "tracked": true,
+      "lines": 353,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_FRONT_ABLATION_A1.md",
+      "sha256": "8da7600344e8a6f01ef97406eb4f87a8f9f6cacee38e9a0efc1e7c5074674f3a",
+      "tracked": true,
+      "lines": 188,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_FRONT_ABLATION_A2.md",
+      "sha256": "a634a5e4680b49e77557ec6500787e7e8450e974fedd1c490ce56a552ff738de",
+      "tracked": true,
+      "lines": 130,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_FRONT_ABLATION_A2_COMMANDS.md",
+      "sha256": "fab13ee4f49cb2b849c9ae214951f6b150ba97e5c976b106f35bdf4353c71d7f",
+      "tracked": true,
+      "lines": 94,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_FRONT_ABLATION_A3.md",
+      "sha256": "89b17d9d47abeb07ec3fc3032c9e60ad54d5d540f8c0e85110a57d5edce8c9f8",
+      "tracked": true,
+      "lines": 154,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_FRONT_ABLATION_A4.md",
+      "sha256": "00bdf27a2e0f2e9ca5998d2a273157a69ced2503cd23e3ecac968fd7b81af74f",
+      "tracked": true,
+      "lines": 243,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_IMPLEMENTATION_REPORT.md",
+      "sha256": "ea19ed40b0eac53c77bf2602b0517bf73a2de489b8c8d5456bce71c8c849dd79",
+      "tracked": true,
+      "lines": 169,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_IMPLEMENTATION_STATUS.md",
+      "sha256": "cf202cb3f560a88cf62d0ac68f09fa4ea77bd12bee29a6e89ffeeca7c156e19a",
+      "tracked": true,
+      "lines": 463,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_PERFORMANCE_TOOLS.md",
+      "sha256": "b92db4a850dcddf8585df2817de77c0217be21db21c3f4068e737aa481f0ab56",
+      "tracked": true,
+      "lines": 87,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_PERIODIC_VISUALIZATION.md",
+      "sha256": "0dac26b1654a95ba2554904eee32b50457249f15c1162a7cbf5d014381dffc42",
+      "tracked": false,
+      "lines": 133,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_PHASE2_MODULES.md",
+      "sha256": "78b6c802a420547c4f9815b40297e789858a76972ae3adddfbc3c3f0a26b28ce",
+      "tracked": true,
+      "lines": 143,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_PHASE3_CDPA.md",
+      "sha256": "c6614180eaea3746102e31c37a877f581141fa147021dae3455e6cfe13174c63",
+      "tracked": true,
+      "lines": 146,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_PHASE4_CORE.md",
+      "sha256": "0e52d708e1697ccfba6310d461776178a2552b4a6e21d26225e60f053e8b07dd",
+      "tracked": true,
+      "lines": 235,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_PHASE5_STATIC_TASKS.md",
+      "sha256": "2918c2e471bbe1f17cb44dd9b08595f14a844cc2b9feaf7f10007a9b4b72ebbc",
+      "tracked": true,
+      "lines": 121,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_PHASE6_TEMPORAL_TASKS.md",
+      "sha256": "01800f5e9f129ea8e2c9bb0a8248b9b8d2c42114162c6aaf71fd0f43652c18f6",
+      "tracked": true,
+      "lines": 86,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_PHASE7_SHAPENET_CAR.md",
+      "sha256": "d7ce4a0c5899f47a11ac3357b1416f57ed981acd87865569284d36c34b3e12d0",
+      "tracked": true,
+      "lines": 119,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_PHASE8_AIRFRANS.md",
+      "sha256": "ad34667ba3c4b982c3bf19e9e29bc6361a2704d7982f3247f18147018b9337b2",
+      "tracked": true,
+      "lines": 114,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_PHASE9_PERFORMANCE.md",
+      "sha256": "ce3a330fd0ddb9c46aa128c4630c0082510f3d49687080cb2ffb1a3366a3d187",
+      "tracked": true,
+      "lines": 172,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_REFERENCE_AUDIT.md",
+      "sha256": "384983c64fa431655304b40e40f75045da9a7d3a582961635a742d96150492e2",
+      "tracked": true,
+      "lines": 315,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_REMOTE_LAUNCHERS.md",
+      "sha256": "dee7bd8210ef42657e4f807ec031400daa6a61509d575d2bdf16fb4a505ba9f8",
+      "tracked": true,
+      "lines": 100,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_REQUIREMENTS_MATRIX.md",
+      "sha256": "3c0de9cd7b9fcb244bedb9f01ffae87392dc1f5e47d28755d984725d0dfa7740",
+      "tracked": true,
+      "lines": 172,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_RESULT_REPORTS.md",
+      "sha256": "ed1d5d09809d3f87b1ea038b522bb8b7a5232dec5379d547de5aadc14b77cd75",
+      "tracked": false,
+      "lines": 99,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_SEQUENTIAL_LAUNCH.md",
+      "sha256": "a47cd2ff33e1a1f725281435d56b734e749b5d379500660adfb1afcc032d180c",
+      "tracked": true,
+      "lines": 34,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_TASK_LAUNCHERS.md",
+      "sha256": "ab70e3e2c753f9c1569ae70655264fd77d20a52e132e1409fb3d35d5fea36ede",
+      "tracked": true,
+      "lines": 64,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_THIRD_PARTY_NOTICES.md",
+      "sha256": "9463334eb5fbcf60b675d327cda6a69be48a2cfbf7275910e847b870a7af3f48",
+      "tracked": true,
+      "lines": 46,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_TRAINING_LAUNCH_REVIEW.md",
+      "sha256": "ef37436a5386217d6cc35798284b4a831bf0c1c586958c8ad95aa8189bd39a82",
+      "tracked": true,
+      "lines": 95,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_VISUALIZATION_RESUME_PLAN.md",
+      "sha256": "57596b39080a6698a4ad61c09e0ccfd572f09b3d19f4892869d49523501d48a4",
+      "tracked": true,
+      "lines": 202,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/CDLNO_VISUALIZATION_RESUME_V1.md",
+      "sha256": "2ecb8c42b0a34f59bed0c1308946a299cec54b1b476719d7e22139e27dddea80",
+      "tracked": true,
+      "lines": 132,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/KCDNO_COMMANDS.md",
+      "sha256": "00960bd2f5f0405a9e73d0897577fefddcbaa83703be5bd89ca0d3a63bc18415",
+      "tracked": true,
+      "lines": 50,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/KCDNO_IMPLEMENTATION_REPORT.md",
+      "sha256": "802322bb73c5f96fb72c8c2d6d1b819e930a33a9bb8377b6df78825d8d10586a",
+      "tracked": true,
+      "lines": 122,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/KCDNO_IMPLEMENTATION_STATUS.md",
+      "sha256": "41de797457f74cf1d175da7f3ea58fba9998a9f04c8b0b1e063ad131685596b1",
+      "tracked": true,
+      "lines": 259,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/KCDNO_K1_CONFIGURATION.md",
+      "sha256": "4377a65a287d7919d11a363290edafda6594c53f92c5064f34af3cbc5d990d6e",
+      "tracked": true,
+      "lines": 150,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/KCDNO_K2_KERNEL_HISTORY.md",
+      "sha256": "b89a42e5aa96c202be62e0b6c8d23c90f19bbf8d653db6b58096b9214a40cc30",
+      "tracked": true,
+      "lines": 136,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/KCDNO_K3_CORE.md",
+      "sha256": "c71c717af823b51cc2190e9a31c53f4d44906f5d832fa679f679ecbaa5d106f9",
+      "tracked": true,
+      "lines": 167,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/KCDNO_K4_STATIC.md",
+      "sha256": "99e1dd4a1d98911a999e373a2b9d82a534e85c8292b0f765a2c518b98e40c6f8",
+      "tracked": true,
+      "lines": 40,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/KCDNO_K5_TEMPORAL.md",
+      "sha256": "a4b761e0965a3f7247fe7b46043ac175ae006905ca052126ddf3ce415a5b2f14",
+      "tracked": true,
+      "lines": 30,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/KCDNO_K6_CAR.md",
+      "sha256": "002ed44055e9c72a7cc08b5bb5b531103d4ead34ebecabd8dd403a37ef73ab80",
+      "tracked": true,
+      "lines": 18,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/KCDNO_K7_AIRFRANS.md",
+      "sha256": "0ec328a124d67e39fcd6beb8b80708f5cc4caa370c2664d04bb5cb2564fdaf2c",
+      "tracked": true,
+      "lines": 16,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/KCDNO_K8_MATCHED.md",
+      "sha256": "536e65da78423e9f5218064cba639f83ba94c00951402ae5526c77e083a497a9",
+      "tracked": true,
+      "lines": 24,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/KCDNO_K9_PERFORMANCE.md",
+      "sha256": "26bb25849729317b93c29169888d827aa8bc6e30aa9367314c03ca161f57d056",
+      "tracked": true,
+      "lines": 50,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/KCDNO_REFERENCE_AUDIT.md",
+      "sha256": "2bba47c3678ce070cc92b75d7ea585a985e2561a0d443f1755c85c6c423c8399",
+      "tracked": true,
+      "lines": 257,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/KCDNO_REQUIREMENTS_MATRIX.md",
+      "sha256": "907ef4183f02a5e9291aa386129ba3588ddbfd4731aa246010218da6f387f79b",
+      "tracked": true,
+      "lines": 55,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/KCDNO_SEED_SUITE.md",
+      "sha256": "353ba9679e3805fd87a26330f302bdf81733af500cd9201d196a352cf4231762",
+      "tracked": false,
+      "lines": 170,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/MSAR_LNO_IMPLEMENTATION_STATUS.md",
+      "sha256": "7e3cc4d743998f98c43b8d61c581503fc2d095641ff29fd3c5b2345dda4b6d66",
+      "tracked": false,
+      "lines": 17,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/MSAR_LNO_M1_CONFIGURATION.md",
+      "sha256": "72a01c9d0c5a13d6e9c894c7373ecb356c49eac9ea7bb51f5a2c4dad7460584c",
+      "tracked": false,
+      "lines": 167,
+      "kind": "documentation"
+    },
+    {
+      "path": "docs/final_audit/delivery-checks.json",
+      "sha256": "ce4d8fbbe8da6ac1751d21196f80045b3d7e308fd181b9876d4459917a6e89a6",
+      "tracked": true,
+      "lines": 146,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/final_audit/diff-baseline-location.json",
+      "sha256": "929ad5d898f317e3b0ed390db0df66f480cd56955e4ee06a2671f985feeee127",
+      "tracked": true,
+      "lines": 12,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/final_audit/diff-inventory.json",
+      "sha256": "a497bc3f508d36cfe7276e024bc94897d35234d9d8c24d5ba9094599891f88ee",
+      "tracked": true,
+      "lines": 90,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/final_audit/environment.json",
+      "sha256": "a61b5c16b008c8d0ac7e2bd9a4c72c7c9e24ccef01948b066164cd78aec41297",
+      "tracked": true,
+      "lines": 24,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/final_audit/evidence-sha256.json",
+      "sha256": "add39962baca7913e23914b49726bba7a6576d3a278fc82ea0114f11d04efc5a",
+      "tracked": true,
+      "lines": 15,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/final_audit/freeze-check.json",
+      "sha256": "e712ae7b0ddb56bb21f52acd9eee4c1c3d1f58af77410bf368c79cb9a044a359",
+      "tracked": true,
+      "lines": 1415,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/final_audit/implementation-vs-baseline.patch",
+      "sha256": "fdaccaddbf267e3e31dff23548427fc8e42ac002b3dea87c970592bf07d63adf",
+      "tracked": true,
+      "lines": 8412,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/final_audit/ipot-source.json",
+      "sha256": "ec621ae1487c1d7e11d71356645a822792ede675939f4429f1885ad7b46ef17e",
+      "tracked": true,
+      "lines": 33,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/final_audit/lrsa-source.json",
+      "sha256": "8d3f25e8c8a9656bb399b6a935aafc912f9d296d1507b5e0938d9085caa7428d",
+      "tracked": true,
+      "lines": 13,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/final_audit/phase10-changes.patch",
+      "sha256": "e9269671ae7be2f74e35ea789c2ba5d78aa2fd4eec71412031c42bfe5cce5dab",
+      "tracked": true,
+      "lines": 776,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/final_audit/phase10-start.json",
+      "sha256": "aaeefa892951c977ad1336392964a11eca1562fe22749d0ba15a6f99e03a2085",
+      "tracked": true,
+      "lines": 164,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a0-documents.patch",
+      "sha256": "fea413bcf4e18d315e5ce47c00a2b1a93b7645c3621a1b2cf5ceccc9fa38c2a7",
+      "tracked": true,
+      "lines": 412,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/front_ablation_audit/a0-start.json",
+      "sha256": "c565c153e14e9d5d01b66592fb3d49f914ea8a8a3ddd19f99a18a5b749f32544",
+      "tracked": true,
+      "lines": 210,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a1/a1-changes.patch",
+      "sha256": "aab8128d83bd8d3b11ec8bdeca2984394e4e6b6002ec94b5b311af5bb7d612d5",
+      "tracked": true,
+      "lines": 667,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/front_ablation_audit/a1/audit_scope.py",
+      "sha256": "77d0746aa014eba13ce81ad96480835ed2f7647774441a30696c3b6436ae2588",
+      "tracked": true,
+      "lines": 136,
+      "kind": "source"
+    },
+    {
+      "path": "docs/front_ablation_audit/a1/baseline.json",
+      "sha256": "09fbded0c768b664dddc1fd659c94e7fa58270ef55f78c3cccfd5a6bd9adc589",
+      "tracked": true,
+      "lines": 25,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a1/before-airfrans.json",
+      "sha256": "66754968b219d7b2a8ce30628b88e34d635f4c5be73ddf9ffa1b7ccb04147a2d",
+      "tracked": true,
+      "lines": 471,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a1/before-car.json",
+      "sha256": "04488fed154505e31a301e6a8adfb79fea740601895d8584237b85d76f16b16e",
+      "tracked": true,
+      "lines": 469,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a1/before-core.json",
+      "sha256": "e4021b385a33ee045af12ed2412e5e68cbdcc2a9877f4813ffbb6e0516fe721d",
+      "tracked": true,
+      "lines": 2476,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a1/capture_before.py",
+      "sha256": "31b1b940304a40732ec8664fdd481002d36de395789c4f5408b173e0001f8360",
+      "tracked": true,
+      "lines": 123,
+      "kind": "source"
+    },
+    {
+      "path": "docs/front_ablation_audit/a1/check_gpu.py",
+      "sha256": "2c29ec2862a79eb196d35ad32cca8056cefafa21def12fb4e78c8d32bf586c9c",
+      "tracked": true,
+      "lines": 48,
+      "kind": "source"
+    },
+    {
+      "path": "docs/front_ablation_audit/a1/freeze.json",
+      "sha256": "0f71ff70c64729236edf14db479725521366de4896292eb942409f0e6eadb690",
+      "tracked": true,
+      "lines": 344,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a1/full-airfrans.json",
+      "sha256": "a40765a8ef7c98bfeec998d2273c7233f2f6acaac6b6d6c0df75b76f0ff27fd2",
+      "tracked": true,
+      "lines": 31,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a1/full-car.json",
+      "sha256": "a6fa9cb276082fead91da4de59179e60749b10f7eae69528b18d65d69e9bfc4e",
+      "tracked": true,
+      "lines": 31,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a1/full-core.json",
+      "sha256": "c9878b5f9a09370bdc90bafe3d54451dfd955219d1428e5434b166d23a75e8b9",
+      "tracked": true,
+      "lines": 141,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a1/gpu.json",
+      "sha256": "f89a1b3bbb45b515b735cec5274568c76d89d06eabd7f31009ddd60cb8535471",
+      "tracked": true,
+      "lines": 27,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a1/regression-initial.txt",
+      "sha256": "42ebc564634377c536e52a485424dcb0405a8f2abfcf91a9263b0692fa7f28f5",
+      "tracked": true,
+      "lines": 198,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a1/regression.txt",
+      "sha256": "d0c97176cbb12c32069f3de35b4fa2ea646a47bce2584b2904ef08fb5145b190",
+      "tracked": true,
+      "lines": 166,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a1/start.json",
+      "sha256": "95c7f4075cf4159da53b478c54671dd5626924af894b706491d03639ab29a075",
+      "tracked": true,
+      "lines": 222,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a1/targeted-initial.txt",
+      "sha256": "ed267a6d8d9adb573b43234831b09c7e6e2b8330e3d1a7866536d8660730bb36",
+      "tracked": true,
+      "lines": 18,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a1/verify_before.py",
+      "sha256": "8e4c6843fe576bd4509b86a98e72e914632736f381fb807d7a53136745742e53",
+      "tracked": true,
+      "lines": 107,
+      "kind": "source"
+    },
+    {
+      "path": "docs/front_ablation_audit/a2/a2-changes.patch",
+      "sha256": "d974fd7941b30baf989cd708a680b491b940964510d578fe751e2ccbdfd70e0f",
+      "tracked": true,
+      "lines": 897,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/front_ablation_audit/a2/audit_scope.py",
+      "sha256": "d82f15e8566737013756ae9fd7e1cef1b714d73dccc1806932bb7f131529a336",
+      "tracked": true,
+      "lines": 106,
+      "kind": "source"
+    },
+    {
+      "path": "docs/front_ablation_audit/a2/before-presets.json",
+      "sha256": "aca343e43ab9fc5b29b6e2556ea3281b72e1db250694470e46223b09d7341418",
+      "tracked": true,
+      "lines": 194,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a2/commands.json",
+      "sha256": "f7e84e60287afa69381a71ad9f283a027cb6435c61fea81af2a751cf0f6d3e8c",
+      "tracked": true,
+      "lines": 2710,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a2/freeze.json",
+      "sha256": "a06cc013ded90ff232b71dd2fde7be481ecfe0be7879e936c9ef0edb5433e17c",
+      "tracked": true,
+      "lines": 401,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a2/full-airfrans.json",
+      "sha256": "a40765a8ef7c98bfeec998d2273c7233f2f6acaac6b6d6c0df75b76f0ff27fd2",
+      "tracked": true,
+      "lines": 31,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a2/full-car.json",
+      "sha256": "a6fa9cb276082fead91da4de59179e60749b10f7eae69528b18d65d69e9bfc4e",
+      "tracked": true,
+      "lines": 31,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a2/full-core.json",
+      "sha256": "c9878b5f9a09370bdc90bafe3d54451dfd955219d1428e5434b166d23a75e8b9",
+      "tracked": true,
+      "lines": 141,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a2/regression-before-final-review.txt",
+      "sha256": "6242a533f0c4d47a6116b7e22e77d82ead9fc0ed9d3ff585f2a737acccae5451",
+      "tracked": true,
+      "lines": 174,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a2/regression-final.txt",
+      "sha256": "142df454e8eb1260038adefaecd8d375f0704f97c42aa268c3fa1b7910501ebe",
+      "tracked": true,
+      "lines": 174,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a2/regression-initial.txt",
+      "sha256": "b21424de47d5d729013a5410a8494776a89f80907e029349e79be9b4ab3683b2",
+      "tracked": true,
+      "lines": 255,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a2/start.json",
+      "sha256": "2103d130a84dcad3795cf55ceb64e3b09038f0e3efa3128a29271d7f4cf2049e",
+      "tracked": true,
+      "lines": 242,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a2/targeted-final.txt",
+      "sha256": "767bbbfbe5491f7522f8c1556c80e203c30ab77253057fbd09f121ead903bb6e",
+      "tracked": true,
+      "lines": 15,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a2/targeted-initial.txt",
+      "sha256": "059e781120b3d4933452a212a48240f42ea8f0c2f61d992fdf8d3af6d63c6edb",
+      "tracked": true,
+      "lines": 191,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a2/targeted.txt",
+      "sha256": "9dcdf839a46202749a900e18da221343b4028236000818e0f216c7b87d3c279b",
+      "tracked": true,
+      "lines": 14,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a3/a3-changes.patch",
+      "sha256": "1095eabec6e284ebec2166db372874341fbd5335ae653237cff31217905d1203",
+      "tracked": true,
+      "lines": 681,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/front_ablation_audit/a3/audit_scope.py",
+      "sha256": "a5334b5c88f322bbc9a532f92e3f8058050f0f2589a84acbd1b40d6deec2780e",
+      "tracked": true,
+      "lines": 55,
+      "kind": "source"
+    },
+    {
+      "path": "docs/front_ablation_audit/a3/environment.json",
+      "sha256": "82afddcb83d4e184063e35e8bb3a9c853ec096a026865fb0e0a26188e2779601",
+      "tracked": true,
+      "lines": 9,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a3/executed-standard-fragments.json",
+      "sha256": "1a6bc9846265771365399fb2b057e50f109abdf767c00e320bb1b6eb67ad8ebb",
+      "tracked": true,
+      "lines": 21,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a3/freeze.json",
+      "sha256": "37e5b4349d158f2f0a1e6d02f0377203c11a9f949804d1cd5cf9254fe825a32b",
+      "tracked": true,
+      "lines": 166,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a3/full-airfrans.json",
+      "sha256": "a40765a8ef7c98bfeec998d2273c7233f2f6acaac6b6d6c0df75b76f0ff27fd2",
+      "tracked": true,
+      "lines": 31,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a3/full-car.json",
+      "sha256": "a6fa9cb276082fead91da4de59179e60749b10f7eae69528b18d65d69e9bfc4e",
+      "tracked": true,
+      "lines": 31,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a3/full-core.json",
+      "sha256": "c9878b5f9a09370bdc90bafe3d54451dfd955219d1428e5434b166d23a75e8b9",
+      "tracked": true,
+      "lines": 141,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a3/start.json",
+      "sha256": "4ceb2ee81c5b9e602b8d0dac6f3d8d73e45cfe57e58bf09064eb636b36bbed35",
+      "tracked": true,
+      "lines": 260,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a3/training-cases.json",
+      "sha256": "f5bd82142fecc05fe371b89c7f63010f8fefc2e112b2b02ae0afaf6d8e24ad33",
+      "tracked": true,
+      "lines": 1034,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a3/verification-summary.json",
+      "sha256": "3018b6c8a920bb72d8a73f90313ab57bd42240b961ec46f0cdf68b9b1d56d3c5",
+      "tracked": true,
+      "lines": 62,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/a4-changes.patch",
+      "sha256": "770747d441424b661d5d656ca2b608bc22cd6aea1b640d5b61f5fa0f1f020677",
+      "tracked": true,
+      "lines": 849,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/audit_scope.py",
+      "sha256": "cfd6435a652f8262858efded4959775e9b0668ef9203511c00677946aa785f9b",
+      "tracked": true,
+      "lines": 115,
+      "kind": "source"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/commands.json",
+      "sha256": "8cbbbea0f460fde3ab4eff6ed9c271d8cc7fb6f1f7118340a86f71218557566c",
+      "tracked": true,
+      "lines": 2917,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/commands.txt",
+      "sha256": "ae265811f9ff20bd284b372add8bb4c56b2fe60026b8db202d8e2c5799491df3",
+      "tracked": true,
+      "lines": 3,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/cpu-full.json",
+      "sha256": "b1b70a8c66032195fcc07bf5afeef624001ee724b656db4b472c6bbc80cd77e5",
+      "tracked": true,
+      "lines": 13979,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/cpu-identity.json",
+      "sha256": "05dc9cf19f3275d85833a3b1b382f846cf81640b751bfeb0391de6363573bee1",
+      "tracked": true,
+      "lines": 12710,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/cpu-no_sa.json",
+      "sha256": "726b5eac065968c7bc2c03f91871caeed5a0956294254ec7ff9962e234eaf391",
+      "tracked": true,
+      "lines": 13061,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/freeze.json",
+      "sha256": "9e47705cc92abbe8d3d4de34945790cadd2b7b06b63326bda6f28e3e4d0aee38",
+      "tracked": true,
+      "lines": 291,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/front-ablation-runtime.patch",
+      "sha256": "08f7eb6a0ee7de43b52a8e98973b180300fa52d686880958ee7455c37a926aa7",
+      "tracked": true,
+      "lines": 894,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/full-before.json",
+      "sha256": "cab5dc2933b9b8d3a81baa89d0f917bd9d1813ecf954b68331a21815b1efd9d5",
+      "tracked": true,
+      "lines": 5228,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/gpu-airfoil-matched-full.json",
+      "sha256": "b226dbe9cc91b7d47bc13a408ce689ea1a4b25b273d2216682480eb591fe8e3b",
+      "tracked": true,
+      "lines": 1608,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/gpu-airfoil-matched-identity.json",
+      "sha256": "9cdb2d1ce65ae9b443b655ec965e5831e468a1b277ac6cef1280f8c3a17683a3",
+      "tracked": true,
+      "lines": 1459,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/gpu-airfoil-matched-no_sa.json",
+      "sha256": "7310a815772f7d16423b71393d93db59e19d3f2c4934cbb1bb0f7d2ebf321c53",
+      "tracked": true,
+      "lines": 1498,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/gpu-elasticity-task-full.json",
+      "sha256": "fab99360893bd450aafb19c57afa354b48b78bd6c39cda98407ca4eeec8db38d",
+      "tracked": true,
+      "lines": 7731,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/gpu-elasticity-task-identity.json",
+      "sha256": "12226e469fd475ca6c2b9f16da8eeb272332c8db1569b4b6da8eac031de4bb29",
+      "tracked": true,
+      "lines": 1421,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/gpu-elasticity-task-no_sa.json",
+      "sha256": "002a33891bf9dd45c8938ed8776519c5c25fa9706c6db94acca5c1632c81d884",
+      "tracked": true,
+      "lines": 1460,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/performance-commands.json",
+      "sha256": "d5d39cde97d14c32551309c24e809a5327ad37555111ac64253b0416b15e0f18",
+      "tracked": true,
+      "lines": 291,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/performance-targeted.txt",
+      "sha256": "d92a659e5224e1e2446fe12be5193ec23fdbc401dc5f102e595a7b5d03464598",
+      "tracked": true,
+      "lines": 24,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/regression-final.txt",
+      "sha256": "ddd2b994fbe7bead633f45e77584f9fc20ecdcdbe2a960162c2d8f10cdfff429",
+      "tracked": true,
+      "lines": 236,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/results.json",
+      "sha256": "6c3ecc7ff092a1cd65a91ed059c066f93bf109a07aa82447298a96dd462a629c",
+      "tracked": true,
+      "lines": 25,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/run_performance.py",
+      "sha256": "4a165ca7c6fafc4ee0c1bd1b91f936a8cd1a3e11c7e72cace4e206a5acea37b5",
+      "tracked": true,
+      "lines": 40,
+      "kind": "source"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/scope-final.txt",
+      "sha256": "fa6c79c9cace73f2c8f146c2a7ad4e6ff1bfa6b046ebcdd5231d6cb9216d8c52",
+      "tracked": true,
+      "lines": 25,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/start.json",
+      "sha256": "30296cb076b140841adaf4a6fde69d44b4eccb73ee9eb6c37591faf70959c34c",
+      "tracked": true,
+      "lines": 291,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/summarize.py",
+      "sha256": "4ea07a25151c6f40f71e326d0370c69208494ffff6cb976305796972afa0a2e3",
+      "tracked": true,
+      "lines": 65,
+      "kind": "source"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/summary.json",
+      "sha256": "264631b34b1d8035d9eff7aa2ca32b47e26109fb81dcffb209015a373c086d53",
+      "tracked": true,
+      "lines": 2978,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/summary.txt",
+      "sha256": "a62362ec20fbbe9e8f1de894685c42c6b719f6615f06ba0d7f044e99e46ee742",
+      "tracked": true,
+      "lines": 20,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/a4/verify_commands.py",
+      "sha256": "db95f7f79b687cd9d5263b282c65fccca9649e138e714c86040968288c1abacd",
+      "tracked": true,
+      "lines": 49,
+      "kind": "source"
+    },
+    {
+      "path": "docs/front_ablation_audit/delivery-check.json",
+      "sha256": "43a30e6af22474710524c6f586e5d17e167dc6a6eb635562b25a1c693e150951",
+      "tracked": true,
+      "lines": 41,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/static-results.json",
+      "sha256": "456b945a0ea342cfb767f6c1a2de0184368fbf06994f28db0b64c1f3ed437446",
+      "tracked": true,
+      "lines": 368,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/front_ablation_audit/static_check.txt",
+      "sha256": "a8a6103b23464ba0e624936153c1879288134507be64a1c06b34447a2a01c11b",
+      "tracked": true,
+      "lines": 135,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/audit_static.py",
+      "sha256": "43a36e2f2c764b7f28e1372673d63e2c65a0b0586d4fe660679e2484509b828f",
+      "tracked": true,
+      "lines": 117,
+      "kind": "source"
+    },
+    {
+      "path": "docs/kcdno_audit/baseline.json",
+      "sha256": "87443709a0bf6d6dec9d3f547900938c9520975e5edef1f77e1538a7de9c42b3",
+      "tracked": true,
+      "lines": 1628,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/capture-airfrans.json",
+      "sha256": "301c2226e377b0cd1200bbfa1a7d627a255ad70bcace7c00b64855df20ac291c",
+      "tracked": true,
+      "lines": 45,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/capture-airfrans.txt",
+      "sha256": "bf22442ca9425f20270b37956f2c8a73c2867740fa0ecd93e3abbf484ba9d34b",
+      "tracked": true,
+      "lines": 6,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/capture-car.json",
+      "sha256": "67997b4728acac81dd59e39a14d266fc52a0d9cbdc6ef22327a50be5d00021f4",
+      "tracked": true,
+      "lines": 45,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/capture-car.txt",
+      "sha256": "13329b1095bc6756e45aedae4fe7343bbedcdb2b112e7d18e52a8845e27e3678",
+      "tracked": true,
+      "lines": 6,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/capture-standard.json",
+      "sha256": "02419430ce526bf1d4bf5850aab9bdf5e52b0039499e0d1f9eb4d951119b2276",
+      "tracked": true,
+      "lines": 219,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/capture-standard.txt",
+      "sha256": "c0d03c5245dae9816c3ea12f0b0c5b82ff6ca023a96693dc0fdbf0545a52db1b",
+      "tracked": true,
+      "lines": 35,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/capture.json",
+      "sha256": "9171164929250100056bc5f009bf1d37d6a4fa26d3cbe8223221db5cf72da5ab",
+      "tracked": true,
+      "lines": 365,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/cli-airfrans.json",
+      "sha256": "a4c68027e3b751726aab35b17e8e84fc4052bd73f7d57dc30fd0fe75072e60f9",
+      "tracked": true,
+      "lines": 214,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/cli-airfrans.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tracked": true,
+      "lines": 0,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/cli-car.json",
+      "sha256": "2a70d1425b54e370d8cb7077e3a845a0a3833a42c47fc19f01696c03f7f4d689",
+      "tracked": true,
+      "lines": 241,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/cli-car.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tracked": true,
+      "lines": 0,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/cli-standard.json",
+      "sha256": "d2831593d846edab2ffc2f68f0fb7cf34d0df1a5c29295214347f58bfc9e121b",
+      "tracked": true,
+      "lines": 1470,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/cli-standard.txt",
+      "sha256": "1992138f2563e695311c57b3c8fc2cd9774200f32fd13334a726690334b98c08",
+      "tracked": true,
+      "lines": 2,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/commands.txt",
+      "sha256": "7bbf086f43f573354fbb9f186eb33ba659dbc415763a3f98a489d09a878f118f",
+      "tracked": true,
+      "lines": 21,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/delivery-checks.json",
+      "sha256": "e9bd891aafd59af205352f67b7e13960c7569a3bae1aed493e449fcacfbab279",
+      "tracked": true,
+      "lines": 10,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/entry-contracts.json",
+      "sha256": "4a62583b4ed2e9360fc994e6349db84c32e3337c7a89ee109c886830047ccba2",
+      "tracked": true,
+      "lines": 1552,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/environment.json",
+      "sha256": "c5ee91df637bfb8b92eb91ebb794d5bf959cce148a159e9825a828da64e70c56",
+      "tracked": true,
+      "lines": 81,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/execution-notes.json",
+      "sha256": "a91b3e7caa65593f2714208451a205b344eae1c945ef1df1039bed08ca96a999",
+      "tracked": true,
+      "lines": 26,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/final_static.py",
+      "sha256": "7f620c85affc08812687db90bb3d82c203c9d1660493c247195421f58f851b73",
+      "tracked": true,
+      "lines": 58,
+      "kind": "source"
+    },
+    {
+      "path": "docs/kcdno_audit/fixture_index.json",
+      "sha256": "b250c03b90cbdb87133ebea9b3dadd1e4872de0a515194d43f266fe0136c14cf",
+      "tracked": true,
+      "lines": 2509,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/freeze.json",
+      "sha256": "1cf80f966efac5b888c354574b7e0472160802a1fcf80dc9916dc88228ef42e6",
+      "tracked": true,
+      "lines": 43,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/frozen-tests.txt",
+      "sha256": "7ba601b302219906a205bf7a0a3b89da6d95ef6c7d5445348ee0a57d34d3f7ef",
+      "tracked": true,
+      "lines": 16,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k1/before.json",
+      "sha256": "5fcfdc7570f67a4f73d44151e3435007c709c537943279d1159a35066ec3849d",
+      "tracked": true,
+      "lines": 394,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k1/code-changes.patch",
+      "sha256": "1051bc8076d9d8ea0928a59f695bfad28b26cd7bb09835d3748595d0d7a094d1",
+      "tracked": true,
+      "lines": 764,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/kcdno_audit/k1/commands.txt",
+      "sha256": "a52d725de30fcda9e541a6d7e877183deae2915f3dc287608fbef690fbafbd66",
+      "tracked": true,
+      "lines": 14,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k1/config-tests-initial.txt",
+      "sha256": "0729c9caaa5728fc673f97bae7994e740bafe17b0092731b15f80a1c7affc3e5",
+      "tracked": true,
+      "lines": 53,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k1/config-tests.txt",
+      "sha256": "aa21dacb790164f2bfe75da7ece0f05a76827a5053b591c46040b49081d541d9",
+      "tracked": true,
+      "lines": 18,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k1/example-metadata.json",
+      "sha256": "19f019e4a86c98004d7f7548d92d0a98c276ffa2dc94ef12091b3a18e37016c5",
+      "tracked": true,
+      "lines": 51,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k1/final-tests.txt",
+      "sha256": "574d15a60ce4c4219fe1277c34571ca004fd391198f3730af38098391b48e06e",
+      "tracked": true,
+      "lines": 35,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k1/freeze.json",
+      "sha256": "f7bf2deb309177e124488b336a9e5c81503a1f9d975d795255fc078cb2ecf54d",
+      "tracked": true,
+      "lines": 383,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k1/package-check.json",
+      "sha256": "ad8a19e0d9cea9369b09a585912bc3a89e2aed50bed29953339bab24319bbe9e",
+      "tracked": true,
+      "lines": 9,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k1/profiles.json",
+      "sha256": "964378d733e49d470663a2594d017fe1b3d89fe778a204d1042cee735047cc49",
+      "tracked": true,
+      "lines": 422,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k1/replay-after-airfrans.json",
+      "sha256": "b21a3436a23a7e39e35121c5f1f098c7deb78b291ba8a7a65167073c8c5c22a0",
+      "tracked": true,
+      "lines": 140,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k1/replay-after-car.json",
+      "sha256": "5f6292a6c620ed48dcf28da943bcf4fcf58f6c16f84a8a2c2310bc5fb87bbc64",
+      "tracked": true,
+      "lines": 113,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k1/replay-after-standard.json",
+      "sha256": "70119587a6196378a1e17bdf7eb290ee375c6ee1515b470cdadafc20086f7119",
+      "tracked": true,
+      "lines": 666,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k1/replay-after.json",
+      "sha256": "a6cc883a1f5fdf41eead646cab42cbcf07696117bbee91408cdb261b775c71e7",
+      "tracked": true,
+      "lines": 975,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k1/replay-before-airfrans.json",
+      "sha256": "b21a3436a23a7e39e35121c5f1f098c7deb78b291ba8a7a65167073c8c5c22a0",
+      "tracked": true,
+      "lines": 140,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k1/replay-before-car.json",
+      "sha256": "5f6292a6c620ed48dcf28da943bcf4fcf58f6c16f84a8a2c2310bc5fb87bbc64",
+      "tracked": true,
+      "lines": 113,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k1/replay-before-standard.json",
+      "sha256": "70119587a6196378a1e17bdf7eb290ee375c6ee1515b470cdadafc20086f7119",
+      "tracked": true,
+      "lines": 666,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k1/replay-before.json",
+      "sha256": "cd13add74b485ffab2d4c1456ded6a11d70c29bdf7cd6ded048ee754ebedc2d9",
+      "tracked": true,
+      "lines": 975,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k1/summary.json",
+      "sha256": "e367d37d29cccb329c8a328a00a1da21bb26a775d86326f404328043bfb6679f",
+      "tracked": true,
+      "lines": 23,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k10/before.json",
+      "sha256": "36cc230a41822829f65996321b6ecdfb20bd388ee51cfa348ca3cc54c284a03e",
+      "tracked": true,
+      "lines": 553,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k10/changed-files.json",
+      "sha256": "68c5d2e9287fcb03c24470b440465e5c068a4b8a37ed04e34ec3d8d576bc87a1",
+      "tracked": true,
+      "lines": 33,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k10/changes.patch",
+      "sha256": "6fec2c23405dce5806c21c7d0265df465fa62ed853156530c51e48c95473661c",
+      "tracked": true,
+      "lines": 838,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/kcdno_audit/k10/commands.txt",
+      "sha256": "b909c195f9ec6eb438adb6b2a88b6378ca539df996095b520e6a6784e79d80cf",
+      "tracked": true,
+      "lines": 6,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k10/final-suite.txt",
+      "sha256": "ccfdf8ae7f36f9f6c0079be95a7bfb9dda19cd7e7a545173ecc4149faaa86ffd",
+      "tracked": true,
+      "lines": 322,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k10/freeze.json",
+      "sha256": "274d0cbe821e27c137da585efda0e6667737ec3d5ab53bc6a8acac0f157a125b",
+      "tracked": true,
+      "lines": 149,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k10/git-status.txt",
+      "sha256": "8122e710fe7d06ff21cd66d32e09371b3f74e193d10982c2b4f36b81eaba5d0f",
+      "tracked": true,
+      "lines": 76,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k10/integration-changed-files.json",
+      "sha256": "fcff75a750818e5c2befab7bbcadeea687d45690b0e7977552644b6da71d5dd0",
+      "tracked": true,
+      "lines": 85,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k10/integration-changes.patch",
+      "sha256": "47f5cca1f4bbaac31a2ca2705147af163ecab3e639e613ed1fd4957546bbc604",
+      "tracked": true,
+      "lines": 3557,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/kcdno_audit/k10/old-replay-airfrans.json",
+      "sha256": "b21a3436a23a7e39e35121c5f1f098c7deb78b291ba8a7a65167073c8c5c22a0",
+      "tracked": true,
+      "lines": 140,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k10/old-replay-car.json",
+      "sha256": "5f6292a6c620ed48dcf28da943bcf4fcf58f6c16f84a8a2c2310bc5fb87bbc64",
+      "tracked": true,
+      "lines": 113,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k10/old-replay-standard.json",
+      "sha256": "70119587a6196378a1e17bdf7eb290ee375c6ee1515b470cdadafc20086f7119",
+      "tracked": true,
+      "lines": 666,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k10/old-replay.json",
+      "sha256": "a518a67579f6a60bee6692e7954e4f1bfa29b4a1bfa6f60306ec0826de0a4015",
+      "tracked": true,
+      "lines": 975,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k10/old-replay.txt",
+      "sha256": "fd6ca2e88b6b4abc56ace60af51a9f5b12335557f20697c04226c2b1d77da596",
+      "tracked": true,
+      "lines": 3,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k10/targeted-tests.txt",
+      "sha256": "2d1b3c90896086beb674179eed55d36108c2de3fbf0ca2dc396b062f0a4b5598",
+      "tracked": true,
+      "lines": 11,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k10/task-coverage.json",
+      "sha256": "f1e4ec909ff13d80d65675eff0ddbb426cffdbe20f13687775a3763b6b54d0c6",
+      "tracked": true,
+      "lines": 266,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k10/temporal-off-step.txt",
+      "sha256": "3fb984a4913b8af1b3fe44611cdaa71ab99cb190844644e2545425e58e549bbc",
+      "tracked": true,
+      "lines": 8,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k2/before.json",
+      "sha256": "008fbc6343e66d78553a2a05ca9ef76dfbedd329862d5cf29d9bb59f9a5b0fc4",
+      "tracked": true,
+      "lines": 415,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k2/code-changes.patch",
+      "sha256": "d4ac41c3a4d5b8f3836d635241244978c3fecb5cdb6f2d5c1200fd0e23f7fbc2",
+      "tracked": true,
+      "lines": 633,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/kcdno_audit/k2/commands.txt",
+      "sha256": "a8227784103cc105fb303417b35aa1bdb0316684ee006b8434d745fc4dfb390f",
+      "tracked": true,
+      "lines": 15,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k2/final-tests.txt",
+      "sha256": "598d9e0c8bd6a15927ec0ff7e19fc109926b356811eb3a12eaf6b5cff11163db",
+      "tracked": true,
+      "lines": 90,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k2/freeze.json",
+      "sha256": "1d8e3f724f6f01d2c22eb0d7ce7b6fa33fc79b6bf309e9d915ffb3b3557afb37",
+      "tracked": true,
+      "lines": 414,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k2/frozen-tests.txt",
+      "sha256": "ee36bceeb220ad6701f3cd8c0fd50d49b9b2da4639c8fa25118e2bfca0e166d9",
+      "tracked": true,
+      "lines": 16,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k2/old-model-replay-airfrans.json",
+      "sha256": "b21a3436a23a7e39e35121c5f1f098c7deb78b291ba8a7a65167073c8c5c22a0",
+      "tracked": true,
+      "lines": 140,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k2/old-model-replay-car.json",
+      "sha256": "5f6292a6c620ed48dcf28da943bcf4fcf58f6c16f84a8a2c2310bc5fb87bbc64",
+      "tracked": true,
+      "lines": 113,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k2/old-model-replay-standard.json",
+      "sha256": "70119587a6196378a1e17bdf7eb290ee375c6ee1515b470cdadafc20086f7119",
+      "tracked": true,
+      "lines": 666,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k2/old-model-replay.json",
+      "sha256": "d9f6d7d6b09116525fe4449f96e3349883e4f008c9da9808c41ece401186c378",
+      "tracked": true,
+      "lines": 975,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k2/summary.json",
+      "sha256": "72d8ca072629789073c1be66879e0e0bc01b42987ac038b47b56a72071541cf3",
+      "tracked": true,
+      "lines": 79,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k2/targeted-initial.txt",
+      "sha256": "f522a430b9cd9ac26600d683beac5147c323ae8c802a53a57716d5dd26b815c2",
+      "tracked": true,
+      "lines": 30,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k3/before.json",
+      "sha256": "5238efdcb79c5e6e1852b19dd2a00986215212811c3bc014d8b03ca32ebb14e8",
+      "tracked": true,
+      "lines": 434,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k3/code-changes.patch",
+      "sha256": "37002ac40f5fe32538aa88087022e99a8371bcbbc27ef0ebe45506e4cfc02990",
+      "tracked": true,
+      "lines": 728,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/kcdno_audit/k3/commands.txt",
+      "sha256": "881529526b0dce03410e2749619fabc852615999b8b5f4fe658c2958b1b45305",
+      "tracked": true,
+      "lines": 17,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k3/core-evidence.json",
+      "sha256": "0451aff4e2d35bc59277c73260183d0d5bd718cf96e1a5b812335eb566b0adf1",
+      "tracked": true,
+      "lines": 631,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k3/core-evidence.txt",
+      "sha256": "1c30276fd52bfa2375106f42313d5075f1e9ffd6ff75de446918020c4f95b185",
+      "tracked": true,
+      "lines": 1,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k3/final-tests.txt",
+      "sha256": "72c88e129258ea9bf05ee14648cbea8772b0b684825dabf3a40b0f48d3f47767",
+      "tracked": true,
+      "lines": 83,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k3/freeze.json",
+      "sha256": "441342be575a0d7aff59c77ab2ed675e318722f53d3e72ab28ac6351a2b60580",
+      "tracked": true,
+      "lines": 16,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k3/initial-tests.txt",
+      "sha256": "719130884f182a3888d84cf69f9647764e6dbb268b21e993453bfc50fdb27f73",
+      "tracked": true,
+      "lines": 34,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k3/old-core-replay.json",
+      "sha256": "ea31f186ada3c1be542ac757f4b3c7c3e982d383418e6128c95e8a1e48708806",
+      "tracked": true,
+      "lines": 129,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k3/old-core-replay.txt",
+      "sha256": "c8f9bb791ed521330de9b9c60587e1831c4726ed59fbeb1d79c247b070bb0522",
+      "tracked": true,
+      "lines": 9,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k3/stage-changes.patch",
+      "sha256": "ec503b3478c7ccbf4014c2a3a37766acb2179d0b475c5d3a7eeb093eab6ea274",
+      "tracked": true,
+      "lines": 2393,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/kcdno_audit/k3/summary.json",
+      "sha256": "cd3f1d198c9cca1ba0fc7203bd747ee526e01b70495b70476434f98375c6c683",
+      "tracked": true,
+      "lines": 65,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k3/verify.py",
+      "sha256": "164985fcf86070c55c169f9049c05158aaae7519902f6fd38f7745a412b3510a",
+      "tracked": true,
+      "lines": 108,
+      "kind": "source"
+    },
+    {
+      "path": "docs/kcdno_audit/k4/before.json",
+      "sha256": "402acef74486858c661e8175cb547869d84626e197430a3caa1a0d796dc4b7b4",
+      "tracked": true,
+      "lines": 455,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k4/changed-files.json",
+      "sha256": "160138f5900bdfd0aca23b142dd317e380f7a63416a119eff06beeedde65b505",
+      "tracked": true,
+      "lines": 28,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k4/changes.patch",
+      "sha256": "f6f1c60a4ce73cf0ae3c4e3c6113b51f35b4da9cf4adf5cc64c70d9502f37238",
+      "tracked": true,
+      "lines": 921,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/kcdno_audit/k4/final-tests.txt",
+      "sha256": "25c8ec603800b6867372193befa6fcd5ec52e0f10cfaf75cfa286500ca510f6f",
+      "tracked": true,
+      "lines": 13,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k4/old-freeze.txt",
+      "sha256": "42bee404e4b52f75c7f1e76be023f219f8d2baa867194c75143f4f322657bb4a",
+      "tracked": true,
+      "lines": 8,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k4/old-replay-fixed.txt",
+      "sha256": "325acb56bd1a386411ab41900f42c22e2cfe4098b8c09b0a0055fdf86620aff7",
+      "tracked": true,
+      "lines": 18,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k4/old-replay.json",
+      "sha256": "af7eef6bd4748b3346bee0187bc7d60df45ff53f06df69710cc2250bba3c2163",
+      "tracked": true,
+      "lines": 354,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k4/old-replay.txt",
+      "sha256": "b2d493157be29350a8167bedb21d72a4869e9021c87629187e59efd95288dd50",
+      "tracked": true,
+      "lines": 18,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k4/tests.txt",
+      "sha256": "3382dc4c047deca8bc7b0a56f49be3d8d75dc7e2a2581f4a582c732de8b7002b",
+      "tracked": true,
+      "lines": 11,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k5/before.json",
+      "sha256": "21e8c6f5c3496bb13234274848be693c09dd396403649f5fd0188f17a0bc01a8",
+      "tracked": true,
+      "lines": 480,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k5/changed-files.json",
+      "sha256": "36dceb9ca717d0d0b2ef2ce44b36f94d1d7d3efc9edeb30334034236089fffb3",
+      "tracked": true,
+      "lines": 16,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k5/changes.patch",
+      "sha256": "be767cf799912f5b671f20440afa204bf26ff23493cadc2941511bb0657f6d53",
+      "tracked": true,
+      "lines": 437,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/kcdno_audit/k5/final-tests.txt",
+      "sha256": "20a6708e0ae96cdb520f231ab06ccc3b16a2238b357c07e6b835b005b158e804",
+      "tracked": true,
+      "lines": 19,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k5/old-replay.json",
+      "sha256": "7eb5d89465de18efb71c89581980933cff078ca09c0fcf34f5309d1e9e360662",
+      "tracked": true,
+      "lines": 178,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k5/old-replay.txt",
+      "sha256": "78e2b9426ba7229bcceacafd317e94b1290ff8dc545a36518ad1ffd08fec095a",
+      "tracked": true,
+      "lines": 10,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k5/tests.txt",
+      "sha256": "82531680e46720d5b1565a1ef5371f67740c13d6e651e7470e2442ed776268de",
+      "tracked": true,
+      "lines": 28,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k6/before.json",
+      "sha256": "642a1004ecb046c2e71e86ee8be0c756dca8b19c62eec098723f4b6837cde32a",
+      "tracked": true,
+      "lines": 494,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k6/changed-files.json",
+      "sha256": "3a37329be5705cee365ec45d7051ea504f29e38b8c8cf73968e81359d84335ab",
+      "tracked": true,
+      "lines": 16,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k6/changes.patch",
+      "sha256": "814beedab662227d350d8f10b56dc5eb3f6f97c5d35b195c27c460f986b15b8f",
+      "tracked": true,
+      "lines": 506,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/kcdno_audit/k6/final-tests.txt",
+      "sha256": "71894b2bb9217f8771902aaa61bcadec067c150878f221ccaaa589be2a564c6b",
+      "tracked": true,
+      "lines": 13,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k6/old-replay.json",
+      "sha256": "1d7b7068fe4d4f4574da56e437c420f22ce930e5f057e5502b8aac736e10bb6b",
+      "tracked": true,
+      "lines": 94,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k6/old-replay.txt",
+      "sha256": "76636595b638dedb2285c2d8e6d2df268bcc1cea83dc2ca18f815968c648b692",
+      "tracked": true,
+      "lines": 6,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k6/tests.txt",
+      "sha256": "cedc5f4bd21ef82fb43794815b3dd4ce580b14c01d9944021ef2e1684a9dfba0",
+      "tracked": true,
+      "lines": 9,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k7/before.json",
+      "sha256": "5b3d2d20837275e6ebc09f9e56e8007eb1d5ba29a1c26142d33384f6c5872895",
+      "tracked": true,
+      "lines": 510,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k7/changed-files.json",
+      "sha256": "3f3712562461e09b8c3c5dd3e313bdfb0abf9e593265879b2ae69a05ce46f1f0",
+      "tracked": true,
+      "lines": 18,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k7/changes.patch",
+      "sha256": "d41a59890b448219aa2e601bd72d605e25ce8bcfa32f572b39396aee3f3e1114",
+      "tracked": true,
+      "lines": 542,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/kcdno_audit/k7/command-preview.txt",
+      "sha256": "a9d7afecf2539eb9b895b05960f34723c868521f40fb98056ced602a482343c2",
+      "tracked": true,
+      "lines": 3,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k7/final-tests.txt",
+      "sha256": "f1884f1af754c297ad9e64955807500a5fe3e6b5dd04a89d1305b59537db1b65",
+      "tracked": true,
+      "lines": 13,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k7/initial-tests.txt",
+      "sha256": "a29041394707bbf6d794ae93d4be7e6584c7092bdd754adae3d34d35405c1823",
+      "tracked": true,
+      "lines": 15,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k7/old-replay.json",
+      "sha256": "59eb8f724dd9295a4e8b08950ea924be917074d0d0df577a0929ab6daa148064",
+      "tracked": true,
+      "lines": 121,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k7/old-replay.txt",
+      "sha256": "1b8acdc75eb0914744062497baacd46590054370c33d49a60968851971abd870",
+      "tracked": true,
+      "lines": 6,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k8/before.json",
+      "sha256": "943f5a0f97e064b4b18674bc94412f1e538cfe85c52fd810aca278b36583278c",
+      "tracked": true,
+      "lines": 525,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k8/changed-files.json",
+      "sha256": "2fbb19ac86733bb297ad28bf98b36d51d13ba731c0ca43d25469de4ce93fbc1e",
+      "tracked": true,
+      "lines": 36,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k8/changes.patch",
+      "sha256": "2963f73cf41da241ebaf6273d5d1ca91c622a6e1694bfc159bcb27cd797be804",
+      "tracked": true,
+      "lines": 1249,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/kcdno_audit/k8/final-tests.txt",
+      "sha256": "efaca9702a4cd9dc1472136b272c6519e637982934d68cb1c8e956264f4a8a40",
+      "tracked": true,
+      "lines": 25,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k8/initial-tests.txt",
+      "sha256": "a5b861ffaf721dab10c9675ab8fbd0c3b148f373b533c089e736e0eccc672543",
+      "tracked": true,
+      "lines": 38,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k8/sequential-preview.txt",
+      "sha256": "998852ac95f3a0785bcd975f307946bb95551b1e6fd1b3065dd402df93b61088",
+      "tracked": true,
+      "lines": 8,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k9/before.json",
+      "sha256": "dca6b175d57ae5fb67227ba82b35e9f404151876e8c756474675a741578b86bd",
+      "tracked": true,
+      "lines": 538,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k9/changed-files.json",
+      "sha256": "bfa748f86e8abf7e328a329a176f3ea79ab3438de536b5775f4dcf7a8a9dac34",
+      "tracked": true,
+      "lines": 12,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k9/changes.patch",
+      "sha256": "92081cef48e9d060e88cf587d5911c6f3adef6e8744de4b67265394955e6ab76",
+      "tracked": true,
+      "lines": 408,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/kcdno_audit/k9/final-tests.txt",
+      "sha256": "95eb7ba4774e1f6e0edb0c8990b404e9252572658a931fc28832c06689ca45c1",
+      "tracked": true,
+      "lines": 26,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k9/gpu-darcy.json",
+      "sha256": "5f516a5e35926082c03fb7094514a0babaf7b14a160d8a20a8c0ee28f221231b",
+      "tracked": true,
+      "lines": 6844,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k9/gpu-point-final.json",
+      "sha256": "43436d99f6ef340dabe9e56c60605f2ad6dbeb4ea3c3370cc7916b9536ed7795",
+      "tracked": true,
+      "lines": 6563,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k9/gpu-point.json",
+      "sha256": "213f1701e9f80afe33dd199dbddd788ac29c1fa925252d3dc9f8405a2f529e0d",
+      "tracked": true,
+      "lines": 6563,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k9/initial-tests.txt",
+      "sha256": "26f336155a29809fe97edb25feb06cc6c39c1638f523bf47beb4c783225ad810",
+      "tracked": true,
+      "lines": 35,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/k9/summary.json",
+      "sha256": "821a0585c06ccfbde3cf2ae1a7aa7e7937f8c74ad746c33cd3951a8305392fd8",
+      "tracked": true,
+      "lines": 326,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/make_regression_fixtures.py",
+      "sha256": "a09c15a42cad38cd7bf4a8f2dd6ca3328e404c510084f3df70e6b433327efb8f",
+      "tracked": true,
+      "lines": 340,
+      "kind": "source"
+    },
+    {
+      "path": "docs/kcdno_audit/presets.json",
+      "sha256": "c3f2534b0ebb0651c44517283c4bc798fa6adfaa4183d42567999aceb972b1ab",
+      "tracked": true,
+      "lines": 322,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/replay-airfrans.json",
+      "sha256": "b21a3436a23a7e39e35121c5f1f098c7deb78b291ba8a7a65167073c8c5c22a0",
+      "tracked": true,
+      "lines": 140,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/replay-airfrans.txt",
+      "sha256": "9c11a29c8c3a60af4fd733043d1ecb1ac23e6bdeb34a5b86696c7dae26d49187",
+      "tracked": true,
+      "lines": 6,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/replay-car.json",
+      "sha256": "5f6292a6c620ed48dcf28da943bcf4fcf58f6c16f84a8a2c2310bc5fb87bbc64",
+      "tracked": true,
+      "lines": 113,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/replay-car.txt",
+      "sha256": "e6e17b37c2fda8d2bbfd0cdb51ce263619927f7160fb137296c3efe0fd5449e6",
+      "tracked": true,
+      "lines": 6,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/replay-standard.json",
+      "sha256": "70119587a6196378a1e17bdf7eb290ee375c6ee1515b470cdadafc20086f7119",
+      "tracked": true,
+      "lines": 666,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/replay-standard.txt",
+      "sha256": "2b5799c50cafb2ac553bdc2f8d392fd169edfd97df118e02a27397ec902a76b7",
+      "tracked": true,
+      "lines": 35,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/replay.json",
+      "sha256": "b45efcbe734e18c7ea645cd7f8e1d67438752d9f64041a71abc34ad582ff924c",
+      "tracked": true,
+      "lines": 975,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/replay_subset.py",
+      "sha256": "44dbce755894b0b225e85d96bade3b0237201063f3ec33336014499a18efed87",
+      "tracked": true,
+      "lines": 19,
+      "kind": "source"
+    },
+    {
+      "path": "docs/kcdno_audit/seed_suite/freeze.json",
+      "sha256": "48135f44a8bf84d5382fcb57d823d1b4a09a99044013241634579a7a0c495c52",
+      "tracked": false,
+      "lines": 12,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/seed_suite/remote-seed-diagnosis.json",
+      "sha256": "f8ef87fa3a27b3aeb948263cf95eaa2cb577ff411c824668824cd24653a2775b",
+      "tracked": false,
+      "lines": 14,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/kcdno_audit/seed_suite/seed-support.patch",
+      "sha256": "fe9b1816c282d516b3beb0b446e1cd73593d798c13724852d5083715d6c2ecbe",
+      "tracked": false,
+      "lines": 128,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/kcdno_audit/stages.py",
+      "sha256": "cd4afa2d7c872b409f5232d4ce8f09627d503d70dcb8a643f845d332ba9ecf22",
+      "tracked": true,
+      "lines": 35,
+      "kind": "source"
+    },
+    {
+      "path": "docs/kcdno_audit/static-results.json",
+      "sha256": "7cf981f5e43cf4bd64f9d01b948f9672120e99d4eb282dd9eb9bbc571689b83f",
+      "tracked": true,
+      "lines": 55,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/before.json",
+      "sha256": "8f94356eff1063b604cac0e345f91ed8443202429455309937e3700051970cd2",
+      "tracked": false,
+      "lines": 623,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/config-tests-final.txt",
+      "sha256": "1999f28616510d59888b96267a384986a76cee11e70e874dd06c9fd454f61fa6",
+      "tracked": false,
+      "lines": 37,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/config-tests-initial.txt",
+      "sha256": "d479db35d07faa69e5ed584b718f9367ad140b9b07d60a459cd452333dc4c773",
+      "tracked": false,
+      "lines": 54,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/current-after.json",
+      "sha256": "e6775c67d4ec585b1df1f64acd0d7fe844b1c6018288ac8c7a6103db72b5963c",
+      "tracked": false,
+      "lines": 1752,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/current-after.txt",
+      "sha256": "697917395c0f0ac8f80b4c603a49dec5488c7106deea326170d66f24b0229c65",
+      "tracked": false,
+      "lines": 1,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/current-before.json",
+      "sha256": "ec7cf0ff1f1f4e386afc35bdd4c4b1cbb965549c2855bf48e85048236e7b21ca",
+      "tracked": false,
+      "lines": 1752,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/environment.json",
+      "sha256": "fb4ec5b214aad8170d46ab3abdb8a2ba8455612f78563ed0c36b8487ba681252",
+      "tracked": false,
+      "lines": 17,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/fixture-hashes.json",
+      "sha256": "88672203486a242004f3d7eafe9bba045790e14558eb38d41ccf977206737b8c",
+      "tracked": false,
+      "lines": 6,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/fixture-index.json",
+      "sha256": "e0f2b4089153dd339028d16a6ebc9c6cd55288d3e07fb83e44d2ccfa8aa738c8",
+      "tracked": false,
+      "lines": 224,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/freeze.json",
+      "sha256": "5c940f85300e34e5814939cceeccc16ed5d085e50fffdf774697eea7747e1e7c",
+      "tracked": false,
+      "lines": 656,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/full-preview.json",
+      "sha256": "67bc82d7fd13be3275f8c874fc844838545e32ec8a3dcbfb2428127b616385a9",
+      "tracked": false,
+      "lines": 71,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/inventory.json",
+      "sha256": "3bc136c9afad9cdac027b64550f3da8776dac8a2887e9a546c62545197da61c2",
+      "tracked": false,
+      "lines": 5139,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/light-preview.json",
+      "sha256": "2e95bc136ddbfe5111f8ff3dc39a73e16d887980150d1da2d52f460d7b2136b8",
+      "tracked": false,
+      "lines": 53,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/m1-source.patch",
+      "sha256": "0141581d50f3c8025d301c7f28e45cb0bd04c828f98b79018aaf68de605dc280",
+      "tracked": false,
+      "lines": 1095,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/no-regularizer-preview.json",
+      "sha256": "a7481a96c35cb92d13e0684d5469b064c66994eef2ddce985f461a390571e558",
+      "tracked": false,
+      "lines": 53,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/old-after-airfrans.json",
+      "sha256": "b21a3436a23a7e39e35121c5f1f098c7deb78b291ba8a7a65167073c8c5c22a0",
+      "tracked": false,
+      "lines": 140,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/old-after-car.json",
+      "sha256": "5f6292a6c620ed48dcf28da943bcf4fcf58f6c16f84a8a2c2310bc5fb87bbc64",
+      "tracked": false,
+      "lines": 113,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/old-after-standard.json",
+      "sha256": "70119587a6196378a1e17bdf7eb290ee375c6ee1515b470cdadafc20086f7119",
+      "tracked": false,
+      "lines": 666,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/old-after.json",
+      "sha256": "fefbe33db8415d04e2820b3c0862154901038e786c5c9ec6e2b63639833f0601",
+      "tracked": false,
+      "lines": 975,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/old-after.txt",
+      "sha256": "fd6ca2e88b6b4abc56ace60af51a9f5b12335557f20697c04226c2b1d77da596",
+      "tracked": false,
+      "lines": 3,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/old-before-airfrans.json",
+      "sha256": "b21a3436a23a7e39e35121c5f1f098c7deb78b291ba8a7a65167073c8c5c22a0",
+      "tracked": false,
+      "lines": 140,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/old-before-car.json",
+      "sha256": "5f6292a6c620ed48dcf28da943bcf4fcf58f6c16f84a8a2c2310bc5fb87bbc64",
+      "tracked": false,
+      "lines": 113,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/old-before-standard.json",
+      "sha256": "70119587a6196378a1e17bdf7eb290ee375c6ee1515b470cdadafc20086f7119",
+      "tracked": false,
+      "lines": 666,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/old-before.json",
+      "sha256": "c7d7697839dedc5a78a072121e7456726a1b55e43d33c1d16647b0ba3294b94b",
+      "tracked": false,
+      "lines": 975,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/old-before.txt",
+      "sha256": "fd6ca2e88b6b4abc56ace60af51a9f5b12335557f20697c04226c2b1d77da596",
+      "tracked": false,
+      "lines": 3,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/preexisting.diff",
+      "sha256": "a9ca0305cd24bcd8df30dc62439661d1b054218102baa28d4a2feec5ac8a8a5a",
+      "tracked": false,
+      "lines": 840,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/replay_current.py",
+      "sha256": "2ddc368ce12b0e915ea8938f9263fb93a08aa04583522e09bc36c8909c88fe05",
+      "tracked": false,
+      "lines": 56,
+      "kind": "source"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/status-before.txt",
+      "sha256": "3c61d5e8ed300d09444ab20ece7e822c12c7532bd5ec0e5a5ef41ff51148c628",
+      "tracked": false,
+      "lines": 39,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/msar_lno_audit/m1/summary.json",
+      "sha256": "a5280ff8cd904576a03f967fbc9e8d243d23aa21d6d2d545b948262b959748ab",
+      "tracked": false,
+      "lines": 32,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/output_audit/changes.json",
+      "sha256": "2b182648a794f279d6ae1dbfb9fe2c7fd8fb627368cb6491e0c0927f09f58e81",
+      "tracked": true,
+      "lines": 338,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/output_audit/environment.json",
+      "sha256": "de865411ee1af26b51f85fc6646adf68d7b3672a058f2d4407e6586964837667",
+      "tracked": true,
+      "lines": 9,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/output_audit/final-regression.txt",
+      "sha256": "997936380ab7e0071ddcee4111569c7692fb3535a4c7bee132eedf83cd0cb251",
+      "tracked": true,
+      "lines": 256,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/output_audit/final-snapshot-check.txt",
+      "sha256": "659301c8dcfe4e7ab31d1412379484226d5f48050179f7078f74a881edd935ae",
+      "tracked": true,
+      "lines": 8,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/output_audit/first-regression.txt",
+      "sha256": "61e0da5e956a875e8f9e69c8a2b9af956816b5bf2043f3a395d1148a9c5bdec1",
+      "tracked": true,
+      "lines": 328,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/output_audit/freeze.json",
+      "sha256": "f6cac07aa4865bcf6fe0b151c780f436965e6cf33f2ad4ee7f4ed37707923fb2",
+      "tracked": true,
+      "lines": 108,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/output_audit/incremental.patch",
+      "sha256": "00bca4d0e830bef93e509ce1622afe9abf328f4ab5e02a831555a3aa72f15b66",
+      "tracked": true,
+      "lines": 2042,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/output_audit/record-tests.txt",
+      "sha256": "d12cd4cd88435f99d864d52dd20951035e5b016a990dfc26878c0dd277340124",
+      "tracked": true,
+      "lines": 27,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/output_audit/shell-syntax.json",
+      "sha256": "9b2f79baaf2bceeac6077fadef4121a85375f0d7853509b513d59bf988df6d5f",
+      "tracked": true,
+      "lines": 15,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/output_audit/upstream-freeze.txt",
+      "sha256": "1a5aac3e772278298a2500dc733277cb232051095f57bc26a14fe7c7a63d90c4",
+      "tracked": true,
+      "lines": 16,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/performance/phase9/airfoil-matched.json",
+      "sha256": "c664f33680c85779c8c2662c242c70ca6ae017c90db7279627b83fc8b8dbd71d",
+      "tracked": true,
+      "lines": 16704,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/performance/phase9/airfoil-task.json",
+      "sha256": "c6922cbdd0e1e40468cc312b8626041497690ccda2c9faafb84c91ed5575b230",
+      "tracked": true,
+      "lines": 7011,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/performance/phase9/continuation-baseline.json",
+      "sha256": "288568f43d659168d9acf52e5523931ea01ef3a8191ceb0a4bd7a4b03400699d",
+      "tracked": true,
+      "lines": 154,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/performance/phase9/elasticity-matched.json",
+      "sha256": "a1f940dc3df72e34b09d07c716b517e70382e2927a7ac03391369034d11bbb2f",
+      "tracked": true,
+      "lines": 16266,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/performance/phase9/freeze-check.json",
+      "sha256": "91fade4bbf3cdb38ee63b542ee3c7a84d273b63c9abf68216f39b7b311052900",
+      "tracked": true,
+      "lines": 12,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/periodic_visualization_audit/freeze.json",
+      "sha256": "29b832472364f6dffcd228989d4c4966d7ea57ddb15cd29689db0d07dd6666eb",
+      "tracked": false,
+      "lines": 266,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/periodic_visualization_audit/gpu.json",
+      "sha256": "a49a0ac0453aa45ead9df41f368d98ce155c106b82b2ea8bb837c8a09081d131",
+      "tracked": false,
+      "lines": 14,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/periodic_visualization_audit/gpu_isolation.py",
+      "sha256": "13e7008486e920a90265e4a36afa3ec1c01479a6b35594d8a2732d4c3f4f72a6",
+      "tracked": false,
+      "lines": 47,
+      "kind": "source"
+    },
+    {
+      "path": "docs/periodic_visualization_audit/implementation.patch",
+      "sha256": "5b4a11e49403f6a76c8fd09aa3b91b47083f819932155ff6dbd8eac1dc5a93e0",
+      "tracked": false,
+      "lines": 1051,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/periodic_visualization_audit/make_demos.py",
+      "sha256": "5ed9e654226f762b57878185248ac3f7aea88e1394de8d0ab48acecaee3a383b",
+      "tracked": false,
+      "lines": 32,
+      "kind": "source"
+    },
+    {
+      "path": "docs/periodic_visualization_audit/paper_sources.json",
+      "sha256": "ebe27ab03c7f2acb054dc91da1323d85bc9556abb9eb180ae71625391b12220c",
+      "tracked": false,
+      "lines": 150,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/periodic_visualization_audit/summary.json",
+      "sha256": "73fb2a61b8deb8ff3705615b632ca9f1d61c9f4c235d4fb80c180d6d649d84e1",
+      "tracked": false,
+      "lines": 88,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/periodic_visualization_audit/synthetic_previews/curved_grid/caption.tex",
+      "sha256": "3a20e10220d164d3824262cae365775ba5476e082603aa1f54abdb21c843e787",
+      "tracked": false,
+      "lines": 1,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/periodic_visualization_audit/synthetic_previews/curved_grid/caption.txt",
+      "sha256": "ab5b999534b2b859e03c7c8a4023f0ae8af59698c5d98cd5d3e41f309a49796c",
+      "tracked": false,
+      "lines": 1,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/periodic_visualization_audit/synthetic_previews/curved_grid/metadata.json",
+      "sha256": "a20089b83157ebc8b0b085a0ca19aa8db246516cb7144a03fbc83cda22ea4ac1",
+      "tracked": false,
+      "lines": 70,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/periodic_visualization_audit/synthetic_previews/point_cloud_hole/caption.tex",
+      "sha256": "3a20e10220d164d3824262cae365775ba5476e082603aa1f54abdb21c843e787",
+      "tracked": false,
+      "lines": 1,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/periodic_visualization_audit/synthetic_previews/point_cloud_hole/caption.txt",
+      "sha256": "ab5b999534b2b859e03c7c8a4023f0ae8af59698c5d98cd5d3e41f309a49796c",
+      "tracked": false,
+      "lines": 1,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/periodic_visualization_audit/synthetic_previews/point_cloud_hole/metadata.json",
+      "sha256": "70ae7a271a7400928b32920e4b99cd0daef097d2ea8e3b8d5f79396bcb00ed6a",
+      "tracked": false,
+      "lines": 67,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/periodic_visualization_audit/synthetic_previews/surface_3d/caption.tex",
+      "sha256": "3a20e10220d164d3824262cae365775ba5476e082603aa1f54abdb21c843e787",
+      "tracked": false,
+      "lines": 1,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/periodic_visualization_audit/synthetic_previews/surface_3d/caption.txt",
+      "sha256": "ab5b999534b2b859e03c7c8a4023f0ae8af59698c5d98cd5d3e41f309a49796c",
+      "tracked": false,
+      "lines": 1,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/periodic_visualization_audit/synthetic_previews/surface_3d/metadata.json",
+      "sha256": "f6cfb3d1f0ce30e36c97ca1f2dcabc58d698dfedd28bc505301463d0096bba07",
+      "tracked": false,
+      "lines": 67,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/remote_launch_audit/delivery-checks.json",
+      "sha256": "193b0724e77dfd25d6cba6b92e41e04bd8cfe99d447444997cb903516005d375",
+      "tracked": true,
+      "lines": 6,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/remote_launch_audit/freeze-check.json",
+      "sha256": "23b3644497aef94621cf031d02547ac597d0b95a12c788c86e0e6372cbed6473",
+      "tracked": true,
+      "lines": 19,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/remote_launch_audit/launcher-checks.json",
+      "sha256": "cc7489519da3e20f46cd4245113868a2de7dc3ee0d8dcb0740d920a37a44d6b9",
+      "tracked": true,
+      "lines": 1359,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/remote_launch_audit/remote-launch-changes.patch",
+      "sha256": "3dbd995bcd2e80f2c4f5d00bda2b2c07f56da7654c051f0a25e13adef120301e",
+      "tracked": true,
+      "lines": 1014,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/remote_launch_audit/start.json",
+      "sha256": "7f0205b75086bab4b936ecda00c6b4fcff2d3ef1d54eb811df8060f83c045abc",
+      "tracked": true,
+      "lines": 203,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/remote_launch_audit/verify_remote_launchers.py",
+      "sha256": "e19d343859ae872b7e50566dbe29464561666865e5319ebfb8d80339d28ccd02",
+      "tracked": true,
+      "lines": 149,
+      "kind": "source"
+    },
+    {
+      "path": "docs/sequential_launch_audit/freeze.json",
+      "sha256": "686ca5a3c1f3be3bfad485afeea3ee70b084b4f00b6f9b3e3975ad58fa1007c3",
+      "tracked": true,
+      "lines": 26,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/sequential_launch_audit/results.json",
+      "sha256": "80b2cce5e97c80fe2b653b277066104c2ac8f6c70c87b73d74364384df40a1df",
+      "tracked": true,
+      "lines": 2764,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/sequential_launch_audit/start.json",
+      "sha256": "0f777dc6c12fb482aaf3d168df4ed0c356cd74ed7d14e0764afa2e72a2f8020b",
+      "tracked": true,
+      "lines": 216,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/sequential_launch_audit/verify.py",
+      "sha256": "6d4952e79279f4f0f64f9924703d7e44622efd280b2da4fb37b57298e05de2b7",
+      "tracked": true,
+      "lines": 129,
+      "kind": "source"
+    },
+    {
+      "path": "docs/show_audit/freeze.json",
+      "sha256": "858bcc7df21f11abceb9dc5d3d533a9f4b23d58ab2245ed99dff296981ce6894",
+      "tracked": false,
+      "lines": 175,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/show_audit/selection/changes.patch",
+      "sha256": "de92ab29851d4187a1bf78e3d955329c2e1358a4fa2cacb2e0fba53a953c3aed",
+      "tracked": false,
+      "lines": 586,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/show_audit/selection/freeze.json",
+      "sha256": "9fb721150a77b76428b37898c97832ff6190b8fa03615feb0ff8d3ff4663aef5",
+      "tracked": false,
+      "lines": 232,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/show_audit/selection/render.json",
+      "sha256": "44dcde08f78b14bdfe24827b8a46e60731381b93d38b1947b8278885081d80b7",
+      "tracked": false,
+      "lines": 51,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/show_audit/selection/test_run.json",
+      "sha256": "c818348afc70b85034b82182603163a51735c046600d21b639d0947ebbd85494",
+      "tracked": false,
+      "lines": 6,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/show_audit/selection/tests.txt",
+      "sha256": "6967b54d25fdeea516f1a8c1ff84a015b36445f101788132ca6829df7be84303",
+      "tracked": false,
+      "lines": 21,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/show_audit/summary.json",
+      "sha256": "d41c51aa2237c25b615d51915ee75809b8649988bce9abc83c462bf4bbd60b08",
+      "tracked": false,
+      "lines": 20,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/show_audit/tests.txt",
+      "sha256": "e344a84a57f22e88d36e729953a2040f09ce408a1769a363c85b3e6281a553e5",
+      "tracked": false,
+      "lines": 15,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/training_launch_audit/changed-files-before.json",
+      "sha256": "54c171ed2aa27602fb646ee312650bdadf1ab8cfdf92e2345160884c228a415e",
+      "tracked": true,
+      "lines": 11,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/training_launch_audit/delivery-checks.json",
+      "sha256": "92350e73e84997af60ecac47b601d66e81c60fa11e718b40d1719cf54aba5263",
+      "tracked": true,
+      "lines": 6,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/training_launch_audit/freeze-check.json",
+      "sha256": "7fa7db74fffd8a6e0e7666870e81a0861d270b1922197938497080fd4c48b8e2",
+      "tracked": true,
+      "lines": 96,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/training_launch_audit/launch-changes.patch",
+      "sha256": "6b3d1cb3d995516d0b39156f08ce8dfe6630dfc061fd444c938d210df0bda43d",
+      "tracked": true,
+      "lines": 611,
+      "kind": "other_text"
+    },
+    {
+      "path": "docs/training_launch_audit/launcher-checks.json",
+      "sha256": "53f795b2460c8a68c639d50abc50d8b4404c0fffd3fb3db7e38dcbadee0d22dd",
+      "tracked": true,
+      "lines": 332,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/training_launch_audit/paper-excerpts.json",
+      "sha256": "31715bde4d9aa61aec2fb51b011e3f955051fae3029c023ecf4747eb75790018",
+      "tracked": true,
+      "lines": 18,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/training_launch_audit/start.json",
+      "sha256": "8d1d8bcc7864d737a7e51d53afe97a92e4ed207991721bc3c46a4822426259be",
+      "tracked": true,
+      "lines": 175,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/training_launch_audit/verify_launchers.py",
+      "sha256": "950e27d9f748aa5122967442c7a723036adc10bb78e2e067d1afacc45c7dcc93",
+      "tracked": true,
+      "lines": 108,
+      "kind": "source"
+    },
+    {
+      "path": "docs/viz_resume_audit/paper_sources.json",
+      "sha256": "60607c468611c5c21afc47c0964d04255b0953839740ac958d8c8c6f67304461",
+      "tracked": true,
+      "lines": 135,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/viz_resume_audit/planning_audit.json",
+      "sha256": "132f930127a2a146bb9d93732e13a006c58c536e0292b99872aadaa30dfb0784",
+      "tracked": true,
+      "lines": 19,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/viz_resume_audit/planning_start.json",
+      "sha256": "4e2c010a9306f446d20978fc5706feaa63bcfffba6e87085cb5890996e26530f",
+      "tracked": true,
+      "lines": 273,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/viz_resume_audit/v1/audit_scope.py",
+      "sha256": "09144d9cf5a8a22b5b51a833e1608e67e1eefbbb3dda1f2c27853ed5e503708f",
+      "tracked": true,
+      "lines": 66,
+      "kind": "source"
+    },
+    {
+      "path": "docs/viz_resume_audit/v1/environment.json",
+      "sha256": "28c1466694c70dc40147640644a45b29be4f778d48780739db1ecd5f11453c64",
+      "tracked": true,
+      "lines": 9,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/viz_resume_audit/v1/freeze.json",
+      "sha256": "a59581c94b082a7fe843522c5e094debe78380ff4efc79d1284292c8e817b6d6",
+      "tracked": true,
+      "lines": 169,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/viz_resume_audit/v1/render-demo.json",
+      "sha256": "8433fb0d9682855a8cd7cadcd35fe38109a7dcda48c93519ba40a05b761ea618",
+      "tracked": true,
+      "lines": 46,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/viz_resume_audit/v1/render_demo.py",
+      "sha256": "4676ba269d7dc9938adb017c424cbbb164b07e4ae0ee6f4f6e2fa021d01f3ed6",
+      "tracked": true,
+      "lines": 38,
+      "kind": "source"
+    },
+    {
+      "path": "docs/viz_resume_audit/v1/results.json",
+      "sha256": "fee8927b541b7376f7e0f3ba9393116de9e1af43959f586274780c3ef0881555",
+      "tracked": true,
+      "lines": 27,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/viz_resume_audit/v1/start.json",
+      "sha256": "cba6e4df51a2bbff4ff60354127faea1d386cf900b38200d48e15b72d9d87bc8",
+      "tracked": true,
+      "lines": 277,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "docs/viz_resume_audit/v1/v1-changes.patch",
+      "sha256": "e13a2a4f6d2afe75ed3bfc0c78743b57630d8f4ed83a4058f1a26bfee2d3b009",
+      "tracked": true,
+      "lines": 1576,
+      "kind": "other_text"
+    },
+    {
+      "path": "memory/2026-09-13-cdpa-plan-and-reference-audit.md",
+      "sha256": "819b22e7abe1909c02c471fd8c28c63c6cc99b533593522802ae3d1aef8763bd",
+      "tracked": true,
+      "lines": 71,
+      "kind": "documentation"
+    },
+    {
+      "path": "memory/2026-09-13-exported-conversation-review.md",
+      "sha256": "338b88a1b16a8350c806e095032cccb8f57949ae69331cebb3bdeacaf63b65c5",
+      "tracked": true,
+      "lines": 196,
+      "kind": "documentation"
+    },
+    {
+      "path": "memory/README.md",
+      "sha256": "9ad6cb0e4b4be07f987f2d6c15439e5cc9a6974cc0cbc381fd89b605d847f21a",
+      "tracked": true,
+      "lines": 19,
+      "kind": "documentation"
+    },
+    {
+      "path": "memory/current-state.md",
+      "sha256": "2a75465e13893b7997e208d41318c476e5a7625e8ef3d7de2ce4a00a4a9d8e23",
+      "tracked": true,
+      "lines": 409,
+      "kind": "documentation"
+    },
+    {
+      "path": "path.sh",
+      "sha256": "153163c1535a74dc4802e59590b2ec9815b0d166dc5d534d66fc6b38f596a87c",
+      "tracked": true,
+      "lines": 26,
+      "kind": "source"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "34430853bae8ed064a44a999bbfe563321a75010144aceccc2d807c4ba3efbd2",
+      "tracked": true,
+      "lines": 13,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "tests/cdpa_reference.py",
+      "sha256": "a110768c375a7cecedf4d7bf175191b262197d66b325248d72fdccbe7bcdb9f8",
+      "tracked": true,
+      "lines": 64,
+      "kind": "source"
+    },
+    {
+      "path": "tests/kernel_history_reference.py",
+      "sha256": "7e2aef19be71c57065857cde9c3d54239f1aeb683c6ed4440f021d47af65aaa5",
+      "tracked": true,
+      "lines": 71,
+      "kind": "source"
+    },
+    {
+      "path": "tests/output_recording_projection.py",
+      "sha256": "b8e6c6a59094ea5a8a237985f15d3cfffd3dff42619cacea4007fe311e49558f",
+      "tracked": true,
+      "lines": 73,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_airfrans.py",
+      "sha256": "5851ca837a0b4000b4f9ace5860b401862792f02697e46f9c66007031da08a3a",
+      "tracked": true,
+      "lines": 453,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_cdpa.py",
+      "sha256": "d65fbbf05b02b9d7a48f3da9490c49860da676653049023f7998abef16f47dec",
+      "tracked": true,
+      "lines": 511,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_core.py",
+      "sha256": "c30bf6f4f23ec3f96fc0f82412ff6e3b59045b9050ef2b2c94627ae6875b74e1",
+      "tracked": true,
+      "lines": 424,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_core_config.py",
+      "sha256": "2f0c117810984734a40d708f3a99f604e68f34f38e1c37c014b47ede3dce73e4",
+      "tracked": true,
+      "lines": 216,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_experiment_records.py",
+      "sha256": "c46cde067c4c5ad7b078fc438039875b7722e3dbf49df85f04250e108a29db49",
+      "tracked": true,
+      "lines": 326,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_front_ablation.py",
+      "sha256": "5f45a15380edb912f673b89b0396a5efc2c375be167033537f423029fee812ca",
+      "tracked": true,
+      "lines": 405,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_front_task_modes.py",
+      "sha256": "f73a0b32536e9b8471d0c971909279938e5fe7726b34515c5dc2554a1e0967c2",
+      "tracked": true,
+      "lines": 363,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_front_training.py",
+      "sha256": "9f487f59dc6c04f4977a020d39c6d56e50e5990d21e07acec02949429f8eea6d",
+      "tracked": true,
+      "lines": 395,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_kcdno_airfrans.py",
+      "sha256": "2b160fe30159c642a554002087ae130576d02485c789f799aa80f3df03c2c9e5",
+      "tracked": true,
+      "lines": 110,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_kcdno_car.py",
+      "sha256": "d1ca1fcab1a803741ba5f90de2b4336adb949ea4026d2995b0cee5f64dafa707",
+      "tracked": true,
+      "lines": 99,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_kcdno_config.py",
+      "sha256": "4db8d8d85220426a3c39e85d1371e081b666c9b3605c7cfa1e8a79270c5e4804",
+      "tracked": true,
+      "lines": 285,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_kcdno_core.py",
+      "sha256": "79881e7ca1ee5d09c381d65d705d9f0c1befe4d796b69ca4cf55476919afab4e",
+      "tracked": true,
+      "lines": 482,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_kcdno_delivery.py",
+      "sha256": "3edd1ce1fa464d46e94ef0ad3ef4674c2a6e2eecdf7d9d2b0b3dca11bf60d679",
+      "tracked": true,
+      "lines": 155,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_kcdno_matched.py",
+      "sha256": "f418686117971a4bd99ad9824d6d6c4aa55d223d7ec347b02a16a6e23e522283",
+      "tracked": true,
+      "lines": 121,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_kcdno_performance.py",
+      "sha256": "81bc41230099ea164c5ca477dd345639adc9f8c57cb0bf96f0b5800c377e1197",
+      "tracked": true,
+      "lines": 41,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_kcdno_seed_suite.py",
+      "sha256": "cb966c8d1a220cd13d13dfd8daec0e181bdbe413e4021ea5d05baa054cfefe94",
+      "tracked": false,
+      "lines": 213,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_kcdno_tasks.py",
+      "sha256": "fe02fdbc0b39aef16f1b9e9eb02f05a52b165cb729980885f461f75cecf0130f",
+      "tracked": true,
+      "lines": 215,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_kcdno_temporal.py",
+      "sha256": "d4afa2d3b3c3771b90406134251a549460c54a2caaab9decde92d19d9f9e3133",
+      "tracked": true,
+      "lines": 111,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_kernel_history.py",
+      "sha256": "fe4f8f18317b3bc4434b1014733f798b1b85603808b16c7960798a8cb5c1a1e1",
+      "tracked": true,
+      "lines": 404,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_lrsa_reference.py",
+      "sha256": "73c4d7a6436852b2e0bf45e9795eb829f8d86c4c401e24e0989df7dbb32d5f39",
+      "tracked": true,
+      "lines": 136,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_modules.py",
+      "sha256": "6ef4b528d093a2258b4c84fe542e960e2e5df21b7d1e0fc0ac51f5510eb0bd6d",
+      "tracked": true,
+      "lines": 473,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_msar_config.py",
+      "sha256": "617de7d7367554b2a571d9275115922d48e8757a1cea20fef2dd9d24f415e1d6",
+      "tracked": false,
+      "lines": 297,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_performance.py",
+      "sha256": "b4adbca94705e116562b4d715d26375ceee1e783caed7060a0dd8eca23a6b552",
+      "tracked": true,
+      "lines": 306,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_periodic_visualization.py",
+      "sha256": "838b437399603fcb0dbf6fd668488547344f0614c01ade7ed980b17620bdb9e6",
+      "tracked": false,
+      "lines": 236,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_shapenet_car.py",
+      "sha256": "3d206da3872f8f179b0801b3bbe078518143f8939ce3ef99f2b6ad6ba777b217",
+      "tracked": true,
+      "lines": 454,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_show_reports.py",
+      "sha256": "c57d391e353d9d6224c460a2ed3f2176f681324a3c0fc4437053b6618fa0c40e",
+      "tracked": false,
+      "lines": 310,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_static_standard.py",
+      "sha256": "1c6c5a5dc0875694d3e871c2d20c1b8ba7e3eddeb8c283c0228bbc3bd5c5382c",
+      "tracked": true,
+      "lines": 472,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_temporal_standard.py",
+      "sha256": "49c1f435c12d80b15b2c96f1092f1a32bc826ca8aaaa347c3e2488eceff3b1ec",
+      "tracked": true,
+      "lines": 176,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_training_state.py",
+      "sha256": "5b535086e5e751a91dbdca4b380b9211f56bc992cf64f4d4ad719a3a4566f736",
+      "tracked": true,
+      "lines": 397,
+      "kind": "source"
+    },
+    {
+      "path": "tests/test_visualization.py",
+      "sha256": "b4a0e88c728563e7e8d71a92df95877647b3726f3cf169cacbe983b6d4869d14",
+      "tracked": true,
+      "lines": 68,
+      "kind": "source"
+    },
+    {
+      "path": "tests/visualization_projection.py",
+      "sha256": "9444d30036db306f8e906f3c1e56885d1eca7c061d3dc6287827f42f01354df8",
+      "tracked": false,
+      "lines": 24,
+      "kind": "source"
+    },
+    {
+      "path": "tools/cdlno_benchmark.py",
+      "sha256": "52a5a97f46f4ff7d9d2c842efc6aba798b3045cae818dd7de49174912d6c9bf3",
+      "tracked": true,
+      "lines": 167,
+      "kind": "source"
+    },
+    {
+      "path": "tools/cdlno_environment_preflight.py",
+      "sha256": "cbddb72d8a3491e1d2d44deecd125e544f687a8806232d9990a1f08ed5074084",
+      "tracked": true,
+      "lines": 48,
+      "kind": "source"
+    },
+    {
+      "path": "tools/cdlno_perf/__init__.py",
+      "sha256": "f37d530c1f97443000442a1c750108754095403278d9360a99ff9bc7f469289e",
+      "tracked": true,
+      "lines": 1,
+      "kind": "source"
+    },
+    {
+      "path": "tools/cdlno_perf/costs.py",
+      "sha256": "d9ea12ae4b72f621b915770a86d9f2a552959d5365670a2b4de2514fc793b1a0",
+      "tracked": true,
+      "lines": 255,
+      "kind": "source"
+    },
+    {
+      "path": "tools/cdlno_perf/kernel_costs.py",
+      "sha256": "903817e93151bc3beeac1ddcb1fbdddf2e5a4c745d2ae8436284250ddc5acdfa",
+      "tracked": true,
+      "lines": 34,
+      "kind": "source"
+    },
+    {
+      "path": "tools/cdlno_perf/measure.py",
+      "sha256": "f98bc2a6f697631aa2383872b7c93ae8f5b412bece39578232bcccfb0cefd63e",
+      "tracked": true,
+      "lines": 261,
+      "kind": "source"
+    },
+    {
+      "path": "tools/cdlno_perf/models.py",
+      "sha256": "a3b066ea95cb988b339b778c93936555371c0aa9068df230ad43129e32d369e8",
+      "tracked": true,
+      "lines": 262,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/README.md",
+      "sha256": "5a6d7f63dd5cf1c1d2b01b414b5f8b0e5702d50e4406f637ba5917337d286a46",
+      "tracked": true,
+      "lines": 214,
+      "kind": "documentation"
+    },
+    {
+      "path": "tran_evaluate/_common.sh",
+      "sha256": "dd6409998725ae9f053aad1b0db74e236596514c94e2767774a1b0681714779e",
+      "tracked": true,
+      "lines": 127,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/_standard.sh",
+      "sha256": "9f7690e15d95c8dd04549c421664f4895e34e68c86dd1c6c5e7898ee18febcca",
+      "tracked": true,
+      "lines": 73,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/ablation/README.md",
+      "sha256": "bcf82746b6f8bb1f91b25ab4b5ad4ca1829a5750382de2b6abd2d67e3250a7fb",
+      "tracked": true,
+      "lines": 58,
+      "kind": "documentation"
+    },
+    {
+      "path": "tran_evaluate/ablation/identity/eval.sh",
+      "sha256": "47954572d8ae1c8ac4836bb7c1f6102f9f007a5811359ea567b67821b258ad8b",
+      "tracked": true,
+      "lines": 5,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/ablation/identity/train.sh",
+      "sha256": "58c9c8afb800f84997ad5e5765c1fc61a45e1b5edb1d7f16843bdedc8f6e4a7f",
+      "tracked": true,
+      "lines": 5,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/ablation/identity/train_eval.sh",
+      "sha256": "e36cf030bdbcbc8329ab87a8aebe52257b2dc5cc342047f8d03d48dbf5d9453e",
+      "tracked": true,
+      "lines": 5,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/ablation/no_sa/eval.sh",
+      "sha256": "00b304495e3c61ccb453950eb59efb7f7ca6fd784a2d20c0737a4111d868de1e",
+      "tracked": true,
+      "lines": 5,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/ablation/no_sa/train.sh",
+      "sha256": "7d699d4b32cb83cd78093cabb5e2d265bc12c4f8fe74a1476d07ecde24aa995c",
+      "tracked": true,
+      "lines": 5,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/ablation/no_sa/train_eval.sh",
+      "sha256": "be9b5076c2c66d3a3f113ddbed942c6052616c32fa99485e06c7cd6dbb066ddf",
+      "tracked": true,
+      "lines": 5,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/ablation/verification.json",
+      "sha256": "13a112a59ab1f93e190244ef7025630b7c17f26315f71eec3de475ab044c160b",
+      "tracked": true,
+      "lines": 164,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "tran_evaluate/airfoil.sh",
+      "sha256": "4a5d1596fa2e473fa69cb0a46dbe29a6dd71900947a4c385c885c798a254104e",
+      "tracked": true,
+      "lines": 4,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/airfrans.sh",
+      "sha256": "b3634006874e74fa3588a70855263b3abce90c3377f120f61f9fa57eefb1de92",
+      "tracked": true,
+      "lines": 53,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/car.sh",
+      "sha256": "f6f28e7a8edcbd7aadccdafc53669d7c861873f1486ab4baa4ba858f445c6d21",
+      "tracked": true,
+      "lines": 51,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/check_car_eval.py",
+      "sha256": "a2bf1cbc643ba27c828fcd461e8a35d6a1301efb97825f015fdacd1435a14a54",
+      "tracked": true,
+      "lines": 45,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/darcy.sh",
+      "sha256": "8f717553ecbc86f777113288a669d6aac2983708faffb1943c8b3b7e399275e3",
+      "tracked": true,
+      "lines": 4,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/elasticity.sh",
+      "sha256": "25ab6e5ae42efc9736b29c6d553940e6f866f82313e57bea4cf06c7cb1e2369b",
+      "tracked": true,
+      "lines": 4,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/inspect_data.py",
+      "sha256": "09102d1bcc8b30310a3238fc6fdac756053f55f8d50627f9454db93b36b4b376",
+      "tracked": true,
+      "lines": 202,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/inspect_data.sh",
+      "sha256": "fddf695de854eda5582159c27193a15d84b5bfb1b48e7d2b0bff70710b369961",
+      "tracked": true,
+      "lines": 27,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/README.md",
+      "sha256": "492080367a4fadbe740b000e74e74be40effb3fedd2294b8931afda70b15321e",
+      "tracked": true,
+      "lines": 148,
+      "kind": "documentation"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/_seed_suite.py",
+      "sha256": "7f491102ef7082ecf72f9f5f09d8b552c74687422cf72463fc4334552525e175",
+      "tracked": false,
+      "lines": 130,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/_task.sh",
+      "sha256": "9faa3a4b35380b9d85cc3114af5c1494c74cb5e4969db133b9a1884e4dee2c63",
+      "tracked": true,
+      "lines": 50,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/airfoil.sh",
+      "sha256": "96e052bd02216687b3a4a4de0e48dfefa4512f18d05dd9ac9c3dd804d8b98ba9",
+      "tracked": true,
+      "lines": 3,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/airfrans.sh",
+      "sha256": "3cc6d4d0d97a1bd4462e4a6a65130733ed709fd3518e966487fd543c6605d2b3",
+      "tracked": true,
+      "lines": 3,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/car.sh",
+      "sha256": "d89ee33408093d90725630fe2269b2ab69972323a0532ebc822414a0d5063b28",
+      "tracked": true,
+      "lines": 3,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/darcy.sh",
+      "sha256": "bd1994d97632e86bfb0fd8bb7f6d241b99b5a0987205cf827381183b2f88fe10",
+      "tracked": true,
+      "lines": 3,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/elasticity.sh",
+      "sha256": "641613b44b350e0ca3105edd9e304b5d32628a89f37b5341d58eaeba7581dc27",
+      "tracked": true,
+      "lines": 3,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/ns.sh",
+      "sha256": "065ff7b6c9cbeedaedec50468f71073a092f78f6018e13bb82441e6166ec8c97",
+      "tracked": true,
+      "lines": 3,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/pipe.sh",
+      "sha256": "45cd214c62b8ddc2ff83f7fddb31d8ef80c726fdfa49621e7694f281f6388195",
+      "tracked": true,
+      "lines": 3,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/plasticity.sh",
+      "sha256": "c87d8cd87c5d070eddef64948cf9614bf9665ea495f8c9c119da89a2c393d3ea",
+      "tracked": true,
+      "lines": 3,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/run_seed.sh",
+      "sha256": "25114eab94501aa57ec7aee8b273b4f47aa2e2818a59541642ca3c6a90a22c45",
+      "tracked": false,
+      "lines": 31,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/verification.json",
+      "sha256": "a01b9ff4a5cd5542cf6b061d0772b82fbb7f8db79dda7739cab7c7a9efc5a73b",
+      "tracked": true,
+      "lines": 1218,
+      "kind": "configuration_or_evidence"
+    },
+    {
+      "path": "tran_evaluate/kcdno/_dispatch.sh",
+      "sha256": "157c4906e9445c342c66ebc772450c4bc909e1b307b66b85c3325a124b8727ef",
+      "tracked": true,
+      "lines": 31,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/kcdno/_standard.sh",
+      "sha256": "3934500dd20af9b8fb02ee0c12b3ea2ff15e297012d5932913107104c6417e8d",
+      "tracked": true,
+      "lines": 33,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/kcdno/airfoil.sh",
+      "sha256": "7e03f73f262cb9b98697ff83fe4e4ba0b823786a763a012f69cb3f65f0b9a2a6",
+      "tracked": true,
+      "lines": 4,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/kcdno/airfrans.sh",
+      "sha256": "d659f3455da2de3e64147f0527ce12a1821f311c2c084c032419a8bbd6561e25",
+      "tracked": true,
+      "lines": 21,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/kcdno/car.sh",
+      "sha256": "710f2f51db2b62d81089a804c83bfc248c86f7696318775f918a15eb20ab6f5c",
+      "tracked": true,
+      "lines": 12,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/kcdno/darcy.sh",
+      "sha256": "dc71af3c6c3500ede9b4d684708fc82a2e1e5a3ce72a4591f6bdcb7de303a0ba",
+      "tracked": true,
+      "lines": 4,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/kcdno/elasticity.sh",
+      "sha256": "b8a4b157b9882066ed53c395ac47e2985f62e0b7e45c1783ce1e5797497539e8",
+      "tracked": true,
+      "lines": 4,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/kcdno/ns.sh",
+      "sha256": "6ba2faf012ced6b2f913683b55b23d010e69cf7f7e98fa52e89b03ab208f796c",
+      "tracked": true,
+      "lines": 4,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/kcdno/pipe.sh",
+      "sha256": "77e00aadb3bc15741338cbff74865d9410f66373bca117beef0c0fc0f24452ef",
+      "tracked": true,
+      "lines": 4,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/kcdno/plasticity.sh",
+      "sha256": "9a3471d2becc6c4beedbdbb6bb2e92324647eab04c28d9209021633c2fde1cc3",
+      "tracked": true,
+      "lines": 4,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/kcdno/train_eval.sh",
+      "sha256": "a8aabd8804703b2db2c0e2d07dde41ef8d6e4250a9e34b5e7628ff2b366db59e",
+      "tracked": true,
+      "lines": 19,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/ns.sh",
+      "sha256": "fe4ae30955ff9c030d0480b8e9458770a901229b8024264dc0fe3f71960c6ad9",
+      "tracked": true,
+      "lines": 4,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/pipe.sh",
+      "sha256": "45dd772c36cc56429451554ff22febdcc1a1c318564d4a59dd4bcfa55b9bb72b",
+      "tracked": true,
+      "lines": 4,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/plasticity.sh",
+      "sha256": "7c6cd3aebf50a70500a5666f3dc5bd632c5ea3f2f14d7db49abfc9a75b4edfa9",
+      "tracked": true,
+      "lines": 4,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/show/Airfoil-Design-AirfRANS.sh",
+      "sha256": "cccd231b34088214b06c0d8030b44bad85ed11508f28fce51bbea16b477aa51f",
+      "tracked": false,
+      "lines": 5,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/show/Car-Design-ShapeNetCar.sh",
+      "sha256": "8cadb215810597c8d01f317d643bec91d6588b7644085693b647d4695f58aac2",
+      "tracked": false,
+      "lines": 5,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/show/PDE-Solving-StandardBenchmark.sh",
+      "sha256": "0a0cee67074dd87441171d4a0985a8db0d7670299ab17f09c4a7b08a269aa746",
+      "tracked": false,
+      "lines": 5,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/show/README.md",
+      "sha256": "44cad206617d7240acd0adb653a11c46df5264fddf1e5568badda153b0e41e3a",
+      "tracked": false,
+      "lines": 136,
+      "kind": "documentation"
+    },
+    {
+      "path": "tran_evaluate/show/_report.py",
+      "sha256": "e5d8afc7279b73ed0570bc4f0b8778bd68824d596952802764df4dceeadbc533",
+      "tracked": false,
+      "lines": 708,
+      "kind": "source"
+    },
+    {
+      "path": "tran_evaluate/train_eval.sh",
+      "sha256": "a7f6218d577713c8c0a23810e07d098f7de9f9513097ec2f9669ebaa1ec69298",
+      "tracked": true,
+      "lines": 83,
+      "kind": "source"
+    }
+  ],
+  "counts": {
+    "other_text": 36,
+    "documentation": 67,
+    "source": 227,
+    "configuration_or_evidence": 298
+  },
+  "python_files": 157,
+  "test_methods": 274,
+  "documents": 67,
+  "shell_scripts": 70,
+  "shell_syntax_failures": [],
+  "method": "Full text read; every Python AST/function/call contract indexed; exact-hash duplicates only. Semantic review is recorded separately, not inferred from parser success."
+}

@@ -16,6 +16,12 @@ if args.model == 'CDLNO':
     with open('params.yaml', 'r') as config_file:
         recording_hparams = resolve_hparams(args, yaml.safe_load(config_file)['CDLNO'])
     start_experiment(args, 'airfrans', evaluation=True, hparams=recording_hparams)
+elif args.model == 'msar_lno':
+    from msar_entry import AirRun as MSARAirRun, model_kwargs as msar_model_kwargs, resolve_hparams as msar_resolve_hparams
+    from cdlno.experiment import start as start_experiment, finish as finish_experiment
+    with open('params.yaml', 'r') as config_file:
+        recording_hparams = msar_resolve_hparams(args, yaml.safe_load(config_file)['msar_lno'])
+    start_experiment(args, 'airfrans', evaluation=True, hparams=recording_hparams)
 elif args.model in ('kcdno', 'lrsa_matched'):
     from kcdno_entry import AirRun as KCDNOAirRun, model_kwargs as kcdno_model_kwargs, resolve_hparams as kcdno_resolve_hparams
     from cdlno.experiment import start as start_experiment, finish as finish_experiment
@@ -65,6 +71,11 @@ for task in tasks:
                 requested_hparams = resolve_hparams(args, yaml.safe_load(f)[model])
             cdlno_run = AirRun(args, requested_hparams, device=device, evaluation=True)
             mod = cdlno_run.load()
+        elif model == 'msar_lno':
+            with open('params.yaml', 'r') as f:
+                requested_hparams = msar_resolve_hparams(args, yaml.safe_load(f)[model])
+            cdlno_run = MSARAirRun(args, requested_hparams, device=device, evaluation=True)
+            mod = cdlno_run.load()
         elif model in ('kcdno', 'lrsa_matched'):
             with open('params.yaml', 'r') as f:
                 requested_hparams = kcdno_resolve_hparams(args, yaml.safe_load(f)[model])
@@ -82,12 +93,16 @@ for task in tasks:
             hparam = yaml.safe_load(f)[model]
             if model == 'CDLNO':
                 hparam = cdlno_run.hparams
+            elif model == 'msar_lno':
+                hparam = cdlno_run.hparams
             elif model in ('kcdno', 'lrsa_matched'):
                 hparam = cdlno_run.hparams
             hparams.append(hparam)
 
     results_dir = cdlno_run.result_dir if args.model == 'CDLNO' else osp.join(ckpt_root_dir, 'scores', task)
-    if args.model in ('kcdno', 'lrsa_matched'):
+    if args.model == 'msar_lno':
+        results_dir = cdlno_run.result_dir
+    elif args.model in ('kcdno', 'lrsa_matched'):
         results_dir = cdlno_run.result_dir
     coefs = metrics.Results_test(device, models, hparams, coef_norm, data_dir, results_dir, n_test=3, criterion='MSE',
                                  s=s)
@@ -105,6 +120,9 @@ for task in tasks:
     np.save(osp.join(results_dir, 'bls'), coefs[6])
 
 if args.model == 'CDLNO':
+    cdlno_run.recorder.record_air_scores(results_dir)
+    finish_experiment(args)
+elif args.model == 'msar_lno':
     cdlno_run.recorder.record_air_scores(results_dir)
     finish_experiment(args)
 elif args.model in ('kcdno', 'lrsa_matched'):

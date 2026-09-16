@@ -1,0 +1,234 @@
+[
+  {
+    "task": "darcy",
+    "device": "cuda",
+    "dtype": "float32",
+    "backend": "MATH",
+    "original_loss_step": "passed"
+  },
+  {
+    "task": "elasticity",
+    "device": "cuda",
+    "dtype": "float32",
+    "backend": "MATH",
+    "original_loss_step": "passed"
+  },
+  {
+    "task": "airfoil",
+    "device": "cuda",
+    "dtype": "float32",
+    "backend": "MATH",
+    "original_loss_step": "passed"
+  },
+  {
+    "task": "pipe",
+    "device": "cuda",
+    "dtype": "float32",
+    "backend": "MATH",
+    "original_loss_step": "passed"
+  },
+  {
+    "task": "darcy",
+    "mode": "floor",
+    "device": "cpu",
+    "dtype": "float32",
+    "shape": [
+      2,
+      49,
+      1
+    ],
+    "original_loss": "Darcy field+0.1 derivative L2",
+    "forward": true,
+    "backward": true,
+    "step": true,
+    "eval": true,
+    "strict_checkpoint": true,
+    "atol": 0,
+    "rtol": 0
+  },
+  {
+    "task": "darcy",
+    "mode": "off",
+    "device": "cpu",
+    "dtype": "float32",
+    "shape": [
+      2,
+      49,
+      1
+    ],
+    "original_loss": "Darcy field+0.1 derivative L2",
+    "forward": true,
+    "backward": true,
+    "step": true,
+    "eval": true,
+    "strict_checkpoint": true,
+    "atol": 0,
+    "rtol": 0
+  },
+  {
+    "task": "elasticity",
+    "mode": "floor",
+    "device": "cpu",
+    "dtype": "float32",
+    "shape": [
+      2,
+      35,
+      1
+    ],
+    "original_loss": "original relative L2",
+    "forward": true,
+    "backward": true,
+    "step": true,
+    "eval": true,
+    "strict_checkpoint": true,
+    "atol": 0,
+    "rtol": 0
+  },
+  {
+    "task": "elasticity",
+    "mode": "off",
+    "device": "cpu",
+    "dtype": "float32",
+    "shape": [
+      2,
+      35,
+      1
+    ],
+    "original_loss": "original relative L2",
+    "forward": true,
+    "backward": true,
+    "step": true,
+    "eval": true,
+    "strict_checkpoint": true,
+    "atol": 0,
+    "rtol": 0
+  },
+  {
+    "task": "airfoil",
+    "mode": "floor",
+    "device": "cpu",
+    "dtype": "float32",
+    "shape": [
+      2,
+      35,
+      1
+    ],
+    "original_loss": "original relative L2",
+    "forward": true,
+    "backward": true,
+    "step": true,
+    "eval": true,
+    "strict_checkpoint": true,
+    "atol": 0,
+    "rtol": 0
+  },
+  {
+    "task": "airfoil",
+    "mode": "off",
+    "device": "cpu",
+    "dtype": "float32",
+    "shape": [
+      2,
+      35,
+      1
+    ],
+    "original_loss": "original relative L2",
+    "forward": true,
+    "backward": true,
+    "step": true,
+    "eval": true,
+    "strict_checkpoint": true,
+    "atol": 0,
+    "rtol": 0
+  },
+  {
+    "task": "pipe",
+    "mode": "floor",
+    "device": "cpu",
+    "dtype": "float32",
+    "shape": [
+      2,
+      35,
+      1
+    ],
+    "original_loss": "original relative L2",
+    "forward": true,
+    "backward": true,
+    "step": true,
+    "eval": true,
+    "strict_checkpoint": true,
+    "atol": 0,
+    "rtol": 0
+  },
+  {
+    "task": "pipe",
+    "mode": "off",
+    "device": "cpu",
+    "dtype": "float32",
+    "shape": [
+      2,
+      35,
+      1
+    ],
+    "original_loss": "original relative L2",
+    "forward": true,
+    "backward": true,
+    "step": true,
+    "eval": true,
+    "strict_checkpoint": true,
+    "atol": 0,
+    "rtol": 0
+  },
+  {
+    "task": "darcy",
+    "real_N": 7225,
+    "d": 8,
+    "grid": "original",
+    "forward": "passed",
+    "training": "not_run"
+  },
+  {
+    "task": "elasticity",
+    "real_N": 972,
+    "d": 8,
+    "grid": "original",
+    "forward": "passed",
+    "training": "not_run"
+  },
+  {
+    "task": "airfoil",
+    "real_N": 11271,
+    "d": 8,
+    "grid": "original",
+    "forward": "passed",
+    "training": "not_run"
+  },
+  {
+    "task": "pipe",
+    "real_N": 16641,
+    "d": 8,
+    "grid": "original",
+    "forward": "passed",
+    "training": "not_run"
+  },
+  {
+    "profile": "light",
+    "task": "elasticity",
+    "N": 35,
+    "M1": 512,
+    "parameters": 1710169,
+    "device": "cpu",
+    "forward": "passed",
+    "backward": "not_run"
+  },
+  {
+    "profile": "full",
+    "task": "elasticity",
+    "N": 972,
+    "M1": 1024,
+    "parameters": 6811825,
+    "device": "cpu",
+    "forward": "passed",
+    "backward": "not_run"
+  }
+]

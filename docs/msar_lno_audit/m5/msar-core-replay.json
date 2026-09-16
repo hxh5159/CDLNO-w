@@ -1,0 +1,2856 @@
+[
+  {
+    "profile": "light",
+    "action": "replay",
+    "status": "passed",
+    "config": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        512,
+        256,
+        128,
+        64
+      ],
+      "d": 96,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "input_layout": {
+      "input_tokens": 35,
+      "num_latents": [
+        512,
+        256,
+        128,
+        64
+      ],
+      "first_down_expands": true,
+      "token_path": [
+        35,
+        512,
+        256,
+        128,
+        64
+      ],
+      "note": "M1>N is a legal latent expansion; no token count was clipped"
+    },
+    "input_shape": [
+      2,
+      35,
+      96
+    ],
+    "output_shape": [
+      2,
+      35,
+      4
+    ],
+    "output_dim": 4,
+    "parameters": 1691260,
+    "parameter_groups": {
+      "downs": 203280,
+      "encoders": 669552,
+      "decoders": 669552,
+      "ups": 111000,
+      "fusions": 288,
+      "final_up": 37008,
+      "output_norm": 192,
+      "output": 388
+    },
+    "module_counts": {
+      "MSARLNO": 1,
+      "ModuleList": 5,
+      "LearnedQueryDown": 4,
+      "Linear": 125,
+      "RMSNorm": 76,
+      "Sequential": 8,
+      "LatentFFNSAFFNBlock": 12,
+      "PlainFFN": 24,
+      "_SelfAttention": 12,
+      "_ProjectedAttention": 12,
+      "QueryAlignedUpCross": 4,
+      "PairwiseAttnResFusion": 3,
+      "LayerNorm": 1
+    },
+    "shape_trace": [
+      {
+        "module": "downs.0",
+        "inputs": [
+          [
+            2,
+            35,
+            96
+          ]
+        ],
+        "output": [
+          2,
+          512,
+          96
+        ]
+      },
+      {
+        "module": "encoders.0",
+        "inputs": [
+          [
+            2,
+            512,
+            96
+          ]
+        ],
+        "output": [
+          2,
+          512,
+          96
+        ]
+      },
+      {
+        "module": "downs.1",
+        "inputs": [
+          [
+            2,
+            512,
+            96
+          ]
+        ],
+        "output": [
+          2,
+          256,
+          96
+        ]
+      },
+      {
+        "module": "encoders.1",
+        "inputs": [
+          [
+            2,
+            256,
+            96
+          ]
+        ],
+        "output": [
+          2,
+          256,
+          96
+        ]
+      },
+      {
+        "module": "downs.2",
+        "inputs": [
+          [
+            2,
+            256,
+            96
+          ]
+        ],
+        "output": [
+          2,
+          128,
+          96
+        ]
+      },
+      {
+        "module": "encoders.2",
+        "inputs": [
+          [
+            2,
+            128,
+            96
+          ]
+        ],
+        "output": [
+          2,
+          128,
+          96
+        ]
+      },
+      {
+        "module": "downs.3",
+        "inputs": [
+          [
+            2,
+            128,
+            96
+          ]
+        ],
+        "output": [
+          2,
+          64,
+          96
+        ]
+      },
+      {
+        "module": "encoders.3",
+        "inputs": [
+          [
+            2,
+            64,
+            96
+          ]
+        ],
+        "output": [
+          2,
+          64,
+          96
+        ]
+      },
+      {
+        "module": "decoders.3",
+        "inputs": [
+          [
+            2,
+            64,
+            96
+          ]
+        ],
+        "output": [
+          2,
+          64,
+          96
+        ]
+      },
+      {
+        "module": "ups.2",
+        "inputs": [
+          [
+            2,
+            128,
+            96
+          ],
+          [
+            2,
+            64,
+            96
+          ]
+        ],
+        "output": [
+          2,
+          128,
+          96
+        ]
+      },
+      {
+        "module": "fusions.2",
+        "inputs": [
+          [
+            2,
+            128,
+            96
+          ],
+          [
+            2,
+            128,
+            96
+          ]
+        ],
+        "output": [
+          2,
+          128,
+          96
+        ]
+      },
+      {
+        "module": "decoders.2",
+        "inputs": [
+          [
+            2,
+            128,
+            96
+          ]
+        ],
+        "output": [
+          2,
+          128,
+          96
+        ]
+      },
+      {
+        "module": "ups.1",
+        "inputs": [
+          [
+            2,
+            256,
+            96
+          ],
+          [
+            2,
+            128,
+            96
+          ]
+        ],
+        "output": [
+          2,
+          256,
+          96
+        ]
+      },
+      {
+        "module": "fusions.1",
+        "inputs": [
+          [
+            2,
+            256,
+            96
+          ],
+          [
+            2,
+            256,
+            96
+          ]
+        ],
+        "output": [
+          2,
+          256,
+          96
+        ]
+      },
+      {
+        "module": "decoders.1",
+        "inputs": [
+          [
+            2,
+            256,
+            96
+          ]
+        ],
+        "output": [
+          2,
+          256,
+          96
+        ]
+      },
+      {
+        "module": "ups.0",
+        "inputs": [
+          [
+            2,
+            512,
+            96
+          ],
+          [
+            2,
+            256,
+            96
+          ]
+        ],
+        "output": [
+          2,
+          512,
+          96
+        ]
+      },
+      {
+        "module": "fusions.0",
+        "inputs": [
+          [
+            2,
+            512,
+            96
+          ],
+          [
+            2,
+            512,
+            96
+          ]
+        ],
+        "output": [
+          2,
+          512,
+          96
+        ]
+      },
+      {
+        "module": "decoders.0",
+        "inputs": [
+          [
+            2,
+            512,
+            96
+          ]
+        ],
+        "output": [
+          2,
+          512,
+          96
+        ]
+      },
+      {
+        "module": "final_up",
+        "inputs": [
+          [
+            2,
+            35,
+            96
+          ],
+          [
+            2,
+            512,
+            96
+          ]
+        ],
+        "output": [
+          2,
+          35,
+          96
+        ]
+      },
+      {
+        "module": "output_norm",
+        "inputs": [
+          [
+            2,
+            35,
+            96
+          ]
+        ],
+        "output": [
+          2,
+          35,
+          96
+        ]
+      },
+      {
+        "module": "output",
+        "inputs": [
+          [
+            2,
+            35,
+            96
+          ]
+        ],
+        "output": [
+          2,
+          35,
+          4
+        ]
+      }
+    ],
+    "state_keys_shapes": {
+      "downs.0.latent_queries": [
+        512,
+        96
+      ],
+      "downs.0.to_k.weight": [
+        96,
+        96
+      ],
+      "downs.0.to_v.weight": [
+        96,
+        96
+      ],
+      "downs.0.to_out.weight": [
+        96,
+        96
+      ],
+      "downs.0.to_out.bias": [
+        96
+      ],
+      "downs.0.q_norm.weight": [
+        24
+      ],
+      "downs.0.k_norm.weight": [
+        24
+      ],
+      "downs.1.latent_queries": [
+        256,
+        96
+      ],
+      "downs.1.to_k.weight": [
+        96,
+        96
+      ],
+      "downs.1.to_v.weight": [
+        96,
+        96
+      ],
+      "downs.1.to_out.weight": [
+        96,
+        96
+      ],
+      "downs.1.to_out.bias": [
+        96
+      ],
+      "downs.1.q_norm.weight": [
+        24
+      ],
+      "downs.1.k_norm.weight": [
+        24
+      ],
+      "downs.2.latent_queries": [
+        128,
+        96
+      ],
+      "downs.2.to_k.weight": [
+        96,
+        96
+      ],
+      "downs.2.to_v.weight": [
+        96,
+        96
+      ],
+      "downs.2.to_out.weight": [
+        96,
+        96
+      ],
+      "downs.2.to_out.bias": [
+        96
+      ],
+      "downs.2.q_norm.weight": [
+        12
+      ],
+      "downs.2.k_norm.weight": [
+        12
+      ],
+      "downs.3.latent_queries": [
+        64,
+        96
+      ],
+      "downs.3.to_k.weight": [
+        96,
+        96
+      ],
+      "downs.3.to_v.weight": [
+        96,
+        96
+      ],
+      "downs.3.to_out.weight": [
+        96,
+        96
+      ],
+      "downs.3.to_out.bias": [
+        96
+      ],
+      "downs.3.q_norm.weight": [
+        12
+      ],
+      "downs.3.k_norm.weight": [
+        12
+      ],
+      "encoders.0.0.norm1.weight": [
+        96
+      ],
+      "encoders.0.0.ffn1.fc1.weight": [
+        192,
+        96
+      ],
+      "encoders.0.0.ffn1.fc1.bias": [
+        192
+      ],
+      "encoders.0.0.ffn1.fc2.weight": [
+        96,
+        192
+      ],
+      "encoders.0.0.ffn1.fc2.bias": [
+        96
+      ],
+      "encoders.0.0.norm_sa.weight": [
+        96
+      ],
+      "encoders.0.0.sa.attn.to_q.weight": [
+        96,
+        96
+      ],
+      "encoders.0.0.sa.attn.to_k.weight": [
+        96,
+        96
+      ],
+      "encoders.0.0.sa.attn.to_v.weight": [
+        96,
+        96
+      ],
+      "encoders.0.0.sa.attn.to_out.weight": [
+        96,
+        96
+      ],
+      "encoders.0.0.sa.attn.to_out.bias": [
+        96
+      ],
+      "encoders.0.0.sa.attn.q_norm.weight": [
+        24
+      ],
+      "encoders.0.0.sa.attn.k_norm.weight": [
+        24
+      ],
+      "encoders.0.0.norm2.weight": [
+        96
+      ],
+      "encoders.0.0.ffn2.fc1.weight": [
+        192,
+        96
+      ],
+      "encoders.0.0.ffn2.fc1.bias": [
+        192
+      ],
+      "encoders.0.0.ffn2.fc2.weight": [
+        96,
+        192
+      ],
+      "encoders.0.0.ffn2.fc2.bias": [
+        96
+      ],
+      "encoders.0.1.norm1.weight": [
+        96
+      ],
+      "encoders.0.1.ffn1.fc1.weight": [
+        192,
+        96
+      ],
+      "encoders.0.1.ffn1.fc1.bias": [
+        192
+      ],
+      "encoders.0.1.ffn1.fc2.weight": [
+        96,
+        192
+      ],
+      "encoders.0.1.ffn1.fc2.bias": [
+        96
+      ],
+      "encoders.0.1.norm_sa.weight": [
+        96
+      ],
+      "encoders.0.1.sa.attn.to_q.weight": [
+        96,
+        96
+      ],
+      "encoders.0.1.sa.attn.to_k.weight": [
+        96,
+        96
+      ],
+      "encoders.0.1.sa.attn.to_v.weight": [
+        96,
+        96
+      ],
+      "encoders.0.1.sa.attn.to_out.weight": [
+        96,
+        96
+      ],
+      "encoders.0.1.sa.attn.to_out.bias": [
+        96
+      ],
+      "encoders.0.1.sa.attn.q_norm.weight": [
+        24
+      ],
+      "encoders.0.1.sa.attn.k_norm.weight": [
+        24
+      ],
+      "encoders.0.1.norm2.weight": [
+        96
+      ],
+      "encoders.0.1.ffn2.fc1.weight": [
+        192,
+        96
+      ],
+      "encoders.0.1.ffn2.fc1.bias": [
+        192
+      ],
+      "encoders.0.1.ffn2.fc2.weight": [
+        96,
+        192
+      ],
+      "encoders.0.1.ffn2.fc2.bias": [
+        96
+      ],
+      "encoders.0.2.norm1.weight": [
+        96
+      ],
+      "encoders.0.2.ffn1.fc1.weight": [
+        192,
+        96
+      ],
+      "encoders.0.2.ffn1.fc1.bias": [
+        192
+      ],
+      "encoders.0.2.ffn1.fc2.weight": [
+        96,
+        192
+      ],
+      "encoders.0.2.ffn1.fc2.bias": [
+        96
+      ],
+      "encoders.0.2.norm_sa.weight": [
+        96
+      ],
+      "encoders.0.2.sa.attn.to_q.weight": [
+        96,
+        96
+      ],
+      "encoders.0.2.sa.attn.to_k.weight": [
+        96,
+        96
+      ],
+      "encoders.0.2.sa.attn.to_v.weight": [
+        96,
+        96
+      ],
+      "encoders.0.2.sa.attn.to_out.weight": [
+        96,
+        96
+      ],
+      "encoders.0.2.sa.attn.to_out.bias": [
+        96
+      ],
+      "encoders.0.2.sa.attn.q_norm.weight": [
+        24
+      ],
+      "encoders.0.2.sa.attn.k_norm.weight": [
+        24
+      ],
+      "encoders.0.2.norm2.weight": [
+        96
+      ],
+      "encoders.0.2.ffn2.fc1.weight": [
+        192,
+        96
+      ],
+      "encoders.0.2.ffn2.fc1.bias": [
+        192
+      ],
+      "encoders.0.2.ffn2.fc2.weight": [
+        96,
+        192
+      ],
+      "encoders.0.2.ffn2.fc2.bias": [
+        96
+      ],
+      "encoders.1.0.norm1.weight": [
+        96
+      ],
+      "encoders.1.0.ffn1.fc1.weight": [
+        192,
+        96
+      ],
+      "encoders.1.0.ffn1.fc1.bias": [
+        192
+      ],
+      "encoders.1.0.ffn1.fc2.weight": [
+        96,
+        192
+      ],
+      "encoders.1.0.ffn1.fc2.bias": [
+        96
+      ],
+      "encoders.1.0.norm_sa.weight": [
+        96
+      ],
+      "encoders.1.0.sa.attn.to_q.weight": [
+        96,
+        96
+      ],
+      "encoders.1.0.sa.attn.to_k.weight": [
+        96,
+        96
+      ],
+      "encoders.1.0.sa.attn.to_v.weight": [
+        96,
+        96
+      ],
+      "encoders.1.0.sa.attn.to_out.weight": [
+        96,
+        96
+      ],
+      "encoders.1.0.sa.attn.to_out.bias": [
+        96
+      ],
+      "encoders.1.0.sa.attn.q_norm.weight": [
+        24
+      ],
+      "encoders.1.0.sa.attn.k_norm.weight": [
+        24
+      ],
+      "encoders.1.0.norm2.weight": [
+        96
+      ],
+      "encoders.1.0.ffn2.fc1.weight": [
+        192,
+        96
+      ],
+      "encoders.1.0.ffn2.fc1.bias": [
+        192
+      ],
+      "encoders.1.0.ffn2.fc2.weight": [
+        96,
+        192
+      ],
+      "encoders.1.0.ffn2.fc2.bias": [
+        96
+      ],
+      "encoders.2.0.norm1.weight": [
+        96
+      ],
+      "encoders.2.0.ffn1.fc1.weight": [
+        192,
+        96
+      ],
+      "encoders.2.0.ffn1.fc1.bias": [
+        192
+      ],
+      "encoders.2.0.ffn1.fc2.weight": [
+        96,
+        192
+      ],
+      "encoders.2.0.ffn1.fc2.bias": [
+        96
+      ],
+      "encoders.2.0.norm_sa.weight": [
+        96
+      ],
+      "encoders.2.0.sa.attn.to_q.weight": [
+        96,
+        96
+      ],
+      "encoders.2.0.sa.attn.to_k.weight": [
+        96,
+        96
+      ],
+      "encoders.2.0.sa.attn.to_v.weight": [
+        96,
+        96
+      ],
+      "encoders.2.0.sa.attn.to_out.weight": [
+        96,
+        96
+      ],
+      "encoders.2.0.sa.attn.to_out.bias": [
+        96
+      ],
+      "encoders.2.0.sa.attn.q_norm.weight": [
+        12
+      ],
+      "encoders.2.0.sa.attn.k_norm.weight": [
+        12
+      ],
+      "encoders.2.0.norm2.weight": [
+        96
+      ],
+      "encoders.2.0.ffn2.fc1.weight": [
+        192,
+        96
+      ],
+      "encoders.2.0.ffn2.fc1.bias": [
+        192
+      ],
+      "encoders.2.0.ffn2.fc2.weight": [
+        96,
+        192
+      ],
+      "encoders.2.0.ffn2.fc2.bias": [
+        96
+      ],
+      "encoders.3.0.norm1.weight": [
+        96
+      ],
+      "encoders.3.0.ffn1.fc1.weight": [
+        192,
+        96
+      ],
+      "encoders.3.0.ffn1.fc1.bias": [
+        192
+      ],
+      "encoders.3.0.ffn1.fc2.weight": [
+        96,
+        192
+      ],
+      "encoders.3.0.ffn1.fc2.bias": [
+        96
+      ],
+      "encoders.3.0.norm_sa.weight": [
+        96
+      ],
+      "encoders.3.0.sa.attn.to_q.weight": [
+        96,
+        96
+      ],
+      "encoders.3.0.sa.attn.to_k.weight": [
+        96,
+        96
+      ],
+      "encoders.3.0.sa.attn.to_v.weight": [
+        96,
+        96
+      ],
+      "encoders.3.0.sa.attn.to_out.weight": [
+        96,
+        96
+      ],
+      "encoders.3.0.sa.attn.to_out.bias": [
+        96
+      ],
+      "encoders.3.0.sa.attn.q_norm.weight": [
+        12
+      ],
+      "encoders.3.0.sa.attn.k_norm.weight": [
+        12
+      ],
+      "encoders.3.0.norm2.weight": [
+        96
+      ],
+      "encoders.3.0.ffn2.fc1.weight": [
+        192,
+        96
+      ],
+      "encoders.3.0.ffn2.fc1.bias": [
+        192
+      ],
+      "encoders.3.0.ffn2.fc2.weight": [
+        96,
+        192
+      ],
+      "encoders.3.0.ffn2.fc2.bias": [
+        96
+      ],
+      "decoders.0.0.norm1.weight": [
+        96
+      ],
+      "decoders.0.0.ffn1.fc1.weight": [
+        192,
+        96
+      ],
+      "decoders.0.0.ffn1.fc1.bias": [
+        192
+      ],
+      "decoders.0.0.ffn1.fc2.weight": [
+        96,
+        192
+      ],
+      "decoders.0.0.ffn1.fc2.bias": [
+        96
+      ],
+      "decoders.0.0.norm_sa.weight": [
+        96
+      ],
+      "decoders.0.0.sa.attn.to_q.weight": [
+        96,
+        96
+      ],
+      "decoders.0.0.sa.attn.to_k.weight": [
+        96,
+        96
+      ],
+      "decoders.0.0.sa.attn.to_v.weight": [
+        96,
+        96
+      ],
+      "decoders.0.0.sa.attn.to_out.weight": [
+        96,
+        96
+      ],
+      "decoders.0.0.sa.attn.to_out.bias": [
+        96
+      ],
+      "decoders.0.0.sa.attn.q_norm.weight": [
+        24
+      ],
+      "decoders.0.0.sa.attn.k_norm.weight": [
+        24
+      ],
+      "decoders.0.0.norm2.weight": [
+        96
+      ],
+      "decoders.0.0.ffn2.fc1.weight": [
+        192,
+        96
+      ],
+      "decoders.0.0.ffn2.fc1.bias": [
+        192
+      ],
+      "decoders.0.0.ffn2.fc2.weight": [
+        96,
+        192
+      ],
+      "decoders.0.0.ffn2.fc2.bias": [
+        96
+      ],
+      "decoders.0.1.norm1.weight": [
+        96
+      ],
+      "decoders.0.1.ffn1.fc1.weight": [
+        192,
+        96
+      ],
+      "decoders.0.1.ffn1.fc1.bias": [
+        192
+      ],
+      "decoders.0.1.ffn1.fc2.weight": [
+        96,
+        192
+      ],
+      "decoders.0.1.ffn1.fc2.bias": [
+        96
+      ],
+      "decoders.0.1.norm_sa.weight": [
+        96
+      ],
+      "decoders.0.1.sa.attn.to_q.weight": [
+        96,
+        96
+      ],
+      "decoders.0.1.sa.attn.to_k.weight": [
+        96,
+        96
+      ],
+      "decoders.0.1.sa.attn.to_v.weight": [
+        96,
+        96
+      ],
+      "decoders.0.1.sa.attn.to_out.weight": [
+        96,
+        96
+      ],
+      "decoders.0.1.sa.attn.to_out.bias": [
+        96
+      ],
+      "decoders.0.1.sa.attn.q_norm.weight": [
+        24
+      ],
+      "decoders.0.1.sa.attn.k_norm.weight": [
+        24
+      ],
+      "decoders.0.1.norm2.weight": [
+        96
+      ],
+      "decoders.0.1.ffn2.fc1.weight": [
+        192,
+        96
+      ],
+      "decoders.0.1.ffn2.fc1.bias": [
+        192
+      ],
+      "decoders.0.1.ffn2.fc2.weight": [
+        96,
+        192
+      ],
+      "decoders.0.1.ffn2.fc2.bias": [
+        96
+      ],
+      "decoders.0.2.norm1.weight": [
+        96
+      ],
+      "decoders.0.2.ffn1.fc1.weight": [
+        192,
+        96
+      ],
+      "decoders.0.2.ffn1.fc1.bias": [
+        192
+      ],
+      "decoders.0.2.ffn1.fc2.weight": [
+        96,
+        192
+      ],
+      "decoders.0.2.ffn1.fc2.bias": [
+        96
+      ],
+      "decoders.0.2.norm_sa.weight": [
+        96
+      ],
+      "decoders.0.2.sa.attn.to_q.weight": [
+        96,
+        96
+      ],
+      "decoders.0.2.sa.attn.to_k.weight": [
+        96,
+        96
+      ],
+      "decoders.0.2.sa.attn.to_v.weight": [
+        96,
+        96
+      ],
+      "decoders.0.2.sa.attn.to_out.weight": [
+        96,
+        96
+      ],
+      "decoders.0.2.sa.attn.to_out.bias": [
+        96
+      ],
+      "decoders.0.2.sa.attn.q_norm.weight": [
+        24
+      ],
+      "decoders.0.2.sa.attn.k_norm.weight": [
+        24
+      ],
+      "decoders.0.2.norm2.weight": [
+        96
+      ],
+      "decoders.0.2.ffn2.fc1.weight": [
+        192,
+        96
+      ],
+      "decoders.0.2.ffn2.fc1.bias": [
+        192
+      ],
+      "decoders.0.2.ffn2.fc2.weight": [
+        96,
+        192
+      ],
+      "decoders.0.2.ffn2.fc2.bias": [
+        96
+      ],
+      "decoders.1.0.norm1.weight": [
+        96
+      ],
+      "decoders.1.0.ffn1.fc1.weight": [
+        192,
+        96
+      ],
+      "decoders.1.0.ffn1.fc1.bias": [
+        192
+      ],
+      "decoders.1.0.ffn1.fc2.weight": [
+        96,
+        192
+      ],
+      "decoders.1.0.ffn1.fc2.bias": [
+        96
+      ],
+      "decoders.1.0.norm_sa.weight": [
+        96
+      ],
+      "decoders.1.0.sa.attn.to_q.weight": [
+        96,
+        96
+      ],
+      "decoders.1.0.sa.attn.to_k.weight": [
+        96,
+        96
+      ],
+      "decoders.1.0.sa.attn.to_v.weight": [
+        96,
+        96
+      ],
+      "decoders.1.0.sa.attn.to_out.weight": [
+        96,
+        96
+      ],
+      "decoders.1.0.sa.attn.to_out.bias": [
+        96
+      ],
+      "decoders.1.0.sa.attn.q_norm.weight": [
+        24
+      ],
+      "decoders.1.0.sa.attn.k_norm.weight": [
+        24
+      ],
+      "decoders.1.0.norm2.weight": [
+        96
+      ],
+      "decoders.1.0.ffn2.fc1.weight": [
+        192,
+        96
+      ],
+      "decoders.1.0.ffn2.fc1.bias": [
+        192
+      ],
+      "decoders.1.0.ffn2.fc2.weight": [
+        96,
+        192
+      ],
+      "decoders.1.0.ffn2.fc2.bias": [
+        96
+      ],
+      "decoders.2.0.norm1.weight": [
+        96
+      ],
+      "decoders.2.0.ffn1.fc1.weight": [
+        192,
+        96
+      ],
+      "decoders.2.0.ffn1.fc1.bias": [
+        192
+      ],
+      "decoders.2.0.ffn1.fc2.weight": [
+        96,
+        192
+      ],
+      "decoders.2.0.ffn1.fc2.bias": [
+        96
+      ],
+      "decoders.2.0.norm_sa.weight": [
+        96
+      ],
+      "decoders.2.0.sa.attn.to_q.weight": [
+        96,
+        96
+      ],
+      "decoders.2.0.sa.attn.to_k.weight": [
+        96,
+        96
+      ],
+      "decoders.2.0.sa.attn.to_v.weight": [
+        96,
+        96
+      ],
+      "decoders.2.0.sa.attn.to_out.weight": [
+        96,
+        96
+      ],
+      "decoders.2.0.sa.attn.to_out.bias": [
+        96
+      ],
+      "decoders.2.0.sa.attn.q_norm.weight": [
+        12
+      ],
+      "decoders.2.0.sa.attn.k_norm.weight": [
+        12
+      ],
+      "decoders.2.0.norm2.weight": [
+        96
+      ],
+      "decoders.2.0.ffn2.fc1.weight": [
+        192,
+        96
+      ],
+      "decoders.2.0.ffn2.fc1.bias": [
+        192
+      ],
+      "decoders.2.0.ffn2.fc2.weight": [
+        96,
+        192
+      ],
+      "decoders.2.0.ffn2.fc2.bias": [
+        96
+      ],
+      "decoders.3.0.norm1.weight": [
+        96
+      ],
+      "decoders.3.0.ffn1.fc1.weight": [
+        192,
+        96
+      ],
+      "decoders.3.0.ffn1.fc1.bias": [
+        192
+      ],
+      "decoders.3.0.ffn1.fc2.weight": [
+        96,
+        192
+      ],
+      "decoders.3.0.ffn1.fc2.bias": [
+        96
+      ],
+      "decoders.3.0.norm_sa.weight": [
+        96
+      ],
+      "decoders.3.0.sa.attn.to_q.weight": [
+        96,
+        96
+      ],
+      "decoders.3.0.sa.attn.to_k.weight": [
+        96,
+        96
+      ],
+      "decoders.3.0.sa.attn.to_v.weight": [
+        96,
+        96
+      ],
+      "decoders.3.0.sa.attn.to_out.weight": [
+        96,
+        96
+      ],
+      "decoders.3.0.sa.attn.to_out.bias": [
+        96
+      ],
+      "decoders.3.0.sa.attn.q_norm.weight": [
+        12
+      ],
+      "decoders.3.0.sa.attn.k_norm.weight": [
+        12
+      ],
+      "decoders.3.0.norm2.weight": [
+        96
+      ],
+      "decoders.3.0.ffn2.fc1.weight": [
+        192,
+        96
+      ],
+      "decoders.3.0.ffn2.fc1.bias": [
+        192
+      ],
+      "decoders.3.0.ffn2.fc2.weight": [
+        96,
+        192
+      ],
+      "decoders.3.0.ffn2.fc2.bias": [
+        96
+      ],
+      "ups.0.to_q.weight": [
+        96,
+        96
+      ],
+      "ups.0.to_k.weight": [
+        96,
+        96
+      ],
+      "ups.0.to_v.weight": [
+        96,
+        96
+      ],
+      "ups.0.to_out.weight": [
+        96,
+        96
+      ],
+      "ups.0.to_out.bias": [
+        96
+      ],
+      "ups.0.q_norm.weight": [
+        24
+      ],
+      "ups.0.k_norm.weight": [
+        24
+      ],
+      "ups.1.to_q.weight": [
+        96,
+        96
+      ],
+      "ups.1.to_k.weight": [
+        96,
+        96
+      ],
+      "ups.1.to_v.weight": [
+        96,
+        96
+      ],
+      "ups.1.to_out.weight": [
+        96,
+        96
+      ],
+      "ups.1.to_out.bias": [
+        96
+      ],
+      "ups.1.q_norm.weight": [
+        24
+      ],
+      "ups.1.k_norm.weight": [
+        24
+      ],
+      "ups.2.to_q.weight": [
+        96,
+        96
+      ],
+      "ups.2.to_k.weight": [
+        96,
+        96
+      ],
+      "ups.2.to_v.weight": [
+        96,
+        96
+      ],
+      "ups.2.to_out.weight": [
+        96,
+        96
+      ],
+      "ups.2.to_out.bias": [
+        96
+      ],
+      "ups.2.q_norm.weight": [
+        12
+      ],
+      "ups.2.k_norm.weight": [
+        12
+      ],
+      "fusions.0.w": [
+        96
+      ],
+      "fusions.1.w": [
+        96
+      ],
+      "fusions.2.w": [
+        96
+      ],
+      "final_up.to_q.weight": [
+        96,
+        96
+      ],
+      "final_up.to_k.weight": [
+        96,
+        96
+      ],
+      "final_up.to_v.weight": [
+        96,
+        96
+      ],
+      "final_up.to_out.weight": [
+        96,
+        96
+      ],
+      "final_up.to_out.bias": [
+        96
+      ],
+      "final_up.q_norm.weight": [
+        24
+      ],
+      "final_up.k_norm.weight": [
+        24
+      ],
+      "output_norm.weight": [
+        96
+      ],
+      "output_norm.bias": [
+        96
+      ],
+      "output.weight": [
+        4,
+        96
+      ],
+      "output.bias": [
+        4
+      ]
+    },
+    "fixture": "/home/hwz/CDLNO-artifacts/msar-m3-before-jx4v53vh/post-m3-core/light.pt",
+    "sha256": "968cbde20f0a0937a6282abbb45e8b9c06c98d60638b7529a99d74c169911e0c",
+    "bytes": 6890697,
+    "dtype": "float32",
+    "device": "cpu",
+    "sdpa": "MATH",
+    "atol": 0,
+    "rtol": 0,
+    "evidence": "post-M3 current synthetic lifted inputs; no task/data/training checkpoint claim"
+  },
+  {
+    "profile": "full",
+    "action": "replay",
+    "status": "passed",
+    "config": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        1024,
+        512,
+        256,
+        128
+      ],
+      "d": 192,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "input_layout": {
+      "input_tokens": 7,
+      "num_latents": [
+        1024,
+        512,
+        256,
+        128
+      ],
+      "first_down_expands": true,
+      "token_path": [
+        7,
+        1024,
+        512,
+        256,
+        128
+      ],
+      "note": "M1>N is a legal latent expansion; no token count was clipped"
+    },
+    "input_shape": [
+      1,
+      7,
+      192
+    ],
+    "output_shape": [
+      1,
+      7,
+      4
+    ],
+    "output_dim": 4,
+    "parameters": 6737140,
+    "parameter_groups": {
+      "downs": 812064,
+      "encoders": 2666208,
+      "decoders": 2666208,
+      "ups": 443184,
+      "fusions": 576,
+      "final_up": 147744,
+      "output_norm": 384,
+      "output": 772
+    },
+    "module_counts": {
+      "MSARLNO": 1,
+      "ModuleList": 5,
+      "LearnedQueryDown": 4,
+      "Linear": 125,
+      "RMSNorm": 76,
+      "Sequential": 8,
+      "LatentFFNSAFFNBlock": 12,
+      "PlainFFN": 24,
+      "_SelfAttention": 12,
+      "_ProjectedAttention": 12,
+      "QueryAlignedUpCross": 4,
+      "PairwiseAttnResFusion": 3,
+      "LayerNorm": 1
+    },
+    "shape_trace": [
+      {
+        "module": "downs.0",
+        "inputs": [
+          [
+            1,
+            7,
+            192
+          ]
+        ],
+        "output": [
+          1,
+          1024,
+          192
+        ]
+      },
+      {
+        "module": "encoders.0",
+        "inputs": [
+          [
+            1,
+            1024,
+            192
+          ]
+        ],
+        "output": [
+          1,
+          1024,
+          192
+        ]
+      },
+      {
+        "module": "downs.1",
+        "inputs": [
+          [
+            1,
+            1024,
+            192
+          ]
+        ],
+        "output": [
+          1,
+          512,
+          192
+        ]
+      },
+      {
+        "module": "encoders.1",
+        "inputs": [
+          [
+            1,
+            512,
+            192
+          ]
+        ],
+        "output": [
+          1,
+          512,
+          192
+        ]
+      },
+      {
+        "module": "downs.2",
+        "inputs": [
+          [
+            1,
+            512,
+            192
+          ]
+        ],
+        "output": [
+          1,
+          256,
+          192
+        ]
+      },
+      {
+        "module": "encoders.2",
+        "inputs": [
+          [
+            1,
+            256,
+            192
+          ]
+        ],
+        "output": [
+          1,
+          256,
+          192
+        ]
+      },
+      {
+        "module": "downs.3",
+        "inputs": [
+          [
+            1,
+            256,
+            192
+          ]
+        ],
+        "output": [
+          1,
+          128,
+          192
+        ]
+      },
+      {
+        "module": "encoders.3",
+        "inputs": [
+          [
+            1,
+            128,
+            192
+          ]
+        ],
+        "output": [
+          1,
+          128,
+          192
+        ]
+      },
+      {
+        "module": "decoders.3",
+        "inputs": [
+          [
+            1,
+            128,
+            192
+          ]
+        ],
+        "output": [
+          1,
+          128,
+          192
+        ]
+      },
+      {
+        "module": "ups.2",
+        "inputs": [
+          [
+            1,
+            256,
+            192
+          ],
+          [
+            1,
+            128,
+            192
+          ]
+        ],
+        "output": [
+          1,
+          256,
+          192
+        ]
+      },
+      {
+        "module": "fusions.2",
+        "inputs": [
+          [
+            1,
+            256,
+            192
+          ],
+          [
+            1,
+            256,
+            192
+          ]
+        ],
+        "output": [
+          1,
+          256,
+          192
+        ]
+      },
+      {
+        "module": "decoders.2",
+        "inputs": [
+          [
+            1,
+            256,
+            192
+          ]
+        ],
+        "output": [
+          1,
+          256,
+          192
+        ]
+      },
+      {
+        "module": "ups.1",
+        "inputs": [
+          [
+            1,
+            512,
+            192
+          ],
+          [
+            1,
+            256,
+            192
+          ]
+        ],
+        "output": [
+          1,
+          512,
+          192
+        ]
+      },
+      {
+        "module": "fusions.1",
+        "inputs": [
+          [
+            1,
+            512,
+            192
+          ],
+          [
+            1,
+            512,
+            192
+          ]
+        ],
+        "output": [
+          1,
+          512,
+          192
+        ]
+      },
+      {
+        "module": "decoders.1",
+        "inputs": [
+          [
+            1,
+            512,
+            192
+          ]
+        ],
+        "output": [
+          1,
+          512,
+          192
+        ]
+      },
+      {
+        "module": "ups.0",
+        "inputs": [
+          [
+            1,
+            1024,
+            192
+          ],
+          [
+            1,
+            512,
+            192
+          ]
+        ],
+        "output": [
+          1,
+          1024,
+          192
+        ]
+      },
+      {
+        "module": "fusions.0",
+        "inputs": [
+          [
+            1,
+            1024,
+            192
+          ],
+          [
+            1,
+            1024,
+            192
+          ]
+        ],
+        "output": [
+          1,
+          1024,
+          192
+        ]
+      },
+      {
+        "module": "decoders.0",
+        "inputs": [
+          [
+            1,
+            1024,
+            192
+          ]
+        ],
+        "output": [
+          1,
+          1024,
+          192
+        ]
+      },
+      {
+        "module": "final_up",
+        "inputs": [
+          [
+            1,
+            7,
+            192
+          ],
+          [
+            1,
+            1024,
+            192
+          ]
+        ],
+        "output": [
+          1,
+          7,
+          192
+        ]
+      },
+      {
+        "module": "output_norm",
+        "inputs": [
+          [
+            1,
+            7,
+            192
+          ]
+        ],
+        "output": [
+          1,
+          7,
+          192
+        ]
+      },
+      {
+        "module": "output",
+        "inputs": [
+          [
+            1,
+            7,
+            192
+          ]
+        ],
+        "output": [
+          1,
+          7,
+          4
+        ]
+      }
+    ],
+    "state_keys_shapes": {
+      "downs.0.latent_queries": [
+        1024,
+        192
+      ],
+      "downs.0.to_k.weight": [
+        192,
+        192
+      ],
+      "downs.0.to_v.weight": [
+        192,
+        192
+      ],
+      "downs.0.to_out.weight": [
+        192,
+        192
+      ],
+      "downs.0.to_out.bias": [
+        192
+      ],
+      "downs.0.q_norm.weight": [
+        48
+      ],
+      "downs.0.k_norm.weight": [
+        48
+      ],
+      "downs.1.latent_queries": [
+        512,
+        192
+      ],
+      "downs.1.to_k.weight": [
+        192,
+        192
+      ],
+      "downs.1.to_v.weight": [
+        192,
+        192
+      ],
+      "downs.1.to_out.weight": [
+        192,
+        192
+      ],
+      "downs.1.to_out.bias": [
+        192
+      ],
+      "downs.1.q_norm.weight": [
+        48
+      ],
+      "downs.1.k_norm.weight": [
+        48
+      ],
+      "downs.2.latent_queries": [
+        256,
+        192
+      ],
+      "downs.2.to_k.weight": [
+        192,
+        192
+      ],
+      "downs.2.to_v.weight": [
+        192,
+        192
+      ],
+      "downs.2.to_out.weight": [
+        192,
+        192
+      ],
+      "downs.2.to_out.bias": [
+        192
+      ],
+      "downs.2.q_norm.weight": [
+        24
+      ],
+      "downs.2.k_norm.weight": [
+        24
+      ],
+      "downs.3.latent_queries": [
+        128,
+        192
+      ],
+      "downs.3.to_k.weight": [
+        192,
+        192
+      ],
+      "downs.3.to_v.weight": [
+        192,
+        192
+      ],
+      "downs.3.to_out.weight": [
+        192,
+        192
+      ],
+      "downs.3.to_out.bias": [
+        192
+      ],
+      "downs.3.q_norm.weight": [
+        24
+      ],
+      "downs.3.k_norm.weight": [
+        24
+      ],
+      "encoders.0.0.norm1.weight": [
+        192
+      ],
+      "encoders.0.0.ffn1.fc1.weight": [
+        384,
+        192
+      ],
+      "encoders.0.0.ffn1.fc1.bias": [
+        384
+      ],
+      "encoders.0.0.ffn1.fc2.weight": [
+        192,
+        384
+      ],
+      "encoders.0.0.ffn1.fc2.bias": [
+        192
+      ],
+      "encoders.0.0.norm_sa.weight": [
+        192
+      ],
+      "encoders.0.0.sa.attn.to_q.weight": [
+        192,
+        192
+      ],
+      "encoders.0.0.sa.attn.to_k.weight": [
+        192,
+        192
+      ],
+      "encoders.0.0.sa.attn.to_v.weight": [
+        192,
+        192
+      ],
+      "encoders.0.0.sa.attn.to_out.weight": [
+        192,
+        192
+      ],
+      "encoders.0.0.sa.attn.to_out.bias": [
+        192
+      ],
+      "encoders.0.0.sa.attn.q_norm.weight": [
+        48
+      ],
+      "encoders.0.0.sa.attn.k_norm.weight": [
+        48
+      ],
+      "encoders.0.0.norm2.weight": [
+        192
+      ],
+      "encoders.0.0.ffn2.fc1.weight": [
+        384,
+        192
+      ],
+      "encoders.0.0.ffn2.fc1.bias": [
+        384
+      ],
+      "encoders.0.0.ffn2.fc2.weight": [
+        192,
+        384
+      ],
+      "encoders.0.0.ffn2.fc2.bias": [
+        192
+      ],
+      "encoders.0.1.norm1.weight": [
+        192
+      ],
+      "encoders.0.1.ffn1.fc1.weight": [
+        384,
+        192
+      ],
+      "encoders.0.1.ffn1.fc1.bias": [
+        384
+      ],
+      "encoders.0.1.ffn1.fc2.weight": [
+        192,
+        384
+      ],
+      "encoders.0.1.ffn1.fc2.bias": [
+        192
+      ],
+      "encoders.0.1.norm_sa.weight": [
+        192
+      ],
+      "encoders.0.1.sa.attn.to_q.weight": [
+        192,
+        192
+      ],
+      "encoders.0.1.sa.attn.to_k.weight": [
+        192,
+        192
+      ],
+      "encoders.0.1.sa.attn.to_v.weight": [
+        192,
+        192
+      ],
+      "encoders.0.1.sa.attn.to_out.weight": [
+        192,
+        192
+      ],
+      "encoders.0.1.sa.attn.to_out.bias": [
+        192
+      ],
+      "encoders.0.1.sa.attn.q_norm.weight": [
+        48
+      ],
+      "encoders.0.1.sa.attn.k_norm.weight": [
+        48
+      ],
+      "encoders.0.1.norm2.weight": [
+        192
+      ],
+      "encoders.0.1.ffn2.fc1.weight": [
+        384,
+        192
+      ],
+      "encoders.0.1.ffn2.fc1.bias": [
+        384
+      ],
+      "encoders.0.1.ffn2.fc2.weight": [
+        192,
+        384
+      ],
+      "encoders.0.1.ffn2.fc2.bias": [
+        192
+      ],
+      "encoders.0.2.norm1.weight": [
+        192
+      ],
+      "encoders.0.2.ffn1.fc1.weight": [
+        384,
+        192
+      ],
+      "encoders.0.2.ffn1.fc1.bias": [
+        384
+      ],
+      "encoders.0.2.ffn1.fc2.weight": [
+        192,
+        384
+      ],
+      "encoders.0.2.ffn1.fc2.bias": [
+        192
+      ],
+      "encoders.0.2.norm_sa.weight": [
+        192
+      ],
+      "encoders.0.2.sa.attn.to_q.weight": [
+        192,
+        192
+      ],
+      "encoders.0.2.sa.attn.to_k.weight": [
+        192,
+        192
+      ],
+      "encoders.0.2.sa.attn.to_v.weight": [
+        192,
+        192
+      ],
+      "encoders.0.2.sa.attn.to_out.weight": [
+        192,
+        192
+      ],
+      "encoders.0.2.sa.attn.to_out.bias": [
+        192
+      ],
+      "encoders.0.2.sa.attn.q_norm.weight": [
+        48
+      ],
+      "encoders.0.2.sa.attn.k_norm.weight": [
+        48
+      ],
+      "encoders.0.2.norm2.weight": [
+        192
+      ],
+      "encoders.0.2.ffn2.fc1.weight": [
+        384,
+        192
+      ],
+      "encoders.0.2.ffn2.fc1.bias": [
+        384
+      ],
+      "encoders.0.2.ffn2.fc2.weight": [
+        192,
+        384
+      ],
+      "encoders.0.2.ffn2.fc2.bias": [
+        192
+      ],
+      "encoders.1.0.norm1.weight": [
+        192
+      ],
+      "encoders.1.0.ffn1.fc1.weight": [
+        384,
+        192
+      ],
+      "encoders.1.0.ffn1.fc1.bias": [
+        384
+      ],
+      "encoders.1.0.ffn1.fc2.weight": [
+        192,
+        384
+      ],
+      "encoders.1.0.ffn1.fc2.bias": [
+        192
+      ],
+      "encoders.1.0.norm_sa.weight": [
+        192
+      ],
+      "encoders.1.0.sa.attn.to_q.weight": [
+        192,
+        192
+      ],
+      "encoders.1.0.sa.attn.to_k.weight": [
+        192,
+        192
+      ],
+      "encoders.1.0.sa.attn.to_v.weight": [
+        192,
+        192
+      ],
+      "encoders.1.0.sa.attn.to_out.weight": [
+        192,
+        192
+      ],
+      "encoders.1.0.sa.attn.to_out.bias": [
+        192
+      ],
+      "encoders.1.0.sa.attn.q_norm.weight": [
+        48
+      ],
+      "encoders.1.0.sa.attn.k_norm.weight": [
+        48
+      ],
+      "encoders.1.0.norm2.weight": [
+        192
+      ],
+      "encoders.1.0.ffn2.fc1.weight": [
+        384,
+        192
+      ],
+      "encoders.1.0.ffn2.fc1.bias": [
+        384
+      ],
+      "encoders.1.0.ffn2.fc2.weight": [
+        192,
+        384
+      ],
+      "encoders.1.0.ffn2.fc2.bias": [
+        192
+      ],
+      "encoders.2.0.norm1.weight": [
+        192
+      ],
+      "encoders.2.0.ffn1.fc1.weight": [
+        384,
+        192
+      ],
+      "encoders.2.0.ffn1.fc1.bias": [
+        384
+      ],
+      "encoders.2.0.ffn1.fc2.weight": [
+        192,
+        384
+      ],
+      "encoders.2.0.ffn1.fc2.bias": [
+        192
+      ],
+      "encoders.2.0.norm_sa.weight": [
+        192
+      ],
+      "encoders.2.0.sa.attn.to_q.weight": [
+        192,
+        192
+      ],
+      "encoders.2.0.sa.attn.to_k.weight": [
+        192,
+        192
+      ],
+      "encoders.2.0.sa.attn.to_v.weight": [
+        192,
+        192
+      ],
+      "encoders.2.0.sa.attn.to_out.weight": [
+        192,
+        192
+      ],
+      "encoders.2.0.sa.attn.to_out.bias": [
+        192
+      ],
+      "encoders.2.0.sa.attn.q_norm.weight": [
+        24
+      ],
+      "encoders.2.0.sa.attn.k_norm.weight": [
+        24
+      ],
+      "encoders.2.0.norm2.weight": [
+        192
+      ],
+      "encoders.2.0.ffn2.fc1.weight": [
+        384,
+        192
+      ],
+      "encoders.2.0.ffn2.fc1.bias": [
+        384
+      ],
+      "encoders.2.0.ffn2.fc2.weight": [
+        192,
+        384
+      ],
+      "encoders.2.0.ffn2.fc2.bias": [
+        192
+      ],
+      "encoders.3.0.norm1.weight": [
+        192
+      ],
+      "encoders.3.0.ffn1.fc1.weight": [
+        384,
+        192
+      ],
+      "encoders.3.0.ffn1.fc1.bias": [
+        384
+      ],
+      "encoders.3.0.ffn1.fc2.weight": [
+        192,
+        384
+      ],
+      "encoders.3.0.ffn1.fc2.bias": [
+        192
+      ],
+      "encoders.3.0.norm_sa.weight": [
+        192
+      ],
+      "encoders.3.0.sa.attn.to_q.weight": [
+        192,
+        192
+      ],
+      "encoders.3.0.sa.attn.to_k.weight": [
+        192,
+        192
+      ],
+      "encoders.3.0.sa.attn.to_v.weight": [
+        192,
+        192
+      ],
+      "encoders.3.0.sa.attn.to_out.weight": [
+        192,
+        192
+      ],
+      "encoders.3.0.sa.attn.to_out.bias": [
+        192
+      ],
+      "encoders.3.0.sa.attn.q_norm.weight": [
+        24
+      ],
+      "encoders.3.0.sa.attn.k_norm.weight": [
+        24
+      ],
+      "encoders.3.0.norm2.weight": [
+        192
+      ],
+      "encoders.3.0.ffn2.fc1.weight": [
+        384,
+        192
+      ],
+      "encoders.3.0.ffn2.fc1.bias": [
+        384
+      ],
+      "encoders.3.0.ffn2.fc2.weight": [
+        192,
+        384
+      ],
+      "encoders.3.0.ffn2.fc2.bias": [
+        192
+      ],
+      "decoders.0.0.norm1.weight": [
+        192
+      ],
+      "decoders.0.0.ffn1.fc1.weight": [
+        384,
+        192
+      ],
+      "decoders.0.0.ffn1.fc1.bias": [
+        384
+      ],
+      "decoders.0.0.ffn1.fc2.weight": [
+        192,
+        384
+      ],
+      "decoders.0.0.ffn1.fc2.bias": [
+        192
+      ],
+      "decoders.0.0.norm_sa.weight": [
+        192
+      ],
+      "decoders.0.0.sa.attn.to_q.weight": [
+        192,
+        192
+      ],
+      "decoders.0.0.sa.attn.to_k.weight": [
+        192,
+        192
+      ],
+      "decoders.0.0.sa.attn.to_v.weight": [
+        192,
+        192
+      ],
+      "decoders.0.0.sa.attn.to_out.weight": [
+        192,
+        192
+      ],
+      "decoders.0.0.sa.attn.to_out.bias": [
+        192
+      ],
+      "decoders.0.0.sa.attn.q_norm.weight": [
+        48
+      ],
+      "decoders.0.0.sa.attn.k_norm.weight": [
+        48
+      ],
+      "decoders.0.0.norm2.weight": [
+        192
+      ],
+      "decoders.0.0.ffn2.fc1.weight": [
+        384,
+        192
+      ],
+      "decoders.0.0.ffn2.fc1.bias": [
+        384
+      ],
+      "decoders.0.0.ffn2.fc2.weight": [
+        192,
+        384
+      ],
+      "decoders.0.0.ffn2.fc2.bias": [
+        192
+      ],
+      "decoders.0.1.norm1.weight": [
+        192
+      ],
+      "decoders.0.1.ffn1.fc1.weight": [
+        384,
+        192
+      ],
+      "decoders.0.1.ffn1.fc1.bias": [
+        384
+      ],
+      "decoders.0.1.ffn1.fc2.weight": [
+        192,
+        384
+      ],
+      "decoders.0.1.ffn1.fc2.bias": [
+        192
+      ],
+      "decoders.0.1.norm_sa.weight": [
+        192
+      ],
+      "decoders.0.1.sa.attn.to_q.weight": [
+        192,
+        192
+      ],
+      "decoders.0.1.sa.attn.to_k.weight": [
+        192,
+        192
+      ],
+      "decoders.0.1.sa.attn.to_v.weight": [
+        192,
+        192
+      ],
+      "decoders.0.1.sa.attn.to_out.weight": [
+        192,
+        192
+      ],
+      "decoders.0.1.sa.attn.to_out.bias": [
+        192
+      ],
+      "decoders.0.1.sa.attn.q_norm.weight": [
+        48
+      ],
+      "decoders.0.1.sa.attn.k_norm.weight": [
+        48
+      ],
+      "decoders.0.1.norm2.weight": [
+        192
+      ],
+      "decoders.0.1.ffn2.fc1.weight": [
+        384,
+        192
+      ],
+      "decoders.0.1.ffn2.fc1.bias": [
+        384
+      ],
+      "decoders.0.1.ffn2.fc2.weight": [
+        192,
+        384
+      ],
+      "decoders.0.1.ffn2.fc2.bias": [
+        192
+      ],
+      "decoders.0.2.norm1.weight": [
+        192
+      ],
+      "decoders.0.2.ffn1.fc1.weight": [
+        384,
+        192
+      ],
+      "decoders.0.2.ffn1.fc1.bias": [
+        384
+      ],
+      "decoders.0.2.ffn1.fc2.weight": [
+        192,
+        384
+      ],
+      "decoders.0.2.ffn1.fc2.bias": [
+        192
+      ],
+      "decoders.0.2.norm_sa.weight": [
+        192
+      ],
+      "decoders.0.2.sa.attn.to_q.weight": [
+        192,
+        192
+      ],
+      "decoders.0.2.sa.attn.to_k.weight": [
+        192,
+        192
+      ],
+      "decoders.0.2.sa.attn.to_v.weight": [
+        192,
+        192
+      ],
+      "decoders.0.2.sa.attn.to_out.weight": [
+        192,
+        192
+      ],
+      "decoders.0.2.sa.attn.to_out.bias": [
+        192
+      ],
+      "decoders.0.2.sa.attn.q_norm.weight": [
+        48
+      ],
+      "decoders.0.2.sa.attn.k_norm.weight": [
+        48
+      ],
+      "decoders.0.2.norm2.weight": [
+        192
+      ],
+      "decoders.0.2.ffn2.fc1.weight": [
+        384,
+        192
+      ],
+      "decoders.0.2.ffn2.fc1.bias": [
+        384
+      ],
+      "decoders.0.2.ffn2.fc2.weight": [
+        192,
+        384
+      ],
+      "decoders.0.2.ffn2.fc2.bias": [
+        192
+      ],
+      "decoders.1.0.norm1.weight": [
+        192
+      ],
+      "decoders.1.0.ffn1.fc1.weight": [
+        384,
+        192
+      ],
+      "decoders.1.0.ffn1.fc1.bias": [
+        384
+      ],
+      "decoders.1.0.ffn1.fc2.weight": [
+        192,
+        384
+      ],
+      "decoders.1.0.ffn1.fc2.bias": [
+        192
+      ],
+      "decoders.1.0.norm_sa.weight": [
+        192
+      ],
+      "decoders.1.0.sa.attn.to_q.weight": [
+        192,
+        192
+      ],
+      "decoders.1.0.sa.attn.to_k.weight": [
+        192,
+        192
+      ],
+      "decoders.1.0.sa.attn.to_v.weight": [
+        192,
+        192
+      ],
+      "decoders.1.0.sa.attn.to_out.weight": [
+        192,
+        192
+      ],
+      "decoders.1.0.sa.attn.to_out.bias": [
+        192
+      ],
+      "decoders.1.0.sa.attn.q_norm.weight": [
+        48
+      ],
+      "decoders.1.0.sa.attn.k_norm.weight": [
+        48
+      ],
+      "decoders.1.0.norm2.weight": [
+        192
+      ],
+      "decoders.1.0.ffn2.fc1.weight": [
+        384,
+        192
+      ],
+      "decoders.1.0.ffn2.fc1.bias": [
+        384
+      ],
+      "decoders.1.0.ffn2.fc2.weight": [
+        192,
+        384
+      ],
+      "decoders.1.0.ffn2.fc2.bias": [
+        192
+      ],
+      "decoders.2.0.norm1.weight": [
+        192
+      ],
+      "decoders.2.0.ffn1.fc1.weight": [
+        384,
+        192
+      ],
+      "decoders.2.0.ffn1.fc1.bias": [
+        384
+      ],
+      "decoders.2.0.ffn1.fc2.weight": [
+        192,
+        384
+      ],
+      "decoders.2.0.ffn1.fc2.bias": [
+        192
+      ],
+      "decoders.2.0.norm_sa.weight": [
+        192
+      ],
+      "decoders.2.0.sa.attn.to_q.weight": [
+        192,
+        192
+      ],
+      "decoders.2.0.sa.attn.to_k.weight": [
+        192,
+        192
+      ],
+      "decoders.2.0.sa.attn.to_v.weight": [
+        192,
+        192
+      ],
+      "decoders.2.0.sa.attn.to_out.weight": [
+        192,
+        192
+      ],
+      "decoders.2.0.sa.attn.to_out.bias": [
+        192
+      ],
+      "decoders.2.0.sa.attn.q_norm.weight": [
+        24
+      ],
+      "decoders.2.0.sa.attn.k_norm.weight": [
+        24
+      ],
+      "decoders.2.0.norm2.weight": [
+        192
+      ],
+      "decoders.2.0.ffn2.fc1.weight": [
+        384,
+        192
+      ],
+      "decoders.2.0.ffn2.fc1.bias": [
+        384
+      ],
+      "decoders.2.0.ffn2.fc2.weight": [
+        192,
+        384
+      ],
+      "decoders.2.0.ffn2.fc2.bias": [
+        192
+      ],
+      "decoders.3.0.norm1.weight": [
+        192
+      ],
+      "decoders.3.0.ffn1.fc1.weight": [
+        384,
+        192
+      ],
+      "decoders.3.0.ffn1.fc1.bias": [
+        384
+      ],
+      "decoders.3.0.ffn1.fc2.weight": [
+        192,
+        384
+      ],
+      "decoders.3.0.ffn1.fc2.bias": [
+        192
+      ],
+      "decoders.3.0.norm_sa.weight": [
+        192
+      ],
+      "decoders.3.0.sa.attn.to_q.weight": [
+        192,
+        192
+      ],
+      "decoders.3.0.sa.attn.to_k.weight": [
+        192,
+        192
+      ],
+      "decoders.3.0.sa.attn.to_v.weight": [
+        192,
+        192
+      ],
+      "decoders.3.0.sa.attn.to_out.weight": [
+        192,
+        192
+      ],
+      "decoders.3.0.sa.attn.to_out.bias": [
+        192
+      ],
+      "decoders.3.0.sa.attn.q_norm.weight": [
+        24
+      ],
+      "decoders.3.0.sa.attn.k_norm.weight": [
+        24
+      ],
+      "decoders.3.0.norm2.weight": [
+        192
+      ],
+      "decoders.3.0.ffn2.fc1.weight": [
+        384,
+        192
+      ],
+      "decoders.3.0.ffn2.fc1.bias": [
+        384
+      ],
+      "decoders.3.0.ffn2.fc2.weight": [
+        192,
+        384
+      ],
+      "decoders.3.0.ffn2.fc2.bias": [
+        192
+      ],
+      "ups.0.to_q.weight": [
+        192,
+        192
+      ],
+      "ups.0.to_k.weight": [
+        192,
+        192
+      ],
+      "ups.0.to_v.weight": [
+        192,
+        192
+      ],
+      "ups.0.to_out.weight": [
+        192,
+        192
+      ],
+      "ups.0.to_out.bias": [
+        192
+      ],
+      "ups.0.q_norm.weight": [
+        48
+      ],
+      "ups.0.k_norm.weight": [
+        48
+      ],
+      "ups.1.to_q.weight": [
+        192,
+        192
+      ],
+      "ups.1.to_k.weight": [
+        192,
+        192
+      ],
+      "ups.1.to_v.weight": [
+        192,
+        192
+      ],
+      "ups.1.to_out.weight": [
+        192,
+        192
+      ],
+      "ups.1.to_out.bias": [
+        192
+      ],
+      "ups.1.q_norm.weight": [
+        48
+      ],
+      "ups.1.k_norm.weight": [
+        48
+      ],
+      "ups.2.to_q.weight": [
+        192,
+        192
+      ],
+      "ups.2.to_k.weight": [
+        192,
+        192
+      ],
+      "ups.2.to_v.weight": [
+        192,
+        192
+      ],
+      "ups.2.to_out.weight": [
+        192,
+        192
+      ],
+      "ups.2.to_out.bias": [
+        192
+      ],
+      "ups.2.q_norm.weight": [
+        24
+      ],
+      "ups.2.k_norm.weight": [
+        24
+      ],
+      "fusions.0.w": [
+        192
+      ],
+      "fusions.1.w": [
+        192
+      ],
+      "fusions.2.w": [
+        192
+      ],
+      "final_up.to_q.weight": [
+        192,
+        192
+      ],
+      "final_up.to_k.weight": [
+        192,
+        192
+      ],
+      "final_up.to_v.weight": [
+        192,
+        192
+      ],
+      "final_up.to_out.weight": [
+        192,
+        192
+      ],
+      "final_up.to_out.bias": [
+        192
+      ],
+      "final_up.q_norm.weight": [
+        48
+      ],
+      "final_up.k_norm.weight": [
+        48
+      ],
+      "output_norm.weight": [
+        192
+      ],
+      "output_norm.bias": [
+        192
+      ],
+      "output.weight": [
+        4,
+        192
+      ],
+      "output.bias": [
+        4
+      ]
+    },
+    "fixture": "/home/hwz/CDLNO-artifacts/msar-m3-before-jx4v53vh/post-m3-core/full.pt",
+    "sha256": "09d602b935aecf90fb836f51498d6b52b6df1c0c0fdb033fc7267e8ce96ebf64",
+    "bytes": 27051849,
+    "dtype": "float32",
+    "device": "cpu",
+    "sdpa": "MATH",
+    "atol": 0,
+    "rtol": 0,
+    "evidence": "post-M3 current synthetic lifted inputs; no task/data/training checkpoint claim"
+  }
+]

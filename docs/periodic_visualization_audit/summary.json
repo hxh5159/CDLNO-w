@@ -1,0 +1,88 @@
+{
+  "head": "9c5569e059eca8d57f5321fdbf0c0dc4aeb40860",
+  "environment": {
+    "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "pyg": "2.3.1",
+    "matplotlib": "3.10.6",
+    "numpy": "2.2.6"
+  },
+  "full_suite": {
+    "tests": 287,
+    "seconds": 319.519,
+    "failures": 0,
+    "errors": 0,
+    "skipped_marks": 3
+  },
+  "final_targeted": {
+    "tests": 11,
+    "seconds": 17.178,
+    "skipped": 1
+  },
+  "recovered_external_LRSA": {
+    "tests": 2,
+    "seconds": 3.355,
+    "passed": true
+  },
+  "car_actual_epoch": {
+    "passed": true,
+    "exact_weights_rng": true,
+    "real_export": true,
+    "air_subcase": "skipped: missing torch_cluster"
+  },
+  "gpu": {
+    "status": "passed",
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+    "device": "NVIDIA GeForce RTX 5090 Laptop GPU",
+    "dtype": "float32",
+    "sdpa": "math",
+    "tf32": false,
+    "compile": false,
+    "amp": false,
+    "deterministic": true,
+    "scope": "synthetic 5x7 Darcy KCDNO observer + exact next-step weights; renderer mocked, CPU real rendering separately tested"
+  },
+  "protected_files_unchanged": 161,
+  "entry_ASTs_equal": 9,
+  "source_files_in_patch": [
+    "Airfoil-Design-AirfRANS/main.py",
+    "Airfoil-Design-AirfRANS/train.py",
+    "Car-Design-ShapeNetCar/train.py",
+    "PDE-Solving-StandardBenchmark/exp_airfoil.py",
+    "PDE-Solving-StandardBenchmark/exp_darcy.py",
+    "PDE-Solving-StandardBenchmark/exp_elas.py",
+    "PDE-Solving-StandardBenchmark/exp_ns.py",
+    "PDE-Solving-StandardBenchmark/exp_pipe.py",
+    "PDE-Solving-StandardBenchmark/exp_plas.py",
+    "cdlno/experiment.py",
+    "cdlno/visualization.py",
+    "tests/output_recording_projection.py",
+    "tests/test_experiment_records.py",
+    "tests/test_kcdno_airfrans.py",
+    "tests/test_kcdno_car.py",
+    "tests/test_kcdno_tasks.py",
+    "cdlno/periodic_visualization.py",
+    "tests/test_periodic_visualization.py",
+    "tests/visualization_projection.py",
+    "docs/periodic_visualization_audit/gpu_isolation.py",
+    "docs/periodic_visualization_audit/make_demos.py"
+  ],
+  "not_run": [
+    "real dataset reading/training/convergence/accuracy",
+    "AirfRANS full sampled diagnostic/epoch: torch_cluster absent",
+    "new observer AMP/compile",
+    "remote Python3.10 torch2.11/cu128"
+  ],
+  "command_logs": [
+    "full-suite.log",
+    "final-focused.log",
+    "car-full-epoch.log",
+    "lrsa-reference.log",
+    "gpu.json",
+    "gpu-initial-exact-failure.log"
+  ],
+  "publication_demos": "synthetic analytic fields only, not training outcomes"
+}

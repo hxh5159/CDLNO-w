@@ -34,7 +34,8 @@ SMALL = ['--n-hidden','8','--n-heads','2','--n-layers','2','--slice_num','3','--
 
 
 def tree(task):
-    return ast.parse((PROJECT / f'exp_{(TASKS | TEMPORAL)[task][0]}.py').read_text())
+    from msar_entry_projection import strip_msar
+    return strip_msar(ast.parse((PROJECT / f'exp_{(TASKS | TEMPORAL)[task][0]}.py').read_text()))
 
 
 def arguments(task, flags=()):
@@ -64,6 +65,9 @@ def sample(model,batch=2):
 
 
 def strip_new(tree):
+    from visualization_projection import strip_visualization
+    from msar_entry_projection import strip_msar
+    tree = strip_visualization(strip_msar(tree))
     class Strip(ast.NodeTransformer):
         def visit_ImportFrom(self,n):
             return None if n.module=='kcdno_entry' else n

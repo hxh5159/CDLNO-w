@@ -15,8 +15,11 @@ def get_nb_trainable_params(model):
     return sum([np.prod(p.size()) for p in model_parameters])
 
 
-def train(device, model, train_loader, optimizer, scheduler, reg=1):
+def train(device, model, train_loader, optimizer, scheduler, reg=1, msar_metrics=None):
     model.train()
+    msar_training = getattr(getattr(model, 'config', None), 'family', None) == 'msar_lno'
+    if msar_training:
+        from cdlno.msar_lno.objective import training_forward, training_objective
 
     criterion_func = nn.MSELoss(reduction='none')
     losses_press = []
@@ -25,7 +28,11 @@ def train(device, model, train_loader, optimizer, scheduler, reg=1):
         cfd_data = cfd_data.to(device)
         geom = geom.to(device)
         optimizer.zero_grad()
-        out = model((cfd_data, geom))
+        if msar_training:
+            msar_forward = training_forward(model, (cfd_data, geom))
+            out = msar_forward.prediction
+        else:
+            out = model((cfd_data, geom))
         targets = cfd_data.y
 
         loss_press = criterion_func(out[cfd_data.surf, -1], targets[cfd_data.surf, -1]).mean(dim=0)
@@ -33,7 +40,14 @@ def train(device, model, train_loader, optimizer, scheduler, reg=1):
         loss_velo = loss_velo_var.mean()
         total_loss = loss_velo + reg * loss_press
 
-        total_loss.backward()
+        if msar_training:
+            msar_loss = training_objective(total_loss, msar_forward)
+            if msar_metrics is not None:
+                msar_metrics.add(msar_loss)
+            msar_loss.total.backward()
+            del msar_forward, msar_loss
+        else:
+            total_loss.backward()
 
         optimizer.step()
         scheduler.step()
@@ -76,6 +90,9 @@ class NumpyEncoder(json.JSONEncoder):
 
 def main(device, train_dataset, val_dataset, Net, hparams, path, reg=1, val_iter=1, coef_norm=[], record=None):
     model = Net.to(device)
+    msar_training = getattr(getattr(model, 'config', None), 'family', None) == 'msar_lno'
+    if msar_training:
+        from cdlno.msar_lno.objective import ObjectiveMetrics
     optimizer = torch.optim.Adam(model.parameters(), lr=hparams['lr'])
     lr_scheduler = torch.optim.lr_scheduler.OneCycleLR(
         optimizer,
@@ -91,7 +108,14 @@ def main(device, train_dataset, val_dataset, Net, hparams, path, reg=1, val_iter
     pbar_train = tqdm(range(hparams['nb_epochs']), position=0)
     for epoch in pbar_train:
         train_loader = DataLoader(train_dataset, batch_size=hparams['batch_size'], shuffle=True, drop_last=True)
-        loss_velo, loss_press = train(device, model, train_loader, optimizer, lr_scheduler, reg=reg)
+        if msar_training:
+            msar_metrics = ObjectiveMetrics()
+            loss_velo, loss_press = train(device, model, train_loader, optimizer, lr_scheduler, reg=reg, msar_metrics=msar_metrics)
+            msar_values = msar_metrics.values()
+            print('MSAR objective (step mean):', msar_values,
+                  'coverage:', model.training_config.effective_coverage_mode)
+        else:
+            loss_velo, loss_press = train(device, model, train_loader, optimizer, lr_scheduler, reg=reg)
         if record is not None:
             recorded_train = dict(pressure_mse=loss_velo, velocity_mse=loss_press)
         train_loss = loss_velo + reg * loss_press
@@ -113,7 +137,11 @@ def main(device, train_dataset, val_dataset, Net, hparams, path, reg=1, val_iter
             if val_iter is not None and (epoch == hparams['nb_epochs'] - 1 or epoch % val_iter == 0):
                 metrics.update(validation_pressure_mse=loss_velo, validation_velocity_mse=loss_press,
                                upstream_validation_log_value=val_loss)
+            if msar_training:
+                metrics.update(msar_values, coverage_mode=model.training_config.effective_coverage_mode,
+                             objective_reduction='mean-over-optimizer-steps')
             record.record_epoch(epoch + 1, metrics)
+            record.visualize(model, epoch + 1, hparams['nb_epochs'], dataset=val_dataset, coef_norm=coef_norm)
 
     end = time.time()
     time_elapsed = end - start

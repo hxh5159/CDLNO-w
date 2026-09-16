@@ -157,9 +157,11 @@ def backend_probe(model, args, context, device, *, regions=True):
 
 
 def benchmark(model, args, target, context, device, *, warmup=5, iterations=20,
-              precision='fp32', compile_model=False):
+              precision='fp32', compile_model=False, loss_closure=None):
     if warmup < 1 or iterations < 2:
         raise ValueError('warmup>=1 and iterations>=2 required for initialized-state quantiles')
+    if loss_closure is not None and compile_model:
+        raise ValueError('custom training loss timing supports eager models only')
     # Model-only compile is common to every variant. Optimizer/loss stay eager.
     # Compile first-forward and first-backward costs are excluded and reported.
     run_model = torch.compile(model) if compile_model else model
@@ -203,8 +205,12 @@ def benchmark(model, args, target, context, device, *, warmup=5, iterations=20,
     def step():
         optimizer.zero_grad(set_to_none=True)
         with context():
-            out = run_model(*args)
-            loss = (out.float() - target.float()).square().mean()
+            if loss_closure is None:
+                out = run_model(*args)
+                loss = (out.float() - target.float()).square().mean()
+            else:
+                # Explicit per-call objective; no model-owned auxiliary cache.
+                loss = loss_closure(run_model, args, target)
         scaler.scale(loss).backward()
         scaler.step(optimizer)
         scaler.update()
@@ -256,6 +262,8 @@ def benchmark(model, args, target, context, device, *, warmup=5, iterations=20,
                                cuda_state_tensor_bytes=cuda_state_bytes, active_parameter_tensors=len(optimizer.state), successful_steps_per_active_parameter=observed_steps,
                                grad_scaler_enabled=scaler.is_enabled()),
                 timing='synchronized perf_counter; includes host launch/wrapper overhead; no data I/O',
-                loss='synthetic FP32 mean squared error, one model call/update; not task loss/temporal rollout',
+                loss=('synthetic FP32 mean squared error, one model call/update; not task loss/temporal rollout'
+                      if loss_closure is None else
+                      'explicit caller loss_closure; one model call/update, see caller objective metadata'),
                 memory_scope='forward: model+buffers+inputs+output/temporaries, no grads/optimizer; train: also grads+initialized AdamW states',
                 compile_cold=compile_cold)

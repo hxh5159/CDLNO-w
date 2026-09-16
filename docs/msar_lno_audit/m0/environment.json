@@ -1,0 +1,59 @@
+{
+  "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+  "executable": "/home/hwz/anaconda3/bin/python",
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+  "torch": "2.13.0+cu130",
+  "cuda_built": "13.0",
+  "cuda_available": true,
+  "devices": [
+    "NVIDIA GeForce RTX 5090 Laptop GPU"
+  ],
+  "cdlno_path": "/home/hwz/CDLNO/cdlno/__init__.py",
+  "PYTHONPATH": null,
+  "packages": {
+    "torch-geometric": "2.3.1",
+    "pyg-lib": null,
+    "torch-cluster": null,
+    "torch-scatter": null,
+    "numpy": "2.2.6",
+    "scipy": "1.16.3",
+    "timm": "1.0.28",
+    "einops": "0.8.2",
+    "matplotlib": "3.10.6",
+    "pyvista": "0.48.4",
+    "vtk": "9.6.2",
+    "cdlno": null,
+    "setuptools": "80.9.0"
+  },
+  "imports": {
+    "torch_geometric": {
+      "ok": true,
+      "file": "/home/hwz/anaconda3/lib/python3.13/site-packages/torch_geometric/__init__.py"
+    },
+    "pyg_lib": {
+      "ok": false,
+      "error": "No module named 'pyg_lib'"
+    },
+    "torch_cluster": {
+      "ok": false,
+      "error": "No module named 'torch_cluster'"
+    },
+    "torch_scatter": {
+      "ok": false,
+      "error": "No module named 'torch_scatter'"
+    },
+    "pyvista": {
+      "ok": true,
+      "file": "/home/hwz/anaconda3/lib/python3.13/site-packages/pyvista/__init__.py"
+    },
+    "vtk": {
+      "ok": true,
+      "file": "/home/hwz/anaconda3/lib/python3.13/site-packages/vtk.py"
+    }
+  },
+  "tiny_radius_graph": {
+    "ok": false,
+    "error": "'NoneType' object has no attribute 'radius_graph'"
+  },
+  "validation_scope": "Read-only local environment; no install, data, or remote runtime acceptance"
+}

@@ -1,0 +1,586 @@
+--- before/tran_evaluate/show/_report.py
++++ after/tran_evaluate/show/_report.py
+@@ -28,13 +28,28 @@
+     'PDE-Solving-StandardBenchmark': ('darcy', 'airfoil', 'plasticity', 'elasticity', 'ns', 'pipe'),
+ }
+ ALIASES = {'elas':'elasticity','plas':'plasticity','shapenet-car':'car','shapenet_car':'car','navier-stokes':'ns'}
++TITLES = {'ns':'Navier–Stokes','car':'ShapeNet-Car','airfrans':'AirfRANS'}
++VALIDATION_KEYS = {
++    **{task:('validation_relative_l2',) for task in ('darcy','airfoil','elasticity','pipe')},
++    **{task:('test_full_loss',) for task in ('ns','plasticity')},
++    'car':('validation_velocity_mse','validation_pressure_mse'),
++    'airfrans':('validation_volume_mse','validation_surface_mse'),
++}
++SELECTION_POLICY = (
++    'One run per task, minimizing the last recorded validation loss, never the historical minimum '
++    'or independent evaluation scores. Known unfinished/failed runs are excluded. Legacy runs '
++    'without a training status file require a recorded validation loss and are marked unverified. '
++    'Multiple members within one run use the arithmetic mean of their respective final validation '
++    'losses, without selecting a member. Exact ties use recorded integer seed (ascending, missing '
++    'last), then absolute path (lexicographic). No source run or previous report is modified.'
++)
+ STYLE = {'font.family':'STIXGeneral','mathtext.fontset':'stix','font.size':8,
+          'axes.titlesize':9,'axes.labelsize':8,'xtick.labelsize':7,'ytick.labelsize':7,
+          'legend.fontsize':7,'axes.linewidth':.6,'lines.linewidth':1.25,
+          'pdf.fonttype':42,'ps.fonttype':42,'axes.spines.top':False,'axes.spines.right':False,
+          'savefig.facecolor':'white','figure.facecolor':'white',
+          'axes.prop_cycle':matplotlib.cycler(color=['#0072B2','#D55E00','#009E73','#CC79A7','#E69F00','#56B4E9'])}
+-NUM = r'[-+]?(?:\d*\.\d+|\d+\.?\d*)(?:[eE][-+]?\d+)?'
++NUM = r'(?:[-+]?(?:\d*\.\d+|\d+\.?\d*)(?:[eE][-+]?\d+)?|[-+]?(?i:nan|inf(?:inity)?))'
+ 
+ 
+ def slug(value):
+@@ -77,10 +92,31 @@
+     return ''.join(mapping.get(c,c) for c in text)
+ 
+ 
++def validation_value(task, metrics, config):
++    """Saved held-out monitor, with named industrial components (not swapped log values)."""
++    keys=VALIDATION_KEYS[task]
++    values=[number(metrics.get(k)) for k in keys]
++    if not all(math.isfinite(v) and v>=0 for v in values):
++        raise ValueError('last validation has missing, nonfinite or negative components: '+', '.join(keys))
++    weight=None
++    if len(keys)==1:return keys[0],values[0],weight
++    args=config.get('resolved_arguments',{})
++    recorded=[number(v) for v in (metrics.get('reg'),args.get('weight')) if v is not None]
++    if not recorded or not all(math.isfinite(v) and v>=0 for v in recorded):
++        raise ValueError('industrial validation requires a saved finite nonnegative weight/reg')
++    if any(v!=recorded[0] for v in recorded):raise ValueError('saved reg and weight disagree')
++    if task=='airfrans' and metrics.get('criterion','MSE_weighted')!='MSE_weighted':
++        raise ValueError('unsupported saved AirfRANS criterion; weighted MSE cannot be inferred')
++    weight=recorded[0];value=values[0]+weight*values[1]
++    if not math.isfinite(value):raise ValueError('nonfinite combined validation loss')
++    return keys[0]+' + weight * '+keys[1],value,weight
++
++
+ class Bundle:
+     def __init__(self, args, directory):
+         self.args,self.directory=args,directory
+         self.warnings=[];self.sources={};self.runs=[];self.eval_rows=[];self.epoch_rows=[]
++        self.histories={};self.selection=[];self.history_errors=set()
+ 
+     def warn(self, message):
+         self.warnings.append(str(message));print('NOTE:',message,file=sys.stderr)
+@@ -124,16 +160,19 @@
+                          +('Logarithmic' if logarithmic else 'Linear')+' vertical axis. Missing/nonfinite values are not replaced by zero.')
+ 
+     def history(self,run,task):
++        # Reuse the exact snapshot used for selection when exporting winning curves.
++        if (run,task) in self.histories:return self.histories[run,task]
+         path=run/'train_history.jsonl';rows=[]
+         if path.exists():
+             try:lines=self.track(path).decode('utf-8').splitlines()
+-            except (OSError,UnicodeError) as e:self.warn(f'{path}: {e}');return []
++            except (OSError,UnicodeError) as e:self.history_errors.add((run,task));self.warn(f'{path}: {e}');return []
+             for index,line in enumerate(lines):
+                 try:
+                     row=json.loads(line)
+                     if type(row.get('epoch')) is not int or row['epoch']<1 or not isinstance(row.get('metrics'),dict):raise ValueError('expected completed epoch and metrics')
+                     row['member']=row.get('member',0);rows.append(row)
+-                except (ValueError,TypeError,AttributeError) as e:self.warn(f'{path}:{index+1}: ignored invalid/incomplete row ({e})')
++                except (ValueError,TypeError,AttributeError) as e:
++                    self.history_errors.add((run,task));self.warn(f'{path}:{index+1}: ignored invalid/incomplete row ({e})')
+         elif (run/'train.log').is_file() and task in PROJECTS['PDE-Solving-StandardBenchmark']:
+             # Exact existing PDE print formats only; never infer epochs from tqdm.
+             text=self.track(run/'train.log').decode('utf-8',errors='replace');current=None
+@@ -160,6 +199,145 @@
+             if key in seen:self.warn(f'{run}: duplicate member/epoch {key}; last recorded row used')
+             seen[key]=row
+         return sorted(seen.values(),key=lambda r:(str(r['member']),r['epoch']))
++
++    def selection_record(self,run,task,config,architecture):
++        args=config.get('resolved_arguments',{});arch=config.get('architecture') or architecture.get('architecture',{})
++        result=self.json(run/'train_results.json',{})
++        status=result.get('status','unrecorded') if isinstance(result,dict) else 'invalid'
++        record=dict(source=str(run),task=task,model=config.get('model') or arch.get('family') or arch.get('model_name') or 'unknown',
++                    seed=args.get('seed'),fold=args.get('fold_id'),split=args.get('task'),training_status=status,
++                    selected=False,eligible=False,metric=None,final_validation_loss=None,validation_epochs={},
++                    member_losses={},weights={},last_training_epochs={},reason='')
++        if (run/'train_results.json').exists() and status!='completed':
++            record['reason']='training status is not completed: '+str(status);return record
++        rows=self.history(run,task);self.histories[run,task]=rows
++        if (run,task) in self.history_errors:
++            record['reason']='invalid/incomplete history rows; final validation cannot be confirmed';return record
++        members={str(r['member']) for r in rows}
++        members.update(str(m) for m in config.get('members',{}))
++        count=args.get('nmodel')
++        if type(count) is int and count>0:members.update(str(i) for i in range(count))
++        if not members:record['reason']='no recorded validation history';return record
++        for member in sorted(members):
++            member_rows=[r for r in rows if str(r['member'])==member]
++            record['last_training_epochs'][member]=max((r['epoch'] for r in member_rows),default=None)
++            # A partial/nonfinite last validation must not fall back to an earlier finite one.
++            validation=[r for r in member_rows if any(
++                k.startswith('validation_') or k.startswith('test_') or k=='upstream_validation_log_value'
++                for k in r['metrics'])]
++            if not validation:record['reason']=f'member {member}: no recorded validation';return record
++            last=validation[-1];record['validation_epochs'][member]=last['epoch']
++            try:metric,value,weight=validation_value(task,last['metrics'],config)
++            except ValueError as e:record['reason']=f'member {member}, epoch {last["epoch"]}: {e}';return record
++            record['metric']=metric;record['member_losses'][member]=value
++            if weight is not None:record['weights'][member]=weight
++        record['final_validation_loss']=math.fsum(v/len(members) for v in record['member_losses'].values())
++        record['eligible']=True;record['reason']='eligible'
++        if status=='unrecorded':self.warn(f'{run}: no training status file; selecting from last recorded validation, completion unverified')
++        return record
++
++    def select_runs(self,candidates):
++        self.selection=[self.selection_record(*item) for item in candidates]
++        chosen=set()
++        for task in PROJECTS[self.args.project]:
++            eligible=[r for r in self.selection if r['task']==task and r['eligible']]
++            if not eligible:continue
++            def order(r):
++                seed=r['seed'];seed_key=(0,seed) if type(seed) is int else (1,0)
++                return r['final_validation_loss'],seed_key,r['source']
++            winner=min(eligible,key=order);winner['selected']=True;chosen.add(winner['source'])
++            for r in eligible:
++                r['reason']='minimum final validation loss' if r is winner else 'larger final validation loss'
++                if r is not winner and r['final_validation_loss']==winner['final_validation_loss']:
++                    r['reason']='equal final validation loss; deterministic seed/path tie-break'
++            # Still choose exactly one per task; expose mixed settings instead of claiming a seed-controlled comparison.
++            signatures=set()
++            for run,t,cfg,sidecar in candidates:
++                if str(run) not in {r['source'] for r in eligible}:continue
++                a=cfg.get('resolved_arguments',{})
++                training={k:v for k,v in a.items() if k in ('epochs','lr','batch_size','weight','weight_decay','ntrain','downsample','nmodel','fold_id','task')}
++                signatures.add(json.dumps(dict(model=cfg.get('model'),architecture=cfg.get('architecture') or sidecar.get('architecture'),
++                                               training=training,hparams=cfg.get('hparams')),sort_keys=True))
++            if len(signatures)>1:
++                self.warn(f'{task}: candidate architectures/training settings/folds/splits differ; the winner is only best among included runs, not a controlled seed comparison. Narrow --model/--run-dir/--runs-root if needed.')
++        for r in self.selection:
++            if not r['eligible']:self.warn(f'{r["source"]}: excluded from figures: {r["reason"]}')
++        return [item for item in candidates if str(item[0]) in chosen]
++
++    def pde_overview(self):
++        """One six-panel figure, one selected run per benchmark; never superpose seeds."""
++        if not self.runs:return
++        fig,axes=plt.subplots(2,3,figsize=(7.16,4.9),layout='constrained')
++        captions=[]
++        for i,(task,ax) in enumerate(zip(PROJECTS['PDE-Solving-StandardBenchmark'],axes.flat)):
++            info=next((r for r in self.runs if r['task']==task),None)
++            title=f'({chr(97+i)}) '+TITLES.get(task,task.title())
++            if info is None:
++                ax.set_title(title);ax.text(.5,.5,'No eligible saved run',ha='center',va='center',transform=ax.transAxes,fontsize=8)
++                ax.set_axis_off();captions.append(title+': no eligible saved run.');continue
++            selection=info['selection'];rows=self.history(Path(info['source']),task)
++            members=sorted({str(r['member']) for r in rows});all_values=[]
++            # Plasticity records a per-step train loss but a full-field held-out loss:
++            # label them explicitly instead of treating them as the same quantity.
++            keys=[('train_loss','Train field'),('validation_relative_l2','Held-out field')]
++            if task=='ns':keys=[('train_full_loss','Train (teacher forced)'),('test_full_loss','Held-out (rollout)')]
++            elif task=='plasticity':keys=[('train_step_loss','Train per time'),('test_full_loss','Held-out full field')]
++            for member in members:
++                mr=[r for r in rows if str(r['member'])==member]
++                for (key,label),color in zip(keys,('#0072B2','#D55E00')):
++                    points=[(r['epoch'],number(r['metrics'][key])) for r in mr if key in r['metrics']]
++                    if not points:continue
++                    x,y=zip(*points);y=np.asarray(y);all_values.extend(y[np.isfinite(y)])
++                    ax.plot(x,np.where(np.isfinite(y),y,np.nan),color=color,label=label+(f' / member {member}' if len(members)>1 else ''),
++                            marker='o' if len(x)<30 else None,markersize=2)
++            if all_values and np.all(np.asarray(all_values)>0):ax.set_yscale('log')
++            seed=info['seed'] if info['seed'] is not None else 'unrecorded'
++            epochs='/'.join(str(e) for e in sorted(set(selection['validation_epochs'].values())))
++            ax.set(title=title+f' · seed {seed}',xlabel='Completed epoch',ylabel=r'Relative $L_2$')
++            ax.text(.97,.97,f'Final held-out: {selection["final_validation_loss"]:.4g}\nValidation epoch: {epochs}',
++                    transform=ax.transAxes,ha='right',va='top',fontsize=7,
++                    bbox=dict(facecolor='white',alpha=.8,edgecolor='none',pad=2))
++            ax.grid(which='major',alpha=.18)
++            if ax.lines:ax.legend(frameon=False,loc='upper right',bbox_to_anchor=(1,.81),fontsize=7)
++            captions.append(title+': '+info['label']+f'; selected using {selection["metric"]}={selection["final_validation_loss"]:.6g} at epoch(s) {epochs}.')
++        self.save_figure(fig,self.directory/'pde_selected_training',
++                         'Six PDE benchmarks, one run per task chosen by lowest final recorded held-out loss. '
++                         'Curves show original recorded values without smoothing; positive panels use a log vertical axis. '
++                         'NS train uses truth-fed windows and held-out uses prediction-fed rollout; Plasticity train is per time, held-out is full field. '
++                         'These are training-time held-out monitors (upstream test_* for NS/Plasticity), not fresh independent evaluations. '
++                         +' '.join(captions))
++
++    def pde_evaluation_overview(self):
++        if not self.runs:return
++        fig,axes=plt.subplots(2,3,figsize=(7.16,4.7),layout='constrained');captions=[]
++        for i,(task,ax) in enumerate(zip(PROJECTS['PDE-Solving-StandardBenchmark'],axes.flat)):
++            info=next((r for r in self.runs if r['task']==task),None)
++            title=f'({chr(97+i)}) '+TITLES.get(task,task.title())
++            rows=[r for r in self.eval_rows if r['task']==task and r['status']=='completed']
++            keys=['test_step_loss','test_full_loss'] if task in ('ns','plasticity') else ['relative_l2']
++            values=[r for r in rows if r['metric'] in keys and math.isfinite(number(r['value']))]
++            seed=info['seed'] if info and info['seed'] is not None else 'unrecorded'
++            ax.set_title(title+(f' · seed {seed}' if info else ''))
++            if not values:
++                ax.text(.5,.5,'No completed saved evaluation',ha='center',va='center',transform=ax.transAxes,fontsize=7)
++                ax.set_axis_off();continue
++            evaluations=list(dict.fromkeys(r['evaluation'] for r in values));x=np.arange(len(evaluations))
++            present=[k for k in keys if any(r['metric']==k for r in values)];width=.65/len(present)
++            for j,key in enumerate(present):
++                y=[next((number(r['value']) for r in values if r['evaluation']==e and r['metric']==key),np.nan) for e in evaluations]
++                bars=ax.bar(x+(j-(len(present)-1)/2)*width,y,width=width,
++                            label={'relative_l2':'Field','test_step_loss':'Per step','test_full_loss':'Full field'}[key])
++                for bar,value in zip(bars,y):
++                    if math.isfinite(value):ax.annotate(f'{value:.3g}',(bar.get_x()+bar.get_width()/2,value),
++                                                       xytext=(0,3),textcoords='offset points',ha='center',fontsize=7)
++            ax.set_xticks(x,[f'E{j+1}' for j in range(len(evaluations))]);ax.set(xlabel='Saved evaluation',ylabel=r'Relative $L_2$')
++            ax.set_xlim(-.75,len(evaluations)-.25)
++            ax.margins(y=.22);ax.grid(axis='y',alpha=.18);ax.set_axisbelow(True);ax.legend(frameon=False,fontsize=7)
++            captions.append(title+': '+info['label']+'; '+', '.join(f'E{j+1}={e}' for j,e in enumerate(evaluations))+'.')
++        self.save_figure(fig,self.directory/'pde_selected_evaluation',
++                         'Saved independent evaluation metrics for the same selected run in each of the six PDE tasks. '
++                         'All completed saved evaluation attempts are shown; they are not used for seed selection. '
++                         'Missing/failed evaluation results are not replaced with training validation or zeros. '+' '.join(captions))
+ 
+     def training(self,run,dest,task,info,config):
+         rows=self.history(run,task);long=[]
+@@ -372,10 +550,13 @@
+         model=config.get('model') or arch.get('family') or arch.get('model_name') or 'unknown'
+         seed=args.get('seed');rid=slug(run.name)+'_'+hashlib.sha256(str(run).encode()).hexdigest()[:8]
+         status=self.json(run/'train_results.json',{})
+-        info=dict(id=rid,source=str(run),task=task,task_title={'ns':'Navier–Stokes','car':'ShapeNet-Car','airfrans':'AirfRANS'}.get(task,task.title()),model=model,seed=seed,
++        info=dict(id=rid,source=str(run),task=task,task_title=TITLES.get(task,task.title()),model=model,seed=seed,
+                   training_status=status.get('status','unrecorded'),parameters=config.get('parameters'),architecture=arch,
+                   fold=args.get('fold_id'),split=args.get('task'),
+                   front_latent_mode=arch.get('front_latent_mode'),history_mode=arch.get('history_mode'),cdpa_mode=arch.get('cdpa_mode'))
++        selection=next((r for r in self.selection if r['source']==str(run)),{})
++        info.update(selection=selection,final_validation_loss=selection.get('final_validation_loss'),
++                    validation_epochs=selection.get('validation_epochs'))
+         mode=', '.join(f'{k}={v}' for k,v in [('front',info['front_latent_mode']),('history',info['history_mode']),('CDPA',info['cdpa_mode'])] if v is not None)
+         info['label']=f'{info["task_title"]} / {model} / seed {seed if seed is not None else "unrecorded"}'+(' / '+mode if mode else '')
+         if info['fold'] is not None:info['label']+=f'; fold {info["fold"]}'
+@@ -401,7 +582,8 @@
+         self.make_index(dest,info['label'])
+ 
+     def make_index(self,directory,title):
+-        images=sorted(p for p in directory.rglob('*.png') if p.is_file())
++        images=sorted((p for p in directory.rglob('*.png') if p.is_file()),
++                      key=lambda p:(not p.name.startswith('pde_selected_'),str(p)))
+         cards=[]
+         for p in images:
+             rel=p.relative_to(directory).as_posix();pdf=p.with_suffix('.pdf');caption=p.with_suffix('.txt')
+@@ -413,7 +595,7 @@
+         for p in sorted(directory.rglob('*')):
+             if p.is_file() and p.suffix in ('.csv','.json','.tex'):
+                 rel=p.relative_to(directory).as_posix();links.append('<li><a href="'+html.escape(rel,quote=True)+'">'+html.escape(rel)+'</a></li>')
+-        page='<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+html.escape(title)+'</title><style>body{max-width:1100px;margin:40px auto;padding:0 24px;font:16px/1.65 Georgia,serif;color:#243544;background:#f8fafb}h1{font-size:28px}section{background:white;border:1px solid #dde3e9;border-radius:8px;padding:20px;margin:24px 0}img{max-width:100%;height:auto}h3{overflow-wrap:anywhere;font:14px monospace}a{color:#006598}p{max-width:90ch}</style><h1>'+html.escape(title)+'</h1><p>Saved experiment records. Curves are unsmoothed. Runs, seeds and evaluation attempts remain separate. Missing results are listed in the bundle warnings; no test values are inferred from validation.</p>'+''.join(cards)+'<h2>Numeric tables and provenance</h2><ul>'+''.join(links)+'</ul></html>'
++        page='<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+html.escape(title)+'</title><style>body{max-width:1100px;margin:40px auto;padding:0 24px;font:16px/1.65 Georgia,serif;color:#243544;background:#f8fafb}h1{font-size:28px}section{background:white;border:1px solid #dde3e9;border-radius:8px;padding:20px;margin:24px 0}img{max-width:100%;height:auto}h3{overflow-wrap:anywhere;font:14px monospace}a{color:#006598}p{max-width:90ch}</style><h1>'+html.escape(title)+'</h1><p>One selected run per dataset, using its final recorded validation loss. See selection.json/CSV for candidates, seeds, epochs, losses and exclusions. Curves are unsmoothed; selected-run members and evaluation attempts remain separate. No test values are inferred from validation and no source files are changed.</p>'+''.join(cards)+'<h2>Numeric tables and provenance</h2><ul>'+''.join(links)+'</ul></html>'
+         (directory/'index.html').write_text(page,encoding='utf-8')
+ 
+ 
+@@ -444,7 +626,7 @@
+ 
+ 
+ def parser():
+-    p=argparse.ArgumentParser(description='Offline training/evaluation report + ZIP; never loads datasets, models or checkpoints.')
++    p=argparse.ArgumentParser(description='Offline report + ZIP for the lowest-final-validation run per dataset; never loads datasets, models or checkpoints.')
+     p.add_argument('project',choices=PROJECTS)
+     p.add_argument('--repo-root',type=Path,default=Path(__file__).resolve().parents[2],help='Actual checkout, defaults to script location (not /home/hwz)')
+     p.add_argument('--runs-root',type=Path,action='append',help='Scan this root; repeatable. Overrides default output/runs/project metrics+scores roots')
+@@ -453,7 +635,7 @@
+     p.add_argument('--model',help='Filter saved model family, e.g. kcdno/CDLNO/lrsa_matched')
+     p.add_argument('--seed',type=int,help='Filter the explicitly recorded seed; never infer it from a filename')
+     p.add_argument('--output-dir',type=Path,help='New bundle directory; existing paths are rejected')
+-    p.add_argument('--fields',choices=['latest','all','none'],default='latest',help='Copy latest stored epoch per member by default; all runs remain included')
++    p.add_argument('--fields',choices=['latest','all','none'],default='latest',help='Copy latest stored epoch per member of the selected run; all copies all stored epochs of that run')
+     p.add_argument('--include-arrays',action='store_true',help='Include copied field NPZ/NPY arrays (can be large)')
+     p.add_argument('--dpi',type=int,default=600,choices=(300,600))
+     p.add_argument('--dry-run',action='store_true',help='Read/discover only; no plots or output directories')
+@@ -486,24 +668,33 @@
+         if args.seed is not None and cfg.get('resolved_arguments',{}).get('seed')!=args.seed:continue
+         if output==run or output.is_relative_to(run) or run.is_relative_to(output):raise ValueError('output must not overlap an input run directory')
+         selected.append((run,task,cfg,arch))
+-    print('Project:',project);print('Report:',output);print('Runs:',len(selected))
+-    for run,task,_,_ in selected:print(f'  {task}: {run}')
++    candidate_count=len(selected);selected=bundle.select_runs(selected)
++    print('Project:',project);print('Report:',output);print('Candidates:',candidate_count);print('Runs:',len(selected))
++    print('Selection:',SELECTION_POLICY)
++    for record in bundle.selection:
++        state='SELECTED' if record['selected'] else 'EXCLUDED'
++        print(f'  {state} {record["task"]} seed={record["seed"]} final_validation={record["final_validation_loss"]} '
++              f'epochs={record["validation_epochs"]}: {record["source"]} ({record["reason"]})')
+     if args.dry_run:return 0
+     output.mkdir(parents=True,exist_ok=False)
+     with plt.rc_context(STYLE):
+         for run,task,cfg,arch in selected:
+             bundle.report_run(run,task,cfg,arch)
+-    if not selected:bundle.warn('No matching saved runs. No synthetic curves or metrics were created. Specify --run-dir or --runs-root for custom locations.')
+-    write_csv(output/'runs.csv',bundle.runs,['id','task','model','seed','fold','split','training_status','parameters','front_latent_mode','history_mode','cdpa_mode','source'])
++        if args.project=='PDE-Solving-StandardBenchmark':
++            bundle.pde_overview();bundle.pde_evaluation_overview()
++    if not selected:bundle.warn('No eligible saved runs with final validation. No synthetic curves or metrics were created. See selection.json and source history/status; --run-dir/--runs-root locate custom runs.')
++    write_json(output/'selection.json',dict(policy=SELECTION_POLICY,candidates=bundle.selection))
++    write_csv(output/'selection.csv',bundle.selection,['task','model','seed','fold','split','training_status','selected','eligible','metric','final_validation_loss','validation_epochs','member_losses','weights','last_training_epochs','reason','source'])
++    write_csv(output/'runs.csv',bundle.runs,['id','task','model','seed','fold','split','training_status','parameters','front_latent_mode','history_mode','cdpa_mode','final_validation_loss','validation_epochs','source'])
+     write_csv(output/'training_history.csv',bundle.epoch_rows,['run','task','model','seed','member','epoch','metric','value'])
+     write_csv(output/'evaluation_metrics.csv',bundle.eval_rows,['run','task','model','seed','evaluation','status','metric','value'])
+-    manifest=dict(format_version=1,generated_at_utc=stamp,project=args.project,repo_root=str(repo),runs=bundle.runs,
++    manifest=dict(format_version=2,generated_at_utc=stamp,project=args.project,repo_root=str(repo),runs=bundle.runs,selection=bundle.selection,selection_policy=SELECTION_POLICY,
+                   warnings=bundle.warnings,sources=bundle.sources,options={k:str(v) if isinstance(v,Path) else [str(x) for x in v] if isinstance(v,list) else v for k,v in vars(args).items()},
+                   environment=dict(python=sys.version,numpy=np.__version__,matplotlib=matplotlib.__version__),style= {k:v for k,v in STYLE.items() if k!='axes.prop_cycle'},
+                   semantics='Read-only records; no smoothing, no averaging across runs/seeds/folds, no dataset/checkpoint load; status is taken from saved files and can be stale after hard termination.')
+     write_json(output/'manifest.json',manifest)
+     (output/'WARNINGS.txt').write_text('\n'.join(bundle.warnings) + '\n',encoding='utf-8')
+-    (output/'README.md').write_text('# '+args.project+' results\n\nOpen index.html for the gallery. PDF/PNG figures have English TXT/LaTeX captions. CSV files preserve metric names and epoch/member/seed/evaluation axes. Sources and SHA256 hashes are in manifest.json.\n\nReports contain saved records, not fresh evaluation. Missing histories cannot be recovered from checkpoints. No model weights are included. See WARNINGS.txt before interpreting figures.\n',encoding='utf-8')
++    (output/'README.md').write_text('# '+args.project+' results\n\nOpen index.html for the gallery. PDF/PNG figures have English TXT/LaTeX captions. CSV files preserve metric names and epoch/member/seed/evaluation axes. Sources and SHA256 hashes are in manifest.json.\n\n'+SELECTION_POLICY+'\n\nselection.json/CSV record all candidates; curves, field images and evaluation tables include selected runs only. PDE pde_selected_training/evaluation.pdf each show all six tasks in one figure.\n\nReports contain saved records, not fresh evaluation. Missing histories cannot be recovered from checkpoints. No model weights are included. See WARNINGS.txt before interpreting figures.\n',encoding='utf-8')
+     bundle.make_index(output,args.project+' / experiment report')
+     with zipfile.ZipFile(archive,'x',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as z:
+         for p in sorted(output.rglob('*')):
+--- before/tran_evaluate/show/README.md
++++ after/tran_evaluate/show/README.md
+@@ -22,13 +22,39 @@
+ 
+ 同级还会生成 `<UTC时间戳_随机ID>.zip`。文件夹含一个可离线打开的 `index.html`；下载ZIP、解压后直接打开即可浏览。每次使用新目录，不覆盖之前的报告；`--output-dir`若已存在也明确拒绝。
+ 
+-默认扫描当前仓库 `output/`、旧 `runs/`、对应子项目 `metrics/` 和 `scores/`。若已显式导出 `CDLNO_RUNS_ROOT` 则用它替代默认 `output/`；启动时打印本次实际输入目录。默认保留所有发现的run、seed、fold和评估尝试，不选择“最好一次”或自动平均。
++默认扫描当前仓库 `output/`、旧 `runs/`、对应子项目 `metrics/` 和 `scores/`。若已显式导出 `CDLNO_RUNS_ROOT` 则用它替代默认 `output/`。**每个数据集仅选择最后一次记录的验证损失最小的一个run/seed**，然后整理该run的训练曲线、评估结果和已有场图。PDE六个子任务分别选优，并生成一张六子图训练汇总和一张六子图评估汇总。未选run只列在筛选依据中，不进入绘图/字段复制流程。
++
++**所有源实验（包括未选种子）、checkpoint和旧报告保持原样**。本工具没有删除、移动或回写源结果的流程，每次只创建新的报告目录和ZIP。
++
++## 选取依据
++
++先应用`--model/--seed/--task/--run-dir/--runs-root`筛选，再对每个task单独选一个run。使用最后一个有验证记录的epoch，**不是历次epoch中的最小值，也不使用独立评估结果选seed**。例如seed0前期0.001、最后0.03，seed1前期0.1、最后0.02，选择seed1。
++
++| 数据集 | 比较的最后验证损失 |
++|---|---|
++| Darcy / Elasticity / Airfoil / Pipe | `validation_relative_l2` |
++| NS / Plasticity | `test_full_loss`，即原训练循环的held-out监控值；保留其上游`test_*`命名，非独立验证集的新声明 |
++| Car | `validation_velocity_mse + weight × validation_pressure_mse`，必须有保存的weight |
++| AirfRANS | `validation_volume_mse + weight × validation_surface_mse`，使用保存的reg/weight，对应当前weighted MSE入口 |
++
++Car/Air的旧`upstream_validation_log_value`分别受原外层分项交换、拼写分支影响，**不用于选优**；这里使用已正确记录的分项派生目标，原训练代码和结果不改写。Air若训练398epoch、最后验证在390epoch，则选优依据明确记为390，后续纯训练epoch不补验证值。周期场图仍取选中run已存的最后场图，不冒称是该验证epoch重算出的结果。
++
++- 已记录为running/failed/interrupted/incomplete的run不参选；缺损/非有限/负损失、缺权重、损坏JSONL、缺成员验证不参选，也不退回更早的好数值。没有可参选run时明确留空，不从测试指标或checkpoint捏造依据。
++- 旧run没有`train_results.json`、但有可解析最后验证记录时可参选，明确标注“完成状态未核实”。seed缺失保留unrecorded，不推断为0。
++- 同一run若有多个Air成员，使用**各成员最后验证损失的算术均值**选择run，不挑其中最好的member、不跨seed平均；入选后各成员曲线仍分别保留。候选run之间成员数不同会提示配置差异。
++- 完全同值时按明确记录的整数seed升序、再按绝对路径字典序选一个；缺seed排在已有seed之后，不按文件修改时间选取。
++- 默认在本次纳入的run中选优；若混有不同模型/架构/训练设置/fold/split会提示，结果不代表受控的单纯seed比较。可用`--model`及重复`--run-dir`限定要比较的一组同配置实验。
++
++`selection.json`/`selection.csv`记录**所有候选**、选择/排除原因、最后验证轮次、分项权重、成员loss、seed及路径。控制台及`--dry-run`也显示同一结果。`runs.csv`、曲线/评价CSV、HTML图片和复制场图仅包含获选run；其全部已存评估尝试保留，不再挑一次最好的测试结果。
+ 
+ ## 常用选择
+ 
+ ```bash
+-# 先检查会读哪些目录；不出图、不创建输出。
++# 先检查每个数据集会选哪个seed、最后loss/epoch和排除原因；不创建输出。
+ bash tran_evaluate/show/PDE-Solving-StandardBenchmark.sh --dry-run
++
++# 在KCDNO实验中，各任务自动选择最后验证损失最小的seed。
++bash tran_evaluate/show/PDE-Solving-StandardBenchmark.sh --model kcdno
+ 
+ # 只整理KCDNO、seed0的六个PDE任务。
+ bash tran_evaluate/show/PDE-Solving-StandardBenchmark.sh --model kcdno --seed 0
+@@ -47,7 +73,7 @@
+ # 结果不在默认位置：指定扫描根（可重复），覆盖默认搜索根。
+ bash tran_evaluate/show/Airfoil-Design-AirfRANS.sh --runs-root /实际远端磁盘/实验输出
+ 
+-# 完整复制所有已保存周期场图及其NPZ数组；默认只复制各成员最后一个已有epoch的场图。
++# 复制获选run的所有已存周期场图及NPZ；不会重新纳入其他seed。
+ bash tran_evaluate/show/PDE-Solving-StandardBenchmark.sh --fields all --include-arrays
+ 
+ # 只出曲线、评估图表，不复制场图；指定一个尚不存在的输出目录。
+@@ -65,7 +91,10 @@
+ ```text
+ 报告目录/
+   index.html                         # 总图册，支持离线浏览
+-  runs.csv                           # 模型、seed、fold/split、模式、参数量、状态
++  selection.json / selection.csv     # 所有候选的最终验证值/epoch及选取理由
++  pde_selected_training.pdf / .png   # PDE专有，六任务各一个seed，2×3子图
++  pde_selected_evaluation.pdf / .png # PDE专有，同样六任务，选中run的独立评价
++  runs.csv                           # 仅选中run的模型、seed、fold/split、参数、状态
+   training_history.csv               # 保留task/run/member/epoch/metric轴
+   evaluation_metrics.csv             # 保留每次evaluation与status，不平均
+   manifest.json                      # 来源绝对路径、SHA256、环境、配置、缺项
+@@ -80,7 +109,9 @@
+     legacy_figures/                   # 已存在的原绘图，保留原格式/分辨率
+ ```
+ 
+-新曲线不平滑、不插值补数据点；稀疏验证使用**实际记录epoch**，连线只是视觉辅助。所有有限值都为正时使用对数纵轴，否则线性；非有限记录保留在CSV且图上为缺口，不替换为0。新图使用STIX/数学STIX，标题9pt、轴8pt、刻度/图例7pt；单栏3.5英寸、双面板7.16英寸，默认600dpi PNG，PDF嵌入TrueType字体。图注标注模型、seed、模式、已记录架构宽深/latent数、fold/split和评价状态；最终投稿请按期刊栏宽排版。
++新曲线不平滑、不插值补数据点；稀疏验证使用**实际记录epoch**，连线只是视觉辅助。所有有限值都为正时使用对数纵轴，否则线性；获选run的中间非有限记录保留在CSV且图上为缺口，不替换为0。新图使用STIX/数学STIX，标题9pt、轴8pt、刻度/图例7pt；单栏3.5英寸，双面板/六子图汇总宽7.16英寸，默认600dpi PNG，PDF嵌入TrueType字体。图注标注模型、seed、模式、已记录架构宽深/latent数、fold/split和评价状态；最终投稿请按期刊栏宽排版。
++
++PDE汇总按Darcy、Airfoil、Plasticity、Elasticity、NS、Pipe排列；图内标注每个获选seed、末次held-out loss及真实验证epoch。NS训练真值回填与held-out预测回填分别标注；Plasticity训练per-time和held-out full-field不冒称同一聚合量。没有合格run或完成的独立评价时，对应面板显示缺项，其他task照常绘制。独立评价汇总保留选中run的所有完成评价（E1/E2映射在图注），不选最小测试值。
+ 
+ | 项目 | 新生成的图表 | 依据/区别 |
+ |---|---|---|
+@@ -92,13 +123,13 @@
+ | AirfRANS | 加权训练loss；表面/体积均值及vx/vy/p/nut分项；独立评价MSE、气动力误差和Spearman | 按原`MSE_weighted`入口及原`score.json`，不把MSE称为relative-L2；验证不填满未执行epoch |
+ | AirfRANS配对数组存在时 | 升力/阻力预测—真值散点及相等线、Cp/Cf原表面散点 | 原`true_coefs[N,2]`、`pred_coefs_mean[N,group,2]`轴；误差棒为保存的成员std，不是置信区间。Cp倒置纵轴；不跨翼型上下表面连接点 |
+ 
+-AirfRANS `score.json` 的mean/std是原成员统计，不在这里重新跨seed平均。所有评估尝试都进表；failed/running/legacy_unverified指标不画成“完成评估”的柱状图。已有配对数组仍可生成带状态说明的散点。单例周期场图属于诊断，不能替代正式指标；复制既有图不重新裁剪色标/选择低误差案例。`--fields latest`只作用于周期场图，不丢弃历史loss或较早评估记录。
++AirfRANS `score.json` 的mean/std是原成员统计，不在这里重新跨seed平均。选中run的所有评估尝试都进表；failed/running/legacy_unverified指标不画成“完成评估”的柱状图。已有配对数组仍可生成带状态说明的散点。单例周期场图属于诊断，不能替代正式指标；复制既有图不重新裁剪色标/选择低误差案例。`--fields latest`只作用于选中run的周期场图，不丢弃该run的历史loss或较早评估记录。
+ 
+ Car原评价的`*_pred.npy/*_gt.npy`没有坐标和surf mask，且没有保存每案例阻力系数配对；脚本不会从它们捏造表面场图、拖曳系数散点或重算一个不同区域的误差。可使用之前已保存、带几何/mask的周期场图。AirfRANS边界层等其他原数组不新增物理重算；数值表和已有图完整保留其实际可用范围。
+ 
+ ## 旧实验和缺项
+ 
+-首选结构化JSONL/JSON；六PDE若只有已有`train.log`，可按原`Epoch ... Train loss`、`Reg`、`train_step_loss/test_full_loss`和`rel_err`格式提取，源码0基epoch转为完成轮数。此路径明确注明控制台精度截断，不能冒充高精度原数值。旧Car/AirfRANS最终log不能恢复整条曲线；保存的PNG和最终JSON仅作为原产物保留，不OCR、不从图片反推数值。旧Transolver是否能整理取决于其实际保留了哪些日志/图表，没有保证它自动具备新记录格式。
++首选结构化JSONL/JSON；六PDE若只有已有`train.log`，可按原`Epoch ... Train loss`、`Reg`、`train_step_loss/test_full_loss`和`rel_err`格式提取，源码0基epoch转为完成轮数。此路径明确注明控制台精度截断，不能冒充高精度原数值。旧Car/AirfRANS最终log不能恢复整条曲线；缺可判定最后验证值的run只列入筛选记录，不从PNG/OCR、最终测试结果反推验证值。旧Transolver是否能整理取决于其实际保留了哪些日志/图表，没有保证它自动具备新记录格式。
+ 
+ 没有独立评估则显示缺项，不把训练中的验证冒称独立测试。新图的数值表和caption随包提供；原图保留原字体和分辨率，不宣称已把150dpi旧PNG升级成论文原图。模型权重不进入ZIP，也不反序列化；`.npy/.npz`只用`allow_pickle=False`，object/ragged数组会明确跳过，不扩大加载权限。
+ 
+--- before/tests/test_show_reports.py
++++ after/tests/test_show_reports.py
+@@ -24,7 +24,7 @@
+ 
+ 
+ def fixture(root,task,model='kcdno',seed=0):
+-    path=root/task/model/'20260101';path.mkdir(parents=True)
++    path=root/task/model/f'20260101_seed{seed}';path.mkdir(parents=True)
+     args={'seed':seed,'weight':.5,'fold_id':0,'task':'full'}
+     config=dict(task=task,model=model,resolved_arguments=args,parameters={'total':1234,'trainable':1234},architecture={'family':model,'history_mode':'all'})
+     (path/'config.json').write_text(json.dumps(config))
+@@ -59,6 +59,10 @@
+ def hashes(root):return {str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in root.rglob('*') if p.is_file()}
+ 
+ 
++def set_history(run,rows):
++    (run/'train_history.jsonl').write_text(''.join(json.dumps(r)+'\n' for r in rows))
++
++
+ class Reports(unittest.TestCase):
+     def setUp(self):
+         self.tmp=tempfile.TemporaryDirectory(prefix='report fixture ');self.addCleanup(self.tmp.cleanup)
+@@ -160,5 +164,147 @@
+         self.assertTrue((dest/'field_snapshots/member_000/epoch_0100/case_000/field/caption.txt').exists())
+         self.assertFalse(list(dest.rglob('*.npz')));self.assertFalse(list(dest.rglob('epoch_0050')))
+ 
++    def test_final_validation_winner_per_PDE_task_six_panels_only_selected_assets(self):
++        tasks=report.PROJECTS[self.args.project];winners={};runs={}
++        for i,task in enumerate(tasks):
++            for seed in range(3):
++                run,_=fixture(self.repo/'output',task,seed=seed);runs[task,seed]=run
++                key=report.VALIDATION_KEYS[task][0]
++                final=.02 if seed==i%3 else .1+seed*.1
++                # The seed with the best earlier loss deliberately loses on its final epoch.
++                set_history(run,[{'epoch':1,'metrics':{key:.8 if seed==i%3 else .00001,'train_loss':.7}},
++                                 {'epoch':500,'metrics':{key:final,'train_loss':.03,'train_full_loss':.04,'train_step_loss':.03}}])
++                field=run/'visualizations/member_000/epoch_0500/case_000';field.mkdir(parents=True)
++                (field/'caption.txt').write_text(f'Synthetic saved field placeholder for {task}, seed {seed}')
++                # Selection must not depend on independent test scores or checkpoint content.
++                (run/'evaluations/first/results.json').write_text(json.dumps({'status':'completed','metrics':
++                            {key if task in ('ns','plasticity') else 'relative_l2':9 if seed==i%3 else .000001}}))
++                (run/'model.pt').write_bytes(b'opaque test placeholder: must never be loaded or copied')
++            winners[task]=i%3
++        prior=self.repo/self.args.project/'result_visualizations/prior_report';prior.mkdir(parents=True)
++        (prior/'index.html').write_text('EXISTING REPORT MUST REMAIN IDENTICAL')
++        (prior.parent/'prior_report.zip').write_bytes(b'existing archive placeholder')
++        before=hashes(self.repo);out=self.root/'selected';figures={}
++        def capture(fig,path,caption):
++            figures[path.name]={'titles':[a.get_title() for a in fig.axes],'caption':caption,
++                                'lines':[[list(line.get_ydata()) for line in a.lines] for a in fig.axes]}
++            report.plt.close(fig)
++        with patch.object(report.Bundle,'save_figure',side_effect=capture),redirect_stdout(io.StringIO()),redirect_stderr(io.StringIO()):
++            report.main([self.args.project,'--repo-root',str(self.repo),'--output-dir',str(out)])
++        manifest=json.loads((out/'manifest.json').read_text())
++        self.assertEqual({r['task']:r['seed'] for r in manifest['runs']},winners)
++        self.assertEqual(len(manifest['selection']),18);self.assertEqual(sum(r['selected'] for r in manifest['selection']),6)
++        for name in ('pde_selected_training','pde_selected_evaluation'):
++            self.assertEqual(len(figures[name]['titles']),6)
++            for task,title in zip(tasks,figures[name]['titles']):self.assertIn(f'seed {winners[task]}',title)
++        self.assertIn([.8,.02],figures['pde_selected_training']['lines'][0])
++        for fname in ('runs.csv','training_history.csv','evaluation_metrics.csv'):
++            rows=list(csv.DictReader(io.StringIO((out/fname).read_text(encoding='utf-8-sig'))))
++            self.assertTrue(rows)
++            for row in rows:self.assertEqual(int(row['seed']),winners[row['task']])
++        for task,seed in winners.items():
++            dirs=list((out/task).iterdir());self.assertEqual(len(dirs),1)
++            self.assertIn(f'seed{seed}',dirs[0].name)
++            self.assertIn(f'seed {seed}',next(dirs[0].rglob('caption.txt')).read_text())
++        with zipfile.ZipFile(out.with_suffix('.zip')) as z:
++            self.assertIsNone(z.testzip())
++            for task in tasks:
++                names=[n for n in z.namelist() if '/'+task+'/' in n]
++                self.assertTrue(names)
++                self.assertFalse(any(f'seed{s}_' in n for n in names for s in range(3) if s!=winners[task]))
++        self.assertEqual(before,hashes(self.repo))
++
++    def test_reject_invalid_final_validation_and_unfinished_without_earlier_fallback(self):
++        cases=[('completed',.05),('completed',float('nan')),('failed',.001),('running',.0001),
++               ('completed',None),('interrupted',.00001),('incomplete',.000001)]
++        candidates=[]
++        for seed,(status,last) in enumerate(cases):
++            run,cfg=fixture(self.repo/'output','darcy',seed=seed)
++            (run/'train_results.json').write_text(json.dumps({'status':status}))
++            set_history(run,[{'epoch':1,'metrics':{'validation_relative_l2':.0000001}},
++                             {'epoch':500,'metrics':{'validation_relative_l2':last}}])
++            candidates.append((run,'darcy',cfg,{}))
++        b=report.Bundle(self.args,self.root/'b')
++        with redirect_stderr(io.StringIO()):selected=b.select_runs(candidates)
++        self.assertEqual([item[2]['resolved_arguments']['seed'] for item in selected],[0])
++        self.assertEqual(b.selection[1]['validation_epochs'],{'0':500});self.assertFalse(b.selection[1]['eligible'])
++        self.assertIn('nonfinite',b.selection[1]['reason'])
++        self.assertFalse(b.selection[4]['eligible'])
++
++    def test_corrupt_history_and_legacy_nonfinite_final_are_not_silently_selected(self):
++        run,cfg=fixture(self.repo/'output','darcy')
++        with (run/'train_history.jsonl').open('a') as stream:stream.write('{"epoch":500,"metrics":')
++        with redirect_stderr(io.StringIO()):
++            record=report.Bundle(self.args,self.root/'b').selection_record(run,'darcy',cfg,{})
++        self.assertFalse(record['eligible']);self.assertIn('final validation cannot be confirmed',record['reason'])
++        (run/'train_history.jsonl').unlink()
++        (run/'train.log').write_text('Epoch 0 Train loss : .1\nrel_err:.001\nEpoch 499 Train loss : .1\nrel_err:nan\n')
++        with redirect_stderr(io.StringIO()):
++            record=report.Bundle(self.args,self.root/'c').selection_record(run,'darcy',cfg,{})
++        self.assertFalse(record['eligible']);self.assertEqual(record['validation_epochs'],{'0':500})
++
++    def test_car_selection_uses_correct_saved_components_and_weight(self):
++        candidates=[]
++        for seed,(vel,pressure) in enumerate(((.1,.4),(.3,.1),(.001,.001))):
++            run,cfg=fixture(self.repo/'output','car',seed=seed)
++            if seed==2:del cfg['resolved_arguments']['weight']
++            set_history(run,[{'epoch':200,'metrics':{'validation_velocity_mse':vel,'validation_pressure_mse':pressure,
++                                                   'upstream_validation_log_value':pressure+.5*vel}}])
++            candidates.append((run,'car',cfg,{}))
++        args=report.parser().parse_args(['Car-Design-ShapeNetCar']);b=report.Bundle(args,self.root/'b')
++        with redirect_stderr(io.StringIO()):selected=b.select_runs(candidates)
++        self.assertEqual(selected[0][2]['resolved_arguments']['seed'],0)
++        self.assertAlmostEqual(b.selection[0]['final_validation_loss'],.3)
++        self.assertIn('weight/reg',b.selection[2]['reason'])
++        # Do not backtrack to an earlier complete validation if the last is missing a component.
++        run,task,cfg,arch=candidates[0]
++        set_history(run,[{'epoch':190,'metrics':{'validation_velocity_mse':.001,'validation_pressure_mse':.001}},
++                         {'epoch':200,'metrics':{'validation_velocity_mse':.001}}])
++        self.assertFalse(report.Bundle(args,self.root/'new').selection_record(run,task,cfg,arch)['eligible'])
++
++    def test_air_sparse_final_validation_multiple_members_and_missing_member(self):
++        candidates=[]
++        for seed,volumes in enumerate(((.01,4.0),(.6,.6),(.001,))):
++            run,cfg=fixture(self.repo/'output','airfrans',seed=seed)
++            cfg['resolved_arguments']['nmodel']=2
++            rows=[]
++            for member,vol in enumerate(volumes):
++                rows.extend([{'epoch':390,'member':member,'metrics':{'validation_volume_mse':vol,'validation_surface_mse':.2,
++                                                                    'reg':.5,'criterion':'MSE_weighted','upstream_validation_log_value':99}},
++                             {'epoch':398,'member':member,'metrics':{'train_loss':.03,'reg':.5,'criterion':'MSE_weighted'}}])
++            set_history(run,rows);candidates.append((run,'airfrans',cfg,{}))
++        args=report.parser().parse_args(['Airfoil-Design-AirfRANS']);b=report.Bundle(args,self.root/'b')
++        with redirect_stderr(io.StringIO()):selected=b.select_runs(candidates)
++        self.assertEqual(selected[0][2]['resolved_arguments']['seed'],1)
++        self.assertAlmostEqual(b.selection[1]['final_validation_loss'],.7)
++        self.assertEqual(b.selection[1]['validation_epochs'],{'0':390,'1':390})
++        self.assertEqual(b.selection[1]['last_training_epochs'],{'0':398,'1':398})
++        self.assertFalse(b.selection[2]['eligible']);self.assertIn('member 1',b.selection[2]['reason'])
++        with self.assertRaisesRegex(ValueError,'disagree'):
++            report.validation_value('airfrans',dict(validation_volume_mse=.1,validation_surface_mse=.1,reg=.1),candidates[0][2])
++
++    def test_ties_legacy_missing_history_and_dry_run_selection(self):
++        candidates=[]
++        for seed in (2,1,0):
++            run,cfg=fixture(self.repo/'output','darcy',seed=seed);candidates.append((run,'darcy',cfg,{}))
++        legacy=candidates[-1][0];(legacy/'train_results.json').unlink()
++        b=report.Bundle(self.args,self.root/'b')
++        with redirect_stderr(io.StringIO()):selected=b.select_runs(candidates)
++        self.assertEqual(selected[0][0],legacy);self.assertTrue(any('completion unverified' in w for w in b.warnings))
++        self.assertEqual(sum(r['selected'] for r in b.selection),1)
++        self.assertTrue(all('tie-break' in r['reason'] for r in b.selection if not r['selected']))
++        # Seed/path tie is deterministic even if input discovery order changes.
++        copy=legacy.with_name('000_copy');shutil.copytree(legacy,copy)
++        with redirect_stderr(io.StringIO()):
++            tied=report.Bundle(self.args,self.root/'c').select_runs(candidates+[(copy,'darcy',candidates[-1][2],{})])
++        self.assertEqual(tied[0][0],copy)
++        before=hashes(self.repo);out=self.root/'dry';stdout=io.StringIO()
++        with redirect_stdout(stdout),redirect_stderr(io.StringIO()):
++            report.main([self.args.project,'--repo-root',str(self.repo),'--output-dir',str(out),'--dry-run'])
++        self.assertIn('SELECTED darcy seed=0',stdout.getvalue());self.assertIn('EXCLUDED darcy seed=2',stdout.getvalue())
++        self.assertFalse(out.exists());self.assertFalse(out.with_suffix('.zip').exists());self.assertEqual(before,hashes(self.repo))
++        (legacy/'train_history.jsonl').unlink()
++        self.assertFalse(report.Bundle(self.args,self.root/'d').selection_record(legacy,'darcy',candidates[-1][2],{})['eligible'])
++
+ 
+ if __name__=='__main__':unittest.main(verbosity=2)

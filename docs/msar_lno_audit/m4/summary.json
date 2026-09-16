@@ -1,0 +1,54 @@
+{
+  "stage": "M4",
+  "environment": {
+    "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "available": true,
+    "pyg": "2.3.1",
+    "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU"
+  },
+  "suites": [
+    {
+      "log": "msar-tests.log",
+      "tests": 66,
+      "seconds": 17.8,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "log": "old-entry-tests.log",
+      "tests": 33,
+      "seconds": 31.286,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "log": "integration-tests-final.log",
+      "tests": 18,
+      "seconds": 8.539,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    }
+  ],
+  "distinct_test_methods": 100,
+  "distinct_count_note": "49 M1-M3 + 18 final M4 + 33 old entries; logs overlap, not a single 100-test invocation",
+  "old_same_weight_passed": 75,
+  "msar_core_same_weight_passed": 2,
+  "old_fixture_hashes": 182,
+  "factory": "Real PDE factory exports lifted MSARLNO only; eight production task train/eval wrappers not wired",
+  "loss": "Original safe relative-L2 callable on synthetic lifted core + explicit coverage; not full Darcy/task loop",
+  "checkpoint": "Strict bare state_dict, trusted whole/list/member core snapshots; no optimizer/RNG resume archive",
+  "gpu": "Small CUDA MATH FP32 objective/AdamW/strict checkpoint passed, atol=1e-6 rtol=1e-5; existing M2/M3 limited AMP tests reran",
+  "not_run": [
+    "MSAR task/PyG wrappers and full task loss/time/decode/physical metrics",
+    "Real datasets/training/convergence/accuracy",
+    "Remote Python3.10/torch2.11/cu128",
+    "Task resume integration",
+    "Existing GUNet graph path: torch_cluster missing"
+  ],
+  "next_stage_executed": false
+}

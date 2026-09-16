@@ -1,0 +1,86 @@
+{
+  "scope": "synthetic lifted-core M4 construction; not a Darcy task training loop",
+  "resolved": {
+    "task": "darcy",
+    "profile": "light",
+    "architecture": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        512,
+        256,
+        128,
+        64
+      ],
+      "d": 96,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "training": {
+      "coverage_mode": "floor",
+      "coverage_weight": 0.01,
+      "coverage_kappa": 0.2,
+      "coverage_eps": 1e-06,
+      "diagnostics": false
+    },
+    "effective_coverage_mode": "floor",
+    "profile_overrides": []
+  },
+  "layout": {
+    "input_tokens": 35,
+    "num_latents": [
+      512,
+      256,
+      128,
+      64
+    ],
+    "first_down_expands": true,
+    "token_path": [
+      35,
+      512,
+      256,
+      128,
+      64
+    ],
+    "note": "M1>N is a legal latent expansion; no token count was clipped"
+  },
+  "parameters": 1690969,
+  "objective": {
+    "pde": 1.9897030591964722,
+    "coverage_raw": 0.0,
+    "coverage_weighted": 0.0,
+    "total": 1.9897030591964722
+  },
+  "prediction_shape": [
+    2,
+    35,
+    1
+  ],
+  "checkpoint": "/home/hwz/CDLNO-artifacts/msar-m4-before-i75l1rvp/example-output/darcy/msar_lno/light/coverage_floor/20260916T141404588319Z_48e0de46a6d6",
+  "same_weight_eval": "exact"
+}

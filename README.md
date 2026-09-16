@@ -129,6 +129,37 @@ python -B tools/cdlno_benchmark.py --task elasticity --models cdlno_entry --fron
 
 矩阵成本采用1 MAC=1乘加、2 FLOPs/MAC；额外norm/softmax/depth/临时stack与历史/点特征存储单列，SDPA不会按0计。实测报告forward及合成MSE/AdamW步的median/p90、GPU同步、峰值allocated显存、初始化optimizer state和精度/backend/warmup。所有模型用相同AMP/TF32/compile条件。详细口径、原始数据和限制见 [工具说明](docs/CDLNO_PERFORMANCE_TOOLS.md) 与 [阶段9报告](docs/CDLNO_PHASE9_PERFORMANCE.md)。模型计时不能换算真实epoch；已有结果也不构成普遍加速保证。
 
+## 独立 MSAR-LNO（msar_lno）
+
+MSAR-LNO使用四级latent encoder–decoder：4次learned-query Down、6个encoder和6个decoder的FFN–SA–FFN block、4次以对应encoder特征为query的Up、3处两来源AttnRes（零初始化时等于E+U），最后逐点LN/head。没有卷积、CDPA/kernel history或最终E0跳连。原Transolver、CDLNO及前段消融、KCDNO all/off和matched LRSA继续保留。
+
+| profile | d | 四级latent数 | heads | encoder / decoder depths |
+|---|---:|---|---|---|
+| Light（默认） | 96 | 512,256,128,64 | 4,4,8,8 | 均3,1,1,1 |
+| Full | 192 | 1024,512,256,128 | 4,4,8,8 | 均3,1,1,1 |
+
+八任务脚本在`tran_evaluate/msar_lno/`，使用实际项目入口，支持`train|eval`；[八任务Light/Full×coverage on/off训练后评估模板](tran_evaluate/msar_lno/README.md)包含数据路径和工业限制。默认coverage=floor、weight=.01、kappa=.2；`--coverage-mode off --coverage-weight 0`关闭辅助目标。正常off路径不显式获取coverage A，普通eval始终只返回预测；显式开启diagnostics会有独立的no-grad观测开销。
+
+```bash
+# 在实际checkout根目录预览；不读取数据或训练。
+bash tran_evaluate/msar_lno/darcy.sh train --profile light --coverage-mode floor --dry-run
+bash tran_evaluate/msar_lno/darcy.sh train --profile full --coverage-mode off --coverage-weight 0 --dry-run
+bash tran_evaluate/msar_lno/darcy.sh eval --msar-run-dir /absolute/path/to/existing/run --dry-run
+
+# 无数据模型验收；证据写到新的临时目录。
+msar_check_dir=$(mktemp -d "${TMPDIR:-/tmp}/msar-check.XXXXXX")
+MSAR_M8_RESULTS="$msar_check_dir/acceptance.json" PYTHONPATH=tests:. \
+  python -B -m unittest test_msar_acceptance -v
+# 有限合成计时，不是数据集训练。只测一个N/B，固定精度/backend。
+python -B tools/msar_benchmark.py --task elasticity --B 1 --N 972 \
+  --device cuda:0 --precision fp32 --backend math --warmup 5 --iterations 20 \
+  --output "$msar_check_dir/performance.json"
+```
+
+默认输出`output/<task>/msar_lno/<light|full>/coverage_<floor|off>/<unique>/`。eval先读保存的resolved架构与任务metadata再核对显式覆盖，coverage不同不阻止同结构纯eval；不覆写训练sidecar。六PDE保持state_dict，Car整模型、AirfRANS成员整模型/列表，严格加载并保留原可信pickle边界。**任务checkpoint仍不包含完整optimizer/scheduler/RNG续训状态，未新增resume。**
+
+M8完成八任务正式Light off/floor原loss合成步骤和Full合成反传/权重往返；M9完成实测参数/完整矩阵MAC、独立公式复查与有限本地GPU计时。详见[最终实施报告](docs/MSAR_LNO_IMPLEMENTATION_REPORT.md)、[规格矩阵](docs/MSAR_LNO_REQUIREMENTS_MATRIX.md)、[八任务覆盖表](docs/MSAR_LNO_M8_ACCEPTANCE.md)。性能结果使用RTX5090 Laptop/Torch2.13cu130；结构不等宽/不等参数的模型比较不是公平精度或速度结论。**真实数据读取完整性、收敛、精度、epoch时长、SOTA及远端Torch2.11cu128尚未验证。**
+
 ---
 
 以下保留原 Transolver README、论文结果与引用：

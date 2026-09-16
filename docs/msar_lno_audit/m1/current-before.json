@@ -1,0 +1,1752 @@
+[
+  {
+    "name": "kcdno_all_point_ffn",
+    "status": "passed",
+    "mode": "capture",
+    "sha256": "07882ec511969208b8d65bfac261d2a8532ab2b6e4a61358fae1294e9ad4fcc1",
+    "keys_shapes": {
+      "blocks.0.point_norm.weight": [
+        8
+      ],
+      "blocks.0.down.latent_queries": [
+        4,
+        2,
+        4
+      ],
+      "blocks.0.down.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.0.down.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.0.down.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.0.down.to_out.bias": [
+        8
+      ],
+      "blocks.0.down.q_norm.weight": [
+        4
+      ],
+      "blocks.0.down.k_norm.weight": [
+        4
+      ],
+      "blocks.0.latent_norm_1.weight": [
+        8
+      ],
+      "blocks.0.latent_ffn_1.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.0.latent_ffn_1.fc1.bias": [
+        16
+      ],
+      "blocks.0.latent_ffn_1.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.0.latent_ffn_1.fc2.bias": [
+        8
+      ],
+      "blocks.0.latent_norm_2.weight": [
+        8
+      ],
+      "blocks.0.latent_ffn_2.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.0.latent_ffn_2.fc1.bias": [
+        16
+      ],
+      "blocks.0.latent_ffn_2.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.0.latent_ffn_2.fc2.bias": [
+        8
+      ],
+      "blocks.0.up_latent_norm.weight": [
+        8
+      ],
+      "blocks.0.up.to_q.weight": [
+        8,
+        8
+      ],
+      "blocks.0.up.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.0.up.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.0.up.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.0.up.to_out.bias": [
+        8
+      ],
+      "blocks.0.up.q_norm.weight": [
+        4
+      ],
+      "blocks.0.up.k_norm.weight": [
+        4
+      ],
+      "blocks.0.point_ffn_norm.weight": [
+        8
+      ],
+      "blocks.0.point_ffn.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.0.point_ffn.fc1.bias": [
+        16
+      ],
+      "blocks.0.point_ffn.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.0.point_ffn.fc2.bias": [
+        8
+      ],
+      "blocks.0.writer.key_norm.weight": [
+        8
+      ],
+      "blocks.0.writer.to_k.weight": [
+        3,
+        8
+      ],
+      "blocks.1.point_norm.weight": [
+        8
+      ],
+      "blocks.1.down.latent_queries": [
+        4,
+        2,
+        4
+      ],
+      "blocks.1.down.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.1.down.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.1.down.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.1.down.to_out.bias": [
+        8
+      ],
+      "blocks.1.down.q_norm.weight": [
+        4
+      ],
+      "blocks.1.down.k_norm.weight": [
+        4
+      ],
+      "blocks.1.latent_norm_1.weight": [
+        8
+      ],
+      "blocks.1.latent_ffn_1.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.1.latent_ffn_1.fc1.bias": [
+        16
+      ],
+      "blocks.1.latent_ffn_1.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.1.latent_ffn_1.fc2.bias": [
+        8
+      ],
+      "blocks.1.reader.w": [
+        8
+      ],
+      "blocks.1.reader.gamma": [],
+      "blocks.1.reader.query_norm.weight": [
+        8
+      ],
+      "blocks.1.reader.to_q.weight": [
+        3,
+        8
+      ],
+      "blocks.1.reader.depth_norm.weight": [
+        8
+      ],
+      "blocks.1.latent_norm_2.weight": [
+        8
+      ],
+      "blocks.1.latent_ffn_2.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.1.latent_ffn_2.fc1.bias": [
+        16
+      ],
+      "blocks.1.latent_ffn_2.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.1.latent_ffn_2.fc2.bias": [
+        8
+      ],
+      "blocks.1.up_latent_norm.weight": [
+        8
+      ],
+      "blocks.1.up.to_q.weight": [
+        8,
+        8
+      ],
+      "blocks.1.up.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.1.up.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.1.up.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.1.up.to_out.bias": [
+        8
+      ],
+      "blocks.1.up.q_norm.weight": [
+        4
+      ],
+      "blocks.1.up.k_norm.weight": [
+        4
+      ],
+      "blocks.1.point_ffn_norm.weight": [
+        8
+      ],
+      "blocks.1.point_ffn.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.1.point_ffn.fc1.bias": [
+        16
+      ],
+      "blocks.1.point_ffn.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.1.point_ffn.fc2.bias": [
+        8
+      ]
+    },
+    "config": {
+      "family": "kcdno",
+      "architecture_version": "kcdno-core-v1",
+      "L": 2,
+      "d": 8,
+      "h": 2,
+      "M": 4,
+      "kernel_rank": 3,
+      "history_mode": "all",
+      "ffn1_hidden": 16,
+      "ffn2_hidden": 16,
+      "point_hidden": 16,
+      "latent_activation": "gelu",
+      "point_activation": "gelu",
+      "point_module": "point_ffn",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "kernel_phi": "elu_plus_one",
+      "kernel_clamp": 1e-06,
+      "kernel_denominator_eps": 1e-06,
+      "kernel_projection_bias": false,
+      "gate_parameterization": "unconstrained_scalar",
+      "attention_dropout": 0.0
+    },
+    "atol": 0,
+    "rtol": 0,
+    "dtype": "float32",
+    "device": "cpu",
+    "backend": "math",
+    "fixture": "/home/hwz/CDLNO-artifacts/msar-m1-before-n7y0eg1j/current-fixtures/kcdno_all_point_ffn.pt"
+  },
+  {
+    "name": "kcdno_all_conv_ffn",
+    "status": "passed",
+    "mode": "capture",
+    "sha256": "e511c9b2156d973e5445d2d057d5949d4843103c766a98c8726080287151a440",
+    "keys_shapes": {
+      "blocks.0.point_norm.weight": [
+        8
+      ],
+      "blocks.0.down.latent_queries": [
+        4,
+        2,
+        4
+      ],
+      "blocks.0.down.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.0.down.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.0.down.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.0.down.to_out.bias": [
+        8
+      ],
+      "blocks.0.down.q_norm.weight": [
+        4
+      ],
+      "blocks.0.down.k_norm.weight": [
+        4
+      ],
+      "blocks.0.latent_norm_1.weight": [
+        8
+      ],
+      "blocks.0.latent_ffn_1.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.0.latent_ffn_1.fc1.bias": [
+        16
+      ],
+      "blocks.0.latent_ffn_1.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.0.latent_ffn_1.fc2.bias": [
+        8
+      ],
+      "blocks.0.latent_norm_2.weight": [
+        8
+      ],
+      "blocks.0.latent_ffn_2.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.0.latent_ffn_2.fc1.bias": [
+        16
+      ],
+      "blocks.0.latent_ffn_2.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.0.latent_ffn_2.fc2.bias": [
+        8
+      ],
+      "blocks.0.up_latent_norm.weight": [
+        8
+      ],
+      "blocks.0.up.to_q.weight": [
+        8,
+        8
+      ],
+      "blocks.0.up.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.0.up.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.0.up.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.0.up.to_out.bias": [
+        8
+      ],
+      "blocks.0.up.q_norm.weight": [
+        4
+      ],
+      "blocks.0.up.k_norm.weight": [
+        4
+      ],
+      "blocks.0.point_ffn_norm.weight": [
+        8
+      ],
+      "blocks.0.point_ffn.conv.weight": [
+        8,
+        8,
+        3,
+        3
+      ],
+      "blocks.0.point_ffn.conv.bias": [
+        8
+      ],
+      "blocks.0.point_ffn.norm.weight": [
+        8
+      ],
+      "blocks.0.point_ffn.norm.bias": [
+        8
+      ],
+      "blocks.0.point_ffn.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.0.point_ffn.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.0.point_ffn.fc2.bias": [
+        8
+      ],
+      "blocks.0.writer.key_norm.weight": [
+        8
+      ],
+      "blocks.0.writer.to_k.weight": [
+        3,
+        8
+      ],
+      "blocks.1.point_norm.weight": [
+        8
+      ],
+      "blocks.1.down.latent_queries": [
+        4,
+        2,
+        4
+      ],
+      "blocks.1.down.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.1.down.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.1.down.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.1.down.to_out.bias": [
+        8
+      ],
+      "blocks.1.down.q_norm.weight": [
+        4
+      ],
+      "blocks.1.down.k_norm.weight": [
+        4
+      ],
+      "blocks.1.latent_norm_1.weight": [
+        8
+      ],
+      "blocks.1.latent_ffn_1.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.1.latent_ffn_1.fc1.bias": [
+        16
+      ],
+      "blocks.1.latent_ffn_1.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.1.latent_ffn_1.fc2.bias": [
+        8
+      ],
+      "blocks.1.reader.w": [
+        8
+      ],
+      "blocks.1.reader.gamma": [],
+      "blocks.1.reader.query_norm.weight": [
+        8
+      ],
+      "blocks.1.reader.to_q.weight": [
+        3,
+        8
+      ],
+      "blocks.1.reader.depth_norm.weight": [
+        8
+      ],
+      "blocks.1.latent_norm_2.weight": [
+        8
+      ],
+      "blocks.1.latent_ffn_2.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.1.latent_ffn_2.fc1.bias": [
+        16
+      ],
+      "blocks.1.latent_ffn_2.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.1.latent_ffn_2.fc2.bias": [
+        8
+      ],
+      "blocks.1.up_latent_norm.weight": [
+        8
+      ],
+      "blocks.1.up.to_q.weight": [
+        8,
+        8
+      ],
+      "blocks.1.up.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.1.up.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.1.up.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.1.up.to_out.bias": [
+        8
+      ],
+      "blocks.1.up.q_norm.weight": [
+        4
+      ],
+      "blocks.1.up.k_norm.weight": [
+        4
+      ],
+      "blocks.1.point_ffn_norm.weight": [
+        8
+      ],
+      "blocks.1.point_ffn.conv.weight": [
+        8,
+        8,
+        3,
+        3
+      ],
+      "blocks.1.point_ffn.conv.bias": [
+        8
+      ],
+      "blocks.1.point_ffn.norm.weight": [
+        8
+      ],
+      "blocks.1.point_ffn.norm.bias": [
+        8
+      ],
+      "blocks.1.point_ffn.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.1.point_ffn.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.1.point_ffn.fc2.bias": [
+        8
+      ]
+    },
+    "config": {
+      "family": "kcdno",
+      "architecture_version": "kcdno-core-v1",
+      "L": 2,
+      "d": 8,
+      "h": 2,
+      "M": 4,
+      "kernel_rank": 3,
+      "history_mode": "all",
+      "ffn1_hidden": 16,
+      "ffn2_hidden": 16,
+      "point_hidden": 16,
+      "latent_activation": "gelu",
+      "point_activation": "gelu",
+      "point_module": "conv_ffn",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "kernel_phi": "elu_plus_one",
+      "kernel_clamp": 1e-06,
+      "kernel_denominator_eps": 1e-06,
+      "kernel_projection_bias": false,
+      "gate_parameterization": "unconstrained_scalar",
+      "attention_dropout": 0.0
+    },
+    "atol": 0,
+    "rtol": 0,
+    "dtype": "float32",
+    "device": "cpu",
+    "backend": "math",
+    "fixture": "/home/hwz/CDLNO-artifacts/msar-m1-before-n7y0eg1j/current-fixtures/kcdno_all_conv_ffn.pt"
+  },
+  {
+    "name": "kcdno_off_point_ffn",
+    "status": "passed",
+    "mode": "capture",
+    "sha256": "939b796412857606ecfe90c3ffa6993db7819ef3179fa026ded8262750f49317",
+    "keys_shapes": {
+      "blocks.0.point_norm.weight": [
+        8
+      ],
+      "blocks.0.down.latent_queries": [
+        4,
+        2,
+        4
+      ],
+      "blocks.0.down.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.0.down.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.0.down.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.0.down.to_out.bias": [
+        8
+      ],
+      "blocks.0.down.q_norm.weight": [
+        4
+      ],
+      "blocks.0.down.k_norm.weight": [
+        4
+      ],
+      "blocks.0.latent_norm_1.weight": [
+        8
+      ],
+      "blocks.0.latent_ffn_1.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.0.latent_ffn_1.fc1.bias": [
+        16
+      ],
+      "blocks.0.latent_ffn_1.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.0.latent_ffn_1.fc2.bias": [
+        8
+      ],
+      "blocks.0.latent_norm_2.weight": [
+        8
+      ],
+      "blocks.0.latent_ffn_2.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.0.latent_ffn_2.fc1.bias": [
+        16
+      ],
+      "blocks.0.latent_ffn_2.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.0.latent_ffn_2.fc2.bias": [
+        8
+      ],
+      "blocks.0.up_latent_norm.weight": [
+        8
+      ],
+      "blocks.0.up.to_q.weight": [
+        8,
+        8
+      ],
+      "blocks.0.up.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.0.up.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.0.up.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.0.up.to_out.bias": [
+        8
+      ],
+      "blocks.0.up.q_norm.weight": [
+        4
+      ],
+      "blocks.0.up.k_norm.weight": [
+        4
+      ],
+      "blocks.0.point_ffn_norm.weight": [
+        8
+      ],
+      "blocks.0.point_ffn.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.0.point_ffn.fc1.bias": [
+        16
+      ],
+      "blocks.0.point_ffn.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.0.point_ffn.fc2.bias": [
+        8
+      ],
+      "blocks.1.point_norm.weight": [
+        8
+      ],
+      "blocks.1.down.latent_queries": [
+        4,
+        2,
+        4
+      ],
+      "blocks.1.down.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.1.down.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.1.down.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.1.down.to_out.bias": [
+        8
+      ],
+      "blocks.1.down.q_norm.weight": [
+        4
+      ],
+      "blocks.1.down.k_norm.weight": [
+        4
+      ],
+      "blocks.1.latent_norm_1.weight": [
+        8
+      ],
+      "blocks.1.latent_ffn_1.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.1.latent_ffn_1.fc1.bias": [
+        16
+      ],
+      "blocks.1.latent_ffn_1.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.1.latent_ffn_1.fc2.bias": [
+        8
+      ],
+      "blocks.1.latent_norm_2.weight": [
+        8
+      ],
+      "blocks.1.latent_ffn_2.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.1.latent_ffn_2.fc1.bias": [
+        16
+      ],
+      "blocks.1.latent_ffn_2.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.1.latent_ffn_2.fc2.bias": [
+        8
+      ],
+      "blocks.1.up_latent_norm.weight": [
+        8
+      ],
+      "blocks.1.up.to_q.weight": [
+        8,
+        8
+      ],
+      "blocks.1.up.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.1.up.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.1.up.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.1.up.to_out.bias": [
+        8
+      ],
+      "blocks.1.up.q_norm.weight": [
+        4
+      ],
+      "blocks.1.up.k_norm.weight": [
+        4
+      ],
+      "blocks.1.point_ffn_norm.weight": [
+        8
+      ],
+      "blocks.1.point_ffn.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.1.point_ffn.fc1.bias": [
+        16
+      ],
+      "blocks.1.point_ffn.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.1.point_ffn.fc2.bias": [
+        8
+      ]
+    },
+    "config": {
+      "family": "kcdno",
+      "architecture_version": "kcdno-core-v1",
+      "L": 2,
+      "d": 8,
+      "h": 2,
+      "M": 4,
+      "kernel_rank": 3,
+      "history_mode": "off",
+      "ffn1_hidden": 16,
+      "ffn2_hidden": 16,
+      "point_hidden": 16,
+      "latent_activation": "gelu",
+      "point_activation": "gelu",
+      "point_module": "point_ffn",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "kernel_phi": "elu_plus_one",
+      "kernel_clamp": 1e-06,
+      "kernel_denominator_eps": 1e-06,
+      "kernel_projection_bias": false,
+      "gate_parameterization": "unconstrained_scalar",
+      "attention_dropout": 0.0
+    },
+    "atol": 0,
+    "rtol": 0,
+    "dtype": "float32",
+    "device": "cpu",
+    "backend": "math",
+    "fixture": "/home/hwz/CDLNO-artifacts/msar-m1-before-n7y0eg1j/current-fixtures/kcdno_off_point_ffn.pt"
+  },
+  {
+    "name": "kcdno_off_conv_ffn",
+    "status": "passed",
+    "mode": "capture",
+    "sha256": "8ef50a220fdf91810f9d7f49264916b9fe54d1c702dac1da273fe76c5a4062c5",
+    "keys_shapes": {
+      "blocks.0.point_norm.weight": [
+        8
+      ],
+      "blocks.0.down.latent_queries": [
+        4,
+        2,
+        4
+      ],
+      "blocks.0.down.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.0.down.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.0.down.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.0.down.to_out.bias": [
+        8
+      ],
+      "blocks.0.down.q_norm.weight": [
+        4
+      ],
+      "blocks.0.down.k_norm.weight": [
+        4
+      ],
+      "blocks.0.latent_norm_1.weight": [
+        8
+      ],
+      "blocks.0.latent_ffn_1.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.0.latent_ffn_1.fc1.bias": [
+        16
+      ],
+      "blocks.0.latent_ffn_1.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.0.latent_ffn_1.fc2.bias": [
+        8
+      ],
+      "blocks.0.latent_norm_2.weight": [
+        8
+      ],
+      "blocks.0.latent_ffn_2.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.0.latent_ffn_2.fc1.bias": [
+        16
+      ],
+      "blocks.0.latent_ffn_2.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.0.latent_ffn_2.fc2.bias": [
+        8
+      ],
+      "blocks.0.up_latent_norm.weight": [
+        8
+      ],
+      "blocks.0.up.to_q.weight": [
+        8,
+        8
+      ],
+      "blocks.0.up.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.0.up.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.0.up.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.0.up.to_out.bias": [
+        8
+      ],
+      "blocks.0.up.q_norm.weight": [
+        4
+      ],
+      "blocks.0.up.k_norm.weight": [
+        4
+      ],
+      "blocks.0.point_ffn_norm.weight": [
+        8
+      ],
+      "blocks.0.point_ffn.conv.weight": [
+        8,
+        8,
+        3,
+        3
+      ],
+      "blocks.0.point_ffn.conv.bias": [
+        8
+      ],
+      "blocks.0.point_ffn.norm.weight": [
+        8
+      ],
+      "blocks.0.point_ffn.norm.bias": [
+        8
+      ],
+      "blocks.0.point_ffn.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.0.point_ffn.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.0.point_ffn.fc2.bias": [
+        8
+      ],
+      "blocks.1.point_norm.weight": [
+        8
+      ],
+      "blocks.1.down.latent_queries": [
+        4,
+        2,
+        4
+      ],
+      "blocks.1.down.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.1.down.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.1.down.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.1.down.to_out.bias": [
+        8
+      ],
+      "blocks.1.down.q_norm.weight": [
+        4
+      ],
+      "blocks.1.down.k_norm.weight": [
+        4
+      ],
+      "blocks.1.latent_norm_1.weight": [
+        8
+      ],
+      "blocks.1.latent_ffn_1.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.1.latent_ffn_1.fc1.bias": [
+        16
+      ],
+      "blocks.1.latent_ffn_1.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.1.latent_ffn_1.fc2.bias": [
+        8
+      ],
+      "blocks.1.latent_norm_2.weight": [
+        8
+      ],
+      "blocks.1.latent_ffn_2.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.1.latent_ffn_2.fc1.bias": [
+        16
+      ],
+      "blocks.1.latent_ffn_2.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.1.latent_ffn_2.fc2.bias": [
+        8
+      ],
+      "blocks.1.up_latent_norm.weight": [
+        8
+      ],
+      "blocks.1.up.to_q.weight": [
+        8,
+        8
+      ],
+      "blocks.1.up.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.1.up.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.1.up.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.1.up.to_out.bias": [
+        8
+      ],
+      "blocks.1.up.q_norm.weight": [
+        4
+      ],
+      "blocks.1.up.k_norm.weight": [
+        4
+      ],
+      "blocks.1.point_ffn_norm.weight": [
+        8
+      ],
+      "blocks.1.point_ffn.conv.weight": [
+        8,
+        8,
+        3,
+        3
+      ],
+      "blocks.1.point_ffn.conv.bias": [
+        8
+      ],
+      "blocks.1.point_ffn.norm.weight": [
+        8
+      ],
+      "blocks.1.point_ffn.norm.bias": [
+        8
+      ],
+      "blocks.1.point_ffn.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.1.point_ffn.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.1.point_ffn.fc2.bias": [
+        8
+      ]
+    },
+    "config": {
+      "family": "kcdno",
+      "architecture_version": "kcdno-core-v1",
+      "L": 2,
+      "d": 8,
+      "h": 2,
+      "M": 4,
+      "kernel_rank": 3,
+      "history_mode": "off",
+      "ffn1_hidden": 16,
+      "ffn2_hidden": 16,
+      "point_hidden": 16,
+      "latent_activation": "gelu",
+      "point_activation": "gelu",
+      "point_module": "conv_ffn",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "kernel_phi": "elu_plus_one",
+      "kernel_clamp": 1e-06,
+      "kernel_denominator_eps": 1e-06,
+      "kernel_projection_bias": false,
+      "gate_parameterization": "unconstrained_scalar",
+      "attention_dropout": 0.0
+    },
+    "atol": 0,
+    "rtol": 0,
+    "dtype": "float32",
+    "device": "cpu",
+    "backend": "math",
+    "fixture": "/home/hwz/CDLNO-artifacts/msar-m1-before-n7y0eg1j/current-fixtures/kcdno_off_conv_ffn.pt"
+  },
+  {
+    "name": "lrsa_matched_point_ffn",
+    "status": "passed",
+    "mode": "capture",
+    "sha256": "62c5972349287d5d66b16aa93d3183cfe7df3f6898f2058ce51dc30fdfcd64a1",
+    "keys_shapes": {
+      "blocks.0.point_norm.weight": [
+        8
+      ],
+      "blocks.0.down.latent_queries": [
+        4,
+        2,
+        4
+      ],
+      "blocks.0.down.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.0.down.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.0.down.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.0.down.to_out.bias": [
+        8
+      ],
+      "blocks.0.down.q_norm.weight": [
+        4
+      ],
+      "blocks.0.down.k_norm.weight": [
+        4
+      ],
+      "blocks.0.latent_norm_1.weight": [
+        8
+      ],
+      "blocks.0.latent_ffn_1.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.0.latent_ffn_1.fc1.bias": [
+        16
+      ],
+      "blocks.0.latent_ffn_1.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.0.latent_ffn_1.fc2.bias": [
+        8
+      ],
+      "blocks.0.latent_norm_sa.weight": [
+        8
+      ],
+      "blocks.0.latent_sa.attn.to_q.weight": [
+        8,
+        8
+      ],
+      "blocks.0.latent_sa.attn.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.0.latent_sa.attn.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.0.latent_sa.attn.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.0.latent_sa.attn.to_out.bias": [
+        8
+      ],
+      "blocks.0.latent_sa.attn.q_norm.weight": [
+        4
+      ],
+      "blocks.0.latent_sa.attn.k_norm.weight": [
+        4
+      ],
+      "blocks.0.latent_norm_2.weight": [
+        8
+      ],
+      "blocks.0.latent_ffn_2.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.0.latent_ffn_2.fc1.bias": [
+        16
+      ],
+      "blocks.0.latent_ffn_2.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.0.latent_ffn_2.fc2.bias": [
+        8
+      ],
+      "blocks.0.up_latent_norm.weight": [
+        8
+      ],
+      "blocks.0.up.to_q.weight": [
+        8,
+        8
+      ],
+      "blocks.0.up.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.0.up.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.0.up.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.0.up.to_out.bias": [
+        8
+      ],
+      "blocks.0.up.q_norm.weight": [
+        4
+      ],
+      "blocks.0.up.k_norm.weight": [
+        4
+      ],
+      "blocks.0.point_ffn_norm.weight": [
+        8
+      ],
+      "blocks.0.point_ffn.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.0.point_ffn.fc1.bias": [
+        16
+      ],
+      "blocks.0.point_ffn.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.0.point_ffn.fc2.bias": [
+        8
+      ],
+      "blocks.1.point_norm.weight": [
+        8
+      ],
+      "blocks.1.down.latent_queries": [
+        4,
+        2,
+        4
+      ],
+      "blocks.1.down.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.1.down.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.1.down.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.1.down.to_out.bias": [
+        8
+      ],
+      "blocks.1.down.q_norm.weight": [
+        4
+      ],
+      "blocks.1.down.k_norm.weight": [
+        4
+      ],
+      "blocks.1.latent_norm_1.weight": [
+        8
+      ],
+      "blocks.1.latent_ffn_1.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.1.latent_ffn_1.fc1.bias": [
+        16
+      ],
+      "blocks.1.latent_ffn_1.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.1.latent_ffn_1.fc2.bias": [
+        8
+      ],
+      "blocks.1.latent_norm_sa.weight": [
+        8
+      ],
+      "blocks.1.latent_sa.attn.to_q.weight": [
+        8,
+        8
+      ],
+      "blocks.1.latent_sa.attn.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.1.latent_sa.attn.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.1.latent_sa.attn.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.1.latent_sa.attn.to_out.bias": [
+        8
+      ],
+      "blocks.1.latent_sa.attn.q_norm.weight": [
+        4
+      ],
+      "blocks.1.latent_sa.attn.k_norm.weight": [
+        4
+      ],
+      "blocks.1.latent_norm_2.weight": [
+        8
+      ],
+      "blocks.1.latent_ffn_2.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.1.latent_ffn_2.fc1.bias": [
+        16
+      ],
+      "blocks.1.latent_ffn_2.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.1.latent_ffn_2.fc2.bias": [
+        8
+      ],
+      "blocks.1.up_latent_norm.weight": [
+        8
+      ],
+      "blocks.1.up.to_q.weight": [
+        8,
+        8
+      ],
+      "blocks.1.up.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.1.up.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.1.up.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.1.up.to_out.bias": [
+        8
+      ],
+      "blocks.1.up.q_norm.weight": [
+        4
+      ],
+      "blocks.1.up.k_norm.weight": [
+        4
+      ],
+      "blocks.1.point_ffn_norm.weight": [
+        8
+      ],
+      "blocks.1.point_ffn.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.1.point_ffn.fc1.bias": [
+        16
+      ],
+      "blocks.1.point_ffn.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.1.point_ffn.fc2.bias": [
+        8
+      ]
+    },
+    "config": {
+      "family": "lrsa_matched",
+      "architecture_version": "lrsa-matched-full-v1",
+      "L": 2,
+      "d": 8,
+      "h": 2,
+      "M": 4,
+      "ffn1_hidden": 16,
+      "ffn2_hidden": 16,
+      "point_hidden": 16,
+      "latent_activation": "gelu",
+      "point_activation": "gelu",
+      "point_module": "point_ffn",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "attention_dropout": 0.0,
+      "latent_processor": "full"
+    },
+    "atol": 0,
+    "rtol": 0,
+    "dtype": "float32",
+    "device": "cpu",
+    "backend": "math",
+    "fixture": "/home/hwz/CDLNO-artifacts/msar-m1-before-n7y0eg1j/current-fixtures/lrsa_matched_point_ffn.pt"
+  },
+  {
+    "name": "lrsa_matched_conv_ffn",
+    "status": "passed",
+    "mode": "capture",
+    "sha256": "1206013fc6020bc2bc7ddae1149c17c6fd4caf3009174a7aaf04b0ffecb5a85e",
+    "keys_shapes": {
+      "blocks.0.point_norm.weight": [
+        8
+      ],
+      "blocks.0.down.latent_queries": [
+        4,
+        2,
+        4
+      ],
+      "blocks.0.down.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.0.down.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.0.down.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.0.down.to_out.bias": [
+        8
+      ],
+      "blocks.0.down.q_norm.weight": [
+        4
+      ],
+      "blocks.0.down.k_norm.weight": [
+        4
+      ],
+      "blocks.0.latent_norm_1.weight": [
+        8
+      ],
+      "blocks.0.latent_ffn_1.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.0.latent_ffn_1.fc1.bias": [
+        16
+      ],
+      "blocks.0.latent_ffn_1.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.0.latent_ffn_1.fc2.bias": [
+        8
+      ],
+      "blocks.0.latent_norm_sa.weight": [
+        8
+      ],
+      "blocks.0.latent_sa.attn.to_q.weight": [
+        8,
+        8
+      ],
+      "blocks.0.latent_sa.attn.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.0.latent_sa.attn.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.0.latent_sa.attn.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.0.latent_sa.attn.to_out.bias": [
+        8
+      ],
+      "blocks.0.latent_sa.attn.q_norm.weight": [
+        4
+      ],
+      "blocks.0.latent_sa.attn.k_norm.weight": [
+        4
+      ],
+      "blocks.0.latent_norm_2.weight": [
+        8
+      ],
+      "blocks.0.latent_ffn_2.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.0.latent_ffn_2.fc1.bias": [
+        16
+      ],
+      "blocks.0.latent_ffn_2.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.0.latent_ffn_2.fc2.bias": [
+        8
+      ],
+      "blocks.0.up_latent_norm.weight": [
+        8
+      ],
+      "blocks.0.up.to_q.weight": [
+        8,
+        8
+      ],
+      "blocks.0.up.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.0.up.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.0.up.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.0.up.to_out.bias": [
+        8
+      ],
+      "blocks.0.up.q_norm.weight": [
+        4
+      ],
+      "blocks.0.up.k_norm.weight": [
+        4
+      ],
+      "blocks.0.point_ffn_norm.weight": [
+        8
+      ],
+      "blocks.0.point_ffn.conv.weight": [
+        8,
+        8,
+        3,
+        3
+      ],
+      "blocks.0.point_ffn.conv.bias": [
+        8
+      ],
+      "blocks.0.point_ffn.norm.weight": [
+        8
+      ],
+      "blocks.0.point_ffn.norm.bias": [
+        8
+      ],
+      "blocks.0.point_ffn.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.0.point_ffn.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.0.point_ffn.fc2.bias": [
+        8
+      ],
+      "blocks.1.point_norm.weight": [
+        8
+      ],
+      "blocks.1.down.latent_queries": [
+        4,
+        2,
+        4
+      ],
+      "blocks.1.down.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.1.down.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.1.down.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.1.down.to_out.bias": [
+        8
+      ],
+      "blocks.1.down.q_norm.weight": [
+        4
+      ],
+      "blocks.1.down.k_norm.weight": [
+        4
+      ],
+      "blocks.1.latent_norm_1.weight": [
+        8
+      ],
+      "blocks.1.latent_ffn_1.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.1.latent_ffn_1.fc1.bias": [
+        16
+      ],
+      "blocks.1.latent_ffn_1.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.1.latent_ffn_1.fc2.bias": [
+        8
+      ],
+      "blocks.1.latent_norm_sa.weight": [
+        8
+      ],
+      "blocks.1.latent_sa.attn.to_q.weight": [
+        8,
+        8
+      ],
+      "blocks.1.latent_sa.attn.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.1.latent_sa.attn.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.1.latent_sa.attn.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.1.latent_sa.attn.to_out.bias": [
+        8
+      ],
+      "blocks.1.latent_sa.attn.q_norm.weight": [
+        4
+      ],
+      "blocks.1.latent_sa.attn.k_norm.weight": [
+        4
+      ],
+      "blocks.1.latent_norm_2.weight": [
+        8
+      ],
+      "blocks.1.latent_ffn_2.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.1.latent_ffn_2.fc1.bias": [
+        16
+      ],
+      "blocks.1.latent_ffn_2.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.1.latent_ffn_2.fc2.bias": [
+        8
+      ],
+      "blocks.1.up_latent_norm.weight": [
+        8
+      ],
+      "blocks.1.up.to_q.weight": [
+        8,
+        8
+      ],
+      "blocks.1.up.to_k.weight": [
+        8,
+        8
+      ],
+      "blocks.1.up.to_v.weight": [
+        8,
+        8
+      ],
+      "blocks.1.up.to_out.weight": [
+        8,
+        8
+      ],
+      "blocks.1.up.to_out.bias": [
+        8
+      ],
+      "blocks.1.up.q_norm.weight": [
+        4
+      ],
+      "blocks.1.up.k_norm.weight": [
+        4
+      ],
+      "blocks.1.point_ffn_norm.weight": [
+        8
+      ],
+      "blocks.1.point_ffn.conv.weight": [
+        8,
+        8,
+        3,
+        3
+      ],
+      "blocks.1.point_ffn.conv.bias": [
+        8
+      ],
+      "blocks.1.point_ffn.norm.weight": [
+        8
+      ],
+      "blocks.1.point_ffn.norm.bias": [
+        8
+      ],
+      "blocks.1.point_ffn.fc1.weight": [
+        16,
+        8
+      ],
+      "blocks.1.point_ffn.fc2.weight": [
+        8,
+        16
+      ],
+      "blocks.1.point_ffn.fc2.bias": [
+        8
+      ]
+    },
+    "config": {
+      "family": "lrsa_matched",
+      "architecture_version": "lrsa-matched-full-v1",
+      "L": 2,
+      "d": 8,
+      "h": 2,
+      "M": 4,
+      "ffn1_hidden": 16,
+      "ffn2_hidden": 16,
+      "point_hidden": 16,
+      "latent_activation": "gelu",
+      "point_activation": "gelu",
+      "point_module": "conv_ffn",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "attention_dropout": 0.0,
+      "latent_processor": "full"
+    },
+    "atol": 0,
+    "rtol": 0,
+    "dtype": "float32",
+    "device": "cpu",
+    "backend": "math",
+    "fixture": "/home/hwz/CDLNO-artifacts/msar-m1-before-n7y0eg1j/current-fixtures/lrsa_matched_conv_ffn.pt"
+  }
+]

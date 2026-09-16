@@ -12,6 +12,15 @@ from pathlib import Path
 import numpy as np
 
 
+# 7.16 inches = 181.9 mm, suitable for a two-column manuscript figure.
+# STIX is bundled with Matplotlib, so no system Times font or TeX is required.
+PUBLICATION_STYLE = {'font.family': 'STIXGeneral', 'mathtext.fontset': 'stix',
+    'font.size': 8, 'axes.titlesize': 9, 'axes.labelsize': 8,
+    'xtick.labelsize': 7, 'ytick.labelsize': 7, 'legend.fontsize': 7,
+    'axes.linewidth': .6, 'lines.linewidth': 1., 'pdf.fonttype': 42,
+    'ps.fonttype': 42, 'savefig.facecolor': 'white', 'figure.facecolor': 'white'}
+
+
 def _array(value):
     # Duck-type torch tensors so importing visualization does not import torch.
     if hasattr(value, 'detach'):
@@ -80,7 +89,8 @@ def fixed_scales(path, truth, prediction, channel_names):
 
 def render_fields(directory, *, coordinates, truth, prediction, channel_names,
                   scales, task, case_id, completed_epoch, grid_shape=None,
-                  display_mask=None, units=None, view=(20., -60.), metadata=None):
+                  display_mask=None, units=None, view=(20., -60.), metadata=None,
+                  model_name='CDLNO', prediction_coordinates=None, coordinate_labels=('$x$', '$y$')):
     """Write scalar-channel GT/pred/absolute-error panels + original arrays.
 
     Structured panels preserve explicit [H,W] point order and physical xy.
@@ -102,6 +112,8 @@ def render_fields(directory, *, coordinates, truth, prediction, channel_names,
     units = [''] * gt.shape[1] if units is None else list(units)
     if len(units) != gt.shape[1]:
         raise ValueError('units must match channels')
+    if len(coordinate_labels) != 2:
+        raise ValueError('two coordinate labels required for the displayed plane')
     mask = np.ones(xyz.shape[0], dtype=bool) if display_mask is None else np.array(display_mask, copy=True)
     if mask.shape != (xyz.shape[0],) or mask.dtype != np.bool_ or not mask.any():
         raise ValueError('display_mask must be nonempty boolean [N]')
@@ -110,6 +122,9 @@ def render_fields(directory, *, coordinates, truth, prediction, channel_names,
                 or np.prod(grid_shape) != xyz.shape[0] or xyz.shape[1] != 2 or not mask.all()):
             raise ValueError('structured field requires explicit H,W with N=H*W and unmasked xy')
     error = np.abs(pred.astype(np.float64) - gt.astype(np.float64))
+    pred_xyz = xyz if prediction_coordinates is None else _array(prediction_coordinates)
+    if pred_xyz.shape != xyz.shape:
+        raise ValueError('prediction coordinates must preserve point correspondence')
     metrics = []
     for c, (name, scale) in enumerate(zip(channel_names, scales)):
         denominator = np.linalg.norm(gt[:, c].astype(np.float64))
@@ -119,53 +134,123 @@ def render_fields(directory, *, coordinates, truth, prediction, channel_names,
             maximum_absolute_error=float(error[:, c].max()),
             prediction_outside_color_fraction=float(np.mean((pred[:, c] < scale.minimum) | (pred[:, c] > scale.maximum))),
             error_above_color_fraction=float(np.mean(error[:, c] > scale.error_maximum)),
+            displayed_prediction_outside_color_fraction=float(np.mean((pred[mask, c] < scale.minimum) | (pred[mask, c] > scale.maximum))),
+            displayed_error_above_color_fraction=float(np.mean(error[mask, c] > scale.error_maximum)),
+            displayed_mse=float(np.mean(error[mask, c]**2)),
+            displayed_relative_l2=(None if np.linalg.norm(gt[mask, c]) == 0 else
+                float(np.linalg.norm(error[mask, c])/np.linalg.norm(gt[mask, c]))),
             color_scale=scale.to_dict()))
     record = dict(version=1, task=task, case_id=case_id, completed_epoch=completed_epoch,
         shape=list(gt.shape), grid_shape=None if grid_shape is None else list(grid_shape),
         coordinates_dimension=xyz.shape[1], displayed_points=int(mask.sum()),
         scalar_error='abs(prediction-truth)', channel_metrics=metrics, view=list(view),
-        supplied_metadata=metadata or {})
+        supplied_metadata=metadata or {}, model_name=model_name,
+        typography=PUBLICATION_STYLE, figure_width_inches=7.16, png_dpi=600,
+        prediction_geometry='separate' if prediction_coordinates is not None else 'shared',
+        error_geometry='ground_truth')
+    record['coordinate_labels'] = list(coordinate_labels)
     # Fail on invalid metadata before creating output files.
     encoded = json.dumps(record, indent=2, allow_nan=False) + '\n'
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=False)
     from matplotlib.figure import Figure
     from matplotlib.backends.backend_agg import FigureCanvasAgg
-    # Object API: no global backend/rcParams/pyplot figure registry mutation.
-    figure = Figure(figsize=(12, 3.5 * gt.shape[1]), layout='constrained')
-    FigureCanvasAgg(figure)
-    try:
-        for c, name in enumerate(channel_names):
-            scale = scales[c]
-            for col, (label, values) in enumerate((('Ground truth', gt[:, c]), ('CDLNO prediction', pred[:, c]), ('Absolute error', error[:, c]))):
-                ax = figure.add_subplot(gt.shape[1], 3, c*3+col+1, projection='3d' if xyz.shape[1] == 3 else None)
-                lo, hi = (0., scale.error_maximum) if col == 2 else (scale.minimum, scale.maximum)
-                color = 'magma' if col == 2 else 'viridis'
-                if grid_shape is not None:
-                    artist = ax.pcolormesh(xyz[:, 0].reshape(grid_shape), xyz[:, 1].reshape(grid_shape),
-                        values.reshape(grid_shape), shading='nearest', cmap=color, vmin=lo, vmax=hi, rasterized=True)
-                    ax.set_aspect('equal')
-                elif xyz.shape[1] == 2:
-                    artist = ax.scatter(xyz[mask, 0], xyz[mask, 1], c=values[mask], s=6,
-                        cmap=color, vmin=lo, vmax=hi, rasterized=True)
-                    ax.set_aspect('equal')
-                else:
-                    artist = ax.scatter(xyz[mask, 0], xyz[mask, 1], xyz[mask, 2], c=values[mask], s=3,
-                        cmap=color, vmin=lo, vmax=hi, depthshade=False, rasterized=True)
-                    ax.view_init(elev=view[0], azim=view[1])
-                    ax.set_box_aspect(np.maximum(np.ptp(xyz[mask], axis=0), 1e-12))
-                title = f'{name}: {label}'
-                if col == 2:
-                    relative = metrics[c]['relative_l2']
-                    title += '\nrelative L2 = ' + ('undefined (zero truth)' if relative is None else f'{relative:.3g}')
-                ax.set_title(title)
-                figure.colorbar(artist, ax=ax, label=units[c], shrink=.8)
-        figure.suptitle(f'{task} | {case_id} | completed epoch {completed_epoch}')
-        figure.savefig(directory / 'fields.png', dpi=300, bbox_inches='tight', pad_inches=.15)
-        figure.savefig(directory / 'fields.pdf', dpi=300, bbox_inches='tight', pad_inches=.15)
-        np.savez_compressed(directory / 'fields.npz', coordinates=xyz, truth=gt, prediction=pred,
-                            absolute_error=error, display_mask=mask, channel_names=np.array(channel_names))
-        (directory / 'metadata.json').write_text(encoded, encoding='utf-8')
-    finally:
-        figure.clear()
+    import matplotlib as mpl
+    # rc_context restores all font/export settings even if rendering fails.
+    with mpl.rc_context(PUBLICATION_STYLE):
+        figure = Figure(figsize=(7.16, 2.25 * gt.shape[1]), layout='constrained')
+        FigureCanvasAgg(figure)
+        try:
+            _draw_fields(figure, xyz, pred_xyz, gt, pred, error, mask, channel_names,
+                         scales, units, grid_shape, view, model_name, coordinate_labels)
+            figure.savefig(directory / 'fields.png', dpi=600, bbox_inches='tight', pad_inches=.03)
+            figure.savefig(directory / 'fields.pdf', dpi=600, bbox_inches='tight', pad_inches=.03)
+        finally:
+            figure.clear()
+    np.savez_compressed(directory / 'fields.npz', coordinates=xyz, prediction_coordinates=pred_xyz,
+                        truth=gt, prediction=pred, absolute_error=error, signed_error=pred-gt,
+                        display_mask=mask, channel_names=np.array(channel_names))
+    (directory / 'metadata.json').write_text(encoded, encoding='utf-8')
+    caption = (f'{model_name} predictions for {task}, case {case_id}, after {completed_epoch} training epochs. '
+               'Each row shows (left) reference, (middle) prediction, and (right) pointwise absolute error. '
+               'Reference and prediction share a color scale; error uses its own scale. '
+               'Color limits are fixed across the recorded epochs. '
+               'Field values and any saturated colors are documented in the accompanying arrays and metadata.')
+    if prediction_coordinates is not None:
+        caption += ' Reference and prediction use their respective deformed coordinates; errors use reference coordinates with the original node correspondence.'
+    if not mask.all():
+        caption += ' Only the stated geometric mask is displayed; it is not a change to model inputs.'
+    details = (metadata or {}).get('caption_note', '')
+    if (metadata or {}).get('seed') is not None:
+        caption += f" Training seed: {metadata['seed']}."
+    if details:
+        caption += ' ' + details
+    (directory / 'caption.txt').write_text(caption + '\n', encoding='utf-8')
+    # Escape text for a copyable LaTeX caption without requiring a TeX runtime.
+    escapes = {'\\': r'\textbackslash{}', '&': r'\&', '%': r'\%', '$': r'\$', '#': r'\#',
+               '_': r'\_', '{': r'\{', '}': r'\}'}
+    latex = ''.join(escapes.get(char, char) for char in caption)
+    (directory / 'caption.tex').write_text('\\caption{' + latex + '}\n', encoding='utf-8')
     return record
+
+
+def _draw_fields(figure, xyz, pred_xyz, gt, pred, error, mask, channel_names,
+                 scales, units, grid_shape, view, model_name, coordinate_labels):
+    for c, name in enumerate(channel_names):
+        scale = scales[c]
+        for col, (label, values) in enumerate((('Reference', gt[:, c]), (model_name, pred[:, c]), ('Absolute error', error[:, c]))):
+            coords = pred_xyz if col == 1 else xyz
+            ax = figure.add_subplot(gt.shape[1], 3, c*3+col+1, projection='3d' if xyz.shape[1] == 3 else None)
+            lo, hi = (0., scale.error_maximum) if col == 2 else (scale.minimum, scale.maximum)
+            color = 'OrRd' if col == 2 else ('RdBu_r' if lo < 0 < hi else 'viridis')
+            if grid_shape is not None:
+                artist = ax.pcolormesh(coords[:, 0].reshape(grid_shape), coords[:, 1].reshape(grid_shape),
+                    values.reshape(grid_shape), shading='gouraud', cmap=color, vmin=lo, vmax=hi, rasterized=True)
+                ax.set_aspect('equal')
+            elif xyz.shape[1] == 2:
+                artist = ax.scatter(coords[mask, 0], coords[mask, 1], c=values[mask], s=2,
+                    linewidths=0, cmap=color, vmin=lo, vmax=hi, rasterized=True)
+                ax.set_aspect('equal')
+            else:
+                artist = ax.scatter(coords[mask, 0], coords[mask, 1], coords[mask, 2], c=values[mask], s=1.2,
+                    linewidths=0, cmap=color, vmin=lo, vmax=hi, depthshade=False, rasterized=True)
+                ax.view_init(elev=view[0], azim=view[1])
+                ax.set_proj_type('ortho')
+                ax.set_box_aspect(np.maximum(np.ptp(xyz[mask], axis=0), 1e-12))
+                ax.set_axis_off()
+            if xyz.shape[1] == 2:
+                joint = np.concatenate((xyz[mask], pred_xyz[mask]))
+                ax.set_xlim(*_range(joint[:, 0].min(), joint[:, 0].max()))
+                ax.set_ylim(*_range(joint[:, 1].min(), joint[:, 1].max()))
+                ax.set_xlabel(coordinate_labels[0]); ax.set_ylabel(coordinate_labels[1])
+                ax.tick_params(length=2, pad=2)
+            ax.set_title(f'({chr(97+c*3+col)}) {label}\n{name}', pad=4)
+            figure.colorbar(artist, ax=ax, label=units[c], shrink=.8,
+                           pad=.025, fraction=.045, extend='max' if col == 2 else 'both')
+
+
+def render_curves(directory, x, series, *, xlabel, ylabel):
+    """Pure diagnostic curve export, with exactly the supplied numerical values."""
+    from matplotlib.figure import Figure
+    from matplotlib.backends.backend_agg import FigureCanvasAgg
+    import matplotlib as mpl
+    directory = Path(directory)
+    directory.mkdir(parents=True, exist_ok=False)
+    x = _array(x)
+    values = {name: _array(value) for name, value in series.items()}
+    if any(value.shape != x.shape for value in values.values()):
+        raise ValueError('curve x and y shapes must match')
+    with mpl.rc_context(PUBLICATION_STYLE):
+        fig = Figure(figsize=(3.5, 2.3), layout='constrained')
+        FigureCanvasAgg(fig)
+        try:
+            ax = fig.add_subplot(111)
+            for name, value in values.items():
+                ax.plot(x, value, marker='o', markersize=2, label=name)
+            ax.set_xlabel(xlabel); ax.set_ylabel(ylabel)
+            ax.legend(frameon=False); ax.grid(alpha=.2)
+            for ext in ('pdf', 'png'):
+                fig.savefig(directory / ('curve.' + ext), dpi=600, bbox_inches='tight', pad_inches=.03)
+            np.savez_compressed(directory / 'curve.npz', x=x, **values)
+        finally:
+            fig.clear()

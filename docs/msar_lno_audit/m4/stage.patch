@@ -1,0 +1,1044 @@
+--- before/PDE-Solving-StandardBenchmark/model/MSAR_LNO.py
++++ after/PDE-Solving-StandardBenchmark/model/MSAR_LNO.py
+@@ -0,0 +1,6 @@
++"""M4 factory export: Model accepts LIFTED E0[B,N,d], not raw task x/fx.
++
++Task construction/loss branches are integrated in subsequent task stages.
++The serialized class stays cdlno.msar_lno.core.MSARLNO.
++"""
++from cdlno.msar_lno.core import MSARLNO as Model
+--- before/PDE-Solving-StandardBenchmark/model_dict.py
++++ after/PDE-Solving-StandardBenchmark/model_dict.py
+@@ -2,6 +2,9 @@
+ 
+ 
+ def get_model(args):
++    if args.model == 'msar_lno':
++        from model import MSAR_LNO
++        return MSAR_LNO
+     if args.model in ('kcdno', 'lrsa_matched'):
+         from model import KCDNO
+         return KCDNO
+--- before/cdlno/msar_lno/checkpoint.py
++++ after/cdlno/msar_lno/checkpoint.py
+@@ -0,0 +1,168 @@
++"""Strict M4 core checkpoint foundation, retaining each task's payload format.
++
++These snapshots contain an already-lifted-input core, NOT a task wrapper or an
++optimizer/RNG resume archive. Task stages add their own field/protocol metadata.
++Only the local industrial whole-object/list branch opts into trusted pickle;
++state_dict always uses weights_only=True. Evaluation never writes any file.
++"""
++from __future__ import annotations
++
++from dataclasses import dataclass
++import json
++from pathlib import Path
++
++import torch
++
++from .config import FAMILY, positive_int
++from .core import MSARLNO
++from .metadata import (MSARMetadata, MSARMetadataMismatch, EvaluationResolution,
++                       reserve_run_directory, resolve_evaluation, save_metadata)
++
++_CLASS = 'cdlno.msar_lno.core.MSARLNO'
++_INPUT = 'already-lifted-B-N-d-v1'
++_DTYPES = {name: getattr(torch, name) for name in ('float32', 'float64', 'float16', 'bfloat16')}
++
++
++def _filename(value):
++    if (type(value) is not str or not value or Path(value).name != value
++            or value in ('.', '..', 'architecture.json', 'core.json') or '\\' in value):
++        raise MSARMetadataMismatch('checkpoint filename must be a distinct local filename')
++    return value
++
++
++def _members(payload, fmt):
++    if fmt == 'model_list':
++        if type(payload) is not list or not payload:
++            raise MSARMetadataMismatch('expected nonempty model_list')
++        return payload
++    if type(payload) is not MSARLNO:
++        raise MSARMetadataMismatch('expected the stable MSARLNO core class')
++    return [payload]
++
++
++def _reference(meta, output_dim, dtype):
++    # Validation/reconstruction must not advance the caller's initialization RNG.
++    with torch.random.fork_rng(devices=[]), torch.device('cpu'):
++        return MSARLNO(meta.architecture, output_dim=output_dim,
++                       training_config=meta.training).to(dtype=dtype)
++
++
++def _validate_model(model, meta, output_dim, dtype):
++    if (type(model) is not MSARLNO or getattr(model, 'config', None) != meta.architecture
++            or getattr(model, 'output_dim', None) != output_dim
++            or getattr(model, 'training_config', None) != meta.training):
++        raise MSARMetadataMismatch('core class/architecture/output/training metadata mismatch')
++    values = list(model.parameters())
++    if not values or any(p.dtype != dtype for p in values):
++        raise MSARMetadataMismatch('core parameter dtype mismatch')
++    named = list(model.named_parameters(remove_duplicate=False))
++    if len(named) != len({(p.device, p.untyped_storage().data_ptr()) for _, p in named}):
++        raise MSARMetadataMismatch('unexpected shared parameter storage in MSAR core')
++    expected = _reference(meta, output_dim, dtype)
++    # Reuse the existing read-only type/module/behavior/buffer + strict-state
++    # validator; never copy its initialized parameters into the saved object.
++    from ..kcdno.loading import validate_whole_model
++    try:
++        validate_whole_model(model, expected)
++    except (ValueError, RuntimeError) as error:
++        raise MSARMetadataMismatch(str(error)) from error
++
++
++def save_core_checkpoint(directory, payload, metadata: MSARMetadata, *, filename=None) -> Path:
++    """Exclusive NEW snapshot; no periodic save policy, task Run or resume added.
++
++    PDE payload stays a bare state_dict. Car stays one whole object (caller
++    supplies model_<epochs>.pth); Air stays a list or one member object.
++    """
++    if type(metadata) is not MSARMetadata:
++        raise MSARMetadataMismatch('MSARMetadata required')
++    metadata.validate()
++    fmt = metadata.checkpoint_format
++    models = _members(payload, fmt)
++    first = models[0]
++    if type(first) is not MSARLNO:
++        raise MSARMetadataMismatch('only the real lifted-feature MSARLNO core is supported in M4')
++    output_dim, dtype = first.output_dim, next(first.parameters()).dtype
++    dtype_name = str(dtype).removeprefix('torch.')
++    if dtype_name not in _DTYPES:
++        raise MSARMetadataMismatch('unsupported saved parameter dtype')
++    for model in models:
++        _validate_model(model, metadata, output_dim, dtype)
++    if filename is None:
++        if metadata.task == 'car':
++            raise MSARMetadataMismatch('Car requires its explicit model_<epochs>.pth filename')
++        filename = 'model.pt' if fmt == 'state_dict' else (FAMILY if fmt == 'model_list' else 'model')
++    filename = _filename(filename)
++    record = dict(schema_version=1, family=FAMILY, model_class=_CLASS, input_contract=_INPUT,
++                  output_dim=output_dim, members=len(models), weight_dtype=dtype_name, filename=filename)
++    directory = reserve_run_directory(directory)
++    save_metadata(directory / 'architecture.json', metadata)
++    with (directory / filename).open('xb') as stream:
++        torch.save(first.state_dict() if fmt == 'state_dict' else payload, stream)
++    with (directory / 'core.json').open('x', encoding='utf-8') as stream:
++        json.dump(record, stream, indent=2, allow_nan=False)
++        stream.write('\n')
++    return directory / filename
++
++
++@dataclass(frozen=True)
++class LoadedCoreCheckpoint:
++    model: MSARLNO | list[MSARLNO]
++    resolution: EvaluationResolution
++
++
++def load_core_checkpoint(directory, *, task, explicit=None, expected_output_dim=None,
++                         device='cpu', trusted_local=False) -> LoadedCoreCheckpoint:
++    """Read saved architecture BEFORE construction/loading; return eval models.
++
++    No inference from legacy files lacking family. Explicit coverage changes
++    are reported in resolution, never substituted into saved training metadata.
++    trusted_local=True is required only for an already trusted industrial run;
++    it is not a general unpickling fallback and never affects old loaders.
++    """
++    directory = Path(directory)
++    resolution = resolve_evaluation(directory / 'architecture.json',
++                                    {} if explicit is None else explicit, task=task)
++    meta = resolution.saved
++    record = json.loads((directory / 'core.json').read_text(encoding='utf-8'))
++    required = {'schema_version', 'family', 'model_class', 'input_contract', 'output_dim',
++                'members', 'weight_dtype', 'filename'}
++    if (type(record) is not dict or record.keys() != required
++            or type(record['schema_version']) is not int or record['schema_version'] != 1
++            or record['family'] != FAMILY or record['model_class'] != _CLASS
++            or record['input_contract'] != _INPUT):
++        raise MSARMetadataMismatch('unsupported or incomplete core checkpoint contract')
++    positive_int('output_dim', record['output_dim'])
++    positive_int('members', record['members'])
++    if expected_output_dim is not None:
++        positive_int('expected_output_dim', expected_output_dim)
++        if expected_output_dim != record['output_dim']:
++            raise MSARMetadataMismatch('checkpoint output_dim mismatch')
++    if type(record['weight_dtype']) is not str or record['weight_dtype'] not in _DTYPES:
++        raise MSARMetadataMismatch('unsupported weight_dtype')
++    fmt = meta.checkpoint_format
++    if fmt != 'model_list' and record['members'] != 1:
++        raise MSARMetadataMismatch('single-model format requires members=1')
++    filename = _filename(record['filename'])
++    if type(trusted_local) is not bool:
++        raise ValueError('trusted_local must be bool')
++    if fmt != 'state_dict' and not trusted_local:
++        raise ValueError('whole objects/lists require an explicitly trusted local industrial checkpoint')
++    dtype = _DTYPES[record['weight_dtype']]
++    if fmt == 'state_dict':
++        model = _reference(meta, record['output_dim'], dtype)
++        weights = torch.load(directory / filename, weights_only=True, map_location='cpu')
++        if (not isinstance(weights, dict) or not all(isinstance(v, torch.Tensor) and v.dtype == dtype
++                                                    for v in weights.values())):
++            raise MSARMetadataMismatch('expected bare state_dict with the recorded weight dtype')
++        model.load_state_dict(weights, strict=True)
++        payload = model.to(device).eval()
++    else:
++        payload = torch.load(directory / filename, weights_only=False, map_location='cpu')
++        models = _members(payload, fmt)
++        if len(models) != record['members']:
++            raise MSARMetadataMismatch('whole-model list member count mismatch')
++        for model in models:
++            _validate_model(model, meta, record['output_dim'], dtype)
++            model.to(device).eval()
++    return LoadedCoreCheckpoint(payload, resolution)
+--- before/cdlno/msar_lno/entry.py
++++ after/cdlno/msar_lno/entry.py
+@@ -0,0 +1,18 @@
++"""M4 explicit parameter forwarding for the lifted-feature core only.
++
++Task lift/time/graph adapters and production train/eval loops remain separate.
++No old Namespace defaults become explicit MSAR architecture options.
++"""
++from .config import positive_int
++from .options import resolve_training
++from .registry import family_for_model_key
++
++
++def core_model_kwargs(model_key, *, task, explicit, output_dim=1):
++    """Only msar_lno receives new kwargs; other selectors receive no additions."""
++    if family_for_model_key(model_key) is None:
++        return {}
++    positive_int('output_dim', output_dim)
++    resolved = resolve_training(task, explicit)
++    return dict(config=resolved.architecture, training_config=resolved.training,
++                output_dim=output_dim)
+--- before/cdlno/msar_lno/objective.py
++++ after/cdlno/msar_lno/objective.py
+@@ -0,0 +1,88 @@
++"""Explicit, per-forward MSAR training objective; no trainer or mutable cache.
++
++Call the original task loss on prediction (including its original decode/mask)
++first, then combine it here. Task-specific rollout reductions stay in the task.
++Logging returns detached scalar tensors, with no hidden host synchronization.
++"""
++from dataclasses import dataclass
++
++import torch
++from torch import Tensor
++
++from .config import MSARArchitectureConfig, MSARTrainingConfig
++from .core import MSARAuxOutput
++
++
++@dataclass(frozen=True)
++class MSARTrainingForward:
++    prediction: Tensor
++    auxiliary: MSARAuxOutput | None
++    training: MSARTrainingConfig
++
++
++@dataclass(frozen=True)
++class MSARLoss:
++    pde: Tensor
++    coverage_raw: Tensor
++    coverage_weighted: Tensor
++    total: Tensor
++    coverage_active: bool
++
++    def log_values(self) -> dict[str, Tensor]:
++        return {name: getattr(self, name).detach() for name in
++                ('pde', 'coverage_raw', 'coverage_weighted', 'total')}
++
++
++def training_forward(model, *inputs, training_config=None, **kwargs) -> MSARTrainingForward:
++    """New-family only. Neither toggles train/eval nor mutates model config.
++
++    Explicit aux/config arguments will also be the contract for future task
++    wrappers; existing old-family forward calls must never call this adapter.
++    """
++    if type(getattr(model, 'config', None)) is not MSARArchitectureConfig:
++        raise ValueError('MSAR training adapter requires an msar_lno model')
++    if not model.training:
++        raise ValueError('training_forward requires model.train(); eval uses model(...) directly')
++    cfg = model.training_config if training_config is None else training_config
++    if type(cfg) is not MSARTrainingConfig:
++        raise ValueError('training_config must be MSARTrainingConfig')
++    cfg.validate()
++    if 'return_aux' in kwargs:
++        raise ValueError('training_forward owns the explicit return_aux request')
++    need_aux = cfg.coverage_enabled or cfg.diagnostics
++    output = model(*inputs, return_aux=need_aux, training_config=cfg, **kwargs)
++    if need_aux:
++        if not isinstance(output, MSARAuxOutput) or output.coverage_active != cfg.coverage_enabled:
++            raise ValueError('MSAR auxiliary output disagrees with the requested training objective')
++        return MSARTrainingForward(output.prediction, output, cfg)
++    if not isinstance(output, Tensor):
++        raise ValueError('MSAR coverage-off forward must return prediction Tensor')
++    return MSARTrainingForward(output, None, cfg)
++
++
++def training_objective(pde_loss: Tensor, forward: MSARTrainingForward) -> MSARLoss:
++    """LPDE + weight * mean_l(raw coverage_l); no rescaling of the task loss.
++
++    Off/weight0 returns the EXACT pde_loss object, without an extra add/graph.
++    The caller owns mean-over-time/member semantics; this is one forward only.
++    """
++    if not isinstance(forward, MSARTrainingForward):
++        raise ValueError('explicit MSARTrainingForward required')
++    if not isinstance(pde_loss, Tensor) or pde_loss.ndim != 0 or not pde_loss.is_floating_point():
++        raise ValueError('original PDE loss must be a floating scalar tensor')
++    if pde_loss.device != forward.prediction.device:
++        raise ValueError('PDE loss and prediction must be on the same device')
++    cfg = forward.training
++    cfg.validate()
++    if not cfg.coverage_enabled:
++        zero = pde_loss.new_zeros((), dtype=torch.float32)
++        return MSARLoss(pde_loss, zero, zero, pde_loss, False)
++    aux = forward.auxiliary
++    if (not isinstance(aux, MSARAuxOutput) or not aux.coverage_active
++            or aux.prediction is not forward.prediction
++            or aux.coverage_per_level.shape != (4,) or aux.coverage_mean.ndim != 0
++            or aux.coverage_mean.dtype != torch.float32 or aux.coverage_mean.device != pde_loss.device):
++        raise ValueError('active coverage requires this forward\'s four-level FP32 auxiliary output')
++    raw = aux.coverage_mean
++    weighted = cfg.coverage_weight * raw
++    return MSARLoss(pde_loss, raw, weighted, pde_loss + weighted, True)
+--- before/cdlno/msar_lno/registry.py
++++ after/cdlno/msar_lno/registry.py
+@@ -1,4 +1,4 @@
+-"""Family routing protocol only. No model constructor or task factory registration."""
++"""Lazy new-family selection; old keys delegate to their existing selectors."""
+ from .config import FAMILY
+ 
+ 
+@@ -12,3 +12,15 @@
+     family = payload['family']
+     if type(family) is not str or not family:raise ValueError('explicit family must be a nonempty string')
+     return family
++
++
++def core_class(model_key: str):
++    """Real lifted-feature core, not a task wrapper or a placeholder constructor.
++
++    Keep configuration/legacy imports torch-free. Industrial task selectors can
++    use this same family mapping when their field adapters are integrated.
++    """
++    if family_for_model_key(model_key) is None:
++        return None
++    from .core import MSARLNO
++    return MSARLNO
+--- before/docs/CDLNO_IMPLEMENTATION_STATUS.md
++++ after/docs/CDLNO_IMPLEMENTATION_STATUS.md
+@@ -1,3 +1,14 @@
++# 最新：MSAR-LNO M4公共接入基础完成，等待审查（2026-09-16）
++
++仅M4。详见[报告](MSAR_LNO_M4_INTEGRATION.md)与[独立STATUS](MSAR_LNO_IMPLEMENTATION_STATUS.md)。
++PDE真实factory独立msar_lno→稳定lifted-core类；family专用kwargs、显式aux/loss与四项日志、严格core state/whole/list checkpoint完成。
++off/weight0直接原LPDE，无A；eval先读sidecar再校验，coverage覆盖不影响纯eval，旧pickle边界和保存格式不变。
++M4最终18项+旧MSAR基础49项+旧入口33项通过；75旧同权重和2份M3 core精确回放，182旧artifact hash保留。
++三cwd加载、本机小CUDA FP32 loss/往返和本轮M2/M3有限AMP通过；所有任务脚本/旧模型/math/数据/依赖本轮未改。
++这不是八任务接入：任务lift/normalizer/原loss/loop/日志/输出Run仍待M5—M7；无新增task resume或真实数据训练。
++保留23处用户先存tracked修改；快照msar-m4-before-i75l1rvp/source。无安装/commit/push/PR。
++本M阶段结束，未执行下一阶段。
++
+ # CDLNO 实施状态
+ 
+ ## 2026-09-16：独立 MSAR-LNO M3 core 完成
+--- before/docs/MSAR_LNO_IMPLEMENTATION_STATUS.md
++++ after/docs/MSAR_LNO_IMPLEMENTATION_STATUS.md
+@@ -1,4 +1,18 @@
+ # MSAR-LNO 实施状态
++
++## 2026-09-16：M4 模型选择、显式训练目标和checkpoint基础完成，等待审查
++
++仅M4。已接受M3不改数学；真实PDE factory新增独立msar_lno分支，薄Model导出稳定的`cdlno.msar_lno.core.MSARLNO`，输入仍是已提升E0[B,N,d]。**八任务生产MSAR train/eval尚未接入，不可直接给exp/main加新模型名声称训练可用。** 静态/时间/工业wrapper与loss循环分别留M5/M6/M7。
++
++- 新`registry.core_class`懒加载与`entry.core_model_kwargs`仅服务msar_lno；旧key返回None/空kwargs，CLI默认/旧模型数值行为不变。
++- 新`objective.training_forward/training_objective`显式per-call aux；原LPDE先计算，floor有效才加weight×四Down raw mean。off/weight0不请求A且total就是原LPDE张量；四项detach日志pde/raw/weighted/total交调用者，无last_loss、配置切换或跨forward缓存。生产epoch日志后续接线。
++- 新`checkpoint`保存完整M1 metadata+core接口/output/dtype/member合同，保留裸state_dict/可信整对象/列表/单成员格式；先读结构再验证显式覆盖、严格加载。coverage差异允许纯eval，不覆盖sidecar。新目录exclusive，无新的任务resume；这些core快照不是优化器/RNG续训档案。
++- [M4报告与公共/任务接入表](MSAR_LNO_M4_INTEGRATION.md)、[结果摘要](msar_lno_audit/m4/summary.json)、[freeze](msar_lno_audit/m4/freeze.json)、[fixture索引](msar_lno_audit/m4/fixture-index.json)、[安全真实factory构造示例](msar_lno_audit/m4/construct_example.py)。M4最终18/18；既有M1—M3 49/49；旧入口33/33，总100个不同方法均通过；不是单次全仓库suite。M0全部75同权重夹具及M3 Light/Full两份精确回放，182旧artifact hash保留。
++- 原relative-L2安全loss连接合成core训练步通过；**未验证真实Darcy完整decode/边界loss或八任务训练链**。三cwd新进程core state/whole/list加载与小CUDA FP32 MATH loss/checkpoint通过；M2/M3套件有限AMP也重跑。PyG新wrapper/真实训练/远端2.11cu128未执行。
++- 本轮新生产4文件、旧factory3行+MSAR registry扩展；旧freeze测试只增加精确新分支AST断言后移除，不扩大忽略规则。所有任务数据/train/eval、旧模型/共享数学、M1配置/M2/M3数学和依赖字节不变。23处先存tracked修改保留；678文件起点快照`/home/hwz/CDLNO-artifacts/msar-m4-before-i75l1rvp/source`。
++
++无新架构冲突，无真实训练、安装、commit/push/PR；M5未执行。**本M阶段结束，未执行下一阶段。**
++
+ 
+ ## 2026-09-16：M3 四级 core 完成，等待审查
+ 
+--- before/docs/MSAR_LNO_M4_INTEGRATION.md
++++ after/docs/MSAR_LNO_M4_INTEGRATION.md
+@@ -0,0 +1,140 @@
++# MSAR-LNO M4：模型选择、显式训练目标与 checkpoint 基础
++
++2026-09-16。本轮只执行 M4。依据已接受的 M0 实际映射、M1 配置、M2 原语和 M3 core，不开展 M5—M7 任务适配。本轮开始为 `main@9c5569e059eca8d57f5321fdbf0c0dc4aeb40860`，原有23处 tracked 修改及未跟踪阶段文件均保留；[起点](msar_lno_audit/m4/before.json)及[用户原diff](msar_lno_audit/m4/user-before.patch)可核查。
++
++## A. 完成范围与公共接入表
++
++M4 实现真实 core 的选择、参数转发、显式 loss adapter，以及保留三种实际 payload 格式的严格 core checkpoint。**没有八任务 MSAR 生产训练入口；当前 factory 的 MSAR Model 接收已经提升的 E0[B,N,d]，不是原任务 x/fx/时间/PyG wrapper。** 不能直接给现有 `exp_*.py` 加 `--model msar_lno` 宣称能训练；任务参数解析、lift、原loss/normalizer及循环接线仍属于后续阶段。
++
++| 部分 | M4实际路径和完成状态 | 后续依赖 |
++|---|---|---|
++| 公共family | `registry.core_class('msar_lno') → cdlno.msar_lno.core.MSARLNO`，其他key返回None；懒导入，旧配置import不新增torch依赖 | 工业选择分支后续使用此独立家族 |
++| 真实PDE factory | `model_dict.get_model(args) → model.MSAR_LNO.Model`，Model是现有真实core的薄导出 | 四静态wrapper M5；两时间wrapper M6 |
++| 显式参数 | `entry.core_model_kwargs`仅msar_lno返回config/training_config/output_dim；旧key返回空dict且不解析新参数 | 生产parser仍未接MSAR；沿M1副本parser/explicit-only协议 |
++| 训练aux/目标 | `objective.training_forward/training_objective`按单次forward显式组合；四项日志通过`MSARLoss.log_values()`交给调用者 | 实际训练日志/epoch聚合及loss调用位置 M5—M7 |
++| 评估 | core默认Tensor；checkpoint重建后eval；不计算coverage，不改变prediction通道 | 原任务decode/导出/物理指标接线 M5—M7 |
++| 保存加载 | `checkpoint.save_core_checkpoint/load_core_checkpoint`；state_dict、可信整对象、可信列表/单成员均实际往返 | 任务字段/normalizer/split协议及完整wrapper metadata M5—M7 |
++| 目录 | 复用M1 `new_run_path/reserve_run_directory`，family/profile/coverage标识、显式save_name、exclusive保护 | 任务Run/统一Experiment记录尚未接线 |
++
++| 任务 | 当前生产MSAR train/eval | M4已有的保存协议基础 | 待授权阶段 |
++|---|---|---|---|
++| Darcy | 未接入 | bare state_dict，`model.pt` | M5 |
++| Elasticity | 未接入 | bare state_dict，`model.pt` | M5 |
++| Airfoil | 未接入 | bare state_dict，`model.pt` | M5 |
++| Pipe | 未接入 | bare state_dict，`model.pt` | M5 |
++| NS | 未接入 | bare state_dict；未实现时间loss聚合 | M6 |
++| Plasticity | 未接入 | bare state_dict；未实现逐时间点调用 | M6 |
++| ShapeNet-Car | 未接入 | 整对象，调用方明确给`model_<epochs>.pth` | M7 |
++| AirfRANS | 未接入 | run根列表`msar_lno`；单成员`model` | M7 |
++
++表中的checkpoint通过是**真实MSAR core的协议检查**，不是八任务wrapper或真实PyG训练验收。工业main没有统一factory，M4没有另造全仓库框架，也没有改它们的选择/采样/训练代码。
++
++## B. 文件与 diff
++
++新增生产文件：
++
++- `PDE-Solving-StandardBenchmark/model/MSAR_LNO.py`：真实core薄导出，无占位构造器；pickle仍指向`cdlno.msar_lno.core.MSARLNO`。
++- `cdlno/msar_lno/entry.py`：仅新家族配置转发，无旧默认值渗入。
++- `cdlno/msar_lno/objective.py`：每次forward独立的aux、loss和日志合同。
++- `cdlno/msar_lno/checkpoint.py`：M4 core专用快照/加载，完整结构和接口校验。
++
++修改生产文件只有 `cdlno/msar_lno/registry.py`（增懒加载真实类）及 `PDE-Solving-StandardBenchmark/model_dict.py`（3行独立分支）。M1结构/训练配置与解析规则、M2/M3数学代码和所有旧模型原语未改。
++
++新增 `tests/test_msar_integration.py`、[安全构造示例](msar_lno_audit/m4/construct_example.py)、本报告/证据；增量更新独立STATUS、既有CDLNO STATUS与memory。`tests/test_static_standard.py`增加6行：先断言新增factory分支**整个AST精确等于指定3行**，再移除此分支核对旧factory。没有扩大忽略规则，也没有放宽旧exp的数据/训练AST比较。
++
++[freeze](msar_lno_audit/m4/freeze.json)与[本轮patch](msar_lno_audit/m4/stage.patch)相对于真实M4起点，而不是将此前用户diff计作本轮改动。快照位于 `/home/hwz/CDLNO-artifacts/msar-m4-before-i75l1rvp/source`。没有修改 `AGENTS.md`、依赖、旧保存格式、任务数据和训练/评估脚本。
++
++## C. 公式、参数与调用合同
++
++```python
++forward = training_forward(msar_model, e0)       # only msar_lno, model.train()
++LPDE = original_task_loss(forward.prediction, target)  # 原任务先完成decode/mask等
++loss = training_objective(LPDE, forward)
++loss.total.backward()
++metrics = loss.log_values()  # pde / coverage_raw / coverage_weighted / total
++```
++
++| 公式/行为 | 实际实现与证据 |
++|---|---|
++| `Lcoverage = mean(raw_l, l=1..4)` | M3 `MSARAuxOutput.coverage_mean`；M4直接消费，不重复除batch/N/层 |
++| `Ltotal = LPDE + weight * Lcoverage` | `training_objective`；原relative-L2 loss真实导入后连接、反传和AdamW step通过 |
++| off/weight0 | `training_forward`默认不请求aux；Down无A请求；`loss.total is LPDE`，raw/weighted为无图FP32零 |
++| four logs | `MSARLoss.log_values`返回四个detach标量tensor；不隐式CPU同步。示例明确输出四值，生产epoch日志后续接线 |
++| 线程/重入 | frozen per-call dataclass保存该次prediction/aux/config；无model.last_loss，不切换model.training、不改配置；两个不同目标调用交错后独立loss/梯度通过 |
++| eval | 直接`model.eval()(...)`返回Tensor；on/off同权重预测一致。加载器不使用训练aux或改变decode |
++
++诊断默认关闭。若用户显式请求diagnostics，则沿M3的no-grad观察路径；它不参与默认loss。M4没有引入新的辅助损失、参数或数学层。时间任务未来必须按原有loss尺度聚合每次forward的raw coverage；**本模块没有提前决定NS/Plasticity的时间归一或optimizer节奏**。
++
++## D. Checkpoint 边界
++
++每个新快照保留三类信息：
++
++1. `architecture.json`：沿用M1 schema1，显式family=msar_lno、architecture_version、完整resolved四级结构、profile provenance、独立training及runtime。
++2. `core.json`：schema1、固定class路径、`input_contract=already-lifted-B-N-d-v1`、output_dim、member数、实际weight dtype、payload文件名。这个明确边界防止未来误把core当成已封装原始输入的task wrapper。
++3. 原协议payload：PDE裸state_dict；Car原样整对象；Air列表或单对象。没有将它们全改为dict envelope；加载后也不把整对象静默改成新随机模型。
++
++加载先读并严格检查sidecar与显式架构，再构造/反序列化。缺family、缺结构字段、错误family/heads/M/d/output、缺key、多key、shape错误、整对象隐藏heads变化/参数共享均拒绝；`strict=True`。coverage显式变化仅出现在`resolution.training_differences`，不拒绝同结构纯eval；保存的训练配置不被覆盖。初始化仅用于state模型重建或整对象校验的参考实例；同一权重严格装载，已学习fusion.w不会重置。构造参考时保留调用者RNG。
++
++PDE始终`weights_only=True`；whole/list只在已确认本地可信工业run的调用方显式`trusted_local=True`时走局部`weights_only=False`。沿用已有边界，不改全局torch行为、不加fallback。整对象继续复用已有`kcdno.loading.validate_whole_model`的module/type/行为/固定buffer/严格state校验，不修改该工具。两张sidecar在成功eval与负向检查后逐字节不变。
++
++`save_core_checkpoint`只接受新目录；它是独立完整core快照基础，**不是周期保存策略或任务Run，更不是optimizer/scheduler/RNG续训包**。当前八任务没有接入V1共享resume archive；M4不新建resume。不承诺用裸权重/整对象恢复优化器。后续若接入已有完整archive，必须额外校验训练配置并保留其状态协议。
++
++## E. 实际验证
++
++本机：Python3.13.9 / torch2.13.0+cu130 / CUDA13.0 / RTX5090 Laptop / PyG2.3.1；未安装或更改依赖。远端Python3.10 / torch2.11/cu128未运行。[环境](msar_lno_audit/m4/environment.json)，[汇总](msar_lno_audit/m4/summary.json)，[回归索引](msar_lno_audit/m4/fixture-index.json)。
++
++| 验证 | 实际结果 |
++|---|---|
++| 最终M4定向测试 | 18/18，8.539s，无失败/错误/skip；[log](msar_lno_audit/m4/integration-tests-final.log) |
++| M1/M2/M3既有测试 | 49/49；本轮首次MSAR合并套件66/66中运行，之后新增元数据负向项，最终M4单独重跑18项；[log](msar_lno_audit/m4/msar-tests.log) |
++| 旧PDE/时间/CDLNO/K任务入口测试 | 33/33，31.286s，无失败/错误/skip；包含旧factory/CLI/AST/strict保存加载；[log](msar_lno_audit/m4/old-entry-tests.log) |
++| M0所有既有同权重夹具 | 41旧K0 +6 pre-M1 K core +24任务wrapper +4其他旧模型 =75/75；所有CPU FP32 MATH、atol=rtol=0；182旧夹具hash未变 |
++| 原有GUNet例外 | 独立旧模型审计仍明确not_run：本机缺torch_cluster，未执行radius/nearest图链；不计入75份已保存夹具 |
++| M3正式Light/Full core | 两份同权重输入、eval、train-floor及coverage重新精确回放；不是重新seed随机初始化互比 |
++| M4真实loss连接 | 安全导入原`utils.testloss.TestLoss(size_average=False)`的relative-L2，合成lifted张量上backward/step通过；没有跑Darcy完整decode/边界/梯度loss或其他任务loop |
++| CUDA | 新小core FP32 MATH显式loss/AdamW/checkpoint通过，roundtrip容差1e-6/1e-5；本轮M2/M3套件也实际重跑有限FP16/BF16 AMP检查 |
++| 三子项目cwd | 各新进程同权重core strict加载通过；Car whole、Air list明确trusted本地；没有直接import exp/main |
++| 真实PyG MSAR wrapper | 未实现/未运行；旧fixture中的真实PyG证据不冒充新家族支持 |
++| 真实数据训练/评估/指标/收敛 | 全部未运行；没有下载/制造任务数据 |
++
++共覆盖100个不同测试方法（49旧MSAR基础+18最终M4+33旧入口），不是声称一次跑了100项全仓库套件。首次18项之前的M4首轮16项及合并17项也通过，日志保留；没有生产故障被隐藏。基础checkpoint验证只在例外分支又补了缺对象属性/非法dtype的清晰报错，并添加最终元数据负向检查。
++
++实际命令（仓库根目录，输出重定向至上述log）：
++
++```bash
++python -B -m unittest discover -s tests -p 'test_msar*.py' -v
++PYTHONPATH=tests:. python -B -m unittest test_static_standard test_temporal_standard test_kcdno_tasks test_kcdno_temporal -v
++python -B -m unittest discover -s tests -p test_msar_integration.py -v
++python -B docs/kcdno_audit/make_regression_fixtures.py replay --artifacts /home/hwz/CDLNO-artifacts/k0-before-zf3l4cve/fixtures --result docs/msar_lno_audit/m4/k0-replay.json
++python -B docs/msar_lno_audit/m1/replay_current.py replay --artifacts /home/hwz/CDLNO-artifacts/msar-m1-before-n7y0eg1j/current-fixtures --result docs/msar_lno_audit/m4/kcore-replay.json
++python -B docs/msar_lno_audit/m0/wrapper_fixtures.py replay --artifacts /home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers --result docs/msar_lno_audit/m4/wrapper-replay.json
++python -B docs/msar_lno_audit/m0/other_model_fixtures.py replay --artifacts /home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/other-models --result docs/msar_lno_audit/m4/other-replay.json
++python -B docs/msar_lno_audit/m3/core_fixtures.py replay --artifacts /home/hwz/CDLNO-artifacts/msar-m3-before-jx4v53vh/post-m3-core --result docs/msar_lno_audit/m4/msar-core-replay.json
++```
++
++这些绝对artifacts路径为本机已保存证据；远端回放需迁移原夹具并替换路径，不能重新生成所谓旧权重。
++
++## F. 可运行构造示例与自审
++
++从实际仓库根目录运行，只有合成lifted数据、小N和一次优化步，默认正式Light，所有四级M不缩减：
++
++```bash
++python -B docs/msar_lno_audit/m4/construct_example.py
++python -B docs/msar_lno_audit/m4/construct_example.py --coverage-mode off --coverage-weight 0
++# 可选保存至独立测试区域；自动生成唯一family/profile/coverage目录
++python -B docs/msar_lno_audit/m4/construct_example.py --output-root /tmp/msar-m4-check
++```
++
++[Light示例实际输出](msar_lno_audit/m4/example-light.json)含同权重保存加载，checkpoint保存在外部M4 artifacts；[off示例](msar_lno_audit/m4/example-off.json)四项日志raw/weighted严格为零。脚本使用真实`model_dict.get_model(...).Model(**core_model_kwargs(...))`，不是虚构统一train.py。不附八任务训练命令，因为对应生产入口尚未接通。
++
++已逐项自审：
++
++- 旧分支隔离：新参数仅进入新family；旧factory新增分支移除后精确等于起点，旧模型数值夹具精确回放。
++- loss归属：原loss先计算，新家族单独加权；off对象同一性、四项日志、交错forward梯度均通过；无隐式跨forward缓存。
++- 加载真实性：保存完整resolved结构和core接口；strict keys/shapes、whole对象隐含属性、已学习w不重置、可信边界与sidecar不改写均通过。
++- 阶段边界：M1/M2/M3数学、所有数据/训练/评估脚本、旧输出记录代码保持；新core通过不等于八任务wrapper通过。
++- 证据边界：旧夹具是既有固定合成参考，不证明所有历史真实训练checkpoint兼容；远端环境、MSAR PyG/task resume/真实数据需后续验证。
++
++没有发现需用户裁定的新架构冲突。余项是既定M5静态、M6时间、M7工业接入及后续验收，不在本轮补做。
++
++**本M阶段结束，未执行下一阶段。**
+--- before/docs/msar_lno_audit/m4/construct_example.py
++++ after/docs/msar_lno_audit/m4/construct_example.py
+@@ -0,0 +1,64 @@
++"""M4 safe example using the real PDE factory; synthetic LIFTED inputs only.
++
++No exp/main imports, task training, data files, task adapters, or fake datasets.
++Without --output-root, creates no checkpoint directory. With it, uses a fresh
++family/profile/coverage path and never replaces an existing experiment.
++"""
++import argparse
++import json
++from pathlib import Path
++import sys
++
++ROOT = Path(__file__).resolve().parents[3]
++sys.path.insert(0,str(ROOT))
++sys.path.insert(0,str(ROOT/'PDE-Solving-StandardBenchmark'))
++
++import torch
++from model_dict import get_model
++from utils.testloss import TestLoss
++from cdlno.msar_lno.options import parser_for_family,explicit_arguments,resolve_training
++from cdlno.msar_lno.entry import core_model_kwargs
++from cdlno.msar_lno.objective import training_forward,training_objective
++from cdlno.msar_lno.config import input_layout
++from cdlno.msar_lno.metadata import MSARMetadata,new_run_path
++from cdlno.msar_lno.checkpoint import save_core_checkpoint,load_core_checkpoint
++
++
++def main():
++    base=argparse.ArgumentParser(description=__doc__)
++    base.add_argument('--model',choices=('msar_lno',),default='msar_lno')
++    base.add_argument('--output-root',type=Path)
++    base.add_argument('--save-name')
++    parser=parser_for_family(base,'msar_lno')
++    args=parser.parse_args();explicit=explicit_arguments(parser,sys.argv[1:])
++    resolved=resolve_training('darcy',explicit)
++    torch.set_num_threads(1);torch.manual_seed(916404)
++    model=get_model(args).Model(**core_model_kwargs('msar_lno',task='darcy',explicit=explicit,output_dim=1))
++    x=torch.randn(2,35,resolved.architecture.d)
++    target=torch.randn(2,35,1)
++    optimizer=torch.optim.AdamW(model.parameters(),lr=1e-3)
++    result=training_forward(model.train(),x)
++    # The exact safe repository loss, applied to synthetic outputs. Darcy's
++    # decoder/boundary/gradient loss additions and actual loop are not run here.
++    pde=TestLoss(size_average=False)(result.prediction,target)
++    loss=training_objective(pde,result)
++    loss.total.backward();optimizer.step()
++    record=dict(scope='synthetic lifted-core M4 construction; not a Darcy task training loop',
++                resolved=resolved.to_dict(),layout=input_layout(model.config,x.shape[1]),
++                parameters=sum(p.numel() for p in model.parameters()),
++                objective={key:float(value) for key,value in loss.log_values().items()},
++                prediction_shape=list(result.prediction.shape))
++    with torch.no_grad():
++        expected=model.eval()(x)
++        if args.output_root is not None:
++            directory=new_run_path(args.output_root,resolved,save_name=args.save_name)
++            metadata=MSARMetadata('darcy',model.config,'state_dict',resolved.profile,training=resolved.training)
++            save_core_checkpoint(directory,model,metadata)
++            loaded=load_core_checkpoint(directory,task='darcy',explicit={'coverage_mode':'off'}).model
++            torch.testing.assert_close(loaded(x),expected,atol=0,rtol=0)
++            record['checkpoint']=str(directory)
++            record['same_weight_eval']='exact'
++    print(json.dumps(record,indent=2))
++
++
++if __name__=='__main__':main()
+--- before/docs/msar_lno_audit/m4/finalize_evidence.py
++++ after/docs/msar_lno_audit/m4/finalize_evidence.py
+@@ -0,0 +1,100 @@
++"""Read-only source/fixture verification, writing M4 evidence only."""
++import ast
++import difflib
++import hashlib
++import json
++from pathlib import Path
++import re
++import subprocess
++
++ROOT=Path(__file__).resolve().parents[3]
++EVIDENCE=Path(__file__).resolve().parent
++
++
++def read(path):return json.loads(Path(path).read_text())
++def write(name,value):(EVIDENCE/name).write_text(json.dumps(value,indent=2,ensure_ascii=False)+'\n')
++def sha(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
++
++
++def main():
++    before=read(EVIDENCE/'before.json');archive=Path(before['archive'])/'source'
++    expected_changes={'PDE-Solving-StandardBenchmark/model_dict.py','cdlno/msar_lno/registry.py',
++        'tests/test_static_standard.py','docs/MSAR_LNO_IMPLEMENTATION_STATUS.md',
++        'docs/CDLNO_IMPLEMENTATION_STATUS.md','memory/current-state.md'}
++    changed=[];unchanged=[]
++    for name,digest in before['files'].items():
++        p=ROOT/name
++        assert p.exists(),f'deleted existing file: {name}'
++        (unchanged if sha(p)==digest else changed).append(name)
++    assert set(changed)==expected_changes,changed
++    added=['PDE-Solving-StandardBenchmark/model/MSAR_LNO.py','cdlno/msar_lno/entry.py',
++        'cdlno/msar_lno/objective.py','cdlno/msar_lno/checkpoint.py',
++        'tests/test_msar_integration.py','docs/MSAR_LNO_M4_INTEGRATION.md',
++        'docs/msar_lno_audit/m4/construct_example.py','docs/msar_lno_audit/m4/finalize_evidence.py']
++    patch=[]
++    for name in sorted(changed+added):
++        previous=(archive/name).read_text() if name in before['files'] else ''
++        current=(ROOT/name).read_text()
++        patch.extend(difflib.unified_diff(previous.splitlines(True),current.splitlines(True),
++                                        fromfile='before/'+name,tofile='after/'+name))
++        if name.endswith('.py'):
++            ast.parse(current,feature_version=(3,10))
++        assert all(line.rstrip()==line for line in current.splitlines()),name
++    (EVIDENCE/'stage.patch').write_text(''.join(patch))
++    old_index=read(ROOT/'docs/msar_lno_audit/m0/fixture-index.json')
++    for record in old_index['integrity_files']:
++        assert sha(record['path'])==record['sha256'],record['path']
++    core_index=read(ROOT/'docs/msar_lno_audit/m3/fixture-index.json')
++    for record in core_index['records']:
++        assert sha(record['fixture'])==record['sha256'],record['fixture']
++    replay=[];not_run=[]
++    for name in ('k0-replay','wrapper-replay','other-replay'):
++        for group in read(EVIDENCE/(name+'.json')):
++            assert group['returncode']==0,group
++            for row in group.get('rows',group.get('summary',{}).get('rows',[])):
++                if row['status']=='not_run':not_run.append(row);continue
++                assert row['status']=='passed',row
++                replay.append(dict(group=name,name=row['name'],status=row['status']))
++    for row in read(EVIDENCE/'kcore-replay.json'):
++        assert row['status']=='passed',row
++        replay.append(dict(group='kcore-replay',name=row['name'],status=row['status']))
++    assert len(replay)==75,len(replay)
++    core_rows=read(EVIDENCE/'msar-core-replay.json')
++    assert len(core_rows)==2 and all(r['status']=='passed' for r in core_rows)
++    suites=[]
++    for file,expected in (('msar-tests.log',66),('old-entry-tests.log',33),('integration-tests-final.log',18)):
++        text=(EVIDENCE/file).read_text();match=re.search(r'Ran (\d+) tests in ([\d.]+)s',text)
++        assert match and int(match[1])==expected and '\nOK\n' in text and 'FAILED' not in text,file
++        suites.append(dict(log=file,tests=int(match[1]),seconds=float(match[2]),failures=0,errors=0,skips=0))
++    write('fixture-index.json',dict(old_index='docs/msar_lno_audit/m0/fixture-index.json',
++        core_index='docs/msar_lno_audit/m3/fixture-index.json',old_fixture_files_verified=len(old_index['integrity_files']),
++        core_fixture_files_verified=2,old_same_weight_passed=75,core_same_weight_passed=2,
++        tolerance=dict(old_cpu=dict(dtype='float32',backend='MATH',atol=0,rtol=0),
++                       core_cpu=dict(dtype='float32',backend='MATH',atol=0,rtol=0)),
++        rows=replay,not_run=not_run,limits='Existing synthetic fixed-weight fixtures; not all historical trained checkpoints.'))
++    factory=ast.parse((ROOT/'PDE-Solving-StandardBenchmark/model_dict.py').read_text())
++    fn=next(n for n in factory.body if isinstance(n,ast.FunctionDef) and n.name=='get_model')
++    expected=ast.parse("if args.model == 'msar_lno':\n    from model import MSAR_LNO\n    return MSAR_LNO").body[0]
++    assert ast.dump(fn.body.pop(0))==ast.dump(expected)
++    assert ast.dump(factory)==ast.dump(ast.parse((archive/'PDE-Solving-StandardBenchmark/model_dict.py').read_text()))
++    freeze=dict(snapshot=str(archive),files_at_start=len(before['files']),unchanged_count=len(unchanged),
++                changed=changed,added_source_test_report=added,factory_old_ast='exact after validating/removing one explicit new branch',
++                unchanged_sha256={p:before['files'][p] for p in unchanged},
++                current_changed_sha256={p:sha(ROOT/p) for p in changed+added},
++                frozen='All existing task entry/train/eval/data/model math/config/dependency files unchanged; only listed factory/registry/test/docs changed.')
++    write('freeze.json',freeze)
++    write('summary.json',dict(stage='M4',environment=read(EVIDENCE/'environment.json'),suites=suites,
++        distinct_test_methods=100,distinct_count_note='49 M1-M3 + 18 final M4 + 33 old entries; logs overlap, not a single 100-test invocation',
++        old_same_weight_passed=75,msar_core_same_weight_passed=2,old_fixture_hashes=182,
++        factory='Real PDE factory exports lifted MSARLNO only; eight production task train/eval wrappers not wired',
++        loss='Original safe relative-L2 callable on synthetic lifted core + explicit coverage; not full Darcy/task loop',
++        checkpoint='Strict bare state_dict, trusted whole/list/member core snapshots; no optimizer/RNG resume archive',
++        gpu='Small CUDA MATH FP32 objective/AdamW/strict checkpoint passed, atol=1e-6 rtol=1e-5; existing M2/M3 limited AMP tests reran',
++        not_run=['MSAR task/PyG wrappers and full task loss/time/decode/physical metrics',
++                 'Real datasets/training/convergence/accuracy','Remote Python3.10/torch2.11/cu128',
++                 'Task resume integration','Existing GUNet graph path: torch_cluster missing'],next_stage_executed=False))
++    subprocess.run(['git','diff','--check'],cwd=ROOT,check=True)
++    print(json.dumps(dict(changed=changed,unchanged=len(unchanged),tests=100,old_fixtures=75,core_fixtures=2)))
++
++
++if __name__=='__main__':main()
+--- before/memory/current-state.md
++++ after/memory/current-state.md
+@@ -1,3 +1,14 @@
++# 最新：MSAR-LNO M4公共接入基础完成，等待审查（2026-09-16）
++
++仅M4。详见[报告](../docs/MSAR_LNO_M4_INTEGRATION.md)与[独立STATUS](../docs/MSAR_LNO_IMPLEMENTATION_STATUS.md)。
++PDE真实factory独立msar_lno→稳定lifted-core类；family专用kwargs、显式aux/loss与四项日志、严格core state/whole/list checkpoint完成。
++off/weight0直接原LPDE，无A；eval先读sidecar再校验，coverage覆盖不影响纯eval，旧pickle边界和保存格式不变。
++M4最终18项+旧MSAR基础49项+旧入口33项通过；75旧同权重和2份M3 core精确回放，182旧artifact hash保留。
++三cwd加载、本机小CUDA FP32 loss/往返和本轮M2/M3有限AMP通过；所有任务脚本/旧模型/math/数据/依赖本轮未改。
++这不是八任务接入：任务lift/normalizer/原loss/loop/日志/输出Run仍待M5—M7；无新增task resume或真实数据训练。
++保留23处用户先存tracked修改；快照msar-m4-before-i75l1rvp/source。无安装/commit/push/PR。
++本M阶段结束，未执行下一阶段。
++
+ # 最新：MSAR-LNO M3四级core完成，等待审查（2026-09-16）
+ 
+ 只实施M3。读docs/MSAR_LNO_M3_CORE.md及MSAR_LNO_IMPLEMENTATION_STATUS.md。
+--- before/tests/test_msar_integration.py
++++ after/tests/test_msar_integration.py
+@@ -0,0 +1,330 @@
++"""M4 selection/explicit objective/core checkpoint foundation; no task entry imports."""
++import argparse
++import copy
++from dataclasses import replace
++import importlib.util
++import json
++import os
++from pathlib import Path
++import subprocess
++import sys
++import tempfile
++import unittest
++from unittest.mock import patch
++
++import torch
++from torch.nn.attention import SDPBackend, sdpa_kernel
++
++from cdlno.msar_lno.config import MSARTrainingConfig
++from cdlno.msar_lno.core import MSARLNO
++from cdlno.msar_lno.entry import core_model_kwargs
++from cdlno.msar_lno.registry import core_class
++from cdlno.msar_lno.options import explicit_arguments, parser_for_family, resolve_training
++from cdlno.msar_lno.metadata import MSARMetadata, MSARMetadataMismatch
++from cdlno.msar_lno.checkpoint import save_core_checkpoint, load_core_checkpoint
++from cdlno.msar_lno.objective import training_forward, training_objective
++from test_msar_core import small
++from test_msar_config import parser_only, ENTRIES
++
++ROOT = Path(__file__).resolve().parents[1]
++
++
++def setUpModule():
++    torch.set_num_threads(1)
++
++
++def meta(task='darcy', training=None, fmt=None):
++    fmt = fmt or ('whole_model' if task == 'car' else 'model_list' if task == 'airfrans' else 'state_dict')
++    return MSARMetadata(task, small(), fmt, training=training or MSARTrainingConfig())
++
++
++def model_for(metadata, output_dim=2):
++    return MSARLNO(metadata.architecture, output_dim=output_dim, training_config=metadata.training)
++
++
++def hashes(directory):
++    return {str(p.relative_to(directory)): p.read_bytes() for p in Path(directory).rglob('*') if p.is_file()}
++
++
++class MSARIntegrationTests(unittest.TestCase):
++    def setUp(self):
++        torch.manual_seed(916404)
++
++    def test_real_factory_routes_and_old_kwargs_are_empty(self):
++        code = '''
++from argparse import Namespace
++from model_dict import get_model
++from cdlno.msar_lno.core import MSARLNO
++from cdlno.msar_lno.entry import core_model_kwargs
++assert get_model(Namespace(model='msar_lno')).Model is MSARLNO
++for key in ('Transolver_Irregular_Mesh','Transolver_Structured_Mesh_2D','Transolver_Structured_Mesh_3D','kcdno','lrsa_matched'):
++    module=get_model(Namespace(model=key))
++    assert module.Model is not MSARLNO
++for task in ('darcy','elasticity','airfoil','pipe','ns','plasticity'):
++    assert get_model(Namespace(model='CDLNO',cdlno_task=task)).Model is not MSARLNO
++print('actual factory mappings passed')
++'''
++        result = subprocess.run([sys.executable,'-B','-c',code], cwd=ROOT/'PDE-Solving-StandardBenchmark',
++                                capture_output=True, text=True, env=dict(os.environ,PYTHONPATH=str(ROOT)))
++        self.assertEqual(result.returncode,0,result.stderr)
++        for key in ('CDLNO','kcdno','lrsa_matched','Transolver_Structured_Mesh_2D','GraphSAGE','unknown'):
++            self.assertIsNone(core_class(key))
++            # Invalid new-family input is not even inspected on a legacy branch.
++            self.assertEqual(core_model_kwargs(key,task='unused',explicit=None,output_dim=-1),{})
++        self.assertIs(core_class('msar_lno'),MSARLNO)
++
++    def test_real_parser_config_priority_forwarding_and_light_defaults(self):
++        parser=parser_only(ENTRIES[0]); before=vars(parser.parse_args([])).copy()
++        new=parser_for_family(parser,'msar_lno')
++        kw=core_model_kwargs('msar_lno',task='darcy',explicit=explicit_arguments(new,['--model','msar_lno']))
++        self.assertEqual(kw['config'].d,96); self.assertEqual(kw['config'].num_latents,(512,256,128,64))
++        explicit=explicit_arguments(new,['--model','msar_lno','--profile','full','--d','8',
++                '--heads','2','2','4','4','--num-latents','7','5','3','2','--coverage-mode','off'])
++        kw=core_model_kwargs('msar_lno',task='darcy',explicit=explicit,output_dim=2)
++        model=core_class('msar_lno')(**kw)
++        self.assertEqual(model.config,small());self.assertFalse(model.training_config.coverage_enabled)
++        self.assertEqual(model(torch.randn(2,35,8)).shape,(2,35,2))
++        self.assertEqual(vars(parser.parse_args([])),before)
++        for bad in ({'family':'kcdno'},{'front_blocks':2},{'d':7},{'num_latents':[3,2]}):
++            with self.assertRaises(ValueError):core_model_kwargs('msar_lno',task='darcy',explicit=bad)
++
++    def test_original_loss_then_explicit_objective_and_optimizer(self):
++        # Safe original relative-L2 callable, not a copied or approximated loss.
++        spec=importlib.util.spec_from_file_location('m4_original_testloss',ROOT/'PDE-Solving-StandardBenchmark/utils/testloss.py')
++        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
++        cfg=MSARTrainingConfig(coverage_kappa=1.)
++        model=MSARLNO(small(),output_dim=2,training_config=cfg).train()
++        x=torch.randn(2,35,8);target=torch.randn(2,35,2)
++        optimizer=torch.optim.AdamW(model.parameters(),lr=1e-3)
++        forward=training_forward(model,x)
++        pde=module.TestLoss(size_average=False)(forward.prediction,target)
++        loss=training_objective(pde,forward)
++        self.assertIs(loss.pde,pde);self.assertIs(loss.coverage_raw,forward.auxiliary.coverage_mean)
++        torch.testing.assert_close(loss.total,pde+cfg.coverage_weight*forward.auxiliary.coverage_per_level.mean(),atol=0,rtol=0)
++        self.assertGreater(loss.coverage_raw.item(),0)
++        self.assertEqual(set(loss.log_values()),{'pde','coverage_raw','coverage_weighted','total'})
++        self.assertTrue(all(not v.requires_grad for v in loss.log_values().values()))
++        before=model.downs[0].latent_queries.detach().clone()
++        loss.total.backward()
++        self.assertTrue(all(p.grad is not None and torch.isfinite(p.grad).all() for p in model.parameters()))
++        optimizer.step();self.assertFalse(torch.equal(before,model.downs[0].latent_queries))
++        self.assertFalse(hasattr(model,'last_loss'))
++
++    def test_off_and_weight_zero_keep_identical_pde_tensor_no_attention_aux(self):
++        model=MSARLNO(small()).train()
++        for cfg in (MSARTrainingConfig(coverage_mode='off'),MSARTrainingConfig(coverage_weight=0)):
++            requests=[]
++            handles=[d.register_forward_pre_hook(lambda m,a,k:requests.append(k.copy()),with_kwargs=True) for d in model.downs]
++            out=training_forward(model,torch.randn(1,11,8),training_config=cfg)
++            for handle in handles:handle.remove()
++            self.assertIsNone(out.auxiliary)
++            self.assertTrue(all(not k.get('return_aux',False) for k in requests))
++            pde=out.prediction.square().mean();loss=training_objective(pde,out)
++            self.assertIs(loss.total,pde);self.assertFalse(loss.coverage_active)
++            self.assertFalse(loss.coverage_raw.requires_grad);self.assertEqual(loss.coverage_raw.item(),0)
++            loss.total.backward();model.zero_grad(set_to_none=True)
++
++    def test_interleaved_calls_hold_their_own_config_and_graph(self):
++        model=MSARLNO(small()).train();saved=model.training_config
++        x=torch.randn(2,11,8,requires_grad=True)
++        on=training_forward(model,x,training_config=MSARTrainingConfig(coverage_kappa=1,coverage_weight=.3))
++        off=training_forward(model,torch.randn_like(x),training_config=MSARTrainingConfig(coverage_mode='off'))
++        loss_off=training_objective(off.prediction.square().mean(),off)
++        loss_on=training_objective(on.prediction.square().mean(),on)
++        self.assertTrue(loss_on.coverage_active);self.assertFalse(loss_off.coverage_active)
++        torch.testing.assert_close(loss_on.coverage_weighted,.3*on.auxiliary.coverage_mean,atol=0,rtol=0)
++        self.assertIs(model.training_config,saved)
++        gradient=torch.autograd.grad(loss_on.coverage_raw,x)[0]
++        self.assertTrue(torch.isfinite(gradient).all());self.assertGreater(gradient.abs().sum().item(),0)
++
++    def test_prediction_only_eval_and_negative_adapter_contracts(self):
++        model=MSARLNO(small()).eval();x=torch.randn(2,35,8)
++        with torch.no_grad():
++            on=model(x,training_config=MSARTrainingConfig())
++            off=model(x,training_config=MSARTrainingConfig(coverage_mode='off'))
++        self.assertIsInstance(on,torch.Tensor);torch.testing.assert_close(on,off,atol=0,rtol=0)
++        with self.assertRaisesRegex(ValueError,'model.train'):training_forward(model,x)
++        with self.assertRaisesRegex(ValueError,'msar_lno'):training_forward(torch.nn.Linear(8,1),x)
++        model.train()
++        with self.assertRaises(ValueError):training_forward(model,x,return_aux=False)
++        with self.assertRaises(ValueError):training_forward(model,x,training_config={})
++        out=training_forward(model,x)
++        with self.assertRaisesRegex(ValueError,'scalar'):training_objective(out.prediction,out)
++        with self.assertRaisesRegex(ValueError,'explicit'):training_objective(out.prediction.mean(),None)
++        bad=replace(out,auxiliary=None)
++        with self.assertRaisesRegex(ValueError,'active coverage'):training_objective(out.prediction.mean(),bad)
++
++    def test_same_weights_off_floor_state_dict_and_sidecars_readonly(self):
++        with tempfile.TemporaryDirectory() as tmp,sdpa_kernel(SDPBackend.MATH):
++            for mode in ('off','floor'):
++                metadata=meta(training=MSARTrainingConfig(coverage_mode=mode));model=model_for(metadata).eval()
++                # Preserve trained values, not just initializer=0 values.
++                with torch.no_grad():model.fusions[0].w.add_(.1)
++                directory=Path(tmp)/mode;checkpoint=save_core_checkpoint(directory,model,metadata)
++                self.assertTrue(all(isinstance(v,torch.Tensor) for v in torch.load(checkpoint,weights_only=True).values()))
++                frozen=hashes(directory);x=torch.randn(2,35,8);expected=model(x)
++                loaded=load_core_checkpoint(directory,task='darcy',explicit={'coverage_mode':'floor' if mode=='off' else 'off'},expected_output_dim=2)
++                self.assertEqual(loaded.model.training_config,metadata.training)
++                self.assertFalse(loaded.model.training)
++                torch.testing.assert_close(loaded.model(x),expected,atol=0,rtol=0)
++                self.assertEqual(hashes(directory),frozen)
++                self.assertEqual(loaded.resolution.training_differences,('coverage_mode',))
++
++    def test_saved_structure_first_and_conflicts_precede_deserialization(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            directory=Path(tmp)/'run';save_core_checkpoint(directory,model_for(meta()),meta());frozen=hashes(directory)
++            for explicit in ({'d':16},{'num_latents':[8,6,4,2]},{'heads':[4,4,4,4]},
++                             {'family':'kcdno'},{'activation':'relu'}):
++                with patch('torch.load',side_effect=AssertionError('must reject BEFORE deserialization')):
++                    with self.assertRaises(ValueError):load_core_checkpoint(directory,task='darcy',explicit=explicit)
++            with patch('torch.load',side_effect=AssertionError('must reject BEFORE deserialization')):
++                with self.assertRaisesRegex(ValueError,'output_dim'):load_core_checkpoint(directory,task='darcy',expected_output_dim=4)
++            loaded=load_core_checkpoint(directory,task='darcy',explicit={'profile':'full'})
++            self.assertEqual(loaded.model.config,small()) # profile provenance does not overwrite saved values
++            self.assertEqual(hashes(directory),frozen)
++
++    def test_missing_family_and_incomplete_structure_are_never_guessed(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            directory=Path(tmp)/'run';save_core_checkpoint(directory,model_for(meta()),meta())
++            path=directory/'architecture.json';raw=json.loads(path.read_text())
++            for kind in ('family','shape','wrong_family'):
++                bad=copy.deepcopy(raw)
++                if kind=='family':bad.pop('family')
++                elif kind=='shape':bad['architecture'].pop('heads')
++                else:bad['family']='kcdno'
++                path.write_text(json.dumps(bad));before=path.read_bytes()
++                with self.assertRaises(ValueError):load_core_checkpoint(directory,task='darcy')
++                self.assertEqual(path.read_bytes(),before)
++
++    def test_strict_missing_extra_or_wrong_shape_weights_rejected(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            directory=Path(tmp)/'run';path=save_core_checkpoint(directory,model_for(meta()),meta())
++            weights=torch.load(path,weights_only=True);first=next(iter(weights))
++            for kind in ('missing','extra','shape'):
++                bad=weights.copy()
++                if kind=='missing':bad.pop(first)
++                elif kind=='extra':bad['made_up']=torch.zeros(1)
++                else:bad[first]=bad[first][:-1]
++                torch.save(bad,path)
++                with self.assertRaises(RuntimeError):load_core_checkpoint(directory,task='darcy')
++
++    def test_core_contract_schema_shape_and_dtype_rejected_before_load(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            directory=Path(tmp)/'run';save_core_checkpoint(directory,model_for(meta()),meta())
++            path=directory/'core.json';original=json.loads(path.read_text())
++            invalid=[dict(family='kcdno'),dict(input_contract='raw-task-data'),dict(output_dim=True),
++                     dict(members=2),dict(schema_version=True),dict(weight_dtype=[]),dict(filename='../model.pt')]
++            invalid.append({'model_class':'models.Transolver.Model'})
++            for change in invalid:
++                path.write_text(json.dumps(original | change));frozen=path.read_bytes()
++                with patch('torch.load',side_effect=AssertionError('invalid contract must not load')):
++                    with self.assertRaises(ValueError):load_core_checkpoint(directory,task='darcy')
++                self.assertEqual(path.read_bytes(),frozen)
++
++    def test_exclusive_save_and_validation_before_reservation(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            directory=Path(tmp)/'run';save_core_checkpoint(directory,model_for(meta()),meta());before=hashes(directory)
++            with self.assertRaises(FileExistsError):save_core_checkpoint(directory,model_for(meta()),meta())
++            self.assertEqual(hashes(directory),before)
++            other=Path(tmp)/'bad'
++            with self.assertRaises(ValueError):save_core_checkpoint(other,model_for(meta()),meta(training=MSARTrainingConfig(coverage_mode='off')))
++            self.assertFalse(other.exists())
++            with self.assertRaises(ValueError):save_core_checkpoint(other,model_for(meta()),meta(),filename='../model.pt')
++            self.assertFalse(other.exists())
++
++    def test_whole_and_list_protocols_and_trusted_local_boundary(self):
++        with tempfile.TemporaryDirectory() as tmp,sdpa_kernel(SDPBackend.MATH):
++            for task,fmt in (('car','whole_model'),('airfrans','model_list'),('airfrans','whole_model')):
++                metadata=meta(task,fmt=fmt);models=[model_for(metadata).eval() for _ in range(2 if fmt=='model_list' else 1)]
++                payload=models if fmt=='model_list' else models[0]
++                directory=Path(tmp)/(task+fmt)
++                filename='model_200.pth' if task=='car' else None
++                save_core_checkpoint(directory,payload,metadata,filename=filename);frozen=hashes(directory)
++                with patch('torch.load',side_effect=AssertionError('untrusted must reject before pickle')):
++                    with self.assertRaisesRegex(ValueError,'trusted local'):load_core_checkpoint(directory,task=task)
++                loaded=load_core_checkpoint(directory,task=task,trusted_local=True,explicit={'coverage_mode':'off'}).model
++                actual=loaded if fmt=='model_list' else [loaded]
++                self.assertEqual(type(loaded),list if fmt=='model_list' else MSARLNO)
++                x=torch.randn(1,11,8)
++                for a,b in zip(actual,models):torch.testing.assert_close(a(x),b(x),atol=0,rtol=0)
++                self.assertEqual(hashes(directory),frozen)
++
++    def test_whole_object_hidden_behavior_and_list_count_conflict(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            metadata=meta('car');model=model_for(metadata);directory=Path(tmp)/'car'
++            path=save_core_checkpoint(directory,model,metadata,filename='model_200.pth')
++            model.downs[0].heads=4 # same weights/config but a different forward
++            torch.save(model,path)
++            with self.assertRaisesRegex(ValueError,'behavior'):load_core_checkpoint(directory,task='car',trusted_local=True)
++            metadata=meta('airfrans');directory=Path(tmp)/'air'
++            path=save_core_checkpoint(directory,[model_for(metadata),model_for(metadata)],metadata)
++            torch.save([model_for(metadata)],path)
++            with self.assertRaisesRegex(ValueError,'member count'):load_core_checkpoint(directory,task='airfrans',trusted_local=True)
++
++    def test_parameter_aliasing_and_dtype_preservation(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            metadata=meta();model=model_for(metadata)
++            model.downs[1].to_k.weight=model.downs[0].to_k.weight
++            with self.assertRaisesRegex(ValueError,'shared'):save_core_checkpoint(Path(tmp)/'alias',model,metadata)
++            model=model_for(metadata).double().eval();directory=Path(tmp)/'double'
++            save_core_checkpoint(directory,model,metadata)
++            loaded=load_core_checkpoint(directory,task='darcy').model;x=torch.randn(1,11,8,dtype=torch.float64)
++            self.assertEqual(next(loaded.parameters()).dtype,torch.float64)
++            torch.testing.assert_close(loaded(x),model(x),atol=0,rtol=0)
++
++    def test_load_preserves_rng_and_does_not_initialize_over_trained_values(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            metadata=meta();model=model_for(metadata).eval()
++            with torch.no_grad():model.fusions[2].w.fill_(.42)
++            directory=Path(tmp)/'run';rng=torch.get_rng_state().clone();save_core_checkpoint(directory,model,metadata)
++            self.assertTrue(torch.equal(rng,torch.get_rng_state()))
++            actual=load_core_checkpoint(directory,task='darcy').model
++            self.assertTrue(torch.equal(rng,torch.get_rng_state()))
++            torch.testing.assert_close(actual.fusions[2].w,model.fusions[2].w,atol=0,rtol=0)
++
++    def test_three_project_cwd_fresh_process_loads(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            dirs=[]
++            for project,task in (('PDE-Solving-StandardBenchmark','darcy'),('Car-Design-ShapeNetCar','car'),('Airfoil-Design-AirfRANS','airfrans')):
++                metadata=meta(task);model=model_for(metadata).eval();directory=Path(tmp)/task
++                payload=[model] if task=='airfrans' else model
++                save_core_checkpoint(directory,payload,metadata,filename='model_200.pth' if task=='car' else None)
++                x=torch.randn(2,11,8)
++                torch.save({'input':x,'output':model(x).detach()},Path(tmp)/(task+'.pt'))
++                dirs.append((project,task,directory))
++            code='''
++import sys,torch
++from cdlno.msar_lno.checkpoint import load_core_checkpoint
++torch.set_num_threads(1)
++directory,task,fixture=sys.argv[1:]
++result=load_core_checkpoint(directory,task=task,trusted_local=task!='darcy')
++model=result.model[0] if isinstance(result.model,list) else result.model
++sample=torch.load(fixture,weights_only=True)
++torch.testing.assert_close(model(sample['input']),sample['output'],atol=0,rtol=0)
++print(task+' strict same-weight fresh-cwd load passed')
++'''
++            for project,task,directory in dirs:
++                result=subprocess.run([sys.executable,'-B','-c',code,str(directory),task,str(Path(tmp)/(task+'.pt'))],
++                    cwd=ROOT/project,env=dict(os.environ,PYTHONPATH=str(ROOT)),capture_output=True,text=True)
++                self.assertEqual(result.returncode,0,result.stderr)
++
++    @unittest.skipUnless(torch.cuda.is_available(), 'CUDA unavailable: M4 adapter GPU check not run')
++    def test_gpu_explicit_objective_step_and_checkpoint(self):
++        cfg=MSARTrainingConfig(coverage_kappa=1.)
++        metadata=meta(training=cfg);model=model_for(metadata).cuda().train()
++        optimizer=torch.optim.AdamW(model.parameters(),lr=1e-3)
++        with sdpa_kernel(SDPBackend.MATH):
++            x=torch.randn(2,11,8,device='cuda')
++            result=training_forward(model,x)
++            # Explicit synthetic MSE, not a real task loop or metric.
++            losses=training_objective(result.prediction.square().mean(),result)
++            losses.total.backward()
++            self.assertTrue(all(p.grad is not None and torch.isfinite(p.grad).all() for p in model.parameters()))
++            optimizer.step()
++            with tempfile.TemporaryDirectory() as tmp:
++                directory=Path(tmp)/'gpu';save_core_checkpoint(directory,model,metadata)
++                loaded=load_core_checkpoint(directory,task='darcy',device='cuda').model
++                torch.testing.assert_close(model.eval()(x),loaded(x),atol=1e-6,rtol=1e-5)
++
++
++if __name__=='__main__':unittest.main(verbosity=2)
+--- before/tests/test_static_standard.py
++++ after/tests/test_static_standard.py
+@@ -430,6 +430,12 @@
+             projected = LegacyProjection().visit(strip_recording(tree(task)))
+             self.assertEqual(ast.dump(projected), ast.dump(ast.parse(original)), task)
+         current = strip_recording(ast.parse((PROJECT / 'model_dict.py').read_text()))
++        # M4 adds exactly one independent lifted-core selection branch. Assert
++        # its entire AST before removing it from the legacy factory comparison.
++        factory = next(n for n in current.body if isinstance(n, ast.FunctionDef) and n.name == 'get_model')
++        msar = ast.parse("if args.model == 'msar_lno':\n    from model import MSAR_LNO\n    return MSAR_LNO").body[0]
++        self.assertEqual(ast.dump(factory.body[0]), ast.dump(msar))
++        factory.body.pop(0)
+         original = subprocess.check_output(['git','show',f'{UPSTREAM}:PDE-Solving-StandardBenchmark/model_dict.py'], cwd=ROOT, text=True)
+         self.assertEqual(ast.dump(LegacyProjection().visit(current)), ast.dump(ast.parse(original)))
+ 

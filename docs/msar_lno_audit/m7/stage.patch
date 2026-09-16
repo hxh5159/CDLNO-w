@@ -1,0 +1,1805 @@
+--- before/Airfoil-Design-AirfRANS/cdlno_entry.py
++++ after/Airfoil-Design-AirfRANS/cdlno_entry.py
+@@ -39,6 +39,16 @@
+     parser.add_argument('--kernel-rank', '--kernel_rank', type=int, default=16)
+     parser.add_argument('--history-mode', '--history_mode', choices=('all', 'off'), default='all')
+     parser.add_argument('--kcdno-run-dir', type=Path, default=None)
++    # Route only an explicitly selected new family; the original parser stays intact.
++    import argparse
++    import sys
++    tokens = sys.argv[1:] if argv is None else argv
++    selector = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
++    selector.add_argument('--model')
++    selected, _ = selector.parse_known_args(tokens)
++    if selected.model == 'msar_lno':
++        from cdlno.msar_lno.industrial_entry import parse_args as parse_msar_args
++        return parse_msar_args(parser, tokens, task='airfrans', evaluation=evaluation)
+     args = parser.parse_args(argv)
+     if args.model in ('kcdno', 'lrsa_matched'):
+         from cdlno.kcdno.air_entry import resolve_air
+--- before/Airfoil-Design-AirfRANS/configs/msar_lno/airfrans.json
++++ after/Airfoil-Design-AirfRANS/configs/msar_lno/airfrans.json
+@@ -0,0 +1,12 @@
++{
++  "family": "msar_lno",
++  "task": "airfrans",
++  "profile": "light",
++  "objective": {
++    "coverage_mode": "floor",
++    "coverage_weight": 0.01,
++    "coverage_kappa": 0.2,
++    "coverage_eps": 1e-06,
++    "diagnostics": false
++  }
++}
+--- before/Airfoil-Design-AirfRANS/main.py
++++ after/Airfoil-Design-AirfRANS/main.py
+@@ -28,6 +28,12 @@
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     with open('params.yaml', 'r') as config_file:
+         recording_hparams = resolve_hparams(args, yaml.safe_load(config_file)['CDLNO'])
++    start_experiment(args, 'airfrans', evaluation=False, hparams=recording_hparams)
++elif args.model == 'msar_lno':
++    from msar_entry import AirRun as MSARAirRun, model_kwargs as msar_model_kwargs, resolve_hparams as msar_resolve_hparams
++    from cdlno.experiment import start as start_experiment, finish as finish_experiment
++    with open('params.yaml', 'r') as config_file:
++        recording_hparams = msar_resolve_hparams(args, yaml.safe_load(config_file)['msar_lno'])
+     start_experiment(args, 'airfrans', evaluation=False, hparams=recording_hparams)
+ elif args.model in ('kcdno', 'lrsa_matched'):
+     from kcdno_entry import AirRun as KCDNOAirRun, model_kwargs as kcdno_model_kwargs, resolve_hparams as kcdno_resolve_hparams
+@@ -65,6 +71,11 @@
+     cdlno_run = AirRun(args, hparams, device=device)
+     cdlno_run.recorder.update_protocol(dict(train_graphs=len(train_dataset), validation_graphs=len(val_dataset),
+                                          val_iter=10, val_sample=True, criterion="MSE_weighted"))
++elif args.model == 'msar_lno':
++    hparams = msar_resolve_hparams(args, hparams)
++    cdlno_run = MSARAirRun(args, hparams, device=device)
++    cdlno_run.recorder.update_protocol(dict(train_graphs=len(train_dataset), validation_graphs=len(val_dataset),
++                                         val_iter=10, val_sample=True, criterion="MSE_weighted"))
+ elif args.model in ('kcdno', 'lrsa_matched'):
+     hparams = kcdno_resolve_hparams(args, hparams)
+     cdlno_run = KCDNOAirRun(args, hparams, device=device)
+@@ -92,6 +103,10 @@
+         from models.CDLNO import Model
+ 
+         model = Model(**cdlno_model_kwargs(args)).to(device)
++    elif args.model == 'msar_lno':
++        from models.MSAR_LNO import Model
++
++        model = Model(**msar_model_kwargs(args)).to(device)
+     elif args.model in ('kcdno', 'lrsa_matched'):
+         from models.KCDNO import Model
+ 
+@@ -134,11 +149,17 @@
+ score_array_path = score_path if cdlno_run is not None else osp.join('scores', args.task)
+ if args.model == 'CDLNO':
+     finish_experiment(args)
++elif args.model == 'msar_lno':
++    finish_experiment(args)
+ elif args.model in ('kcdno', 'lrsa_matched'):
+     finish_experiment(args)
+ 
+ if bool(args.score):
+     if args.model == 'CDLNO':
++        cdlno_run.recorder = start_experiment(args, 'airfrans', evaluation=True, hparams=hparams)
++        score_path = cdlno_run.recorder.result_dir
++        score_array_path = score_path
++    elif args.model == 'msar_lno':
+         cdlno_run.recorder = start_experiment(args, 'airfrans', evaluation=True, hparams=hparams)
+         score_path = cdlno_run.recorder.result_dir
+         score_array_path = score_path
+@@ -166,6 +187,9 @@
+     if args.model == 'CDLNO':
+         cdlno_run.recorder.record_air_scores(score_path)
+         finish_experiment(args)
++    elif args.model == 'msar_lno':
++        cdlno_run.recorder.record_air_scores(score_path)
++        finish_experiment(args)
+     elif args.model in ('kcdno', 'lrsa_matched'):
+         cdlno_run.recorder.record_air_scores(score_path)
+         finish_experiment(args)
+--- before/Airfoil-Design-AirfRANS/main_evaluation.py
++++ after/Airfoil-Design-AirfRANS/main_evaluation.py
+@@ -15,6 +15,12 @@
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     with open('params.yaml', 'r') as config_file:
+         recording_hparams = resolve_hparams(args, yaml.safe_load(config_file)['CDLNO'])
++    start_experiment(args, 'airfrans', evaluation=True, hparams=recording_hparams)
++elif args.model == 'msar_lno':
++    from msar_entry import AirRun as MSARAirRun, model_kwargs as msar_model_kwargs, resolve_hparams as msar_resolve_hparams
++    from cdlno.experiment import start as start_experiment, finish as finish_experiment
++    with open('params.yaml', 'r') as config_file:
++        recording_hparams = msar_resolve_hparams(args, yaml.safe_load(config_file)['msar_lno'])
+     start_experiment(args, 'airfrans', evaluation=True, hparams=recording_hparams)
+ elif args.model in ('kcdno', 'lrsa_matched'):
+     from kcdno_entry import AirRun as KCDNOAirRun, model_kwargs as kcdno_model_kwargs, resolve_hparams as kcdno_resolve_hparams
+@@ -65,6 +71,11 @@
+                 requested_hparams = resolve_hparams(args, yaml.safe_load(f)[model])
+             cdlno_run = AirRun(args, requested_hparams, device=device, evaluation=True)
+             mod = cdlno_run.load()
++        elif model == 'msar_lno':
++            with open('params.yaml', 'r') as f:
++                requested_hparams = msar_resolve_hparams(args, yaml.safe_load(f)[model])
++            cdlno_run = MSARAirRun(args, requested_hparams, device=device, evaluation=True)
++            mod = cdlno_run.load()
+         elif model in ('kcdno', 'lrsa_matched'):
+             with open('params.yaml', 'r') as f:
+                 requested_hparams = kcdno_resolve_hparams(args, yaml.safe_load(f)[model])
+@@ -82,12 +93,16 @@
+             hparam = yaml.safe_load(f)[model]
+             if model == 'CDLNO':
+                 hparam = cdlno_run.hparams
++            elif model == 'msar_lno':
++                hparam = cdlno_run.hparams
+             elif model in ('kcdno', 'lrsa_matched'):
+                 hparam = cdlno_run.hparams
+             hparams.append(hparam)
+ 
+     results_dir = cdlno_run.result_dir if args.model == 'CDLNO' else osp.join(ckpt_root_dir, 'scores', task)
+-    if args.model in ('kcdno', 'lrsa_matched'):
++    if args.model == 'msar_lno':
++        results_dir = cdlno_run.result_dir
++    elif args.model in ('kcdno', 'lrsa_matched'):
+         results_dir = cdlno_run.result_dir
+     coefs = metrics.Results_test(device, models, hparams, coef_norm, data_dir, results_dir, n_test=3, criterion='MSE',
+                                  s=s)
+@@ -107,6 +122,9 @@
+ if args.model == 'CDLNO':
+     cdlno_run.recorder.record_air_scores(results_dir)
+     finish_experiment(args)
++elif args.model == 'msar_lno':
++    cdlno_run.recorder.record_air_scores(results_dir)
++    finish_experiment(args)
+ elif args.model in ('kcdno', 'lrsa_matched'):
+     cdlno_run.recorder.record_air_scores(results_dir)
+     finish_experiment(args)
+--- before/Airfoil-Design-AirfRANS/models/MSAR_LNO.py
++++ after/Airfoil-Design-AirfRANS/models/MSAR_LNO.py
+@@ -0,0 +1,2 @@
++"""Stable shared AirfRANS class; local import alias only."""
++from cdlno.msar_lno.industrial import AirfRANSModel as Model
+--- before/Airfoil-Design-AirfRANS/msar_entry.py
++++ after/Airfoil-Design-AirfRANS/msar_entry.py
+@@ -0,0 +1,2 @@
++"""Data-free MSAR industrial entry aliases; stable model classes live in cdlno."""
++from cdlno.msar_lno.industrial_entry import AirRun, model_kwargs, resolve_hparams
+--- before/Airfoil-Design-AirfRANS/params.yaml
++++ after/Airfoil-Design-AirfRANS/params.yaml
+@@ -86,3 +86,12 @@
+   max_neighbors: 64
+   subsampling: 32000
+   r: 0.05
++
++# Independent MSAR family; task sampling/optimizer settings match the original.
++msar_lno:
++  batch_size: 1
++  nb_epochs: 398
++  lr: 0.001
++  max_neighbors: 64
++  subsampling: 32000
++  r: 0.05
+--- before/Airfoil-Design-AirfRANS/train.py
++++ after/Airfoil-Design-AirfRANS/train.py
+@@ -24,8 +24,11 @@
+     return sum([np.prod(p.size()) for p in model_parameters])
+ 
+ 
+-def train(device, model, train_loader, optimizer, scheduler, criterion='MSE', reg=1):
++def train(device, model, train_loader, optimizer, scheduler, criterion='MSE', reg=1, msar_metrics=None):
+     model.train()
++    msar_training = getattr(getattr(model, 'config', None), 'family', None) == 'msar_lno'
++    if msar_training:
++        from cdlno.msar_lno.objective import training_forward, training_objective
+     avg_loss_per_var = torch.zeros(4, device=device)
+     avg_loss = 0
+     avg_loss_surf_var = torch.zeros(4, device=device)
+@@ -38,7 +41,11 @@
+         data_clone = data.clone()
+         data_clone = data_clone.to(device)
+         optimizer.zero_grad()
+-        out = model(data_clone)
++        if msar_training:
++            msar_forward = training_forward(model, data_clone)
++            out = msar_forward.prediction
++        else:
++            out = model(data_clone)
+         targets = data_clone.y
+ 
+         if criterion == 'MSE' or criterion == 'MSE_weighted':
+@@ -52,10 +59,17 @@
+         loss_surf = loss_surf_var.mean()
+         loss_vol = loss_vol_var.mean()
+ 
+-        if criterion == 'MSE_weighted':
+-            (loss_vol + reg * loss_surf).backward()
++        if msar_training:
++            msar_loss = training_objective(loss_vol + reg * loss_surf if criterion == 'MSE_weighted' else total_loss, msar_forward)
++            if msar_metrics is not None:
++                msar_metrics.add(msar_loss)
++            msar_loss.total.backward()
++            del msar_forward, msar_loss
+         else:
+-            total_loss.backward()
++            if criterion == 'MSE_weighted':
++                (loss_vol + reg * loss_surf).backward()
++            else:
++                total_loss.backward()
+ 
+         optimizer.step()
+         scheduler.step()
+@@ -136,6 +150,9 @@
+     Path(path).mkdir(parents=True, exist_ok=True)
+ 
+     model = Net.to(device)
++    msar_training = getattr(getattr(model, 'config', None), 'family', None) == 'msar_lno'
++    if msar_training:
++        from cdlno.msar_lno.objective import ObjectiveMetrics
+     optimizer = torch.optim.Adam(model.parameters(), lr=hparams['lr'])
+     lr_scheduler = torch.optim.lr_scheduler.OneCycleLR(
+         optimizer,
+@@ -177,8 +194,16 @@
+         train_loader = DataLoader(train_dataset_sampled, batch_size=hparams['batch_size'], shuffle=True)
+         del (train_dataset_sampled)
+ 
+-        train_loss, _, loss_surf_var, loss_vol_var, loss_surf, loss_vol = train(device, model, train_loader, optimizer,
+-                                                                                lr_scheduler, criterion, reg=reg)
++        if msar_training:
++            msar_metrics = ObjectiveMetrics()
++            train_loss, _, loss_surf_var, loss_vol_var, loss_surf, loss_vol = train(device, model, train_loader, optimizer,
++                                                                                    lr_scheduler, criterion, reg=reg, msar_metrics=msar_metrics)
++            msar_values = msar_metrics.values()
++            print('MSAR objective (step mean):', msar_values,
++                  'coverage:', model.training_config.effective_coverage_mode)
++        else:
++            train_loss, _, loss_surf_var, loss_vol_var, loss_surf, loss_vol = train(device, model, train_loader, optimizer,
++                                                                                    lr_scheduler, criterion, reg=reg)
+         print('epoch: ' + str(epoch))
+         print('train_loss： ' + str(train_loss))
+         print('loss_vol： ' + str(loss_vol))
+@@ -269,6 +294,9 @@
+                                         validation_surface_mse=val_surf, validation_volume_mse=val_vol,
+                                         validation_surface_per_channel=val_surf_var,
+                                         validation_volume_per_channel=val_vol_var)
++            if msar_training:
++                recorded_metrics.update(msar_values, coverage_mode=model.training_config.effective_coverage_mode,
++                             objective_reduction='mean-over-optimizer-steps')
+             record.record_epoch(epoch + 1, recorded_metrics, member=record_member)
+             record.visualize(model, epoch + 1, hparams['nb_epochs'], member=record_member,
+                              dataset=val_dataset, coef_norm=visualization_norm, hparams=hparams)
+--- before/Car-Design-ShapeNetCar/configs/msar_lno/car.json
++++ after/Car-Design-ShapeNetCar/configs/msar_lno/car.json
+@@ -0,0 +1,17 @@
++{
++  "family": "msar_lno",
++  "task": "car",
++  "profile": "light",
++  "objective": {
++    "coverage_mode": "floor",
++    "coverage_weight": 0.01,
++    "coverage_kappa": 0.2,
++    "coverage_eps": 1e-06,
++    "diagnostics": false
++  },
++  "training": {
++    "lr": 0.001,
++    "batch_size": 1,
++    "nb_epochs": 200
++  }
++}
+--- before/Car-Design-ShapeNetCar/main.py
++++ after/Car-Design-ShapeNetCar/main.py
+@@ -27,7 +27,11 @@
+ if args.cfd_model == 'CDLNO':
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     start_experiment(args, 'car', evaluation=False)
+-if args.cfd_model in ('kcdno', 'lrsa_matched'):
++if args.cfd_model == 'msar_lno':
++    from msar_entry import CarRun as MSARRun, model_kwargs as msar_model_kwargs
++    from cdlno.experiment import start as start_experiment, finish as finish_experiment
++    start_experiment(args, 'car', evaluation=False)
++elif args.cfd_model in ('kcdno', 'lrsa_matched'):
+     from kcdno_entry import CarRun as KCDNORun, model_kwargs as kcdno_model_kwargs
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     start_experiment(args, 'car', evaluation=False)
+@@ -58,6 +62,11 @@
+     cdlno_run.recorder.update_protocol(dict(train_graphs=len(train_ds), validation_graphs=len(val_ds),
+                                          val_iter=args.val_iter, loss="velocity_mse + weight * surface_pressure_mse"))
+ 
++elif args.cfd_model == 'msar_lno':
++    from models.MSAR_LNO import Model as MSARModel
++    model = MSARModel(**msar_model_kwargs(args)).to(device)
++    cdlno_run = MSARRun(args, device=device, model=model)
++    cdlno_run.recorder.update_protocol(dict(train_graphs=len(train_ds), validation_graphs=len(val_ds), val_iter=args.val_iter, loss='velocity_mse + weight * surface_pressure_mse'))
+ elif args.cfd_model in ('kcdno', 'lrsa_matched'):
+     from models.KCDNO import Model as KCDNOModel
+     model = KCDNOModel(**kcdno_model_kwargs(args)).to(device)
+@@ -75,5 +84,7 @@
+ if args.cfd_model == 'CDLNO':
+     finish_experiment(args)
+ 
+-if args.cfd_model in ('kcdno', 'lrsa_matched'):
++if args.cfd_model == 'msar_lno':
+     finish_experiment(args)
++elif args.cfd_model in ('kcdno', 'lrsa_matched'):
++    finish_experiment(args)
+--- before/Car-Design-ShapeNetCar/main_evaluation.py
++++ after/Car-Design-ShapeNetCar/main_evaluation.py
+@@ -26,7 +26,11 @@
+ if args.cfd_model == 'CDLNO':
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     start_experiment(args, 'car', evaluation=True)
+-if args.cfd_model in ('kcdno', 'lrsa_matched'):
++if args.cfd_model == 'msar_lno':
++    from msar_entry import CarRun as MSARRun, model_kwargs as msar_model_kwargs
++    from cdlno.experiment import start as start_experiment, finish as finish_experiment
++    start_experiment(args, 'car', evaluation=True)
++elif args.cfd_model in ('kcdno', 'lrsa_matched'):
+     from kcdno_entry import CarRun as KCDNORun, model_kwargs as kcdno_model_kwargs
+     from cdlno.experiment import start as start_experiment, finish as finish_experiment
+     start_experiment(args, 'car', evaluation=True)
+@@ -42,6 +46,11 @@
+ 
+ if args.cfd_model == 'CDLNO':
+     cdlno_run = CarRun(args, device=device, evaluation=True)
++    path = str(cdlno_run.directory)
++    model = cdlno_run.load()
++    results_dir = cdlno_run.result_dir
++elif args.cfd_model == 'msar_lno':
++    cdlno_run = MSARRun(args, device=device, evaluation=True)
+     path = str(cdlno_run.directory)
+     model = cdlno_run.load()
+     results_dir = cdlno_run.result_dir
+@@ -147,10 +156,17 @@
+         upstream_unsynchronized_mean_forward_seconds=np.mean(times), evaluated_graphs=index))
+     finish_experiment(args)
+ 
+-if args.cfd_model in ('kcdno', 'lrsa_matched'):
++if args.cfd_model == 'msar_lno':
+     cdlno_run.recorder.record_metrics(dict(
+         rho_d=spear, c_d=coef_error / index, relative_l2_pressure=l2err_press,
+         relative_l2_velocity=l2err_velo, rmse_pressure=rmse_press, rmse_velocity_components=rmse_velo_var,
+         rmse_velocity=np.sqrt(np.mean(np.square(rmse_velo_var))),
+         upstream_unsynchronized_mean_forward_seconds=np.mean(times), evaluated_graphs=index))
+     finish_experiment(args)
++elif args.cfd_model in ('kcdno', 'lrsa_matched'):
++    cdlno_run.recorder.record_metrics(dict(
++        rho_d=spear, c_d=coef_error / index, relative_l2_pressure=l2err_press,
++        relative_l2_velocity=l2err_velo, rmse_pressure=rmse_press, rmse_velocity_components=rmse_velo_var,
++        rmse_velocity=np.sqrt(np.mean(np.square(rmse_velo_var))),
++        upstream_unsynchronized_mean_forward_seconds=np.mean(times), evaluated_graphs=index))
++    finish_experiment(args)
+--- before/Car-Design-ShapeNetCar/models/MSAR_LNO.py
++++ after/Car-Design-ShapeNetCar/models/MSAR_LNO.py
+@@ -0,0 +1,2 @@
++"""Stable shared Car class; local import alias only."""
++from cdlno.msar_lno.industrial import CarModel as Model
+--- before/Car-Design-ShapeNetCar/models/cdlno_run.py
++++ after/Car-Design-ShapeNetCar/models/cdlno_run.py
+@@ -33,6 +33,16 @@
+     parser.add_argument('--cdpa_mode', '--cdpa-mode', choices=('off', 'entry', 'every_block'), default=None)
+     parser.add_argument('--run_dir', type=Path, default=None,
+                         help='new CDLNO training directory, or existing run for evaluation')
++    # Route only an explicitly selected new family; the original parser stays intact.
++    import argparse
++    import sys
++    tokens = sys.argv[1:] if argv is None else argv
++    selector = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
++    selector.add_argument('--cfd_model')
++    selected, _ = selector.parse_known_args(tokens)
++    if selected.cfd_model == 'msar_lno':
++        from cdlno.msar_lno.industrial_entry import parse_args as parse_msar_args
++        return parse_msar_args(parser, tokens, task='car', evaluation=evaluation)
+     args = parser.parse_args(argv)
+     if args.cfd_model in ('kcdno', 'lrsa_matched'):
+         import sys
+--- before/Car-Design-ShapeNetCar/msar_entry.py
++++ after/Car-Design-ShapeNetCar/msar_entry.py
+@@ -0,0 +1,2 @@
++"""Data-free MSAR industrial entry aliases; stable model classes live in cdlno."""
++from cdlno.msar_lno.industrial_entry import CarRun, model_kwargs
+--- before/Car-Design-ShapeNetCar/train.py
++++ after/Car-Design-ShapeNetCar/train.py
+@@ -15,8 +15,11 @@
+     return sum([np.prod(p.size()) for p in model_parameters])
+ 
+ 
+-def train(device, model, train_loader, optimizer, scheduler, reg=1):
++def train(device, model, train_loader, optimizer, scheduler, reg=1, msar_metrics=None):
+     model.train()
++    msar_training = getattr(getattr(model, 'config', None), 'family', None) == 'msar_lno'
++    if msar_training:
++        from cdlno.msar_lno.objective import training_forward, training_objective
+ 
+     criterion_func = nn.MSELoss(reduction='none')
+     losses_press = []
+@@ -25,7 +28,11 @@
+         cfd_data = cfd_data.to(device)
+         geom = geom.to(device)
+         optimizer.zero_grad()
+-        out = model((cfd_data, geom))
++        if msar_training:
++            msar_forward = training_forward(model, (cfd_data, geom))
++            out = msar_forward.prediction
++        else:
++            out = model((cfd_data, geom))
+         targets = cfd_data.y
+ 
+         loss_press = criterion_func(out[cfd_data.surf, -1], targets[cfd_data.surf, -1]).mean(dim=0)
+@@ -33,7 +40,14 @@
+         loss_velo = loss_velo_var.mean()
+         total_loss = loss_velo + reg * loss_press
+ 
+-        total_loss.backward()
++        if msar_training:
++            msar_loss = training_objective(total_loss, msar_forward)
++            if msar_metrics is not None:
++                msar_metrics.add(msar_loss)
++            msar_loss.total.backward()
++            del msar_forward, msar_loss
++        else:
++            total_loss.backward()
+ 
+         optimizer.step()
+         scheduler.step()
+@@ -76,6 +90,9 @@
+ 
+ def main(device, train_dataset, val_dataset, Net, hparams, path, reg=1, val_iter=1, coef_norm=[], record=None):
+     model = Net.to(device)
++    msar_training = getattr(getattr(model, 'config', None), 'family', None) == 'msar_lno'
++    if msar_training:
++        from cdlno.msar_lno.objective import ObjectiveMetrics
+     optimizer = torch.optim.Adam(model.parameters(), lr=hparams['lr'])
+     lr_scheduler = torch.optim.lr_scheduler.OneCycleLR(
+         optimizer,
+@@ -91,7 +108,14 @@
+     pbar_train = tqdm(range(hparams['nb_epochs']), position=0)
+     for epoch in pbar_train:
+         train_loader = DataLoader(train_dataset, batch_size=hparams['batch_size'], shuffle=True, drop_last=True)
+-        loss_velo, loss_press = train(device, model, train_loader, optimizer, lr_scheduler, reg=reg)
++        if msar_training:
++            msar_metrics = ObjectiveMetrics()
++            loss_velo, loss_press = train(device, model, train_loader, optimizer, lr_scheduler, reg=reg, msar_metrics=msar_metrics)
++            msar_values = msar_metrics.values()
++            print('MSAR objective (step mean):', msar_values,
++                  'coverage:', model.training_config.effective_coverage_mode)
++        else:
++            loss_velo, loss_press = train(device, model, train_loader, optimizer, lr_scheduler, reg=reg)
+         if record is not None:
+             recorded_train = dict(pressure_mse=loss_velo, velocity_mse=loss_press)
+         train_loss = loss_velo + reg * loss_press
+@@ -113,6 +137,9 @@
+             if val_iter is not None and (epoch == hparams['nb_epochs'] - 1 or epoch % val_iter == 0):
+                 metrics.update(validation_pressure_mse=loss_velo, validation_velocity_mse=loss_press,
+                                upstream_validation_log_value=val_loss)
++            if msar_training:
++                metrics.update(msar_values, coverage_mode=model.training_config.effective_coverage_mode,
++                             objective_reduction='mean-over-optimizer-steps')
+             record.record_epoch(epoch + 1, metrics)
+             record.visualize(model, epoch + 1, hparams['nb_epochs'], dataset=val_dataset, coef_norm=coef_norm)
+ 
+--- before/cdlno/msar_lno/car_preflight.py
++++ after/cdlno/msar_lno/car_preflight.py
+@@ -0,0 +1,25 @@
++"""Read actual parser + saved config, then reuse the existing Car path guard."""
++import argparse
++import ast
++from pathlib import Path
++import subprocess
++import sys
++
++
++def main():
++    root=Path(__file__).resolve().parents[2]
++    project=root/'Car-Design-ShapeNetCar'
++    nodes=[n for n in ast.parse((project/'main_evaluation.py').read_text()).body if
++           (isinstance(n,ast.Assign) and ast.unparse(n.targets[0])=='parser') or
++           (isinstance(n,ast.Expr) and isinstance(n.value,ast.Call) and ast.unparse(n.value.func)=='parser.add_argument')]
++    scope={'argparse':argparse}
++    exec(compile(ast.Module(body=nodes,type_ignores=[]),'<parser-only>','exec'),scope)
++    sys.path.insert(0,str(project))
++    from models.cdlno_run import parse_args
++    args=parse_args(scope['parser'],evaluation=True)
++    subprocess.run([sys.executable,'-B',str(root/'tran_evaluate/check_car_eval.py'),
++                    '--data_dir',args.data_dir,'--run_dir',str(args.msar_run_dir),
++                    '--fold_id',str(args.fold_id),'--nb_epochs',str(args.nb_epochs)],check=True)
++
++
++if __name__=='__main__':main()
+--- before/cdlno/msar_lno/industrial.py
++++ after/cdlno/msar_lno/industrial.py
+@@ -0,0 +1,90 @@
++"""Stable single-graph MSAR wrappers; no loader, graph construction or losses."""
++from dataclasses import replace
++
++import numpy as np
++import torch
++from torch import Tensor, nn
++
++from ..airfrans import _single_graph as sampled_single_graph
++from ..modules import _init_linear
++from .config import MSARArchitectureConfig, MSARTrainingConfig
++from .core import MSARLNO, MSARAuxOutput
++
++
++def adapter_architecture(task):
++    common = dict(input_channels=7, output_channels=4, placeholder=True, Time_Input=False,
++                  lift='pointwise-linear-gelu-linear-2d-v1', output_head='core-layernorm-linear-v1')
++    if task == 'car':
++        return common | dict(version='msar-shapenet-car-v1', stem_width=7,
++            input_order=['xyz3', 'sdf1', 'normal3'], output_order=['velocity3', 'pressure1'],
++            unified_pos=False, geometry_encoder=False, batch_policy='single-graph')
++    if task == 'airfrans':
++        return common | dict(version='msar-airfrans-v1', stem_width=71,
++            input_order=['xy2', 'Uinf2', 'sdf1', 'normal2'], output_order=['vx', 'vy', 'p', 'nut'],
++            ref=8, reference_domain=[[-2., 4.], [-1.5, 1.5]],
++            reference_rule='append-distances-from-data.pos', batch_policy='single-graph-sampled-ptr-v1')
++    raise ValueError('industrial MSAR task must be car or airfrans')
++
++
++class _GraphModel(nn.Module):
++    def __init__(self, *, config, training_config=None):
++        super().__init__()
++        if type(config) is not MSARArchitectureConfig:
++            raise ValueError('MSARArchitectureConfig required')
++        config.validate()
++        cfg = MSARTrainingConfig() if training_config is None else training_config
++        if type(cfg) is not MSARTrainingConfig:
++            raise ValueError('MSARTrainingConfig required')
++        cfg.validate()
++        self.config, self.training_config = config, cfg
++        d = config.d
++        self.preprocess = nn.Sequential(nn.Linear(self.adapter_architecture()['stem_width'], 2*d),
++                                        nn.GELU(), nn.Linear(2*d, d))
++        _init_linear(self.preprocess[0]); _init_linear(self.preprocess[2])
++        self.placeholder = nn.Parameter(torch.rand(d) / d)
++        if self.task_name == 'airfrans':
++            gx = torch.tensor(np.linspace(-2, 4, 8), dtype=torch.float32)
++            gy = torch.tensor(np.linspace(-1.5, 1.5, 8), dtype=torch.float32)
++            grid = torch.stack(torch.meshgrid(gx, gy, indexing='ij'), -1).reshape(64, 2)
++            self.register_buffer('reference', grid, persistent=False)
++        self.core = MSARLNO(config, output_dim=4, training_config=cfg)
++
++    def adapter_architecture(self):
++        return adapter_architecture(self.task_name)
++
++    def forward(self, data, *, return_aux=False, training_config=None):
++        if self.task_name == 'car':
++            if not isinstance(data, (tuple, list)) or len(data) != 2:
++                raise TypeError('MSAR ShapeNet-Car requires (cfd_data, geom_data)')
++            data, _ = data  # Preserve loader geometry work; baseline model ignores it.
++        x = getattr(data, 'x', None)
++        if not isinstance(x, Tensor) or x.ndim != 2 or x.shape[1] != 7 or x.shape[0] < 1 or not x.is_floating_point():
++            raise ValueError('MSAR industrial data.x must be nonempty floating [N,7]')
++        # Existing accepted Air sampled-ptr rule; Car additionally requires exact N.
++        sampled_single_graph(data, x.shape[0])
++        ptr = getattr(data, 'ptr', None)
++        if self.task_name == 'car' and ptr is not None and ptr[1].item() != x.shape[0]:
++            raise ValueError('MSAR Car single-graph ptr must be [0,N]')
++        features = x
++        if self.task_name == 'airfrans':
++            pos = getattr(data, 'pos', None)
++            if not isinstance(pos, Tensor) or pos.shape != (x.shape[0], 2):
++                raise ValueError('MSAR AirfRANS data.pos must be [N,2]')
++            if pos.dtype != x.dtype or pos.device != x.device:
++                raise ValueError('data.pos and data.x must share floating dtype/device')
++            distances = (pos[:, None] - self.reference.to(dtype=pos.dtype)[None]).square().sum(-1).sqrt()
++            features = torch.cat((x, distances), -1)
++        lifted = self.preprocess(features.unsqueeze(0)) + self.placeholder[None, None]
++        output = self.core(lifted, return_aux=return_aux, training_config=training_config)
++        # Explicit per-call aux, keeping prediction identity within its record.
++        if isinstance(output, MSARAuxOutput):
++            return replace(output, prediction=output.prediction.squeeze(0))
++        return output.squeeze(0)
++
++
++class CarModel(_GraphModel):
++    task_name = 'car'
++
++
++class AirfRANSModel(_GraphModel):
++    task_name = 'airfrans'
+--- before/cdlno/msar_lno/industrial_entry.py
++++ after/cdlno/msar_lno/industrial_entry.py
+@@ -0,0 +1,220 @@
++"""Industrial CLI and local trusted whole-object/list protocol; no data IO."""
++import json
++import os
++from pathlib import Path
++
++from .config import FAMILY, MSARArchitectureConfig, MSARTrainingConfig, MSARRuntimeConfig
++from .metadata import MSARMetadata, MSARMetadataMismatch, load_metadata, save_metadata, resolve_evaluation, new_run_path
++from .options import parser_for_family, explicit_arguments, resolve_training
++from .industrial import CarModel, AirfRANSModel, adapter_architecture
++
++ROOT = Path(__file__).resolve().parents[2]
++CAR_CONTRACT = ('fold_id', 'nb_epochs', 'weight', 'cfd_mesh', 'r')
++AIR_CONTRACT = ('task', 'nmodel', 'weight', 'hparams')
++CLASSES = {'car': CarModel, 'airfrans': AirfRANSModel}
++
++
++def task_record(directory, task):
++    value = json.loads((Path(directory)/'task.json').read_text())
++    required = {'schema_version','family','task','adapter','protocol','arguments'}
++    if (type(value) is not dict or value.keys() != required or type(value['schema_version']) is not int
++            or value['schema_version'] != 1 or value['family'] != FAMILY or value['task'] != task
++            or not all(type(value[k]) is dict for k in ('adapter','protocol','arguments'))
++            or value['adapter'] != adapter_architecture(task)
++            or set(value['protocol']) != set(CAR_CONTRACT if task == 'car' else AIR_CONTRACT)):
++        raise MSARMetadataMismatch('invalid MSAR industrial task/wrapper/protocol sidecar')
++    return value
++
++
++def parse_args(parser, tokens, *, task, evaluation=False):
++    import yaml
++    parser = parser_for_family(parser, FAMILY)
++    parser.add_argument('--msar-run-dir', type=Path)
++    parser.add_argument('--save_name', type=str, default=None)
++    args = parser.parse_args(tokens)
++    explicit = explicit_arguments(parser, tokens)
++    if args.msar_run_dir is None:
++        args.msar_run_dir = args.run_dir
++    elif args.run_dir is not None and args.run_dir != args.msar_run_dir:
++        raise ValueError('conflicting --run_dir and --msar-run-dir')
++    args.msar_task, args.msar_family, args.msar_evaluation = task, FAMILY, evaluation
++    project = 'Car-Design-ShapeNetCar' if task == 'car' else 'Airfoil-Design-AirfRANS'
++    preset = json.loads((ROOT/project/'configs/msar_lno'/f'{task}.json').read_text())
++    if preset['family'] != FAMILY or preset['task'] != task:
++        raise ValueError('MSAR preset family/task mismatch')
++    if evaluation:
++        if args.msar_run_dir is None:
++            parser.error('MSAR evaluation requires --msar-run-dir pointing to an existing run')
++        resolution = resolve_evaluation(args.msar_run_dir/'architecture.json', explicit, task=task)
++        saved = resolution.saved
++        if saved.checkpoint_format != ('whole_model' if task == 'car' else 'model_list'):
++            raise MSARMetadataMismatch('industrial checkpoint format mismatch')
++        record = task_record(args.msar_run_dir, task)
++        contract = record['protocol']
++        for name in (CAR_CONTRACT if task == 'car' else ('task','nmodel','weight')):
++            if name in explicit and explicit[name] != contract[name]:
++                raise MSARMetadataMismatch('industrial run contract mismatch: '+name)
++            setattr(args, name, contract[name])
++        if task == 'airfrans':
++            hp = contract['hparams']
++            for name in ('nb_epochs','batch_size','lr'):
++                if name in explicit and explicit[name] != hp.get(name):
++                    raise MSARMetadataMismatch('AirfRANS hparams mismatch: '+name)
++        args.profile, architecture, training = saved.profile, saved.architecture, saved.training
++        args.msar_eval_training_overrides = resolution.requested_training.to_dict()
++        args.msar_eval_training_differences = list(resolution.training_differences)
++    else:
++        resolved = resolve_training(task, dict(profile=preset['profile']) | preset['objective'] | explicit)
++        args.profile, architecture, training = resolved.profile, resolved.architecture, resolved.training
++        if task == 'car':
++            for name,value in preset['training'].items():
++                if name not in explicit:setattr(args,name,value)
++        else:
++            hp = yaml.safe_load((ROOT/project/'params.yaml').read_text())[FAMILY].copy()
++            for name in ('nb_epochs','batch_size','lr'):
++                if name in explicit:hp[name]=explicit[name]
++        # Validate save_name even when a separate explicit run path is supplied.
++        proposed = new_run_path(Path(os.environ.get('CDLNO_RUNS_ROOT', ROOT/'output')), resolved,
++                                save_name=args.save_name)
++        if args.msar_run_dir is None:args.msar_run_dir = proposed
++    if task == 'car':
++        if not 0 <= args.fold_id <= 8 or args.nb_epochs < 1:
++            raise ValueError('Car requires fold_id in 0..8 and positive nb_epochs')
++        if getattr(args,'batch_size',1) != 1:
++            raise ValueError('MSAR Car supports single-graph batch_size=1 only')
++        args.batch_size = 1
++    else:
++        if args.task not in ('full','scarce','reynolds','aoa') or args.nmodel < 1:
++            raise ValueError('invalid AirfRANS task/nmodel')
++        if hp.get('batch_size') != 1 or type(hp.get('nb_epochs')) is not int or hp['nb_epochs'] < 1:
++            raise ValueError('MSAR AirfRANS requires batch_size=1 and positive nb_epochs')
++        # All original sampling/graph fields are mandatory; never repair a sidecar.
++        if set(hp) != {'batch_size','nb_epochs','lr','max_neighbors','subsampling','r'}:
++            raise MSARMetadataMismatch('AirfRANS requires its complete saved sampling/training hparams')
++        args.msar_hparams = hp
++        for name in ('nb_epochs','batch_size','lr'):setattr(args,name,hp[name])
++    args.msar_architecture, args.msar_training = architecture.to_dict(), training.to_dict()
++    return args
++
++
++def model_kwargs(args):
++    if getattr(args,'msar_family',None) != FAMILY or args.msar_task not in CLASSES:
++        raise ValueError('explicit MSAR industrial arguments required')
++    return dict(config=MSARArchitectureConfig.from_dict(args.msar_architecture),
++                training_config=MSARTrainingConfig.from_dict(args.msar_training))
++
++
++def resolve_hparams(args, hparams):
++    if getattr(args,'msar_task',None) != 'airfrans':
++        raise ValueError('MSAR AirfRANS arguments required')
++    return dict(args.msar_hparams)  # Saved complete values win in eval; no YAML overwrite.
++
++
++class _IndustrialRun:
++    def __init__(self, args, *, device, model=None, evaluation=False):
++        from ..experiment import session, reserve_directory, timestamp
++        self.args, self.device, self.evaluation = args, device, evaluation
++        self.task = args.msar_task
++        self.directory = Path(args.msar_run_dir).resolve()
++        self.architecture = MSARArchitectureConfig.from_dict(args.msar_architecture)
++        self.training_config = MSARTrainingConfig.from_dict(args.msar_training)
++        self.adapter = adapter_architecture(self.task)
++        self.contract = ({k:getattr(args,k) for k in CAR_CONTRACT} if self.task == 'car' else
++                         dict(task=args.task, nmodel=args.nmodel, weight=args.weight, hparams=dict(args.msar_hparams)))
++        if self.task == 'airfrans':self.hparams = self.contract['hparams']
++        self.recorder = session(args)
++        self.metadata = MSARMetadata(self.task, self.architecture,
++            'whole_model' if self.task == 'car' else 'model_list', args.profile, training=self.training_config,
++            runtime=MSARRuntimeConfig(device=str(device),batch_size=1))
++        if evaluation:
++            self.validate()  # Before construction of the expected model or unpickling.
++        else:
++            if model is not None:self._check_model(model)
++            reserve_directory(args,self.directory)
++            save_metadata(self.sidecar,self.metadata)
++            with (self.directory/'task.json').open('x',encoding='utf-8') as stream:
++                json.dump(dict(schema_version=1,family=FAMILY,task=self.task,adapter=self.adapter,
++                    protocol=self.contract,arguments={k:str(v) if isinstance(v,Path) else v for k,v in vars(args).items()}),
++                    stream,indent=2,allow_nan=False)
++                stream.write('\n')
++        self.result_dir = str(self.directory/('eval_'+timestamp()))+'/'
++        if self.recorder is not None:
++            self.result_dir = self.recorder.result_dir
++            if model is not None:self.recorder.attach_model(model,protocol=self.contract)
++        print('MSAR industrial run:',self.directory,self.architecture.to_dict(),self.adapter)
++        print('MSAR coverage:',self.training_config.to_dict(),'effective:',self.training_config.effective_coverage_mode)
++
++    @property
++    def sidecar(self):return self.directory/'architecture.json'
++
++    @property
++    def checkpoint(self):
++        return self.directory/(f'model_{self.contract["nb_epochs"]}.pth' if self.task == 'car' else FAMILY)
++
++    def member_dir(self,index):
++        if self.task != 'airfrans' or type(index) is not int or not 0 <= index < self.contract['nmodel']:
++            raise ValueError('AirfRANS member index out of range')
++        return str(self.directory/f'member_{index:03d}')
++
++    def validate(self):
++        saved, record = load_metadata(self.sidecar), task_record(self.directory,self.task)
++        if (saved.task != self.task or saved.checkpoint_format != self.metadata.checkpoint_format
++                or saved.architecture != self.architecture or saved.training != self.training_config
++                or record['protocol'] != self.contract):
++            raise MSARMetadataMismatch('MSAR industrial family/architecture/training/protocol mismatch')
++
++    def _check_model(self,model):
++        import torch
++        if (type(model) is not CLASSES[self.task] or getattr(model,'config',None) != self.architecture
++                or getattr(model,'training_config',None) != self.training_config
++                or model.core.config != self.architecture or model.core.training_config != self.training_config
++                or model.core.output_dim != 4 or model.adapter_architecture() != self.adapter):
++            raise MSARMetadataMismatch('MSAR whole-model class/configuration/task mismatch')
++        parameters = list(model.named_parameters(remove_duplicate=False))
++        if len(parameters) != len({(p.device,p.untyped_storage().data_ptr()) for _,p in parameters}):
++            raise MSARMetadataMismatch('unexpected shared MSAR parameter storage')
++        dtype = next(model.parameters()).dtype
++        if any(p.dtype != dtype for _,p in parameters):
++            raise MSARMetadataMismatch('mixed parameter dtype in MSAR checkpoint')
++        with torch.random.fork_rng(devices=[]), torch.device('cpu'):
++            expected = CLASSES[self.task](**model_kwargs(self.args)).to(dtype=dtype)
++        from ..kcdno.loading import validate_whole_model
++        try:validate_whole_model(model,expected)
++        except (ValueError,RuntimeError) as error:raise MSARMetadataMismatch(str(error)) from error
++
++    def load(self, *, member=None):
++        import torch
++        if not self.evaluation:
++            raise RuntimeError('load requires evaluation of an existing trusted industrial run')
++        self.validate()
++        path = self.checkpoint if member is None else Path(self.member_dir(member))/'model'
++        # Same explicit LOCAL trusted whole-object boundary as the original tasks.
++        saved = torch.load(path, map_location=self.device, weights_only=False)
++        if self.task == 'airfrans' and member is None:
++            if type(saved) is not list or len(saved) != self.contract['nmodel']:
++                raise MSARMetadataMismatch('checkpoint must contain the complete AirfRANS model list')
++            models = saved
++        else:models = [saved]
++        storages = set()
++        for i,model in enumerate(models):
++            self._check_model(model)
++            for p in model.parameters():
++                key=(p.device,p.untyped_storage().data_ptr())
++                if key in storages:raise MSARMetadataMismatch('model list members must not share parameters')
++                storages.add(key)
++            model.to(self.device)
++            if self.recorder is not None:
++                self.recorder.attach_model(model,hparams=getattr(self,'hparams',None),
++                    member=i if member is None else member,protocol=self.contract)
++        return models if self.task == 'airfrans' and member is None else models[0]
++
++
++class CarRun(_IndustrialRun):
++    pass
++
++
++class AirRun(_IndustrialRun):
++    def __init__(self,args,hparams,*,device,evaluation=False):
++        if hparams != resolve_hparams(args,hparams):
++            raise MSARMetadataMismatch('AirfRANS hparams must match resolved/saved values')
++        super().__init__(args,device=device,evaluation=evaluation)
+--- before/docs/CDLNO_IMPLEMENTATION_STATUS.md
++++ after/docs/CDLNO_IMPLEMENTATION_STATUS.md
+@@ -1,4 +1,12 @@
+-# 最新：MSAR-LNO M5四静态任务完成，等待审查（2026-09-17）
++# 最新：独立MSAR-LNO M7工业任务完成，等待审查（2026-09-17）
++
++## 2026-09-17：MSAR-LNO M7完成，旧模型保持
++
++仅M7；M6已批准。Car/AirfRANS真实工业入口、独立wrapper/family/Light或Full/coverage显式loss/严格整对象或列表checkpoint已接入。单图batch1、变长N、reference/通道/surf及原加权loss保留；loader图构造/采样/散射/物理指标、旧模型、MSAR数学及PDE入口不改。eval先读架构/任务信息，coverage覆盖只记录请求；旧可信pickle边界不扩大，无新resume。
++
++报告`docs/MSAR_LNO_M7_INDUSTRIAL_TASKS.md`、独立STATUS和八任务命令`tran_evaluate/msar_lno/README.md`、证据`docs/msar_lno_audit/m7/`。MSAR107项106通过/1跳过（Air torch_cluster），166.280s；旧相关90项有两处测试适配问题，修正后定向2项通过，原模型回归无遗留失败，仍2处既有Air skip。14份旧工业同权重exact，182夹具hash保持。真实PyG原loss步骤、Car完整合成epoch、Air记录/scatter片段、同模式checkpoint/新cwd、两工业GPU FP32小结构及正式Light/Full小N前向通过。Air完整采样epoch/VTK指标、真实数据训练/收敛、远端2.11cu128、工业AMP、大profile反传/性能未验证。
++
++保留pre-M7快照`/home/hwz/CDLNO-artifacts/msar-m7-before-bocerv4d/source`和先存用户工作。6个工业完整入口/训练AST剥离精确新分支后与pre-M7相同；788起点文件字节相同。Car原drag固定路径/fold0、原日志压力/速度交换及Air日志拼写缺陷仍保留，不借新模型修复。下一阶段M8未执行，无真实训练/安装/commit/push/PR。**本M阶段结束，未执行下一阶段。**
+ 
+ ## 2026-09-17：独立MSAR-LNO M6完成（旧模型保持）
+ 
+--- before/docs/MSAR_LNO_IMPLEMENTATION_STATUS.md
++++ after/docs/MSAR_LNO_IMPLEMENTATION_STATUS.md
+@@ -1,4 +1,19 @@
+ # MSAR-LNO 实施状态
++
++## 2026-09-17：M7 ShapeNet-Car / AirfRANS接入完成，等待审查
++
++M6已审查通过；本轮仅M7。八任务现已接入`msar_lno`选择/Light默认/Full显式/coverage floor或off及原保存协议。新增工业wrapper共享同一已接受core，保留Car tuple→velocity3/pressure1、Air Data+reference64→vx/vy/p/nut、单图batch1与可变N。没有卷积，未删除任何图构造/采样，未修改MSAR核心或旧模型数学。
++
++- 工业训练使用既有显式`training_forward/training_objective`，无model.last_loss；Car原全点速度MSE+reg×表面压力MSE，Air入口原体积MSE+reg×表面MSE保持。每个单图forward只加入weight×四层raw均值，目标日志按优化步平均，coverage off/weight0不计算A。surf不成为coverage mask；没有新面积权重或标签权重。
++- 工业checkpoint保留Car整对象、Air整成员+列表，稳定类路径`cdlno.msar_lno.industrial.{CarModel,AirfRANSModel}`。先读完整family/架构/任务sidecar，再构造或本地可信unpickle；严格key/shape/行为/reference/成员隔离校验。eval coverage请求不改训练metadata，重复eval不覆盖训练文件；不提供新resume。
++- 新14方法；MSAR全套**107项/166.280s，106通过、1因缺torch_cluster跳过，0失败/错误**。真实PyG floor/off原loss/优化/eval、变长节点/拒绝多图、整对象/列表往返、两个原cwd新进程加载通过；Car完整合成epoch两模式通过，Air原训练函数+记录及scatter片段通过，完整采样epoch明确未执行。
++- 旧相关90方法首轮有2个测试适配问题（新YAML键及片段局部变量），修正后对应2项定向重跑通过，其余原模型回归通过；原Air缺torch_cluster仍2处skip。14旧工业固定权重夹具exact（8 K0 + 6 M0），182旧夹具文件hash保持。完整日志保留，未把分次结果冒充一次全绿运行。
++- 本地GPU两工业小结构FP32/MATH原loss更新通过；正式Light/Full B1/N11前向及实际参数统计通过（Car 1,711,420/6,814,324；Air 1,723,708/6,838,900）。本机Py3.13.9/torch2.13+cu130/PyG2.3.1/RTX5090Laptop；远端2.11/cu128、大profile反传/性能、工业AMP、完整数据读取/训练/收敛/物理系数未验证。
++- 起点807文本快照`/home/hwz/CDLNO-artifacts/msar-m7-before-bocerv4d/source`保留；19已有文件增量、15新增实现/测试/交付文件、788起点文件字节相同。6个完整工业main/eval/train AST剥离精确新family分支后与pre-M7相等；loader/metrics/旧模型、PDE入口、公共原语/已接受MSAR数学不改。先存用户diff保持，无安装、真实训练、commit/push/PR。
++
++[八任务覆盖及M7报告](MSAR_LNO_M7_INDUSTRIAL_TASKS.md)；[实际命令](../tran_evaluate/msar_lno/README.md)；[结果](msar_lno_audit/m7/summary.json)、[freeze](msar_lno_audit/m7/freeze.json)、[夹具](msar_lno_audit/m7/fixture-index.json)。自审5项通过。剩余限制为Air torch_cluster/完整后处理、原Car固定drag路径/fold0及原日志缺陷、远端与真实数据验证；未扩大信任或训练协议。
++
++**本M阶段结束，未执行下一阶段。**
+ 
+ ## 2026-09-17：M6 NS / Plasticity接入完成，等待审查
+ 
+--- before/docs/MSAR_LNO_M7_INDUSTRIAL_TASKS.md
++++ after/docs/MSAR_LNO_M7_INDUSTRIAL_TASKS.md
+@@ -0,0 +1,134 @@
++# MSAR-LNO M7：ShapeNet-Car / AirfRANS
++
++2026-09-17，仅M7。M6已审查通过。基于`main@9c5569e059eca8d57f5321fdbf0c0dc4aeb40860`的实际未提交工作增量实现；[M0接口审计](MSAR_LNO_REFERENCE_AUDIT.md)、[M6状态](MSAR_LNO_M6_TEMPORAL_TASKS.md)和当前工业源码共同确定接入位置。根AGENTS适用；没有其他子目录AGENTS。未执行M8、真实数据训练、依赖安装、commit/push或PR。
++
++## A. 完成范围和八任务覆盖
++
++两个工业任务均可通过原main/main_evaluation选择`msar_lno`。默认Light、显式Full，复用同一已接受MSAR core；原模型和旧入口默认值不变。新增wrapper只逐点lift/head，不使用卷积或图边，但保留loader/训练/评价中的全部图构造、采样、字段及后处理工作。原单图batch1保持，多图输入明确拒绝。
++
++| 任务 | wrapper合同 | 静态/选择/参数流 | 合成原loss训练步与eval | checkpoint | 真实PyG | GPU/真实数据 |
++|---|---|---|---|---|---|---|
++| Darcy | `x[B,N,2], fx=None → [B,N,1]`，原输入/输出normalizer与decode | M5通过，本轮MSAR套件重跑 | M5 floor/off通过，本轮重跑 | 原严格state_dict，通过 | 不适用 | 既有有限GPU随套件重跑；真实数据未执行 |
++| Elasticity | `x[B,N,2], fx=None → [B,N,1]` | 同上 | 同上 | 同上 | 不适用 | 同上 |
++| Airfoil | `x[B,N,2], fx=None → [B,N,1]` | 同上 | 同上 | 同上 | 不适用 | 同上 |
++| Pipe | `x[B,N,2], fx=None → [B,N,1]` | 同上 | 同上 | 同上 | 不适用 | 同上 |
++| NS | `x[B,4096,2], fx[B,4096,10] → [B,4096,1]` | M6通过，本轮重跑 | 原10次真值回填训练/预测回填eval通过，本轮重跑 | 原严格state_dict，通过 | 不适用 | 有限原10步GPU随套件重跑；真实数据未执行 |
++| Plasticity | `x[B,3131,2], fx[B,3131,1], T[B,1] → [B,3131,4]` | M6通过，本轮重跑 | 原20次独立时间更新通过，本轮重跑 | 原严格state_dict，通过 | 不适用 | 有限20时间点GPU随套件重跑；真实数据未执行 |
++| ShapeNet-Car | `forward((cfd_data,geom_data)) → [N,4]`，velocity3/pressure1 | M7通过 | floor/off原loss+Adam/OneCycle步骤通过；两种模式完整合成epoch、原test通过 | 整对象、负向、重复eval、新cwd通过 | 真Data/Batch，单图、变长N通过 | 本地缩小结构FP32步骤通过；真实数据/drag未执行 |
++| AirfRANS | `forward(data) → [N,4]`，vx/vy/p/nut | M7通过 | floor/off原`MSE_weighted`训练+原MSE test通过；完整抽样epoch未执行 | 整成员+模型列表、负向、重复eval、新cwd通过 | 真Data/Batch、原sampled-ptr合同通过 | 本地缩小结构FP32步骤通过；真实数据/完整抽样物理指标未执行 |
++
++“通过”指相应合成模型/源码检查，不表示真实数据读取、完整数据训练、收敛或准确率。AirfRANS完整采样需要本机缺失的`torch_cluster`，未伪造PyG/半径图、未跳过生产radius_graph来制造完整链路通过。工业多图支持未扩展。
++
++## B. 文件、符号与必要改动
++
++| 文件 | 符号/作用 |
++|---|---|
++| `cdlno/msar_lno/industrial.py`（新增） | `_GraphModel`、`CarModel`、`AirfRANSModel`及`adapter_architecture`：共享逐点lift、固定四通道head、任务字段校验、显式aux，稳定pickle类路径 |
++| 两项目`models/MSAR_LNO.py`、`msar_entry.py`（新增） | 最薄的任务Model/Run别名，不复制MSAR数学，不改旧类路径 |
++| `cdlno/msar_lno/industrial_entry.py`（新增） | `parse_args/model_kwargs/resolve_hparams`、`CarRun/AirRun`：新family显式解析、完整结构恢复、任务sidecar、原整对象/列表协议严格验证 |
++| Car `models/cdlno_run.py` / Air `cdlno_entry.py` | 在原parse前识别明确新模型名，仅该family使用新parser副本；旧模型返回原参数，不收到新kwargs |
++| 两项目`main.py/main_evaluation.py` | 显式`msar_lno`分支：早期实验记录、新Model/Run、原保存位置和原评价结果记录；数据主体不改 |
++| 两项目`train.py` | 新family独立forward/objective分支；每epoch局部`ObjectiveMetrics`，不改变原返回tuple、原loss表达式、optimizer/scheduler/采样节奏；旧分支保持 |
++| 两项目`configs/msar_lno/{car,airfrans}.json`及Air `params.yaml` | Light/floor/.01/.2默认，Car原200/batch1/lr.001；Air新增独立YAML键，仅原6项任务设置，无旧d/M注入 |
++| `cdlno/msar_lno/car_preflight.py`、`tran_evaluate/msar_lno/{car,airfrans,_dispatch}.sh` | 复用现有路径设置、环境和原Car预检；用户余参最后覆盖，不自动启动训练 |
++| `tests/test_msar_industrial.py`（新增14方法） | 真实PyG、原loss/epoch片段、图隔离、metadata/整对象严格加载、cwd、GPU、profile和脚本验证 |
++| 6个既有测试/投影helper | 增加精确新family剥离规则、YAML独立键允许项、实际旧family fragment局部变量；完整旧入口/训练AST另与pre-M7验证，不忽略任意代码 |
++| 本报告、STATUS/memory、脚本README和`docs/msar_lno_audit/m7/` | 八任务交付、真实命令及限制；保留此前报告/用户diff |
++
++起点快照807文本文件：`/home/hwz/CDLNO-artifacts/msar-m7-before-bocerv4d/source`。19个已有文件增量修改、15个新增实现/测试/报告/核查文件（不计生成证据）；其余788个起点文件字节不变。[起点](msar_lno_audit/m7/before.json)、[先存diff](msar_lno_audit/m7/preexisting.patch)、[本轮diff](msar_lno_audit/m7/stage.patch)、[冻结记录](msar_lno_audit/m7/freeze.json)分开保存，不把原有未提交修改算成本阶段模型改动。
++
++## C. 字段、公式和参数归属
++
++| 合同 | 代码/公式 | 实际检查 |
++|---|---|---|
++| Car输入 | 只读`cfd_data.x[N,7] = xyz3+sdf1+normal3`；保留tuple的geom，由原loader构造，按既有基线不额外编码 | 真PyG；y或edge变化预测exact不变；输入不修改 |
++| Air输入 | 只读`data.x[N,7] = xy2+Uinf2+sdf1+normal2`，追加从`data.pos[N,2]`到固定8×8参考点的64维距离，stem71 | 独立距离公式exact；原参考范围x[-2,4]/y[-1.5,1.5]与点序保持 |
++| lift/core/head | `Linear(stem,2d)→GELU→Linear(2d,d) + placeholder → 原MSARLNO(output_dim=4)`；core返回[B1,N,4]，wrapper只squeeze batch轴 | 没有Conv、额外head或跨forward状态；不递归重新初始化core |
++| 单图隔离 | 复用已接受`cdlno.airfrans._single_graph`只读校验；Car额外要求ptr=[0,N]；Air允许采样后all-zero batch与原ptr=[0,original_N] | 真Data/Batch，N11/23；多图拒绝；Air原N19采样10节点的ptr不改写 |
++| 节点与mask | surf只用于原PDE loss/边界后处理，不作为coverage源mask；无现成面积测度时图内全部点均匀；后续latent各slot均匀 | 同步点排列后输出等变，atol2e-6/rtol1e-4；off/floor同权重节点顺序一致 |
++| aux合同 | 既有`training_forward`调用`return_aux`，wrapper用dataclass replace只替换prediction成[N,4]，保持同一个prediction对象归属；局部变量不写model.last_loss | 原adapter有效检查；off/weight0不请求A；eval纯Tensor、不调用CoverageFloorLoss |
++| Car PDE | `LPDE = MSE(out[:,:3],y[:,:3]) + reg*MSE(out[surf,3],y[surf,3])` | 当前原`train.train`与独立同权重原式一步Adam更新exact |
++| Air PDE | `LPDE = MSE(out[~surf,:],y[~surf,:]) + reg*MSE(out[surf,:],y[surf,:])`，入口明确`criterion='MSE_weighted'`；eval保持MSE | 同上，非默认函数参数替代实际入口损失；eval原test通过 |
++| coverage聚合 | 每次单图forward：`C=(1/4)Σ_l Σ_j relu(kappa*mu_lj-p_lj)^2/(mu_lj+eps)`；`Ltotal=LPDE+coverage_weight*C` | 四Down FP32 raw均值，只加一次；off返回原LPDE对象；epoch日志仅对optimizer steps取平均，无跨图attention/图间辅助loss状态 |
++| 采样/scatter | `utils/metrics.Infer_test`原gather、`out[n][idx]=o.cpu()`、累积计数平均及surf vx/vy/nut处理不变 | 原AST安全片段+真实Data执行，压力通道/节点顺序对照exact；完整radius_graph/VTK/force链未执行 |
++
++默认diagnostics关闭；显式开启只返回既有小型no-grad统计，不把整图A写入日志。新参数仅在两个wrapper自己的lift/placeholder和同一个MSAR core，层间/模型成员不共享storage。
++
++正式Light/Full均实际构造并在CPU、B1/N11完成前向（M1>N是合法扩张，未截断M）。记录的是**真实模型参数量**，不代表大N训练性能：
++
++| 任务 | Light参数 | Full参数 | 新增图训练数值结构 |
++|---|---:|---:|---|
++| Car | 1,711,420 | 6,814,324 | d8、M=[7,5,3,2]、heads=[2,2,4,4]，完整6+6 block拓扑 |
++| AirfRANS | 1,723,708 | 6,838,900 | 同上；7+64输入合同不缩减 |
++
++正式Light/Full完整图反传/性能未运行。测试中kappa=1用于使coverage低于floor时有可测信号，实际profile仍为.2。示例loss值仅为固定随机合成数据的数值证据，不是数据集结果。
++
++## D. Checkpoint与可运行命令
++
++保存/加载不改原序列化方式：Car最终`model_<nb_epochs>.pth`整对象；Air每成员`member_NNN/model`整对象、根`msar_lno`模型列表。稳定类路径分别为`cdlno.msar_lno.industrial.CarModel`和`AirfRANSModel`，本地`models.MSAR_LNO`只是别名。没有新resume，**这些整模型文件不含完整optimizer/scheduler/RNG续训状态**。
++
++新run默认`output/<car|airfrans>/msar_lno/<light|full>/coverage_<floor|off>/<UTC+uuid>`，显式`--save_name`及`--msar-run-dir`保留独占防覆盖。data读取前预留路径/初始config；模型构造后记录实测参数；epoch四项目标日志与eval独立目录沿用现有experiment。Air成员相互独立。
++
++eval先解析已保存`architecture.json`的完整resolved结构/版本/family及训练目标，再验证用户显式架构覆盖；`task.json`核对adapter和fold/task/nmodel/训练采样协议，再构造或反序列化。coverage纯eval差异只记录请求，不改训练sidecar。缺family、错family、缺/错key、形状、heads、reference固定buffer、共享参数/共享列表成员均严格拒绝。expected模型仅在隔离CPU RNG环境构造作strict验证，**不替换或重新初始化已加载模型**；沿原本地可信pickle `weights_only=False`边界，没有全局权限设置、自动转换或strict=False。
++
++两个工业脚本的Light on/off和Full训练后立即eval模板、Car固定drag路径限制、Air train/eval路径差异见[脚本README](../tran_evaluate/msar_lno/README.md)。仅预览可执行：
++
++```bash
++# 实际checkout根目录，远端不依赖本机路径。
++bash tran_evaluate/msar_lno/car.sh train --profile light --gpu 0 --dry-run
++bash tran_evaluate/msar_lno/car.sh train --coverage-mode off --coverage-weight 0 --gpu 0 --dry-run
++CUDA_VISIBLE_DEVICES=0 bash tran_evaluate/msar_lno/airfrans.sh train --profile full --dry-run
++```
++
++两个任务各支持上述三种配置。6条train和6条eval预览已通过**真实parser**校验，无Python数据入口执行。以下是本机实际执行的审计命令；全套中的冻结/夹具检查依赖保留的外置源码快照和回归文件，其绝对路径不是训练脚本依赖。
++
++```bash
++MSAR_M7_RESULTS=docs/msar_lno_audit/m7/task-cases.json \
++PYTHONPATH=tests:. python -B -m unittest discover -s tests -p 'test_msar*.py' -v
++
++PYTHONPATH=tests:. python -B -m unittest \
++  test_shapenet_car test_airfrans test_kcdno_car test_kcdno_airfrans \
++  test_front_training test_experiment_records test_periodic_visualization -v
++
++python -B docs/kcdno_audit/replay_subset.py car --result docs/msar_lno_audit/m7/k0-car-replay.json
++python -B docs/kcdno_audit/replay_subset.py airfrans --result docs/msar_lno_audit/m7/k0-airfrans-replay.json
++
++# 分别在原Car/Air项目cwd，project为car或airfrans：
++PYTHONPATH=/home/hwz/CDLNO python -B \
++  /home/hwz/CDLNO/docs/msar_lno_audit/m0/wrapper_fixtures.py replay --project car \
++  --artifacts /home/hwz/CDLNO-artifacts/msar-m0-after-m1-q12zvb3s/wrappers \
++  --result /home/hwz/CDLNO/docs/msar_lno_audit/m7/car-wrapper-replay.json
++
++python -B docs/msar_lno_audit/m7/finalize_evidence.py
++```
++
++远端若仅有代码checkout而没有本机审计快照，可运行下列合成检查；它们不读取真实数据或外置旧夹具。若远端具备torch_cluster，最后一项会执行原radius_graph的**合成**单epoch，仍不会启动真实数据集训练：
++
++```bash
++PYTHONPATH=tests:. python -B -m unittest -v \
++  test_msar_industrial.IndustrialMSAR.test_real_graph_inputs_permutation_reference_and_batch_rejection \
++  test_msar_industrial.IndustrialMSAR.test_original_weighted_losses_steps_and_eval \
++  test_msar_industrial.IndustrialMSAR.test_coverage_off_weightzero_order_and_uniform_measure \
++  test_msar_industrial.IndustrialMSAR.test_checkpoint_whole_list_member_readfirst_and_fresh_cwd \
++  test_msar_industrial.IndustrialMSAR.test_checkpoint_corrupt_family_shape_behavior_and_shared_list \
++  test_msar_industrial.IndustrialMSAR.test_cuda_real_graph_loss_steps \
++  test_msar_industrial.IndustrialMSAR.test_air_original_sampled_epoch_when_extension_available
++```
++
++## E. 实际验证与冻结证据
++
++- [MSAR全套](msar_lno_audit/m7/msar-tests.log)：**107项，106通过、1跳过，166.280s，无失败/错误**，包括新增14方法。唯一跳过为缺torch_cluster的Air原完整抽样epoch。两工业cwd各floor/off共4次新进程真实本地Model别名导入、实际parser恢复、shared-class整对象加载CPU FP32 MATH exact。
++- [实际任务结果](msar_lno_audit/m7/task-cases.json)：两个任务×floor/off原loss梯度/一步Adam权重与独立同权重原式exact；覆盖N11/23、图隔离、coverage路径、严格checkpoint、原MSE test。另Car两个完整合成epoch（floor/off各一次）和Air两个原记录片段，重复eval不改训练config/sidecars/results。Car原可视化回调也实际执行；Air没有假装执行完整抽样可视化。
++- 本地GPU两个任务真实PyG小结构、FP32/MATH原损失反传/optimizer/eval通过；[环境](msar_lno_audit/m7/environment.json)为Python3.13.9、Torch2.13.0+cu130、CUDA13.0、PyG2.3.1、RTX5090 Laptop。旧M2/M3 AMP检查随套件重跑，但**不等于工业任务AMP验收**。远端Python3.10/Torch2.11/cu128未实测。
++- [旧受影响套件首轮](msar_lno_audit/m7/old-tests.log)：90方法、154.530s；2处skip记录均为既有Air缺torch_cluster。原生产回归通过，另有两处测试适配错误（YAML断言未排除新增独立键；单独exec的epoch记录片段未提供新局部family条件）。修正测试后[对应2项重跑](msar_lno_audit/m7/old-tests-corrections.log)均通过，2.524s。没有改旧生产行为或放宽数值容差；不把两次运行描述成一次全绿的90项运行。
++- [首轮新增检查](msar_lno_audit/m7/initial-tests.log)唯一错误为合成Car调用漏传normalizer而传None，原最终日志要求可迭代coef_norm；补上四项真实合同的合成normalizer后全套通过。保留失败日志，不改原trainer来迁就错误测试。
++- [夹具索引](msar_lno_audit/m7/fixture-index.json)：pre-K0工业8份（Transolver与CDLNO三模式×两任务）+M0工业6份（KCDNO all/off、matched×两任务），**14/14同一权重/固定输入精确回放，atol=rtol=0**。旧182个夹具文件hash保持。未触及的核心/时间/static旧夹具保留M0/M4—M6有效证据，不声称所有历史训练checkpoint兼容。
++- 六个完整工业入口/训练文件经**只移除精确MSAR分支**后，与pre-M7完整AST相等；函数签名只增加可选局部统计参数，旧调用/返回不变。loader、sampling/idx、normalizer、mask、原loss/更新频率、metrics/drag、旧模型实现、共享原语和MSAR M1—M6模型数学均未改。[冻结证据](msar_lno_audit/m7/freeze.json)包含字节与AST哈希。本轮没有触及六PDE入口或任务预设。
++
++## F. 自审重点与剩余边界
++
++已完成5项自审：①真实字段/reference/tuple及节点顺序；②单图隔离和保留图构造；③原weighted loss与每forward四层coverage均值；④先读配置、strict整对象/列表、训练文件只读；⑤完整旧分支AST及同权重旧输出。证据在对应测试及冻结索引中，未发现需要修改确认模型公式的阻断冲突。
++
++仍未验证：真实数据读取/训练/收敛/精度、Car drag和Air完整VTK/force指标、远端目标环境、正式大profile完整图反传/性能、工业AMP/backend/compile矩阵。Air缺torch_cluster是本机原依赖缺项，**不会在生产跳过图构造**。Car原drag硬编码param0/路径、外层日志变量压力/速度交换，Air既有验证日志拼写与条件缺陷均保留，不借新增模型修复冻结语义。本轮不新增resume或后续研究实验。
++
++**本M阶段结束，未执行下一阶段。**
+--- before/docs/msar_lno_audit/m7/finalize_evidence.py
++++ after/docs/msar_lno_audit/m7/finalize_evidence.py
+@@ -0,0 +1,124 @@
++"""M7 source/fixture integrity and actual result index, no task/data imports."""
++import ast
++import difflib
++import hashlib
++import json
++from pathlib import Path
++import re
++import subprocess
++import sys
++
++ROOT=Path(__file__).resolve().parents[3]
++E=Path(__file__).resolve().parent
++sys.path.insert(0,str(ROOT/'tests'))
++from msar_entry_projection import strip_msar
++
++
++def read(path):return json.loads(Path(path).read_text())
++def sha(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
++def write(name,data):(E/name).write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n')
++
++
++def main():
++    before=read(E/'before.json');snapshot=Path(before['archive'])/'source'
++    expected={
++        'Car-Design-ShapeNetCar/main.py','Car-Design-ShapeNetCar/main_evaluation.py',
++        'Car-Design-ShapeNetCar/train.py','Car-Design-ShapeNetCar/models/cdlno_run.py',
++        'Airfoil-Design-AirfRANS/main.py','Airfoil-Design-AirfRANS/main_evaluation.py',
++        'Airfoil-Design-AirfRANS/train.py','Airfoil-Design-AirfRANS/cdlno_entry.py','Airfoil-Design-AirfRANS/params.yaml',
++        'tests/msar_entry_projection.py','tests/test_airfrans.py','tests/test_experiment_records.py',
++        'tests/test_kcdno_tasks.py','tests/test_kcdno_car.py','tests/test_kcdno_airfrans.py',
++        'tran_evaluate/msar_lno/README.md','docs/MSAR_LNO_IMPLEMENTATION_STATUS.md',
++        'docs/CDLNO_IMPLEMENTATION_STATUS.md','memory/current-state.md'}
++    changed=[];unchanged=[]
++    for name,digest in before['files'].items():
++        assert (ROOT/name).is_file(),name
++        (unchanged if sha(ROOT/name)==digest else changed).append(name)
++    assert set(changed)==expected,changed
++    added=['cdlno/msar_lno/industrial.py','cdlno/msar_lno/industrial_entry.py','cdlno/msar_lno/car_preflight.py',
++           'Car-Design-ShapeNetCar/models/MSAR_LNO.py','Car-Design-ShapeNetCar/msar_entry.py',
++           'Car-Design-ShapeNetCar/configs/msar_lno/car.json',
++           'Airfoil-Design-AirfRANS/models/MSAR_LNO.py','Airfoil-Design-AirfRANS/msar_entry.py',
++           'Airfoil-Design-AirfRANS/configs/msar_lno/airfrans.json',
++           'tran_evaluate/msar_lno/car.sh','tran_evaluate/msar_lno/airfrans.sh','tran_evaluate/msar_lno/_dispatch.sh',
++           'tests/test_msar_industrial.py','docs/MSAR_LNO_M7_INDUSTRIAL_TASKS.md','docs/msar_lno_audit/m7/finalize_evidence.py']
++    patch=[]
++    for name in sorted(changed+added):
++        old=(snapshot/name).read_text() if name in before['files'] else ''
++        now=(ROOT/name).read_text()
++        patch.extend(difflib.unified_diff(old.splitlines(True),now.splitlines(True),fromfile='before/'+name,tofile='after/'+name))
++        if name.endswith('.py'):ast.parse(now,feature_version=(3,10))
++        if name.endswith('.sh'):subprocess.run(['bash','-n',str(ROOT/name)],check=True)
++    (E/'stage.patch').write_text(''.join(patch))
++    projections=[]
++    for project in ('Car-Design-ShapeNetCar','Airfoil-Design-AirfRANS'):
++        for file in ('main.py','main_evaluation.py','train.py'):
++            name=project+'/'+file
++            a=ast.dump(strip_msar(ast.parse((ROOT/name).read_text())))
++            b=ast.dump(ast.parse((snapshot/name).read_text()))
++            assert a==b,name
++            projections.append(dict(file=name,pre_M7_AST_sha256=hashlib.sha256(b.encode()).hexdigest(),status='exact'))
++    suites=[]
++    for name,count,status in [('msar-tests.log',107,'OK (skipped=1)'),
++                              ('old-tests.log',90,'FAILED (failures=1, errors=1, skipped=2)'),
++                              ('old-tests-corrections.log',2,'OK')]:
++        log=(E/name).read_text();match=re.search(r'Ran (\d+) tests in ([\d.]+)s',log)
++        assert match and int(match[1])==count and '\n'+status in log,name
++        suites.append(dict(log=name,methods=count,seconds=float(match[2]),reported_status=status))
++    # The only old suite failures must be the two corrected test adaptations.
++    oldlog=(E/'old-tests.log').read_text();corrections=(E/'old-tests-corrections.log').read_text()
++    problems=re.findall(r'^(?:FAIL|ERROR): (\w+) ',oldlog,re.M)
++    assert set(problems)=={'test_cli_yaml_inheritance_and_explicit_overrides',
++                          'test_air_weighted_loss_and_real_epoch_record_fragment_without_sampling'}
++    for method in problems:assert re.search(r'^'+method+r'.* \.\.\. ok$',corrections,re.M),method
++    replays=[]
++    for name,size in [('k0-car-replay',4),('k0-airfrans-replay',4),('car-wrapper-replay',3),('airfrans-wrapper-replay',3)]:
++        rows=read(E/(name+'.json'));assert len(rows)==size
++        for row in rows:
++            assert row['status']=='passed',row
++            replays.append(dict(group=name,name=row['name'],status='passed',atol=0,rtol=0))
++    oldindex=read(ROOT/'docs/msar_lno_audit/m0/fixture-index.json')
++    for item in oldindex['integrity_files']:assert sha(item['path'])==item['sha256'],item['path']
++    write('fixture-index.json',dict(previous_index='docs/msar_lno_audit/m0/fixture-index.json',
++        preserved_artifact_files=len(oldindex['integrity_files']),replayed=len(replays),results=replays,
++        unchanged_other_evidence='Pre-M1 core / K0 standard / M0 standard wrappers retain accepted prior evidence; not rerun here.',
++        limits='Fixed synthetic inputs and the same saved weights. No real trained historical industrial checkpoint supplied; not universal historical compatibility.'))
++    cases=read(E/'task-cases.json')
++    assert sum(bool(c.get('strict_checkpoint')) for c in cases)==4
++    assert sum(c.get('device')=='cuda' for c in cases)==2
++    assert sum(bool(c.get('complete_synthetic_epoch')) for c in cases)==2
++    assert sum(bool(c.get('epoch_record_fragment')) for c in cases)==2
++    assert sum(c.get('profile') in ('light','full') for c in cases)==4
++    write('freeze.json',dict(snapshot=str(snapshot),head=before['head'],files_at_start=len(before['files']),
++        changed=changed,added=added,unchanged_count=len(unchanged),industrial_complete_ast=projections,
++        unchanged_sha256={name:before['files'][name] for name in unchanged},
++        current_sha256={name:sha(ROOT/name) for name in changed+added},
++        frozen='All old model math, MSAR M1-M6 mathematics, six PDE entries, all loaders/metrics/dependencies remain byte-identical. Six complete industrial entry/train ASTs equal pre-M7 after exact new-family projection.'))
++    write('summary.json',dict(stage='M7',environment=read(E/'environment.json'),suites=suites,
++        new_test_methods=14,MSAR_passed=106,MSAR_skipped=1,
++        old_final_unresolved_failures=0,old_initial_failures_corrected_in_tests=problems,old_skip_records=2,
++        old_same_weight_exact=14,old_fixture_hashes_preserved=len(oldindex['integrity_files']),
++        original_loss='Car velocity-all MSE + reg*surface pressure MSE; Air MSE_weighted volume+reg*surface',
++        coverage='Per actual graph forward: weight * four-encoder-Down raw mean. Epoch logging mean per optimizer step.',
++        checkpoint='Car whole object; Air whole member and model list, original trusted local boundary; no new resume',
++        preview_actual_parser=dict(train=6,eval=6),fresh_cwd_graph_loads=4,
++        GPU='2 real PyG synthetic graph original-loss steps, reduced d8/M7,5,3,2 FP32 MATH, no AMP task acceptance',
++        profiles='Actual Light and Full parameters/construction/CPU B1 N11 forward, permitted M1>N expansion',
++        not_run=['real data reads/download/training/convergence/accuracy','remote Python3.10/torch2.11/cu128',
++                 'Air full sampled epoch/radius_graph/VTK/physical metrics (torch_cluster absent)',
++                 'Car real drag postprocessing','formal full-size industrial profile backward/performance',
++                 'industrial AMP/other backend/compile matrix'],next_stage_executed=False))
++    for doc in ('docs/MSAR_LNO_M7_INDUSTRIAL_TASKS.md','tran_evaluate/msar_lno/README.md'):
++        path=ROOT/doc
++        for target in re.findall(r'\]\(([^)]+)\)',path.read_text()):
++            if '://' not in target and not target.startswith('#'):assert (path.parent/target.split('#')[0]).exists(),target
++        for block in re.findall(r'```bash\n(.*?)```',path.read_text(),re.S):
++            subprocess.run(['bash','-n'],input=block,text=True,check=True)
++    subprocess.run(['git','diff','--check'],cwd=ROOT,check=True)
++    assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()==before['head']
++    (E/'status-after.txt').write_text(subprocess.check_output(['git','status','--short'],cwd=ROOT,text=True))
++    print(json.dumps(dict(stage='M7',changed=len(changed),added=len(added),unchanged=len(unchanged),
++        MSAR_passed=106,MSAR_skipped=1,old_exact=14,old_unresolved=0),ensure_ascii=False))
++
++
++if __name__=='__main__':main()
+--- before/memory/current-state.md
++++ after/memory/current-state.md
+@@ -1,4 +1,12 @@
+-# 最新：MSAR-LNO M5四静态任务完成，等待审查（2026-09-17）
++# 最新：独立MSAR-LNO M7工业任务完成，等待审查（2026-09-17）
++
++## 2026-09-17：MSAR-LNO M7完成，旧模型保持
++
++仅M7；M6已批准。Car/AirfRANS真实工业入口、独立wrapper/family/Light或Full/coverage显式loss/严格整对象或列表checkpoint已接入。单图batch1、变长N、reference/通道/surf及原加权loss保留；loader图构造/采样/散射/物理指标、旧模型、MSAR数学及PDE入口不改。eval先读架构/任务信息，coverage覆盖只记录请求；旧可信pickle边界不扩大，无新resume。
++
++报告`docs/MSAR_LNO_M7_INDUSTRIAL_TASKS.md`、独立STATUS和八任务命令`tran_evaluate/msar_lno/README.md`、证据`docs/msar_lno_audit/m7/`。MSAR107项106通过/1跳过（Air torch_cluster），166.280s；旧相关90项有两处测试适配问题，修正后定向2项通过，原模型回归无遗留失败，仍2处既有Air skip。14份旧工业同权重exact，182夹具hash保持。真实PyG原loss步骤、Car完整合成epoch、Air记录/scatter片段、同模式checkpoint/新cwd、两工业GPU FP32小结构及正式Light/Full小N前向通过。Air完整采样epoch/VTK指标、真实数据训练/收敛、远端2.11cu128、工业AMP、大profile反传/性能未验证。
++
++保留pre-M7快照`/home/hwz/CDLNO-artifacts/msar-m7-before-bocerv4d/source`和先存用户工作。6个工业完整入口/训练AST剥离精确新分支后与pre-M7相同；788起点文件字节相同。Car原drag固定路径/fold0、原日志压力/速度交换及Air日志拼写缺陷仍保留，不借新模型修复。下一阶段M8未执行，无真实训练/安装/commit/push/PR。**本M阶段结束，未执行下一阶段。**
+ 
+ ## 2026-09-17：MSAR-LNO M6完成，等待审查
+ 
+--- before/tests/msar_entry_projection.py
++++ after/tests/msar_entry_projection.py
+@@ -1,4 +1,4 @@
+-"""Only remove the explicit M5 new-family branches, retaining their legacy else.
++"""Only remove the explicit new-family branches, retaining their legacy else.
+ 
+ The complete projected entries are separately compared to the pre-M5 snapshot.
+ Factory mapping is not stripped: it has its own exact branch assertion.
+@@ -10,9 +10,18 @@
+ def strip_msar(tree):
+     class Strip(ast.NodeTransformer):
+         def visit_FunctionDef(self, node):
++            if node.name == 'train' and node.args.args[-1].arg == 'msar_metrics':
++                assert ast.unparse(node.args.defaults[-1]) == 'None'
++                node.args.args.pop(); node.args.defaults.pop()
+             return node if node.name == 'get_model' else self.generic_visit(node)
++        def visit_Assign(self, node):
++            if ast.unparse(node.targets[0]) == 'msar_training':
++                assert ast.unparse(node.value) == "getattr(getattr(model, 'config', None), 'family', None) == 'msar_lno'"
++                return None
++            return self.generic_visit(node)
+         def visit_If(self, node):
+-            if ast.unparse(node.test) == "args.model == 'msar_lno'":
++            if ast.unparse(node.test) in ("args.model == 'msar_lno'", "args.cfd_model == 'msar_lno'",
++                                          "model == 'msar_lno'", 'msar_training'):
+                 result=[]
+                 for item in node.orelse:
+                     value=self.visit(item)
+--- before/tests/test_airfrans.py
++++ after/tests/test_airfrans.py
+@@ -146,7 +146,7 @@
+     def test_cli_yaml_inheritance_and_explicit_overrides(self):
+         current = yaml.safe_load((AIR / 'params.yaml').read_text())
+         base = yaml.safe_load(original('params.yaml'))
+-        self.assertEqual({k:v for k,v in current.items() if k not in ('CDLNO', 'kcdno', 'lrsa_matched')}, base)
++        self.assertEqual({k:v for k,v in current.items() if k not in ('CDLNO', 'kcdno', 'lrsa_matched', 'msar_lno')}, base)
+         self.assertEqual(current['CDLNO'], current['Transolver'])
+         self.assertEqual(current['Transolver']['nb_epochs'], 398)
+         a = args(['--n-layers', '12', '--front-blocks', '7', '--nb_epochs', '400'])
+--- before/tests/test_experiment_records.py
++++ after/tests/test_experiment_records.py
+@@ -267,7 +267,7 @@
+                     if p.grad is not None:torch.testing.assert_close(p.grad,q.grad,atol=1e-6,rtol=1e-5)
+                 scope=dict(record=r,record_member=0,epoch=0,train_loss=values[0],loss_surf_var=values[2],
+                            loss_vol_var=values[3],loss_surf=values[4],loss_vol=values[5],criterion='MSE_weighted',
+-                           reg=.5,val_iter=None,model=m,hparams={'nb_epochs':4},
++                           reg=.5,val_iter=None,model=m,msar_training=getattr(getattr(m,'config',None),'family',None)=='msar_lno',hparams={'nb_epochs':4},
+                            val_dataset=[graph],visualization_norm=None)
+                 tree=ast.parse((ROOT/'Airfoil-Design-AirfRANS/train.py').read_text())
+                 main=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='main')
+--- before/tests/test_kcdno_airfrans.py
++++ after/tests/test_kcdno_airfrans.py
+@@ -39,12 +39,13 @@
+         for name in ('main.py','main_evaluation.py'):
+             self.assertEqual(ast.dump(strip_new(ast.parse((AIR/name).read_text()))),ast.dump(ast.parse((snapshot/name).read_text())))
+         from visualization_projection import strip_visualization
+-        self.assertEqual(ast.dump(strip_visualization(ast.parse((AIR/'train.py').read_text()))),
++        from msar_entry_projection import strip_msar
++        self.assertEqual(ast.dump(strip_visualization(strip_msar(ast.parse((AIR/'train.py').read_text())))),
+                          ast.dump(ast.parse((snapshot/'train.py').read_text())))
+         for name in ('utils/metrics.py','dataset/dataset.py'):
+             self.assertEqual((AIR/name).read_bytes(),(snapshot/name).read_bytes())
+         saved=yaml.safe_load((snapshot/'params.yaml').read_text());current=yaml.safe_load((AIR/'params.yaml').read_text())
+-        self.assertEqual({k:v for k,v in current.items() if k not in ('kcdno','lrsa_matched')},saved)
++        self.assertEqual({k:v for k,v in current.items() if k not in ('kcdno','lrsa_matched','msar_lno')},saved)
+         self.assertEqual(current['kcdno'],saved['Transolver'])
+         with self.assertRaises(ValueError):arguments(['--batch_size','2'])
+         with self.assertRaises(ValueError):arguments(['--front_latent_mode','full'])
+--- before/tests/test_kcdno_car.py
++++ after/tests/test_kcdno_car.py
+@@ -39,7 +39,8 @@
+         for name in ('main.py','main_evaluation.py'):
+             self.assertEqual(ast.dump(strip_new(ast.parse((CAR/name).read_text()))),ast.dump(ast.parse((snap/'Car-Design-ShapeNetCar'/name).read_text())))
+         from visualization_projection import strip_visualization
+-        self.assertEqual(ast.dump(strip_visualization(ast.parse((CAR/'train.py').read_text()))),
++        from msar_entry_projection import strip_msar
++        self.assertEqual(ast.dump(strip_visualization(strip_msar(ast.parse((CAR/'train.py').read_text())))),
+                          ast.dump(ast.parse((snap/'Car-Design-ShapeNetCar/train.py').read_text())))
+         with self.assertRaises(ValueError):arguments(['--batch_size','2'])
+         with self.assertRaises(ValueError):arguments(['--front_latent_mode','no_sa'])
+--- before/tests/test_kcdno_tasks.py
++++ after/tests/test_kcdno_tasks.py
+@@ -66,7 +66,8 @@
+ 
+ def strip_new(tree):
+     from visualization_projection import strip_visualization
+-    tree = strip_visualization(tree)
++    from msar_entry_projection import strip_msar
++    tree = strip_visualization(strip_msar(tree))
+     class Strip(ast.NodeTransformer):
+         def visit_ImportFrom(self,n):
+             return None if n.module=='kcdno_entry' else n
+--- before/tests/test_msar_industrial.py
++++ after/tests/test_msar_industrial.py
+@@ -0,0 +1,431 @@
++"""M7 real single-graph PyG, original losses and trusted pickle; no main imports."""
++import ast
++import copy
++from contextlib import redirect_stdout
++from dataclasses import replace
++import io
++import json
++import os
++from pathlib import Path
++import shlex
++import subprocess
++import sys
++import tempfile
++import unittest
++from unittest.mock import patch
++
++import numpy as np
++import torch
++from torch import nn
++from torch.nn.attention import sdpa_kernel, SDPBackend
++import yaml
++
++from test_shapenet_car import CAR, ROOT, entry_parser, HAS_PYG
++from models.cdlno_run import parse_args as car_parse
++from test_airfrans import AIR, entry as air_entry, parser as air_parser, module
++from msar_entry_projection import strip_msar
++from cdlno.msar_lno.industrial import CarModel, AirfRANSModel
++from cdlno.msar_lno.industrial_entry import CarRun, AirRun, model_kwargs, resolve_hparams
++from cdlno.msar_lno.metadata import MSARMetadataMismatch
++from cdlno.msar_lno.objective import training_forward, training_objective, ObjectiveMetrics
++from cdlno.msar_lno.modules import CoverageFloorLoss, LearnedQueryDown
++
++SMALL=['--d','8','--heads','2','2','4','4','--num-latents','7','5','3','2']
++PROJECTS={'car':CAR,'airfrans':AIR}
++CLASSES={'car':CarModel,'airfrans':AirfRANSModel}
++CASES=[]
++
++
++def tearDownModule():
++    target=os.environ.get('MSAR_M7_RESULTS')
++    if target:Path(target).write_text(json.dumps(CASES,indent=2)+'\n')
++
++
++def arguments(task, flags=(), evaluation=False):
++    if task=='car':
++        return car_parse(entry_parser(evaluation), evaluation=evaluation, argv=['--cfd_model','msar_lno',*flags])
++    return air_entry.parse_args(air_parser(evaluation),evaluation=evaluation,argv=['--model','msar_lno',*flags])
++
++
++def run(args, *, model=None, evaluation=False, device='cpu'):
++    if args.msar_task=='car':return CarRun(args,device=device,model=model,evaluation=evaluation)
++    return AirRun(args,resolve_hparams(args,{}),device=device,evaluation=evaluation)
++
++
++def graph(task,n=11):
++    from torch_geometric.data import Data,Batch
++    g=Data(x=torch.randn(n,7),pos=torch.randn(n,3 if task=='car' else 2),
++           y=torch.randn(n,4),surf=torch.arange(n)%3==0,edge_index=torch.tensor([[0,1],[1,0]]))
++    g=Batch.from_data_list([g])
++    return (g,Data(x=torch.randn(5,3))) if task=='car' else g
++
++
++def cfd(g):return g[0] if isinstance(g,tuple) else g
++
++
++def pde(task,pred,data,reg=.7):
++    errors=(pred-data.y).square()
++    if task=='car':return errors[:,:3].mean()+reg*errors[data.surf,3].mean()
++    return errors[~data.surf].mean()+reg*errors[data.surf].mean()
++
++
++def trainer(task):return module(PROJECTS[task]/'train.py','_msar_'+task+'_train')
++
++
++def save(run, models):
++    if run.task=='car':torch.save(models[0],run.checkpoint)
++    else:
++        torch.save(models,run.checkpoint)
++        for i,m in enumerate(models):
++            Path(run.member_dir(i)).mkdir(exist_ok=True)
++            torch.save(m,Path(run.member_dir(i))/'model')
++
++
++class IndustrialMSAR(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        cls.threads=torch.get_num_threads();torch.set_num_threads(1)
++        cls.math=sdpa_kernel(SDPBackend.MATH);cls.math.__enter__()
++    @classmethod
++    def tearDownClass(cls):
++        cls.math.__exit__(None,None,None);torch.set_num_threads(cls.threads)
++    def setUp(self):torch.manual_seed(731)
++
++    def test_real_parser_profiles_and_inapplicable_flags(self):
++        for task in PROJECTS:
++            a=arguments(task)
++            self.assertEqual(a.msar_architecture['num_latents'],[512,256,128,64])
++            self.assertEqual(a.msar_architecture['d'],96)
++            self.assertEqual(a.nb_epochs,200 if task=='car' else 398)
++            self.assertEqual((a.batch_size,a.lr),(1,.001))
++            self.assertEqual(a.msar_training['coverage_mode'],'floor')
++            a=arguments(task,['--profile','full','--d','16'])
++            self.assertEqual(a.msar_architecture['num_latents'],[1024,512,256,128])
++            self.assertEqual(a.msar_architecture['d'],16)
++            a=arguments(task,['--coverage-mode','off','--coverage-weight','0'])
++            self.assertIn('/msar_lno/light/coverage_off/',str(a.msar_run_dir))
++            for flags in (['--batch_size','2'],['--front-blocks','2'],['--history-mode','off'],['--slice_num','64']):
++                with self.assertRaises(ValueError):arguments(task,flags)
++            with self.assertRaises(FileNotFoundError):arguments(task,['--msar-run-dir','/absent/msar/run'],True)
++
++    def test_frozen_complete_entries_trainers_yaml_and_core(self):
++        before=json.loads((ROOT/'docs/msar_lno_audit/m7/before.json').read_text())
++        source=Path(before['archive'])/'source'
++        for project in PROJECTS.values():
++            for name in ('main.py','main_evaluation.py','train.py'):
++                relative=project.relative_to(ROOT)/name
++                self.assertEqual(ast.dump(strip_msar(ast.parse((project/name).read_text()))),
++                                 ast.dump(ast.parse((source/relative).read_text())),str(relative))
++        old=yaml.safe_load((source/'Airfoil-Design-AirfRANS/params.yaml').read_text())
++        now=yaml.safe_load((AIR/'params.yaml').read_text());new=now.pop('msar_lno')
++        self.assertEqual(now,old);self.assertEqual(new,old['kcdno'])
++        for path in ['cdlno/msar_lno/core.py','cdlno/msar_lno/modules.py','cdlno/msar_lno/objective.py',
++                     'cdlno/modules.py','cdlno/cdpa.py','Airfoil-Design-AirfRANS/utils/metrics.py',
++                     'Car-Design-ShapeNetCar/utils/drag_coefficient.py']:
++            self.assertEqual((ROOT/path).read_bytes(),(source/path).read_bytes())
++
++    @unittest.skipUnless(HAS_PYG,'real PyG unavailable')
++    def test_real_graph_inputs_permutation_reference_and_batch_rejection(self):
++        from torch_geometric.data import Batch
++        for task in PROJECTS:
++            a=arguments(task,SMALL);m=CLASSES[task](**model_kwargs(a)).eval()
++            self.assertFalse(any(isinstance(layer,(nn.Conv1d,nn.Conv2d,nn.Conv3d)) for layer in m.modules()))
++            for n in (11,23):
++                g=graph(task,n);data=cfd(g);before=data.clone();out=m(g)
++                self.assertEqual(out.shape,(n,4))
++                order=torch.randperm(n);perm=data.clone()
++                for field in ('x','pos','y','surf','batch'):perm[field]=data[field][order]
++                permuted=(perm,g[1]) if task=='car' else perm
++                torch.testing.assert_close(m(permuted),out[order],atol=2e-6,rtol=1e-4)
++                data.y+=10;data.edge_index=torch.empty(2,0,dtype=torch.long)
++                torch.testing.assert_close(m(g),out,atol=0,rtol=0)
++                data.y=before.y;data.edge_index=before.edge_index
++                for key,value in before.to_dict().items():torch.testing.assert_close(data[key],value,atol=0,rtol=0)
++                multi=Batch.from_data_list([data.to_data_list()[0]]*2)
++                with self.assertRaises(ValueError):m((multi,g[1]) if task=='car' else multi)
++                if task=='airfrans':
++                    captured=[]
++                    hook=m.preprocess.register_forward_pre_hook(lambda _,inputs:captured.append(inputs[0].detach().clone()))
++                    m(g);hook.remove()
++                    distances=(data.pos[:,None]-m.reference[None]).square().sum(-1).sqrt()
++                    torch.testing.assert_close(captured[0],torch.cat((data.x,distances),-1)[None],atol=0,rtol=0)
++            self.assertEqual(len(list(m.parameters())),len({p.untyped_storage().data_ptr() for p in m.parameters()}))
++
++    @unittest.skipUnless(HAS_PYG,'real PyG unavailable')
++    def test_original_weighted_losses_steps_and_eval(self):
++        for task in PROJECTS:
++            for mode in ('off','floor'):
++                a=arguments(task,[*SMALL,'--coverage-mode',mode,'--coverage-kappa','1'])
++                m=CLASSES[task](**model_kwargs(a));reference=copy.deepcopy(m)
++                data=graph(task);t=trainer(task)
++                opt=torch.optim.Adam(m.parameters(),lr=.001)
++                sched=torch.optim.lr_scheduler.OneCycleLR(opt,max_lr=.001,total_steps=20)
++                refopt=torch.optim.Adam(reference.parameters(),lr=.001)
++                refsched=torch.optim.lr_scheduler.OneCycleLR(refopt,max_lr=.001,total_steps=20)
++                f=training_forward(reference,data);raw=pde(task,f.prediction,cfd(data))
++                objective=training_objective(raw,f);objective.total.backward();refopt.step();refsched.step()
++                metrics=ObjectiveMetrics()
++                kwargs=dict(reg=.7,msar_metrics=metrics)
++                if task=='airfrans':kwargs['criterion']='MSE_weighted'
++                t.train('cpu',m,[data],opt,sched,**kwargs)
++                self.assertEqual(sched.last_epoch,1)
++                for key,value in reference.state_dict().items():torch.testing.assert_close(m.state_dict()[key],value,atol=0,rtol=0)
++                expected=objective.log_values();got=metrics.values()
++                for new,old in [('objective_pde','pde'),('coverage_raw','coverage_raw'),('coverage_weighted','coverage_weighted'),('objective_total','total')]:
++                    self.assertAlmostEqual(got[new],expected[old].item(),places=6)
++                if mode=='off':self.assertEqual(got['objective_pde'],got['objective_total'])
++                self.assertTrue(all(p.grad is not None and torch.isfinite(p.grad).all() for p in m.parameters()))
++                with patch.object(CoverageFloorLoss,'forward',side_effect=AssertionError('eval computed coverage')):
++                    losses=t.test('cpu',m,[data]);self.assertTrue(np.isfinite(np.asarray(losses[0])).all())
++                CASES.append(dict(task=task,mode=mode,device='cpu',real_PyG=True,original_loss=True,
++                    optimizer_steps=1,eval=True,objective=got))
++
++    @unittest.skipUnless(HAS_PYG,'real PyG unavailable')
++    def test_coverage_off_weightzero_order_and_uniform_measure(self):
++        for task in PROJECTS:
++            m=CLASSES[task](**model_kwargs(arguments(task,SMALL))).train();g=graph(task)
++            # A is requested only for four Down layers, no source_measure or label weights.
++            requests=[];handles=[d.register_forward_pre_hook(lambda mod,args,kw:requests.append(kw.copy()),with_kwargs=True) for d in m.core.downs]
++            off=replace(m.training_config,coverage_mode='off');zero=replace(m.training_config,coverage_weight=0)
++            with patch.object(CoverageFloorLoss,'forward',side_effect=AssertionError('off computed coverage')):
++                x=training_forward(m,g,training_config=off);z=training_forward(m,g,training_config=zero)
++            self.assertTrue(all(not item.get('return_aux',False) for item in requests));requests.clear()
++            recorded=[]
++            original=CoverageFloorLoss.forward
++            def capture(mod,attention,**kwargs):
++                self.assertIsNone(kwargs.get('source_measure'));recorded.append(attention.shape)
++                return original(mod,attention,**kwargs)
++            with patch.object(CoverageFloorLoss,'forward',capture):y=training_forward(m,g)
++            self.assertEqual(len(recorded),4)
++            for h in handles:h.remove()
++            torch.testing.assert_close(x.prediction,y.prediction,atol=2e-6,rtol=1e-4)
++            torch.testing.assert_close(z.prediction,x.prediction,atol=0,rtol=0)
++            self.assertIs(y.auxiliary.prediction,y.prediction)
++            self.assertIsNone(y.auxiliary.diagnostics)
++            with torch.no_grad():
++                diagnostic=m(g,return_aux=True,training_config=replace(off,diagnostics=True))
++            for group in diagnostic.diagnostics.values():
++                for row in group:
++                    for value in row.values():self.assertLessEqual(value.numel(),2);self.assertFalse(value.requires_grad)
++
++    @unittest.skipUnless(HAS_PYG,'real PyG unavailable')
++    def test_checkpoint_whole_list_member_readfirst_and_fresh_cwd(self):
++        for task in PROJECTS:
++            for mode in ('floor','off'):
++                with self.subTest(task=task,mode=mode),tempfile.TemporaryDirectory() as tmp,redirect_stdout(io.StringIO()):
++                    path=Path(tmp)/'run';flags=[*SMALL,'--coverage-mode',mode,'--nb_epochs','3','--msar-run-dir',str(path)]
++                    if task=='airfrans':flags+=['--nmodel','2']
++                    a=arguments(task,flags);models=[CLASSES[task](**model_kwargs(a)).eval() for _ in range(2 if task=='airfrans' else 1)]
++                    r=run(a,model=models[0]);save(r,models);g=graph(task)
++                    expected=models[0](g).detach();files={p.name:p.read_bytes() for p in (r.sidecar,path/'task.json')}
++                    ev=arguments(task,['--msar-run-dir',str(path),'--coverage-mode','off' if mode=='floor' else 'floor'],True)
++                    er=run(ev,evaluation=True);loaded=er.load();loaded=loaded[0] if task=='airfrans' else loaded
++                    torch.testing.assert_close(loaded.eval()(g),expected,atol=0,rtol=0)
++                    if task=='airfrans':
++                        for i,m in enumerate(models):torch.testing.assert_close(er.load(member=i).eval()(g),m(g),atol=0,rtol=0)
++                    for flags in (['--d','16'],['--num-latents','8','5','3','2'],['--nb_epochs','4']):
++                        with patch('torch.load',side_effect=AssertionError('unpickle before validation')):
++                            with self.assertRaises(MSARMetadataMismatch):arguments(task,['--msar-run-dir',str(path),*flags],True)
++                    self.assertEqual(files,{p.name:p.read_bytes() for p in (r.sidecar,path/'task.json')})
++                    torch.save(dict(x=cfd(g).x,pos=cfd(g).pos,expected=expected),Path(tmp)/'probe.pt')
++                    code='''
++import sys, torch
++from pathlib import Path
++from torch_geometric.data import Data
++from torch.nn.attention import sdpa_kernel,SDPBackend
++import ast, argparse
++from cdlno.msar_lno.industrial_entry import CarRun,AirRun,model_kwargs,resolve_hparams
++from models.MSAR_LNO import Model
++p=Path(sys.argv[1]);task=sys.argv[2];torch.set_num_threads(1)
++if task=='car':
++ from models.cdlno_run import parse_args
++else:
++ from cdlno_entry import parse_args
++nodes=[n for n in ast.parse(Path('main_evaluation.py').read_text()).body if
++ (isinstance(n,ast.Assign) and ast.unparse(n.targets[0])=='parser') or
++ (isinstance(n,ast.Expr) and isinstance(n.value,ast.Call) and ast.unparse(n.value.func)=='parser.add_argument')]
++scope={'argparse':argparse};exec(compile(ast.Module(body=nodes,type_ignores=[]),'<real-parser-only>','exec'),scope)
++a=parse_args(scope['parser'],evaluation=True,argv=['--cfd_model' if task=='car' else '--model','msar_lno','--msar-run-dir',str(p/'run')])
++r=CarRun(a,device='cpu',evaluation=True) if task=='car' else AirRun(a,resolve_hparams(a,{}),device='cpu',evaluation=True)
++loaded=r.load();m=loaded[0] if task=='airfrans' else loaded
++assert type(m) is Model and Model.__module__=='cdlno.msar_lno.industrial'
++assert type(Model(**model_kwargs(a))) is type(m)
++probe=torch.load(p/'probe.pt',weights_only=True);data=Data(x=probe['x'],pos=probe['pos'])
++with sdpa_kernel(SDPBackend.MATH):
++ torch.testing.assert_close(m.eval()((data,None) if task=='car' else data),probe['expected'],atol=0,rtol=0)
++assert 'main' not in sys.modules and 'main_evaluation' not in sys.modules
++'''
++                    result=subprocess.run([sys.executable,'-B','-c',code,tmp,task],cwd=PROJECTS[task],env=dict(os.environ,PYTHONPATH=str(ROOT)+os.pathsep+str(ROOT/'tests')),capture_output=True,text=True,timeout=60)
++                    self.assertEqual(result.returncode,0,result.stdout+result.stderr)
++                    CASES.append(dict(task=task,mode=mode,strict_checkpoint=True,fresh_cwd=True,atol=0,rtol=0))
++
++    @unittest.skipUnless(HAS_PYG,'real PyG unavailable')
++    def test_checkpoint_corrupt_family_shape_behavior_and_shared_list(self):
++        for task in PROJECTS:
++            with tempfile.TemporaryDirectory() as tmp,redirect_stdout(io.StringIO()):
++                p=Path(tmp)/'run';a=arguments(task,[*SMALL,'--msar-run-dir',str(p)])
++                m=CLASSES[task](**model_kwargs(a));r=run(a,model=m);save(r,[m]);meta=r.sidecar.read_text()
++                for family in ('kcdno',None):
++                    val=json.loads(meta)
++                    if family is None:del val['family']
++                    else:val['family']=family
++                    r.sidecar.write_text(json.dumps(val))
++                    with patch('torch.load',side_effect=AssertionError('unpickle before metadata')):
++                        with self.assertRaises(MSARMetadataMismatch):arguments(task,['--msar-run-dir',str(p)],True)
++                r.sidecar.write_text(meta);ev=arguments(task,['--msar-run-dir',str(p)],True);er=run(ev,evaluation=True)
++                for corruption in ('key','shape','heads','sharing','class','reference'):
++                    if corruption=='reference' and task=='car':continue
++                    bad=copy.deepcopy(m)
++                    if corruption=='key':del bad.core.downs[0].to_k.weight
++                    elif corruption=='shape':bad.core.output.weight=nn.Parameter(torch.zeros(5,8))
++                    elif corruption=='heads':bad.core.downs[0].heads=4
++                    elif corruption=='sharing':bad.core.encoders[0][1]=bad.core.encoders[0][0]
++                    elif corruption=='class':bad=nn.Linear(8,4)
++                    else:bad.reference.add_(1)
++                    save(r,[bad])
++                    with self.assertRaises(MSARMetadataMismatch):er.load()
++        with tempfile.TemporaryDirectory() as tmp,redirect_stdout(io.StringIO()):
++            a=arguments('airfrans',[*SMALL,'--nmodel','2','--msar-run-dir',str(Path(tmp)/'run')]);r=run(a)
++            m=AirfRANSModel(**model_kwargs(a));save(r,[m,m]);ev=arguments('airfrans',['--msar-run-dir',str(r.directory)],True)
++            with self.assertRaises(MSARMetadataMismatch):run(ev,evaluation=True).load()
++
++    @unittest.skipUnless(HAS_PYG,'real PyG unavailable')
++    def test_car_original_complete_synthetic_epoch_records(self):
++        from cdlno.experiment import start,finish
++        from torch_geometric.data import Data
++        for mode in ('floor','off'):
++            with tempfile.TemporaryDirectory() as tmp,redirect_stdout(io.StringIO()):
++                path=Path(tmp)/'run';a=arguments('car',[*SMALL,'--coverage-mode',mode,'--nb_epochs','1','--msar-run-dir',str(path)])
++                record=start(a,'car',evaluation=False);m=CarModel(**model_kwargs(a));r=run(a,model=m)
++                pairs=[]
++                for n in (11,17):
++                    g,geom=graph('car',n);pairs.append((g.to_data_list()[0],geom))
++                hp=dict(lr=.001,batch_size=1,nb_epochs=1)
++                trainer('car').main('cpu',pairs,pairs,m,hp,str(path),reg=.7,coef_norm=(np.zeros(7),np.ones(7),np.zeros(4),np.ones(4)),record=record)
++                finish(a)
++                rows=[json.loads(line) for line in (path/'train_history.jsonl').read_text().splitlines()]
++                self.assertEqual(len(rows),1)
++                metrics=rows[0]['metrics'];self.assertEqual(metrics['coverage_mode'],mode)
++                self.assertAlmostEqual(metrics['objective_total'],metrics['objective_pde']+metrics['coverage_weighted'],places=6)
++                saved={p.name:p.read_bytes() for p in (r.sidecar,path/'task.json',path/'config.json',path/'train_results.json')}
++                for _ in range(2):
++                    ev=arguments('car',['--msar-run-dir',str(path)],True);rr=start(ev,'car',evaluation=True);run(ev,evaluation=True).load();rr.record_metrics({'synthetic_eval':1});finish(ev)
++                self.assertEqual(saved,{p.name:p.read_bytes() for p in (r.sidecar,path/'task.json',path/'config.json',path/'train_results.json')})
++                CASES.append(dict(task='car',mode=mode,complete_synthetic_epoch=True,recorded=True,repeated_eval=True))
++
++    @unittest.skipUnless(HAS_PYG,'real PyG unavailable')
++    def test_air_original_epoch_record_fragment_and_eval_immutability(self):
++        from cdlno.experiment import start,finish
++        tree=ast.parse((AIR/'train.py').read_text())
++        main=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='main')
++        epoch=next(n for n in main.body if isinstance(n,ast.For))
++        recording=next(n for n in epoch.body if isinstance(n,ast.If) and ast.unparse(n.test)=='record is not None')
++        # Epoch 1 of 398 does not schedule a field plot; the actual record and
++        # visualize calls remain in the executed source fragment.
++        for mode in ('floor','off'):
++            with tempfile.TemporaryDirectory() as tmp,redirect_stdout(io.StringIO()):
++                path=Path(tmp)/'run';a=arguments('airfrans',[*SMALL,'--coverage-mode',mode,'--msar-run-dir',str(path)])
++                record=start(a,'airfrans',evaluation=False);r=run(a)
++                m=AirfRANSModel(**model_kwargs(a));record.attach_model(m,hparams=r.hparams,member=0,protocol=r.contract)
++                g=graph('airfrans');t=trainer('airfrans');opt=torch.optim.Adam(m.parameters(),lr=.001)
++                scheduler=torch.optim.lr_scheduler.OneCycleLR(opt,max_lr=.001,total_steps=20)
++                metrics=ObjectiveMetrics();losses=t.train('cpu',m,[g],opt,scheduler,criterion='MSE_weighted',reg=.7,msar_metrics=metrics)
++                val=t.test('cpu',m,[g]);train_loss,_,loss_surf_var,loss_vol_var,loss_surf,loss_vol=losses
++                scope=dict(record=record,epoch=0,train_loss=train_loss,loss_surf=loss_surf,loss_vol=loss_vol,
++                    loss_surf_var=loss_surf_var,loss_vol_var=loss_vol_var,criterion='MSE_weighted',reg=.7,
++                    val_iter=10,val_loss=val[0],val_surf_var=val[2],val_vol_var=val[3],val_surf=val[4],val_vol=val[5],
++                    msar_training=True,msar_values=metrics.values(),model=m,record_member=0,hparams=r.hparams,
++                    val_dataset=[g],visualization_norm=None)
++                exec(compile(ast.Module(body=[recording],type_ignores=[]),'<original-epoch-recording>','exec'),scope)
++                save(r,[m.eval()]);finish(a)
++                row=json.loads((path/'train_history.jsonl').read_text())
++                self.assertEqual(row['metrics']['coverage_mode'],mode)
++                self.assertEqual(row['metrics']['objective_pde'],metrics.values()['objective_pde'])
++                saved={p.name:p.read_bytes() for p in (r.sidecar,path/'task.json',path/'config.json',path/'train_results.json')}
++                for _ in range(2):
++                    ev=arguments('airfrans',['--msar-run-dir',str(path),'--coverage-mode','off'],True)
++                    rr=start(ev,'airfrans',evaluation=True);run(ev,evaluation=True).load();rr.record_metrics({'synthetic_masked_MSE':float(val[0])});finish(ev)
++                self.assertEqual(saved,{p.name:p.read_bytes() for p in (r.sidecar,path/'task.json',path/'config.json',path/'train_results.json')})
++                CASES.append(dict(task='airfrans',mode=mode,epoch_record_fragment=True,repeated_eval=True,
++                    full_sampled_epoch=False,original_weighted_loss=True))
++
++    @unittest.skipUnless(HAS_PYG,'real PyG unavailable')
++    def test_air_original_sampled_epoch_when_extension_available(self):
++        try:
++            from torch_cluster import radius_graph
++        except ImportError:self.skipTest('torch_cluster absent: original sampled epoch/graph rebuild not executed')
++        with tempfile.TemporaryDirectory() as tmp,redirect_stdout(io.StringIO()):
++            a=arguments('airfrans',SMALL);m=AirfRANSModel(**model_kwargs(a));graphs=[graph('airfrans').to_data_list()[0]]
++            hp=resolve_hparams(a,{})|dict(nb_epochs=1,subsampling=7)
++            trainer('airfrans').main('cpu',graphs,graphs,m,hp,tmp,criterion='MSE_weighted',reg=.7,name_mod='msar_lno',val_sample=True)
++
++    @unittest.skipUnless(HAS_PYG,'real PyG unavailable')
++    def test_air_sampled_ptr_original_scatter_fragments(self):
++        # Execute only safe original gather/scatter/boundary AST, not radius_graph
++        # or VTK. This is NOT acceptance of the complete sampled evaluator.
++        tree=ast.parse((AIR/'utils/metrics.py').read_text());fn=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='Infer_test')
++        loop=next(n for n in fn.body if isinstance(n,ast.While))
++        gathers=[n for n in loop.body if isinstance(n,ast.Assign) and ast.unparse(n.targets[0]) in ('data_sampled.pos','data_sampled.x','data_sampled.y','data_sampled.surf','data_sampled.batch')]
++        scatters=[n for n in ast.walk(loop) if isinstance(n,ast.Assign) and ast.unparse(n.targets[0]) in ('out[n][idx]','outs[n]','n_out[idx]')]
++        boundary=next(n for n in fn.body if isinstance(n,ast.For) and ast.unparse(n.target)=='(n, out)')
++        m=AirfRANSModel(**model_kwargs(arguments('airfrans',SMALL))).eval();data=graph('airfrans',19)
++        scope=dict(torch=torch,data=data,coef_norm=None,n=0,n_out=torch.zeros(19,1),outs=[torch.zeros(19,4)])
++        expected=torch.zeros(19,4);counts=torch.zeros(19,1)
++        for idx in (torch.tensor([5,1,7,3,12,18,0,6,10,14]),torch.tensor([2,4,8,9,11,13,15,16,17,5])):
++            scope.update(data_sampled=data.clone(),idx=idx,out=[torch.zeros(19,4)])
++            exec(compile(ast.Module(body=gathers,type_ignores=[]),'<original-gather>','exec'),scope)
++            part=scope['data_sampled'];self.assertEqual(part.ptr.tolist(),[0,19])
++            prediction=m(part).detach();self.assertEqual(prediction.shape,(len(idx),4))
++            scope['o']=prediction
++            exec(compile(ast.Module(body=scatters,type_ignores=[]),'<original-scatter>','exec'),scope)
++            expected[idx]+=prediction;counts[idx]+=1
++        expected/=counts;expected[data.surf,:2]=0;expected[data.surf,3]=0
++        exec(compile(ast.Module(body=[boundary],type_ignores=[]),'<original-boundary>','exec'),scope)
++        torch.testing.assert_close(scope['outs'][0],expected,atol=0,rtol=0)
++        CASES.append(dict(task='airfrans',sampling_scatter='original AST fragments only',real_PyG=True,full_sampled_evaluator=False))
++
++    @unittest.skipUnless(HAS_PYG,'real PyG unavailable')
++    def test_profiles_real_light_full_small_N(self):
++        for task in PROJECTS:
++            for profile in ('light','full'):
++                a=arguments(task,['--profile',profile]);m=CLASSES[task](**model_kwargs(a)).eval()
++                with torch.no_grad():output=m(graph(task,11))
++                self.assertEqual(output.shape,(11,4));self.assertTrue(torch.isfinite(output).all())
++                self.assertGreater(m.config.num_latents[0],11)
++                CASES.append(dict(task=task,profile=profile,N=11,latent_expansion=True,device='cpu',
++                    parameters=sum(p.numel() for p in m.parameters()),forward=True,backward=False))
++
++    @unittest.skipUnless(HAS_PYG and torch.cuda.is_available(),'real PyG/CUDA unavailable')
++    def test_cuda_real_graph_loss_steps(self):
++        for task in PROJECTS:
++            a=arguments(task,[*SMALL,'--coverage-kappa','1']);m=CLASSES[task](**model_kwargs(a)).cuda()
++            g=graph(task);t=trainer(task);opt=torch.optim.Adam(m.parameters(),lr=.001)
++            sched=torch.optim.lr_scheduler.OneCycleLR(opt,max_lr=.001,total_steps=20);metrics=ObjectiveMetrics()
++            kw=dict(msar_metrics=metrics,reg=.7)
++            if task=='airfrans':kw['criterion']='MSE_weighted'
++            t.train('cuda',m,[g],opt,sched,**kw);t.test('cuda',m,[g])
++            self.assertTrue(all(p.grad is not None and torch.isfinite(p.grad).all() for p in m.parameters()))
++            CASES.append(dict(task=task,device='cuda',dtype='float32',backend='MATH',real_PyG=True,original_loss=True,objective=metrics.values()))
++
++    def test_scripts_real_parsers_train_and_eval(self):
++        for task in PROJECTS:
++            for profile,mode in [('light','floor'),('light','off'),('full','floor')]:
++                with tempfile.TemporaryDirectory() as tmp,redirect_stdout(io.StringIO()):
++                    path=Path(tmp)/'run';script=ROOT/'tran_evaluate/msar_lno'/f'{task}.sh'
++                    flags=['--profile',profile,'--coverage-mode',mode,'--msar-run-dir',str(path)]
++                    if mode=='off':flags+=['--coverage-weight','0']
++                    result=subprocess.run(['bash',str(script),'train',*flags,'--dry-run'],cwd=tmp,capture_output=True,text=True,check=True)
++                    command=shlex.split(next(line[9:] for line in result.stdout.splitlines() if line.startswith('Command: ')))
++                    parse=car_parse if task=='car' else air_entry.parse_args
++                    parser=entry_parser if task=='car' else air_parser
++                    a=parse(parser(),argv=command[3:]);self.assertEqual(a.profile,profile)
++                    # Save authentic full-profile metadata without fake model/checkpoint.
++                    r=run(a)
++                    result=subprocess.run(['bash',str(script),'eval','--msar-run-dir',str(path),'--dry-run'],cwd=tmp,capture_output=True,text=True,check=True)
++                    command=shlex.split(next(line[9:] for line in result.stdout.splitlines() if line.startswith('Command: ')))
++                    e=parse(parser(True),evaluation=True,argv=command[3:])
++                    self.assertEqual(e.msar_architecture,a.msar_architecture)
++                    self.assertEqual(e.msar_training,a.msar_training)
++
++
++if __name__=='__main__':unittest.main(verbosity=2)
+--- before/tran_evaluate/msar_lno/README.md
++++ after/tran_evaluate/msar_lno/README.md
+@@ -1,6 +1,6 @@
+-# MSAR-LNO：M5 静态任务 / M6 时间任务
++# MSAR-LNO：八任务训练与评估（截至 M7）
+ 
+-可用脚本：`darcy.sh`、`elasticity.sh`、`airfoil.sh`、`pipe.sh`、`ns.sh`、`plasticity.sh`。调用形式是 `bash SCRIPT train|eval [原任务选项和MSAR选项]`，追加 `--dry-run` 只打印命令，不启动Python或访问数据。Car、AirfRANS尚未接入MSAR。
++可用脚本：`darcy.sh`、`elasticity.sh`、`airfoil.sh`、`pipe.sh`、`ns.sh`、`plasticity.sh`、`car.sh`、`airfrans.sh`。调用形式是 `bash SCRIPT train|eval [原任务选项和MSAR选项]`，追加 `--dry-run` 只打印命令，不启动Python或访问数据。工业任务用法与限制见下方M7段落。
+ 
+ 脚本定位其所在checkout并复用 `tran_evaluate/_common.sh`、根 `path.sh` 和原 `exp_*.py`；远端无需使用本机`/home/hwz/CDLNO`路径。原数据路径可通过对应环境变量或最后的`--data_path`覆盖。
+ 
+@@ -68,3 +68,53 @@
+ NS保持现有10帧输入→每次1帧→10帧预测回填评估；现有源码没有可用的20/40步CLI或对应长序列数据读取。本轮不添加不存在的`--rollout`选项或长时实验。CDLNO/KCDNO旧NS命令保留。MSAR时间wrapper沿既有固定网格合同：NS 64×64、Plasticity 101×31；不能把时间拼入N，非默认NS downsample不作为新支持项。
+ 
+ 纯eval/周期图始终用预测Tensor，不计算coverage或diagnostics。需要模型级诊断时，显式`model.eval(); model(x, fx, T=..., return_aux=True, training_config=replace(model.training_config, diagnostics=True))`（`replace`来自`dataclasses`）；只返回该次小型no-grad统计，预测不变。训练CLI有`--diagnostics/--no-diagnostics`，默认关闭；现有任务eval循环不会因保存的训练开关自动收集aux，也不输出完整attention矩阵。
++
++## M7：ShapeNet-Car / AirfRANS
++
++工业脚本同样是 `train|eval`，复用现有Python环境、原main入口和数据路径；用户余参在最后覆盖。新增profile仅决定MSAR结构，不改原训练预设。Car默认200epochs、batch1、lr.001、weight.5、val_iter10；AirfRANS默认398epochs、batch1、lr.001、weight1、subsampling32000、r.05、max_neighbors64。两个任务保留Adam和原OneCycleLR，不混合多图，不使用卷积，也不删除图构造。
++
++| 脚本 | 项目 / 真实参数 | 数据路径 |
++|---|---|---|
++| car.sh | Car-Design-ShapeNetCar/main.py 和 main_evaluation.py；`--cfd_model msar_lno`、`--gpu`、`--fold_id` | `CDLNO_CAR_RAW_ROOT` / `--data_dir` 原始数据，`CDLNO_CAR_CACHE_ROOT` / `--save_dir` 预处理缓存 |
++| airfrans.sh | Airfoil-Design-AirfRANS/main.py 和 main_evaluation.py；`--model msar_lno`、`--task full|scarce|reynolds|aoa`、`--nmodel` | `CDLNO_AIRFRANS_DATASET` 指向 **Dataset**；train的`--my_path`是Dataset，eval的`--my_path`是Dataset父目录 |
++
++在实际checkout根目录，先用 `--dry-run` 预览。例如：
++
++```bash
++bash tran_evaluate/msar_lno/car.sh train --profile light --gpu 0 --dry-run
++CUDA_VISIBLE_DEVICES=0 bash tran_evaluate/msar_lno/airfrans.sh train --profile full --dry-run
++```
++
++AirfRANS原CLI没有`--gpu`，使用 `CUDA_VISIBLE_DEVICES`。不要给它传Car的选项。以下函数供用户按需运行；训练失败时不会启动评估，eval始终指向同一个确切run。此文档不会执行训练。
++
++```bash
++msar_car_pair() {
++    local profile="$1" mode="$2" weight="$3"
++    local run="$PWD/output/car/msar_lno/$profile/coverage_$mode/$(date -u +%Y%m%dT%H%M%S%NZ)"
++    bash tran_evaluate/msar_lno/car.sh train --gpu 0 --fold_id 0 \
++        --profile "$profile" --coverage-mode "$mode" --coverage-weight "$weight" \
++        --msar-run-dir "$run" &&
++    bash tran_evaluate/msar_lno/car.sh eval --gpu 0 --msar-run-dir "$run"
++}
++msar_airfrans_pair() {
++    local profile="$1" mode="$2" weight="$3"
++    local run="$PWD/output/airfrans/msar_lno/$profile/coverage_$mode/$(date -u +%Y%m%dT%H%M%S%NZ)"
++    CUDA_VISIBLE_DEVICES=0 bash tran_evaluate/msar_lno/airfrans.sh train \
++        --task full --nmodel 1 --profile "$profile" \
++        --coverage-mode "$mode" --coverage-weight "$weight" --msar-run-dir "$run" &&
++    CUDA_VISIBLE_DEVICES=0 bash tran_evaluate/msar_lno/airfrans.sh eval --msar-run-dir "$run"
++}
++```
++
++| 任务 | Light coverage-on | Light off | Full coverage-on |
++|---|---|---|---|
++| ShapeNet-Car | `msar_car_pair light floor 0.01` | `msar_car_pair light off 0` | `msar_car_pair full floor 0.01` |
++| AirfRANS | `msar_airfrans_pair light floor 0.01` | `msar_airfrans_pair light off 0` | `msar_airfrans_pair full floor 0.01` |
++
++Car完整drag评价仍有原仓库限制：fold0，`/data/PDE_data/mlcfd_data/training_data/param0`可读，且`--data_dir`与该固定根目录指向同一数据。新脚本复用原预检拒绝不一致路径；没有修改drag代码、创建软链接或假设远端路径已经满足。Car纯模型/表面mask评估的合成验证通过，不等于真实drag指标通过。
++
++保存协议保持：Car整对象`model_<nb_epochs>.pth`；AirfRANS各成员整对象`member_NNN/model`及根目录模型列表`msar_lno`。新稳定类路径为`cdlno.msar_lno.industrial.CarModel`和`AirfRANSModel`。`architecture.json`保存完整family、resolved架构/版本/训练目标，`task.json`保存字段和任务合同；eval先读它们再加载可信本地pickle，严格验证类/结构/key/shape，coverage on/off的显式eval请求不改写训练sidecar。**没有新增resume，整模型文件不是完整optimizer/scheduler/RNG续训归档。**
++
++Car的LPDE是全点速度MSE + weight×表面压力MSE；AirfRANS实际训练LPDE是体积四通道MSE + weight×表面四通道MSE。每个单图forward只加一次`coverage_weight * mean(四层raw coverage)`，epoch日志按optimizer step平均四项目标，surface mask不作为coverage source mask。无面积/体积权重时mu对图内所有源点均匀；latent层对其所有slot均匀。原Car外层日志的压力/速度变量交换保持，判断真实优化目标请看新`objective_pde/coverage_raw/coverage_weighted/objective_total`。
++
++[八任务覆盖与M7实际证据](../../docs/MSAR_LNO_M7_INDUSTRIAL_TASKS.md)。本机真实PyG已用于合成单图、原loss、更新、eval和checkpoint；缺`torch_cluster`时AirfRANS完整radius_graph抽样epoch/评价未运行，不能由已通过的原训练函数和scatter片段推断完整链路成功。真实数据、收敛、物理系数准确率和远端环境仍未验证。
+--- before/tran_evaluate/msar_lno/_dispatch.sh
++++ after/tran_evaluate/msar_lno/_dispatch.sh
+@@ -0,0 +1,31 @@
++#!/usr/bin/env bash
++# New-family path flags, using the same installed Python and original cwd.
++set -euo pipefail
++launcher="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++source "$launcher/../_common.sh"
++project="$1"; entry="$2"; shift 2
++dry=0; args=()
++while (($#)); do
++    arg="$1"; shift
++    case "$arg" in
++        --dry-run) dry=1 ;;
++        --msar-run-dir|--run_dir|--data_dir|--save_dir|--my_path|--save_path)
++            value="${1:?missing path}"; shift
++            [[ "$value" = /* ]] || value="$PWD/$value"
++            args+=("$arg" "$value") ;;
++        --msar-run-dir=*|--run_dir=*|--data_dir=*|--save_dir=*|--my_path=*|--save_path=*)
++            value="${arg#*=}"; [[ "$value" = /* ]] || value="$PWD/$value"
++            args+=("${arg%%=*}" "$value") ;;
++        *) args+=("$arg") ;;
++    esac
++done
++export PYTHONPATH="$cdlno_repo_root${PYTHONPATH:+:$PYTHONPATH}"
++export MPLBACKEND="${MPLBACKEND:-Agg}"
++printf 'Working directory: %s\n' "$cdlno_repo_root/$project"
++printf 'Command:'; printf ' %q' "$CDLNO_PYTHON" -u "$entry" "${args[@]}"; printf '\n'
++((dry)) && { printf 'DRY RUN: no Python/data/training/evaluation.\n'; exit 0; }
++cd "$cdlno_repo_root/$project"
++if [[ "$project" == Car-Design-ShapeNetCar && "$entry" == main_evaluation.py ]]; then
++    "$CDLNO_PYTHON" -B -m cdlno.msar_lno.car_preflight "${args[@]}"
++fi
++exec "$CDLNO_PYTHON" -u "$entry" "${args[@]}"
+--- before/tran_evaluate/msar_lno/airfrans.sh
++++ after/tran_evaluate/msar_lno/airfrans.sh
+@@ -0,0 +1,21 @@
++#!/usr/bin/env bash
++set -euo pipefail
++launcher="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++source "$launcher/../_common.sh"
++action="${1:?train or eval required}"; shift
++# TRAIN my_path = Dataset (manifest.json); EVAL my_path = Dataset's PARENT.
++# No --gpu in this original project; use CUDA_VISIBLE_DEVICES.
++dataset="${CDLNO_AIRFRANS_DATASET%/}"
++case "$action" in
++ train) entry=main.py; args=(--score 0 --my_path "$dataset") ;;
++ eval)
++    entry=main_evaluation.py
++    explicit=0
++    for flag in "$@"; do case "$flag" in --my_path|--my_path=*) explicit=1 ;; esac; done
++    if [[ "${dataset##*/}" != Dataset ]] && ((explicit == 0)); then
++        printf 'AirfRANS eval expects a /Dataset path or explicit --my_path parent.\n' >&2; exit 2
++    fi
++    args=(--my_path "$(dirname -- "$dataset")") ;;
++ *) exit 2 ;;
++esac
++exec bash "$launcher/_dispatch.sh" Airfoil-Design-AirfRANS "$entry" --model msar_lno --profile light "${args[@]}" "$@"
+--- before/tran_evaluate/msar_lno/car.sh
++++ after/tran_evaluate/msar_lno/car.sh
+@@ -0,0 +1,12 @@
++#!/usr/bin/env bash
++set -euo pipefail
++launcher="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++source "$launcher/../_common.sh"
++action="${1:?train or eval required}"; shift
++case "$action" in train) entry=main.py ;; eval) entry=main_evaluation.py ;; *) exit 2 ;; esac
++args=(--cfd_model msar_lno --profile light)
++[[ -z "${CDLNO_CAR_RAW_ROOT:-}" ]] || args+=(--data_dir "$CDLNO_CAR_RAW_ROOT")
++[[ -z "${CDLNO_CAR_CACHE_ROOT:-}" ]] || args+=(--save_dir "$CDLNO_CAR_CACHE_ROOT")
++# save_dir is preprocessed data. A run is exactly one fold. Full drag evaluation
++# retains the original fixed param0 path; the preflight checks it without data IO.
++exec bash "$launcher/_dispatch.sh" Car-Design-ShapeNetCar "$entry" "${args[@]}" "$@"

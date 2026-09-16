@@ -1,0 +1,1623 @@
+[
+  {
+    "check": "formal_light_execution",
+    "counts": {
+      "LearnedQueryDown": 4,
+      "LatentFFNSAFFNBlock": 12,
+      "QueryAlignedUpCross": 4,
+      "PairwiseAttnResFusion": 3
+    },
+    "SA_tokens": [
+      512,
+      512,
+      512,
+      256,
+      128,
+      64,
+      64,
+      128,
+      256,
+      512,
+      512,
+      512
+    ],
+    "point_N": 35,
+    "fusion_w0_exact": true,
+    "independent_storage": true
+  },
+  {
+    "check": "three_fusions",
+    "zero_exact": true,
+    "source_axis": 2,
+    "per_token": true,
+    "raw_values": true,
+    "gradients": [
+      "w",
+      "E",
+      "U"
+    ],
+    "extra_parameters": false
+  },
+  {
+    "task": "airfoil",
+    "profile": "full",
+    "mode": "floor",
+    "device": "cpu",
+    "dtype": "float32",
+    "backend": "MATH",
+    "architecture": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        1024,
+        512,
+        256,
+        128
+      ],
+      "d": 192,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "parameters": 6811825,
+    "shape": [
+      1,
+      35,
+      1
+    ],
+    "B": 1,
+    "N": 35,
+    "latent_expansion": true,
+    "forward": true,
+    "backward": true,
+    "loss": "explicit synthetic MSE + coverage, NOT original task loss",
+    "optimizer": false,
+    "strict_state_dict": true,
+    "eval": true,
+    "checkpoint_atol": 0,
+    "checkpoint_rtol": 0,
+    "seconds": 3.0592332410014933
+  },
+  {
+    "task": "airfrans",
+    "profile": "full",
+    "mode": "floor",
+    "device": "cpu",
+    "dtype": "float32",
+    "backend": "MATH",
+    "architecture": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        1024,
+        512,
+        256,
+        128
+      ],
+      "d": 192,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "parameters": 6838900,
+    "shape": [
+      19,
+      4
+    ],
+    "B": 1,
+    "N": 19,
+    "latent_expansion": true,
+    "forward": true,
+    "backward": true,
+    "loss": "explicit synthetic MSE + coverage, NOT original task loss",
+    "optimizer": false,
+    "strict_state_dict": true,
+    "eval": true,
+    "checkpoint_atol": 0,
+    "checkpoint_rtol": 0,
+    "seconds": 2.56415946999914
+  },
+  {
+    "task": "car",
+    "profile": "full",
+    "mode": "floor",
+    "device": "cpu",
+    "dtype": "float32",
+    "backend": "MATH",
+    "architecture": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        1024,
+        512,
+        256,
+        128
+      ],
+      "d": 192,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "parameters": 6814324,
+    "shape": [
+      19,
+      4
+    ],
+    "B": 1,
+    "N": 19,
+    "latent_expansion": true,
+    "forward": true,
+    "backward": true,
+    "loss": "explicit synthetic MSE + coverage, NOT original task loss",
+    "optimizer": false,
+    "strict_state_dict": true,
+    "eval": true,
+    "checkpoint_atol": 0,
+    "checkpoint_rtol": 0,
+    "seconds": 3.0705380520012113
+  },
+  {
+    "task": "darcy",
+    "profile": "full",
+    "mode": "floor",
+    "device": "cpu",
+    "dtype": "float32",
+    "backend": "MATH",
+    "architecture": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        1024,
+        512,
+        256,
+        128
+      ],
+      "d": 192,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "parameters": 6835825,
+    "shape": [
+      1,
+      49,
+      1
+    ],
+    "B": 1,
+    "N": 49,
+    "latent_expansion": true,
+    "forward": true,
+    "backward": true,
+    "loss": "explicit synthetic MSE + coverage, NOT original task loss",
+    "optimizer": false,
+    "strict_state_dict": true,
+    "eval": true,
+    "checkpoint_atol": 0,
+    "checkpoint_rtol": 0,
+    "seconds": 2.9201631730029476
+  },
+  {
+    "task": "elasticity",
+    "profile": "full",
+    "mode": "floor",
+    "device": "cpu",
+    "dtype": "float32",
+    "backend": "MATH",
+    "architecture": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        1024,
+        512,
+        256,
+        128
+      ],
+      "d": 192,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "parameters": 6811825,
+    "shape": [
+      1,
+      35,
+      1
+    ],
+    "B": 1,
+    "N": 35,
+    "latent_expansion": true,
+    "forward": true,
+    "backward": true,
+    "loss": "explicit synthetic MSE + coverage, NOT original task loss",
+    "optimizer": false,
+    "strict_state_dict": true,
+    "eval": true,
+    "checkpoint_atol": 0,
+    "checkpoint_rtol": 0,
+    "seconds": 2.856846946000587
+  },
+  {
+    "task": "ns",
+    "profile": "full",
+    "mode": "floor",
+    "device": "cpu",
+    "dtype": "float32",
+    "backend": "MATH",
+    "architecture": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        1024,
+        512,
+        256,
+        128
+      ],
+      "d": 192,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "parameters": 6839281,
+    "shape": [
+      1,
+      4096,
+      1
+    ],
+    "B": 1,
+    "N": 4096,
+    "latent_expansion": false,
+    "forward": true,
+    "backward": true,
+    "loss": "explicit synthetic MSE + coverage, NOT original task loss",
+    "optimizer": false,
+    "strict_state_dict": true,
+    "eval": true,
+    "checkpoint_atol": 0,
+    "checkpoint_rtol": 0,
+    "seconds": 5.22894003699912
+  },
+  {
+    "task": "pipe",
+    "profile": "full",
+    "mode": "floor",
+    "device": "cpu",
+    "dtype": "float32",
+    "backend": "MATH",
+    "architecture": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        1024,
+        512,
+        256,
+        128
+      ],
+      "d": 192,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "parameters": 6811825,
+    "shape": [
+      1,
+      35,
+      1
+    ],
+    "B": 1,
+    "N": 35,
+    "latent_expansion": true,
+    "forward": true,
+    "backward": true,
+    "loss": "explicit synthetic MSE + coverage, NOT original task loss",
+    "optimizer": false,
+    "strict_state_dict": true,
+    "eval": true,
+    "checkpoint_atol": 0,
+    "checkpoint_rtol": 0,
+    "seconds": 2.7371406640013447
+  },
+  {
+    "task": "plasticity",
+    "profile": "full",
+    "mode": "floor",
+    "device": "cpu",
+    "dtype": "float32",
+    "backend": "MATH",
+    "architecture": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        1024,
+        512,
+        256,
+        128
+      ],
+      "d": 192,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "parameters": 6886708,
+    "shape": [
+      1,
+      3131,
+      4
+    ],
+    "B": 1,
+    "N": 3131,
+    "latent_expansion": false,
+    "forward": true,
+    "backward": true,
+    "loss": "explicit synthetic MSE + coverage, NOT original task loss",
+    "optimizer": false,
+    "strict_state_dict": true,
+    "eval": true,
+    "checkpoint_atol": 0,
+    "checkpoint_rtol": 0,
+    "seconds": 4.2151820180006325
+  },
+  {
+    "task": "airfoil",
+    "profile": "light",
+    "mode": "off",
+    "device": "cpu",
+    "dtype": "float32",
+    "backend": "MATH",
+    "architecture": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        512,
+        256,
+        128,
+        64
+      ],
+      "d": 96,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "parameters": 1710169,
+    "original_loss": true,
+    "backward": true,
+    "optimizer": true,
+    "eval": true,
+    "real_PyG": false,
+    "same_weight_off_floor_max_abs_diff": 1.2665987014770508e-07,
+    "atol": 2e-06,
+    "rtol": 0.0001,
+    "metrics": {
+      "objective_pde": 1.9058680534362793,
+      "coverage_raw": 0.0,
+      "coverage_weighted": 0.0,
+      "objective_total": 1.9058680534362793
+    },
+    "seconds": 1.4354272089985898,
+    "B": 2,
+    "N": 35,
+    "forwards": 1,
+    "optimizer_steps": 1,
+    "eval_metric": 1.4673523902893066
+  },
+  {
+    "task": "airfoil",
+    "profile": "light",
+    "mode": "floor",
+    "device": "cpu",
+    "dtype": "float32",
+    "backend": "MATH",
+    "architecture": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        512,
+        256,
+        128,
+        64
+      ],
+      "d": 96,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "parameters": 1710169,
+    "original_loss": true,
+    "backward": true,
+    "optimizer": true,
+    "eval": true,
+    "real_PyG": false,
+    "same_weight_off_floor_max_abs_diff": 7.450580596923828e-08,
+    "atol": 2e-06,
+    "rtol": 0.0001,
+    "metrics": {
+      "objective_pde": 1.9058680534362793,
+      "coverage_raw": 0.0,
+      "coverage_weighted": 0.0,
+      "objective_total": 1.9058680534362793
+    },
+    "seconds": 1.0178812930025742,
+    "B": 2,
+    "N": 35,
+    "forwards": 1,
+    "optimizer_steps": 1,
+    "eval_metric": 1.4673523902893066
+  },
+  {
+    "task": "airfrans",
+    "profile": "light",
+    "mode": "off",
+    "device": "cpu",
+    "dtype": "float32",
+    "backend": "MATH",
+    "architecture": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        512,
+        256,
+        128,
+        64
+      ],
+      "d": 96,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "parameters": 1723708,
+    "original_loss": true,
+    "backward": true,
+    "optimizer": true,
+    "eval": true,
+    "real_PyG": true,
+    "same_weight_off_floor_max_abs_diff": 9.685754776000977e-08,
+    "atol": 2e-06,
+    "rtol": 0.0001,
+    "metrics": {
+      "objective_pde": 2.3595938682556152,
+      "coverage_raw": 0.0,
+      "coverage_weighted": 0.0,
+      "objective_total": 2.3595938682556152
+    },
+    "seconds": 3.4540922719970695,
+    "B": 1,
+    "N": 19,
+    "forwards": 1,
+    "optimizer_steps": 1,
+    "eval_metric": 1.0484659671783447
+  },
+  {
+    "task": "airfrans",
+    "profile": "light",
+    "mode": "floor",
+    "device": "cpu",
+    "dtype": "float32",
+    "backend": "MATH",
+    "architecture": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        512,
+        256,
+        128,
+        64
+      ],
+      "d": 96,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "parameters": 1723708,
+    "original_loss": true,
+    "backward": true,
+    "optimizer": true,
+    "eval": true,
+    "real_PyG": true,
+    "same_weight_off_floor_max_abs_diff": 1.043081283569336e-07,
+    "atol": 2e-06,
+    "rtol": 0.0001,
+    "metrics": {
+      "objective_pde": 2.3595938682556152,
+      "coverage_raw": 0.0,
+      "coverage_weighted": 0.0,
+      "objective_total": 2.3595938682556152
+    },
+    "seconds": 0.5910913059997256,
+    "B": 1,
+    "N": 19,
+    "forwards": 1,
+    "optimizer_steps": 1,
+    "eval_metric": 1.0484659671783447
+  },
+  {
+    "task": "car",
+    "profile": "light",
+    "mode": "off",
+    "device": "cpu",
+    "dtype": "float32",
+    "backend": "MATH",
+    "architecture": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        512,
+        256,
+        128,
+        64
+      ],
+      "d": 96,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "parameters": 1711420,
+    "original_loss": true,
+    "backward": true,
+    "optimizer": true,
+    "eval": true,
+    "real_PyG": true,
+    "same_weight_off_floor_max_abs_diff": 1.4156103134155273e-07,
+    "atol": 2e-06,
+    "rtol": 0.0001,
+    "metrics": {
+      "objective_pde": 1.625315546989441,
+      "coverage_raw": 0.0,
+      "coverage_weighted": 0.0,
+      "objective_total": 1.625315546989441
+    },
+    "seconds": 0.5498996540045482,
+    "B": 1,
+    "N": 19,
+    "forwards": 1,
+    "optimizer_steps": 1,
+    "eval_metric": 0.7424527406692505
+  },
+  {
+    "task": "car",
+    "profile": "light",
+    "mode": "floor",
+    "device": "cpu",
+    "dtype": "float32",
+    "backend": "MATH",
+    "architecture": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        512,
+        256,
+        128,
+        64
+      ],
+      "d": 96,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "parameters": 1711420,
+    "original_loss": true,
+    "backward": true,
+    "optimizer": true,
+    "eval": true,
+    "real_PyG": true,
+    "same_weight_off_floor_max_abs_diff": 1.1920928955078125e-07,
+    "atol": 2e-06,
+    "rtol": 0.0001,
+    "metrics": {
+      "objective_pde": 1.6253154277801514,
+      "coverage_raw": 0.0,
+      "coverage_weighted": 0.0,
+      "objective_total": 1.6253154277801514
+    },
+    "seconds": 0.5897746440023184,
+    "B": 1,
+    "N": 19,
+    "forwards": 1,
+    "optimizer_steps": 1,
+    "eval_metric": 0.7424527406692505
+  },
+  {
+    "task": "darcy",
+    "profile": "light",
+    "mode": "off",
+    "device": "cpu",
+    "dtype": "float32",
+    "backend": "MATH",
+    "architecture": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        512,
+        256,
+        128,
+        64
+      ],
+      "d": 96,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "parameters": 1722169,
+    "original_loss": true,
+    "backward": true,
+    "optimizer": true,
+    "eval": true,
+    "real_PyG": false,
+    "same_weight_off_floor_max_abs_diff": 5.960464477539063e-08,
+    "atol": 2e-06,
+    "rtol": 0.0001,
+    "metrics": {
+      "objective_pde": 2.0999200344085693,
+      "coverage_raw": 0.0,
+      "coverage_weighted": 0.0,
+      "objective_total": 2.0999200344085693
+    },
+    "seconds": 0.9060490659976494,
+    "B": 2,
+    "N": 49,
+    "forwards": 1,
+    "optimizer_steps": 1,
+    "eval_metric": 1.3495855331420898
+  },
+  {
+    "task": "darcy",
+    "profile": "light",
+    "mode": "floor",
+    "device": "cpu",
+    "dtype": "float32",
+    "backend": "MATH",
+    "architecture": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        512,
+        256,
+        128,
+        64
+      ],
+      "d": 96,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "parameters": 1722169,
+    "original_loss": true,
+    "backward": true,
+    "optimizer": true,
+    "eval": true,
+    "real_PyG": false,
+    "same_weight_off_floor_max_abs_diff": 8.940696716308594e-08,
+    "atol": 2e-06,
+    "rtol": 0.0001,
+    "metrics": {
+      "objective_pde": 2.0999200344085693,
+      "coverage_raw": 0.0,
+      "coverage_weighted": 0.0,
+      "objective_total": 2.0999200344085693
+    },
+    "seconds": 0.9070160339979338,
+    "B": 2,
+    "N": 49,
+    "forwards": 1,
+    "optimizer_steps": 1,
+    "eval_metric": 1.3495855331420898
+  },
+  {
+    "task": "elasticity",
+    "profile": "light",
+    "mode": "off",
+    "device": "cpu",
+    "dtype": "float32",
+    "backend": "MATH",
+    "architecture": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        512,
+        256,
+        128,
+        64
+      ],
+      "d": 96,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "parameters": 1710169,
+    "original_loss": true,
+    "backward": true,
+    "optimizer": true,
+    "eval": true,
+    "real_PyG": false,
+    "same_weight_off_floor_max_abs_diff": 1.1920928955078125e-07,
+    "atol": 2e-06,
+    "rtol": 0.0001,
+    "metrics": {
+      "objective_pde": 1.8628926277160645,
+      "coverage_raw": 0.0,
+      "coverage_weighted": 0.0,
+      "objective_total": 1.8628926277160645
+    },
+    "seconds": 0.8891636870030197,
+    "B": 2,
+    "N": 35,
+    "forwards": 1,
+    "optimizer_steps": 1,
+    "eval_metric": 1.2432000637054443
+  },
+  {
+    "task": "elasticity",
+    "profile": "light",
+    "mode": "floor",
+    "device": "cpu",
+    "dtype": "float32",
+    "backend": "MATH",
+    "architecture": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        512,
+        256,
+        128,
+        64
+      ],
+      "d": 96,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "parameters": 1710169,
+    "original_loss": true,
+    "backward": true,
+    "optimizer": true,
+    "eval": true,
+    "real_PyG": false,
+    "same_weight_off_floor_max_abs_diff": 1.341104507446289e-07,
+    "atol": 2e-06,
+    "rtol": 0.0001,
+    "metrics": {
+      "objective_pde": 1.862892508506775,
+      "coverage_raw": 0.0,
+      "coverage_weighted": 0.0,
+      "objective_total": 1.862892508506775
+    },
+    "seconds": 1.0142393310015905,
+    "B": 2,
+    "N": 35,
+    "forwards": 1,
+    "optimizer_steps": 1,
+    "eval_metric": 1.2432000637054443
+  },
+  {
+    "task": "ns",
+    "profile": "light",
+    "mode": "off",
+    "device": "cpu",
+    "dtype": "float32",
+    "backend": "MATH",
+    "architecture": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        512,
+        256,
+        128,
+        64
+      ],
+      "d": 96,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "parameters": 1723897,
+    "original_loss": true,
+    "backward": true,
+    "optimizer": true,
+    "eval": true,
+    "real_PyG": false,
+    "same_weight_off_floor_max_abs_diff": 1.564621925354004e-07,
+    "atol": 2e-06,
+    "rtol": 0.0001,
+    "metrics": {
+      "objective_pde": 9.098155975341797,
+      "coverage_raw": 0.0,
+      "coverage_weighted": 0.0,
+      "objective_total": 9.098155975341797
+    },
+    "seconds": 10.437535663004383,
+    "B": 1,
+    "N": 4096,
+    "forwards": 10,
+    "optimizer_steps": 1,
+    "eval_metric": 0.7293151617050171
+  },
+  {
+    "task": "ns",
+    "profile": "light",
+    "mode": "floor",
+    "device": "cpu",
+    "dtype": "float32",
+    "backend": "MATH",
+    "architecture": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        512,
+        256,
+        128,
+        64
+      ],
+      "d": 96,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "parameters": 1723897,
+    "original_loss": true,
+    "backward": true,
+    "optimizer": true,
+    "eval": true,
+    "real_PyG": false,
+    "same_weight_off_floor_max_abs_diff": 1.7136335372924805e-07,
+    "atol": 2e-06,
+    "rtol": 0.0001,
+    "metrics": {
+      "objective_pde": 9.098155975341797,
+      "coverage_raw": 0.0,
+      "coverage_weighted": 0.0,
+      "objective_total": 9.098155975341797
+    },
+    "seconds": 10.864772715001891,
+    "B": 1,
+    "N": 4096,
+    "forwards": 10,
+    "optimizer_steps": 1,
+    "eval_metric": 0.7293151617050171
+  },
+  {
+    "task": "pipe",
+    "profile": "light",
+    "mode": "off",
+    "device": "cpu",
+    "dtype": "float32",
+    "backend": "MATH",
+    "architecture": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        512,
+        256,
+        128,
+        64
+      ],
+      "d": 96,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "parameters": 1710169,
+    "original_loss": true,
+    "backward": true,
+    "optimizer": true,
+    "eval": true,
+    "real_PyG": false,
+    "same_weight_off_floor_max_abs_diff": 8.940696716308594e-08,
+    "atol": 2e-06,
+    "rtol": 0.0001,
+    "metrics": {
+      "objective_pde": 1.8691684007644653,
+      "coverage_raw": 0.0,
+      "coverage_weighted": 0.0,
+      "objective_total": 1.8691684007644653
+    },
+    "seconds": 0.9480203780040029,
+    "B": 2,
+    "N": 35,
+    "forwards": 1,
+    "optimizer_steps": 1,
+    "eval_metric": 1.5496954917907715
+  },
+  {
+    "task": "pipe",
+    "profile": "light",
+    "mode": "floor",
+    "device": "cpu",
+    "dtype": "float32",
+    "backend": "MATH",
+    "architecture": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        512,
+        256,
+        128,
+        64
+      ],
+      "d": 96,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "parameters": 1710169,
+    "original_loss": true,
+    "backward": true,
+    "optimizer": true,
+    "eval": true,
+    "real_PyG": false,
+    "same_weight_off_floor_max_abs_diff": 7.078051567077637e-08,
+    "atol": 2e-06,
+    "rtol": 0.0001,
+    "metrics": {
+      "objective_pde": 1.8691684007644653,
+      "coverage_raw": 0.0,
+      "coverage_weighted": 0.0,
+      "objective_total": 1.8691684007644653
+    },
+    "seconds": 1.1732823780039325,
+    "B": 2,
+    "N": 35,
+    "forwards": 1,
+    "optimizer_steps": 1,
+    "eval_metric": 1.5496954917907715
+  },
+  {
+    "task": "plasticity",
+    "profile": "light",
+    "mode": "off",
+    "device": "cpu",
+    "dtype": "float32",
+    "backend": "MATH",
+    "architecture": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        512,
+        256,
+        128,
+        64
+      ],
+      "d": 96,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "parameters": 1729180,
+    "original_loss": true,
+    "backward": true,
+    "optimizer": true,
+    "eval": true,
+    "real_PyG": false,
+    "same_weight_off_floor_max_abs_diff": 2.2351741790771484e-07,
+    "atol": 2e-06,
+    "rtol": 0.0001,
+    "metrics": {
+      "objective_pde": 0.7500442266464233,
+      "coverage_raw": 0.0,
+      "coverage_weighted": 0.0,
+      "objective_total": 0.7500442266464233
+    },
+    "seconds": 14.723756893996324,
+    "B": 1,
+    "N": 3131,
+    "forwards": 20,
+    "optimizer_steps": 20,
+    "eval_metric": 0.6702378392219543
+  },
+  {
+    "task": "plasticity",
+    "profile": "light",
+    "mode": "floor",
+    "device": "cpu",
+    "dtype": "float32",
+    "backend": "MATH",
+    "architecture": {
+      "family": "msar_lno",
+      "architecture_version": "msar-lno-core-v1",
+      "num_latents": [
+        512,
+        256,
+        128,
+        64
+      ],
+      "d": 96,
+      "heads": [
+        4,
+        4,
+        8,
+        8
+      ],
+      "encoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "decoder_depths": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "latent_ffn_ratio": 2,
+      "activation": "gelu",
+      "norm": "rmsnorm",
+      "qk_norm": "per_head_rmsnorm",
+      "output_norm": "layernorm",
+      "norm_eps": 1e-06,
+      "point_module": "pointwise_mlp",
+      "fusion": "query_aligned_two_source_attnres",
+      "fusion_scale": 2.0
+    },
+    "parameters": 1729180,
+    "original_loss": true,
+    "backward": true,
+    "optimizer": true,
+    "eval": true,
+    "real_PyG": false,
+    "same_weight_off_floor_max_abs_diff": 2.2351741790771484e-07,
+    "atol": 2e-06,
+    "rtol": 0.0001,
+    "metrics": {
+      "objective_pde": 0.7500442266464233,
+      "coverage_raw": 0.0,
+      "coverage_weighted": 0.0,
+      "objective_total": 0.7500442266464233
+    },
+    "seconds": 13.533359982000547,
+    "B": 1,
+    "N": 3131,
+    "forwards": 20,
+    "optimizer_steps": 20,
+    "eval_metric": 0.6702378988265991
+  }
+]
