@@ -1,4 +1,8 @@
-# 最新：MSAR-LNO M9最终交付完成（2026-09-17）
+# 最新：MSAR-LNO训练后评估脚本完成（2026-09-17）
+
+用户授权把终端函数写为`tran_evaluate/msar_lno/run_msar.sh`。用法`bash .../run_msar.sh darcy light --gpu 0`，支持八任务、Light/Full、MSAR_GPU默认和--dry-run；从任意cwd定位原checkout/path.sh，时间戳目录由原训练入口创建，训练成功才评估同一run。AirfRANS使用CUDA_VISIBLE_DEVICES。只新增脚本及说明/状态，原模型/训练/数据/依赖/既有启动脚本不变。起点main@3e88166干净；shell语法、32组64次dry-run和临时shell桩的顺序/退出码/GPU/路径检查通过，没有真实训练、commit/push。详见独立MSAR STATUS和脚本README。本阶段结束，未执行下一阶段。
+
+# 历史：MSAR-LNO M9最终交付完成（2026-09-17）
 
 M8已批准，仅授权M9，本轮已完成成本/有限GPU/独立审查/最终文档，停止。报告`docs/MSAR_LNO_IMPLEMENTATION_REPORT.md`，26条矩阵`docs/MSAR_LNO_REQUIREMENTS_MATRIX.md`，证据`docs/msar_lno_audit/m9/`。模型、任务、数据、旧测试和依赖均无改动；新增性能适配/CLI和6个新测试，只给旧measure.benchmark加可选loss_closure（默认旧MSE不变）。README保留旧文新增MSAR节，八任务训练评估文档补Full off。
 

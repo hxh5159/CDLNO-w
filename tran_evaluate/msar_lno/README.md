@@ -2,6 +2,17 @@
 
 完整结构、参数/计算成本、有限GPU测量和验证边界见[最终报告](../../docs/MSAR_LNO_IMPLEMENTATION_REPORT.md)；[M8覆盖表](../../docs/MSAR_LNO_M8_ACCEPTANCE.md)区分静态、合成、原loss、PyG、checkpoint及GPU。以下训练命令仅交付，不会自动执行。
 
+可直接使用 `run_msar.sh TASK [light|full] --gpu ID`，训练成功后自动评估同一个run，无需在终端定义函数：
+
+```bash
+# 在实际远端仓库根目录；也可从任意目录用脚本绝对路径调用。
+bash tran_evaluate/msar_lno/run_msar.sh darcy light --gpu 0
+bash tran_evaluate/msar_lno/run_msar.sh darcy full --gpu 1
+bash tran_evaluate/msar_lno/run_msar.sh airfrans full --gpu 1 --dry-run
+```
+
+TASK支持下列八个任务名。默认Light、GPU取`MSAR_GPU`环境变量（未设置时0）、coverage floor/weight .01/kappa .2；`--gpu`优先于环境变量。每次生成新的`output/<task>/msar_lno/<profile>/coverage_floor/<UTC时间戳_PID>`，按脚本所在checkout的`path.sh`及`CDLNO_RUNS_ROOT`定位，不要求当前目录就是仓库根；目录由原训练入口创建，脚本不预创建。`--dry-run`仅预览两步；训练失败不评估，任一步失败保留退出码。AirfRANS自动转换GPU选择为`CUDA_VISIBLE_DEVICES`，不传它不支持的`--gpu`。此封装不改变训练配置、模型或数据；自定义coverage/其他入口参数继续使用下面的原`TASK.sh train|eval`命令。Car的原完整drag路径/fold0限制仍适用。
+
 可用脚本：`darcy.sh`、`elasticity.sh`、`airfoil.sh`、`pipe.sh`、`ns.sh`、`plasticity.sh`、`car.sh`、`airfrans.sh`。调用形式是 `bash SCRIPT train|eval [原任务选项和MSAR选项]`，追加 `--dry-run` 只打印命令，不启动Python或访问数据。工业任务用法与限制见下方M7段落。
 
 脚本定位其所在checkout并复用 `tran_evaluate/_common.sh`、根 `path.sh` 和原 `exp_*.py`；远端无需使用本机`/home/hwz/CDLNO`路径。原数据路径可通过对应环境变量或最后的`--data_path`覆盖。

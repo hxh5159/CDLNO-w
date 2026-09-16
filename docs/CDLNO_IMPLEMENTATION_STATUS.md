@@ -1,4 +1,8 @@
-# 最新：独立MSAR-LNO M9最终交付完成（2026-09-17）
+# 最新：MSAR-LNO训练后评估脚本完成（2026-09-17）
+
+用户另行授权新增`tran_evaluate/msar_lno/run_msar.sh`，把已给出的函数封装为`TASK [light|full] --gpu ID`命令；复用八个原任务脚本，独立时间戳目录、训练成功后评估、AirfRANS环境变量GPU、--dry-run均已实现。只改脚本/说明/状态，旧模型、数据、训练和原启动入口不变。shell语法、32组64次真实脚本dry-run及隔离shell桩的顺序/错误退出/GPU/路径检查通过；未启动真实训练或自动commit/push。详情见[脚本用法](../tran_evaluate/msar_lno/README.md)和[独立STATUS](MSAR_LNO_IMPLEMENTATION_STATUS.md)。**本阶段结束，未执行下一阶段。**
+
+# 历史：独立MSAR-LNO M9最终交付完成（2026-09-17）
 
 M8已批准，仅M9。实际八任务Light/Full参数、完整矩阵MAC/标量与coverage载荷单列、13行有限GPU计时和总控26条独立反查完成。[最终报告](MSAR_LNO_IMPLEMENTATION_REPORT.md)、[规格矩阵](MSAR_LNO_REQUIREMENTS_MATRIX.md)、[summary](msar_lno_audit/m9/summary.json)。原README新增独立章节、八任务命令扩为Light/Full×floor/off；无生产模型/训练/数据/依赖修改。
 

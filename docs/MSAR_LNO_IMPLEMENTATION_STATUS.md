@@ -1,5 +1,11 @@
 # MSAR-LNO 实施状态
 
+## 2026-09-17：独立训练后评估脚本
+
+用户另行授权将终端函数保存为脚本。新增`tran_evaluate/msar_lno/run_msar.sh TASK [light|full] --gpu ID`，复用八个既有任务脚本；默认Light、GPU取`MSAR_GPU`或0、coverage floor/.01/.2。自动按checkout/path.sh生成时间戳目录，训练成功后评估同一run；AirfRANS转为CUDA_VISIBLE_DEVICES。支持`--dry-run`，失败退出码保留，脚本不预创建run。README新增实际用法，原模型/训练/数据/依赖/已有脚本未改。
+
+基于`main@3e88166e0d483824be49cf6ebfc2d2d89c5c53c5`干净工作区实施。`bash -n tran_evaluate/msar_lno/run_msar.sh`通过；八任务×Light/Full×GPU0/1共32对、64次真实脚本dry-run通过，从仓库外和含空格路径检查同run/参数/路径，未调用任务Python或创建输出。临时隔离shell桩检查训练失败不评估、评估失败退出码、两种GPU传递、环境变量优先级、默认值/help/非法参数均通过。没有启动真实训练，无新模型验收或commit/push；旧M9结论不变。**本阶段结束，未执行下一阶段。**
+
 ## 2026-09-17：M9 成本、有限性能、独立复查与最终交付完成
 
 M8已审查通过；本轮仅M9。见[最终报告](MSAR_LNO_IMPLEMENTATION_REPORT.md)、[总控26条矩阵](MSAR_LNO_REQUIREMENTS_MATRIX.md)、[八任务四种命令](../tran_evaluate/msar_lno/README.md)及[实际结果](msar_lno_audit/m9/summary.json)。本轮没有模型/训练/数据生产改动，也没有真实数据实验。
