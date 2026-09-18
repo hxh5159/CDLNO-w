@@ -1,0 +1,37 @@
+test_CDLNO_modes_and_matched_share_observer_without_math_changes (test_periodic_visualization.PeriodicChecks.test_CDLNO_modes_and_matched_share_observer_without_math_changes) ... /home/hwz/anaconda3/lib/python3.13/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+ok
+test_NS_prediction_feedback_and_plasticity_twenty_separate_conditions (test_periodic_visualization.PeriodicChecks.test_NS_prediction_feedback_and_plasticity_twenty_separate_conditions) ... ok
+test_air_real_sampling_graph_dependency (test_periodic_visualization.PeriodicChecks.test_air_real_sampling_graph_dependency) ... skipped 'real torch_cluster missing: AirfRANS sampling/graph integration not executed'
+test_frequency_static_real_wrappers_and_original_decode (test_periodic_visualization.PeriodicChecks.test_frequency_static_real_wrappers_and_original_decode) ... ok
+test_observer_exact_training_rng_optimizer_and_failure_isolation (test_periodic_visualization.PeriodicChecks.test_observer_exact_training_rng_optimizer_and_failure_isolation) ... ok
+test_production_hooks_preserve_complete_AST (test_periodic_visualization.PeriodicChecks.test_production_hooks_preserve_complete_AST) ... 
+  test_production_hooks_preserve_complete_AST (test_periodic_visualization.PeriodicChecks.test_production_hooks_preserve_complete_AST) (file='Airfoil-Design-AirfRANS/train.py') ... FAIL
+  test_production_hooks_preserve_complete_AST (test_periodic_visualization.PeriodicChecks.test_production_hooks_preserve_complete_AST) (file='Airfoil-Design-AirfRANS/main.py') ... FAIL
+test_real_PyG_car_and_air_decoding_masks_inputs (test_periodic_visualization.PeriodicChecks.test_real_PyG_car_and_air_decoding_masks_inputs) ... ok
+test_real_export_caption_fonts_and_color_saturation (test_periodic_visualization.PeriodicChecks.test_real_export_caption_fonts_and_color_saturation) ... ok
+
+======================================================================
+FAIL: test_production_hooks_preserve_complete_AST (test_periodic_visualization.PeriodicChecks.test_production_hooks_preserve_complete_AST) (file='Airfoil-Design-AirfRANS/train.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_periodic_visualization.py", line 209, in test_production_hooks_preserve_complete_AST
+    self.assertEqual(ast.dump(strip_visualization(strip_msar(source))),ast.dump(old))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Modu[21871 chars]id=\'linearno_start_epoch\', ctx=Store())], va[35557 chars]])])' != 'Modu[21871 chars]id=\'pbar_train\', ctx=Store())], value=Call(f[35217 chars]])])'
+Diff is 179601 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_production_hooks_preserve_complete_AST (test_periodic_visualization.PeriodicChecks.test_production_hooks_preserve_complete_AST) (file='Airfoil-Design-AirfRANS/main.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_periodic_visualization.py", line 209, in test_production_hooks_preserve_complete_AST
+    self.assertEqual(ast.dump(strip_visualization(strip_msar(source))),ast.dump(old))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Modu[3665 chars]ue=\'LinearNO\')]), body=[ImportFrom(module=\'[26382 chars]])])' != 'Modu[3665 chars]ue=\'CDLNO\')]), body=[ImportFrom(module=\'cdl[25949 chars]])])'
+Diff is 57284 characters long. Set self.maxDiff to None to see it.
+
+----------------------------------------------------------------------
+Ran 8 tests in 7.365s
+
+FAILED (failures=2, skipped=1)

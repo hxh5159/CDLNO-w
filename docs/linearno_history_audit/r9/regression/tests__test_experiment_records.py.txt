@@ -1,0 +1,52 @@
+/home/hwz/anaconda3/lib/python3.13/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+test_air_weighted_loss_and_real_epoch_record_fragment_without_sampling (test_experiment_records.ExperimentRecords.test_air_weighted_loss_and_real_epoch_record_fragment_without_sampling) ... ok
+test_all_launch_pairs_same_timestamp_explicit_override_and_no_writes (test_experiment_records.ExperimentRecords.test_all_launch_pairs_same_timestamp_explicit_override_and_no_writes) ... ok
+test_all_task_modes_early_config_actual_counts_epochs_repeat_eval_checkpoint (test_experiment_records.ExperimentRecords.test_all_task_modes_early_config_actual_counts_epochs_repeat_eval_checkpoint) ... ok
+test_entries_early_lifecycle_and_complete_observation_only_ast (test_experiment_records.ExperimentRecords.test_entries_early_lifecycle_and_complete_observation_only_ast) ... 
+  test_entries_early_lifecycle_and_complete_observation_only_ast (test_experiment_records.ExperimentRecords.test_entries_early_lifecycle_and_complete_observation_only_ast) (path='Airfoil-Design-AirfRANS/main.py') ... FAIL
+  test_entries_early_lifecycle_and_complete_observation_only_ast (test_experiment_records.ExperimentRecords.test_entries_early_lifecycle_and_complete_observation_only_ast) (path='Airfoil-Design-AirfRANS/main_evaluation.py') ... FAIL
+  test_entries_early_lifecycle_and_complete_observation_only_ast (test_experiment_records.ExperimentRecords.test_entries_early_lifecycle_and_complete_observation_only_ast) (path='Airfoil-Design-AirfRANS/train.py') ... FAIL
+test_exceptions_and_incomplete_exit_leave_early_records (test_experiment_records.ExperimentRecords.test_exceptions_and_incomplete_exit_leave_early_records) ... ok
+test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values (test_experiment_records.ExperimentRecords.test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values) ...   0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s, train_loss=1.24, val_loss=1.22]  0%|          | 0/2 [00:00<?, ?it/s, train_loss=1.21, val_loss=1.19]100%|██████████| 2/2 [00:00<00:00, 48.09it/s, train_loss=1.21, val_loss=1.19]
+  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s, train_loss=1.24, val_loss=1.22]  0%|          | 0/2 [00:00<?, ?it/s, train_loss=1.21, val_loss=1.19]100%|██████████| 2/2 [00:14<00:00,  7.14s/it, train_loss=1.21, val_loss=1.19]100%|██████████| 2/2 [00:14<00:00,  7.14s/it, train_loss=1.21, val_loss=1.19]
+
+  test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values (test_experiment_records.ExperimentRecords.test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values) (task='airfrans') ... skipped 'AirfRANS complete sampled epoch not run: torch_cluster is absent; no dependency was installed'
+test_old_runs_without_config_keep_loadable (test_experiment_records.ExperimentRecords.test_old_runs_without_config_keep_loadable) ... ok
+test_recording_lifecycle_in_three_original_fresh_workdirs (test_experiment_records.ExperimentRecords.test_recording_lifecycle_in_three_original_fresh_workdirs) ... ok
+test_same_process_only_reservation_and_unique_defaults (test_experiment_records.ExperimentRecords.test_same_process_only_reservation_and_unique_defaults) ... ok
+
+======================================================================
+FAIL: test_entries_early_lifecycle_and_complete_observation_only_ast (test_experiment_records.ExperimentRecords.test_entries_early_lifecycle_and_complete_observation_only_ast) (path='Airfoil-Design-AirfRANS/main.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_experiment_records.py", line 150, in test_entries_early_lifecycle_and_complete_observation_only_ast
+    self.assertEqual(ast.dump(strip_recording(copy.deepcopy(now))),ast.dump(old))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Modu[3526 chars]])), If(test=Compare(left=Attribute(value=Name[17015 chars]])])' != 'Modu[3526 chars]])), With(items=[withitem(context_expr=Call(fu[16582 chars]])])'
+Diff is 39056 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_entries_early_lifecycle_and_complete_observation_only_ast (test_experiment_records.ExperimentRecords.test_entries_early_lifecycle_and_complete_observation_only_ast) (path='Airfoil-Design-AirfRANS/main_evaluation.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_experiment_records.py", line 150, in test_entries_early_lifecycle_and_complete_observation_only_ast
+    self.assertEqual(ast.dump(strip_recording(copy.deepcopy(now))),ast.dump(old))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "Modu[1426 chars]])), If(test=Compare(left=Attribute(value=Name[11142 chars]])])" != "Modu[1426 chars]])), Assign(targets=[Name(id='use_cuda', ctx=S[10725 chars]])])"
+Diff is 24834 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_entries_early_lifecycle_and_complete_observation_only_ast (test_experiment_records.ExperimentRecords.test_entries_early_lifecycle_and_complete_observation_only_ast) (path='Airfoil-Design-AirfRANS/train.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_experiment_records.py", line 150, in test_entries_early_lifecycle_and_complete_observation_only_ast
+    self.assertEqual(ast.dump(strip_recording(copy.deepcopy(now))),ast.dump(old))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Modu[21468 chars]id=\'linearno_start_epoch\', ctx=Store())], va[33434 chars]])])' != 'Modu[21468 chars]id=\'pbar_train\', ctx=Store())], value=Call(f[33094 chars]])])'
+Diff is 173959 characters long. Set self.maxDiff to None to see it.
+
+----------------------------------------------------------------------
+Ran 9 tests in 34.562s
+
+FAILED (failures=3, skipped=1)

@@ -212,6 +212,8 @@ def provenance():
     normalized = {}; sources = {}
     for path in paths:
         relative = str(path.relative_to(ROOT)); text = path.read_text()
+        from cdlno.linearno_history.provenance import baseline_source
+        text = baseline_source(relative, text)
         sources[relative] = text
         try:
             base = subprocess.check_output(['git','show',f'HEAD:{relative}'],cwd=ROOT,stderr=subprocess.DEVNULL).decode()

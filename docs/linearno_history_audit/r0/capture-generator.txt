@@ -1,0 +1,116 @@
+"""R0 audit capture only: imports real models, never imports task exp/main.
+
+Run with CUDA_VISIBLE_DEVICES='' and PYTHONDONTWRITEBYTECODE=1.
+External evidence, not a new repository test or production implementation.
+"""
+import copy
+import hashlib
+import io
+import json
+import os
+from pathlib import Path
+import random
+import sys
+
+import numpy as np
+import torch
+from torch_geometric.data import Data
+
+ROOT = Path('/home/hwz/CDLNO')
+sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT/'PDE-Solving-StandardBenchmark'))
+from model_dict import get_model
+from types import SimpleNamespace
+from cdlno.linearno.airfrans import AirfRANSLinearNO
+from cdlno.linearno.shapenet import ShapeNetLinearNO
+
+torch.set_num_threads(1)
+torch.use_deterministic_algorithms(True)
+assert os.environ.get('CUDA_VISIBLE_DEVICES') == ''
+OUT = Path(sys.argv[1]); OUT.mkdir(exist_ok=False)
+
+def sha(t):
+    a=t.detach().cpu().contiguous()
+    return hashlib.sha256(a.numpy().tobytes()).hexdigest()
+
+def describe(t):
+    if t is None: return None
+    a=t.detach().cpu()
+    assert torch.isfinite(a).all()
+    return dict(shape=list(a.shape),dtype=str(a.dtype),sha256=sha(a),
+                norm=float(a.double().norm()),sum=float(a.double().sum()))
+
+def rng():
+    npstate=np.random.get_state()
+    return dict(torch=torch.get_rng_state().tolist(),python=random.getstate(),
+                numpy=[npstate[0],npstate[1].tolist(),*npstate[2:]])
+
+def rhash():
+    return hashlib.sha256(json.dumps(rng(),sort_keys=True).encode()).hexdigest()
+
+def capture(task, index):
+    seed=20260918+index;random.seed(seed);np.random.seed(seed);torch.manual_seed(seed)
+    before=rhash(); kw=dict(n_layers=8,n_hidden=16,n_head=2,mlp_ratio=1,dropout=0.,linearno_rank=8,ref=3)
+    if task in ('airfrans','car'):
+        cls=AirfRANSLinearNO if task=='airfrans' else ShapeNetLinearNO
+        model=cls(**kw); selection=cls.__module__+'.'+cls.__name__
+    else:
+        variant={'airfoil':'conv_temp','darcy':'conv_temp','elasticity':'temp','pipe':'conv_temp','ns':'plain','plasticity':'conv'}[task]
+        kw.update(space_dim=2,fun_dim=10 if task=='ns' else 1 if task in ('darcy','plasticity') else 0,
+                  out_dim=4 if task=='plasticity' else 1,H=3,W=5,unified_pos=task=='ns',Time_Input=task=='plasticity',linearno_variant=variant)
+        key='LinearNO_Irregular_Mesh' if task=='elasticity' else 'LinearNO_Structured_Mesh_2D'
+        cls=get_model(SimpleNamespace(model=key)).Model;model=cls(**kw);selection=key+' -> '+cls.__module__+'.'+cls.__name__
+    model.eval(); initial_rng=rng(); after_init=rhash()
+    weights={k:v.detach().clone() for k,v in model.state_dict().items()}
+    if task in ('airfrans','car'):
+        inputs={'x':torch.randn(13,7).requires_grad_()}
+        if task=='airfrans': inputs['pos']=(torch.rand(13,2)+.17).requires_grad_()
+        def forward(m):
+            d=Data(**inputs)
+            return m(d if task=='airfrans' else (d,None))
+    else:
+        N=11 if task=='elasticity' else 15
+        inputs={'x':torch.rand(2,N,2).requires_grad_()}
+        if kw['fun_dim']:inputs['fx']=torch.randn(2,N,kw['fun_dim']).requires_grad_()
+        if kw['Time_Input']: inputs['T']=torch.tensor([[.2],[.7]],requires_grad=True)
+        def forward(m):return m(inputs['x'],inputs.get('fx'),inputs.get('T'))
+    input_values={k:v.detach().clone() for k,v in inputs.items()}
+    target_shape=(13,4) if task in ('airfrans','car') else (2,N,kw['out_dim'])
+    target=torch.randn(target_shape); before_forward=rhash()
+    blocks=[]; hooks=[b.register_forward_hook(lambda _m,_i,o:blocks.append(o.detach().clone())) for b in model.blocks]
+    prediction=forward(model);after_forward=rhash()
+    for h in hooks:h.remove()
+    loss=(prediction-target).square().mean();loss.backward();after_backward=rhash()
+    grads={k:None if p.grad is None else p.grad.detach().clone() for k,p in model.named_parameters()}
+    igrads={k:None if v.grad is None else v.grad.detach().clone() for k,v in inputs.items()}
+    optimizer=torch.optim.AdamW(model.parameters(),lr=.001,weight_decay=1e-5)
+    optimizer.step();after_step=rhash()
+    updated={k:v.detach().clone() for k,v in model.state_dict().items()}
+    with torch.no_grad():post=forward(model).clone()
+    stable=torch.get_rng_state().clone()
+    restored=cls(**kw).eval();restored.load_state_dict(weights,strict=True)
+    torch.set_rng_state(stable)
+    with torch.no_grad():roundtrip=forward(restored)
+    torch.testing.assert_close(roundtrip,prediction.detach(),atol=0,rtol=0)
+    assert all(torch.equal(inputs[k].detach(),v) for k,v in input_values.items())
+    assert before_forward==after_forward==after_backward==after_step
+    assert len(blocks)==8
+    bundle=dict(task=task,kwargs=kw,seed=seed,initial_weights=weights,inputs=input_values,target=target,
+                initial_rng=initial_rng,prediction=prediction.detach(),blocks=blocks,
+                parameter_gradients=grads,input_gradients=igrads,updated_weights=updated,post_step_prediction=post)
+    torch.save(bundle,OUT/(task+'.pt'))
+    row=dict(task=task,selection=selection,seed=seed,kwargs=kw,parameters=sum(p.numel() for p in model.parameters()),
+             inputs={k:describe(v) for k,v in input_values.items()},target=describe(target),
+             state={k:describe(v) for k,v in weights.items()},blocks=[describe(x) for x in blocks],
+             output=describe(prediction),output_values=prediction.detach().tolist(),loss=float(loss.detach()),
+             input_gradients={k:describe(v) for k,v in igrads.items()},parameter_gradients={k:describe(v) for k,v in grads.items()},
+             inactive_parameters=[k for k,v in grads.items() if v is None],
+             updated_state={k:describe(v) for k,v in updated.items()},post_step_output=describe(post),
+             rng=dict(before_init=before,after_init=after_init,before_forward=before_forward,after_forward=after_forward,after_backward=after_backward,after_optimizer=after_step),
+             strict_roundtrip_max_abs=0.,input_unchanged=True,scope='synthetic reduced width/rank/grid; eight complete blocks; CPU FP32 eval; synthetic MSE')
+    print(task,row['parameters'],row['output']['sha256'],flush=True)
+    return row
+
+rows=[capture(t,i) for i,t in enumerate(('airfoil','darcy','elasticity','pipe','ns','plasticity','airfrans','car'))]
+(OUT/'fixtures.json').write_text(json.dumps(dict(generator_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+    source_head='e1c8552799dd9a7b939ddba1dfabe20e88dfa41a',torch=str(torch.__version__),rows=rows),indent=2))

@@ -119,9 +119,9 @@ class Experiment:
                         ('cdlno_run_dir' if hasattr(args, 'cdlno_run_dir') else 'run_dir'))
         if getattr(args, 'msar_family', None) == 'msar_lno':
             self.family, self.run_key = 'msar_lno', 'msar_run_dir'
-        if getattr(args, 'linearno_family', None) == 'linearno':
-            self.family, self.run_key = 'linearno', 'linearno_run_dir'
-        self.resuming = self.family == 'linearno' and getattr(args, 'resume', False)
+        if getattr(args, 'linearno_family', None) in ('linearno', 'linearno_history'):
+            self.family, self.run_key = args.linearno_family, 'linearno_run_dir'
+        self.resuming = self.family in ('linearno', 'linearno_history') and getattr(args, 'resume', False)
         requested = getattr(args, self.run_key)
         self.directory = Path(requested).resolve() if requested is not None else default_directory(task)
         if evaluation or self.resuming:
@@ -147,13 +147,13 @@ class Experiment:
                            hparams=_json(hparams), parameter_count_status='pending_model_construction',
                            parameters=None, architecture=None, environment=self._environment(),
                            code=self._code(), command=sys.argv, cwd=str(Path.cwd()))
-        if self.family == 'linearno':
+        if self.family in ('linearno', 'linearno_history'):
             self.result['seed'] = args.seed
             self.config['resolved_arguments'] = _json({k: v for k, v in vars(args).items()
                                                        if not k.startswith('_linearno')})
             self.config['linearno_profile'] = _json(args._linearno_config)
         if evaluation:
-            if self.family == 'linearno':
+            if self.family in ('linearno', 'linearno_history'):
                 self.result['resolved_arguments'] = self.config['resolved_arguments']
             else:
                 self.result['resolved_arguments'] = _json(vars(args))
@@ -224,7 +224,7 @@ class Experiment:
         params = dict(total=sum(p.numel() for p in model.parameters()),
                       trainable=sum(p.numel() for p in model.parameters() if p.requires_grad))
         parameter = next(model.parameters())
-        if self.family == 'linearno':
+        if self.family in ('linearno', 'linearno_history'):
             actual = dict(parameters=params, architecture=self.args._linearno_model_spec,
                           wrapper_architecture=dict(task=self.task),
                           device=str(parameter.device), dtype=str(parameter.dtype))
@@ -291,7 +291,7 @@ class Experiment:
         if not hasattr(self, '_field_visualizers'):
             self._field_visualizers = {}
         if member not in self._field_visualizers:
-            name = {'kcdno':'KCDNO', 'lrsa_matched':'LRSA matched', 'CDLNO':'CDLNO', 'msar_lno':'MSAR-LNO', 'linearno':'LinearNO'}[self.family]
+            name = {'kcdno':'KCDNO', 'lrsa_matched':'LRSA matched', 'CDLNO':'CDLNO', 'msar_lno':'MSAR-LNO', 'linearno':'LinearNO', 'linearno_history':'LinearNO history'}[self.family]
             self._field_visualizers[member] = PeriodicFields(self.directory, self.task, name,
                                                            seed=getattr(self.args, 'seed', None), member=member)
         event = self._field_visualizers[member].after_epoch(model, completed_epoch, total_epochs, **task_inputs)

@@ -1,0 +1,400 @@
+{
+  "oracle": [
+    {
+      "dtype": "torch.float64",
+      "combined_logits": {
+        "max_abs": 4.440892098500626e-16,
+        "mean_abs": 3.0729387288732013e-17,
+        "max_relative": 2.5667803310326625e-15,
+        "mean_relative": 9.771957208160478e-17,
+        "relative_floor": 1e-12,
+        "relative_l2": 7.37067023203139e-17
+      },
+      "largest_max_abs": 2.1094237467877974e-15,
+      "largest_mean_abs": 8.422082475867398e-16
+    },
+    {
+      "dtype": "torch.float32",
+      "combined_logits": {
+        "max_abs": 2.384185791015625e-07,
+        "mean_abs": 1.7047637984866187e-08,
+        "max_relative": 5.485794535051485e-06,
+        "mean_relative": 8.820476173465855e-08,
+        "relative_floor": 1e-12,
+        "relative_l2": 4.099332899453684e-08
+      },
+      "largest_max_abs": 9.5367431640625e-07,
+      "largest_mean_abs": 5.364418029785156e-07
+    }
+  ],
+  "checks": [
+    {
+      "kind": "causal_single_update",
+      "events": [
+        [
+          "K",
+          0
+        ],
+        [
+          "block",
+          0
+        ],
+        [
+          "K",
+          1
+        ],
+        [
+          "block",
+          1
+        ],
+        [
+          "K",
+          2
+        ],
+        [
+          "block",
+          2
+        ],
+        [
+          "K",
+          3
+        ],
+        [
+          "block",
+          3
+        ]
+      ],
+      "bank_tokens": [
+        8,
+        16,
+        24
+      ],
+      "extra_actual_M": [
+        1,
+        32,
+        64
+      ]
+    },
+    {
+      "kind": "K_fresh_process",
+      "class_path": "model.LinearNO_History.HistoryKModel",
+      "variant": "temp",
+      "no_A_import": true,
+      "max_abs": 0
+    },
+    {
+      "kind": "K_fresh_process",
+      "class_path": "cdlno.linearno_history.models.AirfRANSHistoryKModel",
+      "variant": "airfrans",
+      "no_A_import": true,
+      "max_abs": 0
+    },
+    {
+      "kind": "K_fresh_process",
+      "class_path": "cdlno.linearno_history.models.ShapeNetHistoryKModel",
+      "variant": "shapenet",
+      "no_A_import": true,
+      "max_abs": 0
+    },
+    {
+      "kind": "isolated_K_increment_VJP",
+      "gradient_l1": {
+        "Z": 27.076710969401287,
+        "base_weight": 6.343864778256814,
+        "Uq": 22.34035464885572,
+        "Uk": 19.72450991058752,
+        "Uv": 25.183214258314138,
+        "raw/0": 10.038050877883247,
+        "raw/1": 12.57852239055384,
+        "raw/2": 13.604102417056804
+      },
+      "current_C_grad": null,
+      "future_grad": null,
+      "base_logits_grad": null
+    },
+    {
+      "kind": "K_execution_shapes",
+      "N": 7,
+      "M": 5,
+      "S": 9,
+      "d_h": 4,
+      "matrix_ops": [
+        [
+          "aten.mm.default",
+          [
+            5,
+            4
+          ],
+          [
+            4,
+            4
+          ],
+          [
+            5,
+            4
+          ]
+        ],
+        [
+          "aten.mm.default",
+          [
+            54,
+            4
+          ],
+          [
+            4,
+            4
+          ],
+          [
+            54,
+            4
+          ]
+        ],
+        [
+          "aten.mm.default",
+          [
+            54,
+            4
+          ],
+          [
+            4,
+            4
+          ],
+          [
+            54,
+            4
+          ]
+        ],
+        [
+          "aten.mm.default",
+          [
+            54,
+            4
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            54,
+            5
+          ]
+        ],
+        [
+          "aten.bmm.default",
+          [
+            6,
+            5,
+            9
+          ],
+          [
+            6,
+            9,
+            4
+          ],
+          [
+            6,
+            5,
+            4
+          ]
+        ],
+        [
+          "aten.bmm.default",
+          [
+            6,
+            7,
+            4
+          ],
+          [
+            6,
+            4,
+            5
+          ],
+          [
+            6,
+            7,
+            5
+          ]
+        ]
+      ],
+      "softmax": [
+        [
+          [
+            2,
+            3,
+            5,
+            9
+          ],
+          -1
+        ]
+      ]
+    },
+    {
+      "kind": "point_constant_counterexample",
+      "wrong_bias_max_abs": 0,
+      "mean_N_max_abs": 9.516197353929913e-17,
+      "history_change_K_max_abs": 0.024894787252893624
+    },
+    {
+      "kind": "full_K_zero_gate",
+      "variant": "plain",
+      "L": 4,
+      "train": false,
+      "init_and_forward_rng_equal": true,
+      "forward_gradient_step_max_abs": 0,
+      "strict_roundtrip_max_abs": 0
+    },
+    {
+      "kind": "full_K_zero_gate",
+      "variant": "plain",
+      "L": 4,
+      "train": true,
+      "init_and_forward_rng_equal": true,
+      "forward_gradient_step_max_abs": 0,
+      "strict_roundtrip_max_abs": 0
+    },
+    {
+      "kind": "full_K_zero_gate",
+      "variant": "plain",
+      "L": 8,
+      "train": false,
+      "init_and_forward_rng_equal": true,
+      "forward_gradient_step_max_abs": 0,
+      "strict_roundtrip_max_abs": 0
+    },
+    {
+      "kind": "full_K_zero_gate",
+      "variant": "temp",
+      "L": 4,
+      "train": false,
+      "init_and_forward_rng_equal": true,
+      "forward_gradient_step_max_abs": 0,
+      "strict_roundtrip_max_abs": 0
+    },
+    {
+      "kind": "full_K_zero_gate",
+      "variant": "temp",
+      "L": 4,
+      "train": true,
+      "init_and_forward_rng_equal": true,
+      "forward_gradient_step_max_abs": 0,
+      "strict_roundtrip_max_abs": 0
+    },
+    {
+      "kind": "full_K_zero_gate",
+      "variant": "temp",
+      "L": 8,
+      "train": false,
+      "init_and_forward_rng_equal": true,
+      "forward_gradient_step_max_abs": 0,
+      "strict_roundtrip_max_abs": 0
+    },
+    {
+      "kind": "full_K_zero_gate",
+      "variant": "conv",
+      "L": 4,
+      "train": false,
+      "init_and_forward_rng_equal": true,
+      "forward_gradient_step_max_abs": 0,
+      "strict_roundtrip_max_abs": 0
+    },
+    {
+      "kind": "full_K_zero_gate",
+      "variant": "conv",
+      "L": 4,
+      "train": true,
+      "init_and_forward_rng_equal": true,
+      "forward_gradient_step_max_abs": 0,
+      "strict_roundtrip_max_abs": 0
+    },
+    {
+      "kind": "full_K_zero_gate",
+      "variant": "conv",
+      "L": 8,
+      "train": false,
+      "init_and_forward_rng_equal": true,
+      "forward_gradient_step_max_abs": 0,
+      "strict_roundtrip_max_abs": 0
+    },
+    {
+      "kind": "full_K_zero_gate",
+      "variant": "conv_temp",
+      "L": 4,
+      "train": false,
+      "init_and_forward_rng_equal": true,
+      "forward_gradient_step_max_abs": 0,
+      "strict_roundtrip_max_abs": 0
+    },
+    {
+      "kind": "full_K_zero_gate",
+      "variant": "conv_temp",
+      "L": 4,
+      "train": true,
+      "init_and_forward_rng_equal": true,
+      "forward_gradient_step_max_abs": 0,
+      "strict_roundtrip_max_abs": 0
+    },
+    {
+      "kind": "full_K_zero_gate",
+      "variant": "conv_temp",
+      "L": 8,
+      "train": false,
+      "init_and_forward_rng_equal": true,
+      "forward_gradient_step_max_abs": 0,
+      "strict_roundtrip_max_abs": 0
+    },
+    {
+      "kind": "full_K_zero_gate",
+      "variant": "airfrans",
+      "L": 4,
+      "train": false,
+      "init_and_forward_rng_equal": true,
+      "forward_gradient_step_max_abs": 0,
+      "strict_roundtrip_max_abs": 0
+    },
+    {
+      "kind": "full_K_zero_gate",
+      "variant": "airfrans",
+      "L": 4,
+      "train": true,
+      "init_and_forward_rng_equal": true,
+      "forward_gradient_step_max_abs": 0,
+      "strict_roundtrip_max_abs": 0
+    },
+    {
+      "kind": "full_K_zero_gate",
+      "variant": "airfrans",
+      "L": 8,
+      "train": false,
+      "init_and_forward_rng_equal": true,
+      "forward_gradient_step_max_abs": 0,
+      "strict_roundtrip_max_abs": 0
+    },
+    {
+      "kind": "full_K_zero_gate",
+      "variant": "shapenet",
+      "L": 4,
+      "train": false,
+      "init_and_forward_rng_equal": true,
+      "forward_gradient_step_max_abs": 0,
+      "strict_roundtrip_max_abs": 0
+    },
+    {
+      "kind": "full_K_zero_gate",
+      "variant": "shapenet",
+      "L": 4,
+      "train": true,
+      "init_and_forward_rng_equal": true,
+      "forward_gradient_step_max_abs": 0,
+      "strict_roundtrip_max_abs": 0
+    },
+    {
+      "kind": "full_K_zero_gate",
+      "variant": "shapenet",
+      "L": 8,
+      "train": false,
+      "init_and_forward_rng_equal": true,
+      "forward_gradient_step_max_abs": 0,
+      "strict_roundtrip_max_abs": 0
+    }
+  ]
+}

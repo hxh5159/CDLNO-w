@@ -49,6 +49,10 @@ def check_structure(metadata):
 
 
 def parse_args(parser, tokens, *, evaluation=False):
+    from cdlno.linearno_history.industrial import intercept
+    history_args = intercept(parser, tokens, task='car', evaluation=evaluation)
+    if history_args is not None:
+        return history_args
     parser.add_argument('--linearno-profile', choices=PROFILES, default=argparse.SUPPRESS)
     parser.add_argument('--linearno-variant', choices=('shapenet',), default=argparse.SUPPRESS)
     for field in ('rank', 'hidden', 'heads', 'layers', 'ffn-ratio'):
@@ -376,6 +380,9 @@ def evaluate(run,model,dataset,*,force=True):
 
 
 def run_cli(args):
+    if getattr(args, '_linearno_history_adapter', False):
+        from cdlno.linearno_history.car_entry import run_cli as history_run_cli
+        return history_run_cli(args)
     from cdlno.experiment import start,finish
     import train as native_train
     hparams=dict(lr=args.lr,batch_size=args.batch_size,nb_epochs=args.nb_epochs)

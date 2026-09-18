@@ -1,0 +1,440 @@
+test_20_config_complete_block_matrix_fresh_process_reload (linearno.test_history_integration.HistoryIntegration.test_20_config_complete_block_matrix_fresh_process_reload) ... ERROR
+test_config_validation_no_models_created_on_invalid_fields (linearno.test_history_integration.HistoryIntegration.test_config_validation_no_models_created_on_invalid_fields) ... ok
+test_industrial_joint_strict_native_roundtrip (linearno.test_history_integration.HistoryIntegration.test_industrial_joint_strict_native_roundtrip) ... ok
+test_joint_gate_decomposition_all_variants_and_both_gradients (linearno.test_history_integration.HistoryIntegration.test_joint_gate_decomposition_all_variants_and_both_gradients) ... 
+  test_joint_gate_decomposition_all_variants_and_both_gradients (linearno.test_history_integration.HistoryIntegration.test_joint_gate_decomposition_all_variants_and_both_gradients) (variant='plain') ... ERROR
+  test_joint_gate_decomposition_all_variants_and_both_gradients (linearno.test_history_integration.HistoryIntegration.test_joint_gate_decomposition_all_variants_and_both_gradients) (variant='temp') ... ERROR
+  test_joint_gate_decomposition_all_variants_and_both_gradients (linearno.test_history_integration.HistoryIntegration.test_joint_gate_decomposition_all_variants_and_both_gradients) (variant='conv') ... ERROR
+  test_joint_gate_decomposition_all_variants_and_both_gradients (linearno.test_history_integration.HistoryIntegration.test_joint_gate_decomposition_all_variants_and_both_gradients) (variant='conv_temp') ... ERROR
+test_joint_order_raw_once_residual_once_independent_oracles (linearno.test_history_integration.HistoryIntegration.test_joint_order_raw_once_residual_once_independent_oracles) ... ERROR
+test_metadata_negative_matrix_before_weight_access (linearno.test_history_integration.HistoryIntegration.test_metadata_negative_matrix_before_weight_access) ... ERROR
+test_omitted_flags_explicit_false_exact_legacy_path_rng (linearno.test_history_integration.HistoryIntegration.test_omitted_flags_explicit_false_exact_legacy_path_rng) ... 
+  test_omitted_flags_explicit_false_exact_legacy_path_rng (linearno.test_history_integration.HistoryIntegration.test_omitted_flags_explicit_false_exact_legacy_path_rng) (variant='plain', train=False) ... ERROR
+  test_omitted_flags_explicit_false_exact_legacy_path_rng (linearno.test_history_integration.HistoryIntegration.test_omitted_flags_explicit_false_exact_legacy_path_rng) (variant='plain', train=True) ... ERROR
+  test_omitted_flags_explicit_false_exact_legacy_path_rng (linearno.test_history_integration.HistoryIntegration.test_omitted_flags_explicit_false_exact_legacy_path_rng) (variant='temp', train=False) ... ERROR
+  test_omitted_flags_explicit_false_exact_legacy_path_rng (linearno.test_history_integration.HistoryIntegration.test_omitted_flags_explicit_false_exact_legacy_path_rng) (variant='temp', train=True) ... ERROR
+  test_omitted_flags_explicit_false_exact_legacy_path_rng (linearno.test_history_integration.HistoryIntegration.test_omitted_flags_explicit_false_exact_legacy_path_rng) (variant='conv', train=False) ... ERROR
+  test_omitted_flags_explicit_false_exact_legacy_path_rng (linearno.test_history_integration.HistoryIntegration.test_omitted_flags_explicit_false_exact_legacy_path_rng) (variant='conv', train=True) ... ERROR
+  test_omitted_flags_explicit_false_exact_legacy_path_rng (linearno.test_history_integration.HistoryIntegration.test_omitted_flags_explicit_false_exact_legacy_path_rng) (variant='conv_temp', train=False) ... ERROR
+  test_omitted_flags_explicit_false_exact_legacy_path_rng (linearno.test_history_integration.HistoryIntegration.test_omitted_flags_explicit_false_exact_legacy_path_rng) (variant='conv_temp', train=True) ... ERROR
+test_resume_restores_dropout_optimizer_scheduler_and_all_rng (linearno.test_history_integration.HistoryIntegration.test_resume_restores_dropout_optimizer_scheduler_and_all_rng) ... ERROR
+test_train_dropout_rng_distinction_and_K_only_has_no_A_calls (linearno.test_history_integration.HistoryIntegration.test_train_dropout_rng_distinction_and_K_only_has_no_A_calls) ... ERROR
+test_wrong_state_keys_shapes_rejected_before_load_state_dict (linearno.test_history_integration.HistoryIntegration.test_wrong_state_keys_shapes_rejected_before_load_state_dict) ... ERROR
+
+======================================================================
+ERROR: test_20_config_complete_block_matrix_fresh_process_reload (linearno.test_history_integration.HistoryIntegration.test_20_config_complete_block_matrix_fresh_process_reload)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_history_integration.py", line 152, in test_20_config_complete_block_matrix_fresh_process_reload
+    torch.manual_seed(51005); public = build_model(c0)
+                                       ~~~~~~~~~~~^^^^
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 51, in build_model
+    cls = validate_constructor(c)
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 36, in validate_constructor
+    pure = class_for(baseline_model_spec(c['profile_spec'])['class_path'])
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 20, in class_for
+    if existing is not None and Path(existing.__file__).resolve().parent != standard/'model':
+                                ~~~~^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 503, in __init__
+    super().__init__(*args)
+    ~~~~~~~~~~~~~~~~^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 132, in __init__
+    raise TypeError(
+    ...<2 lines>...
+        f"not {type(path).__name__!r}")
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+======================================================================
+ERROR: test_joint_gate_decomposition_all_variants_and_both_gradients (linearno.test_history_integration.HistoryIntegration.test_joint_gate_decomposition_all_variants_and_both_gradients) (variant='plain')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_history_integration.py", line 245, in test_joint_gate_decomposition_all_variants_and_both_gradients
+    models={sig:build_model(c).double().eval() for sig,c in configs.items()}
+                ~~~~~~~~~~~^^^
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 51, in build_model
+    cls = validate_constructor(c)
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 36, in validate_constructor
+    pure = class_for(baseline_model_spec(c['profile_spec'])['class_path'])
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 20, in class_for
+    if existing is not None and Path(existing.__file__).resolve().parent != standard/'model':
+                                ~~~~^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 503, in __init__
+    super().__init__(*args)
+    ~~~~~~~~~~~~~~~~^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 132, in __init__
+    raise TypeError(
+    ...<2 lines>...
+        f"not {type(path).__name__!r}")
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+======================================================================
+ERROR: test_joint_gate_decomposition_all_variants_and_both_gradients (linearno.test_history_integration.HistoryIntegration.test_joint_gate_decomposition_all_variants_and_both_gradients) (variant='temp')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_history_integration.py", line 245, in test_joint_gate_decomposition_all_variants_and_both_gradients
+    models={sig:build_model(c).double().eval() for sig,c in configs.items()}
+                ~~~~~~~~~~~^^^
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 51, in build_model
+    cls = validate_constructor(c)
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 36, in validate_constructor
+    pure = class_for(baseline_model_spec(c['profile_spec'])['class_path'])
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 20, in class_for
+    if existing is not None and Path(existing.__file__).resolve().parent != standard/'model':
+                                ~~~~^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 503, in __init__
+    super().__init__(*args)
+    ~~~~~~~~~~~~~~~~^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 132, in __init__
+    raise TypeError(
+    ...<2 lines>...
+        f"not {type(path).__name__!r}")
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+======================================================================
+ERROR: test_joint_gate_decomposition_all_variants_and_both_gradients (linearno.test_history_integration.HistoryIntegration.test_joint_gate_decomposition_all_variants_and_both_gradients) (variant='conv')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_history_integration.py", line 245, in test_joint_gate_decomposition_all_variants_and_both_gradients
+    models={sig:build_model(c).double().eval() for sig,c in configs.items()}
+                ~~~~~~~~~~~^^^
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 51, in build_model
+    cls = validate_constructor(c)
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 36, in validate_constructor
+    pure = class_for(baseline_model_spec(c['profile_spec'])['class_path'])
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 20, in class_for
+    if existing is not None and Path(existing.__file__).resolve().parent != standard/'model':
+                                ~~~~^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 503, in __init__
+    super().__init__(*args)
+    ~~~~~~~~~~~~~~~~^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 132, in __init__
+    raise TypeError(
+    ...<2 lines>...
+        f"not {type(path).__name__!r}")
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+======================================================================
+ERROR: test_joint_gate_decomposition_all_variants_and_both_gradients (linearno.test_history_integration.HistoryIntegration.test_joint_gate_decomposition_all_variants_and_both_gradients) (variant='conv_temp')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_history_integration.py", line 245, in test_joint_gate_decomposition_all_variants_and_both_gradients
+    models={sig:build_model(c).double().eval() for sig,c in configs.items()}
+                ~~~~~~~~~~~^^^
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 51, in build_model
+    cls = validate_constructor(c)
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 36, in validate_constructor
+    pure = class_for(baseline_model_spec(c['profile_spec'])['class_path'])
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 20, in class_for
+    if existing is not None and Path(existing.__file__).resolve().parent != standard/'model':
+                                ~~~~^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 503, in __init__
+    super().__init__(*args)
+    ~~~~~~~~~~~~~~~~^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 132, in __init__
+    raise TypeError(
+    ...<2 lines>...
+        f"not {type(path).__name__!r}")
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+======================================================================
+ERROR: test_joint_order_raw_once_residual_once_independent_oracles (linearno.test_history_integration.HistoryIntegration.test_joint_order_raw_once_residual_once_independent_oracles)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_history_integration.py", line 270, in test_joint_order_raw_once_residual_once_independent_oracles
+    model=build_model(c).double().eval();gates(model,.8,.7,.2)
+          ~~~~~~~~~~~^^^
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 51, in build_model
+    cls = validate_constructor(c)
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 36, in validate_constructor
+    pure = class_for(baseline_model_spec(c['profile_spec'])['class_path'])
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 20, in class_for
+    if existing is not None and Path(existing.__file__).resolve().parent != standard/'model':
+                                ~~~~^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 503, in __init__
+    super().__init__(*args)
+    ~~~~~~~~~~~~~~~~^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 132, in __init__
+    raise TypeError(
+    ...<2 lines>...
+        f"not {type(path).__name__!r}")
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+======================================================================
+ERROR: test_metadata_negative_matrix_before_weight_access (linearno.test_history_integration.HistoryIntegration.test_metadata_negative_matrix_before_weight_access)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_history_integration.py", line 341, in test_metadata_negative_matrix_before_weight_access
+    model=build_model(c);opt=optimizer(model);sched=scheduler(opt)
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 51, in build_model
+    cls = validate_constructor(c)
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 36, in validate_constructor
+    pure = class_for(baseline_model_spec(c['profile_spec'])['class_path'])
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 20, in class_for
+    if existing is not None and Path(existing.__file__).resolve().parent != standard/'model':
+                                ~~~~^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 503, in __init__
+    super().__init__(*args)
+    ~~~~~~~~~~~~~~~~^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 132, in __init__
+    raise TypeError(
+    ...<2 lines>...
+        f"not {type(path).__name__!r}")
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+======================================================================
+ERROR: test_omitted_flags_explicit_false_exact_legacy_path_rng (linearno.test_history_integration.HistoryIntegration.test_omitted_flags_explicit_false_exact_legacy_path_rng) (variant='plain', train=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_history_integration.py", line 218, in test_omitted_flags_explicit_false_exact_legacy_path_rng
+    torch.manual_seed(1123); model=build_model(cfg).train(train)
+                                   ~~~~~~~~~~~^^^^^
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 51, in build_model
+    cls = validate_constructor(c)
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 36, in validate_constructor
+    pure = class_for(baseline_model_spec(c['profile_spec'])['class_path'])
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 20, in class_for
+    if existing is not None and Path(existing.__file__).resolve().parent != standard/'model':
+                                ~~~~^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 503, in __init__
+    super().__init__(*args)
+    ~~~~~~~~~~~~~~~~^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 132, in __init__
+    raise TypeError(
+    ...<2 lines>...
+        f"not {type(path).__name__!r}")
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+======================================================================
+ERROR: test_omitted_flags_explicit_false_exact_legacy_path_rng (linearno.test_history_integration.HistoryIntegration.test_omitted_flags_explicit_false_exact_legacy_path_rng) (variant='plain', train=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_history_integration.py", line 218, in test_omitted_flags_explicit_false_exact_legacy_path_rng
+    torch.manual_seed(1123); model=build_model(cfg).train(train)
+                                   ~~~~~~~~~~~^^^^^
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 51, in build_model
+    cls = validate_constructor(c)
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 36, in validate_constructor
+    pure = class_for(baseline_model_spec(c['profile_spec'])['class_path'])
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 20, in class_for
+    if existing is not None and Path(existing.__file__).resolve().parent != standard/'model':
+                                ~~~~^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 503, in __init__
+    super().__init__(*args)
+    ~~~~~~~~~~~~~~~~^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 132, in __init__
+    raise TypeError(
+    ...<2 lines>...
+        f"not {type(path).__name__!r}")
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+======================================================================
+ERROR: test_omitted_flags_explicit_false_exact_legacy_path_rng (linearno.test_history_integration.HistoryIntegration.test_omitted_flags_explicit_false_exact_legacy_path_rng) (variant='temp', train=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_history_integration.py", line 218, in test_omitted_flags_explicit_false_exact_legacy_path_rng
+    torch.manual_seed(1123); model=build_model(cfg).train(train)
+                                   ~~~~~~~~~~~^^^^^
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 51, in build_model
+    cls = validate_constructor(c)
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 36, in validate_constructor
+    pure = class_for(baseline_model_spec(c['profile_spec'])['class_path'])
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 20, in class_for
+    if existing is not None and Path(existing.__file__).resolve().parent != standard/'model':
+                                ~~~~^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 503, in __init__
+    super().__init__(*args)
+    ~~~~~~~~~~~~~~~~^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 132, in __init__
+    raise TypeError(
+    ...<2 lines>...
+        f"not {type(path).__name__!r}")
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+======================================================================
+ERROR: test_omitted_flags_explicit_false_exact_legacy_path_rng (linearno.test_history_integration.HistoryIntegration.test_omitted_flags_explicit_false_exact_legacy_path_rng) (variant='temp', train=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_history_integration.py", line 218, in test_omitted_flags_explicit_false_exact_legacy_path_rng
+    torch.manual_seed(1123); model=build_model(cfg).train(train)
+                                   ~~~~~~~~~~~^^^^^
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 51, in build_model
+    cls = validate_constructor(c)
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 36, in validate_constructor
+    pure = class_for(baseline_model_spec(c['profile_spec'])['class_path'])
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 20, in class_for
+    if existing is not None and Path(existing.__file__).resolve().parent != standard/'model':
+                                ~~~~^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 503, in __init__
+    super().__init__(*args)
+    ~~~~~~~~~~~~~~~~^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 132, in __init__
+    raise TypeError(
+    ...<2 lines>...
+        f"not {type(path).__name__!r}")
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+======================================================================
+ERROR: test_omitted_flags_explicit_false_exact_legacy_path_rng (linearno.test_history_integration.HistoryIntegration.test_omitted_flags_explicit_false_exact_legacy_path_rng) (variant='conv', train=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_history_integration.py", line 218, in test_omitted_flags_explicit_false_exact_legacy_path_rng
+    torch.manual_seed(1123); model=build_model(cfg).train(train)
+                                   ~~~~~~~~~~~^^^^^
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 51, in build_model
+    cls = validate_constructor(c)
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 36, in validate_constructor
+    pure = class_for(baseline_model_spec(c['profile_spec'])['class_path'])
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 20, in class_for
+    if existing is not None and Path(existing.__file__).resolve().parent != standard/'model':
+                                ~~~~^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 503, in __init__
+    super().__init__(*args)
+    ~~~~~~~~~~~~~~~~^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 132, in __init__
+    raise TypeError(
+    ...<2 lines>...
+        f"not {type(path).__name__!r}")
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+======================================================================
+ERROR: test_omitted_flags_explicit_false_exact_legacy_path_rng (linearno.test_history_integration.HistoryIntegration.test_omitted_flags_explicit_false_exact_legacy_path_rng) (variant='conv', train=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_history_integration.py", line 218, in test_omitted_flags_explicit_false_exact_legacy_path_rng
+    torch.manual_seed(1123); model=build_model(cfg).train(train)
+                                   ~~~~~~~~~~~^^^^^
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 51, in build_model
+    cls = validate_constructor(c)
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 36, in validate_constructor
+    pure = class_for(baseline_model_spec(c['profile_spec'])['class_path'])
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 20, in class_for
+    if existing is not None and Path(existing.__file__).resolve().parent != standard/'model':
+                                ~~~~^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 503, in __init__
+    super().__init__(*args)
+    ~~~~~~~~~~~~~~~~^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 132, in __init__
+    raise TypeError(
+    ...<2 lines>...
+        f"not {type(path).__name__!r}")
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+======================================================================
+ERROR: test_omitted_flags_explicit_false_exact_legacy_path_rng (linearno.test_history_integration.HistoryIntegration.test_omitted_flags_explicit_false_exact_legacy_path_rng) (variant='conv_temp', train=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_history_integration.py", line 218, in test_omitted_flags_explicit_false_exact_legacy_path_rng
+    torch.manual_seed(1123); model=build_model(cfg).train(train)
+                                   ~~~~~~~~~~~^^^^^
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 51, in build_model
+    cls = validate_constructor(c)
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 36, in validate_constructor
+    pure = class_for(baseline_model_spec(c['profile_spec'])['class_path'])
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 20, in class_for
+    if existing is not None and Path(existing.__file__).resolve().parent != standard/'model':
+                                ~~~~^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 503, in __init__
+    super().__init__(*args)
+    ~~~~~~~~~~~~~~~~^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 132, in __init__
+    raise TypeError(
+    ...<2 lines>...
+        f"not {type(path).__name__!r}")
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+======================================================================
+ERROR: test_omitted_flags_explicit_false_exact_legacy_path_rng (linearno.test_history_integration.HistoryIntegration.test_omitted_flags_explicit_false_exact_legacy_path_rng) (variant='conv_temp', train=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_history_integration.py", line 218, in test_omitted_flags_explicit_false_exact_legacy_path_rng
+    torch.manual_seed(1123); model=build_model(cfg).train(train)
+                                   ~~~~~~~~~~~^^^^^
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 51, in build_model
+    cls = validate_constructor(c)
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 36, in validate_constructor
+    pure = class_for(baseline_model_spec(c['profile_spec'])['class_path'])
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 20, in class_for
+    if existing is not None and Path(existing.__file__).resolve().parent != standard/'model':
+                                ~~~~^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 503, in __init__
+    super().__init__(*args)
+    ~~~~~~~~~~~~~~~~^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 132, in __init__
+    raise TypeError(
+    ...<2 lines>...
+        f"not {type(path).__name__!r}")
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+======================================================================
+ERROR: test_resume_restores_dropout_optimizer_scheduler_and_all_rng (linearno.test_history_integration.HistoryIntegration.test_resume_restores_dropout_optimizer_scheduler_and_all_rng)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_history_integration.py", line 388, in test_resume_restores_dropout_optimizer_scheduler_and_all_rng
+    c=config(sig,dropout=.2);model=build_model(c).train();gates(model,.7,.4,.2)
+                                   ~~~~~~~~~~~^^^
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 51, in build_model
+    cls = validate_constructor(c)
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 36, in validate_constructor
+    pure = class_for(baseline_model_spec(c['profile_spec'])['class_path'])
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 20, in class_for
+    if existing is not None and Path(existing.__file__).resolve().parent != standard/'model':
+                                ~~~~^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 503, in __init__
+    super().__init__(*args)
+    ~~~~~~~~~~~~~~~~^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 132, in __init__
+    raise TypeError(
+    ...<2 lines>...
+        f"not {type(path).__name__!r}")
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+======================================================================
+ERROR: test_train_dropout_rng_distinction_and_K_only_has_no_A_calls (linearno.test_history_integration.HistoryIntegration.test_train_dropout_rng_distinction_and_K_only_has_no_A_calls)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_history_integration.py", line 307, in test_train_dropout_rng_distinction_and_K_only_has_no_A_calls
+    models=[build_model(c).train() for c in (c0,ca,ckc,cak)]
+            ~~~~~~~~~~~^^^
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 51, in build_model
+    cls = validate_constructor(c)
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 36, in validate_constructor
+    pure = class_for(baseline_model_spec(c['profile_spec'])['class_path'])
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 20, in class_for
+    if existing is not None and Path(existing.__file__).resolve().parent != standard/'model':
+                                ~~~~^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 503, in __init__
+    super().__init__(*args)
+    ~~~~~~~~~~~~~~~~^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 132, in __init__
+    raise TypeError(
+    ...<2 lines>...
+        f"not {type(path).__name__!r}")
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+======================================================================
+ERROR: test_wrong_state_keys_shapes_rejected_before_load_state_dict (linearno.test_history_integration.HistoryIntegration.test_wrong_state_keys_shapes_rejected_before_load_state_dict)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_history_integration.py", line 373, in test_wrong_state_keys_shapes_rejected_before_load_state_dict
+    models={sig:build_model(config(sig)) for sig in SIGNATURES}
+                ~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 51, in build_model
+    cls = validate_constructor(c)
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 36, in validate_constructor
+    pure = class_for(baseline_model_spec(c['profile_spec'])['class_path'])
+  File "/home/hwz/CDLNO/cdlno/linearno_history/factory.py", line 20, in class_for
+    if existing is not None and Path(existing.__file__).resolve().parent != standard/'model':
+                                ~~~~^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 503, in __init__
+    super().__init__(*args)
+    ~~~~~~~~~~~~~~~~^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/pathlib/_local.py", line 132, in __init__
+    raise TypeError(
+    ...<2 lines>...
+        f"not {type(path).__name__!r}")
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+----------------------------------------------------------------------
+Ran 10 tests in 1.152s
+
+FAILED (errors=18)

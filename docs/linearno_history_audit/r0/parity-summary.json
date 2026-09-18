@@ -1,0 +1,212 @@
+[
+  {
+    "suite": "attention-parity",
+    "kind": "oracle",
+    "dtype": "torch.float64",
+    "rows": 12,
+    "atol": [
+      1e-12
+    ],
+    "rtol": [
+      1e-10
+    ],
+    "max_abs": 8.881784197001252e-16,
+    "mean_abs": 2.914335439641036e-16,
+    "max_relative": 1.3013983921529745e-12,
+    "mean_relative": 1.031716722430741e-14
+  },
+  {
+    "suite": "attention-parity",
+    "kind": "oracle",
+    "dtype": "torch.float32",
+    "rows": 12,
+    "atol": [
+      1e-06
+    ],
+    "rtol": [
+      1e-05
+    ],
+    "max_abs": 7.152557373046875e-07,
+    "mean_abs": 1.7384688059488931e-07,
+    "max_relative": 0.0016260452891781187,
+    "mean_relative": 3.4185086290245754e-05
+  },
+  {
+    "suite": "attention-parity",
+    "kind": "official_parity",
+    "dtype": "torch.float64",
+    "rows": 12,
+    "atol": [
+      1e-12
+    ],
+    "rtol": [
+      1e-10
+    ],
+    "max_abs": 0.0,
+    "mean_abs": 0.0,
+    "max_relative": 0.0,
+    "mean_relative": 0.0
+  },
+  {
+    "suite": "attention-parity",
+    "kind": "official_parity",
+    "dtype": "torch.float32",
+    "rows": 12,
+    "atol": [
+      1e-06
+    ],
+    "rtol": [
+      1e-05
+    ],
+    "max_abs": 0.0,
+    "mean_abs": 0.0,
+    "max_relative": 0.0,
+    "mean_relative": 0.0
+  },
+  {
+    "suite": "standard-parity",
+    "kind": "official_parity",
+    "dtype": "torch.float64",
+    "rows": 4,
+    "atol": [
+      1e-12
+    ],
+    "rtol": [
+      1e-10
+    ],
+    "max_abs": 1.8735013540549517e-16,
+    "mean_abs": 3.700743415417188e-17,
+    "max_relative": 1.7175381354918536e-12,
+    "mean_relative": 2.1251226527387603e-13
+  },
+  {
+    "suite": "standard-parity",
+    "kind": "official_parity",
+    "dtype": "torch.float32",
+    "rows": 6,
+    "atol": [
+      1e-06
+    ],
+    "rtol": [
+      1e-05
+    ],
+    "max_abs": 0.0,
+    "mean_abs": 0.0,
+    "max_relative": 0.0,
+    "mean_relative": 0.0
+  },
+  {
+    "suite": "standard-parity",
+    "kind": "independent_oracle",
+    "dtype": "float64",
+    "rows": 8,
+    "atol": [
+      1e-12
+    ],
+    "rtol": [
+      1e-10
+    ],
+    "max_abs": 1.1368683772161603e-13,
+    "mean_abs": 3.9968028886505635e-14,
+    "max_relative": 5.865485295770654e-10,
+    "mean_relative": 2.3039525969219416e-10
+  },
+  {
+    "suite": "air-parity",
+    "kind": "official_full_model_parity",
+    "dtype": "torch.float64",
+    "rows": 1,
+    "atol": [
+      1e-12
+    ],
+    "rtol": [
+      1e-10
+    ],
+    "max_abs": 0.0,
+    "mean_abs": 0.0,
+    "max_relative": 0.0,
+    "mean_relative": 0.0
+  },
+  {
+    "suite": "air-parity",
+    "kind": "official_full_model_parity",
+    "dtype": "torch.float32",
+    "rows": 1,
+    "atol": [
+      1e-06
+    ],
+    "rtol": [
+      1e-05
+    ],
+    "max_abs": 0.0,
+    "mean_abs": 0.0,
+    "max_relative": 0.0,
+    "mean_relative": 0.0
+  },
+  {
+    "suite": "air-parity",
+    "kind": "independent_double_oracle",
+    "dtype": "float64",
+    "rows": 1,
+    "atol": [
+      1e-12
+    ],
+    "rtol": [
+      1e-10
+    ],
+    "max_abs": 2.6645352591003757e-15,
+    "mean_abs": 5.603156827405087e-16,
+    "max_relative": 1.5356858380031082e-10,
+    "mean_relative": 8.190589221808687e-12,
+    "tolerance_source": "existing test source; omitted from raw report"
+  },
+  {
+    "suite": "car-parity",
+    "kind": "official_full_model_parity",
+    "dtype": "torch.float64",
+    "rows": 1,
+    "atol": [
+      1e-12
+    ],
+    "rtol": [
+      1e-10
+    ],
+    "max_abs": 0.0,
+    "mean_abs": 0.0,
+    "max_relative": 0.0,
+    "mean_relative": 0.0
+  },
+  {
+    "suite": "car-parity",
+    "kind": "official_full_model_parity",
+    "dtype": "torch.float32",
+    "rows": 2,
+    "atol": [
+      1e-06
+    ],
+    "rtol": [
+      1e-05
+    ],
+    "max_abs": 0.0,
+    "mean_abs": 0.0,
+    "max_relative": 0.0,
+    "mean_relative": 0.0
+  },
+  {
+    "suite": "car-parity",
+    "kind": "independent_double_oracle",
+    "dtype": "float64",
+    "rows": 1,
+    "atol": [
+      1e-12
+    ],
+    "rtol": [
+      1e-10
+    ],
+    "max_abs": 4.440892098500626e-16,
+    "mean_abs": 8.673617379884035e-17,
+    "max_relative": 3.8857536288888727e-10,
+    "mean_relative": 2.2132752154572874e-11,
+    "tolerance_source": "existing test source; omitted from raw report"
+  }
+]

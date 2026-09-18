@@ -1,0 +1,33 @@
+test_air_original_epoch_record_fragment_and_eval_immutability (test_msar_industrial.IndustrialMSAR.test_air_original_epoch_record_fragment_and_eval_immutability) ... ok
+test_air_original_sampled_epoch_when_extension_available (test_msar_industrial.IndustrialMSAR.test_air_original_sampled_epoch_when_extension_available) ... skipped 'torch_cluster absent: original sampled epoch/graph rebuild not executed'
+test_air_sampled_ptr_original_scatter_fragments (test_msar_industrial.IndustrialMSAR.test_air_sampled_ptr_original_scatter_fragments) ... ok
+test_car_original_complete_synthetic_epoch_records (test_msar_industrial.IndustrialMSAR.test_car_original_complete_synthetic_epoch_records) ...   0%|          | 0/1 [00:00<?, ?it/s]  0%|          | 0/1 [00:00<?, ?it/s, train_loss=1.73, val_loss=1.72]100%|██████████| 1/1 [00:12<00:00, 12.94s/it, train_loss=1.73, val_loss=1.72]100%|██████████| 1/1 [00:12<00:00, 12.94s/it, train_loss=1.73, val_loss=1.72]
+  0%|          | 0/1 [00:00<?, ?it/s]  0%|          | 0/1 [00:00<?, ?it/s, train_loss=1.6, val_loss=1.55]100%|██████████| 1/1 [00:11<00:00, 11.79s/it, train_loss=1.6, val_loss=1.55]100%|██████████| 1/1 [00:11<00:00, 11.79s/it, train_loss=1.6, val_loss=1.55]
+ok
+test_checkpoint_corrupt_family_shape_behavior_and_shared_list (test_msar_industrial.IndustrialMSAR.test_checkpoint_corrupt_family_shape_behavior_and_shared_list) ... ok
+test_checkpoint_whole_list_member_readfirst_and_fresh_cwd (test_msar_industrial.IndustrialMSAR.test_checkpoint_whole_list_member_readfirst_and_fresh_cwd) ... ok
+test_coverage_off_weightzero_order_and_uniform_measure (test_msar_industrial.IndustrialMSAR.test_coverage_off_weightzero_order_and_uniform_measure) ... ok
+test_cuda_real_graph_loss_steps (test_msar_industrial.IndustrialMSAR.test_cuda_real_graph_loss_steps) ... skipped 'real PyG/CUDA unavailable'
+test_frozen_complete_entries_trainers_yaml_and_core (test_msar_industrial.IndustrialMSAR.test_frozen_complete_entries_trainers_yaml_and_core) ... FAIL
+test_original_weighted_losses_steps_and_eval (test_msar_industrial.IndustrialMSAR.test_original_weighted_losses_steps_and_eval) ... ok
+test_profiles_real_light_full_small_N (test_msar_industrial.IndustrialMSAR.test_profiles_real_light_full_small_N) ... ok
+test_real_graph_inputs_permutation_reference_and_batch_rejection (test_msar_industrial.IndustrialMSAR.test_real_graph_inputs_permutation_reference_and_batch_rejection) ... ok
+test_real_parser_profiles_and_inapplicable_flags (test_msar_industrial.IndustrialMSAR.test_real_parser_profiles_and_inapplicable_flags) ... ok
+test_scripts_real_parsers_train_and_eval (test_msar_industrial.IndustrialMSAR.test_scripts_real_parsers_train_and_eval) ... ok
+
+======================================================================
+FAIL: test_frozen_complete_entries_trainers_yaml_and_core (test_msar_industrial.IndustrialMSAR.test_frozen_complete_entries_trainers_yaml_and_core)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_msar_industrial.py", line 117, in test_frozen_complete_entries_trainers_yaml_and_core
+    self.assertEqual(ast.dump(strip_msar(ast.parse((project/name).read_text()))),
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                     ast.dump(ast.parse((source/relative).read_text())),str(relative))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Modu[3665 chars]ue=\'LinearNO\')]), body=[ImportFrom(module=\'[26461 chars]])])' != 'Modu[3665 chars]ue=\'CDLNO\')]), body=[ImportFrom(module=\'cdl[26028 chars]])])'
+Diff is 57434 characters long. Set self.maxDiff to None to see it. : Airfoil-Design-AirfRANS/main.py
+
+----------------------------------------------------------------------
+Ran 14 tests in 38.692s
+
+FAILED (failures=1, skipped=2)

@@ -137,6 +137,10 @@ def check_structure(metadata):
 
 
 def parse_args(parser, tokens, *, evaluation=False):
+    from cdlno.linearno_history.industrial import intercept
+    history_args = intercept(parser, tokens, task='airfrans', evaluation=evaluation)
+    if history_args is not None:
+        return history_args
     parser.add_argument('--linearno-profile', choices=PROFILES, default=argparse.SUPPRESS)
     parser.add_argument('--linearno-variant', choices=('airfrans',), default=argparse.SUPPRESS)
     parser.add_argument('--linearno-rank', type=int, default=argparse.SUPPRESS)
@@ -263,7 +267,9 @@ def _provenance():
     for path in paths:
         key = str(path.relative_to(ROOT))
         source = path.read_text()
-        sources[key] = _sha256(path)
+        from cdlno.linearno_history.provenance import baseline_source
+        source = baseline_source(key, source)
+        sources[key] = hashlib.sha256(source.encode()).hexdigest()
         try:
             before = subprocess.check_output(['git', 'show', 'HEAD:' + key], cwd=ROOT,
                                              stderr=subprocess.DEVNULL).decode()
@@ -579,6 +585,9 @@ def _load_dataset(data_dir, args, *, train=True, coef_norm=None):
 
 
 def run_cli(args):
+    if getattr(args, '_linearno_history_adapter', False):
+        from cdlno.linearno_history.air_entry import run_cli as history_run_cli
+        return history_run_cli(args)
     """Run the original AirfRANS dataset/training/eval actions for LinearNO."""
     from cdlno.experiment import finish, start
     import train as air_train

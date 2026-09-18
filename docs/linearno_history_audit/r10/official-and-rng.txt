@@ -1,0 +1,28 @@
+test_cpu_double_and_float_oracle_all_variants (linearno.test_attention_parity.AttentionParity.test_cpu_double_and_float_oracle_all_variants) ... ok
+test_fixed_official_cpu_forward_all_grads_step_checkpoint (linearno.test_attention_parity.AttentionParity.test_fixed_official_cpu_forward_all_grads_step_checkpoint) ... ok
+test_fixed_official_cuda_fp32_fp16_bfloat16 (linearno.test_attention_parity.AttentionParity.test_fixed_official_cuda_fp32_fp16_bfloat16) ... skipped 'CUDA not available; GPU FP32/AMP NOT RUN'
+test_release_constructor_and_outer_initialization_RNG_keys (linearno.test_attention_parity.AttentionParity.test_release_constructor_and_outer_initialization_RNG_keys) ... ok
+test_cpu_official_all_variants_full_forward_gradients_step (linearno.test_standard_model.StandardModelParity.test_cpu_official_all_variants_full_forward_gradients_step) ... ok
+test_default_allocations_single_apply_then_placeholder_RNG (linearno.test_standard_model.StandardModelParity.test_default_allocations_single_apply_then_placeholder_RNG) ... ok
+test_independent_double_complete_equations_and_all_gradients (linearno.test_standard_model.StandardModelParity.test_independent_double_complete_equations_and_all_gradients) ... ok
+test_native_cuda_official_unified_replacement_all_variants (linearno.test_standard_model.StandardModelParity.test_native_cuda_official_unified_replacement_all_variants) ... skipped 'native official unified Model requires CUDA'
+test_six_release_configurations_and_parameter_counts (linearno.test_standard_model.StandardModelParity.test_six_release_configurations_and_parameter_counts) ... ok
+test_cpu_full_official_parity (linearno.test_airfrans_model.AirfRANSModelChecks.test_cpu_full_official_parity) ... ok
+test_formal_count_exact_initialization_rng_and_state (linearno.test_airfrans_model.AirfRANSModelChecks.test_formal_count_exact_initialization_rng_and_state) ... ok
+test_independent_double_network_oracle (linearno.test_airfrans_model.AirfRANSModelChecks.test_independent_double_network_oracle) ... ok
+test_native_cuda_full_official_parity (linearno.test_airfrans_model.AirfRANSModelChecks.test_native_cuda_full_official_parity) ... skipped 'native release get_grid requires CUDA'
+test_original_normalized_MSE_training_function_and_fresh_pickle (linearno.test_airfrans_model.AirfRANSModelChecks.test_original_normalized_MSE_training_function_and_fresh_pickle) ... ok
+test_real_PyG_variable_nodes_dead_parameters_and_batch_isolation (linearno.test_airfrans_model.AirfRANSModelChecks.test_real_PyG_variable_nodes_dead_parameters_and_batch_isolation) ... ok
+test_reference_grid_golden_and_actual_raw_position (linearno.test_airfrans_model.AirfRANSModelChecks.test_reference_grid_golden_and_actual_raw_position) ... ok
+test_PyG_variable_N_masks_geometry_unused_batch_and_input_unchanged (linearno.test_shapenet_model.ShapeNetModelChecks.test_PyG_variable_N_masks_geometry_unused_batch_and_input_unchanged) ... ok
+test_cpu_official_full_forward_gradients_step (linearno.test_shapenet_model.ShapeNetModelChecks.test_cpu_official_full_forward_gradients_step) ... ok
+test_formal_count_exact_keys_initialization_and_rng (linearno.test_shapenet_model.ShapeNetModelChecks.test_formal_count_exact_keys_initialization_and_rng) ... ok
+test_independent_double_oracle (linearno.test_shapenet_model.ShapeNetModelChecks.test_independent_double_oracle) ... ok
+test_native_cuda_official_full_parity (linearno.test_shapenet_model.ShapeNetModelChecks.test_native_cuda_official_full_parity) ... skipped 'CUDA unavailable'
+test_original_train_AST_MSE_and_fresh_process_whole_object (linearno.test_shapenet_model.ShapeNetModelChecks.test_original_train_AST_MSE_and_fresh_process_whole_object) ... ok
+test_fresh_process_continuation_and_real_visualization (linearno.test_rng.RandomStreamRegression.test_fresh_process_continuation_and_real_visualization) ... ok
+
+----------------------------------------------------------------------
+Ran 23 tests in 36.497s
+
+OK (skipped=4)

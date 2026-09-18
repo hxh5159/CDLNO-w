@@ -1,0 +1,39 @@
+test_LN0_parameterless_population_variance_and_degenerate_rows (linearno.test_history_k.HistoryKTests.test_LN0_parameterless_population_variance_and_degenerate_rows) ... ok
+test_double_finite_difference_and_invalid_configs (linearno.test_history_k.HistoryKTests.test_double_finite_difference_and_invalid_configs) ... ok
+test_fresh_process_K_only_import_and_strict_checkpoint (linearno.test_history_k.HistoryKTests.test_fresh_process_K_only_import_and_strict_checkpoint) ... ok
+test_gate_zero_then_isolated_increment_VJPs (linearno.test_history_k.HistoryKTests.test_gate_zero_then_isolated_increment_VJPs) ... ok
+test_history_joint_token_permutation_and_sample_head_isolation (linearno.test_history_k.HistoryKTests.test_history_joint_token_permutation_and_sample_head_isolation) ... ok
+test_independent_oracle_all_gradients_step_and_strict_state (linearno.test_history_k.HistoryKTests.test_independent_oracle_all_gradients_step_and_strict_state) ... ok
+test_nonconv_point_permutation_and_execution_shapes (linearno.test_history_k.HistoryKTests.test_nonconv_point_permutation_and_execution_shapes) ... FAIL
+test_point_constant_bias_counterexample_and_nonconstant_delta (linearno.test_history_k.HistoryKTests.test_point_constant_bias_counterexample_and_nonconstant_delta) ... ok
+test_raw_history_sequence_reentry_exception_and_no_A (linearno.test_history_k.HistoryKTests.test_raw_history_sequence_reentry_exception_and_no_A) ... ok
+test_six_full_models_zero_gate_eval_train_and_checkpoint (linearno.test_history_k.HistoryKTests.test_six_full_models_zero_gate_eval_train_and_checkpoint) ... ok
+test_six_variants_temperature_order_dead_parameter_QV_and_rank (linearno.test_history_k.HistoryKTests.test_six_variants_temperature_order_dead_parameter_QV_and_rank) ... ok
+test_zero_layer_no_parameters_compute_or_RNG_and_global_parameter_ownership (linearno.test_history_k.HistoryKTests.test_zero_layer_no_parameters_compute_or_RNG_and_global_parameter_ownership) ... ok
+
+======================================================================
+FAIL: test_nonconv_point_permutation_and_execution_shapes (linearno.test_history_k.HistoryKTests.test_nonconv_point_permutation_and_execution_shapes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_history_k.py", line 216, in test_nonconv_point_permutation_and_execution_shapes
+    self.assertEqual([out[-2:] for a,b,out in trace.bmms],[(5,9),(5,4),(7,5)])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [(5, 4), (7, 5)] != [(5, 9), (5, 4), (7, 5)]
+
+First differing element 0:
+(5, 4)
+(5, 9)
+
+Second list contains 1 additional elements.
+First extra element 2:
+(7, 5)
+
+- [(5, 4), (7, 5)]
++ [(5, 9), (5, 4), (7, 5)]
+?      ++++++++
+
+
+----------------------------------------------------------------------
+Ran 12 tests in 12.445s
+
+FAILED (failures=1)

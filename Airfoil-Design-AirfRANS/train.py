@@ -160,7 +160,7 @@ def main(device, train_dataset, val_dataset, Net, hparams, path, criterion='MSE'
         max_lr=hparams['lr'],
         total_steps=(len(train_dataset) // hparams['batch_size'] + 1) * hparams['nb_epochs'],
     )
-    val_loader = DataLoader(val_dataset, batch_size=1)
+    val_loader = DataLoader(val_dataset, batch_size=1, **(linearno_run.loader_kwargs('test') if hasattr(linearno_run, 'loader_kwargs') else {}))
     if record is not None:
         record.record_training_setup(optimizer, lr_scheduler)
     start = time.time()
@@ -202,7 +202,7 @@ def main(device, train_dataset, val_dataset, Net, hparams, path, criterion='MSE'
                                                            max_num_neighbors=int(hparams['max_neighbors'])).cpu()
 
             train_dataset_sampled.append(data_sampled)
-        train_loader = DataLoader(train_dataset_sampled, batch_size=hparams['batch_size'], shuffle=True)
+        train_loader = DataLoader(train_dataset_sampled, batch_size=hparams['batch_size'], shuffle=True, **(linearno_run.loader_kwargs('train') if hasattr(linearno_run, 'loader_kwargs') else {}))
         del (train_dataset_sampled)
 
         if msar_training:
@@ -263,7 +263,7 @@ def main(device, train_dataset, val_dataset, Net, hparams, path, criterion='MSE'
                                 #     data_sampled.edge_attr = torch.cat([x_i - x_j, v_i - v_j, p_i - p_j, sdf_i, sdf_j, v_inf, normal_i, normal_j], dim = 1)
 
                             val_dataset_sampled.append(data_sampled)
-                        val_loader = DataLoader(val_dataset_sampled, batch_size=1, shuffle=True)
+                        val_loader = DataLoader(val_dataset_sampled, batch_size=1, shuffle=True, **(linearno_run.loader_kwargs('test') if hasattr(linearno_run, 'loader_kwargs') else {}))
                         del (val_dataset_sampled)
 
                         val_loss, _, val_surf_var, val_vol_var, val_surf, val_vol = test(device, model, val_loader,

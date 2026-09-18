@@ -1,0 +1,278 @@
+{
+  "stage": "R5",
+  "baseline": "/home/hwz/CDLNO-artifacts/linearno-history-r5-before-3h8t_bpd/manifest.json",
+  "head": "d5abe014ed05ec9286200d677b039bbd68697f96",
+  "head_unchanged": true,
+  "tracked_unchanged": 1242,
+  "ignored_unchanged": 330,
+  "changed_preexisting": [
+    {
+      "before": {
+        "path": "PDE-Solving-StandardBenchmark/model/LinearNO_History.py",
+        "category": "untracked",
+        "size": 4424,
+        "sha256": "9934e735996cccc92c85c474217db4e97e3d82a94ad088182e308390d54b25c5"
+      },
+      "after": {
+        "path": "PDE-Solving-StandardBenchmark/model/LinearNO_History.py",
+        "category": "untracked",
+        "size": 5266,
+        "sha256": "f6e862133557e633029303857cfc39a464bde22cfc420f4a5196e6bd02275f59"
+      }
+    },
+    {
+      "before": {
+        "path": "cdlno/linearno_history/__init__.py",
+        "category": "untracked",
+        "size": 232,
+        "sha256": "44830ed659642307c0617bf5a1b0e41d4b1f1358eb97993b565a94572a753a94"
+      },
+      "after": {
+        "path": "cdlno/linearno_history/__init__.py",
+        "category": "untracked",
+        "size": 242,
+        "sha256": "c33e058eb5fceb8c2597ae507815907b0c88767a7117d587d81fc3d7ede528be"
+      }
+    },
+    {
+      "before": {
+        "path": "cdlno/linearno_history/core.py",
+        "category": "untracked",
+        "size": 7875,
+        "sha256": "fe70799479164dff8af672897750c2da68611016c80a13ae59b15178fceccb03"
+      },
+      "after": {
+        "path": "cdlno/linearno_history/core.py",
+        "category": "untracked",
+        "size": 7730,
+        "sha256": "ea2d0435249382b4312008aa841f4768581f0fd2725258c12119dfcfe86b8b56"
+      }
+    },
+    {
+      "before": {
+        "path": "cdlno/linearno_history/models.py",
+        "category": "untracked",
+        "size": 6490,
+        "sha256": "12fee54ffd333a888079c886544588155dc29f223b227c856a4aae650a484cb5"
+      },
+      "after": {
+        "path": "cdlno/linearno_history/models.py",
+        "category": "untracked",
+        "size": 8129,
+        "sha256": "4795e8ca106bc44d08104e5ed4a7094b847e9303174f38ac1bd87c565af529b5"
+      }
+    },
+    {
+      "before": {
+        "path": "docs/LINEARNO_HISTORY_IMPLEMENTATION_STATUS.md",
+        "category": "untracked",
+        "size": 14814,
+        "sha256": "f473a9ee5b97772fadf0d65d7398ca929a09f114c308bd62ba19d06e0f51efdf"
+      },
+      "after": {
+        "path": "docs/LINEARNO_HISTORY_IMPLEMENTATION_STATUS.md",
+        "category": "untracked",
+        "size": 17191,
+        "sha256": "8a3f56eaf2fb006cf2be835f8b64525341863e7f17f3314d1e954f272f4dcdda"
+      }
+    },
+    {
+      "before": {
+        "path": "docs/LINEARNO_HISTORY_RESEARCH_MATRIX.md",
+        "category": "untracked",
+        "size": 14235,
+        "sha256": "f7177d50fd300acdf7a073940e83377b3c01b20b0e6f857aa5b2eba543492d90"
+      },
+      "after": {
+        "path": "docs/LINEARNO_HISTORY_RESEARCH_MATRIX.md",
+        "category": "untracked",
+        "size": 16864,
+        "sha256": "0842351bfc8085573840ed02575d61388ffd716ee8a505c42d415d5d052f8d0d"
+      }
+    },
+    {
+      "before": {
+        "path": "linearno_history/schema.py",
+        "category": "untracked",
+        "size": 19258,
+        "sha256": "0fde8027968d0f7488a100c1644dd2bec2d786224caab9ae9c09493e22a89d53"
+      },
+      "after": {
+        "path": "linearno_history/schema.py",
+        "category": "untracked",
+        "size": 19379,
+        "sha256": "5783ed2d57808049d1b6e5efe32b6b3a622e76616e96397a2aea30808548ae7e"
+      }
+    },
+    {
+      "before": {
+        "path": "tests/linearno/test_history_k.py",
+        "category": "untracked",
+        "size": 26196,
+        "sha256": "e9b768242427997204fd6c10a4a2a3138766569feaf28f7140b8c1943787f22d"
+      },
+      "after": {
+        "path": "tests/linearno/test_history_k.py",
+        "category": "untracked",
+        "size": 26197,
+        "sha256": "e620fc0717abdb20473f620f64ca09ba88bfc0d0b9a43fe9b12149ee1597c893"
+      }
+    }
+  ],
+  "new_files": [
+    {
+      "path": "cdlno/linearno_history/checkpoint.py",
+      "category": "untracked",
+      "size": 15368,
+      "sha256": "e37f5094f8e028723b243827f7dae63721ac9f36c8a4b61cb7c5d9f84533fd1e"
+    },
+    {
+      "path": "cdlno/linearno_history/config.py",
+      "category": "untracked",
+      "size": 8936,
+      "sha256": "6a368fbba71714feceeb98f867f99ae4334b24c65a7779b387dd8aa285e8a7c4"
+    },
+    {
+      "path": "cdlno/linearno_history/factory.py",
+      "category": "untracked",
+      "size": 2467,
+      "sha256": "3f7aeb5b47e3baa4d4b6827d7caf4501ecf434cbd2d25179795346c3454f2024"
+    },
+    {
+      "path": "docs/LINEARNO_HISTORY_R5_REPORT.md",
+      "category": "untracked",
+      "size": 13921,
+      "sha256": "e572708dd54a2de279e55bb84ada85d6a0c1a623dd73f3edc4253ce1ed090c95"
+    },
+    {
+      "path": "docs/linearno_history_audit/r5/README.md",
+      "category": "untracked",
+      "size": 1908,
+      "sha256": "1e93c9ef5de285e691c61acb39b80c2d00bfe52dbfe79083be3ec9cbd1842919"
+    },
+    {
+      "path": "docs/linearno_history_audit/r5/baseline.json",
+      "category": "untracked",
+      "size": 313,
+      "sha256": "e7ae6e51ade08f18e8afc79efac10b5f6186a711edd20a88fbcba576b5bf14dc"
+    },
+    {
+      "path": "docs/linearno_history_audit/r5/configuration_matrix.json",
+      "category": "untracked",
+      "size": 15359,
+      "sha256": "45725d1eb32b9e1d98fa0366a7fe364628d3fd896cacb561b53729e3588fef2b"
+    },
+    {
+      "path": "docs/linearno_history_audit/r5/end-status.txt",
+      "category": "untracked",
+      "hash_omitted": "self-describing end audit artifact"
+    },
+    {
+      "path": "docs/linearno_history_audit/r5/environment.json",
+      "category": "untracked",
+      "size": 525,
+      "sha256": "73328cdd5551e5459762aa61cc4094a457c9b0d39d9a00a87696e4efdb9d8bf1"
+    },
+    {
+      "path": "docs/linearno_history_audit/r5/freeze.json",
+      "category": "untracked",
+      "hash_omitted": "self-describing end audit artifact"
+    },
+    {
+      "path": "docs/linearno_history_audit/r5/inherited-failures.json",
+      "category": "untracked",
+      "size": 989,
+      "sha256": "b45806c626685b0cd8841b1ed9305e4872617d63a365484d8203a88772a18c2a"
+    },
+    {
+      "path": "docs/linearno_history_audit/r5/integration-final.txt",
+      "category": "untracked",
+      "size": 2034,
+      "sha256": "a549c74bb877d8a012c2b9201917a53dd4e1bd34159dd2d5b09951211bac08ff"
+    },
+    {
+      "path": "docs/linearno_history_audit/r5/integration-initial.txt",
+      "category": "untracked",
+      "size": 32429,
+      "sha256": "3909f1dc9dee3bc3bef9588b299dec34c8d63401595ba5c0d73ac799c03447dd"
+    },
+    {
+      "path": "docs/linearno_history_audit/r5/integration-results.json",
+      "category": "untracked",
+      "size": 31598,
+      "sha256": "f29eb19bcce999b2cbe516bb3ca126a4a896a861daba340541a6a904f9b0f89c"
+    },
+    {
+      "path": "docs/linearno_history_audit/r5/integration-second.txt",
+      "category": "untracked",
+      "size": 3059,
+      "sha256": "950e65cd39fd9eb20bde0aa058a61485d5b2eea26246b354f68234bb4ad6c7ab"
+    },
+    {
+      "path": "docs/linearno_history_audit/r5/integration-third.txt",
+      "category": "untracked",
+      "size": 1870,
+      "sha256": "c5f1f0619d30c612c18770cfb1e5d7a230dacb2c51093ab780c9916df0496c09"
+    },
+    {
+      "path": "docs/linearno_history_audit/r5/numerical-summary.json",
+      "category": "untracked",
+      "size": 772,
+      "sha256": "90a8b8254b4e3191b9082a6c407a3ad8c1378a6e30ff2f0e3567bf1325eed692"
+    },
+    {
+      "path": "docs/linearno_history_audit/r5/regression-results.json",
+      "category": "untracked",
+      "size": 3893,
+      "sha256": "c7605b51e7708ccaffd49ca2558b7ee56544258ab8744f233b61ae8c59d6a965"
+    },
+    {
+      "path": "docs/linearno_history_audit/r5/regression.txt",
+      "category": "untracked",
+      "size": 22668,
+      "sha256": "eae7e6a433f015eb1407dfc27c97fd8cd2abc92271aeb44814004eaa8df81869"
+    },
+    {
+      "path": "docs/linearno_history_audit/r5/research-source.diff",
+      "category": "untracked",
+      "size": 8003,
+      "sha256": "0a45326814d78fbee712a6fc9357131cef73eabe76fd40c03c048436b2497f37"
+    },
+    {
+      "path": "tests/linearno/test_history_integration.py",
+      "category": "untracked",
+      "size": 30385,
+      "sha256": "7e0b353a3f24c1ec0ead33d5671df11ebdfe984e2ae69cde6191c2ff796657a8"
+    }
+  ],
+  "removed": [],
+  "unexpected": [],
+  "protected_prefixes": {
+    "LINEARNO/": {
+      "files": 0,
+      "changed": 0,
+      "new": 0
+    },
+    "monitor/": {
+      "files": 10,
+      "changed": 0,
+      "new": 0
+    },
+    "cdlno/linearno/": {
+      "files": 28,
+      "changed": 0,
+      "new": 0
+    },
+    "tran_evaluate/linearno/": {
+      "files": 18,
+      "changed": 0,
+      "new": 0
+    }
+  },
+  "A_K_math_context_unchanged": true,
+  "category_counts": {
+    "tracked": 1242,
+    "untracked": 104,
+    "ignored": 330
+  }
+}

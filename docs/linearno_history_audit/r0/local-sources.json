@@ -1,0 +1,949 @@
+[
+  {
+    "name": "transolver",
+    "sha": "75e0f67643806a81cd1d3f6adc88dd8c02416fe7",
+    "tree": "22e7386201596e45236907f774478f79d3913da7",
+    "last_commit": "75e0f67643806a81cd1d3f6adc88dd8c02416fe7\n2026-02-26T16:03:45-05:00\nMerge pull request #25 from jaeminoh/main\n",
+    "export": "/home/hwz/CDLNO-artifacts/linearno-l0-before-65a2wvms/references/transolver",
+    "licenses": [
+      "Airfoil-Design-AirfRANS/LICENSE",
+      "LICENSE"
+    ],
+    "files": [
+      {
+        "path": ".gitignore",
+        "blob": "68bc17f9ff2104a9d7b6777058bb4c343ca72609",
+        "size": 3078,
+        "sha256": "5e2c671ddc9e301dafc241ad1a7c07aa85a91fef560a17721b41977b9eddba17",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/LICENSE",
+        "blob": "c734a1dd88c57fd0f8c0256c541b8051cd8a185a",
+        "size": 25275,
+        "sha256": "05ba154a27eeb81940385d278f8b7cd6f37729df050a3a9803113f686fbd40d4",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/README.md",
+        "blob": "9a1ee7e224ed68d0679cb91a1d171be0fd504446",
+        "size": 3552,
+        "sha256": "aca7176a916b7cf765f6165e2516822f018cb951f46d24d66b3b927460224f57",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/dataset/dataset.py",
+        "blob": "c2db89289ebff44e7dd30a5805b094b891deb61d",
+        "size": 13635,
+        "sha256": "b38770f711cabb7c8cfeb23100e14eb07dd3119c2a5ccc685ec559f00b3c78ca",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/dataset/dataset_stats.ipynb",
+        "blob": "3b3e452354522661656fac1d88a08ab337df5325",
+        "size": 3205,
+        "sha256": "f0c015015f9275ff3709868c5c1ac573a19b712137b1c753442ff1fa78ace161",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/fig/results.png",
+        "blob": "1549623f68ac6f97db4fe3b3d52854292d8689f5",
+        "size": 353866,
+        "sha256": "d8d92e76d8bab5782f31d8c71477e0273e2070f2b1b140ddb918b3b0a8dec5da",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/fig/task.png",
+        "blob": "d86f5b6e2e4cddae86f7c857e8b816eab7cfdc02",
+        "size": 531193,
+        "sha256": "acecd3496d81f26fdaf0c043814ce15b18111a5aeac450748605e6b5056603cf",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/main.py",
+        "blob": "a84f7752f7c5697acbd28b55d64dfe045b8175bf",
+        "size": 4895,
+        "sha256": "6c9d43ac2cfdd984ff81972b44b1e8db105c45e65fba3c69d99e62cdc1d385a7",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/main_evaluation.py",
+        "blob": "7823c89b821325de2f30b131ce9a0ba8293c74ef",
+        "size": 2744,
+        "sha256": "58ad69110f74d91622a69d41995c83cbeb85731420e40b5249df327c2b8fd283",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/models/GUNet.py",
+        "blob": "cf61ad2d77006e049b2e091c814d40380b515f1c",
+        "size": 7572,
+        "sha256": "6218a72d071b265140371dac8d2586d0d10edf9803cecd16e1a6ddb2f385963c",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/models/GraphSAGE.py",
+        "blob": "765c1d69c7f4f8c6512910d7d60e6e080ca1a459",
+        "size": 1792,
+        "sha256": "562738fafff0b9cf5cd3d90577197e243961b01742626debb19c0a14eac3db65",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/models/MLP.py",
+        "blob": "9592692df0a526221103db9ba307f188a39c9c0f",
+        "size": 2246,
+        "sha256": "7c34b97acaf3d26bd04570abf93b4a1291d6ca08fda1b2a749fc9180b0d7c72f",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/models/NN.py",
+        "blob": "d9b8609c3c17d1a99f1a20f70b737b0f77a2e2d1",
+        "size": 742,
+        "sha256": "5dcd2b3ee2f192a7891c35ffef6fbe74aa2d509a08432577a95bdf0c57ea9345",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/models/PointNet.py",
+        "blob": "b27d0239135780a28a1ed527b848158bd422499f",
+        "size": 1487,
+        "sha256": "825750d49f8dbad9e3d7cfa3c0f45bcdf19645c9c2696ae8fc3843147cd25313",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/models/Transolver.py",
+        "blob": "9f0ac404f9b24957fb46881f1b0d0afea61f26fc",
+        "size": 8301,
+        "sha256": "1d0c1b932411ac408d8d00ca047d7f875c3176e7b001db802d30c065a7416d74",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/params.yaml",
+        "blob": "0954592648f086555b10a164c3b6a069f49ddb6a",
+        "size": 1004,
+        "sha256": "a11734f5194ed1a81f4908d266672bb9fe84e5b8256a07a8a99442a0a1f26a1a",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/requirements.txt",
+        "blob": "81767c55856870fc274181196faa6d66fdfe5da3",
+        "size": 68,
+        "sha256": "5453b38b9bb483de4c1a7e17f8b54c80d362bb7d246ec5429ad609aef3952576",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/scripts/Evaluation.sh",
+        "blob": "59ba0933c5fae4ae1136e5185c6a521a6494fc8f",
+        "size": 78,
+        "sha256": "e6b1145f678f58d346209f091b89c82e573b9724f19db71a6881729b163c2d27",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/scripts/GraphSAGE.sh",
+        "blob": "97ea9bd34743dfca39093023483888cecbd1cee1",
+        "size": 110,
+        "sha256": "e8892e4a82e62dde5767b68af89db6a2d38de55dc2d32c95ca0ca49397d760e0",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/scripts/Transolver.sh",
+        "blob": "2525d39d0c4ebdae770047297bfad4f64a47c0dd",
+        "size": 111,
+        "sha256": "80175ed6f8c66ee47e12046c86df06943e1fa533efb0b77cf8a7bd73a907f430",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/train.py",
+        "blob": "2838a717f8022fddaa89ba30a2235d30c2b5c833",
+        "size": 16045,
+        "sha256": "39b794cd93ec71ab26586f13f7f958ef3c34244dec0d1bd5142147d26b9a6bec",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/utils/metrics.py",
+        "blob": "062b7df82122b5a5e0310afd6e2d206e00c841a2",
+        "size": 19029,
+        "sha256": "ee53a3da2a29da9df0063f9f02da0efb0a7f35833b08ceb02a5908fbb3e7e39d",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/utils/metrics_NACA.py",
+        "blob": "3507d743e2b8cc6112caaddc43f1d4a4513255ae",
+        "size": 7834,
+        "sha256": "61bbb5968a64cc28ca090245f3bec1d5d176e5d314c887152db7ae86a6184cd3",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/utils/naca_generator.py",
+        "blob": "0f98c1fcd7143b930862f812d5a0c732709e808c",
+        "size": 4076,
+        "sha256": "303e0ed4761b959292078c0287eef64a6b65ac91671b871e7008b737e01e3b6e",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/utils/reorganize.py",
+        "blob": "d09902851bccb5818a03038e9f3d76bfe03bc436",
+        "size": 442,
+        "sha256": "6cdd18acb5370b907e2a18d9eda7f7bc0bd85cce9316167000d888f30dc36605",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Car-Design-ShapeNetCar/README.md",
+        "blob": "f356d521190b4e823aa9262ed6235ed48ab6df0b",
+        "size": 3735,
+        "sha256": "3dc841d84472d817aba0c24b74b128156ff4163dc3b4f94bf827a5a8093ab158",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Car-Design-ShapeNetCar/dataset/dataset.py",
+        "blob": "adc50b57c5f72cd465e715869dfb88c8a7cd61f8",
+        "size": 16643,
+        "sha256": "9f3cb4f16655cc59a7b8134e69aba88bd6bc5434a8093d4edce14bcb1878ea78",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Car-Design-ShapeNetCar/dataset/load_dataset.py",
+        "blob": "58de36bfa419851bc4c8585aeac564869c221ed9",
+        "size": 2159,
+        "sha256": "e4071f35ef2985f193f00609ba174e8b8dba990fd778a640825aa061758ff410",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Car-Design-ShapeNetCar/fig/car_slice_surf.png",
+        "blob": "f43afe9ddaa95464fbdc5b9393f19266c760032a",
+        "size": 840428,
+        "sha256": "058d1ece16806589201e6011538ea6e4bd2bab25780559c076d302ed8f355406",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Car-Design-ShapeNetCar/fig/case_study.png",
+        "blob": "96c011f3b9165d86a97cade05b9a3658aced0cb9",
+        "size": 273342,
+        "sha256": "fca3097b54fff66100e3eeeb34cc78264847d320ef1412e6c7f88f50c93ed130",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Car-Design-ShapeNetCar/fig/results.png",
+        "blob": "3c13a602f8f8c524e5a0eea31788865080cea114",
+        "size": 297941,
+        "sha256": "a5a25e62ec1a26d31377887d7e05cc5a2329fd454611ac3a36bc409dc1803e3b",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Car-Design-ShapeNetCar/fig/task.png",
+        "blob": "10330d8e8fd9320a8e2ceedf43c45cb24294a5a2",
+        "size": 292640,
+        "sha256": "c578fbc167a8da02b5b89ef93c717d59f64507bdc1c5c66cf5b63014988c90c9",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Car-Design-ShapeNetCar/main.py",
+        "blob": "8165e961afbfe796b009fc20550bd3a1be057d7d",
+        "size": 2124,
+        "sha256": "de299ab9930cbc10553d415b3559e5236aa0264b77b4e2a881680dc484ebe6ca",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Car-Design-ShapeNetCar/main_evaluation.py",
+        "blob": "2e254ec1e4d31d2ff7286d3964d80b4905eaaf26",
+        "size": 4939,
+        "sha256": "8ce7819c26ad906adeeedb6848445b05d8ba0a78f808879d11d734f1c048bc78",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Car-Design-ShapeNetCar/models/Transolver.py",
+        "blob": "e3c9e6b8e99947eb5022a5efa5724ed08737d4e6",
+        "size": 8465,
+        "sha256": "9dbea9edae30b0d8484a458b4bdb9b33427e9fda815c8011d64f19fb50e14ffa",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Car-Design-ShapeNetCar/requirements.txt",
+        "blob": "196a860f853ee40d74f9bfe3d4699db4cbed3eae",
+        "size": 51,
+        "sha256": "d904801a2579545e7d766b4c709c2c8a57bbb888303b4aa7eadec0b7709ff9d6",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Car-Design-ShapeNetCar/scripts/Evaluation.sh",
+        "blob": "580b8b15c8695c9d75fea62e2087b029c8c751b4",
+        "size": 193,
+        "sha256": "962b0741edbd6f206b864e88a5c8bfe2215f1060361c589e4aa3bdb5acb60a5a",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Car-Design-ShapeNetCar/scripts/Transolver.sh",
+        "blob": "05cfde79b84e53f128e4c001265483e04d011b21",
+        "size": 183,
+        "sha256": "eb32cec4c8aa5d2bce3181cd80dc923da27fca40cc8785f510201c859f903402",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Car-Design-ShapeNetCar/train.py",
+        "blob": "fb419ce9b02921470040c9bae66fb166294156b2",
+        "size": 4348,
+        "sha256": "64380fac5b13a84d429e0314aabbb7c41ef3834080bd2f325bb1fb1e69b21aca",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Car-Design-ShapeNetCar/utils/drag_coefficient.py",
+        "blob": "b066fc1892664700129023dfc977183fec019da2",
+        "size": 8737,
+        "sha256": "3fb491b272c6fac9a07c1f4bc864a5db1cc8afef861364df9a1b2496e45386f2",
+        "export_matches_blob": true
+      },
+      {
+        "path": "LICENSE",
+        "blob": "004be4612efa1028089218e5fa750ede957064d5",
+        "size": 1084,
+        "sha256": "2c919cd03fa823bf7eefc00a957ff8324c865cd22aa5285e563dc4b558084f25",
+        "export_matches_blob": true
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/README.md",
+        "blob": "544abb579a39a043afd1873dbb39087c9372c78a",
+        "size": 4437,
+        "sha256": "3bc13ffa5598b1fe5594e9b8194ea0966c1bc196118160e9c3c2a97dad244014",
+        "export_matches_blob": true
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/exp_airfoil.py",
+        "blob": "f3128ee5f3ed65c41da314d0fb0510e104aff59b",
+        "size": 9905,
+        "sha256": "f4f3060344515f94ae14104b226ceec47207fdeaf0b50a558abab705aad8f639",
+        "export_matches_blob": true
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/exp_darcy.py",
+        "blob": "d58730aab15cbee1c8f44001e9b1f326687d38d7",
+        "size": 10995,
+        "sha256": "2b5bb6e27b51482bc2900908c157ed62a4b1ac30c0d57f6887d2d2e96edbfcda",
+        "export_matches_blob": true
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/exp_elas.py",
+        "blob": "3c159571098995ccf3eaba46409f982c3e6f96a2",
+        "size": 8305,
+        "sha256": "801ff7fd7ffa296780c140581e0cdc6dee7c2285a7d6ad692985988475493a40",
+        "export_matches_blob": true
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/exp_ns.py",
+        "blob": "79d5d3f083e66401d5281c57b487618fbe4ade58",
+        "size": 10149,
+        "sha256": "53606329128c100551572f371fe9725eacc54fa69ee7dc89fed935d318c73206",
+        "export_matches_blob": true
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/exp_pipe.py",
+        "blob": "d8fb81a7855568bef4e3f9332b005720a319f28a",
+        "size": 10494,
+        "sha256": "54cd24e353af177bab5e70925e1527ccaa32a773ccc5625df3d40ec26240fcb2",
+        "export_matches_blob": true
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/exp_plas.py",
+        "blob": "c5147a5b0c2e427a0877ea0628497e491927ca6d",
+        "size": 11973,
+        "sha256": "7905e7a0369d0956852379ab99d2b52874ebaddd7fe4a4e8d6602212e58ff486",
+        "export_matches_blob": true
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/fig/scalibility.png",
+        "blob": "eaac1423eab82e9926ec3a2bc2fa27cd5dbfec4f",
+        "size": 180266,
+        "sha256": "e38375549329cd319604376b1f3701c8d1852e5439df7343c485bd7ed32bdb88",
+        "export_matches_blob": true
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/fig/showcase.png",
+        "blob": "574d101ba0c5f91fc09d5890c9079ced9f6498f5",
+        "size": 1585299,
+        "sha256": "c5c2e2c7888c7777e522af0253d81544bacd67b735e96112269a90cb7418d1af",
+        "export_matches_blob": true
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/fig/standard_benchmark.png",
+        "blob": "66e826c2c6b23a1319276108d019677a84fd7ceb",
+        "size": 609941,
+        "sha256": "ce962239b90e637be97def92b509e26d39e92283ae4bb6019428ba61c4fe9cbb",
+        "export_matches_blob": true
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/model/Embedding.py",
+        "blob": "06d4c33d4b59f6ab401cc10bc30d3091eb1db1cf",
+        "size": 2938,
+        "sha256": "1371e3c234d2d29be783ee817ecc7e65e8e0b36024b95b6c3c256b2054a9720d",
+        "export_matches_blob": true
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/model/Physics_Attention.py",
+        "blob": "eb16ed494c9b33ba4cb45f76f9f5c8a5f2a1983c",
+        "size": 7989,
+        "sha256": "4fc710f6f96788fb59cb19fab8d64873d3d16e9e182f12a544d451c74c548cc7",
+        "export_matches_blob": true
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/model/Transolver_Irregular_Mesh.py",
+        "blob": "e9484c9f132b3da57e4086d7f4db0cda239325f6",
+        "size": 6096,
+        "sha256": "5259759f7ecc6a954c8442ac8359990b9f242f1437c452c69e5e0f03549b5311",
+        "export_matches_blob": true
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/model/Transolver_Structured_Mesh_2D.py",
+        "blob": "0f1769d6b6d71f55da3a39aaeeea8ecd3c7520bb",
+        "size": 6828,
+        "sha256": "d4b0db8a52c26ba6433f45a232947b380dfbaa4a31eac413a5e03fbef151acfc",
+        "export_matches_blob": true
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/model/Transolver_Structured_Mesh_3D.py",
+        "blob": "f5ecf17ff0561b868476895f0d087178e3817be2",
+        "size": 7768,
+        "sha256": "8422abe388aab493a3d7673184bf9c59c5b49019d462631d38473f7cd848f314",
+        "export_matches_blob": true
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/model_dict.py",
+        "blob": "b001ca3d23e8ee8895038c7856681e4938014a98",
+        "size": 445,
+        "sha256": "fb68b0ec707be77c282ce8dae9fb9b9010066b702bc8953ec4d907f2bf56bf56",
+        "export_matches_blob": true
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/requirements.txt",
+        "blob": "2631a662334995687c43e66e33e70e1410a2f202",
+        "size": 75,
+        "sha256": "822f7a8bd6676370c74598f46c6ccdf554ab835bd50dba3232a915be6c5bf645",
+        "export_matches_blob": true
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/scripts/Transolver_Airfoil.sh",
+        "blob": "59a648bead0c4d967e8639807c5e6613fe157145",
+        "size": 258,
+        "sha256": "e7e32cb24fbbce134fc33e88a0a174046efd77e564b5e257d79b1b51578ed524",
+        "export_matches_blob": true
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/scripts/Transolver_Darcy.sh",
+        "blob": "8b5da670118cfeb0a1ee73f2323181a5c704d9f0",
+        "size": 269,
+        "sha256": "c0d6241baea9eb4dfb899559dd57f3006ae090384fe13ef4ac48e793f5681156",
+        "export_matches_blob": true
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/scripts/Transolver_Elas.sh",
+        "blob": "62e1db85e7324e40dc1c43bccc5bf5bd7622b5f6",
+        "size": 248,
+        "sha256": "997b306121224e8ad8b7c69287489c595e803dab993f1e8e24c24c88acf7b6b6",
+        "export_matches_blob": true
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/scripts/Transolver_NS.sh",
+        "blob": "2c8bf377efe883b8569fcb18512ae759bce7d05b",
+        "size": 228,
+        "sha256": "0c1758806c5a5c57f8cd013d5c5900ce17172cfaf3ef60c993e39a7c647460d6",
+        "export_matches_blob": true
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/scripts/Transolver_Pipe.sh",
+        "blob": "d4629d166e88816e24902c6c53097b0b18859d15",
+        "size": 270,
+        "sha256": "6c2a3c99c475539d6b16443d06780882b2d6b1678549d14fedb0847cb6603b07",
+        "export_matches_blob": true
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/scripts/Transolver_Plas.sh",
+        "blob": "65a85d3bf253b7dcd7e17d716a837916767073f8",
+        "size": 254,
+        "sha256": "011e25f5862199ff86536cef7cd0b4a1bf2c555ec933d2b0f0816ae732f0d337",
+        "export_matches_blob": true
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/utils/normalizer.py",
+        "blob": "a42170cef7a09b1cdf85e0cee51e2801893c4027",
+        "size": 3444,
+        "sha256": "d8eea799d6bad852854e9e58fdb705676fd3d75ed77ce3e01bcdd45295689a7b",
+        "export_matches_blob": true
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/utils/testloss.py",
+        "blob": "c62155794760ecc96d1cbe67ae23eabf7b1e023c",
+        "size": 1293,
+        "sha256": "1a520c0b9c27fe4eaba27e1c72217ba375c2749dee7c04cd6acffeb3d3303bff",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Physics_Attention.py",
+        "blob": "d72bda486b7041762eeab82feed02498d294b7b9",
+        "size": 7992,
+        "sha256": "f7feffd40e21863a2bd5809d9548a3417a7221a817f9e675ea969712c1d45a36",
+        "export_matches_blob": true
+      },
+      {
+        "path": "README.md",
+        "blob": "cd520335c3a5eb30f91afd9544619b03dcda32c0",
+        "size": 5595,
+        "sha256": "2b05861f267ea04a48f83e60a9308d41515d0f1eae6056432cda8610617f1dbe",
+        "export_matches_blob": true
+      },
+      {
+        "path": "pic/Transolver.png",
+        "blob": "cbfed8952bd85a694aaa52279c879c13569e36ed",
+        "size": 621751,
+        "sha256": "9cfdf9d020883e869692756b5bbe4334306dc73fece376028f8d16bfa36b604c",
+        "export_matches_blob": true
+      },
+      {
+        "path": "pic/physical_states.png",
+        "blob": "18299cb4f2dc7c5cc7a41a77930fdff7e5e14c86",
+        "size": 676370,
+        "sha256": "82417b3e07efd4a5b274f05b423a00be93bc86dcc6999d2b3c9e2e138ed9652a",
+        "export_matches_blob": true
+      },
+      {
+        "path": "pic/showcases.png",
+        "blob": "0a64990e9212e55c95e02fe7e5e57685938b189f",
+        "size": 589165,
+        "sha256": "d1add94bf9f45f71bbfde6a681a8b5b3bd936ecf7bc21e84fa1daa57afda0848",
+        "export_matches_blob": true
+      }
+    ]
+  },
+  {
+    "name": "linearno",
+    "sha": "3f2b80df13c17a09e250f2ebe4d4ecdfd4acf269",
+    "tree": "4aa99d7dece8462d932e690a82e23dba78b11b0b",
+    "last_commit": "3f2b80df13c17a09e250f2ebe4d4ecdfd4acf269\n2026-03-24T15:04:17+08:00\nUPDATE README\n",
+    "export": "/home/hwz/CDLNO-artifacts/linearno-l0-before-65a2wvms/references/linearno",
+    "licenses": [],
+    "files": [
+      {
+        "path": ".gitignore",
+        "blob": "fac37e26fe93032db08022e7c57bb9226d61e6d8",
+        "size": 69,
+        "sha256": "0fa9cb8adaee5f2c2bccb3b584232f6eb097ad847c4539ff632107c029f675bf",
+        "export_matches_blob": true
+      },
+      {
+        "path": "AirfRANS/dataset/dataset.py",
+        "blob": "df39fe72cbd89369f7ecfc32ec5cb1320f737c38",
+        "size": 13880,
+        "sha256": "596343fd006d14fe0059665191945f98b8ba1570653f09576506828a5b06e32a",
+        "export_matches_blob": true
+      },
+      {
+        "path": "AirfRANS/dataset/dataset_stats.ipynb",
+        "blob": "b371a66a26412a10987c4c3610db55304114fa32",
+        "size": 3308,
+        "sha256": "66e39303e144082217d468570498bfc4d1b1e6d953342581c8f5cc335ccebdbc",
+        "export_matches_blob": true
+      },
+      {
+        "path": "AirfRANS/main.py",
+        "blob": "b491321f601fb8b632cb59d32aa83df9bf1d5378",
+        "size": 5635,
+        "sha256": "d29f14ce38c59181fe5b1b13dcb01cb46f996a456cdb9aa6cc4812e5df051d4a",
+        "export_matches_blob": true
+      },
+      {
+        "path": "AirfRANS/main_evaluation.py",
+        "blob": "3031181ed527cd1745947a4c638ef034e64a645d",
+        "size": 2892,
+        "sha256": "1397372be9c1de84e5254a061d1b7084260a7109f70d1d9bcda175e402cde362",
+        "export_matches_blob": true
+      },
+      {
+        "path": "AirfRANS/models/GUNet.py",
+        "blob": "e1751815bcdab343acf973399cd510ce79089260",
+        "size": 7793,
+        "sha256": "4e3207443cfcc0e5f743d2daa8d026e69f9b389d88a845c2b071acb4463aacca",
+        "export_matches_blob": true
+      },
+      {
+        "path": "AirfRANS/models/GraphSAGE.py",
+        "blob": "9b3809bf78ceabf1774fac2e1bea1392ab05c616",
+        "size": 1849,
+        "sha256": "e287caae7bac910cf2e52f7db7bfe230aae61f03ca2bc208dc25e5a09b5928a1",
+        "export_matches_blob": true
+      },
+      {
+        "path": "AirfRANS/models/LinearAttnNeuralOperator.py",
+        "blob": "4ff7951aded74f6c1c4bd8b7d70c292fc163fa6d",
+        "size": 7494,
+        "sha256": "d7af7b4aa86280789438e3f0bf9db750714d56d6ea8ce912f3ec0d9ca1978ed0",
+        "export_matches_blob": true
+      },
+      {
+        "path": "AirfRANS/models/MLP.py",
+        "blob": "10d38059758314636eb1f29632eb968db1ad6fe0",
+        "size": 2307,
+        "sha256": "09db639715a8421dfe50b0c6d330c4797fd769923ea62770afb33261da26732d",
+        "export_matches_blob": true
+      },
+      {
+        "path": "AirfRANS/models/NN.py",
+        "blob": "15c85b175c626467cb9202b70f4cb729c93f00e4",
+        "size": 766,
+        "sha256": "b141538020b046b898803c0ce466af128f409d206a1b94742c26fc7e219c1a8f",
+        "export_matches_blob": true
+      },
+      {
+        "path": "AirfRANS/models/PointNet.py",
+        "blob": "97315605630a9f6500e2b927e91c89b184afbbb2",
+        "size": 1531,
+        "sha256": "44f340a79e821b822c506ffa9b21e529cbc6d64524ef993fa2f471e6dffb23cb",
+        "export_matches_blob": true
+      },
+      {
+        "path": "AirfRANS/params.yaml",
+        "blob": "df6d541ac483550532d59cbf94d32ab9901dbd52",
+        "size": 1309,
+        "sha256": "ff4bdbdfe38370f002f34e7ea0a1948f098ee546942d8321d3605aa62274bdd1",
+        "export_matches_blob": true
+      },
+      {
+        "path": "AirfRANS/scripts/Evaluation.sh",
+        "blob": "43789f4d1e83512239c57ba230b7256b33c617e9",
+        "size": 77,
+        "sha256": "7c239f945f2e89760a4b61e19edf3bb0a551659afece9b75c87fda828c719941",
+        "export_matches_blob": true
+      },
+      {
+        "path": "AirfRANS/scripts/Train.sh",
+        "blob": "fe89d189822b7820ffc714e7f102100fa5b2c10b",
+        "size": 191,
+        "sha256": "5c94d5eddc1bef911f7cbae11beea74fd2833b8dc94782cb84f023a945e43284",
+        "export_matches_blob": true
+      },
+      {
+        "path": "AirfRANS/train.py",
+        "blob": "78ef95dc30d5d420737ee4c53958cce525947bbd",
+        "size": 16554,
+        "sha256": "50c3acf2470ce5d35f7115a9543cb3990dea20a62d23b79adb59af889ffb977d",
+        "export_matches_blob": true
+      },
+      {
+        "path": "AirfRANS/utils/metrics.py",
+        "blob": "3e23dd52e54999a21f80b5e916e47dc113cfd128",
+        "size": 19937,
+        "sha256": "ce5ccb2407b1981813167e4e696f4e5d7ff8a5cf53f3842109abffc5d018606d",
+        "export_matches_blob": true
+      },
+      {
+        "path": "AirfRANS/utils/metrics_NACA.py",
+        "blob": "254425bbbc95f3a7ec86a6aeb9cdb6303d3ad145",
+        "size": 8055,
+        "sha256": "4f0a71f278d6dc556d0f211e7323064667f2f5a68b87edaf26d469f560c6a151",
+        "export_matches_blob": true
+      },
+      {
+        "path": "AirfRANS/utils/naca_generator.py",
+        "blob": "40bef54b9a44daa08fd093f57f5ff74574e62503",
+        "size": 4188,
+        "sha256": "bfd0a2eb625e909ae9cc6bc517c1de06c1cc42a0591b636bf4c458989c4a8764",
+        "export_matches_blob": true
+      },
+      {
+        "path": "AirfRANS/utils/reorganize.py",
+        "blob": "676e30f08dc9b64e02ec1685daf23c31a5e42499",
+        "size": 455,
+        "sha256": "f52b54ee437e05ff6b9aa8c22f4ecd7a8e225bea5bfeb0b07c1085534fbe6e0c",
+        "export_matches_blob": true
+      },
+      {
+        "path": "README.md",
+        "blob": "e476bf340c36c87f14f39f68c5e750e4dc975021",
+        "size": 2914,
+        "sha256": "fdda19ccc94c5350deb49b86f3e28c6ac423743d7c0fec566f4402b6e244b1c4",
+        "export_matches_blob": true
+      },
+      {
+        "path": "ShapeNetCar/dataset/dataset.py",
+        "blob": "8c8d4c076a3e94d382cf1f7c557953f9a09bae8c",
+        "size": 17064,
+        "sha256": "e8555fd430211343ded1495735f0fa9465ed70040a403d0e7f4b9b0f5a9cf0be",
+        "export_matches_blob": true
+      },
+      {
+        "path": "ShapeNetCar/dataset/load_dataset.py",
+        "blob": "27a3039aa57962ffacd94a7208f40039d22fd72e",
+        "size": 2221,
+        "sha256": "e7e1238c75dc8d35cdc2d92400628dfb22229fd964613af621df8dab428a48cd",
+        "export_matches_blob": true
+      },
+      {
+        "path": "ShapeNetCar/main.py",
+        "blob": "a877d0333a02ac1cebcfef42b03d84e8605417c0",
+        "size": 2211,
+        "sha256": "4101382980ce5c806c50595d7fa04364b94dfd2e1b163c3a169aecf4d82edfea",
+        "export_matches_blob": true
+      },
+      {
+        "path": "ShapeNetCar/main_evaluation.py",
+        "blob": "f4c6fd8eada691ad4b13b41f4a7ec9afd67045e1",
+        "size": 4903,
+        "sha256": "6504c919ff244279ab25e585881da792416f79c88c78a2c765fdf6a169f036d1",
+        "export_matches_blob": true
+      },
+      {
+        "path": "ShapeNetCar/models/Embedding.py",
+        "blob": "cc4a5bde5f86107893afb8a525636cda28b5d2eb",
+        "size": 3023,
+        "sha256": "e3a4f71c4378b7cce09a43b8c306d6d8a17edb4cd69db5eb069e55a57d2affe2",
+        "export_matches_blob": true
+      },
+      {
+        "path": "ShapeNetCar/models/LinearAttnNeuralOperator.py",
+        "blob": "1a1216608d92bddc5a622d2baaeec6c51a1c2976",
+        "size": 9592,
+        "sha256": "8f67b64e4d0372ddbf356124d3dbb88b1c13af670e503f072fce460862278dcd",
+        "export_matches_blob": true
+      },
+      {
+        "path": "ShapeNetCar/scripts/Evaluation.sh",
+        "blob": "44e4daa6c460fb199ca9c6aef4bbb9379eb47ae3",
+        "size": 194,
+        "sha256": "bd339c0f333161bd7e2e93c0e2a1b8f43865e4894327d81eef36ec1b3eba7538",
+        "export_matches_blob": true
+      },
+      {
+        "path": "ShapeNetCar/scripts/Train.sh",
+        "blob": "a982981274d2cf42279332681e9e048cef7c9c1c",
+        "size": 86,
+        "sha256": "3b394d035b01945132d1700ba72f5e73f1d3ad4a51f1da4068bdf0d702f87a84",
+        "export_matches_blob": true
+      },
+      {
+        "path": "ShapeNetCar/train.py",
+        "blob": "f5b2a3acbded12012ca6f9e3cbbcca68033d60f8",
+        "size": 4475,
+        "sha256": "9a83436e434dc7ca51dbb1969dbddc57bf4c95008952dc54b48167af315c1cfc",
+        "export_matches_blob": true
+      },
+      {
+        "path": "ShapeNetCar/utils/drag_coefficient.py",
+        "blob": "01816bb315b27ed6f95fc702f970569c90e8d812",
+        "size": 8908,
+        "sha256": "a64ea2183d11c00f9fdcd083232d2e0a5f9acf6328680f65acafa18cd75a0854",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Standard_PDE_Benchmark/exp_airfoil.py",
+        "blob": "619adf8d6c78a3bd4ffb0ff0b978e8fa8cdc9a15",
+        "size": 12221,
+        "sha256": "3259b807a5b89615c98efdac6cfc64329806fcc10d1307047cd3a505cf5c21a1",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Standard_PDE_Benchmark/exp_darcy.py",
+        "blob": "5bea18f9495f6970f607a6dd5a5fefb6fadbcf39",
+        "size": 12022,
+        "sha256": "28cd6a1179c8d6ee7eb24e0a77c7389be3c78e9fb73cc56ecbb6a6f8635d5c50",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Standard_PDE_Benchmark/exp_elas.py",
+        "blob": "a320eaedfb307235617be908aea6c37e30a0a147",
+        "size": 9324,
+        "sha256": "cdabab3b79eb1d201f8e91d8a1782d8dcf8ba99958619cf69ee7a1e7268a3109",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Standard_PDE_Benchmark/exp_ns.py",
+        "blob": "21cfc31a6679c6faed3c1cdd1cd9774e7dbcf405",
+        "size": 10609,
+        "sha256": "d1661c78aa22356a624958db4b3f07e1107031d5d28280f9578ba2d6eec560ce",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Standard_PDE_Benchmark/exp_pipe.py",
+        "blob": "0e47943216adeb10cda0a3d6eaa8515c0b94d7f8",
+        "size": 10782,
+        "sha256": "796ce413fa52392e93da09a1d11890498abcc1a9ddc27defb4ea7bb1ecf02a3c",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Standard_PDE_Benchmark/exp_plas.py",
+        "blob": "0b0204842d88f1f56ccdc21cde203a615930a08e",
+        "size": 12484,
+        "sha256": "74594c30bd024ca699566cf873d06e47822113671d77fab46956dfbee2f7cb48",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Standard_PDE_Benchmark/model/Embedding.py",
+        "blob": "cc4a5bde5f86107893afb8a525636cda28b5d2eb",
+        "size": 3023,
+        "sha256": "e3a4f71c4378b7cce09a43b8c306d6d8a17edb4cd69db5eb069e55a57d2affe2",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Standard_PDE_Benchmark/model/LinearAttnNeuralOperator.py",
+        "blob": "44bdd4638cec5a5cfe35243d60242545ce71466f",
+        "size": 15591,
+        "sha256": "2019eacb9c6b61b3b7ede6a94e4ebfa3acb6ab95b25c1ab22299ab3dcc6c79d6",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Standard_PDE_Benchmark/scripts/Evaluation.sh",
+        "blob": "e930ff6622f2d33289d4dc039a38ef0f3addda7b",
+        "size": 2153,
+        "sha256": "611ddfea69601f7b42e9a9fb2cfd429e38b1d9ad94eae3692dde0a39a3173ecb",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Standard_PDE_Benchmark/scripts/LinearNO_Darcy.sh",
+        "blob": "ce0ad33153339cc1331db2106564a016811ad0a7",
+        "size": 350,
+        "sha256": "bcd87f6d87a5f61a84008a8f28d36f3e8117dacf87ca99b70fb0776be546cde6",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Standard_PDE_Benchmark/scripts/LinearNO_Elas.sh",
+        "blob": "41001a4f4e87864369e27caa1eb697a0d7a86260",
+        "size": 279,
+        "sha256": "0987f44f5f32a4b0abd52b3417fbbd345aa1256f22cbba36c7f9481458b44cfe",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Standard_PDE_Benchmark/scripts/LinearNO_NS.sh",
+        "blob": "124d5f985e92f92349f30974eda4e9bec04e4299",
+        "size": 335,
+        "sha256": "6e6b4c559cecf3d57c64b032502c3608b60e660cf568204d1e457c40c97b48bd",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Standard_PDE_Benchmark/scripts/LinearNO_Pipe.sh",
+        "blob": "7af3c1d138b6e51ad052bcb515711220cb8b325a",
+        "size": 332,
+        "sha256": "f3da7fb23d8a80692449efaf2d8b3056e1481f1d897ff093aef235ba22730820",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Standard_PDE_Benchmark/scripts/LinearNO_Plas.sh",
+        "blob": "d6e69889e117065c0ffc530f191817727031afaf",
+        "size": 329,
+        "sha256": "b9be3f7a194eb720fd64797568eb195b22bf0d91508198413613cb9772ce8d89",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Standard_PDE_Benchmark/scripts/LinearNO_airfoil.sh",
+        "blob": "5aa7f255966ee183754434b7c3b965418982e89b",
+        "size": 378,
+        "sha256": "094d38354e29bede206c6585ff8dd5b95bf2df2cfeb455d48e0e432126dbd35f",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Standard_PDE_Benchmark/utils/normalizer.py",
+        "blob": "d35b07de3642665a0f65754faba0e78d9e3e936b",
+        "size": 3558,
+        "sha256": "0d073489639f3ae7aa04b6c23a47bb45fb99d00041f89a5ad11dd98b6c0ba8ae",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Standard_PDE_Benchmark/utils/testloss.py",
+        "blob": "5ce18acba05834c4cbb0057cb57434570f9ca713",
+        "size": 1338,
+        "sha256": "bb806fd2323a54bb112940c7241a5bbdbd1447f28459ad705ce9015696c251b5",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Super-Resoltion-AppendixE/configs/LinearNO_completer_random_Burgers_ratio0005_cycle_Adam.jsonc",
+        "blob": "29ff1303027564559ad6d50193c04ca4d6b62357",
+        "size": 951,
+        "sha256": "1c547f2470067416b9e631a8021b927ce6cfe17ef6b2a3f494a658229d9a5ae7",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Super-Resoltion-AppendixE/configs/LinearNO_completer_random_Burgers_ratio001_cycle_Adam.jsonc",
+        "blob": "9e97b236386decc9de139072e74836bbba3fdb9c",
+        "size": 950,
+        "sha256": "67cb696ca94042c5ab63730aca15d22c5658f2ecc791190032d9f5f109c39644",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Super-Resoltion-AppendixE/configs/LinearNO_completer_random_Burgers_ratio005_cycle_Adam.jsonc",
+        "blob": "0b62850c56e038e5eafc4db3a7d784d9e9b895d5",
+        "size": 950,
+        "sha256": "90c1383b14df675e2592992a0678f5ea267c7a52a92ccad3df267c4004ce0dad",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Super-Resoltion-AppendixE/configs/LinearNO_completer_random_Burgers_ratio01_cycle_Adam.jsonc",
+        "blob": "0851357de9ceb187db98217fc4b6e3a09f816d4d",
+        "size": 991,
+        "sha256": "6e2c0a99c5b52f616ab1d75ee3c673e4561bf0543620f2ea4da3021e6a16f4b2",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Super-Resoltion-AppendixE/configs/LinearNO_completer_random_Burgers_ratio02_cycle_Adam.jsonc",
+        "blob": "8d4317b6d6bb5c22934fef633e5d180a93ae7901",
+        "size": 991,
+        "sha256": "8e7ad63e924824b3618253c5dbff27fc9c0edcf76778059ea3593d764d793489",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Super-Resoltion-AppendixE/module/LinearAttentionNeuralOperator.py",
+        "blob": "9a1fe450fe0f0d8ab67fbdd7dfb6d497df569f78",
+        "size": 9298,
+        "sha256": "54c375829b8b4744b349f77ad8697621f5143c17aef4dfb9070ca42637bd3a8f",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Super-Resoltion-AppendixE/module/model.py",
+        "blob": "ab944367dda88e3fe08cfdb5721d09d70a3c5e69",
+        "size": 15971,
+        "sha256": "25cadc43fa81f71a61d714cd67f00f0f6826f4715dc6f1ddb1d2dbf8d272d559",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Super-Resoltion-AppendixE/module/utils.py",
+        "blob": "ca860531f75185902f4f2396c55de9ec7748477a",
+        "size": 28283,
+        "sha256": "cd724c506381f28b0dda7468c161f30029ddbf5da9f25ea14a8f6b925802e0af",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Super-Resoltion-AppendixE/prepare.py",
+        "blob": "d93aeb53677181c9cd613fba760569fdbac68894",
+        "size": 7407,
+        "sha256": "0e5c67c9371683463ce5fea1f6c90a49ee752a5338ca1cffd313b2d6d1db8f1f",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Super-Resoltion-AppendixE/scripts/Evaluation.sh",
+        "blob": "d242057496c6c4e31b217c6dfd9ae7269752c1fb",
+        "size": 237,
+        "sha256": "dc9fb8cd3b6a1ca32ca9411f9db627e736672b1a8682cca6b2c902959fbad363",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Super-Resoltion-AppendixE/scripts/Train.sh",
+        "blob": "0431bcb1337920ca9e54c84bfd77c5bb84379fc8",
+        "size": 240,
+        "sha256": "3dd0142389b5ff22d24f2a9216f492936a9b95d1741bd329858606f09d83b078",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Super-Resoltion-AppendixE/test.py",
+        "blob": "a5fad1a3a20389448614c33d99cb24ed7a867766",
+        "size": 4877,
+        "sha256": "6bc677e4cacbbd31d9e6bdb3392076e26e3e15eb57bda4ab5623f22f18c82659",
+        "export_matches_blob": true
+      },
+      {
+        "path": "Super-Resoltion-AppendixE/train.py",
+        "blob": "73ede784f8db6e8676c5df85880bc0056d9e13fc",
+        "size": 10993,
+        "sha256": "c744a2c3615ab21b56c291cfd1b1996c45cdf66821dc500aaaa2984ace5bef73",
+        "export_matches_blob": true
+      },
+      {
+        "path": "environment.yml",
+        "blob": "a921ebed0debd189f584adbd578d6ad2b1024e37",
+        "size": 13052,
+        "sha256": "d09b01e8a9d7f7ae928b34964e5e6e66f5a8f68da877df974f1f9296b66fe7cc",
+        "export_matches_blob": true
+      }
+    ]
+  }
+]

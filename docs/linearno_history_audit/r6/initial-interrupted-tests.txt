@@ -1,0 +1,98 @@
+/home/hwz/anaconda3/lib/python3.13/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+test_launcher_preview_and_invalid_flags (linearno.test_history_static.HistoryStatic.test_launcher_preview_and_invalid_flags) ... usage: Training Transformer [-h] [--lr LR] [--epochs EPOCHS]
+                            [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                            [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                            [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                            [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                            [--downsamplex DOWNSAMPLEX]
+                            [--downsampley DOWNSAMPLEY]
+                            [--mlp_ratio MLP_RATIO] [--dropout DROPOUT]
+                            [--unified_pos UNIFIED_POS] [--ref REF]
+                            [--slice_num SLICE_NUM] [--eval EVAL]
+                            [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                            [--profile {kcdno_v1,transolver_shape_match}]
+                            [--kernel-rank KERNEL_RANK]
+                            [--history-mode {all,off}]
+                            [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                            [--front-latent-mode {full,no_sa,identity}]
+                            [--front-blocks FRONT_BLOCKS]
+                            [--latent-ffn-ratio LATENT_FFN_RATIO]
+                            [--cdpa-mode {off,entry,every_block}]
+                            [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                            [--cdlno-run-dir CDLNO_RUN_DIR]
+                            [--linearno-profile {paper_table8_on_release_model,official_release,transolver_matched}]
+                            [--linearno-variant {plain,temp,conv,conv_temp}]
+                            [--linearno-rank LINEARNO_RANK]
+                            [--experiment-dir LINEARNO_RUN_DIR] [--resume]
+                            [--checkpoint CHECKPOINT]
+Training Transformer: error: production AttnRes history dropout must be exactly 0.1; p=0 is test-only
+usage: python -m unittest [--linearno_latent_attnres {0,1}]
+                          [--linearno_history_k_conditioning {0,1}]
+                          [--linearno_attnres_history_dropout_p LINEARNO_ATTNRES_HISTORY_DROPOUT_P]
+python -m unittest: error: argument --linearno_history_k_conditioning/--linearno-history-k-conditioning: invalid choice: 'true' (choose from 0, 1)
+ok
+test_native_config_factory_counts_and_no_legacy_RNG_change (linearno.test_history_static.HistoryStatic.test_native_config_factory_counts_and_no_legacy_RNG_change) ... ERROR
+test_old_source_fingerprint_and_frozen_task_bodies (linearno.test_history_static.HistoryStatic.test_old_source_fingerprint_and_frozen_task_bodies) ... ok
+test_sixteen_native_cycles_and_new_process_eval (linearno.test_history_static.HistoryStatic.test_sixteen_native_cycles_and_new_process_eval) ... Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/hwz/anaconda3/lib/python3.13/unittest/__main__.py", line 18, in <module>
+    main(module=None)
+    ~~~~^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/unittest/main.py", line 104, in __init__
+    self.runTests()
+    ~~~~~~~~~~~~~^^
+  File "/home/hwz/anaconda3/lib/python3.13/unittest/main.py", line 270, in runTests
+    self.result = testRunner.run(self.test)
+                  ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/unittest/runner.py", line 240, in run
+    test(result)
+    ~~~~^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+           ~~~~~~~~^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/unittest/suite.py", line 122, in run
+    test(result)
+    ~~~~^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+           ~~~~~~~~^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/unittest/suite.py", line 122, in run
+    test(result)
+    ~~~~^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+           ~~~~~~~~^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/unittest/suite.py", line 122, in run
+    test(result)
+    ~~~~^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/unittest/case.py", line 707, in __call__
+    return self.run(*args, **kwds)
+           ~~~~~~~~^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/unittest/case.py", line 651, in run
+    self._callTestMethod(testMethod)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/unittest/case.py", line 606, in _callTestMethod
+    if method() is not None:
+       ~~~~~~^^
+  File "/home/hwz/CDLNO/tests/linearno/test_history_static.py", line 76, in test_sixteen_native_cycles_and_new_process_eval
+    p=subprocess.run([sys.executable,'-B',str(ROOT/'tests/linearno/history_static_worker.py'),task,action,str(directory),str(report),sig],
+        cwd=PROJECT,env={**os.environ,'PYTHONPATH':str(ROOT),'CUDA_VISIBLE_DEVICES':'','PYTHONDONTWRITEBYTECODE':'1'},
+        stdout=stream,stderr=subprocess.STDOUT,timeout=180)
+  File "/home/hwz/anaconda3/lib/python3.13/subprocess.py", line 556, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/subprocess.py", line 1222, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/subprocess.py", line 2154, in _communicate
+    self.wait(timeout=self._remaining_time(endtime))
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/subprocess.py", line 1280, in wait
+    return self._wait(timeout=timeout)
+           ~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/subprocess.py", line 2060, in _wait
+    time.sleep(delay)
+    ~~~~~~~~~~^^^^^^^
+KeyboardInterrupt

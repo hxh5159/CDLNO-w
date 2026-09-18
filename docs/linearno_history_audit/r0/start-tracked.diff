@@ -1,0 +1,43 @@
+diff --git a/.claude/settings.json b/.claude/settings.json
+index 0a11ad6..3eb050b 100644
+--- a/.claude/settings.json
++++ b/.claude/settings.json
+@@ -11,7 +11,12 @@
+       "Bash(echo \"exit=$? size=$\\(wc -c < transolver_full.html 2>/dev/null\\)\")",
+       "Bash(git status *)",
+       "Bash(bash depth_ablation/train_eval.sh airfoil 4 --seed 0 --gpu 0 --dry-run)",
+-      "Bash(bash depth_ablation/train_eval.sh elasticity 16 --seed 1 --gpu 0 --dry-run)"
++      "Bash(bash depth_ablation/train_eval.sh elasticity 16 --seed 1 --gpu 0 --dry-run)",
++      "Bash(chmod +x depth_ablation/schedule.sh)",
++      "Bash(bash -n depth_ablation/schedule.sh)",
++      "Bash(bash depth_ablation/schedule.sh elasticity --seed 0 --dry-run)",
++      "Bash(bash depth_ablation/schedule.sh airfoil --seed 0 --dry-run)",
++      "Bash(bash depth_ablation/schedule.sh pipe --seed 0 --dry-run)"
+     ]
+   }
+ }
+diff --git a/depth_ablation/README.md b/depth_ablation/README.md
+index 442a8ae..e400bdf 100644
+--- a/depth_ablation/README.md
++++ b/depth_ablation/README.md
+@@ -65,6 +65,20 @@ bash depth_ablation/train_eval.sh elasticity 8 --seed 0 --gpu 0 --dry-run
+ bash depth_ablation/run_all.sh --seeds "0 1 2" --depths "4 12 16" --gpu 0 --dry-run
+ ```
+ 
++## 按数据集一键调度（schedule.sh）
++
++`schedule.sh` 把一个数据集按其指定的 GPU×深度排程用**一条命令**跑完：同一 GPU 内的深度依次执行，跨 GPU 的流并行执行。
++
++```bash
++# 每个数据集一条命令；--seed 换成要跑的种子
++bash depth_ablation/schedule.sh airfoil    --seed 0    # GPU0: 4 -> 12 -> 16
++bash depth_ablation/schedule.sh darcy      --seed 0    # GPU1: 4 -> 12 -> 16
++bash depth_ablation/schedule.sh elasticity --seed 0    # GPU0: 4 -> 12   GPU1: 16
++bash depth_ablation/schedule.sh pipe       --seed 0    # GPU0: 16        GPU1: 4 -> 12
++```
++
++加 `--dry-run` 可预览每条命令而不执行。它与 `run_all.sh` 的区别在于：`schedule.sh` 固定了各数据集的 GPU 分配与跨 GPU 并行，`run_all.sh` 只在单个 GPU 上顺序排队。
++
+ ## 数据路径
+ 
+ 沿用仓库根 `path.sh`（由 `CDLNO_FNO_ROOT` 派生 `CDLNO_DARCY_ROOT` / `CDLNO_ELASTICITY_ROOT` / `CDLNO_AIRFOIL_ROOT` / `CDLNO_PIPE_ROOT`）。运行前确认 `path.sh` 中的 `CDLNO_DATA_ROOT` / `CDLNO_FNO_ROOT` 指向实际数据，再用去掉 `--dry-run` 的命令。

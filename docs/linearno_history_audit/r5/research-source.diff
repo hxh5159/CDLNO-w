@@ -1,0 +1,146 @@
+--- before/PDE-Solving-StandardBenchmark/model/LinearNO_History.py
++++ after/PDE-Solving-StandardBenchmark/model/LinearNO_History.py
+@@ -75,3 +75,20 @@
+ 
+     def forward(self, x, fx, T=None, *, observe=None):
+         return super().forward(x, fx, T, observe=observe, history_k=self.history_k)
++
++
++class JointHistoryModel(Model):
++    """Internal A+K model; mechanisms own disjoint parameters."""
++    def __init__(self, *args, feature_seed, **kwargs):
++        super().__init__(*args, **kwargs)
++        from cdlno.linearno_history.attnres import LatentSummaryAttnRes
++        from cdlno.linearno_history.history_k import HistoryConditionedK
++        first = self.blocks[0].Attn
++        self.latent_attnres = LatentSummaryAttnRes(
++            len(self.blocks), first.dim_head, feature_seed=feature_seed)
++        self.history_k = HistoryConditionedK(
++            len(self.blocks), first.heads, first.dim_head, feature_seed=feature_seed)
++
++    def forward(self, x, fx, T=None, *, observe=None):
++        return super().forward(x, fx, T, observe=observe,
++                               latent_attnres=self.latent_attnres, history_k=self.history_k)
+--- before/cdlno/linearno_history/__init__.py
++++ after/cdlno/linearno_history/__init__.py
+@@ -1,5 +1,5 @@
+-"""Research LinearNO internals. No factory, CLI or eager model imports.
++"""Research LinearNO internals; no benchmark CLI or eager model imports.
+ 
+-R2 provides the raw context; R3 adds A-only AttnRes; R4 adds K-only conditioning.
+-Joint A+K and production selection are intentionally not available here.
++R2 provides raw context; R3 A; R4 K; R5 joint A+K and internal config/factory/checkpoint.
++Eight-task production selection remains separate and is not enabled here.
+ """
+--- before/cdlno/linearno_history/core.py
++++ after/cdlno/linearno_history/core.py
+@@ -1,6 +1,6 @@
+-"""Research core: LinearNO v3 Eq.8/9 plus local raw history and A-only/K-only.
++"""Research core: LinearNO v3 Eq.8/9 plus local raw history and independent A/K.
+ 
+-Operators are owned by research wrappers; no combined mode or production dispatch.
++Operators are owned by research wrappers; no benchmark production dispatch.
+ ModuleList registration keeps the existing blocks.<index> state_dict layout.
+ The explicit observer is per-call, off by default, and intended for tests; the
+ core never stores traces, tensors, observers or contexts on itself.
+@@ -86,7 +86,7 @@
+     """Own already-initialized pure blocks; do not reinitialize or add keys.
+ 
+     Research wrappers register this as `blocks` after the pure constructor.
+-    No-op by default; A-only or K-only wrappers pass their operator per call.
++    No-op by default; research wrappers pass enabled operators per call.
+     This module does not resolve feature flags or register a production model.
+     """
+     def __init__(self, blocks):
+@@ -113,8 +113,6 @@
+ 
+     def forward(self, features: torch.Tensor, *, observe: Callable[[BlockTrace], None] | None = None,
+                 latent_attnres=None, history_k=None):
+-        if latent_attnres is not None and history_k is not None:
+-            raise ValueError('combined A+K is not implemented in R4')
+         if history_k is not None:
+             from .history_k import HistoryConditionedK
+             if not isinstance(history_k, HistoryConditionedK):
+--- before/cdlno/linearno_history/models.py
++++ after/cdlno/linearno_history/models.py
+@@ -1,4 +1,4 @@
+-"""Industrial research wrappers: no-op, A-only, K-only; no task entry imports."""
++"""Industrial research wrappers: no-op, A-only, K-only, joint; no task entry imports."""
+ import torch
+ from cdlno.linearno.airfrans import AirfRANSLinearNO as PureAirfRANS, single_graph as air_single_graph
+ from cdlno.linearno.shapenet import ShapeNetLinearNO as PureShapeNet, single_graph as car_single_graph
+@@ -119,3 +119,37 @@
+ 
+     def forward(self, data, *, observe=None):
+         return super().forward(data, observe=observe, history_k=self.history_k)
++
++
++class AirfRANSJointHistoryModel(AirfRANSHistoryModel):
++    """Internal A+K; preserve the original task input/output contract."""
++    def __init__(self, *args, feature_seed, **kwargs):
++        super().__init__(*args, **kwargs)
++        from .attnres import LatentSummaryAttnRes
++        from .history_k import HistoryConditionedK
++        first = self.blocks[0].Attn
++        self.latent_attnres = LatentSummaryAttnRes(
++            len(self.blocks), first.dim_head, feature_seed=feature_seed)
++        self.history_k = HistoryConditionedK(
++            len(self.blocks), first.heads, first.dim_head, feature_seed=feature_seed)
++
++    def forward(self, data, *, observe=None):
++        return super().forward(data, observe=observe,
++                               latent_attnres=self.latent_attnres, history_k=self.history_k)
++
++
++class ShapeNetJointHistoryModel(ShapeNetHistoryModel):
++    """Internal A+K; preserve the original task input/output contract."""
++    def __init__(self, *args, feature_seed, **kwargs):
++        super().__init__(*args, **kwargs)
++        from .attnres import LatentSummaryAttnRes
++        from .history_k import HistoryConditionedK
++        first = self.blocks[0].Attn
++        self.latent_attnres = LatentSummaryAttnRes(
++            len(self.blocks), first.dim_head, feature_seed=feature_seed)
++        self.history_k = HistoryConditionedK(
++            len(self.blocks), first.heads, first.dim_head, feature_seed=feature_seed)
++
++    def forward(self, data, *, observe=None):
++        return super().forward(data, observe=observe,
++                               latent_attnres=self.latent_attnres, history_k=self.history_k)
+--- before/linearno_history/schema.py
++++ after/linearno_history/schema.py
+@@ -1,8 +1,9 @@
+-"""R1-only schema and compatibility validator for the future LinearNO history family.
++"""Pure config/schema contracts for the LinearNO history family.
+ 
+ This module deliberately does not import torch, task entry points, factories, or
+-model implementations. It validates JSON-like configuration and checkpoint
+-metadata before any future research model construction. A/K math is not here.
++model implementations. The R1 metadata fixture remains a historical contract;
++complete runnable R5 metadata is validated by cdlno.linearno_history.checkpoint.
++A/K math is not here.
+ """
+ from __future__ import annotations
+ 
+@@ -240,7 +241,9 @@
+         raise HistorySchemaError("constructor_hyperparameters must record all resolved structural fields")
+     code = _mapping(spec["code_schema"], "innovation_spec.code_schema")
+     _exact(code, {"config_schema_version", "implementation_version", "architecture_extension"}, "innovation_spec.code_schema")
+-    if code != {"config_schema_version": CONFIG_SCHEMA_VERSION, "implementation_version": "r1-contract-only", "architecture_extension": ARCHITECTURE_EXTENSION}:
++    if (_int(code["config_schema_version"], "code_schema.config_schema_version", 1) != CONFIG_SCHEMA_VERSION
++            or code["implementation_version"] not in ("r1-contract-only", "r5-internal-v1")
++            or code["architecture_extension"] != ARCHITECTURE_EXTENSION):
+         raise HistorySchemaError("invalid research code/schema descriptor")
+     return {"schema_version": 1, "class_path": class_path, "base_linearno": base, "features": _clone(features), "attnres": validated_attnres, "history_k": validated_k, "raw_cache": raw, "constructor_hyperparameters": _clone(hp), "code_schema": code}
+ 
+--- before/tests/linearno/test_history_k.py
++++ after/tests/linearno/test_history_k.py
+@@ -350,7 +350,7 @@
+         broken=dict(state);del broken['uk.weight']
+         with self.assertRaises(RuntimeError):module.load_state_dict(broken,strict=True)
+         _,no_op,_=pair('plain')
+-        with self.assertRaisesRegex(ValueError,'combined'):
++        with self.assertRaisesRegex(TypeError,'K operator'):
+             no_op.blocks(torch.randn(2,15,12),latent_attnres=object(),history_k=object())
+ 
+     def test_fresh_process_K_only_import_and_strict_checkpoint(self):

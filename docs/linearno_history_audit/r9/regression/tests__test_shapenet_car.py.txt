@@ -1,0 +1,21 @@
+test_epoch_path_fix_and_launch_arguments (test_shapenet_car.FrozenSourceAndScripts.test_epoch_path_fix_and_launch_arguments) ... ok
+test_frozen_car_and_airfrans_original_files (test_shapenet_car.FrozenSourceAndScripts.test_frozen_car_and_airfrans_original_files) ... ok
+test_original_entries_project_to_baseline_ast (test_shapenet_car.FrozenSourceAndScripts.test_original_entries_project_to_baseline_ast) ... ok
+test_large_synthetic_point_count_and_input_gradients (test_shapenet_car.RealPyGChecks.test_large_synthetic_point_count_and_input_gradients) ... ok
+test_multigraph_batch_ptr_and_malformed_inputs_rejected (test_shapenet_car.RealPyGChecks.test_multigraph_batch_ptr_and_malformed_inputs_rejected) ... ok
+test_original_train_mask_loss_backward_optimizer_scheduler (test_shapenet_car.RealPyGChecks.test_original_train_mask_loss_backward_optimizer_scheduler) ... ok
+test_variable_n_single_batch_no_mutation_no_label_geometry_read (test_shapenet_car.RealPyGChecks.test_variable_n_single_batch_no_mutation_no_label_geometry_read) ... ok
+test_baseline_lifting_placeholder_and_query_initialization (test_shapenet_car.WrapperAndProtocol.test_baseline_lifting_placeholder_and_query_initialization) ... /home/hwz/anaconda3/lib/python3.13/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+ok
+test_checkpoint_rejects_wrong_object_and_missing_weights (test_shapenet_car.WrapperAndProtocol.test_checkpoint_rejects_wrong_object_and_missing_weights) ... ok
+test_defaults_active_parameters_and_three_modes (test_shapenet_car.WrapperAndProtocol.test_defaults_active_parameters_and_three_modes) ... ok
+test_parser_overrides_legacy_and_invalid_contracts (test_shapenet_car.WrapperAndProtocol.test_parser_overrides_legacy_and_invalid_contracts) ... ok
+test_run_isolation_and_sidecar_before_load (test_shapenet_car.WrapperAndProtocol.test_run_isolation_and_sidecar_before_load) ... ok
+test_whole_model_save_and_load_in_separate_car_processes (test_shapenet_car.WrapperAndProtocol.test_whole_model_save_and_load_in_separate_car_processes) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 5.923s
+
+OK
+Frozen Car/AirfRANS original files byte-identical: 34

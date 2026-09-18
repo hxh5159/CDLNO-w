@@ -1,0 +1,55 @@
+{
+  "modules": [
+    "linearno.test_history_integration",
+    "linearno.test_history_k",
+    "linearno.test_latent_attnres",
+    "linearno.test_history_core",
+    "linearno.test_history_schema",
+    "linearno.test_schema",
+    "linearno.test_profiles",
+    "linearno.test_attention_parity",
+    "linearno.test_attention_structure",
+    "linearno.test_standard_model",
+    "linearno.test_standard_structure",
+    "linearno.test_airfrans_model",
+    "linearno.test_shapenet_model",
+    "linearno.test_legacy",
+    "linearno.test_rng",
+    "monitor.test_monitor"
+  ],
+  "tests": 114,
+  "failures": [
+    {
+      "test": "test_all_preexisting_files_and_absent_frozen_directories (linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) (path='README.md')",
+      "trace": "Traceback (most recent call last):\n  File \"/home/hwz/CDLNO/tests/linearno/test_legacy.py\", line 124, in test_all_preexisting_files_and_absent_frozen_directories\n    self.assertEqual(hashlib.sha256((ROOT/row['path']).read_bytes()).hexdigest(), row['sha256'])\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 'fc58f271728f884d446aa89b623a6634867166ae383072bcc17e42596e333afb' != 'd7124bcc753bd90bce6f8e9475bbdc4eb46c5439a3017156e0dd342681fa8863'\n- fc58f271728f884d446aa89b623a6634867166ae383072bcc17e42596e333afb\n+ d7124bcc753bd90bce6f8e9475bbdc4eb46c5439a3017156e0dd342681fa8863\n\n"
+    },
+    {
+      "test": "test_all_preexisting_files_and_absent_frozen_directories (linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) (path='path.sh')",
+      "trace": "Traceback (most recent call last):\n  File \"/home/hwz/CDLNO/tests/linearno/test_legacy.py\", line 124, in test_all_preexisting_files_and_absent_frozen_directories\n    self.assertEqual(hashlib.sha256((ROOT/row['path']).read_bytes()).hexdigest(), row['sha256'])\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: '4c45fe6fee19cd511487c934b8aea20186b91844ccfedee9111be7007945281b' != '153163c1535a74dc4802e59590b2ec9815b0d166dc5d534d66fc6b38f596a87c'\n- 4c45fe6fee19cd511487c934b8aea20186b91844ccfedee9111be7007945281b\n+ 153163c1535a74dc4802e59590b2ec9815b0d166dc5d534d66fc6b38f596a87c\n\n"
+    },
+    {
+      "test": "test_all_preexisting_files_and_absent_frozen_directories (linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) (path='docs/LINEARNO_REPRODUCTION_MATRIX.md')",
+      "trace": "Traceback (most recent call last):\n  File \"/home/hwz/CDLNO/tests/linearno/test_legacy.py\", line 91, in test_all_preexisting_files_and_absent_frozen_directories\n    self.assertTrue(now.startswith(old.split('\\n\\n',1)[0]+'\\n\\n'))\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: False is not true\n"
+    }
+  ],
+  "errors": [],
+  "skipped": [
+    {
+      "test": "test_fixed_official_cuda_fp32_fp16_bfloat16 (linearno.test_attention_parity.AttentionParity.test_fixed_official_cuda_fp32_fp16_bfloat16)",
+      "reason": "CUDA not available; GPU FP32/AMP NOT RUN"
+    },
+    {
+      "test": "test_native_cuda_official_unified_replacement_all_variants (linearno.test_standard_model.StandardModelParity.test_native_cuda_official_unified_replacement_all_variants)",
+      "reason": "native official unified Model requires CUDA"
+    },
+    {
+      "test": "test_native_cuda_full_official_parity (linearno.test_airfrans_model.AirfRANSModelChecks.test_native_cuda_full_official_parity)",
+      "reason": "native release get_grid requires CUDA"
+    },
+    {
+      "test": "test_native_cuda_official_full_parity (linearno.test_shapenet_model.ShapeNetModelChecks.test_native_cuda_official_full_parity)",
+      "reason": "CUDA unavailable"
+    }
+  ],
+  "seconds": 114.6225703750024
+}

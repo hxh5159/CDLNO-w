@@ -1,0 +1,28 @@
+test_gpu_depth_autocast_precision_and_gradients (test_cdpa.CDPACUDAChecks.test_gpu_depth_autocast_precision_and_gradients) ... skipped 'GPU unavailable; CUDA precision checks not run'
+test_gpu_fp32_reference_and_fused_sdpa (test_cdpa.CDPACUDAChecks.test_gpu_fp32_reference_and_fused_sdpa) ... skipped 'GPU unavailable; CUDA precision checks not run'
+test_gpu_half_bfloat16_outputs_chunks_and_extremes (test_cdpa.CDPACUDAChecks.test_gpu_half_bfloat16_outputs_chunks_and_extremes) ... skipped 'GPU unavailable; CUDA precision checks not run'
+test_batch_isolation_forward_and_gradient (test_cdpa.CDPAChecks.test_batch_isolation_forward_and_gradient) ... ok
+test_chunk_layout_counts_q_once_and_single_global_fusion (test_cdpa.CDPAChecks.test_chunk_layout_counts_q_once_and_single_global_fusion) ... ok
+test_current_token_permutation_equivariance (test_cdpa.CDPAChecks.test_current_token_permutation_equivariance) ... ok
+test_depth_fp32_dispatch_under_cpu_autocast (test_cdpa.CDPAChecks.test_depth_fp32_dispatch_under_cpu_autocast) ... ok
+test_empty_history_is_exact_identity_without_computation (test_cdpa.CDPAChecks.test_empty_history_is_exact_identity_without_computation) ... ok
+test_extreme_magnitudes_and_all_gradients_finite (test_cdpa.CDPAChecks.test_extreme_magnitudes_and_all_gradients_finite) ... ok
+test_initialization_and_only_shared_parameters (test_cdpa.CDPAChecks.test_initialization_and_only_shared_parameters) ... ok
+test_invalid_inputs_rejected_before_projection (test_cdpa.CDPAChecks.test_invalid_inputs_rejected_before_projection) ... ok
+test_mixed_history_dtypes_preserve_cast_gradients (test_cdpa.CDPAChecks.test_mixed_history_dtypes_preserve_cast_gradients) ... ok
+test_noncontiguous_inputs_and_minimal_sizes (test_cdpa.CDPAChecks.test_noncontiguous_inputs_and_minimal_sizes) ... ok
+test_reference_does_not_call_production_or_sdpa (test_cdpa.CDPAChecks.test_reference_does_not_call_production_or_sdpa) ... ok
+test_sdpa_reference_output_and_all_gradients_matrix (test_cdpa.CDPAChecks.test_sdpa_reference_output_and_all_gradients_matrix) ... ok
+test_sidecar_runtime_changes_and_architecture_rejection_without_overwrite (test_cdpa.CDPAChecks.test_sidecar_runtime_changes_and_architecture_rejection_without_overwrite) ... ok
+test_source_reorder_and_historical_token_permutations (test_cdpa.CDPAChecks.test_source_reorder_and_historical_token_permutations) ... ok
+test_stateless_calls_input_immutability_and_chunk_weight_loading (test_cdpa.CDPAChecks.test_stateless_calls_input_immutability_and_chunk_weight_loading) ... ok
+test_two_softmax_axes_and_tokenwise_weights (test_cdpa.CDPAChecks.test_two_softmax_axes_and_tokenwise_weights) ... ok
+test_uniform_initialization_raw_values_and_no_outer_residual (test_cdpa.CDPAChecks.test_uniform_initialization_raw_values_and_no_outer_residual) ... ok
+test_zero_w_gradient_then_updated_w (test_cdpa.CDPAChecks.test_zero_w_gradient_then_updated_w) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 0.928s
+
+OK (skipped=3)
+phase-3 execution: torch=2.13.0+cu130, CUDA runtime=13.0
+CDPA reference matrix: 48 cases, all parameter/input gradients; max abs grad error=2.17e-05

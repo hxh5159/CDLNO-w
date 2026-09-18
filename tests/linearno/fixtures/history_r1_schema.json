@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "feature_configs": {
+    "A0K0": {
+      "linearno_latent_attnres": false,
+      "linearno_history_k_conditioning": false,
+      "linearno_attnres_history_dropout_p": null
+    },
+    "A1K0": {
+      "linearno_latent_attnres": true,
+      "linearno_history_k_conditioning": false,
+      "linearno_attnres_history_dropout_p": null
+    },
+    "A0K1": {
+      "linearno_latent_attnres": false,
+      "linearno_history_k_conditioning": true,
+      "linearno_attnres_history_dropout_p": null
+    },
+    "A1K1": {
+      "linearno_latent_attnres": true,
+      "linearno_history_k_conditioning": true,
+      "linearno_attnres_history_dropout_p": 0.1
+    }
+  },
+  "valid_research_metadata": {
+    "schema_version": 1,
+    "family": "linearno_history",
+    "architecture_extension": "linearno_history_v1",
+    "feature_signature": "A1K1",
+    "innovation_spec": {
+      "schema_version": 1,
+      "class_path": "cdlno.linearno_history.core.LinearNOHistoryCore",
+      "base_linearno": {
+        "variant": "plain",
+        "task_variant": "standard_ns",
+        "n_layers": 4,
+        "heads": 2,
+        "d_h": 8,
+        "actual_M": 8,
+        "temperature_semantics": {
+          "used": false,
+          "initial": null,
+          "clamp": null
+        }
+      },
+      "features": {
+        "linearno_latent_attnres": true,
+        "linearno_history_k_conditioning": true,
+        "feature_signature": "A1K1"
+      },
+      "attnres": {
+        "enabled": true,
+        "version": 1,
+        "per_head_cross": true,
+        "d_m_equals_d_h": true,
+        "history_only_source_softmax": true,
+        "current_in_source_softmax": false,
+        "null_source": {
+          "present": true,
+          "value": "zero",
+          "always_in_softmax": true,
+          "parameterized": false,
+          "kept_when_all_history_masked": true
+        },
+        "gamma": {
+          "shape": "per_receiver_scalar",
+          "initialization": 0.0,
+          "scope": "receiver_layer"
+        },
+        "dropout": {
+          "p": 0.1,
+          "train_only": true,
+          "mask_granularity": "sample_by_real_source",
+          "singleton_history_kept": true,
+          "null_never_dropped": true,
+          "inverted_scaling": false,
+          "all_masked_fallback": "null_weight_one_finite_zero"
+        }
+      },
+      "history_k": {
+        "enabled": true,
+        "version": 1,
+        "base_to_k_row_query": true,
+        "all_history_token_bank": true,
+        "point_slot_dot": true,
+        "point_centering": true,
+        "gate": {
+          "scope": "receiver_layer_and_head",
+          "function": "tanh",
+          "initialization": 0.0,
+          "shape": "[1,H,1,1]"
+        },
+        "changes_q": false,
+        "changes_v": false,
+        "changes_reconstruction_q": false
+      },
+      "raw_cache": {
+        "authoritative_value": "C_raw_pre_attnres",
+        "timing": "after_current_KtV_before_A_and_Q_reconstruction",
+        "storage": "forward_local_tuple",
+        "detach": false,
+        "cross_forward": false,
+        "cross_sample": false,
+        "cross_time": false
+      },
+      "constructor_hyperparameters": {
+        "space_dim": 2,
+        "n_layers": 4,
+        "n_hidden": 16,
+        "n_head": 2,
+        "linearno_rank": 8,
+        "linearno_variant": "plain"
+      },
+      "code_schema": {
+        "config_schema_version": 1,
+        "implementation_version": "r1-contract-only",
+        "architecture_extension": "linearno_history_v1"
+      }
+    },
+    "model_spec": {
+      "class_path": "cdlno.linearno_history.core.LinearNOHistoryCore",
+      "constructor_kwargs": {
+        "n_layers": 4,
+        "heads": 2,
+        "d_h": 8,
+        "actual_M": 8
+      }
+    },
+    "profile_spec": {
+      "name": "official_release"
+    },
+    "provenance_spec": {
+      "base_commit": "d5abe014ed05ec9286200d677b039bbd68697f96"
+    }
+  },
+  "legacy_metadata": {
+    "schema_version": 1,
+    "family": "linearno",
+    "model_spec": {
+      "class_path": "PDE-Solving-StandardBenchmark.model.LinearNO.Model",
+      "constructor_kwargs": {
+        "n_layers": 8
+      }
+    }
+  }
+}

@@ -1,0 +1,45 @@
+test_all_preexisting_files_and_absent_frozen_directories (test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) ... 
+  test_all_preexisting_files_and_absent_frozen_directories (test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) (path='README.md') ... FAIL
+  test_all_preexisting_files_and_absent_frozen_directories (test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) (path='path.sh') ... FAIL
+  test_all_preexisting_files_and_absent_frozen_directories (test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) (path='docs/LINEARNO_REPRODUCTION_MATRIX.md') ... FAIL
+test_eight_real_models_same_weights_and_checkpoints_fresh_workdirs (test_legacy.LegacyRegression.test_eight_real_models_same_weights_and_checkpoints_fresh_workdirs) ... ok
+test_no_task_parser_factory_imports_from_new_namespace (test_legacy.LegacyRegression.test_no_task_parser_factory_imports_from_new_namespace) ... ok
+test_real_parser_AST_defaults_unchanged_and_new_flags_isolated (test_legacy.LegacyRegression.test_real_parser_AST_defaults_unchanged_and_new_flags_isolated) ... ok
+
+======================================================================
+FAIL: test_all_preexisting_files_and_absent_frozen_directories (test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) (path='README.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_legacy.py", line 124, in test_all_preexisting_files_and_absent_frozen_directories
+    self.assertEqual(hashlib.sha256((ROOT/row['path']).read_bytes()).hexdigest(), row['sha256'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'fc58f271728f884d446aa89b623a6634867166ae383072bcc17e42596e333afb' != 'd7124bcc753bd90bce6f8e9475bbdc4eb46c5439a3017156e0dd342681fa8863'
+- fc58f271728f884d446aa89b623a6634867166ae383072bcc17e42596e333afb
++ d7124bcc753bd90bce6f8e9475bbdc4eb46c5439a3017156e0dd342681fa8863
+
+
+======================================================================
+FAIL: test_all_preexisting_files_and_absent_frozen_directories (test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) (path='path.sh')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_legacy.py", line 124, in test_all_preexisting_files_and_absent_frozen_directories
+    self.assertEqual(hashlib.sha256((ROOT/row['path']).read_bytes()).hexdigest(), row['sha256'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: '4c45fe6fee19cd511487c934b8aea20186b91844ccfedee9111be7007945281b' != '153163c1535a74dc4802e59590b2ec9815b0d166dc5d534d66fc6b38f596a87c'
+- 4c45fe6fee19cd511487c934b8aea20186b91844ccfedee9111be7007945281b
++ 153163c1535a74dc4802e59590b2ec9815b0d166dc5d534d66fc6b38f596a87c
+
+
+======================================================================
+FAIL: test_all_preexisting_files_and_absent_frozen_directories (test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) (path='docs/LINEARNO_REPRODUCTION_MATRIX.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_legacy.py", line 91, in test_all_preexisting_files_and_absent_frozen_directories
+    self.assertTrue(now.startswith(old.split('\n\n',1)[0]+'\n\n'))
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 4 tests in 21.486s
+
+FAILED (failures=3)

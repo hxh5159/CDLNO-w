@@ -1,0 +1,18 @@
+## R6：接入四个静态 Standard PDE 任务
+
+```text
+R5 已审查通过。现在只执行 R6：接入Airfoil、Darcy、Elasticity、Pipe四个静态Standard任务。允许为这四个任务所共用的Standard parser/factory/model基础设施做最小必要修改，但本阶段不得改变、启用或声称已经验证NS与Plasticity的任务专属协议/launcher；它们留到R7。也不要修改AirfRANS或ShapeNet的任务专属实现。
+
+1. 复用当前已经验证的任务专属LinearNO variant、actual M、H/W、输入/输出、loss、normalizer、optimizer、scheduler、数据split、seed、checkpoint、可视化和artifact路径。只增加正交architecture字段和研究model构造。
+
+2. 每个任务提供A0K0/A1K0/A0K1/A1K1四个真实可执行的train/resume/eval命令，并支持L=4..8。旧LinearNO命令和目录语义不变；研究目录必须含task/profile/L/A/K/seed。
+
+3. 每个任务先完成无数据config->model->synthetic forward/backward->strict checkpoint->new-process eval闭环。只有RUN_REAL_BATCH=true时运行真实loader一批；只有RUN_MINIRUN=true且MAX_STEPS>0时运行短程。
+
+4. 对plain/temp/conv/conv_temp分别核对基础投影、温度、actual M和zero-gate parity；不能只测plain后假定其余正确。conv路径仍使用原H/W与卷积，不把K模块放到卷积之前。
+
+5. 回归纯LinearNO、旧Transolver、当前其他模型、visualization和resume。A0K0必须继续接受旧纯LinearNO checkpoint；研究checkpoint按innovation_spec strict加载。
+
+6. 记录四任务每个组合/深度的参数量和理论新增张量shape，但不进行完整训练。更新matrix/status后停止。
+```
+

@@ -1,0 +1,18 @@
+test_frozen_complete_entries_trainers_yaml_and_core (test_msar_industrial.IndustrialMSAR.test_frozen_complete_entries_trainers_yaml_and_core) ... FAIL
+
+======================================================================
+FAIL: test_frozen_complete_entries_trainers_yaml_and_core (test_msar_industrial.IndustrialMSAR.test_frozen_complete_entries_trainers_yaml_and_core)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO-artifacts/linearno-history-r6-before-hd6eqt71/source/tests/test_msar_industrial.py", line 117, in test_frozen_complete_entries_trainers_yaml_and_core
+    self.assertEqual(ast.dump(strip_msar(ast.parse((project/name).read_text()))),
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                     ast.dump(ast.parse((source/relative).read_text())),str(relative))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Modu[3665 chars]ue=\'LinearNO\')]), body=[ImportFrom(module=\'[26461 chars]])])' != 'Modu[3665 chars]ue=\'CDLNO\')]), body=[ImportFrom(module=\'cdl[26028 chars]])])'
+Diff is 57434 characters long. Set self.maxDiff to None to see it. : Airfoil-Design-AirfRANS/main.py
+
+----------------------------------------------------------------------
+Ran 1 test in 0.353s
+
+FAILED (failures=1)

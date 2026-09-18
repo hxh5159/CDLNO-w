@@ -1,0 +1,26 @@
+test_small_cuda_fp32_and_amp (test_modules.CUDAModuleChecks.test_small_cuda_fp32_and_amp) ... skipped 'CUDA unavailable; GPU module checks not run'
+test_bridge_formula_and_gradients (test_modules.ModuleChecks.test_bridge_formula_and_gradients) ... ok
+test_conv_5_by_7_row_major_channel_mixing (test_modules.ModuleChecks.test_conv_5_by_7_row_major_channel_mixing) ... ok
+test_cpu_autocast_bfloat16_individual_modules (test_modules.ModuleChecks.test_cpu_autocast_bfloat16_individual_modules) ... /home/hwz/anaconda3/lib/python3.13/site-packages/torch/backends/mkldnn/__init__.py:96: UserWarning: TF32 acceleration on top of oneDNN is available for Intel GPUs. The current Torch version does not have Intel GPU Support. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/Context.cpp:265.)
+  torch._C._set_onednn_allow_tf32(_allow_tf32)
+ok
+test_front_down_zero_and_bridge_query_residual (test_modules.ModuleChecks.test_front_down_zero_and_bridge_query_residual) ... ok
+test_front_order_history_object_and_live_gradients (test_modules.ModuleChecks.test_front_order_history_object_and_live_gradients) ... ok
+test_initialization_once_queries_and_default_conv (test_modules.ModuleChecks.test_initialization_once_queries_and_default_conv) ... ok
+test_invalid_dimensions_ratios_and_grid_fail_early (test_modules.ModuleChecks.test_invalid_dimensions_ratios_and_grid_fail_early) ... ok
+test_norm_bias_and_ffn_default_policies (test_modules.ModuleChecks.test_norm_bias_and_ffn_default_policies) ... ok
+test_norm_formula_outputs_and_gradients (test_modules.ModuleChecks.test_norm_formula_outputs_and_gradients) ... ok
+test_parameter_identity_and_storage_are_independent (test_modules.ModuleChecks.test_parameter_identity_and_storage_are_independent) ... ok
+test_persistent_same_normalized_qkv_and_formula (test_modules.ModuleChecks.test_persistent_same_normalized_qkv_and_formula) ... ok
+test_plain_and_geglu_formula (test_modules.ModuleChecks.test_plain_and_geglu_formula) ... ok
+test_point_permutation_latent_permutation_and_batch_isolation (test_modules.ModuleChecks.test_point_permutation_latent_permutation_and_batch_isolation) ... ok
+test_readout_formula_and_gradients (test_modules.ModuleChecks.test_readout_formula_and_gradients) ... ok
+test_readout_query_context_residual_and_output_norm (test_modules.ModuleChecks.test_readout_query_context_residual_and_output_norm) ... ok
+test_rms_small_large_zero_and_low_precision (test_modules.ModuleChecks.test_rms_small_large_zero_and_low_precision) ... ok
+test_sdpa_matches_explicit_attention_and_gradients (test_modules.ModuleChecks.test_sdpa_matches_explicit_attention_and_gradients) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 0.335s
+
+OK (skipped=1)
+phase-2 tests: torch=2.13.0+cu130, runtime=13.0

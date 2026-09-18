@@ -1,0 +1,14 @@
+/home/hwz/anaconda3/lib/python3.13/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+test_legacy_parser_imports_without_shared_package (test_kcdno_delivery.DeliveryChecks.test_legacy_parser_imports_without_shared_package) ... ok
+test_formal_presets_counts_and_shapes (unittest.loader._FailedTest.test_formal_presets_counts_and_shapes) ... ERROR
+
+======================================================================
+ERROR: test_formal_presets_counts_and_shapes (unittest.loader._FailedTest.test_formal_presets_counts_and_shapes)
+----------------------------------------------------------------------
+AttributeError: type object 'HistoryStatic' has no attribute 'test_formal_presets_counts_and_shapes'
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.120s
+
+FAILED (errors=1)

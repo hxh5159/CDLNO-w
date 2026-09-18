@@ -1,0 +1,16 @@
+## R7：接入 Navier-Stokes 与 Plasticity
+
+```text
+R6 已审查通过。现在只执行 R7：接入Navier-Stokes与Plasticity，继承旧LinearNO提示词中这两项任务的全部特殊训练/评价协议；不要修改其他任务。
+
+1. NS每一次模型调用都只建立“网络深度方向”的新raw history。外部自回归把预测写回下一物理时间步时，绝不能把上一次forward的层历史带入下一次调用。
+
+2. Plasticity每个时间查询/模型调用同样重新建立history；不得把物理时间维误当网络深度来源。保持原坐标、时间embedding、输出shape、loss和调度。
+
+3. history dropout使用的RNG必须纳入当前checkpoint/resume的完整RNG恢复。验证中断前后下一次mask、DataLoader顺序、loss和参数更新连续；不得用恢复后重新seed冒充连续。
+
+4. 分别提供两任务×四组合×L=4..8的准确train/resume/eval命令。旧命令、旧checkpoint、可视化和rollout逻辑不变。
+
+5. 完成合成闭环；真实一批/mini-run仍受RUN_REAL_BATCH、RUN_MINIRUN、MAX_STEPS授权。回归此前全部任务后更新状态并停止。
+```
+

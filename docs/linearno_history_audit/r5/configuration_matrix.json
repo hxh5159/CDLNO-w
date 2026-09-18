@@ -1,0 +1,666 @@
+{
+  "schema_version": 1,
+  "stage": "R5",
+  "scope": "small CPU synthetic, Standard plain 3x5 B2 d12 h3 M8; no production task loop",
+  "core_matrix": [
+    {
+      "feature_signature": "A0K0",
+      "n_layers": 4,
+      "status": "PASS",
+      "coverage": [
+        "construct",
+        "forward",
+        "loss",
+        "backward",
+        "optimizer_step",
+        "save",
+        "fresh_process_strict_reload",
+        "eval"
+      ],
+      "parameters": 3778,
+      "block_calls": {
+        "attention": 4,
+        "ffn": 4,
+        "final_norm": 1,
+        "head": 1
+      },
+      "reload_max_abs": 0
+    },
+    {
+      "feature_signature": "A1K0",
+      "n_layers": 4,
+      "status": "PASS",
+      "coverage": [
+        "construct",
+        "forward",
+        "loss",
+        "backward",
+        "optimizer_step",
+        "save",
+        "fresh_process_strict_reload",
+        "eval"
+      ],
+      "parameters": 3933,
+      "block_calls": {
+        "attention": 4,
+        "ffn": 4,
+        "final_norm": 1,
+        "head": 1
+      },
+      "reload_max_abs": 0
+    },
+    {
+      "feature_signature": "A0K1",
+      "n_layers": 4,
+      "status": "PASS",
+      "coverage": [
+        "construct",
+        "forward",
+        "loss",
+        "backward",
+        "optimizer_step",
+        "save",
+        "fresh_process_strict_reload",
+        "eval"
+      ],
+      "parameters": 3835,
+      "block_calls": {
+        "attention": 4,
+        "ffn": 4,
+        "final_norm": 1,
+        "head": 1
+      },
+      "reload_max_abs": 0
+    },
+    {
+      "feature_signature": "A1K1",
+      "n_layers": 4,
+      "status": "PASS",
+      "coverage": [
+        "construct",
+        "forward",
+        "loss",
+        "backward",
+        "optimizer_step",
+        "save",
+        "fresh_process_strict_reload",
+        "eval"
+      ],
+      "parameters": 3990,
+      "block_calls": {
+        "attention": 4,
+        "ffn": 4,
+        "final_norm": 1,
+        "head": 1
+      },
+      "reload_max_abs": 0
+    },
+    {
+      "feature_signature": "A0K0",
+      "n_layers": 5,
+      "status": "PASS",
+      "coverage": [
+        "construct",
+        "forward",
+        "loss",
+        "backward",
+        "optimizer_step",
+        "save",
+        "fresh_process_strict_reload",
+        "eval"
+      ],
+      "parameters": 4530,
+      "block_calls": {
+        "attention": 5,
+        "ffn": 5,
+        "final_norm": 1,
+        "head": 1
+      },
+      "reload_max_abs": 0
+    },
+    {
+      "feature_signature": "A1K0",
+      "n_layers": 5,
+      "status": "PASS",
+      "coverage": [
+        "construct",
+        "forward",
+        "loss",
+        "backward",
+        "optimizer_step",
+        "save",
+        "fresh_process_strict_reload",
+        "eval"
+      ],
+      "parameters": 4726,
+      "block_calls": {
+        "attention": 5,
+        "ffn": 5,
+        "final_norm": 1,
+        "head": 1
+      },
+      "reload_max_abs": 0
+    },
+    {
+      "feature_signature": "A0K1",
+      "n_layers": 5,
+      "status": "PASS",
+      "coverage": [
+        "construct",
+        "forward",
+        "loss",
+        "backward",
+        "optimizer_step",
+        "save",
+        "fresh_process_strict_reload",
+        "eval"
+      ],
+      "parameters": 4590,
+      "block_calls": {
+        "attention": 5,
+        "ffn": 5,
+        "final_norm": 1,
+        "head": 1
+      },
+      "reload_max_abs": 0
+    },
+    {
+      "feature_signature": "A1K1",
+      "n_layers": 5,
+      "status": "PASS",
+      "coverage": [
+        "construct",
+        "forward",
+        "loss",
+        "backward",
+        "optimizer_step",
+        "save",
+        "fresh_process_strict_reload",
+        "eval"
+      ],
+      "parameters": 4786,
+      "block_calls": {
+        "attention": 5,
+        "ffn": 5,
+        "final_norm": 1,
+        "head": 1
+      },
+      "reload_max_abs": 0
+    },
+    {
+      "feature_signature": "A0K0",
+      "n_layers": 6,
+      "status": "PASS",
+      "coverage": [
+        "construct",
+        "forward",
+        "loss",
+        "backward",
+        "optimizer_step",
+        "save",
+        "fresh_process_strict_reload",
+        "eval"
+      ],
+      "parameters": 5282,
+      "block_calls": {
+        "attention": 6,
+        "ffn": 6,
+        "final_norm": 1,
+        "head": 1
+      },
+      "reload_max_abs": 0
+    },
+    {
+      "feature_signature": "A1K0",
+      "n_layers": 6,
+      "status": "PASS",
+      "coverage": [
+        "construct",
+        "forward",
+        "loss",
+        "backward",
+        "optimizer_step",
+        "save",
+        "fresh_process_strict_reload",
+        "eval"
+      ],
+      "parameters": 5519,
+      "block_calls": {
+        "attention": 6,
+        "ffn": 6,
+        "final_norm": 1,
+        "head": 1
+      },
+      "reload_max_abs": 0
+    },
+    {
+      "feature_signature": "A0K1",
+      "n_layers": 6,
+      "status": "PASS",
+      "coverage": [
+        "construct",
+        "forward",
+        "loss",
+        "backward",
+        "optimizer_step",
+        "save",
+        "fresh_process_strict_reload",
+        "eval"
+      ],
+      "parameters": 5345,
+      "block_calls": {
+        "attention": 6,
+        "ffn": 6,
+        "final_norm": 1,
+        "head": 1
+      },
+      "reload_max_abs": 0
+    },
+    {
+      "feature_signature": "A1K1",
+      "n_layers": 6,
+      "status": "PASS",
+      "coverage": [
+        "construct",
+        "forward",
+        "loss",
+        "backward",
+        "optimizer_step",
+        "save",
+        "fresh_process_strict_reload",
+        "eval"
+      ],
+      "parameters": 5582,
+      "block_calls": {
+        "attention": 6,
+        "ffn": 6,
+        "final_norm": 1,
+        "head": 1
+      },
+      "reload_max_abs": 0
+    },
+    {
+      "feature_signature": "A0K0",
+      "n_layers": 7,
+      "status": "PASS",
+      "coverage": [
+        "construct",
+        "forward",
+        "loss",
+        "backward",
+        "optimizer_step",
+        "save",
+        "fresh_process_strict_reload",
+        "eval"
+      ],
+      "parameters": 6034,
+      "block_calls": {
+        "attention": 7,
+        "ffn": 7,
+        "final_norm": 1,
+        "head": 1
+      },
+      "reload_max_abs": 0
+    },
+    {
+      "feature_signature": "A1K0",
+      "n_layers": 7,
+      "status": "PASS",
+      "coverage": [
+        "construct",
+        "forward",
+        "loss",
+        "backward",
+        "optimizer_step",
+        "save",
+        "fresh_process_strict_reload",
+        "eval"
+      ],
+      "parameters": 6312,
+      "block_calls": {
+        "attention": 7,
+        "ffn": 7,
+        "final_norm": 1,
+        "head": 1
+      },
+      "reload_max_abs": 0
+    },
+    {
+      "feature_signature": "A0K1",
+      "n_layers": 7,
+      "status": "PASS",
+      "coverage": [
+        "construct",
+        "forward",
+        "loss",
+        "backward",
+        "optimizer_step",
+        "save",
+        "fresh_process_strict_reload",
+        "eval"
+      ],
+      "parameters": 6100,
+      "block_calls": {
+        "attention": 7,
+        "ffn": 7,
+        "final_norm": 1,
+        "head": 1
+      },
+      "reload_max_abs": 0
+    },
+    {
+      "feature_signature": "A1K1",
+      "n_layers": 7,
+      "status": "PASS",
+      "coverage": [
+        "construct",
+        "forward",
+        "loss",
+        "backward",
+        "optimizer_step",
+        "save",
+        "fresh_process_strict_reload",
+        "eval"
+      ],
+      "parameters": 6378,
+      "block_calls": {
+        "attention": 7,
+        "ffn": 7,
+        "final_norm": 1,
+        "head": 1
+      },
+      "reload_max_abs": 0
+    },
+    {
+      "feature_signature": "A0K0",
+      "n_layers": 8,
+      "status": "PASS",
+      "coverage": [
+        "construct",
+        "forward",
+        "loss",
+        "backward",
+        "optimizer_step",
+        "save",
+        "fresh_process_strict_reload",
+        "eval"
+      ],
+      "parameters": 6786,
+      "block_calls": {
+        "attention": 8,
+        "ffn": 8,
+        "final_norm": 1,
+        "head": 1
+      },
+      "reload_max_abs": 0
+    },
+    {
+      "feature_signature": "A1K0",
+      "n_layers": 8,
+      "status": "PASS",
+      "coverage": [
+        "construct",
+        "forward",
+        "loss",
+        "backward",
+        "optimizer_step",
+        "save",
+        "fresh_process_strict_reload",
+        "eval"
+      ],
+      "parameters": 7105,
+      "block_calls": {
+        "attention": 8,
+        "ffn": 8,
+        "final_norm": 1,
+        "head": 1
+      },
+      "reload_max_abs": 0
+    },
+    {
+      "feature_signature": "A0K1",
+      "n_layers": 8,
+      "status": "PASS",
+      "coverage": [
+        "construct",
+        "forward",
+        "loss",
+        "backward",
+        "optimizer_step",
+        "save",
+        "fresh_process_strict_reload",
+        "eval"
+      ],
+      "parameters": 6855,
+      "block_calls": {
+        "attention": 8,
+        "ffn": 8,
+        "final_norm": 1,
+        "head": 1
+      },
+      "reload_max_abs": 0
+    },
+    {
+      "feature_signature": "A1K1",
+      "n_layers": 8,
+      "status": "PASS",
+      "coverage": [
+        "construct",
+        "forward",
+        "loss",
+        "backward",
+        "optimizer_step",
+        "save",
+        "fresh_process_strict_reload",
+        "eval"
+      ],
+      "parameters": 7174,
+      "block_calls": {
+        "attention": 8,
+        "ffn": 8,
+        "final_norm": 1,
+        "head": 1
+      },
+      "reload_max_abs": 0
+    }
+  ],
+  "core_matrix_count": 20,
+  "wrapper_matrix_count": 32,
+  "wrapper_matrix": [
+    {
+      "task": "airfoil",
+      "feature_signature": "A0K0",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "airfoil",
+      "feature_signature": "A1K0",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "airfoil",
+      "feature_signature": "A0K1",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "airfoil",
+      "feature_signature": "A1K1",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "darcy",
+      "feature_signature": "A0K0",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "darcy",
+      "feature_signature": "A1K0",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "darcy",
+      "feature_signature": "A0K1",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "darcy",
+      "feature_signature": "A1K1",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "elasticity",
+      "feature_signature": "A0K0",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "elasticity",
+      "feature_signature": "A1K0",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "elasticity",
+      "feature_signature": "A0K1",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "elasticity",
+      "feature_signature": "A1K1",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "pipe",
+      "feature_signature": "A0K0",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "pipe",
+      "feature_signature": "A1K0",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "pipe",
+      "feature_signature": "A0K1",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "pipe",
+      "feature_signature": "A1K1",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "ns",
+      "feature_signature": "A0K0",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "ns",
+      "feature_signature": "A1K0",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "ns",
+      "feature_signature": "A0K1",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "ns",
+      "feature_signature": "A1K1",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "plasticity",
+      "feature_signature": "A0K0",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "plasticity",
+      "feature_signature": "A1K0",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "plasticity",
+      "feature_signature": "A0K1",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "plasticity",
+      "feature_signature": "A1K1",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "airfrans",
+      "feature_signature": "A0K0",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "airfrans",
+      "feature_signature": "A1K0",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "airfrans",
+      "feature_signature": "A0K1",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "airfrans",
+      "feature_signature": "A1K1",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "car",
+      "feature_signature": "A0K0",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "car",
+      "feature_signature": "A1K0",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "car",
+      "feature_signature": "A0K1",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    },
+    {
+      "task": "car",
+      "feature_signature": "A1K1",
+      "synthetic_wrapper_smoke": "NOT_STARTED",
+      "production_train_eval_checkpoint": "NOT_STARTED"
+    }
+  ],
+  "no_real_data": true,
+  "no_launcher_integration": true,
+  "additional_wrapper_evidence": "six variant joint decomposition/oracle; industrial A+K native object checkpoint roundtrip, not eight task production acceptance"
+}

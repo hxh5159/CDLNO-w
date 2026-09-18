@@ -1,0 +1,812 @@
+/home/hwz/anaconda3/lib/python3.13/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+test_native_train_resume_fresh_eval_and_strict_metadata (linearno.test_air_entry.AirEntryCycle.test_native_train_resume_fresh_eval_and_strict_metadata) ... ok
+test_native_two_member_ensemble_manifest_and_load_order (linearno.test_air_entry.AirEntryCycle.test_native_two_member_ensemble_manifest_and_load_order) ... ok
+test_two_member_resume_before_and_during_later_member (linearno.test_air_entry.AirEntryCycle.test_two_member_resume_before_and_during_later_member) ... ok
+test_actual_model_metadata_roundtrip_and_objective_separation (linearno.test_air_objective_decision.AirObjectiveDecision.test_actual_model_metadata_roundtrip_and_objective_separation) ... ok
+test_default_all_profiles_use_reviewed_MSE_and_keep_other_axes (linearno.test_air_objective_decision.AirObjectiveDecision.test_default_all_profiles_use_reviewed_MSE_and_keep_other_axes) ... ok
+test_explicit_configuration_still_has_priority_and_is_visible (linearno.test_air_objective_decision.AirObjectiveDecision.test_explicit_configuration_still_has_priority_and_is_visible) ... ok
+test_source_facts_and_prior_metadata_resolution_are_not_rewritten (linearno.test_air_objective_decision.AirObjectiveDecision.test_source_facts_and_prior_metadata_resolution_are_not_rewritten) ... ok
+test_cpu_full_official_parity (linearno.test_airfrans_model.AirfRANSModelChecks.test_cpu_full_official_parity) ... ok
+test_formal_count_exact_initialization_rng_and_state (linearno.test_airfrans_model.AirfRANSModelChecks.test_formal_count_exact_initialization_rng_and_state) ... ok
+test_independent_double_network_oracle (linearno.test_airfrans_model.AirfRANSModelChecks.test_independent_double_network_oracle) ... ok
+test_native_cuda_full_official_parity (linearno.test_airfrans_model.AirfRANSModelChecks.test_native_cuda_full_official_parity) ... skipped 'native release get_grid requires CUDA'
+test_original_normalized_MSE_training_function_and_fresh_pickle (linearno.test_airfrans_model.AirfRANSModelChecks.test_original_normalized_MSE_training_function_and_fresh_pickle) ... ok
+test_real_PyG_variable_nodes_dead_parameters_and_batch_isolation (linearno.test_airfrans_model.AirfRANSModelChecks.test_real_PyG_variable_nodes_dead_parameters_and_batch_isolation) ... ok
+test_reference_grid_golden_and_actual_raw_position (linearno.test_airfrans_model.AirfRANSModelChecks.test_reference_grid_golden_and_actual_raw_position) ... ok
+test_cpu_double_and_float_oracle_all_variants (linearno.test_attention_parity.AttentionParity.test_cpu_double_and_float_oracle_all_variants) ... ok
+test_fixed_official_cpu_forward_all_grads_step_checkpoint (linearno.test_attention_parity.AttentionParity.test_fixed_official_cpu_forward_all_grads_step_checkpoint) ... ok
+test_fixed_official_cuda_fp32_fp16_bfloat16 (linearno.test_attention_parity.AttentionParity.test_fixed_official_cuda_fp32_fp16_bfloat16) ... skipped 'CUDA not available; GPU FP32/AMP NOT RUN'
+test_release_constructor_and_outer_initialization_RNG_keys (linearno.test_attention_parity.AttentionParity.test_release_constructor_and_outer_initialization_RNG_keys) ... ok
+test_batch_isolation_gradients_and_point_equivariance (linearno.test_attention_structure.AttentionStructure.test_batch_isolation_gradients_and_point_equivariance) ... ok
+test_conv_grid_order_projection_and_noncontiguous_input (linearno.test_attention_structure.AttentionStructure.test_conv_grid_order_projection_and_noncontiguous_input) ... ok
+test_double_gradcheck_independent_reference (linearno.test_attention_structure.AttentionStructure.test_double_gradcheck_independent_reference) ... ok
+test_dropout_only_on_output_and_forward_no_debug_state (linearno.test_attention_structure.AttentionStructure.test_dropout_only_on_output_and_forward_no_debug_state) ... ok
+test_illegal_shapes_types_and_constructors (linearno.test_attention_structure.AttentionStructure.test_illegal_shapes_types_and_constructors) ... ok
+test_no_old_transolver_or_history_dependencies (linearno.test_attention_structure.AttentionStructure.test_no_old_transolver_or_history_dependencies) ... ok
+test_normalization_factorized_dense_and_execution_shapes (linearno.test_attention_structure.AttentionStructure.test_normalization_factorized_dense_and_execution_shapes) ... ok
+test_shared_head_projections_and_independent_parameters (linearno.test_attention_structure.AttentionStructure.test_shared_head_projections_and_independent_parameters) ... ok
+test_task_local_imports_from_three_fresh_workdirs (linearno.test_attention_structure.AttentionStructure.test_task_local_imports_from_three_fresh_workdirs) ... ok
+test_temperature_clamp_boundary_gradients_and_air_dead_parameter (linearno.test_attention_structure.AttentionStructure.test_temperature_clamp_boundary_gradients_and_air_dead_parameter) ... ok
+test_data_preflight_order_and_eval_uses_saved_normalizer (linearno.test_car_entry.CarEntry.test_data_preflight_order_and_eval_uses_saved_normalizer) ... ok
+test_exact_legacy_source_projection (linearno.test_car_entry.CarEntry.test_exact_legacy_source_projection) ... ok
+test_native_fresh_process_resume_eval_and_metadata_failures (linearno.test_car_entry.CarEntry.test_native_fresh_process_resume_eval_and_metadata_failures) ... ok
+test_official_loss_matches_original_and_missing_data_fail_fast (linearno.test_car_entry.CarEntry.test_official_loss_matches_original_and_missing_data_fail_fast) ... ok
+test_denominator_mask_and_normalizer_validation (linearno.test_car_metrics.CarMetricChecks.test_denominator_mask_and_normalizer_validation) ... ok
+test_drag_receives_surface_velocity_and_actual_nonzero_fold_path (linearno.test_car_metrics.CarMetricChecks.test_drag_receives_surface_velocity_and_actual_nonzero_fold_path) ... ok
+test_independent_field_metrics_mask_channels_decode_and_no_grad (linearno.test_car_metrics.CarMetricChecks.test_independent_field_metrics_mask_channels_decode_and_no_grad) ... ok
+test_real_VTK_primitives_match_old_drag_arithmetic_and_validate_count (linearno.test_car_metrics.CarMetricChecks.test_real_VTK_primitives_match_old_drag_arithmetic_and_validate_count) ... ok
+test_historical_paper_underdetermination_and_explicit_override_remain_visible (linearno.test_car_objective_decision.CarObjectiveDecision.test_historical_paper_underdetermination_and_explicit_override_remain_visible) ... ok
+test_three_profiles_default_to_release_MSE_without_changing_model_or_budget (linearno.test_car_objective_decision.CarObjectiveDecision.test_three_profiles_default_to_release_MSE_without_changing_model_or_budget) ... ok
+test_standard_strict_identity_and_module_prefix (linearno.test_converter.ConverterChecks.test_standard_strict_identity_and_module_prefix) ... ok
+test_trusted_objects_are_task_explicit_and_strict (linearno.test_converter.ConverterChecks.test_trusted_objects_are_task_explicit_and_strict) ... ok
+test_all_preexisting_files_and_absent_frozen_directories (linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) ... 
+  test_all_preexisting_files_and_absent_frozen_directories (linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) (path='README.md') ... FAIL
+  test_all_preexisting_files_and_absent_frozen_directories (linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) (path='path.sh') ... FAIL
+  test_all_preexisting_files_and_absent_frozen_directories (linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) (path='docs/LINEARNO_REPRODUCTION_MATRIX.md') ... FAIL
+test_eight_real_models_same_weights_and_checkpoints_fresh_workdirs (linearno.test_legacy.LegacyRegression.test_eight_real_models_same_weights_and_checkpoints_fresh_workdirs) ... ok
+test_no_task_parser_factory_imports_from_new_namespace (linearno.test_legacy.LegacyRegression.test_no_task_parser_factory_imports_from_new_namespace) ... ok
+test_real_parser_AST_defaults_unchanged_and_new_flags_isolated (linearno.test_legacy.LegacyRegression.test_real_parser_AST_defaults_unchanged_and_new_flags_isolated) ... ok
+test_all_24_match_independent_L0_inventory_and_roundtrip (linearno.test_profiles.ProfileChecks.test_all_24_match_independent_L0_inventory_and_roundtrip) ... ok
+test_explicit_priority_no_legacy_defaults_and_alias (linearno.test_profiles.ProfileChecks.test_explicit_priority_no_legacy_defaults_and_alias) ... ok
+test_hash_and_resolution_provenance_cannot_be_forged_by_rehash (linearno.test_profiles.ProfileChecks.test_hash_and_resolution_provenance_cannot_be_forged_by_rehash) ... ok
+test_industrial_pending_decisions_and_objective_axes (linearno.test_profiles.ProfileChecks.test_industrial_pending_decisions_and_objective_axes) ... ok
+test_invalid_values_and_non_square_grid (linearno.test_profiles.ProfileChecks.test_invalid_values_and_non_square_grid) ... ok
+test_schema_namespace_does_not_import_torch_or_task_factories (linearno.test_profiles.ProfileChecks.test_schema_namespace_does_not_import_torch_or_task_factories) ... ok
+test_fresh_process_continuation_and_real_visualization (linearno.test_rng.RandomStreamRegression.test_fresh_process_continuation_and_real_visualization) ... ok
+test_conflicts_required_state_and_legacy_recognition (linearno.test_schema.SchemaChecks.test_conflicts_required_state_and_legacy_recognition) ... ok
+test_numerical_normalizers_and_rng_optimizer_tree_are_lossless (linearno.test_schema.SchemaChecks.test_numerical_normalizers_and_rng_optimizer_tree_are_lossless) ... ok
+test_real_constructor_signature_rejects_runtime_fields (linearno.test_schema.SchemaChecks.test_real_constructor_signature_rejects_runtime_fields) ... ok
+test_roundtrip_is_read_only_and_no_overwrite (linearno.test_schema.SchemaChecks.test_roundtrip_is_read_only_and_no_overwrite) ... ok
+test_structural_rejection_runtime_reporting_and_resume_rules (linearno.test_schema.SchemaChecks.test_structural_rejection_runtime_reporting_and_resume_rules) ... ok
+test_PyG_variable_N_masks_geometry_unused_batch_and_input_unchanged (linearno.test_shapenet_model.ShapeNetModelChecks.test_PyG_variable_N_masks_geometry_unused_batch_and_input_unchanged) ... ok
+test_cpu_official_full_forward_gradients_step (linearno.test_shapenet_model.ShapeNetModelChecks.test_cpu_official_full_forward_gradients_step) ... ok
+test_formal_count_exact_keys_initialization_and_rng (linearno.test_shapenet_model.ShapeNetModelChecks.test_formal_count_exact_keys_initialization_and_rng) ... ok
+test_independent_double_oracle (linearno.test_shapenet_model.ShapeNetModelChecks.test_independent_double_oracle) ... ok
+test_native_cuda_official_full_parity (linearno.test_shapenet_model.ShapeNetModelChecks.test_native_cuda_official_full_parity) ... skipped 'CUDA unavailable'
+test_original_train_AST_MSE_and_fresh_process_whole_object (linearno.test_shapenet_model.ShapeNetModelChecks.test_original_train_AST_MSE_and_fresh_process_whole_object) ... ok
+test_cpu_official_all_variants_full_forward_gradients_step (linearno.test_standard_model.StandardModelParity.test_cpu_official_all_variants_full_forward_gradients_step) ... ok
+test_default_allocations_single_apply_then_placeholder_RNG (linearno.test_standard_model.StandardModelParity.test_default_allocations_single_apply_then_placeholder_RNG) ... ok
+test_independent_double_complete_equations_and_all_gradients (linearno.test_standard_model.StandardModelParity.test_independent_double_complete_equations_and_all_gradients) ... ok
+test_native_cuda_official_unified_replacement_all_variants (linearno.test_standard_model.StandardModelParity.test_native_cuda_official_unified_replacement_all_variants) ... skipped 'native official unified Model requires CUDA'
+test_six_release_configurations_and_parameter_counts (linearno.test_standard_model.StandardModelParity.test_six_release_configurations_and_parameter_counts) ... ok
+test_batches_point_permutation_variable_N_and_no_inplace_or_cache (linearno.test_standard_structure.StandardModelStructure.test_batches_point_permutation_variable_N_and_no_inplace_or_cache) ... ok
+test_eighth_block_executes_all_sublayers_no_quadratic_attention (linearno.test_standard_structure.StandardModelStructure.test_eighth_block_executes_all_sublayers_no_quadratic_attention) ... ok
+test_fresh_standard_cwd_import_strict_checkpoint_and_legacy_registry (linearno.test_standard_structure.StandardModelStructure.test_fresh_standard_cwd_import_strict_checkpoint_and_legacy_registry) ... ok
+test_rejected_shapes_configuration_and_registration_name_isolation (linearno.test_standard_structure.StandardModelStructure.test_rejected_shapes_configuration_and_registration_name_isolation) ... ok
+test_unified_position_replaces_coordinates_nonpersistent_device_buffer (linearno.test_standard_structure.StandardModelStructure.test_unified_position_replaces_coordinates_nonpersistent_device_buffer) ... ok
+test_actual_grid_order_Airfoil_swap_Pipe_square_and_Elasticity_none (linearno.test_static_integration.StaticIntegration.test_actual_grid_order_Airfoil_swap_Pipe_square_and_Elasticity_none) ... ok
+test_all_new_launcher_actions_profiles_and_old_scripts_static (linearno.test_static_integration.StaticIntegration.test_all_new_launcher_actions_profiles_and_old_scripts_static) ... FAIL
+test_data_checksums_reject_changed_content_without_dataset_downloads (linearno.test_static_integration.StaticIntegration.test_data_checksums_reject_changed_content_without_dataset_downloads) ... ok
+test_full_entry_AST_projects_to_pre_L4_all_legacy_paths (linearno.test_static_integration.StaticIntegration.test_full_entry_AST_projects_to_pre_L4_all_legacy_paths) ... ok
+test_losses_Darcy_decode_boundary_zero_padding_and_no_epsilon (linearno.test_static_integration.StaticIntegration.test_losses_Darcy_decode_boundary_zero_padding_and_no_epsilon) ... ok
+test_native_four_task_train_checkpoint_resume_fresh_eval (linearno.test_static_integration.StaticIntegration.test_native_four_task_train_checkpoint_resume_fresh_eval) ... usage: Training Transolver [-h] [--lr LR] [--epochs EPOCHS]
+                           [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                           [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                           [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                           [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                           [--downsample DOWNSAMPLE] [--mlp_ratio MLP_RATIO]
+                           [--dropout DROPOUT] [--ntrain NTRAIN]
+                           [--unified_pos UNIFIED_POS] [--ref REF]
+                           [--slice_num SLICE_NUM] [--eval EVAL]
+                           [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                           [--profile {kcdno_v1,transolver_shape_match}]
+                           [--kernel-rank KERNEL_RANK]
+                           [--history-mode {all,off}]
+                           [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                           [--front-latent-mode {full,no_sa,identity}]
+                           [--front-blocks FRONT_BLOCKS]
+                           [--latent-ffn-ratio LATENT_FFN_RATIO]
+                           [--cdpa-mode {off,entry,every_block}]
+                           [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                           [--cdlno-run-dir CDLNO_RUN_DIR]
+                           [--linearno-profile {paper_table8_on_release_model,official_release,transolver_matched}]
+                           [--linearno-variant {plain,temp,conv,conv_temp}]
+                           [--linearno-rank LINEARNO_RANK]
+                           [--experiment-dir LINEARNO_RUN_DIR] [--resume]
+                           [--checkpoint CHECKPOINT]
+Training Transolver: error: explicit profile conflicts with checkpoint
+usage: Training Transolver [-h] [--lr LR] [--epochs EPOCHS]
+                           [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                           [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                           [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                           [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                           [--downsample DOWNSAMPLE] [--mlp_ratio MLP_RATIO]
+                           [--dropout DROPOUT] [--ntrain NTRAIN]
+                           [--unified_pos UNIFIED_POS] [--ref REF]
+                           [--slice_num SLICE_NUM] [--eval EVAL]
+                           [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                           [--profile {kcdno_v1,transolver_shape_match}]
+                           [--kernel-rank KERNEL_RANK]
+                           [--history-mode {all,off}]
+                           [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                           [--front-latent-mode {full,no_sa,identity}]
+                           [--front-blocks FRONT_BLOCKS]
+                           [--latent-ffn-ratio LATENT_FFN_RATIO]
+                           [--cdpa-mode {off,entry,every_block}]
+                           [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                           [--cdlno-run-dir CDLNO_RUN_DIR]
+                           [--linearno-profile {paper_table8_on_release_model,official_release,transolver_matched}]
+                           [--linearno-variant {plain,temp,conv,conv_temp}]
+                           [--linearno-rank LINEARNO_RANK]
+                           [--experiment-dir LINEARNO_RUN_DIR] [--resume]
+                           [--checkpoint CHECKPOINT]
+Training Transolver: error: explicit model.linearno_rank conflicts with checkpoint
+usage: Training Transolver [-h] [--lr LR] [--epochs EPOCHS]
+                           [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                           [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                           [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                           [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                           [--downsample DOWNSAMPLE] [--mlp_ratio MLP_RATIO]
+                           [--dropout DROPOUT] [--ntrain NTRAIN]
+                           [--unified_pos UNIFIED_POS] [--ref REF]
+                           [--slice_num SLICE_NUM] [--eval EVAL]
+                           [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                           [--profile {kcdno_v1,transolver_shape_match}]
+                           [--kernel-rank KERNEL_RANK]
+                           [--history-mode {all,off}]
+                           [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                           [--front-latent-mode {full,no_sa,identity}]
+                           [--front-blocks FRONT_BLOCKS]
+                           [--latent-ffn-ratio LATENT_FFN_RATIO]
+                           [--cdpa-mode {off,entry,every_block}]
+                           [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                           [--cdlno-run-dir CDLNO_RUN_DIR]
+                           [--linearno-profile {paper_table8_on_release_model,official_release,transolver_matched}]
+                           [--linearno-variant {plain,temp,conv,conv_temp}]
+                           [--linearno-rank LINEARNO_RANK]
+                           [--experiment-dir LINEARNO_RUN_DIR] [--resume]
+                           [--checkpoint CHECKPOINT]
+Training Transolver: error: explicit model.linearno_variant conflicts with checkpoint
+usage: Training Transformer [-h] [--lr LR] [--epochs EPOCHS]
+                            [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                            [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                            [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                            [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                            [--downsample DOWNSAMPLE] [--mlp_ratio MLP_RATIO]
+                            [--dropout DROPOUT] [--ntrain NTRAIN]
+                            [--unified_pos UNIFIED_POS] [--ref REF]
+                            [--slice_num SLICE_NUM] [--eval EVAL]
+                            [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                            [--profile {kcdno_v1,transolver_shape_match}]
+                            [--kernel-rank KERNEL_RANK]
+                            [--history-mode {all,off}]
+                            [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                            [--front-latent-mode {full,no_sa,identity}]
+                            [--front-blocks FRONT_BLOCKS]
+                            [--latent-ffn-ratio LATENT_FFN_RATIO]
+                            [--cdpa-mode {off,entry,every_block}]
+                            [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                            [--cdlno-run-dir CDLNO_RUN_DIR]
+                            [--linearno-profile {paper_table8_on_release_model,official_release,transolver_matched}]
+                            [--linearno-variant {plain,temp,conv,conv_temp}]
+                            [--linearno-rank LINEARNO_RANK]
+                            [--experiment-dir LINEARNO_RUN_DIR] [--resume]
+                            [--checkpoint CHECKPOINT]
+Training Transformer: error: explicit profile conflicts with checkpoint
+usage: Training Transformer [-h] [--lr LR] [--epochs EPOCHS]
+                            [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                            [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                            [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                            [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                            [--downsample DOWNSAMPLE] [--mlp_ratio MLP_RATIO]
+                            [--dropout DROPOUT] [--ntrain NTRAIN]
+                            [--unified_pos UNIFIED_POS] [--ref REF]
+                            [--slice_num SLICE_NUM] [--eval EVAL]
+                            [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                            [--profile {kcdno_v1,transolver_shape_match}]
+                            [--kernel-rank KERNEL_RANK]
+                            [--history-mode {all,off}]
+                            [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                            [--front-latent-mode {full,no_sa,identity}]
+                            [--front-blocks FRONT_BLOCKS]
+                            [--latent-ffn-ratio LATENT_FFN_RATIO]
+                            [--cdpa-mode {off,entry,every_block}]
+                            [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                            [--cdlno-run-dir CDLNO_RUN_DIR]
+                            [--linearno-profile {paper_table8_on_release_model,official_release,transolver_matched}]
+                            [--linearno-variant {plain,temp,conv,conv_temp}]
+                            [--linearno-rank LINEARNO_RANK]
+                            [--experiment-dir LINEARNO_RUN_DIR] [--resume]
+                            [--checkpoint CHECKPOINT]
+Training Transformer: error: explicit model.linearno_rank conflicts with checkpoint
+usage: Training Transformer [-h] [--lr LR] [--epochs EPOCHS]
+                            [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                            [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                            [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                            [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                            [--downsample DOWNSAMPLE] [--mlp_ratio MLP_RATIO]
+                            [--dropout DROPOUT] [--ntrain NTRAIN]
+                            [--unified_pos UNIFIED_POS] [--ref REF]
+                            [--slice_num SLICE_NUM] [--eval EVAL]
+                            [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                            [--profile {kcdno_v1,transolver_shape_match}]
+                            [--kernel-rank KERNEL_RANK]
+                            [--history-mode {all,off}]
+                            [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                            [--front-latent-mode {full,no_sa,identity}]
+                            [--front-blocks FRONT_BLOCKS]
+                            [--latent-ffn-ratio LATENT_FFN_RATIO]
+                            [--cdpa-mode {off,entry,every_block}]
+                            [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                            [--cdlno-run-dir CDLNO_RUN_DIR]
+                            [--linearno-profile {paper_table8_on_release_model,official_release,transolver_matched}]
+                            [--linearno-variant {plain,temp,conv,conv_temp}]
+                            [--linearno-rank LINEARNO_RANK]
+                            [--experiment-dir LINEARNO_RUN_DIR] [--resume]
+                            [--checkpoint CHECKPOINT]
+Training Transformer: error: explicit model.linearno_variant conflicts with checkpoint
+usage: Training Transformer [-h] [--lr LR] [--epochs EPOCHS]
+                            [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                            [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                            [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                            [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                            [--downsamplex DOWNSAMPLEX]
+                            [--downsampley DOWNSAMPLEY]
+                            [--mlp_ratio MLP_RATIO] [--dropout DROPOUT]
+                            [--unified_pos UNIFIED_POS] [--ref REF]
+                            [--slice_num SLICE_NUM] [--eval EVAL]
+                            [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                            [--profile {kcdno_v1,transolver_shape_match}]
+                            [--kernel-rank KERNEL_RANK]
+                            [--history-mode {all,off}]
+                            [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                            [--front-latent-mode {full,no_sa,identity}]
+                            [--front-blocks FRONT_BLOCKS]
+                            [--latent-ffn-ratio LATENT_FFN_RATIO]
+                            [--cdpa-mode {off,entry,every_block}]
+                            [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                            [--cdlno-run-dir CDLNO_RUN_DIR]
+                            [--linearno-profile {paper_table8_on_release_model,official_release,transolver_matched}]
+                            [--linearno-variant {plain,temp,conv,conv_temp}]
+                            [--linearno-rank LINEARNO_RANK]
+                            [--experiment-dir LINEARNO_RUN_DIR] [--resume]
+                            [--checkpoint CHECKPOINT]
+Training Transformer: error: explicit profile conflicts with checkpoint
+usage: Training Transformer [-h] [--lr LR] [--epochs EPOCHS]
+                            [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                            [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                            [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                            [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                            [--downsamplex DOWNSAMPLEX]
+                            [--downsampley DOWNSAMPLEY]
+                            [--mlp_ratio MLP_RATIO] [--dropout DROPOUT]
+                            [--unified_pos UNIFIED_POS] [--ref REF]
+                            [--slice_num SLICE_NUM] [--eval EVAL]
+                            [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                            [--profile {kcdno_v1,transolver_shape_match}]
+                            [--kernel-rank KERNEL_RANK]
+                            [--history-mode {all,off}]
+                            [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                            [--front-latent-mode {full,no_sa,identity}]
+                            [--front-blocks FRONT_BLOCKS]
+                            [--latent-ffn-ratio LATENT_FFN_RATIO]
+                            [--cdpa-mode {off,entry,every_block}]
+                            [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                            [--cdlno-run-dir CDLNO_RUN_DIR]
+                            [--linearno-profile {paper_table8_on_release_model,official_release,transolver_matched}]
+                            [--linearno-variant {plain,temp,conv,conv_temp}]
+                            [--linearno-rank LINEARNO_RANK]
+                            [--experiment-dir LINEARNO_RUN_DIR] [--resume]
+                            [--checkpoint CHECKPOINT]
+Training Transformer: error: explicit model.linearno_rank conflicts with checkpoint
+usage: Training Transformer [-h] [--lr LR] [--epochs EPOCHS]
+                            [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                            [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                            [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                            [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                            [--downsamplex DOWNSAMPLEX]
+                            [--downsampley DOWNSAMPLEY]
+                            [--mlp_ratio MLP_RATIO] [--dropout DROPOUT]
+                            [--unified_pos UNIFIED_POS] [--ref REF]
+                            [--slice_num SLICE_NUM] [--eval EVAL]
+                            [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                            [--profile {kcdno_v1,transolver_shape_match}]
+                            [--kernel-rank KERNEL_RANK]
+                            [--history-mode {all,off}]
+                            [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                            [--front-latent-mode {full,no_sa,identity}]
+                            [--front-blocks FRONT_BLOCKS]
+                            [--latent-ffn-ratio LATENT_FFN_RATIO]
+                            [--cdpa-mode {off,entry,every_block}]
+                            [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                            [--cdlno-run-dir CDLNO_RUN_DIR]
+                            [--linearno-profile {paper_table8_on_release_model,official_release,transolver_matched}]
+                            [--linearno-variant {plain,temp,conv,conv_temp}]
+                            [--linearno-rank LINEARNO_RANK]
+                            [--experiment-dir LINEARNO_RUN_DIR] [--resume]
+                            [--checkpoint CHECKPOINT]
+Training Transformer: error: explicit model.linearno_variant conflicts with checkpoint
+usage: Training Transformer [-h] [--lr LR] [--epochs EPOCHS]
+                            [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                            [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                            [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                            [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                            [--downsamplex DOWNSAMPLEX]
+                            [--downsampley DOWNSAMPLEY]
+                            [--mlp_ratio MLP_RATIO] [--dropout DROPOUT]
+                            [--unified_pos UNIFIED_POS] [--ref REF]
+                            [--slice_num SLICE_NUM] [--eval EVAL]
+                            [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                            [--profile {kcdno_v1,transolver_shape_match}]
+                            [--kernel-rank KERNEL_RANK]
+                            [--history-mode {all,off}]
+                            [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                            [--front-latent-mode {full,no_sa,identity}]
+                            [--front-blocks FRONT_BLOCKS]
+                            [--latent-ffn-ratio LATENT_FFN_RATIO]
+                            [--cdpa-mode {off,entry,every_block}]
+                            [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                            [--cdlno-run-dir CDLNO_RUN_DIR]
+                            [--linearno-profile {paper_table8_on_release_model,official_release,transolver_matched}]
+                            [--linearno-variant {plain,temp,conv,conv_temp}]
+                            [--linearno-rank LINEARNO_RANK]
+                            [--experiment-dir LINEARNO_RUN_DIR] [--resume]
+                            [--checkpoint CHECKPOINT]
+Training Transformer: error: explicit profile conflicts with checkpoint
+usage: Training Transformer [-h] [--lr LR] [--epochs EPOCHS]
+                            [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                            [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                            [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                            [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                            [--downsamplex DOWNSAMPLEX]
+                            [--downsampley DOWNSAMPLEY]
+                            [--mlp_ratio MLP_RATIO] [--dropout DROPOUT]
+                            [--unified_pos UNIFIED_POS] [--ref REF]
+                            [--slice_num SLICE_NUM] [--eval EVAL]
+                            [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                            [--profile {kcdno_v1,transolver_shape_match}]
+                            [--kernel-rank KERNEL_RANK]
+                            [--history-mode {all,off}]
+                            [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                            [--front-latent-mode {full,no_sa,identity}]
+                            [--front-blocks FRONT_BLOCKS]
+                            [--latent-ffn-ratio LATENT_FFN_RATIO]
+                            [--cdpa-mode {off,entry,every_block}]
+                            [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                            [--cdlno-run-dir CDLNO_RUN_DIR]
+                            [--linearno-profile {paper_table8_on_release_model,official_release,transolver_matched}]
+                            [--linearno-variant {plain,temp,conv,conv_temp}]
+                            [--linearno-rank LINEARNO_RANK]
+                            [--experiment-dir LINEARNO_RUN_DIR] [--resume]
+                            [--checkpoint CHECKPOINT]
+Training Transformer: error: explicit model.linearno_rank conflicts with checkpoint
+usage: Training Transformer [-h] [--lr LR] [--epochs EPOCHS]
+                            [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                            [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                            [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                            [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                            [--downsamplex DOWNSAMPLEX]
+                            [--downsampley DOWNSAMPLEY]
+                            [--mlp_ratio MLP_RATIO] [--dropout DROPOUT]
+                            [--unified_pos UNIFIED_POS] [--ref REF]
+                            [--slice_num SLICE_NUM] [--eval EVAL]
+                            [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                            [--profile {kcdno_v1,transolver_shape_match}]
+                            [--kernel-rank KERNEL_RANK]
+                            [--history-mode {all,off}]
+                            [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                            [--front-latent-mode {full,no_sa,identity}]
+                            [--front-blocks FRONT_BLOCKS]
+                            [--latent-ffn-ratio LATENT_FFN_RATIO]
+                            [--cdpa-mode {off,entry,every_block}]
+                            [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                            [--cdlno-run-dir CDLNO_RUN_DIR]
+                            [--linearno-profile {paper_table8_on_release_model,official_release,transolver_matched}]
+                            [--linearno-variant {plain,temp,conv,conv_temp}]
+                            [--linearno-rank LINEARNO_RANK]
+                            [--experiment-dir LINEARNO_RUN_DIR] [--resume]
+                            [--checkpoint CHECKPOINT]
+Training Transformer: error: explicit model.linearno_variant conflicts with checkpoint
+ok
+test_profiles_factory_exact_config_override_and_legacy_isolation (linearno.test_static_integration.StaticIntegration.test_profiles_factory_exact_config_override_and_legacy_isolation) ... usage: Training Transolver [-h] [--lr LR] [--epochs EPOCHS]
+                           [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                           [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                           [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                           [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                           [--downsample DOWNSAMPLE] [--mlp_ratio MLP_RATIO]
+                           [--dropout DROPOUT] [--ntrain NTRAIN]
+                           [--unified_pos UNIFIED_POS] [--ref REF]
+                           [--slice_num SLICE_NUM] [--eval EVAL]
+                           [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                           [--profile {kcdno_v1,transolver_shape_match}]
+                           [--kernel-rank KERNEL_RANK]
+                           [--history-mode {all,off}]
+                           [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                           [--front-latent-mode {full,no_sa,identity}]
+                           [--front-blocks FRONT_BLOCKS]
+                           [--latent-ffn-ratio LATENT_FFN_RATIO]
+                           [--cdpa-mode {off,entry,every_block}]
+                           [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                           [--cdlno-run-dir CDLNO_RUN_DIR]
+                           [--linearno-profile {paper_table8_on_release_model,official_release,transolver_matched}]
+                           [--linearno-variant {plain,temp,conv,conv_temp}]
+                           [--linearno-rank LINEARNO_RANK]
+                           [--experiment-dir LINEARNO_RUN_DIR] [--resume]
+                           [--checkpoint CHECKPOINT]
+Training Transolver: error: Darcy official_release fixes scheduler epochs=500; non-500 training epochs are rejected
+usage: Training Transolver [-h] [--lr LR] [--epochs EPOCHS]
+                           [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                           [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                           [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                           [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                           [--downsample DOWNSAMPLE] [--mlp_ratio MLP_RATIO]
+                           [--dropout DROPOUT] [--ntrain NTRAIN]
+                           [--unified_pos UNIFIED_POS] [--ref REF]
+                           [--slice_num SLICE_NUM] [--eval EVAL]
+                           [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                           [--profile {kcdno_v1,transolver_shape_match}]
+                           [--kernel-rank KERNEL_RANK]
+                           [--history-mode {all,off}]
+                           [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                           [--front-latent-mode {full,no_sa,identity}]
+                           [--front-blocks FRONT_BLOCKS]
+                           [--latent-ffn-ratio LATENT_FFN_RATIO]
+                           [--cdpa-mode {off,entry,every_block}]
+                           [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                           [--cdlno-run-dir CDLNO_RUN_DIR]
+                           [--linearno-profile {paper_table8_on_release_model,official_release,transolver_matched}]
+                           [--linearno-variant {plain,temp,conv,conv_temp}]
+                           [--linearno-rank LINEARNO_RANK]
+                           [--experiment-dir LINEARNO_RUN_DIR] [--resume]
+                           [--checkpoint CHECKPOINT]
+Training Transolver: error: LinearNO rank requires --linearno-rank, not --slice_num
+usage: Training Transolver [-h] [--lr LR] [--epochs EPOCHS]
+                           [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                           [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                           [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                           [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                           [--downsample DOWNSAMPLE] [--mlp_ratio MLP_RATIO]
+                           [--dropout DROPOUT] [--ntrain NTRAIN]
+                           [--unified_pos UNIFIED_POS] [--ref REF]
+                           [--slice_num SLICE_NUM] [--eval EVAL]
+                           [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                           [--profile {kcdno_v1,transolver_shape_match}]
+                           [--kernel-rank KERNEL_RANK]
+                           [--history-mode {all,off}]
+                           [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                           [--front-latent-mode {full,no_sa,identity}]
+                           [--front-blocks FRONT_BLOCKS]
+                           [--latent-ffn-ratio LATENT_FFN_RATIO]
+                           [--cdpa-mode {off,entry,every_block}]
+                           [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                           [--cdlno-run-dir CDLNO_RUN_DIR]
+                           [--linearno-profile {paper_table8_on_release_model,official_release,transolver_matched}]
+                           [--linearno-variant {plain,temp,conv,conv_temp}]
+                           [--linearno-rank LINEARNO_RANK]
+                           [--experiment-dir LINEARNO_RUN_DIR] [--resume]
+                           [--checkpoint CHECKPOINT]
+Training Transolver: error: LinearNO task grid/sampling requires downsample=5
+usage: Training Transolver [-h] [--lr LR] [--epochs EPOCHS]
+                           [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                           [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                           [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                           [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                           [--downsample DOWNSAMPLE] [--mlp_ratio MLP_RATIO]
+                           [--dropout DROPOUT] [--ntrain NTRAIN]
+                           [--unified_pos UNIFIED_POS] [--ref REF]
+                           [--slice_num SLICE_NUM] [--eval EVAL]
+                           [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                           [--profile {kcdno_v1,transolver_shape_match}]
+                           [--kernel-rank KERNEL_RANK]
+                           [--history-mode {all,off}]
+                           [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                           [--front-latent-mode {full,no_sa,identity}]
+                           [--front-blocks FRONT_BLOCKS]
+                           [--latent-ffn-ratio LATENT_FFN_RATIO]
+                           [--cdpa-mode {off,entry,every_block}]
+                           [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                           [--cdlno-run-dir CDLNO_RUN_DIR]
+                           [--linearno-profile {paper_table8_on_release_model,official_release,transolver_matched}]
+                           [--linearno-variant {plain,temp,conv,conv_temp}]
+                           [--linearno-rank LINEARNO_RANK]
+                           [--experiment-dir LINEARNO_RUN_DIR] [--resume]
+                           [--checkpoint CHECKPOINT]
+Training Transolver: error: linearno_rank must be an integer >= 1, got 0
+usage: Training Transolver [-h] [--lr LR] [--epochs EPOCHS]
+                           [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                           [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                           [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                           [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                           [--downsample DOWNSAMPLE] [--mlp_ratio MLP_RATIO]
+                           [--dropout DROPOUT] [--ntrain NTRAIN]
+                           [--unified_pos UNIFIED_POS] [--ref REF]
+                           [--slice_num SLICE_NUM] [--eval EVAL]
+                           [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                           [--profile {kcdno_v1,transolver_shape_match}]
+                           [--kernel-rank KERNEL_RANK]
+                           [--history-mode {all,off}]
+                           [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                           [--front-latent-mode {full,no_sa,identity}]
+                           [--front-blocks FRONT_BLOCKS]
+                           [--latent-ffn-ratio LATENT_FFN_RATIO]
+                           [--cdpa-mode {off,entry,every_block}]
+                           [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                           [--cdlno-run-dir CDLNO_RUN_DIR]
+Training Transolver: error: LinearNO Standard adapter supports only the six Standard tasks
+usage: Training Transolver [-h] [--lr LR] [--epochs EPOCHS]
+                           [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                           [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                           [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                           [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                           [--downsample DOWNSAMPLE] [--mlp_ratio MLP_RATIO]
+                           [--dropout DROPOUT] [--ntrain NTRAIN]
+                           [--unified_pos UNIFIED_POS] [--ref REF]
+                           [--slice_num SLICE_NUM] [--eval EVAL]
+                           [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                           [--profile {kcdno_v1,transolver_shape_match}]
+                           [--kernel-rank KERNEL_RANK]
+                           [--history-mode {all,off}]
+                           [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                           [--front-latent-mode {full,no_sa,identity}]
+                           [--front-blocks FRONT_BLOCKS]
+                           [--latent-ffn-ratio LATENT_FFN_RATIO]
+                           [--cdpa-mode {off,entry,every_block}]
+                           [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                           [--cdlno-run-dir CDLNO_RUN_DIR]
+Training Transolver: error: LinearNO Standard adapter supports only the six Standard tasks
+ok
+test_launchers_and_file_path_contract (linearno.test_temporal_integration.TemporalIntegration.test_launchers_and_file_path_contract) ... ok
+test_native_temporal_cycles_and_negative_checkpoints (linearno.test_temporal_integration.TemporalIntegration.test_native_temporal_cycles_and_negative_checkpoints) ... usage: Training Transformer [-h] [--lr LR] [--epochs EPOCHS]
+                            [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                            [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                            [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                            [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                            [--downsample DOWNSAMPLE] [--mlp_ratio MLP_RATIO]
+                            [--dropout DROPOUT] [--unified_pos UNIFIED_POS]
+                            [--ref REF] [--slice_num SLICE_NUM] [--eval EVAL]
+                            [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                            [--profile {kcdno_v1,transolver_shape_match}]
+                            [--kernel-rank KERNEL_RANK]
+                            [--history-mode {all,off}]
+                            [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                            [--front-latent-mode {full,no_sa,identity}]
+                            [--front-blocks FRONT_BLOCKS]
+                            [--latent-ffn-ratio LATENT_FFN_RATIO]
+                            [--cdpa-mode {off,entry,every_block}]
+                            [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                            [--cdlno-run-dir CDLNO_RUN_DIR]
+                            [--linearno-profile {paper_table8_on_release_model,official_release,transolver_matched}]
+                            [--linearno-variant {plain,temp,conv,conv_temp}]
+                            [--linearno-rank LINEARNO_RANK]
+                            [--experiment-dir LINEARNO_RUN_DIR] [--resume]
+                            [--checkpoint CHECKPOINT]
+Training Transformer: error: explicit profile conflicts with checkpoint
+usage: Training Transformer [-h] [--lr LR] [--epochs EPOCHS]
+                            [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                            [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                            [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                            [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                            [--downsample DOWNSAMPLE] [--mlp_ratio MLP_RATIO]
+                            [--dropout DROPOUT] [--unified_pos UNIFIED_POS]
+                            [--ref REF] [--slice_num SLICE_NUM] [--eval EVAL]
+                            [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                            [--profile {kcdno_v1,transolver_shape_match}]
+                            [--kernel-rank KERNEL_RANK]
+                            [--history-mode {all,off}]
+                            [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                            [--front-latent-mode {full,no_sa,identity}]
+                            [--front-blocks FRONT_BLOCKS]
+                            [--latent-ffn-ratio LATENT_FFN_RATIO]
+                            [--cdpa-mode {off,entry,every_block}]
+                            [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                            [--cdlno-run-dir CDLNO_RUN_DIR]
+                            [--linearno-profile {paper_table8_on_release_model,official_release,transolver_matched}]
+                            [--linearno-variant {plain,temp,conv,conv_temp}]
+                            [--linearno-rank LINEARNO_RANK]
+                            [--experiment-dir LINEARNO_RUN_DIR] [--resume]
+                            [--checkpoint CHECKPOINT]
+Training Transformer: error: explicit model.linearno_rank conflicts with checkpoint
+usage: Training Transformer [-h] [--lr LR] [--epochs EPOCHS]
+                            [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                            [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                            [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                            [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                            [--downsample DOWNSAMPLE] [--mlp_ratio MLP_RATIO]
+                            [--dropout DROPOUT] [--unified_pos UNIFIED_POS]
+                            [--ref REF] [--slice_num SLICE_NUM] [--eval EVAL]
+                            [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                            [--profile {kcdno_v1,transolver_shape_match}]
+                            [--kernel-rank KERNEL_RANK]
+                            [--history-mode {all,off}]
+                            [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                            [--front-latent-mode {full,no_sa,identity}]
+                            [--front-blocks FRONT_BLOCKS]
+                            [--latent-ffn-ratio LATENT_FFN_RATIO]
+                            [--cdpa-mode {off,entry,every_block}]
+                            [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                            [--cdlno-run-dir CDLNO_RUN_DIR]
+                            [--linearno-profile {paper_table8_on_release_model,official_release,transolver_matched}]
+                            [--linearno-variant {plain,temp,conv,conv_temp}]
+                            [--linearno-rank LINEARNO_RANK]
+                            [--experiment-dir LINEARNO_RUN_DIR] [--resume]
+                            [--checkpoint CHECKPOINT]
+Training Transformer: error: explicit model.linearno_variant conflicts with checkpoint
+usage: Training Transformer [-h] [--lr LR] [--epochs EPOCHS]
+                            [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                            [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                            [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                            [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                            [--downsamplex DOWNSAMPLEX]
+                            [--downsampley DOWNSAMPLEY]
+                            [--mlp_ratio MLP_RATIO] [--dropout DROPOUT]
+                            [--unified_pos UNIFIED_POS] [--ref REF]
+                            [--slice_num SLICE_NUM] [--eval EVAL]
+                            [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                            [--profile {kcdno_v1,transolver_shape_match}]
+                            [--kernel-rank KERNEL_RANK]
+                            [--history-mode {all,off}]
+                            [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                            [--front-latent-mode {full,no_sa,identity}]
+                            [--front-blocks FRONT_BLOCKS]
+                            [--latent-ffn-ratio LATENT_FFN_RATIO]
+                            [--cdpa-mode {off,entry,every_block}]
+                            [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                            [--cdlno-run-dir CDLNO_RUN_DIR]
+                            [--linearno-profile {paper_table8_on_release_model,official_release,transolver_matched}]
+                            [--linearno-variant {plain,temp,conv,conv_temp}]
+                            [--linearno-rank LINEARNO_RANK]
+                            [--experiment-dir LINEARNO_RUN_DIR] [--resume]
+                            [--checkpoint CHECKPOINT]
+Training Transformer: error: explicit profile conflicts with checkpoint
+usage: Training Transformer [-h] [--lr LR] [--epochs EPOCHS]
+                            [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                            [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                            [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                            [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                            [--downsamplex DOWNSAMPLEX]
+                            [--downsampley DOWNSAMPLEY]
+                            [--mlp_ratio MLP_RATIO] [--dropout DROPOUT]
+                            [--unified_pos UNIFIED_POS] [--ref REF]
+                            [--slice_num SLICE_NUM] [--eval EVAL]
+                            [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                            [--profile {kcdno_v1,transolver_shape_match}]
+                            [--kernel-rank KERNEL_RANK]
+                            [--history-mode {all,off}]
+                            [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                            [--front-latent-mode {full,no_sa,identity}]
+                            [--front-blocks FRONT_BLOCKS]
+                            [--latent-ffn-ratio LATENT_FFN_RATIO]
+                            [--cdpa-mode {off,entry,every_block}]
+                            [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                            [--cdlno-run-dir CDLNO_RUN_DIR]
+                            [--linearno-profile {paper_table8_on_release_model,official_release,transolver_matched}]
+                            [--linearno-variant {plain,temp,conv,conv_temp}]
+                            [--linearno-rank LINEARNO_RANK]
+                            [--experiment-dir LINEARNO_RUN_DIR] [--resume]
+                            [--checkpoint CHECKPOINT]
+Training Transformer: error: explicit model.linearno_rank conflicts with checkpoint
+usage: Training Transformer [-h] [--lr LR] [--epochs EPOCHS]
+                            [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                            [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                            [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                            [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                            [--downsamplex DOWNSAMPLEX]
+                            [--downsampley DOWNSAMPLEY]
+                            [--mlp_ratio MLP_RATIO] [--dropout DROPOUT]
+                            [--unified_pos UNIFIED_POS] [--ref REF]
+                            [--slice_num SLICE_NUM] [--eval EVAL]
+                            [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                            [--profile {kcdno_v1,transolver_shape_match}]
+                            [--kernel-rank KERNEL_RANK]
+                            [--history-mode {all,off}]
+                            [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                            [--front-latent-mode {full,no_sa,identity}]
+                            [--front-blocks FRONT_BLOCKS]
+                            [--latent-ffn-ratio LATENT_FFN_RATIO]
+                            [--cdpa-mode {off,entry,every_block}]
+                            [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                            [--cdlno-run-dir CDLNO_RUN_DIR]
+                            [--linearno-profile {paper_table8_on_release_model,official_release,transolver_matched}]
+                            [--linearno-variant {plain,temp,conv,conv_temp}]
+                            [--linearno-rank LINEARNO_RANK]
+                            [--experiment-dir LINEARNO_RUN_DIR] [--resume]
+                            [--checkpoint CHECKPOINT]
+Training Transformer: error: explicit model.linearno_variant conflicts with checkpoint
+ok
+test_profiles_real_counts_and_explicit_override (linearno.test_temporal_integration.TemporalIntegration.test_profiles_real_counts_and_explicit_override) ... usage: Training Transformer [-h] [--lr LR] [--epochs EPOCHS]
+                            [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                            [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                            [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                            [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                            [--downsample DOWNSAMPLE] [--mlp_ratio MLP_RATIO]
+                            [--dropout DROPOUT] [--unified_pos UNIFIED_POS]
+                            [--ref REF] [--slice_num SLICE_NUM] [--eval EVAL]
+                            [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                            [--profile {kcdno_v1,transolver_shape_match}]
+                            [--kernel-rank KERNEL_RANK]
+                            [--history-mode {all,off}]
+                            [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                            [--front-latent-mode {full,no_sa,identity}]
+                            [--front-blocks FRONT_BLOCKS]
+                            [--latent-ffn-ratio LATENT_FFN_RATIO]
+                            [--cdpa-mode {off,entry,every_block}]
+                            [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                            [--cdlno-run-dir CDLNO_RUN_DIR]
+                            [--linearno-profile {paper_table8_on_release_model,official_release,transolver_matched}]
+                            [--linearno-variant {plain,temp,conv,conv_temp}]
+                            [--linearno-rank LINEARNO_RANK]
+                            [--experiment-dir LINEARNO_RUN_DIR] [--resume]
+                            [--checkpoint CHECKPOINT]
+Training Transformer: error: LinearNO task grid/sampling requires downsample=1
+usage: Training Transformer [-h] [--lr LR] [--epochs EPOCHS]
+                            [--weight_decay WEIGHT_DECAY] [--model MODEL]
+                            [--n-hidden N_HIDDEN] [--n-layers N_LAYERS]
+                            [--n-heads N_HEADS] [--batch-size BATCH_SIZE]
+                            [--gpu GPU] [--max_grad_norm MAX_GRAD_NORM]
+                            [--downsamplex DOWNSAMPLEX]
+                            [--downsampley DOWNSAMPLEY]
+                            [--mlp_ratio MLP_RATIO] [--dropout DROPOUT]
+                            [--unified_pos UNIFIED_POS] [--ref REF]
+                            [--slice_num SLICE_NUM] [--eval EVAL]
+                            [--save_name SAVE_NAME] [--data_path DATA_PATH]
+                            [--profile {kcdno_v1,transolver_shape_match}]
+                            [--kernel-rank KERNEL_RANK]
+                            [--history-mode {all,off}]
+                            [--kcdno-run-dir KCDNO_RUN_DIR] [--seed SEED]
+                            [--front-latent-mode {full,no_sa,identity}]
+                            [--front-blocks FRONT_BLOCKS]
+                            [--latent-ffn-ratio LATENT_FFN_RATIO]
+                            [--cdpa-mode {off,entry,every_block}]
+                            [--cdpa-source-chunk-size CDPA_SOURCE_CHUNK_SIZE]
+                            [--cdlno-run-dir CDLNO_RUN_DIR]
+                            [--linearno-profile {paper_table8_on_release_model,official_release,transolver_matched}]
+                            [--linearno-variant {plain,temp,conv,conv_temp}]
+                            [--linearno-rank LINEARNO_RANK]
+                            [--experiment-dir LINEARNO_RUN_DIR] [--resume]
+                            [--checkpoint CHECKPOINT]
+Training Transformer: error: LinearNO rank requires --linearno-rank, not --slice_num
+ok
+test_time_condition_gradient_and_historical_point_order (linearno.test_temporal_integration.TemporalIntegration.test_time_condition_gradient_and_historical_point_order) ... ok
+test_unchanged_complete_temporal_AST_and_real_collate (linearno.test_temporal_integration.TemporalIntegration.test_unchanged_complete_temporal_AST_and_real_collate) ... ok
+
+======================================================================
+FAIL: test_all_preexisting_files_and_absent_frozen_directories (linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) (path='README.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_legacy.py", line 124, in test_all_preexisting_files_and_absent_frozen_directories
+    self.assertEqual(hashlib.sha256((ROOT/row['path']).read_bytes()).hexdigest(), row['sha256'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'fc58f271728f884d446aa89b623a6634867166ae383072bcc17e42596e333afb' != 'd7124bcc753bd90bce6f8e9475bbdc4eb46c5439a3017156e0dd342681fa8863'
+- fc58f271728f884d446aa89b623a6634867166ae383072bcc17e42596e333afb
++ d7124bcc753bd90bce6f8e9475bbdc4eb46c5439a3017156e0dd342681fa8863
+
+
+======================================================================
+FAIL: test_all_preexisting_files_and_absent_frozen_directories (linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) (path='path.sh')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_legacy.py", line 124, in test_all_preexisting_files_and_absent_frozen_directories
+    self.assertEqual(hashlib.sha256((ROOT/row['path']).read_bytes()).hexdigest(), row['sha256'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: '4c45fe6fee19cd511487c934b8aea20186b91844ccfedee9111be7007945281b' != '153163c1535a74dc4802e59590b2ec9815b0d166dc5d534d66fc6b38f596a87c'
+- 4c45fe6fee19cd511487c934b8aea20186b91844ccfedee9111be7007945281b
++ 153163c1535a74dc4802e59590b2ec9815b0d166dc5d534d66fc6b38f596a87c
+
+
+======================================================================
+FAIL: test_all_preexisting_files_and_absent_frozen_directories (linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) (path='docs/LINEARNO_REPRODUCTION_MATRIX.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_legacy.py", line 91, in test_all_preexisting_files_and_absent_frozen_directories
+    self.assertTrue(now.startswith(old.split('\n\n',1)[0]+'\n\n'))
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_all_new_launcher_actions_profiles_and_old_scripts_static (linearno.test_static_integration.StaticIntegration.test_all_new_launcher_actions_profiles_and_old_scripts_static)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_static_integration.py", line 228, in test_all_new_launcher_actions_profiles_and_old_scripts_static
+    self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),row['sha256'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: '4c45fe6fee19cd511487c934b8aea20186b91844ccfedee9111be7007945281b' != '153163c1535a74dc4802e59590b2ec9815b0d166dc5d534d66fc6b38f596a87c'
+- 4c45fe6fee19cd511487c934b8aea20186b91844ccfedee9111be7007945281b
++ 153163c1535a74dc4802e59590b2ec9815b0d166dc5d534d66fc6b38f596a87c
+
+
+----------------------------------------------------------------------
+Ran 84 tests in 911.090s
+
+FAILED (failures=4, skipped=4)
+{"tests": 84, "failures": [{"test": "test_all_preexisting_files_and_absent_frozen_directories (linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) (path='README.md')", "trace": "Traceback (most recent call last):\n  File \"/home/hwz/CDLNO/tests/linearno/test_legacy.py\", line 124, in test_all_preexisting_files_and_absent_frozen_directories\n    self.assertEqual(hashlib.sha256((ROOT/row['path']).read_bytes()).hexdigest(), row['sha256'])\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 'fc58f271728f884d446aa89b623a6634867166ae383072bcc17e42596e333afb' != 'd7124bcc753bd90bce6f8e9475bbdc4eb46c5439a3017156e0dd342681fa8863'\n- fc58f271728f884d446aa89b623a6634867166ae383072bcc17e42596e333afb\n+ d7124bcc753bd90bce6f8e9475bbdc4eb46c5439a3017156e0dd342681fa8863\n\n"}, {"test": "test_all_preexisting_files_and_absent_frozen_directories (linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) (path='path.sh')", "trace": "Traceback (most recent call last):\n  File \"/home/hwz/CDLNO/tests/linearno/test_legacy.py\", line 124, in test_all_preexisting_files_and_absent_frozen_directories\n    self.assertEqual(hashlib.sha256((ROOT/row['path']).read_bytes()).hexdigest(), row['sha256'])\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: '4c45fe6fee19cd511487c934b8aea20186b91844ccfedee9111be7007945281b' != '153163c1535a74dc4802e59590b2ec9815b0d166dc5d534d66fc6b38f596a87c'\n- 4c45fe6fee19cd511487c934b8aea20186b91844ccfedee9111be7007945281b\n+ 153163c1535a74dc4802e59590b2ec9815b0d166dc5d534d66fc6b38f596a87c\n\n"}, {"test": "test_all_preexisting_files_and_absent_frozen_directories (linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) (path='docs/LINEARNO_REPRODUCTION_MATRIX.md')", "trace": "Traceback (most recent call last):\n  File \"/home/hwz/CDLNO/tests/linearno/test_legacy.py\", line 91, in test_all_preexisting_files_and_absent_frozen_directories\n    self.assertTrue(now.startswith(old.split('\\n\\n',1)[0]+'\\n\\n'))\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: False is not true\n"}, {"test": "test_all_new_launcher_actions_profiles_and_old_scripts_static (linearno.test_static_integration.StaticIntegration.test_all_new_launcher_actions_profiles_and_old_scripts_static)", "trace": "Traceback (most recent call last):\n  File \"/home/hwz/CDLNO/tests/linearno/test_static_integration.py\", line 228, in test_all_new_launcher_actions_profiles_and_old_scripts_static\n    self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),row['sha256'])\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: '4c45fe6fee19cd511487c934b8aea20186b91844ccfedee9111be7007945281b' != '153163c1535a74dc4802e59590b2ec9815b0d166dc5d534d66fc6b38f596a87c'\n- 4c45fe6fee19cd511487c934b8aea20186b91844ccfedee9111be7007945281b\n+ 153163c1535a74dc4802e59590b2ec9815b0d166dc5d534d66fc6b38f596a87c\n\n"}], "errors": [], "skipped": [{"test": "test_native_cuda_full_official_parity (linearno.test_airfrans_model.AirfRANSModelChecks.test_native_cuda_full_official_parity)", "reason": "native release get_grid requires CUDA"}, {"test": "test_fixed_official_cuda_fp32_fp16_bfloat16 (linearno.test_attention_parity.AttentionParity.test_fixed_official_cuda_fp32_fp16_bfloat16)", "reason": "CUDA not available; GPU FP32/AMP NOT RUN"}, {"test": "test_native_cuda_official_full_parity (linearno.test_shapenet_model.ShapeNetModelChecks.test_native_cuda_official_full_parity)", "reason": "CUDA unavailable"}, {"test": "test_native_cuda_official_unified_replacement_all_variants (linearno.test_standard_model.StandardModelParity.test_native_cuda_official_unified_replacement_all_variants)", "reason": "native official unified Model requires CUDA"}], "seconds": 915.3823439040025, "successful": false, "command": "CUDA_VISIBLE_DEVICES= PYTHONPATH=tests:. python -B -m unittest discover -s tests/linearno -t tests -v", "cpu_only": true}

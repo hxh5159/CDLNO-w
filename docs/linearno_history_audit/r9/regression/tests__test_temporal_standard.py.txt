@@ -1,0 +1,17 @@
+/home/hwz/anaconda3/lib/python3.13/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+test_complete_temporal_entries_project_to_baseline_ast (test_temporal_standard.StaticTemporalFreeze.test_complete_temporal_entries_project_to_baseline_ast) ... ok
+test_scripts_and_python_syntax (test_temporal_standard.StaticTemporalFreeze.test_scripts_and_python_syntax) ... ok
+test_checkpoint_roundtrip_temporal (test_temporal_standard.TemporalChecks.test_checkpoint_roundtrip_temporal) ... ok
+test_defaults_dimensions_and_time_registration (test_temporal_standard.TemporalChecks.test_defaults_dimensions_and_time_registration) ... ok
+test_model_registry_excludes_unapproved_tasks (test_temporal_standard.TemporalChecks.test_model_registry_excludes_unapproved_tasks) ... ok
+test_ns_original_no_clip_default_and_explicit_override (test_temporal_standard.TemporalChecks.test_ns_original_no_clip_default_and_explicit_override) ... ok
+test_ns_teacher_forcing_and_prediction_windows_batched (test_temporal_standard.TemporalChecks.test_ns_teacher_forcing_and_prediction_windows_batched) ... ok
+test_original_temporal_loop_ast_contract (test_temporal_standard.TemporalChecks.test_original_temporal_loop_ast_contract) ... ok
+test_plasticity_time_changes_output_and_time_gradients (test_temporal_standard.TemporalChecks.test_plasticity_time_changes_output_and_time_gradients) ... ok
+test_plasticity_twenty_independent_time_steps_and_loss (test_temporal_standard.TemporalChecks.test_plasticity_twenty_independent_time_steps_and_loss) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 12.574s
+
+OK

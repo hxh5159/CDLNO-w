@@ -1,0 +1,144 @@
+/home/hwz/anaconda3/lib/python3.13/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+test_small_core_fp32_and_amp_modes_point_and_grid (test_core.CoreCUDAChecks.test_small_core_fp32_and_amp_modes_point_and_grid) ... skipped 'GPU unavailable: core CUDA checks not run'
+test_actual_history_sdpa_counts_chunks_and_each_location_projections (test_core.CoreChecks.test_actual_history_sdpa_counts_chunks_and_each_location_projections) ... ok
+test_default_and_42_depth_mode_point_grid_forward_backward_cases (test_core.CoreChecks.test_default_and_42_depth_mode_point_grid_forward_backward_cases) ... ok
+test_direct_history_readout_gradients_zero_w_then_updated_w (test_core.CoreChecks.test_direct_history_readout_gradients_zero_w_then_updated_w) ... ok
+test_explicit_raw_state_schedule_output_and_all_gradient_parity (test_core.CoreChecks.test_explicit_raw_state_schedule_output_and_all_gradient_parity) ... ok
+test_extended_boundary_and_front_above_six_all_modes (test_core.CoreChecks.test_extended_boundary_and_front_above_six_all_modes) ... ok
+test_f0_entry_off_same_weights_exact_outputs_gradients_and_calls (test_core.CoreChecks.test_f0_entry_off_same_weights_exact_outputs_gradients_and_calls) ... ok
+test_history_objects_timing_readout_and_two_forward_graph_isolation (test_core.CoreChecks.test_history_objects_timing_readout_and_two_forward_graph_isolation) ... ok
+test_off_discards_t_and_entry_releases_history_after_only_use (test_core.CoreChecks.test_off_discards_t_and_entry_releases_history_after_only_use) ... ok
+test_operation_counts_and_constant_m_all_front_depths (test_core.CoreChecks.test_operation_counts_and_constant_m_all_front_depths) ... ok
+test_point_order_batch_independence_and_variable_n (test_core.CoreChecks.test_point_order_batch_independence_and_variable_n) ... ok
+test_registration_storage_independence_and_single_initialization (test_core.CoreChecks.test_registration_storage_independence_and_single_initialization) ... ok
+test_state_dict_roundtrip_actual_chunk_changes_and_all_gradients (test_core.CoreChecks.test_state_dict_roundtrip_actual_chunk_changes_and_all_gradients) ... ok
+test_default_L8_counts_and_history_boundaries (test_kcdno_core.KCDNOCoreTests.test_default_L8_counts_and_history_boundaries) ... ok
+test_depths_shapes_and_all_active_gradients (test_kcdno_core.KCDNOCoreTests.test_depths_shapes_and_all_active_gradients) ... ok
+test_forward_isolation_variable_N_and_no_persistent_state (test_kcdno_core.KCDNOCoreTests.test_forward_isolation_variable_N_and_no_persistent_state) ... ok
+test_gamma_zero_all_equals_off_same_common_weights_and_cost_differs (test_kcdno_core.KCDNOCoreTests.test_gamma_zero_all_equals_off_same_common_weights_and_cost_differs) ... ok
+test_initialization_projection_contract_and_parameter_independence (test_kcdno_core.KCDNOCoreTests.test_initialization_projection_contract_and_parameter_independence) ... ok
+test_limited_gpu_fp32_and_amp_backward (test_kcdno_core.KCDNOCoreTests.test_limited_gpu_fp32_and_amp_backward) ... skipped 'no actual CUDA GPU'
+test_manual_one_two_layer_equations_and_gradients (test_kcdno_core.KCDNOCoreTests.test_manual_one_two_layer_equations_and_gradients) ... ok
+test_raw_T_up_norm_and_causal_tuple_schedule (test_kcdno_core.KCDNOCoreTests.test_raw_T_up_norm_and_causal_tuple_schedule) ... ok
+test_strict_config_weight_roundtrip (test_kcdno_core.KCDNOCoreTests.test_strict_config_weight_roundtrip) ... ok
+test_validation_and_grid_contract (test_kcdno_core.KCDNOCoreTests.test_validation_and_grid_contract) ... ok
+test_all_stages_gradients_and_synthetic_optimizer_step (test_msar_core.MSARCoreTests.test_all_stages_gradients_and_synthetic_optimizer_step) ... ok
+test_coverage_only_encoder_down_dependencies_and_raw_mean (test_msar_core.MSARCoreTests.test_coverage_only_encoder_down_dependencies_and_raw_mean) ... ok
+test_cuda_amp_core_aux_and_off_prediction (test_msar_core.MSARCoreTests.test_cuda_amp_core_aux_and_off_prediction) ... skipped 'CUDA unavailable'
+test_default_eval_aux_and_diagnostics_gate (test_msar_core.MSARCoreTests.test_default_eval_aux_and_diagnostics_gate) ... ok
+test_diagnostics_no_grad_reuse_and_prediction_rng_invariance (test_msar_core.MSARCoreTests.test_diagnostics_no_grad_reuse_and_prediction_rng_invariance) ... ok
+test_diagnostics_recomputation_and_nonzero_fusion_reference (test_msar_core.MSARCoreTests.test_diagnostics_recomputation_and_nonzero_fusion_reference) ... ok
+test_execution_order_trace_and_no_point_sa (test_msar_core.MSARCoreTests.test_execution_order_trace_and_no_point_sa) ... ok
+test_final_branch_has_no_e0_skip (test_msar_core.MSARCoreTests.test_final_branch_has_no_e0_skip) ... ok
+test_full_topology_independent_forward_and_gradients (test_msar_core.MSARCoreTests.test_full_topology_independent_forward_and_gradients) ... ok
+test_invalid_contracts (test_msar_core.MSARCoreTests.test_invalid_contracts) ... ok
+test_module_counts_ownership_and_initialization (test_msar_core.MSARCoreTests.test_module_counts_ownership_and_initialization) ... ok
+test_normal_paths_have_no_cpu_statistics (test_msar_core.MSARCoreTests.test_normal_paths_have_no_cpu_statistics) ... ok
+test_off_floor_and_zero_weight_prediction_and_gradient_parity (test_msar_core.MSARCoreTests.test_off_floor_and_zero_weight_prediction_and_gradient_parity) ... ok
+test_real_light_full_shapes_and_full_small_n_strict_roundtrip (test_msar_core.MSARCoreTests.test_real_light_full_shapes_and_full_small_n_strict_roundtrip) ... ok
+test_strict_state_roundtrip_and_trusted_object_fresh_cwds (test_msar_core.MSARCoreTests.test_strict_state_roundtrip_and_trusted_object_fresh_cwds) ... ok
+test_variable_n_batch_permutation_mask_and_no_cross_call_state (test_msar_core.MSARCoreTests.test_variable_n_batch_permutation_mask_and_no_cross_call_state) ... ok
+test_air_weighted_loss_and_real_epoch_record_fragment_without_sampling (test_experiment_records.ExperimentRecords.test_air_weighted_loss_and_real_epoch_record_fragment_without_sampling) ... ok
+test_all_launch_pairs_same_timestamp_explicit_override_and_no_writes (test_experiment_records.ExperimentRecords.test_all_launch_pairs_same_timestamp_explicit_override_and_no_writes) ... ok
+test_all_task_modes_early_config_actual_counts_epochs_repeat_eval_checkpoint (test_experiment_records.ExperimentRecords.test_all_task_modes_early_config_actual_counts_epochs_repeat_eval_checkpoint) ... ok
+test_entries_early_lifecycle_and_complete_observation_only_ast (test_experiment_records.ExperimentRecords.test_entries_early_lifecycle_and_complete_observation_only_ast) ... 
+  test_entries_early_lifecycle_and_complete_observation_only_ast (test_experiment_records.ExperimentRecords.test_entries_early_lifecycle_and_complete_observation_only_ast) (path='Airfoil-Design-AirfRANS/main.py') ... FAIL
+  test_entries_early_lifecycle_and_complete_observation_only_ast (test_experiment_records.ExperimentRecords.test_entries_early_lifecycle_and_complete_observation_only_ast) (path='Airfoil-Design-AirfRANS/main_evaluation.py') ... FAIL
+  test_entries_early_lifecycle_and_complete_observation_only_ast (test_experiment_records.ExperimentRecords.test_entries_early_lifecycle_and_complete_observation_only_ast) (path='Airfoil-Design-AirfRANS/train.py') ... FAIL
+test_exceptions_and_incomplete_exit_leave_early_records (test_experiment_records.ExperimentRecords.test_exceptions_and_incomplete_exit_leave_early_records) ... ok
+test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values (test_experiment_records.ExperimentRecords.test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values) ...   0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s, train_loss=1.22, val_loss=1.21]  0%|          | 0/2 [00:00<?, ?it/s, train_loss=1.2, val_loss=1.19] 100%|██████████| 2/2 [00:00<00:00, 41.88it/s, train_loss=1.2, val_loss=1.19]
+  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s, train_loss=1.22, val_loss=1.21]  0%|          | 0/2 [00:00<?, ?it/s, train_loss=1.2, val_loss=1.19] 100%|██████████| 2/2 [00:13<00:00,  6.84s/it, train_loss=1.2, val_loss=1.19]100%|██████████| 2/2 [00:13<00:00,  6.84s/it, train_loss=1.2, val_loss=1.19]
+
+  test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values (test_experiment_records.ExperimentRecords.test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values) (task='airfrans') ... skipped 'AirfRANS complete sampled epoch not run: torch_cluster is absent; no dependency was installed'
+test_old_runs_without_config_keep_loadable (test_experiment_records.ExperimentRecords.test_old_runs_without_config_keep_loadable) ... ok
+test_recording_lifecycle_in_three_original_fresh_workdirs (test_experiment_records.ExperimentRecords.test_recording_lifecycle_in_three_original_fresh_workdirs) ... ok
+test_same_process_only_reservation_and_unique_defaults (test_experiment_records.ExperimentRecords.test_same_process_only_reservation_and_unique_defaults) ... ok
+test_CDLNO_modes_and_matched_share_observer_without_math_changes (test_periodic_visualization.PeriodicChecks.test_CDLNO_modes_and_matched_share_observer_without_math_changes) ... ok
+test_NS_prediction_feedback_and_plasticity_twenty_separate_conditions (test_periodic_visualization.PeriodicChecks.test_NS_prediction_feedback_and_plasticity_twenty_separate_conditions) ... ok
+test_air_real_sampling_graph_dependency (test_periodic_visualization.PeriodicChecks.test_air_real_sampling_graph_dependency) ... skipped 'real torch_cluster missing: AirfRANS sampling/graph integration not executed'
+test_frequency_static_real_wrappers_and_original_decode (test_periodic_visualization.PeriodicChecks.test_frequency_static_real_wrappers_and_original_decode) ... ok
+test_observer_exact_training_rng_optimizer_and_failure_isolation (test_periodic_visualization.PeriodicChecks.test_observer_exact_training_rng_optimizer_and_failure_isolation) ... ok
+test_production_hooks_preserve_complete_AST (test_periodic_visualization.PeriodicChecks.test_production_hooks_preserve_complete_AST) ... 
+  test_production_hooks_preserve_complete_AST (test_periodic_visualization.PeriodicChecks.test_production_hooks_preserve_complete_AST) (file='Airfoil-Design-AirfRANS/train.py') ... FAIL
+  test_production_hooks_preserve_complete_AST (test_periodic_visualization.PeriodicChecks.test_production_hooks_preserve_complete_AST) (file='Airfoil-Design-AirfRANS/main.py') ... FAIL
+test_real_PyG_car_and_air_decoding_masks_inputs (test_periodic_visualization.PeriodicChecks.test_real_PyG_car_and_air_decoding_masks_inputs) ... ok
+test_real_export_caption_fonts_and_color_saturation (test_periodic_visualization.PeriodicChecks.test_real_export_caption_fonts_and_color_saturation) ... ok
+test_automatic_run_names_and_eval_missing_sidecar (test_static_standard.StaticCheckpointChecks.test_automatic_run_names_and_eval_missing_sidecar) ... ok
+test_fresh_process_wrapper_checkpoint_restore (test_static_standard.StaticCheckpointChecks.test_fresh_process_wrapper_checkpoint_restore) ... ok
+test_invalid_runtime_chunk_all_sidecar_boundaries (test_static_standard.StaticCheckpointChecks.test_invalid_runtime_chunk_all_sidecar_boundaries) ... ok
+test_strict_roundtrip_sidecar_no_overwrite_and_separate_outputs (test_static_standard.StaticCheckpointChecks.test_strict_roundtrip_sidecar_no_overwrite_and_separate_outputs) ... ok
+test_legacy_ast_recovered_exactly_from_limited_branches (test_static_standard.StaticFrozenChecks.test_legacy_ast_recovered_exactly_from_limited_branches) ... ok
+test_scripts_syntax_arguments_and_fresh_imports (test_static_standard.StaticFrozenChecks.test_scripts_syntax_arguments_and_fresh_imports) ... ok
+test_static_wrapper_device_and_amp_backward (test_static_standard.StaticGPUChecks.test_static_wrapper_device_and_amp_backward) ... skipped 'GPU unavailable: wrapper GPU checks not run'
+test_darcy_exact_training_decode_and_gradient_loss_ast (test_static_standard.StaticInterfaceChecks.test_darcy_exact_training_decode_and_gradient_loss_ast) ... ok
+test_defaults_and_explicit_overrides_leave_legacy_parser_unchanged (test_static_standard.StaticInterfaceChecks.test_defaults_and_explicit_overrides_leave_legacy_parser_unchanged) ... ok
+test_four_interfaces_three_modes_backward_placeholder_and_no_time (test_static_standard.StaticInterfaceChecks.test_four_interfaces_three_modes_backward_placeholder_and_no_time) ... ok
+test_original_lifting_reference_order_coords_and_initialization (test_static_standard.StaticInterfaceChecks.test_original_lifting_reference_order_coords_and_initialization) ... ok
+test_pipe_and_elasticity_original_normalizer_loss_connections (test_static_standard.StaticInterfaceChecks.test_pipe_and_elasticity_original_normalizer_loss_connections) ... ok
+test_real_n_with_smaller_width_latents_preserves_layout (test_static_standard.StaticInterfaceChecks.test_real_n_with_smaller_width_latents_preserves_layout) ... ok
+
+======================================================================
+FAIL: test_entries_early_lifecycle_and_complete_observation_only_ast (test_experiment_records.ExperimentRecords.test_entries_early_lifecycle_and_complete_observation_only_ast) (path='Airfoil-Design-AirfRANS/main.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_experiment_records.py", line 150, in test_entries_early_lifecycle_and_complete_observation_only_ast
+    self.assertEqual(ast.dump(strip_recording(copy.deepcopy(now))),ast.dump(old))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Modu[3526 chars]])), If(test=Compare(left=Attribute(value=Name[17015 chars]])])' != 'Modu[3526 chars]])), With(items=[withitem(context_expr=Call(fu[16582 chars]])])'
+Diff is 39056 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_entries_early_lifecycle_and_complete_observation_only_ast (test_experiment_records.ExperimentRecords.test_entries_early_lifecycle_and_complete_observation_only_ast) (path='Airfoil-Design-AirfRANS/main_evaluation.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_experiment_records.py", line 150, in test_entries_early_lifecycle_and_complete_observation_only_ast
+    self.assertEqual(ast.dump(strip_recording(copy.deepcopy(now))),ast.dump(old))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "Modu[1426 chars]])), If(test=Compare(left=Attribute(value=Name[11142 chars]])])" != "Modu[1426 chars]])), Assign(targets=[Name(id='use_cuda', ctx=S[10725 chars]])])"
+Diff is 24834 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_entries_early_lifecycle_and_complete_observation_only_ast (test_experiment_records.ExperimentRecords.test_entries_early_lifecycle_and_complete_observation_only_ast) (path='Airfoil-Design-AirfRANS/train.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_experiment_records.py", line 150, in test_entries_early_lifecycle_and_complete_observation_only_ast
+    self.assertEqual(ast.dump(strip_recording(copy.deepcopy(now))),ast.dump(old))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Modu[21468 chars]id=\'linearno_start_epoch\', ctx=Store())], va[33434 chars]])])' != 'Modu[21468 chars]id=\'pbar_train\', ctx=Store())], value=Call(f[33094 chars]])])'
+Diff is 173959 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_production_hooks_preserve_complete_AST (test_periodic_visualization.PeriodicChecks.test_production_hooks_preserve_complete_AST) (file='Airfoil-Design-AirfRANS/train.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_periodic_visualization.py", line 209, in test_production_hooks_preserve_complete_AST
+    self.assertEqual(ast.dump(strip_visualization(strip_msar(source))),ast.dump(old))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Modu[21871 chars]id=\'linearno_start_epoch\', ctx=Store())], va[35557 chars]])])' != 'Modu[21871 chars]id=\'pbar_train\', ctx=Store())], value=Call(f[35217 chars]])])'
+Diff is 179601 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_production_hooks_preserve_complete_AST (test_periodic_visualization.PeriodicChecks.test_production_hooks_preserve_complete_AST) (file='Airfoil-Design-AirfRANS/main.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_periodic_visualization.py", line 209, in test_production_hooks_preserve_complete_AST
+    self.assertEqual(ast.dump(strip_visualization(strip_msar(source))),ast.dump(old))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Modu[3665 chars]ue=\'LinearNO\')]), body=[ImportFrom(module=\'[26382 chars]])])' != 'Modu[3665 chars]ue=\'CDLNO\')]), body=[ImportFrom(module=\'cdl[25949 chars]])])'
+Diff is 57284 characters long. Set self.maxDiff to None to see it.
+
+----------------------------------------------------------------------
+Ran 69 tests in 80.409s
+
+FAILED (failures=5, skipped=6)
+phase-4 default off: logical histories=0, actual history SDPA=0, total SDPA=14
+phase-4 default entry: logical histories=2, actual history SDPA=1, total SDPA=15
+phase-4 default every_block: logical histories=27, actual history SDPA=6, total SDPA=20
+L8 observed all {'sdpa': 16, 'down': 8, 'latent_ffn_1': 8, 'latent_ffn_2': 8, 'up_latent_norm': 8, 'up': 8, 'point_ffn': 8, 'writer': 7, 'reader_calls': 7, 'logical_reads': 28, 'query_norm': 7, 'query_projection': 7, 'einsum:bmr,bsrd->bsmd': 7, 'einsum:bmr,bsr->bsm': 7, 'source_softmax': 7}
+L8 observed off {'sdpa': 16, 'down': 8, 'latent_ffn_1': 8, 'latent_ffn_2': 8, 'up_latent_norm': 8, 'up': 8, 'point_ffn': 8}
+Hand composition FP32/double: output maxabs=3.65225202e-07; gradient maxabs=1.95877881e-06
+static real-N: darcy (1, 7225, 1) backward passed
+static real-N: elasticity (1, 972, 1) backward passed
+static real-N: airfoil (1, 11271, 1) backward passed
+static real-N: pipe (1, 16641, 1) backward passed

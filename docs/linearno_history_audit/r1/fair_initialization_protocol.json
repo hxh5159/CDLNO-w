@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "name": "linearno_history_fair_initialization_v1",
+  "backbone": {
+    "public_seed_is": "seed",
+    "construction": "construct one public pure-LinearNO backbone and capture its state_dict by key",
+    "copy_rule": "copy identical backbone keys to A0K0/A1K0/A0K1/A1K1; no reconstruction per combination",
+    "constructor_order": "innovation modules cannot consume RNG before public backbone initialization",
+    "backbone_initialization_scope": "existing LinearNO constructor and its documented outer initialization only"
+  },
+  "innovation": {
+    "seed": "derive_fair_seeds(seed, task, split).innovation_feature_seed",
+    "scope": "new A/K module parameters only",
+    "record": ["seed_namespace", "innovation_feature_seed", "parameter_initialization_algorithm", "dtype", "device"],
+    "independence": "does not advance public backbone RNG"
+  },
+  "dataloader": {
+    "generator": "independent torch.Generator per task and split",
+    "seed": "derive_fair_seeds(seed, task, split).dataloader_generator_seed",
+    "record": ["generator_seed", "split", "sampler_type", "worker_seed_policy"]
+  },
+  "comparison": {
+    "same": ["task", "profile", "data split/checksum", "base variant", "n_layers", "heads", "d_h", "actual_M", "optimizer", "scheduler", "dtype", "device", "AMP", "compile", "budget"],
+    "different_only": ["feature_signature", "innovation_feature_seed"],
+    "a0k0": "legacy LinearNO checkpoint/schema/loader; no innovation_spec",
+    "baseline_to_research": "init_from_baseline only in a future explicitly authorized protocol; never resume"
+  }
+}

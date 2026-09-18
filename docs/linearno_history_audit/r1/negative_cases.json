@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {"id":"bool-string","input":"feature_config.linearno_latent_attnres='false'","expected":"reject before construction"},
+    {"id":"dropout-off","input":"A0K0 with linearno_attnres_history_dropout_p=0.1","expected":"reject; dropout only valid when A is enabled"},
+    {"id":"dropout-production-zero","input":"A1K0 with dropout=0.0 in production","expected":"reject; p=0 is oracle/parity-only"},
+    {"id":"non-linearno-family","input":"family=transolver with A1K0","expected":"reject"},
+    {"id":"feature-weight-mismatch","input":"metadata feature_signature=A1K0, innovation_spec=A0K1","expected":"reject before constructor and weights"},
+    {"id":"strict-false","input":"research checkpoint load strict=False","expected":"reject"},
+    {"id":"legacy-with-innovation","input":"legacy metadata plus innovation_spec","expected":"reject; never guess research"},
+    {"id":"research-without-spec","input":"linearno_history metadata without innovation_spec","expected":"reject"},
+    {"id":"cross-mode-checkpoint","input":"A1K0 expected, A0K1 saved","expected":"reject"},
+    {"id":"baseline-resume-research","input":"legacy LinearNO checkpoint plus A1K0 resume","expected":"reject; future init_from_baseline only"},
+    {"id":"all-history-mask","input":"A source mask removes all real sources and null is absent","expected":"reject contract; null must give finite zero fallback"},
+    {"id":"cross-forward-cache","input":"history cache stored on self or reused by next forward","expected":"reject contract; forward-local tuple only"},
+    {"id":"disabled-extra-state","input":"A0K0 metadata contains innovation parameters or consumes innovation RNG","expected":"reject contract"},
+    {"id":"depth-low","input":"n_layers=3","expected":"reject; research matrix is L4..L8"},
+    {"id":"depth-high","input":"n_layers=9","expected":"reject; research matrix is L4..L8"},
+    {"id":"placeholder-class","input":"class_path=linearno_history.Placeholder","expected":"reject"}
+  ]
+}

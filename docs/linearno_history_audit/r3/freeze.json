@@ -1,0 +1,79 @@
+{
+  "head": "d5abe014ed05ec9286200d677b039bbd68697f96",
+  "baseline_artifact": "/home/hwz/CDLNO-artifacts/linearno-history-r3-before-vb2brm6s",
+  "baseline_manifest_sha256": "13316ae8a8f79167349a65d75949dfeb0e873e1437363f79ce57d30ee7b63887",
+  "baseline_counts": {
+    "tracked": 1242,
+    "untracked": 53,
+    "ignored": 330
+  },
+  "changed": [
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/LinearNO_History.py",
+      "kind": "untracked",
+      "before": "87c51710096a794b134bf7a1172bb0e9291e218a701b10821caf7308a4895dd9",
+      "after": "0c80e2f674fb5052b552d8776066e67373b9707555c854c00be58df9ab8ec204"
+    },
+    {
+      "path": "cdlno/linearno_history/__init__.py",
+      "kind": "untracked",
+      "before": "fed15d43c46ea93b042a049f964bdcb016c1d2a3a16b8aec00acca0ed77dc4e2",
+      "after": "eb571c07b329eee95e39cc5f81114e34500bb4a213cba94ba07f2b9596e9ac18"
+    },
+    {
+      "path": "cdlno/linearno_history/core.py",
+      "kind": "untracked",
+      "before": "2c7f6eac41eed32125a2ae458f76614276822c4e7e38785a1c499bf7abe541fb",
+      "after": "821889d603be5b6cb372b8420f09f1ebf03b175022871c5c28fdb94057a93be4"
+    },
+    {
+      "path": "cdlno/linearno_history/models.py",
+      "kind": "untracked",
+      "before": "b0fd67957b8eda67ef0cb7c6ebb5d241825447dea07cfb24d839a65f8dd41dec",
+      "after": "c3c82ce5de382c4fd53e0cec4b0709d9fa43da23ab6e3b4370d2529303101103"
+    },
+    {
+      "path": "docs/LINEARNO_HISTORY_IMPLEMENTATION_STATUS.md",
+      "kind": "untracked",
+      "before": "cf92beb9cec88806285c79edd0ef50980a3e311e03aaac1192e9cbf108e1e5c9",
+      "after": "3f654930e8ecf29f96d2908c6316dd3119a56a49efc1c2fbbda62932ab48dd04"
+    },
+    {
+      "path": "docs/LINEARNO_HISTORY_RESEARCH_MATRIX.md",
+      "kind": "untracked",
+      "before": "6764d39523b4aa5266a75606a7a3aa403823909fe9c22893e7c2c160efcc67c7",
+      "after": "a9151b1e184613555f9ce06354240c2efdace5351ac3f362d4277a635b3d97bb"
+    }
+  ],
+  "deleted": [],
+  "added": [
+    "cdlno/linearno_history/attnres.py",
+    "docs/LINEARNO_HISTORY_R3_REPORT.md",
+    "docs/linearno_history_audit/r3/README.md",
+    "docs/linearno_history_audit/r3/attnres-final.txt",
+    "docs/linearno_history_audit/r3/attnres-initial.txt",
+    "docs/linearno_history_audit/r3/attnres-results.json",
+    "docs/linearno_history_audit/r3/baseline.json",
+    "docs/linearno_history_audit/r3/environment.json",
+    "docs/linearno_history_audit/r3/numerical-summary.json",
+    "docs/linearno_history_audit/r3/regression-results.json",
+    "docs/linearno_history_audit/r3/regression.txt",
+    "tests/linearno/attnres_reference.py",
+    "tests/linearno/test_latent_attnres.py"
+  ],
+  "tracked_unchanged": 1242,
+  "ignored_unchanged": 330,
+  "point_residual_FFN_head_AST_unchanged": true,
+  "git_diff_empty": true,
+  "staged_diff_empty": true,
+  "source_hashes": {
+    "cdlno/linearno_history/__init__.py": "eb571c07b329eee95e39cc5f81114e34500bb4a213cba94ba07f2b9596e9ac18",
+    "cdlno/linearno_history/attnres.py": "da8590b06018aded853fade0b8ed4e2dd4cfb21d54c43e6e087120613966d591",
+    "cdlno/linearno_history/context.py": "ced8d2319b25904b18d588c30c103d1e13d5a5c63309a14e4340b337f149cd70",
+    "cdlno/linearno_history/core.py": "821889d603be5b6cb372b8420f09f1ebf03b175022871c5c28fdb94057a93be4",
+    "cdlno/linearno_history/models.py": "c3c82ce5de382c4fd53e0cec4b0709d9fa43da23ab6e3b4370d2529303101103",
+    "docs/LINEARNO_HISTORY_R3_REPORT.md": "c9bd66a0e65d3330fd5e4f96718e4f358d6bd37554968303fd6a07a234471b04",
+    "tests/linearno/attnres_reference.py": "93a191ba0c2445760e857fc04486a89da73aa3795abfd1120e81481dc650252e",
+    "tests/linearno/test_latent_attnres.py": "d0b42a955c75c6ca6fcfba93217b6e2f8613da2528384f81a94893b3be0f6055"
+  }
+}

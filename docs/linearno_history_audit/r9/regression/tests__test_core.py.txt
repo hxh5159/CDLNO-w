@@ -1,0 +1,21 @@
+test_small_core_fp32_and_amp_modes_point_and_grid (test_core.CoreCUDAChecks.test_small_core_fp32_and_amp_modes_point_and_grid) ... skipped 'GPU unavailable: core CUDA checks not run'
+test_actual_history_sdpa_counts_chunks_and_each_location_projections (test_core.CoreChecks.test_actual_history_sdpa_counts_chunks_and_each_location_projections) ... ok
+test_default_and_42_depth_mode_point_grid_forward_backward_cases (test_core.CoreChecks.test_default_and_42_depth_mode_point_grid_forward_backward_cases) ... ok
+test_direct_history_readout_gradients_zero_w_then_updated_w (test_core.CoreChecks.test_direct_history_readout_gradients_zero_w_then_updated_w) ... ok
+test_explicit_raw_state_schedule_output_and_all_gradient_parity (test_core.CoreChecks.test_explicit_raw_state_schedule_output_and_all_gradient_parity) ... ok
+test_extended_boundary_and_front_above_six_all_modes (test_core.CoreChecks.test_extended_boundary_and_front_above_six_all_modes) ... ok
+test_f0_entry_off_same_weights_exact_outputs_gradients_and_calls (test_core.CoreChecks.test_f0_entry_off_same_weights_exact_outputs_gradients_and_calls) ... ok
+test_history_objects_timing_readout_and_two_forward_graph_isolation (test_core.CoreChecks.test_history_objects_timing_readout_and_two_forward_graph_isolation) ... ok
+test_off_discards_t_and_entry_releases_history_after_only_use (test_core.CoreChecks.test_off_discards_t_and_entry_releases_history_after_only_use) ... ok
+test_operation_counts_and_constant_m_all_front_depths (test_core.CoreChecks.test_operation_counts_and_constant_m_all_front_depths) ... ok
+test_point_order_batch_independence_and_variable_n (test_core.CoreChecks.test_point_order_batch_independence_and_variable_n) ... ok
+test_registration_storage_independence_and_single_initialization (test_core.CoreChecks.test_registration_storage_independence_and_single_initialization) ... ok
+test_state_dict_roundtrip_actual_chunk_changes_and_all_gradients (test_core.CoreChecks.test_state_dict_roundtrip_actual_chunk_changes_and_all_gradients) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 3.356s
+
+OK (skipped=1)
+phase-4 default off: logical histories=0, actual history SDPA=0, total SDPA=14
+phase-4 default entry: logical histories=2, actual history SDPA=1, total SDPA=15
+phase-4 default every_block: logical histories=27, actual history SDPA=6, total SDPA=20

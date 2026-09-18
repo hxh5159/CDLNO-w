@@ -35,6 +35,10 @@ def parse_args(parser, task, argv=None):
     selector.add_argument('--model')
     selected, _ = selector.parse_known_args(tokens)
     if selected.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):
+        from cdlno.linearno_history.standard_entry import intercept as intercept_history
+        history_args = intercept_history(parser, task, tokens, selected.model)
+        if history_args is not None:
+            return history_args
         from cdlno.linearno.standard_entry import parse_args as parse_linearno_args
         return parse_linearno_args(parser, task, tokens)
     if selected.model == 'msar_lno':

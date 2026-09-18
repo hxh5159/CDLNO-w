@@ -1,0 +1,271 @@
+{
+  "stage": "r8",
+  "baseline": {
+    "root": "/home/hwz/CDLNO",
+    "snapshot": "/home/hwz/CDLNO-artifacts/linearno-history-r8-before-0byje7ax",
+    "head": "d5abe014ed05ec9286200d677b039bbd68697f96",
+    "tree": "d74a1b07aa405009992879847aca0c48c75c31f0"
+  },
+  "changed": [
+    {
+      "path": "Airfoil-Design-AirfRANS/train.py",
+      "before": {
+        "path": "Airfoil-Design-AirfRANS/train.py",
+        "category": "tracked",
+        "size": 19955,
+        "sha256": "d2bc4abc1f9a105fea444032b3e55c24d73d2cc034aff8252bf41788a0f075fb"
+      },
+      "after": {
+        "category": "tracked",
+        "size": 20226,
+        "sha256": "f3d621f700fc2ddfd60f5c3353176eebc249e60518e5dfce861ebc2977fd106d"
+      }
+    },
+    {
+      "path": "cdlno/linearno/air_entry.py",
+      "before": {
+        "path": "cdlno/linearno/air_entry.py",
+        "category": "tracked",
+        "size": 39781,
+        "sha256": "4f5af7a4b6c7e6cf5f3684c7077356d812ab4ebdaeefda0668e41ec05fb709fa"
+      },
+      "after": {
+        "category": "tracked",
+        "size": 40308,
+        "sha256": "589d2cd7f43ff21aeac4d9f20f2d9a76fe1d4cffd7b1747818d44acd690c1035"
+      }
+    },
+    {
+      "path": "cdlno/linearno/car_entry.py",
+      "before": {
+        "path": "cdlno/linearno/car_entry.py",
+        "category": "tracked",
+        "size": 22995,
+        "sha256": "08d1a2cc6021238ef71cd5e98c6e9bc71d078493f3d04ca4b9ef42832e0ae843"
+      },
+      "after": {
+        "category": "tracked",
+        "size": 23371,
+        "sha256": "d39b3acbc9ee782fa3f24636ed6933adf2ddf59f21fb727ba8516b3ef1798435"
+      }
+    },
+    {
+      "path": "cdlno/linearno_history/provenance.py",
+      "before": {
+        "path": "cdlno/linearno_history/provenance.py",
+        "category": "untracked",
+        "size": 3743,
+        "sha256": "453a54aa92afb02e2794bc985cf5a846f80a5f9d9e0a92b8690990d18c3c299c"
+      },
+      "after": {
+        "category": "untracked",
+        "size": 6157,
+        "sha256": "2b6175d5b9f44657b22ce2bc4d42dad8c8c0cf7322105487bbf1ecb187c229cd"
+      }
+    },
+    {
+      "path": "docs/LINEARNO_HISTORY_COMMANDS.md",
+      "before": {
+        "path": "docs/LINEARNO_HISTORY_COMMANDS.md",
+        "category": "untracked",
+        "size": 3065,
+        "sha256": "0ad995c00803e391b2a7c783a28b573c77cb16f3a74ca6dd1259e3aa63a5aa2b"
+      },
+      "after": {
+        "category": "untracked",
+        "size": 4638,
+        "sha256": "5db5c341874ad6ed41858d3f81c5072cc93828046d767c7b9523a370ab780c6e"
+      }
+    },
+    {
+      "path": "docs/LINEARNO_HISTORY_IMPLEMENTATION_STATUS.md",
+      "before": {
+        "path": "docs/LINEARNO_HISTORY_IMPLEMENTATION_STATUS.md",
+        "category": "untracked",
+        "size": 18542,
+        "sha256": "29098fb381a3fe98da9de5e08a50241813583d094b9bd9df69d380e14a8224d9"
+      },
+      "after": {
+        "category": "untracked",
+        "size": 19067,
+        "sha256": "33bb82463c0f8e04904ccefd5a8baba481480ea70e48ef9ec565016b923a5c08"
+      }
+    },
+    {
+      "path": "docs/LINEARNO_HISTORY_RESEARCH_MATRIX.md",
+      "before": {
+        "path": "docs/LINEARNO_HISTORY_RESEARCH_MATRIX.md",
+        "category": "untracked",
+        "size": 17552,
+        "sha256": "b088bd4b22ec9c44ea65387236b7673f8944d5037f836e9b310fff54b0e24129"
+      },
+      "after": {
+        "category": "untracked",
+        "size": 18763,
+        "sha256": "ea862b41ac6fa1526b25b65e24cb856efeadb503e88afec608d096573b0235ef"
+      }
+    },
+    {
+      "path": "tests/history_entry_projection.py",
+      "before": {
+        "path": "tests/history_entry_projection.py",
+        "category": "untracked",
+        "size": 1623,
+        "sha256": "102add1852b8dd43733cd2a42ce699ae9d082f555703b7fad033e64a0eb1d60c"
+      },
+      "after": {
+        "category": "untracked",
+        "size": 1963,
+        "sha256": "6c4cde6e622985dee8f79946094dafc3996654b330d657e7ae9fa2e18241732e"
+      }
+    }
+  ],
+  "missing": [],
+  "new": [
+    {
+      "path": "cdlno/linearno_history/air_entry.py",
+      "category": "untracked",
+      "size": 26419,
+      "sha256": "2943fdab2cede967a2f7319d52e400b2e0cbc98f7d1a47bf07a68f287e52b57a"
+    },
+    {
+      "path": "cdlno/linearno_history/car_entry.py",
+      "category": "untracked",
+      "size": 16628,
+      "sha256": "486909e6de4071f8449982b92aada9c8f9be91eee075d76f768cad684be20575"
+    },
+    {
+      "path": "cdlno/linearno_history/industrial.py",
+      "category": "untracked",
+      "size": 5758,
+      "sha256": "f700419e186aa56954987fe61eb2078b378b2171e3922a23bb6b7556d41c1681"
+    },
+    {
+      "path": "docs/LINEARNO_HISTORY_R8_REPORT.md",
+      "category": "untracked",
+      "size": 5554,
+      "sha256": "69dc39fae9d69e656e7222d2289ad15bed2a25db964a4a5231ee6e8104c84c95"
+    },
+    {
+      "path": "docs/linearno_history_audit/r8/baseline-provenance.json",
+      "category": "untracked",
+      "size": 3045,
+      "sha256": "7ed603dc1d036e18427da802269dde13adcfe76adfbe1eb8651fd5b6193fb963"
+    },
+    {
+      "path": "docs/linearno_history_audit/r8/baseline.json",
+      "category": "untracked",
+      "size": 218,
+      "sha256": "0c0501e424fdff54b797e658ffce17666fea576da80944adaa9d208b3503fe8f"
+    },
+    {
+      "path": "docs/linearno_history_audit/r8/draft-interrupted.txt",
+      "category": "untracked",
+      "size": 157,
+      "sha256": "42273c37e9e2e9de254e4c8310271c205c7fbcd1b11f9fe84d6d538c67f8b110"
+    },
+    {
+      "path": "docs/linearno_history_audit/r8/freeze.json",
+      "category": "untracked",
+      "size": 6770,
+      "sha256": "4dd333e36b239afd018eb5ae9146f33a6f6ba9a34c130213a9d15bac5a655581"
+    },
+    {
+      "path": "docs/linearno_history_audit/r8/negatives.txt",
+      "category": "untracked",
+      "size": 265,
+      "sha256": "e7b71062e2fe71502eb5c2da7f17a65b9cf342ef8d64e97cef6cf8028315af65"
+    },
+    {
+      "path": "docs/linearno_history_audit/r8/old-industrial.txt",
+      "category": "untracked",
+      "size": 3088,
+      "sha256": "6d8a43fc871f6ed37abc0344fbc592d577fa8992c319592ee3f9a52f37ac6573"
+    },
+    {
+      "path": "docs/linearno_history_audit/r8/preflight.txt",
+      "category": "untracked",
+      "size": 412,
+      "sha256": "58ec79b4deb85b6d465cc9d2019e25cff20e8f82dd80581c2acf45b1c881d337"
+    },
+    {
+      "path": "docs/linearno_history_audit/r8/prompt.txt",
+      "category": "untracked",
+      "size": 1478,
+      "sha256": "fcf427a1283f9e74b05b231d7174f303b23571b60519cbefdaaf82450bbb7680"
+    },
+    {
+      "path": "docs/linearno_history_audit/r8/protected-models.json",
+      "category": "untracked",
+      "size": 9000,
+      "sha256": "1a1c9876424f53a0223393d64115e9f26962bfda911dc343126aa08e041f1199"
+    },
+    {
+      "path": "docs/linearno_history_audit/r8/results.json",
+      "category": "untracked",
+      "size": 9522,
+      "sha256": "0eaaca61d1b864f5dc52919e9be6c292fc1e9a61cf6f5c0aebc8831d1d6abdad"
+    },
+    {
+      "path": "docs/linearno_history_audit/r8/standard-preflight.txt",
+      "category": "untracked",
+      "size": 2463,
+      "sha256": "1f16334336f46da5b135f003247bcca43b5104a936292aa2754fd69fa7960573"
+    },
+    {
+      "path": "docs/linearno_history_audit/r8/tests.txt",
+      "category": "untracked",
+      "size": 748,
+      "sha256": "765688c074bece2bd4e2fc4e2715df0a95eb105d4c264da07852ea7dcc79dcf0"
+    },
+    {
+      "path": "tests/linearno/history_air_worker.py",
+      "category": "untracked",
+      "size": 10076,
+      "sha256": "774b6d24db4a43f630834f26c0453349591b2bd1622aced41653c5199656d2fe"
+    },
+    {
+      "path": "tests/linearno/history_car_worker.py",
+      "category": "untracked",
+      "size": 6909,
+      "sha256": "22272426fb727bb651c57f6f06f75f47c01ceab94205aa9268d9cecff000927a"
+    },
+    {
+      "path": "tests/linearno/test_history_industrial.py",
+      "category": "untracked",
+      "size": 9806,
+      "sha256": "7897a5c1c8db5b7fae0c9065e4df020b299a5d6843201f896a5fc0527ee6696a"
+    },
+    {
+      "path": "tran_evaluate/linearno_history/airfrans.sh",
+      "category": "untracked",
+      "size": 468,
+      "sha256": "3586a7322fd124fb79459efc26fa1de25794399a871eeb76079203cfc9cb81e0"
+    },
+    {
+      "path": "tran_evaluate/linearno_history/car.sh",
+      "category": "untracked",
+      "size": 453,
+      "sha256": "32c3b71512e078f294edb6db46252a9df0f1b436140ea692506eacf377e58efd"
+    },
+    {
+      "path": "cdlno/linearno_history/__pycache__/air_entry.cpython-313.pyc",
+      "category": "ignored",
+      "size": 35494,
+      "sha256": "4151ad988c16b23eeda7e4ab67f75a1856dd2f702106483f449a8c4a0a901837"
+    },
+    {
+      "path": "cdlno/linearno_history/__pycache__/car_entry.cpython-313.pyc",
+      "category": "ignored",
+      "size": 23825,
+      "sha256": "35d76bc47d8847baa587dcf875a1fa875ffbbf6b5b524c5321d6ce91a164d17f"
+    },
+    {
+      "path": "cdlno/linearno_history/__pycache__/industrial.cpython-313.pyc",
+      "category": "ignored",
+      "size": 10249,
+      "sha256": "972ad688ea03a0ba55533fdc295a8e7db5f2a2970a01d41eeef62e59411702a9"
+    }
+  ],
+  "unchanged": 1712
+}

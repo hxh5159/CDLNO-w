@@ -1,0 +1,31 @@
+{
+  "regression": {
+    "methods": 114,
+    "passed": 109,
+    "skipped": 4,
+    "failed_methods": 1,
+    "failed_assertions": 3,
+    "seconds": 123.248,
+    "all_failures_inherited": true
+  },
+  "static_isolated": {
+    "methods": 7,
+    "passed": 6,
+    "failed_methods": 1,
+    "reason": "unchanged user path.sh differs from historical L4 fixture",
+    "seconds": 84.879
+  },
+  "other_models": {
+    "methods": 69,
+    "passed": 61,
+    "skipped": 6,
+    "failed_methods": 2,
+    "failed_assertions": 5,
+    "seconds": 80.409,
+    "all_failures_reproduced_before_R6": true
+  },
+  "initial_combined_run": {
+    "errors": 7,
+    "reason": "edited factory while its old version was already imported; fixed-source rerun has zero errors"
+  }
+}

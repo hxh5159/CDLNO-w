@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.invalid/linearno-history-v1/innovation-schema.json",
+  "title": "LinearNO history research checkpoint metadata",
+  "description": "R1 contract only. It describes A/K metadata and never constructs a model.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "family", "architecture_extension", "feature_signature", "innovation_spec", "model_spec", "profile_spec", "provenance_spec"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "family": {"const": "linearno_history"},
+    "architecture_extension": {"const": "linearno_history_v1"},
+    "feature_signature": {"enum": ["A1K0", "A0K1", "A1K1"]},
+    "innovation_spec": {"$ref": "#/$defs/innovation_spec"},
+    "model_spec": {"$ref": "#/$defs/model_spec"},
+    "profile_spec": {"type": "object"},
+    "provenance_spec": {"type": "object"}
+  },
+  "$defs": {
+    "innovation_spec": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "class_path", "base_linearno", "features", "attnres", "history_k", "raw_cache", "constructor_hyperparameters", "code_schema"],
+      "properties": {
+        "schema_version": {"const": 1},
+        "class_path": {"type": "string", "pattern": "^[A-Za-z_]\\w*(\\.[A-Za-z_]\\w*)+$"},
+        "base_linearno": {"$ref": "#/$defs/base_linearno"},
+        "features": {"$ref": "#/$defs/features"},
+        "attnres": {"$ref": "#/$defs/attnres"},
+        "history_k": {"$ref": "#/$defs/history_k"},
+        "raw_cache": {"$ref": "#/$defs/raw_cache"},
+        "constructor_hyperparameters": {"type": "object", "minProperties": 1},
+        "code_schema": {
+          "type": "object", "additionalProperties": false,
+          "required": ["config_schema_version", "implementation_version", "architecture_extension"],
+          "properties": {"config_schema_version": {"const": 1}, "implementation_version": {"const": "r1-contract-only"}, "architecture_extension": {"const": "linearno_history_v1"}}
+        }
+      }
+    },
+    "base_linearno": {
+      "type": "object", "additionalProperties": false,
+      "required": ["variant", "task_variant", "n_layers", "heads", "d_h", "actual_M", "temperature_semantics"],
+      "properties": {
+        "variant": {"enum": ["plain", "temp", "conv", "conv_temp", "airfrans", "shapenet"]},
+        "task_variant": {"type": "string", "minLength": 1},
+        "n_layers": {"enum": [4, 5, 6, 7, 8]},
+        "heads": {"type": "integer", "minimum": 1}, "d_h": {"type": "integer", "minimum": 1}, "actual_M": {"type": "integer", "minimum": 1},
+        "temperature_semantics": {"type": "object"}
+      }
+    },
+    "features": {
+      "type": "object", "additionalProperties": false,
+      "required": ["linearno_latent_attnres", "linearno_history_k_conditioning", "feature_signature"],
+      "properties": {"linearno_latent_attnres": {"type": "boolean"}, "linearno_history_k_conditioning": {"type": "boolean"}, "feature_signature": {"enum": ["A1K0", "A0K1", "A1K1"]}}
+    },
+    "attnres": {
+      "type": "object", "additionalProperties": false,
+      "required": ["enabled", "version", "per_head_cross", "d_m_equals_d_h", "history_only_source_softmax", "current_in_source_softmax", "null_source", "gamma", "dropout"],
+      "properties": {"enabled": {"type": "boolean"}, "version": {"const": 1}, "per_head_cross": {"const": true}, "d_m_equals_d_h": {"const": true}, "history_only_source_softmax": {"const": true}, "current_in_source_softmax": {"const": false}, "null_source": {"type": "object"}, "gamma": {"type": "object"}, "dropout": {"type": "object"}}
+    },
+    "history_k": {
+      "type": "object", "additionalProperties": false,
+      "required": ["enabled", "version", "base_to_k_row_query", "all_history_token_bank", "point_slot_dot", "point_centering", "gate", "changes_q", "changes_v", "changes_reconstruction_q"],
+      "properties": {"enabled": {"type": "boolean"}, "version": {"const": 1}, "base_to_k_row_query": {"const": true}, "all_history_token_bank": {"const": true}, "point_slot_dot": {"const": true}, "point_centering": {"const": true}, "gate": {"type": "object"}, "changes_q": {"const": false}, "changes_v": {"const": false}, "changes_reconstruction_q": {"const": false}}
+    },
+    "raw_cache": {
+      "type": "object", "additionalProperties": false,
+      "required": ["authoritative_value", "timing", "storage", "detach", "cross_forward", "cross_sample", "cross_time"],
+      "properties": {"authoritative_value": {"const": "C_raw_pre_attnres"}, "timing": {"type": "string"}, "storage": {"const": "forward_local_tuple"}, "detach": {"const": false}, "cross_forward": {"const": false}, "cross_sample": {"const": false}, "cross_time": {"const": false}}
+    },
+    "model_spec": {"type": "object", "additionalProperties": false, "required": ["class_path", "constructor_kwargs"], "properties": {"class_path": {"type": "string"}, "constructor_kwargs": {"type": "object"}}}
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "no_new_failures": true,
+  "current_failed_assertions": [
+    "test_all_preexisting_files_and_absent_frozen_directories (linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) (path='README.md')",
+    "test_all_preexisting_files_and_absent_frozen_directories (linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) (path='path.sh')",
+    "test_all_preexisting_files_and_absent_frozen_directories (linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) (path='docs/LINEARNO_REPRODUCTION_MATRIX.md')"
+  ],
+  "known_before_R5": true,
+  "prior_evidence": "docs/linearno_history_audit/r4/regression-results.json",
+  "total_test_methods": 114,
+  "passed_methods": 109,
+  "failed_methods": 1,
+  "failed_subtest_assertions": 3,
+  "skipped_methods": 4,
+  "note": "The user approved R0\u2013R4 with these non-math freeze assertions; no hash fixtures were relaxed in R5."
+}

@@ -1,0 +1,26 @@
+test_aux_and_sdpa_gradient_equivalence (test_msar_modules.MSARPrimitiveTests.test_aux_and_sdpa_gradient_equivalence) ... ok
+test_aux_gate_and_sdpa_path_equivalence (test_msar_modules.MSARPrimitiveTests.test_aux_gate_and_sdpa_path_equivalence) ... ok
+test_coverage_hand_values_and_layer_reduction (test_msar_modules.MSARPrimitiveTests.test_coverage_hand_values_and_layer_reduction) ... ok
+test_coverage_masks_ignore_padding_and_measure_scale (test_msar_modules.MSARPrimitiveTests.test_coverage_masks_ignore_padding_and_measure_scale) ... ok
+test_coverage_reference_gradient_mask_and_measure (test_msar_modules.MSARPrimitiveTests.test_coverage_reference_gradient_mask_and_measure) ... ok
+test_cuda_fp32_and_amp_primitives_finite_and_critical_dtypes (test_msar_modules.MSARPrimitiveTests.test_cuda_fp32_and_amp_primitives_finite_and_critical_dtypes) ... skipped 'CUDA unavailable; no AMP acceptance'
+test_diagnostics_no_grad_and_not_automatic (test_msar_modules.MSARPrimitiveTests.test_diagnostics_no_grad_and_not_automatic) ... ok
+test_down_explicit_oracle_outputs_masks_and_gradients (test_msar_modules.MSARPrimitiveTests.test_down_explicit_oracle_outputs_masks_and_gradients) ... ok
+test_down_matches_accepted_old_primitive_same_weights (test_msar_modules.MSARPrimitiveTests.test_down_matches_accepted_old_primitive_same_weights) ... ok
+test_down_permutations_and_batch_isolation (test_msar_modules.MSARPrimitiveTests.test_down_permutations_and_batch_isolation) ... ok
+test_float64_independent_oracle_gradcheck (test_msar_modules.MSARPrimitiveTests.test_float64_independent_oracle_gradcheck) ... ok
+test_fusion_raw_values_slot_alignment_and_oracle (test_msar_modules.MSARPrimitiveTests.test_fusion_raw_values_slot_alignment_and_oracle) ... ok
+test_fusion_zero_initialization_jacobian_and_learnable_w (test_msar_modules.MSARPrimitiveTests.test_fusion_zero_initialization_jacobian_and_learnable_w) ... ok
+test_inputs_not_mutated_and_synthetic_optimizer_step (test_msar_modules.MSARPrimitiveTests.test_inputs_not_mutated_and_synthetic_optimizer_step) ... ok
+test_invalid_shapes_masks_and_configs (test_msar_modules.MSARPrimitiveTests.test_invalid_shapes_masks_and_configs) ... ok
+test_isolated_coverage_gradient_to_learned_q_and_key_projection (test_msar_modules.MSARPrimitiveTests.test_isolated_coverage_gradient_to_learned_q_and_key_projection) ... ok
+test_latent_three_residual_formula_and_calls (test_msar_modules.MSARPrimitiveTests.test_latent_three_residual_formula_and_calls) ... ok
+test_parameters_initialization_independence_and_checkpoint (test_msar_modules.MSARPrimitiveTests.test_parameters_initialization_independence_and_checkpoint) ... ok
+test_single_sample_and_joint_batch_agree_for_latent_and_fusion (test_msar_modules.MSARPrimitiveTests.test_single_sample_and_joint_batch_agree_for_latent_and_fusion) ... ok
+test_up_formula_permutation_branch_and_batch_isolation (test_msar_modules.MSARPrimitiveTests.test_up_formula_permutation_branch_and_batch_isolation) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.831s
+
+OK (skipped=1)
+M2 environment: torch=2.13.0+cu130, CUDA=13.0, GPU=None

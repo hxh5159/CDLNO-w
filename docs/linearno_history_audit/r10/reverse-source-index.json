@@ -1,0 +1,1009 @@
+[
+  {
+    "path": "cdlno/linearno_history/__init__.py",
+    "sha256": "c33e058eb5fceb8c2597ae507815907b0c88767a7117d587d81fc3d7ede528be",
+    "symbols": []
+  },
+  {
+    "path": "cdlno/linearno_history/air_entry.py",
+    "sha256": "2943fdab2cede967a2f7319d52e400b2e0cbc98f7d1a47bf07a68f287e52b57a",
+    "symbols": [
+      {
+        "name": "check_structure",
+        "line": 29,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "parse_args",
+        "line": 35,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "AirRun",
+        "line": 142,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "run_cli",
+        "line": 350,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "__init__",
+        "line": 144,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "_read_manifest",
+        "line": 167,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "model_spec",
+        "line": 172,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "member_dir",
+        "line": 176,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "_resume_zero",
+        "line": 179,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "_metadata",
+        "line": 183,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "_write_root_metadata",
+        "line": 190,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "prepare",
+        "line": 203,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "complete_epoch",
+        "line": 259,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "loader_kwargs",
+        "line": 272,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "bind",
+        "line": 275,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "load_models",
+        "line": 278,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "_write_ensemble_manifest",
+        "line": 320,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "finish_ensemble",
+        "line": 338,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "eval_dir",
+        "line": 343,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "cdlno/linearno_history/attnres.py",
+    "sha256": "da8590b06018aded853fade0b8ed4e2dd4cfb21d54c43e6e087120613966d591",
+    "symbols": [
+      {
+        "name": "SummaryRMSNorm",
+        "line": 17,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "AttnResReceiver",
+        "line": 26,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "AttnResTrace",
+        "line": 37,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "LatentSummaryAttnRes",
+        "line": 46,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "__init__",
+        "line": 18,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "forward",
+        "line": 22,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "__init__",
+        "line": 27,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "__init__",
+        "line": 53,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "_validate",
+        "line": 75,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "forward",
+        "line": 93,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "_evaluate",
+        "line": 99,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "cdlno/linearno_history/car_entry.py",
+    "sha256": "486909e6de4071f8449982b92aada9c8f9be91eee075d76f768cad684be20575",
+    "symbols": [
+      {
+        "name": "check_structure",
+        "line": 30,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "parse_args",
+        "line": 36,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "CarRun",
+        "line": 131,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "run_cli",
+        "line": 250,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "__init__",
+        "line": 132,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "metadata",
+        "line": 153,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "prepare",
+        "line": 162,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "complete_epoch",
+        "line": 184,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "load",
+        "line": 192,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "objective",
+        "line": 202,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "train",
+        "line": 216,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "cdlno/linearno_history/checkpoint.py",
+    "sha256": "e37f5094f8e028723b243827f7dae63721ac9f36c8a4b61cb7c5d9f84533fd1e",
+    "symbols": [
+      {
+        "name": "source_hash",
+        "line": 30,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "rehash",
+        "line": 39,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "baseline_view",
+        "line": 44,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "make_metadata",
+        "line": 56,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "config_from_metadata",
+        "line": 77,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "validate_metadata",
+        "line": 84,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "runtime_changes",
+        "line": 132,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "read_json",
+        "line": 146,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "inspect_checkpoint",
+        "line": 157,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "_read_pair",
+        "line": 194,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "save_checkpoint",
+        "line": 207,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "load_checkpoint",
+        "line": 260,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "resume_checkpoint",
+        "line": 271,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "unique_pairs",
+        "line": 147,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "cdlno/linearno_history/cli.py",
+    "sha256": "733fbaec2c02956b674adf94c240ea610ab6d12eae3f1306de6aff7e1cd5986d",
+    "symbols": [
+      {
+        "name": "take_features",
+        "line": 8,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "run_family",
+        "line": 20,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "cdlno/linearno_history/config.py",
+    "sha256": "6a368fbba71714feceeb98f867f99ae4334b24c65a7779b387dd8aa285e8a7c4",
+    "symbols": [
+      {
+        "name": "task_kind",
+        "line": 37,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "baseline_model_spec",
+        "line": 41,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "resolve_config",
+        "line": 64,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "validate_config",
+        "line": 101,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "innovation_spec",
+        "line": 117,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "structural_differences",
+        "line": 148,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "visit",
+        "line": 150,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "cdlno/linearno_history/context.py",
+    "sha256": "ced8d2319b25904b18d588c30c103d1e13d5a5c63309a14e4340b337f149cd70",
+    "symbols": [
+      {
+        "name": "RawHistoryContext",
+        "line": 10,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "__post_init__",
+        "line": 21,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "before_block",
+        "line": 35,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "after_block",
+        "line": 40,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "__reduce_ex__",
+        "line": 44,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "cdlno/linearno_history/core.py",
+    "sha256": "ea2d0435249382b4312008aa841f4768581f0fd2725258c12119dfcfe86b8b56",
+    "symbols": [
+      {
+        "name": "AttentionFactors",
+        "line": 21,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "BlockTrace",
+        "line": 34,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "attention_factors",
+        "line": 42,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "LinearNOHistoryCore",
+        "line": 85,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "__init__",
+        "line": 92,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "forward",
+        "line": 114,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "cdlno/linearno_history/factory.py",
+    "sha256": "f2055272a3e51680dde3284523349746e6a0236d8cf024dcc4672199e25a4f6b",
+    "symbols": [
+      {
+        "name": "class_for",
+        "line": 11,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "validate_constructor",
+        "line": 35,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "build_model",
+        "line": 51,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "build_fair_model",
+        "line": 62,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "cdlno/linearno_history/fair_run.py",
+    "sha256": "2317079e6e073abaa1262b3120e7b84a04eef8e30d545872f10350d7a6b52ea0",
+    "symbols": [
+      {
+        "name": "take_fair",
+        "line": 17,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "attach",
+        "line": 34,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "record",
+        "line": 47,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "prepare_loaders",
+        "line": 67,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "GeneratorCollate",
+        "line": 81,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "__init__",
+        "line": 87,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "__call__",
+        "line": 90,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "cdlno/linearno_history/history_k.py",
+    "sha256": "f9fbe368d84883bbff3d330a8020987106c2737e3504a2f865baf15abd7deedb",
+    "symbols": [
+      {
+        "name": "ln0",
+        "line": 17,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "HistoryKTrace",
+        "line": 24,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "HistoryConditionedK",
+        "line": 33,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "__init__",
+        "line": 39,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "_validate",
+        "line": 62,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "forward",
+        "line": 85,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "cdlno/linearno_history/industrial.py",
+    "sha256": "f700419e186aa56954987fe61eb2078b378b2171e3922a23bb6b7556d41c1681",
+    "symbols": [
+      {
+        "name": "intercept",
+        "line": 13,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "finish_args",
+        "line": 30,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "check_structure",
+        "line": 54,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "read_metadata",
+        "line": 58,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "write_metadata",
+        "line": 62,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "make_metadata",
+        "line": 67,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "inspect_checkpoint",
+        "line": 78,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "read_pair",
+        "line": 82,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "save_pair",
+        "line": 87,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "construct",
+        "line": 91,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "generators",
+        "line": 118,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "verify_resume_source",
+        "line": 123,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "cdlno/linearno_history/models.py",
+    "sha256": "4795e8ca106bc44d08104e5ed4a7094b847e9303174f38ac1bd87c565af529b5",
+    "symbols": [
+      {
+        "name": "AirfRANSHistoryModel",
+        "line": 8,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "ShapeNetHistoryModel",
+        "line": 39,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "AirfRANSAttnResModel",
+        "line": 74,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "ShapeNetAttnResModel",
+        "line": 86,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "AirfRANSHistoryKModel",
+        "line": 98,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "ShapeNetHistoryKModel",
+        "line": 111,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "AirfRANSJointHistoryModel",
+        "line": 124,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "ShapeNetJointHistoryModel",
+        "line": 141,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "__init__",
+        "line": 11,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "forward",
+        "line": 20,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "__init__",
+        "line": 42,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "forward",
+        "line": 53,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "__init__",
+        "line": 76,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "forward",
+        "line": 82,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "__init__",
+        "line": 88,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "forward",
+        "line": 94,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "__init__",
+        "line": 100,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "forward",
+        "line": 107,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "__init__",
+        "line": 113,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "forward",
+        "line": 120,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "__init__",
+        "line": 126,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "forward",
+        "line": 136,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "__init__",
+        "line": 143,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "forward",
+        "line": 153,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "cdlno/linearno_history/provenance.py",
+    "sha256": "a4de9fe11cc5407b78fe36d46ba5847c6a367637304dc93fb4770ff9b22bc6ae",
+    "symbols": [
+      {
+        "name": "baseline_source",
+        "line": 16,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "research_provenance",
+        "line": 24,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "cdlno/linearno_history/standard_entry.py",
+    "sha256": "8a5f315dd4f7a26cfe001da0cfefd77b747c21a4d15af33cbd8776dfd5bb1257",
+    "symbols": [
+      {
+        "name": "intercept",
+        "line": 25,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "model_module",
+        "line": 49,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "select_run",
+        "line": 58,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "provenance",
+        "line": 63,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "parse_research_args",
+        "line": 68,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "FairBaselineRun",
+        "line": 163,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "HistoryStandardRun",
+        "line": 175,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "construct",
+        "line": 51,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "__init__",
+        "line": 164,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "prepare",
+        "line": 169,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "prepare",
+        "line": 176,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "load",
+        "line": 258,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "save",
+        "line": 264,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "linearno_history/__init__.py",
+    "sha256": "38c3c58ec197aae89a8dd260f8b332813f098edd12b99584114c7a3866f9e415",
+    "symbols": []
+  },
+  {
+    "path": "linearno_history/schema.py",
+    "sha256": "5783ed2d57808049d1b6e5efe32b6b3a622e76616e96397a2aea30808548ae7e",
+    "symbols": [
+      {
+        "name": "HistorySchemaError",
+        "line": 43,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "_mapping",
+        "line": 47,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "_exact",
+        "line": 53,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "_bool",
+        "line": 60,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "_int",
+        "line": 66,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "_finite",
+        "line": 72,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "_class_path",
+        "line": 80,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "_clone",
+        "line": 89,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "feature_signature",
+        "line": 93,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "resolve_feature_config",
+        "line": 97,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "validate_family_feature_config",
+        "line": 124,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "validate_base_descriptor",
+        "line": 135,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "_validate_attnres",
+        "line": 156,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "_validate_history_k",
+        "line": 189,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "validate_innovation_spec",
+        "line": 210,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "_get",
+        "line": 251,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "validate_research_metadata",
+        "line": 268,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "validate_legacy_metadata",
+        "line": 294,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "validate_strict_load_policy",
+        "line": 305,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "assert_structural_compatibility",
+        "line": 310,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "run_directory_id",
+        "line": 321,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "derive_fair_seeds",
+        "line": 332,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "canonical_json",
+        "line": 342,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "derive",
+        "line": 336,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "PDE-Solving-StandardBenchmark/model/LinearNO_History.py",
+    "sha256": "f6e862133557e633029303857cfc39a464bde22cfc420f4a5196e6bd02275f59",
+    "symbols": [
+      {
+        "name": "Model",
+        "line": 11,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "AttnResModel",
+        "line": 55,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "HistoryKModel",
+        "line": 67,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "JointHistoryModel",
+        "line": 80,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "__init__",
+        "line": 14,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "forward",
+        "line": 25,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "__init__",
+        "line": 57,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "forward",
+        "line": 63,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "__init__",
+        "line": 69,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "forward",
+        "line": 76,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "__init__",
+        "line": 82,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "forward",
+        "line": 92,
+        "kind": "FunctionDef"
+      }
+    ]
+  }
+]

@@ -1,0 +1,28 @@
+/home/hwz/anaconda3/lib/python3.13/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+test_fixed_pickle_behavior_and_reference_rejected (test_kcdno_delivery.DeliveryChecks.test_fixed_pickle_behavior_and_reference_rejected) ... ok
+test_legacy_parser_imports_without_shared_package (test_kcdno_delivery.DeliveryChecks.test_legacy_parser_imports_without_shared_package) ... FAIL
+test_real_scripts_profiles_train_eval_and_early_records (test_kcdno_delivery.DeliveryChecks.test_real_scripts_profiles_train_eval_and_early_records) ... ok
+test_temporal_off_model_optimizer_step (test_kcdno_delivery.DeliveryChecks.test_temporal_off_model_optimizer_step) ... ok
+
+======================================================================
+FAIL: test_legacy_parser_imports_without_shared_package (test_kcdno_delivery.DeliveryChecks.test_legacy_parser_imports_without_shared_package)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_kcdno_delivery.py", line 69, in test_legacy_parser_imports_without_shared_package
+    self.assertEqual(r.returncode,0,r.stdout+r.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0 : Traceback (most recent call last):
+  File "<string>", line 11, in <module>
+    a=mod.parse_args(scope['parser'],'darcy',argv=['--model','Transolver_Structured_Mesh_2D']) if kind=='standard' else mod.parse_args(scope['parser'],argv=['--cfd_model' if kind=='car' else '--model','Transolver'])
+      ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark/cdlno_entry.py", line 37, in parse_args
+    from cdlno.linearno_history.standard_entry import intercept as intercept_history
+ModuleNotFoundError: No module named 'cdlno'
+
+
+----------------------------------------------------------------------
+Ran 4 tests in 7.609s
+
+FAILED (failures=1)
+24 real-script train/eval pairs + 32 profile/family defaults + early records passed; no dataset entry executed

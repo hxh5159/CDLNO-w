@@ -1,0 +1,21 @@
+{
+  "task": "elasticity",
+  "scope": "synthetic CPU float32; d32/h4/M16; one thread; no data/GPU",
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "measurement_seed": 17,
+  "N": 972,
+  "B": 2,
+  "warmup": 3,
+  "steps": 12,
+  "control": "for each enhanced mode/depth: pure same-depth global rank nearest parameter or matrix-MAC count; ties smaller rank; width unchanged",
+  "timing": "diagnostics/profiler OFF; CPU synchronous perf_counter_ns; initialized AdamW; synthetic MSE",
+  "flops": "2 per dense matrix/convolution MAC; explicit separate full operator inventory, not claimed total scalar FLOPs",
+  "paired_accuracy": "NOT RUN for all seeds; final checkpoint only; no test selection",
+  "torch": "2.13.0+cu130",
+  "python": "3.13.9",
+  "cpu": ""
+}

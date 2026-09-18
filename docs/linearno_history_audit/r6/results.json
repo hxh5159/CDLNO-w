@@ -1,0 +1,1554 @@
+[
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "airfoil",
+    "depth": 4,
+    "signature": "A0K0",
+    "parameters": 900033,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 11271,
+      "A_cross": null,
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "airfoil",
+    "depth": 4,
+    "signature": "A1K0",
+    "parameters": 902180,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 11271,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "airfoil",
+    "depth": 4,
+    "signature": "A0K1",
+    "parameters": 900825,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 11271,
+      "A_cross": null,
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "airfoil",
+    "depth": 4,
+    "signature": "A1K1",
+    "parameters": 902972,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 11271,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "airfoil",
+    "depth": 5,
+    "signature": "A0K0",
+    "parameters": 1116497,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 11271,
+      "A_cross": null,
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "airfoil",
+    "depth": 5,
+    "signature": "A1K0",
+    "parameters": 1119189,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 11271,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "airfoil",
+    "depth": 5,
+    "signature": "A0K1",
+    "parameters": 1117297,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 11271,
+      "A_cross": null,
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "airfoil",
+    "depth": 5,
+    "signature": "A1K1",
+    "parameters": 1119989,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 11271,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "airfoil",
+    "depth": 6,
+    "signature": "A0K0",
+    "parameters": 1332961,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 11271,
+      "A_cross": null,
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "airfoil",
+    "depth": 6,
+    "signature": "A1K0",
+    "parameters": 1336198,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 11271,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "airfoil",
+    "depth": 6,
+    "signature": "A0K1",
+    "parameters": 1333769,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 11271,
+      "A_cross": null,
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "airfoil",
+    "depth": 6,
+    "signature": "A1K1",
+    "parameters": 1337006,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 11271,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "airfoil",
+    "depth": 7,
+    "signature": "A0K0",
+    "parameters": 1549425,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 11271,
+      "A_cross": null,
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "airfoil",
+    "depth": 7,
+    "signature": "A1K0",
+    "parameters": 1553207,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 11271,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "airfoil",
+    "depth": 7,
+    "signature": "A0K1",
+    "parameters": 1550241,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 11271,
+      "A_cross": null,
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "airfoil",
+    "depth": 7,
+    "signature": "A1K1",
+    "parameters": 1554023,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 11271,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "airfoil",
+    "depth": 8,
+    "signature": "A0K0",
+    "parameters": 1765889,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 11271,
+      "A_cross": null,
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "airfoil",
+    "depth": 8,
+    "signature": "A1K0",
+    "parameters": 1770216,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 11271,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "airfoil",
+    "depth": 8,
+    "signature": "A0K1",
+    "parameters": 1766713,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 11271,
+      "A_cross": null,
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "airfoil",
+    "depth": 8,
+    "signature": "A1K1",
+    "parameters": 1771040,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 11271,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "darcy",
+    "depth": 4,
+    "signature": "A0K0",
+    "parameters": 900289,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 7225,
+      "A_cross": null,
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "darcy",
+    "depth": 4,
+    "signature": "A1K0",
+    "parameters": 902436,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 7225,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "darcy",
+    "depth": 4,
+    "signature": "A0K1",
+    "parameters": 901081,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 7225,
+      "A_cross": null,
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "darcy",
+    "depth": 4,
+    "signature": "A1K1",
+    "parameters": 903228,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 7225,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "darcy",
+    "depth": 5,
+    "signature": "A0K0",
+    "parameters": 1116753,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 7225,
+      "A_cross": null,
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "darcy",
+    "depth": 5,
+    "signature": "A1K0",
+    "parameters": 1119445,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 7225,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "darcy",
+    "depth": 5,
+    "signature": "A0K1",
+    "parameters": 1117553,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 7225,
+      "A_cross": null,
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "darcy",
+    "depth": 5,
+    "signature": "A1K1",
+    "parameters": 1120245,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 7225,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "darcy",
+    "depth": 6,
+    "signature": "A0K0",
+    "parameters": 1333217,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 7225,
+      "A_cross": null,
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "darcy",
+    "depth": 6,
+    "signature": "A1K0",
+    "parameters": 1336454,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 7225,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "darcy",
+    "depth": 6,
+    "signature": "A0K1",
+    "parameters": 1334025,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 7225,
+      "A_cross": null,
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "darcy",
+    "depth": 6,
+    "signature": "A1K1",
+    "parameters": 1337262,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 7225,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "darcy",
+    "depth": 7,
+    "signature": "A0K0",
+    "parameters": 1549681,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 7225,
+      "A_cross": null,
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "darcy",
+    "depth": 7,
+    "signature": "A1K0",
+    "parameters": 1553463,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 7225,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "darcy",
+    "depth": 7,
+    "signature": "A0K1",
+    "parameters": 1550497,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 7225,
+      "A_cross": null,
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "darcy",
+    "depth": 7,
+    "signature": "A1K1",
+    "parameters": 1554279,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 7225,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "darcy",
+    "depth": 8,
+    "signature": "A0K0",
+    "parameters": 1766145,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 7225,
+      "A_cross": null,
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "darcy",
+    "depth": 8,
+    "signature": "A1K0",
+    "parameters": 1770472,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 7225,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "darcy",
+    "depth": 8,
+    "signature": "A0K1",
+    "parameters": 1766969,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 7225,
+      "A_cross": null,
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "darcy",
+    "depth": 8,
+    "signature": "A1K1",
+    "parameters": 1771296,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 7225,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "elasticity",
+    "depth": 4,
+    "signature": "A0K0",
+    "parameters": 309697,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 972,
+      "A_cross": null,
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "elasticity",
+    "depth": 4,
+    "signature": "A1K0",
+    "parameters": 311844,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 972,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "elasticity",
+    "depth": 4,
+    "signature": "A0K1",
+    "parameters": 310489,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 972,
+      "A_cross": null,
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "elasticity",
+    "depth": 4,
+    "signature": "A1K1",
+    "parameters": 312636,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 972,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "elasticity",
+    "depth": 5,
+    "signature": "A0K0",
+    "parameters": 378577,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 972,
+      "A_cross": null,
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "elasticity",
+    "depth": 5,
+    "signature": "A1K0",
+    "parameters": 381269,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 972,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "elasticity",
+    "depth": 5,
+    "signature": "A0K1",
+    "parameters": 379377,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 972,
+      "A_cross": null,
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "elasticity",
+    "depth": 5,
+    "signature": "A1K1",
+    "parameters": 382069,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 972,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "elasticity",
+    "depth": 6,
+    "signature": "A0K0",
+    "parameters": 447457,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 972,
+      "A_cross": null,
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "elasticity",
+    "depth": 6,
+    "signature": "A1K0",
+    "parameters": 450694,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 972,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "elasticity",
+    "depth": 6,
+    "signature": "A0K1",
+    "parameters": 448265,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 972,
+      "A_cross": null,
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "elasticity",
+    "depth": 6,
+    "signature": "A1K1",
+    "parameters": 451502,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 972,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "elasticity",
+    "depth": 7,
+    "signature": "A0K0",
+    "parameters": 516337,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 972,
+      "A_cross": null,
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "elasticity",
+    "depth": 7,
+    "signature": "A1K0",
+    "parameters": 520119,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 972,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "elasticity",
+    "depth": 7,
+    "signature": "A0K1",
+    "parameters": 517153,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 972,
+      "A_cross": null,
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "elasticity",
+    "depth": 7,
+    "signature": "A1K1",
+    "parameters": 520935,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 972,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "elasticity",
+    "depth": 8,
+    "signature": "A0K0",
+    "parameters": 585217,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 972,
+      "A_cross": null,
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "elasticity",
+    "depth": 8,
+    "signature": "A1K0",
+    "parameters": 589544,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 972,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "elasticity",
+    "depth": 8,
+    "signature": "A0K1",
+    "parameters": 586041,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 972,
+      "A_cross": null,
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "elasticity",
+    "depth": 8,
+    "signature": "A1K1",
+    "parameters": 590368,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 972,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "pipe",
+    "depth": 4,
+    "signature": "A0K0",
+    "parameters": 900033,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 16641,
+      "A_cross": null,
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "pipe",
+    "depth": 4,
+    "signature": "A1K0",
+    "parameters": 902180,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 16641,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "pipe",
+    "depth": 4,
+    "signature": "A0K1",
+    "parameters": 900825,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 16641,
+      "A_cross": null,
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "pipe",
+    "depth": 4,
+    "signature": "A1K1",
+    "parameters": 902972,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 16641,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "pipe",
+    "depth": 5,
+    "signature": "A0K0",
+    "parameters": 1116497,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 16641,
+      "A_cross": null,
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "pipe",
+    "depth": 5,
+    "signature": "A1K0",
+    "parameters": 1119189,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 16641,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "pipe",
+    "depth": 5,
+    "signature": "A0K1",
+    "parameters": 1117297,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 16641,
+      "A_cross": null,
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "pipe",
+    "depth": 5,
+    "signature": "A1K1",
+    "parameters": 1119989,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 16641,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "pipe",
+    "depth": 6,
+    "signature": "A0K0",
+    "parameters": 1332961,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 16641,
+      "A_cross": null,
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "pipe",
+    "depth": 6,
+    "signature": "A1K0",
+    "parameters": 1336198,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 16641,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "pipe",
+    "depth": 6,
+    "signature": "A0K1",
+    "parameters": 1333769,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 16641,
+      "A_cross": null,
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "pipe",
+    "depth": 6,
+    "signature": "A1K1",
+    "parameters": 1337006,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 16641,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "pipe",
+    "depth": 7,
+    "signature": "A0K0",
+    "parameters": 1549425,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 16641,
+      "A_cross": null,
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "pipe",
+    "depth": 7,
+    "signature": "A1K0",
+    "parameters": 1553207,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 16641,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "pipe",
+    "depth": 7,
+    "signature": "A0K1",
+    "parameters": 1550241,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 16641,
+      "A_cross": null,
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "pipe",
+    "depth": 7,
+    "signature": "A1K1",
+    "parameters": 1554023,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 16641,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "pipe",
+    "depth": 8,
+    "signature": "A0K0",
+    "parameters": 1765889,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 16641,
+      "A_cross": null,
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "pipe",
+    "depth": 8,
+    "signature": "A1K0",
+    "parameters": 1770216,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 16641,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": null,
+      "K_delta": null
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "pipe",
+    "depth": 8,
+    "signature": "A0K1",
+    "parameters": 1766713,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 16641,
+      "A_cross": null,
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "actual-task-parameter-count",
+    "task": "pipe",
+    "depth": 8,
+    "signature": "A1K1",
+    "parameters": 1771040,
+    "shape": {
+      "B": "task batch",
+      "H": 8,
+      "M": 64,
+      "d_h": 16,
+      "N": 16641,
+      "A_cross": "[B,8,64,64] per real source",
+      "K_read": "[B,8,64,l*64]",
+      "K_delta": "[B,8,N,64]"
+    }
+  },
+  {
+    "kind": "native-cycle",
+    "task": "airfoil",
+    "signature": "A0K0",
+    "depth": 4,
+    "real_N": 11271,
+    "all_exact": true,
+    "synthetic": true,
+    "artifacts": "/home/hwz/CDLNO-artifacts/r6-fair-native-cycles/split/airfoil__paper_table8_on_release_model__L4__A0K0__seed17",
+    "normalizer_no_refit": true,
+    "status": "PASS"
+  },
+  {
+    "kind": "native-cycle",
+    "task": "airfoil",
+    "signature": "A1K0",
+    "depth": 4,
+    "real_N": 11271,
+    "all_exact": true,
+    "synthetic": true,
+    "artifacts": "/home/hwz/CDLNO-artifacts/r6-fair-native-cycles/split/airfoil__paper_table8_on_release_model__L4__A1K0__seed17",
+    "normalizer_no_refit": true,
+    "status": "PASS"
+  },
+  {
+    "kind": "native-cycle",
+    "task": "airfoil",
+    "signature": "A0K1",
+    "depth": 4,
+    "real_N": 11271,
+    "all_exact": true,
+    "synthetic": true,
+    "artifacts": "/home/hwz/CDLNO-artifacts/r6-fair-native-cycles/split/airfoil__paper_table8_on_release_model__L4__A0K1__seed17",
+    "normalizer_no_refit": true,
+    "status": "PASS"
+  },
+  {
+    "kind": "native-cycle",
+    "task": "airfoil",
+    "signature": "A1K1",
+    "depth": 4,
+    "real_N": 11271,
+    "all_exact": true,
+    "synthetic": true,
+    "artifacts": "/home/hwz/CDLNO-artifacts/r6-fair-native-cycles/split/airfoil__paper_table8_on_release_model__L4__A1K1__seed17",
+    "normalizer_no_refit": true,
+    "status": "PASS"
+  },
+  {
+    "kind": "native-cycle",
+    "task": "darcy",
+    "signature": "A0K0",
+    "depth": 4,
+    "real_N": 7225,
+    "all_exact": true,
+    "synthetic": true,
+    "artifacts": "/home/hwz/CDLNO-artifacts/r6-fair-native-cycles/split/darcy__paper_table8_on_release_model__L4__A0K0__seed17",
+    "normalizer_no_refit": true,
+    "status": "PASS"
+  },
+  {
+    "kind": "native-cycle",
+    "task": "darcy",
+    "signature": "A1K0",
+    "depth": 4,
+    "real_N": 7225,
+    "all_exact": true,
+    "synthetic": true,
+    "artifacts": "/home/hwz/CDLNO-artifacts/r6-fair-native-cycles/split/darcy__paper_table8_on_release_model__L4__A1K0__seed17",
+    "normalizer_no_refit": true,
+    "status": "PASS"
+  },
+  {
+    "kind": "native-cycle",
+    "task": "darcy",
+    "signature": "A0K1",
+    "depth": 4,
+    "real_N": 7225,
+    "all_exact": true,
+    "synthetic": true,
+    "artifacts": "/home/hwz/CDLNO-artifacts/r6-fair-native-cycles/split/darcy__paper_table8_on_release_model__L4__A0K1__seed17",
+    "normalizer_no_refit": true,
+    "status": "PASS"
+  },
+  {
+    "kind": "native-cycle",
+    "task": "darcy",
+    "signature": "A1K1",
+    "depth": 4,
+    "real_N": 7225,
+    "all_exact": true,
+    "synthetic": true,
+    "artifacts": "/home/hwz/CDLNO-artifacts/r6-fair-native-cycles/split/darcy__paper_table8_on_release_model__L4__A1K1__seed17",
+    "normalizer_no_refit": true,
+    "status": "PASS"
+  },
+  {
+    "kind": "native-cycle",
+    "task": "elasticity",
+    "signature": "A0K0",
+    "depth": 4,
+    "real_N": 972,
+    "all_exact": true,
+    "synthetic": true,
+    "artifacts": "/home/hwz/CDLNO-artifacts/r6-fair-native-cycles/split/elasticity__paper_table8_on_release_model__L4__A0K0__seed17",
+    "normalizer_no_refit": true,
+    "status": "PASS"
+  },
+  {
+    "kind": "native-cycle",
+    "task": "elasticity",
+    "signature": "A1K0",
+    "depth": 4,
+    "real_N": 972,
+    "all_exact": true,
+    "synthetic": true,
+    "artifacts": "/home/hwz/CDLNO-artifacts/r6-fair-native-cycles/split/elasticity__paper_table8_on_release_model__L4__A1K0__seed17",
+    "normalizer_no_refit": true,
+    "status": "PASS"
+  },
+  {
+    "kind": "native-cycle",
+    "task": "elasticity",
+    "signature": "A0K1",
+    "depth": 4,
+    "real_N": 972,
+    "all_exact": true,
+    "synthetic": true,
+    "artifacts": "/home/hwz/CDLNO-artifacts/r6-fair-native-cycles/split/elasticity__paper_table8_on_release_model__L4__A0K1__seed17",
+    "normalizer_no_refit": true,
+    "status": "PASS"
+  },
+  {
+    "kind": "native-cycle",
+    "task": "elasticity",
+    "signature": "A1K1",
+    "depth": 4,
+    "real_N": 972,
+    "all_exact": true,
+    "synthetic": true,
+    "artifacts": "/home/hwz/CDLNO-artifacts/r6-fair-native-cycles/split/elasticity__paper_table8_on_release_model__L4__A1K1__seed17",
+    "normalizer_no_refit": true,
+    "status": "PASS"
+  },
+  {
+    "kind": "native-cycle",
+    "task": "pipe",
+    "signature": "A0K0",
+    "depth": 4,
+    "real_N": 16641,
+    "all_exact": true,
+    "synthetic": true,
+    "artifacts": "/home/hwz/CDLNO-artifacts/r6-fair-native-cycles/split/pipe__paper_table8_on_release_model__L4__A0K0__seed17",
+    "normalizer_no_refit": true,
+    "status": "PASS"
+  },
+  {
+    "kind": "native-cycle",
+    "task": "pipe",
+    "signature": "A1K0",
+    "depth": 4,
+    "real_N": 16641,
+    "all_exact": true,
+    "synthetic": true,
+    "artifacts": "/home/hwz/CDLNO-artifacts/r6-fair-native-cycles/split/pipe__paper_table8_on_release_model__L4__A1K0__seed17",
+    "normalizer_no_refit": true,
+    "status": "PASS"
+  },
+  {
+    "kind": "native-cycle",
+    "task": "pipe",
+    "signature": "A0K1",
+    "depth": 4,
+    "real_N": 16641,
+    "all_exact": true,
+    "synthetic": true,
+    "artifacts": "/home/hwz/CDLNO-artifacts/r6-fair-native-cycles/split/pipe__paper_table8_on_release_model__L4__A0K1__seed17",
+    "normalizer_no_refit": true,
+    "status": "PASS"
+  },
+  {
+    "kind": "native-cycle",
+    "task": "pipe",
+    "signature": "A1K1",
+    "depth": 4,
+    "real_N": 16641,
+    "all_exact": true,
+    "synthetic": true,
+    "artifacts": "/home/hwz/CDLNO-artifacts/r6-fair-native-cycles/split/pipe__paper_table8_on_release_model__L4__A1K1__seed17",
+    "normalizer_no_refit": true,
+    "status": "PASS"
+  }
+]

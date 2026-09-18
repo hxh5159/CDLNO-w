@@ -1,0 +1,18 @@
+{
+  "scope": "synthetic forward-local context fixtures only; no task integration",
+  "ns": {
+    "variant": "plain", "input_frames": 10, "output_frames": 1,
+    "calls": 10, "train_feedback": "truth", "eval_feedback": "prediction",
+    "train_optimizer_steps": 1
+  },
+  "plasticity": {
+    "variant": "conv", "H": 3, "W": 5, "fun_dim": 1, "out_dim": 4,
+    "time_shape": [2, 1], "queries": 20,
+    "permutation": "per-sample torch.randperm20", "optimizer_steps": 20,
+    "scheduler_steps": 1
+  },
+  "every_call": {
+    "entry_history_size": 0, "before_block_history_sizes": [0, 1, 2, 3],
+    "cache": "raw C, no detach, no forward/time reuse"
+  }
+}

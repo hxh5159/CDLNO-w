@@ -1,0 +1,21 @@
+## R8：接入 AirfRANS 与 ShapeNet-Car
+
+```text
+R7 已审查通过。现在只执行 R8：接入AirfRANS与ShapeNet-Car，完整继承旧LinearNO L6/L7冻结的任务专属模型、objective/evaluation profile、sampling、ensemble、force metric和checkpoint协议。
+
+AirfRANS：
+1. 保持input7、unified reference-distance、preprocess/output、actual M=32、发布forward不使用temperature、随机32k采样、ensemble成员顺序和完整test评估。
+2. 每个ensemble成员必须先读自己的model_spec/innovation_spec再构造并strict加载；成员之间不共享forward history。旧Transolver whole-object路径与纯LinearNO路径不变。
+3. 正式batch=1/单图可变N合同下验证无跨图或跨成员历史混合。
+
+ShapeNet-Car：
+4. 保持input7、actual M=key_ratio*d_h=32、tempreature_q/k拼写和clamp、输出head、fold/split、surface velocity与drag评估修复。
+5. 两创新不得改变基础Q/K温度或把Standard的absolute key_ratio语义套进ShapeNet。
+6. metadata必须先于模型构造；未知/研究权重不得fallback为Transolver。
+
+共同要求：
+7. 为两任务提供四组合×L=4..8准确train/resume/eval命令；完成synthetic/PyG对象forward/backward、strict checkpoint、new-process eval和旧模型回归。
+8. 真实loader一批只在RUN_REAL_BATCH=true；mini-run只在RUN_MINIRUN=true且受MAX_STEPS限制。不得下载/伪造同名数据。
+9. 更新跨八任务RESEARCH_MATRIX和STATUS后停止。
+```
+
