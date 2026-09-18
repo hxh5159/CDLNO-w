@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 # Source this file; it only sets paths. No install, mkdir, symlink or training.
-# Remote checkout: /inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/transolver/CDLNO-w
+# Remote checkout: /inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/transolver/LinearNO-monitor
 # Locating this file keeps the checkout portable (including local --dry-run).
+# The CDLNO_* variable names are shared launcher interfaces, not folder names.
+# After changing checkouts in an existing shell, explicitly bind this checkout:
+#   export CDLNO_REPO_ROOT="$PWD" CDLNO_RUNS_ROOT="$PWD/output"
+#   source ./path.sh
+# User-supplied path overrides remain supported; data stays at the same root.
 export CDLNO_REPO_ROOT="${CDLNO_REPO_ROOT:-$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)}"
 export CDLNO_DATA_ROOT="${CDLNO_DATA_ROOT:-/inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/data}"
 export CDLNO_FNO_ROOT="${CDLNO_FNO_ROOT:-${CDLNO_DATA_ROOT}/fno}"

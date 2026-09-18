@@ -31,8 +31,8 @@ case "$action" in
     *) printf 'action must be train or eval (got %s)\n' "$action" >&2; exit 2 ;;
 esac
 
-[[ "$depth" =~ ^[0-9]+$ ]] || { printf 'depth must be a positive integer (4/8/16), got %s\n' "$depth" >&2; exit 2; }
-((depth >= 1)) || { printf 'depth must be a positive integer (4/8/16), got %s\n' "$depth" >&2; exit 2; }
+[[ "$depth" =~ ^[0-9]+$ ]] || { printf 'depth must be a positive integer (4/12/16), got %s\n' "$depth" >&2; exit 2; }
+((depth >= 1)) || { printf 'depth must be a positive integer (4/12/16), got %s\n' "$depth" >&2; exit 2; }
 
 seed=""
 user=()

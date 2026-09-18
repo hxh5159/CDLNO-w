@@ -38,7 +38,7 @@ blocks4/
 
 ## 深度与种子
 
-- 深度（block 数）由 `--n-layers` 控制，可设为 **4 / 8 / 16**（8 是当前默认，作为对照）。
+- 深度（block 数）由 `--n-layers` 控制，可设为 **4 / 12 / 16**（8 是模型当前默认，作为对照）。
 - 种子由 `--seed` 控制，**必须提供**；不同种子写入不同目录，绝不互相覆盖。
 - 同一（任务、种子、深度）重复运行会被入口的原子目录预留拒绝（不会静默覆盖）；如需重跑，先删除对应的 `blocks<N>/` 目录。
 
@@ -62,7 +62,7 @@ bash depth_ablation/train_eval.sh elasticity 8 --seed 0 --gpu 0 --dry-run
 
 ```bash
 # 批量：四任务 × 深度 × 种子（依次执行）
-bash depth_ablation/run_all.sh --seeds "0 1 2" --depths "4 8 16" --gpu 0 --dry-run
+bash depth_ablation/run_all.sh --seeds "0 1 2" --depths "4 12 16" --gpu 0 --dry-run
 ```
 
 ## 数据路径
