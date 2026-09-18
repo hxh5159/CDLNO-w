@@ -1,5 +1,24 @@
 # LinearNO 实施状态
 
+## 2026-09-18 - 可选传播核监测
+
+**PASS（独立监测实现和无数据验证完成；未启动真实任务训练）。** 新增独立
+`monitor/` 目录，用运行时 hook 读取 LinearNO attention 的 detached `Q/K` 因子，按
+`P_l=Q_lK_l^T` 和
+`rho_ij=tr[(Q_i^TQ_j)(K_j^TK_i)]/(||P_i||_F||P_j||_F+epsilon)` 计算层间矩阵。
+实现只使用 Gram 矩阵，不构造 `N×N`，默认只观察 `eval()` 前向，不物化模型辅助状态，
+不改模型、factory、训练/评估入口、loss、checkpoint 或旧 Transolver 路径。
+
+`monitor/run.py` 通过显式子进程环境变量启用监测；未使用 wrapper 的进程没有 hook。
+每个快照输出 `similarity_values.npz`、`similarity.csv`、`metadata.json` 以及可选的
+PNG/PDF/SVG 热力图，`plot_snapshot.py` 可离线重绘。Airfoil、Darcy、Elasticity、Pipe
+的训练/评估命令和 GPU 参数见 [monitor README](../monitor/README.md)。
+
+实际验证：`PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s monitor -p
+'test_*.py' -v` 返回 **3 passed**；另用现有 Standard LinearNO 小模型在独立子进程中
+验证输出 shape、2 层 rho 归档和 PNG/PDF/SVG 生成。没有读取真实数据、启动完整训练或
+改变既有任务产物。**本监测补充阶段结束，未执行下一阶段。**
+
 ## 2026-09-18 - L10 最终交付
 
 **PASS（实现和无数据验收完成；真实数据、完整训练、远端环境 NOT RUN）。** L6 的 AirfRANS 目标已按用户决定固定为标准化四通道 `volume MSE + 1×surface MSE`；L7 的 Car 目标已按用户决定固定为全点三速度 normalized MSE + `0.5×` surface pressure MSE。两项均不把论文 physical rL2 文字描述改名为训练实现，rL2/drag/Spearman 保持独立评价轴。

@@ -8,7 +8,8 @@
       "Bash(curl -sL --max-time 90 \"https://arxiv.org/html/2511.06294v3\" -o linearno.html)",
       "Bash(echo \"linearno exit=$? size=$\\(wc -c < linearno.html 2>/dev/null\\)\")",
       "Bash(curl -sL --max-time 90 \"https://arxiv.org/html/2402.02366v2\" -o transolver_full.html)",
-      "Bash(echo \"exit=$? size=$\\(wc -c < transolver_full.html 2>/dev/null\\)\")"
+      "Bash(echo \"exit=$? size=$\\(wc -c < transolver_full.html 2>/dev/null\\)\")",
+      "Bash(git status *)"
     ]
   }
 }
