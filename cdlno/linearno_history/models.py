@@ -73,11 +73,12 @@ class ShapeNetHistoryModel(PureShapeNet):
 
 class AirfRANSAttnResModel(AirfRANSHistoryModel):
     """Internal A-only model; Data contract is inherited unchanged."""
-    def __init__(self, *args, feature_seed, **kwargs):
+    def __init__(self, *args, feature_seed, attnres_history_dropout_p=0.1, **kwargs):
         super().__init__(*args, **kwargs)
         from .attnres import LatentSummaryAttnRes
         self.latent_attnres = LatentSummaryAttnRes(
-            len(self.blocks), self.blocks[0].Attn.dim_head, feature_seed=feature_seed)
+            len(self.blocks), self.blocks[0].Attn.dim_head, feature_seed=feature_seed,
+            dropout_p=attnres_history_dropout_p)
 
     def forward(self, data, *, observe=None):
         return super().forward(data, observe=observe, latent_attnres=self.latent_attnres)
@@ -85,11 +86,12 @@ class AirfRANSAttnResModel(AirfRANSHistoryModel):
 
 class ShapeNetAttnResModel(ShapeNetHistoryModel):
     """Internal A-only model; tuple/Data contract is inherited unchanged."""
-    def __init__(self, *args, feature_seed, **kwargs):
+    def __init__(self, *args, feature_seed, attnres_history_dropout_p=0.1, **kwargs):
         super().__init__(*args, **kwargs)
         from .attnres import LatentSummaryAttnRes
         self.latent_attnres = LatentSummaryAttnRes(
-            len(self.blocks), self.blocks[0].Attn.dim_head, feature_seed=feature_seed)
+            len(self.blocks), self.blocks[0].Attn.dim_head, feature_seed=feature_seed,
+            dropout_p=attnres_history_dropout_p)
 
     def forward(self, data, *, observe=None):
         return super().forward(data, observe=observe, latent_attnres=self.latent_attnres)
@@ -123,13 +125,16 @@ class ShapeNetHistoryKModel(ShapeNetHistoryModel):
 
 class AirfRANSJointHistoryModel(AirfRANSHistoryModel):
     """Internal A+K; preserve the original task input/output contract."""
-    def __init__(self, *args, feature_seed, **kwargs):
+    def __init__(self, *args, feature_seed, attnres_history_dropout_p=0.1, **kwargs):
+        if float(attnres_history_dropout_p) == 0.0:
+            raise ValueError('history dropout p=0 is only valid for A1K0')
         super().__init__(*args, **kwargs)
         from .attnres import LatentSummaryAttnRes
         from .history_k import HistoryConditionedK
         first = self.blocks[0].Attn
         self.latent_attnres = LatentSummaryAttnRes(
-            len(self.blocks), first.dim_head, feature_seed=feature_seed)
+            len(self.blocks), first.dim_head, feature_seed=feature_seed,
+            dropout_p=attnres_history_dropout_p)
         self.history_k = HistoryConditionedK(
             len(self.blocks), first.heads, first.dim_head, feature_seed=feature_seed)
 
@@ -140,13 +145,16 @@ class AirfRANSJointHistoryModel(AirfRANSHistoryModel):
 
 class ShapeNetJointHistoryModel(ShapeNetHistoryModel):
     """Internal A+K; preserve the original task input/output contract."""
-    def __init__(self, *args, feature_seed, **kwargs):
+    def __init__(self, *args, feature_seed, attnres_history_dropout_p=0.1, **kwargs):
+        if float(attnres_history_dropout_p) == 0.0:
+            raise ValueError('history dropout p=0 is only valid for A1K0')
         super().__init__(*args, **kwargs)
         from .attnres import LatentSummaryAttnRes
         from .history_k import HistoryConditionedK
         first = self.blocks[0].Attn
         self.latent_attnres = LatentSummaryAttnRes(
-            len(self.blocks), first.dim_head, feature_seed=feature_seed)
+            len(self.blocks), first.dim_head, feature_seed=feature_seed,
+            dropout_p=attnres_history_dropout_p)
         self.history_k = HistoryConditionedK(
             len(self.blocks), first.heads, first.dim_head, feature_seed=feature_seed)
 

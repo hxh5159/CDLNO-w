@@ -351,7 +351,8 @@ class LatentAttnResTests(unittest.TestCase):
         for kwargs in [dict(n_layers=3,d_h=4,feature_seed=1),dict(n_layers=True,d_h=4,feature_seed=1),
                        dict(n_layers=4,d_h=0,feature_seed=1),dict(n_layers=4,d_h=4,feature_seed=True)]:
             with self.assertRaises(ValueError):LatentSummaryAttnRes(**kwargs)
-        with self.assertRaises(TypeError):LatentSummaryAttnRes(4,4,feature_seed=1,dropout_p=0)
+        nodrop = LatentSummaryAttnRes(4,4,feature_seed=1,dropout_p=0)
+        self.assertEqual(nodrop.dropout_p, 0.0)
         with self.assertRaises(TypeError):AttnResModel(feature_seed=1,linearno_history_k_conditioning=True)
         module,c,h=fixture()
         for index,history in [(True,()),(4,h),(2,h),(3,list(h))]:

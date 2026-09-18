@@ -108,8 +108,12 @@ def resolve_feature_config(config: Mapping[str, Any], *, production: bool = True
         dropout = _finite(raw_dropout, FEATURE_FIELDS[2])
         if not attnres:
             raise HistorySchemaError("history dropout is only valid when latent AttnRes is enabled")
-        if production and dropout != 0.1:
-            raise HistorySchemaError("production AttnRes history dropout must be exactly 0.1; p=0 is test-only")
+        # The released research configuration remains p=.1. A production p=0
+        # exception is deliberately narrow: it is an explicit A1K0 ablation.
+        if production and dropout not in (0.0, 0.1):
+            raise HistorySchemaError("production AttnRes history dropout must be 0.1, or 0 only for A1K0")
+        if production and dropout == 0.0 and history_k:
+            raise HistorySchemaError("p=0 history dropout is only supported for the A1K0 ablation")
         source = "explicit"
     return {
         FEATURE_FIELDS[0]: attnres,
@@ -153,7 +157,8 @@ def validate_base_descriptor(base: Mapping[str, Any]) -> dict[str, Any]:
     return _clone(base)
 
 
-def _validate_attnres(spec: Mapping[str, Any], enabled: bool, dropout: float | None) -> dict[str, Any]:
+def _validate_attnres(spec: Mapping[str, Any], enabled: bool, dropout: float | None,
+                      history_k: bool = False) -> dict[str, Any]:
     required = {"enabled", "version", "per_head_cross", "d_m_equals_d_h", "history_only_source_softmax",
                 "current_in_source_softmax", "null_source", "gamma", "dropout"}
     _exact(spec, required, "innovation_spec.attnres")
@@ -178,8 +183,10 @@ def _validate_attnres(spec: Mapping[str, Any], enabled: bool, dropout: float | N
     _exact(drop, {"p", "train_only", "mask_granularity", "singleton_history_kept", "null_never_dropped", "inverted_scaling", "all_masked_fallback"}, "attnres.dropout")
     if drop["p"] != dropout:
         raise HistorySchemaError("AttnRes dropout p disagrees with resolved feature config")
-    if drop["p"] is not None and (not isinstance(drop["p"], float) or drop["p"] != 0.1) and enabled:
-        raise HistorySchemaError("research AttnRes production dropout must be 0.1")
+    if (drop["p"] is not None and enabled and
+            (not isinstance(drop["p"], float) or drop["p"] not in (0.0, 0.1)
+             or (drop["p"] == 0.0 and history_k))):
+        raise HistorySchemaError("research AttnRes dropout must be 0.1, or 0 only for A1K0")
     expected_drop = {"p": dropout, "train_only": True, "mask_granularity": "sample_by_real_source", "singleton_history_kept": True, "null_never_dropped": True, "inverted_scaling": False, "all_masked_fallback": "null_weight_one_finite_zero"}
     if drop != expected_drop:
         raise HistorySchemaError("invalid AttnRes history-dropout contract")
@@ -229,7 +236,7 @@ def validate_innovation_spec(spec: Mapping[str, Any], *, feature_config: Mapping
         dropout = resolved["linearno_attnres_history_dropout_p"]
     else:
         dropout = 0.1 if attnres else None
-    validated_attnres = _validate_attnres(spec["attnres"], attnres, dropout)
+    validated_attnres = _validate_attnres(spec["attnres"], attnres, dropout, history_k)
     validated_k = _validate_history_k(spec["history_k"], history_k)
     raw = _mapping(spec["raw_cache"], "innovation_spec.raw_cache")
     _exact(raw, {"authoritative_value", "timing", "storage", "detach", "cross_forward", "cross_sample", "cross_time"}, "innovation_spec.raw_cache")
@@ -275,6 +282,19 @@ def validate_research_metadata(metadata: Mapping[str, Any], *, feature_config: M
         raise HistorySchemaError("metadata is not a LinearNO history checkpoint")
     if not _SIGNATURE_RE.fullmatch(metadata["feature_signature"]) or metadata["feature_signature"] == "A0K0":
         raise HistorySchemaError("research checkpoint must be A1K0, A0K1, or A1K1")
+    if feature_config is None:
+        # Standalone metadata validation has no resolved config object. Use the
+        # recorded feature flags and dropout value to reconstruct that small
+        # validation input; resolve_feature_config still rejects unsupported
+        # values and A1K1/A0K* p=0 combinations.
+        recorded = metadata["innovation_spec"]
+        recorded_features = recorded.get("features", {})
+        recorded_dropout = recorded.get("attnres", {}).get("dropout", {}).get("p")
+        feature_config = {
+            FEATURE_FIELDS[0]: recorded_features.get("linearno_latent_attnres"),
+            FEATURE_FIELDS[1]: recorded_features.get("linearno_history_k_conditioning"),
+            FEATURE_FIELDS[2]: recorded_dropout,
+        }
     spec = validate_innovation_spec(metadata["innovation_spec"], feature_config=feature_config)
     if metadata["feature_signature"] != spec["features"]["feature_signature"]:
         raise HistorySchemaError("metadata and innovation_spec signatures differ")
@@ -318,7 +338,8 @@ def assert_structural_compatibility(saved: Mapping[str, Any], expected: Mapping[
             raise HistorySchemaError(f"structural metadata mismatch at {path}")
 
 
-def run_directory_id(task: str, profile: str, layers: int, attnres: bool, history_k: bool, seed: int) -> str:
+def run_directory_id(task: str, profile: str, layers: int, attnres: bool, history_k: bool,
+                     seed: int, *, dropout_p: float | None = None) -> str:
     if task not in TASKS:
         raise HistorySchemaError(f"unknown task: {task}")
     if profile not in PROFILES:
@@ -326,7 +347,8 @@ def run_directory_id(task: str, profile: str, layers: int, attnres: bool, histor
     if layers not in DEPTHS:
         raise HistorySchemaError("research depth must be 4..8")
     _int(seed, "seed", 0)
-    return f"{task}__{profile}__L{layers}__{feature_signature(attnres, history_k)}__seed{seed}"
+    suffix = "__nodrop" if (attnres and not history_k and dropout_p == 0.0) else ""
+    return f"{task}__{profile}__L{layers}__{feature_signature(attnres, history_k)}{suffix}__seed{seed}"
 
 
 def derive_fair_seeds(seed: int, *, task: str, split: str = "train") -> dict[str, Any]:

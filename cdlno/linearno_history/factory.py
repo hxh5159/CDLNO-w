@@ -39,6 +39,7 @@ def validate_constructor(config):
     kwargs = dict(spec['constructor_kwargs'])
     if c['family'] == 'linearno_history':
         kwargs.pop('feature_seed')
+        kwargs.pop('attnres_history_dropout_p', None)
     signature = inspect.signature(pure)
     if set(kwargs) != set(signature.parameters):
         raise HistorySchemaError('constructor kwargs must contain exactly the complete base signature')

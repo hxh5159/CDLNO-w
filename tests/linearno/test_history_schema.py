@@ -37,7 +37,9 @@ class HistorySchemaContract(unittest.TestCase):
             with self.assertRaises(HistorySchemaError): resolve_feature_config(bad)
         bad = dict(cfg); bad["linearno_attnres_history_dropout_p"] = .1
         with self.assertRaises(HistorySchemaError): resolve_feature_config(bad)
-        bad = dict(self.fixture["feature_configs"]["A1K0"]); bad["linearno_attnres_history_dropout_p"] = 0.
+        nodrop = dict(self.fixture["feature_configs"]["A1K0"]); nodrop["linearno_attnres_history_dropout_p"] = 0.
+        self.assertEqual(resolve_feature_config(nodrop)["linearno_attnres_history_dropout_p"], 0.0)
+        bad = dict(self.fixture["feature_configs"]["A1K1"]); bad["linearno_attnres_history_dropout_p"] = 0.
         with self.assertRaises(HistorySchemaError): resolve_feature_config(bad)
         with self.assertRaises(HistorySchemaError): validate_family_feature_config("transolver", self.fixture["feature_configs"]["A1K0"])
         self.assertEqual(validate_family_feature_config("linearno", cfg)["feature_signature"], "A0K0")
@@ -79,6 +81,7 @@ class HistorySchemaContract(unittest.TestCase):
 
     def test_run_directory_and_fair_seed_protocol(self):
         self.assertEqual(run_directory_id("darcy", "official_release", 8, True, False, 7), "darcy__official_release__L8__A1K0__seed7")
+        self.assertEqual(run_directory_id("darcy", "official_release", 8, True, False, 7, dropout_p=0.0), "darcy__official_release__L8__A1K0__nodrop__seed7")
         with self.assertRaises(HistorySchemaError): run_directory_id("darcy", "official_release", 3, False, False, 7)
         a = derive_fair_seeds(7, task="darcy", split="train")
         b = derive_fair_seeds(7, task="darcy", split="train")

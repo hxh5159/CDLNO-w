@@ -46,11 +46,13 @@ class AttnResTrace:
 class LatentSummaryAttnRes(nn.Module):
     """Own A parameters once. Histories and optional diagnostics are per-call.
 
-    No configurable production dropout: p=.1 is fixed. The private evaluator's
-    mask argument is for deterministic equation tests; public forward always
-    enforces train/eval and singleton rules. No derived projection cache yet.
+    Production defaults to p=.1; the explicit A1K0 ablation may set p=0.
+    The private evaluator's mask argument is for deterministic equation tests;
+    public forward always enforces train/eval and singleton rules. No derived
+    projection cache yet.
     """
-    def __init__(self, n_layers: int, d_h: int, *, feature_seed: int):
+    def __init__(self, n_layers: int, d_h: int, *, feature_seed: int,
+                 dropout_p: float = 0.1):
         super().__init__()
         if type(n_layers) is not int or n_layers not in range(4, 9):
             raise ValueError('AttnRes requires 4..8 complete LinearNO layers')
@@ -58,7 +60,12 @@ class LatentSummaryAttnRes(nn.Module):
             raise ValueError('d_h must be a positive integer')
         if type(feature_seed) is not int or not 0 <= feature_seed < 2**63:
             raise ValueError('feature_seed must be an integer in [0,2**63)')
+        if isinstance(dropout_p, bool) or not isinstance(dropout_p, (int, float)):
+            raise ValueError('dropout_p must be a finite number in [0,1)')
+        if not torch.isfinite(torch.tensor(float(dropout_p))) or not 0 <= float(dropout_p) < 1:
+            raise ValueError('dropout_p must be a finite number in [0,1)')
         self.n_layers, self.d_h, self.feature_seed = n_layers, d_h, feature_seed
+        self.dropout_p = float(dropout_p)
         # Only CPU parameter allocation occurs here; do not seed/touch CUDA.
         with torch.random.fork_rng(devices=[]):
             torch.random.default_generator.manual_seed(feature_seed)
@@ -117,8 +124,8 @@ class LatentSummaryAttnRes(nn.Module):
                     _drop_mask.device != current.device):
                 raise ValueError('internal mask must be bool [B,S_real] on current device')
             mask = _drop_mask
-        elif self.training and sources > 1:
-            mask = torch.rand(B, sources, device=current.device) < 0.1
+        elif self.training and sources > 1 and self.dropout_p > 0.0:
+            mask = torch.rand(B, sources, device=current.device) < self.dropout_p
         else:
             mask = torch.zeros(B, sources, dtype=torch.bool, device=current.device)
         masked = raw_scores.masked_fill(mask[:, None, None, :], float('-inf'))

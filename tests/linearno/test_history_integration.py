@@ -32,7 +32,7 @@ from linearno.history_k_reference import reference as k_oracle
 SIGNATURES = ('A0K0', 'A1K0', 'A0K1', 'A1K1')
 
 
-def config(sig='A0K0', layers=4, variant='plain', dropout=0., **overrides):
+def config(sig='A0K0', layers=4, variant='plain', dropout=0., history_dropout=None, **overrides):
     task = 'airfrans' if variant == 'airfrans' else 'car' if variant == 'shapenet' else 'airfoil'
     explicit = {'model.layers': layers, 'model.hidden': 12, 'model.heads': 3,
                 'model.linearno_rank': 8, 'model.ref': 3, 'model.dropout': dropout,
@@ -43,8 +43,12 @@ def config(sig='A0K0', layers=4, variant='plain', dropout=0., **overrides):
             'model.time_input': True, 'model.linearno_variant': variant})
     explicit.update(overrides)
     profile = resolve_profile(task, 'official_release', explicit=explicit)
-    return resolve_config(profile, family='linearno_history', features={
-        'linearno_latent_attnres': sig[1]=='1', 'linearno_history_k_conditioning': sig[3]=='1'})
+    features = {
+        'linearno_latent_attnres': sig[1]=='1',
+        'linearno_history_k_conditioning': sig[3]=='1',
+        'linearno_attnres_history_dropout_p': history_dropout,
+    }
+    return resolve_config(profile, family='linearno_history', features=features)
 
 
 def io(config):
@@ -344,10 +348,42 @@ Path(sys.argv[2]).write_text(json.dumps(result))
             forward(models[2],ckc,values)
         for c in (ca,cak):self.assertEqual(c['features']['linearno_attnres_history_dropout_p'],.1)
 
+    def test_A1K0_no_history_dropout_is_explicit_and_rng_stable(self):
+        normal = config('A1K0')
+        nodrop = config('A1K0', history_dropout=0.0)
+        self.assertNotEqual(normal['run_signature'], nodrop['run_signature'])
+        self.assertIn('__nodrop__', nodrop['run_signature'])
+        self.assertNotIn('attnres_history_dropout_p', normal['model_spec']['constructor_kwargs'])
+        self.assertEqual(nodrop['model_spec']['constructor_kwargs']['attnres_history_dropout_p'], 0.0)
+        normal_model = build_model(normal).train()
+        nodrop_model = build_model(nodrop).train()
+        copy_matching(normal_model, nodrop_model)
+        self.assertEqual(normal_model.latent_attnres.dropout_p, 0.1)
+        self.assertEqual(nodrop_model.latent_attnres.dropout_p, 0.0)
+        values = io(normal)
+        torch.manual_seed(8821); before = torch.get_rng_state(); forward(nodrop_model, nodrop, values); after = torch.get_rng_state()
+        torch.manual_seed(8821); expected_before = torch.get_rng_state()
+        self.assertTrue(torch.equal(before, expected_before))
+        self.assertTrue(torch.equal(after, expected_before))
+        with self.assertRaises(ValueError): config('A1K1', history_dropout=0.0)
+
+        # The ablation is a distinct research checkpoint shape/protocol and
+        # must round-trip through the metadata-first strict loader.
+        with tempfile.TemporaryDirectory() as tmp:
+            opt = optimizer(nodrop_model); sched = scheduler(opt)
+            step(nodrop_model, nodrop, values, opt, sched)
+            saved = metadata(nodrop, nodrop_model, opt, sched)
+            ck.save_checkpoint(Path(tmp), nodrop_model, saved)
+            restored, loaded, _ = ck.load_checkpoint(Path(tmp), expected=nodrop, strict=True)
+            self.assertEqual(restored.latent_attnres.dropout_p, 0.0)
+            self.assertEqual(loaded['innovation_spec']['attnres']['dropout']['p'], 0.0)
+            with self.assertRaises(ValueError):
+                ck.load_checkpoint(Path(tmp), expected=normal, strict=True)
+
     def test_config_validation_no_models_created_on_invalid_fields(self):
         c=config()
         bad_flags=[{'linearno_latent_attnres':'false'},{'linearno_history_k_conditioning':1},
-            {'linearno_latent_attnres':True,'linearno_attnres_history_dropout_p':0},
+            {'linearno_latent_attnres':True,'linearno_history_k_conditioning':True,'linearno_attnres_history_dropout_p':0},
             {'linearno_attnres_history_dropout_p':.1},{'feature_signature':'A1K1'}]
         for flags in bad_flags:
             with self.assertRaises(ValueError):resolve_config(c['profile_spec'],family='linearno_history',features=flags)
@@ -482,6 +518,20 @@ Path(sys.argv[2]).write_text(json.dumps(result))
             with tempfile.TemporaryDirectory() as tmp:
                 ck.save_checkpoint(tmp,model,meta);new,read,_=ck.load_checkpoint(tmp,expected=c)
                 assert_exact(forward(model,c,values),forward(new,c,values));assert_exact(meta,read)
+            # Exercise the industrial adapter's metadata path for the new
+            # A1K0 p=0 constructor field as well as the generic checkpoint path.
+            nodrop = config('A1K0', variant=variant, history_dropout=0.0)
+            nodrop_model = build_model(nodrop); nodrop_values = io(nodrop)
+            nodrop_opt = optimizer(nodrop_model); nodrop_sched = scheduler(nodrop_opt)
+            step(nodrop_model, nodrop, nodrop_values, nodrop_opt, nodrop_sched)
+            nodrop_meta = metadata(nodrop, nodrop_model, nodrop_opt, nodrop_sched)
+            from cdlno.linearno_history.industrial import make_metadata as industrial_make_metadata
+            adapted = industrial_make_metadata(
+                profile_spec=nodrop['profile_spec'], model_spec=nodrop['model_spec'],
+                **{key: nodrop_meta[key] for key in (
+                    'data_spec','objective_spec','evaluation_spec','provenance_spec',
+                    'normalizer_spec','resume_state','ensemble_manifest')})
+            self.assertEqual(adapted['innovation_spec']['attnres']['dropout']['p'], 0.0)
             self.rows.append(dict(kind='industrial-joint-object-reload',variant=variant,status='PASS'))
 
 if __name__=='__main__':unittest.main()

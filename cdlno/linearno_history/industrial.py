@@ -69,8 +69,14 @@ def make_metadata(*, profile_spec, model_spec, constructor=None, **sections):
     signatures=[s for s,p in choices.items() if p==model_spec['class_path']]
     if len(signatures)!=1:raise ValueError('unknown industrial class_path')
     sig=signatures[0]
-    c=resolve_config(profile_spec,family='linearno_history',features={FEATURE_FIELDS[0]:sig[1]=='1',FEATURE_FIELDS[1]:sig[3]=='1'},
-        feature_seed=model_spec['constructor_kwargs'].get('feature_seed'))
+    constructor_kwargs = model_spec['constructor_kwargs']
+    # The no-history-dropout A1K0 ablation is encoded in the research
+    # constructor spec. Recover that explicit value when validating an
+    # industrial metadata write; omitted/.1 keeps the historical schema.
+    dropout = constructor_kwargs.get('attnres_history_dropout_p') if sig == 'A1K0' else None
+    c=resolve_config(profile_spec,family='linearno_history',features={
+        FEATURE_FIELDS[0]:sig[1]=='1', FEATURE_FIELDS[1]:sig[3]=='1',
+        FEATURE_FIELDS[2]:dropout}, feature_seed=constructor_kwargs.get('feature_seed'))
     if c['model_spec'] != model_spec:raise ValueError('industrial constructor/profile mismatch')
     return ck.make_metadata(c,**sections)
 

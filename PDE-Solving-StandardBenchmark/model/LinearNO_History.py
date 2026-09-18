@@ -54,11 +54,12 @@ class Model(PureModel):
 
 class AttnResModel(Model):
     """Internal A-only model, not registered with any benchmark factory."""
-    def __init__(self, *args, feature_seed, **kwargs):
+    def __init__(self, *args, feature_seed, attnres_history_dropout_p=0.1, **kwargs):
         super().__init__(*args, **kwargs)
         from cdlno.linearno_history.attnres import LatentSummaryAttnRes
         self.latent_attnres = LatentSummaryAttnRes(
-            len(self.blocks), self.blocks[0].Attn.dim_head, feature_seed=feature_seed)
+            len(self.blocks), self.blocks[0].Attn.dim_head, feature_seed=feature_seed,
+            dropout_p=attnres_history_dropout_p)
 
     def forward(self, x, fx, T=None, *, observe=None):
         return super().forward(x, fx, T, observe=observe, latent_attnres=self.latent_attnres)
@@ -79,13 +80,16 @@ class HistoryKModel(Model):
 
 class JointHistoryModel(Model):
     """Internal A+K model; mechanisms own disjoint parameters."""
-    def __init__(self, *args, feature_seed, **kwargs):
+    def __init__(self, *args, feature_seed, attnres_history_dropout_p=0.1, **kwargs):
+        if float(attnres_history_dropout_p) == 0.0:
+            raise ValueError('history dropout p=0 is only valid for A1K0')
         super().__init__(*args, **kwargs)
         from cdlno.linearno_history.attnres import LatentSummaryAttnRes
         from cdlno.linearno_history.history_k import HistoryConditionedK
         first = self.blocks[0].Attn
         self.latent_attnres = LatentSummaryAttnRes(
-            len(self.blocks), first.dim_head, feature_seed=feature_seed)
+            len(self.blocks), first.dim_head, feature_seed=feature_seed,
+            dropout_p=attnres_history_dropout_p)
         self.history_k = HistoryConditionedK(
             len(self.blocks), first.heads, first.dim_head, feature_seed=feature_seed)
 

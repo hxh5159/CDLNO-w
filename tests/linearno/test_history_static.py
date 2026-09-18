@@ -102,7 +102,9 @@ class HistoryStatic(unittest.TestCase):
                 script=ROOT/f'tran_evaluate/linearno_history/{task}.sh'
                 p=subprocess.run(['bash',str(script),action,'--dry-run','--gpu','1'],text=True,capture_output=True)
                 self.assertEqual(p.returncode,0,p.stderr);self.assertIn('--model LinearNO_',p.stdout)
-        with self.assertRaises((ValueError,SystemExit)):args_for('airfoil','--linearno_latent_attnres','1','--linearno_attnres_history_dropout_p','0')
+        args_for('airfoil','--linearno_latent_attnres','1','--linearno_attnres_history_dropout_p','0')
+        with self.assertRaises((ValueError,SystemExit)):
+            args_for('airfoil','--linearno_latent_attnres','1','--linearno_history_k_conditioning','1','--linearno_attnres_history_dropout_p','0')
         with self.assertRaises(SystemExit):args_for('airfoil','--linearno_history_k_conditioning','true')
 
 if __name__=='__main__':unittest.main()

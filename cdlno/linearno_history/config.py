@@ -84,6 +84,12 @@ def resolve_config(profile, *, family='linearno', features=None, feature_seed=No
         spec['class_path'] = PATHS[task_kind(task)][sig]
         spec['constructor_kwargs']['feature_seed'] = (fair_seeds['innovation_feature_seed']
                                                      if feature_seed is None else feature_seed)
+        # Keep the historical constructor/metadata shape for normal p=.1
+        # research runs. Only the explicit A1K0 p=0 ablation needs a real
+        # constructor field; old A1K0 checkpoints still use the class default.
+        if (flags[FEATURE_FIELDS[0]] and not flags[FEATURE_FIELDS[1]]
+                and flags[FEATURE_FIELDS[2]] == 0.0):
+            spec['constructor_kwargs']['attnres_history_dropout_p'] = 0.0
     # Canonical effective dropout: explicit .1 and omitted/null resolve identically.
     flags.pop('dropout_source')
     result = dict(config_schema_version=1, family='linearno' if sig == 'A0K0' else RESEARCH_FAMILY,
@@ -93,7 +99,8 @@ def resolve_config(profile, *, family='linearno', features=None, feature_seed=No
                       feature_rng='isolated_cpu_fork_rng_per_operator',
                       dataloader_generator_seed=fair_seeds['dataloader_generator_seed']),
                   run_signature=run_directory_id(task, profile['profile'], m['layers'],
-                      flags[FEATURE_FIELDS[0]], flags[FEATURE_FIELDS[1]], seed))
+                      flags[FEATURE_FIELDS[0]], flags[FEATURE_FIELDS[1]], seed,
+                      dropout_p=flags[FEATURE_FIELDS[2]]))
     result['resolved_hash'] = digest(result)
     return result
 
@@ -142,7 +149,8 @@ def innovation_spec(config):
             detach=False, cross_forward=False, cross_sample=False, cross_time=False),
         constructor_hyperparameters=c['model_spec']['constructor_kwargs'],
         code_schema=dict(config_schema_version=1, implementation_version=IMPLEMENTATION_VERSION,
-                         architecture_extension=ARCHITECTURE_EXTENSION)))
+                         architecture_extension=ARCHITECTURE_EXTENSION)),
+        feature_config={key: flags[key] for key in FEATURE_FIELDS})
 
 
 def structural_differences(saved, expected):

@@ -208,3 +208,23 @@ R3 初始1625文件包含1242 tracked、53 untracked、330 ignored；原tracked�
 ## R9（2026-09-18）
 
 **PASS（本阶段）**。578方法综合扫描，返回R6修复新增导入回归并通过8/8复验；最终537方法通过、6历史方法11断言失败、35资源/授权跳过、0错误。32八任务四组合原生合成闭环、核心20、160正式计数；48诊断无扰动、24理论/实际MAC、50性能/对照行、480命令预览。GPU/数据/完整精度仍NOT RUN。详见[报告](LINEARNO_HISTORY_R9_REPORT.md)、诊断文档及r9证据。按连续授权进入R10，只读终审。
+
+## A1K0 无 history dropout 增量（2026-09-18）
+
+**PASS（增量配置；未运行真实数据）**。保留原 A1K0 默认 `p=0.1`，新增显式
+`linearno_latent_attnres=1 + linearno_history_k_conditioning=0 +
+linearno_attnres_history_dropout_p=0`。该配置仍构造完整 A-only AttnRes，
+只跳过训练时的 history-source mask；A0K0、A0K1、A1K1(p=.1)及纯
+LinearNO 路径未改变。A1K1(p=0)和所有非 A 配置的 dropout 参数仍在解析阶段拒绝。
+
+修改范围为 history schema/config/factory、Standard 与工业 A/joint wrapper、
+AttnRes dropout 参数及针对性测试；没有改动任务数据、损失、训练循环、旧
+factory 或 launcher。p=0 的 `model_spec.constructor_kwargs` 显式保存
+`attnres_history_dropout_p=0.0`，运行签名含 `__nodrop__`，研究 checkpoint
+继续 metadata-first、逐字段校验和 `strict=True`。
+
+验证：编译检查通过；A1K0 p=0 的 Standard/AirfRANS/ShapeNet 构造和
+`dropout_p` 传递通过；A1K0 p=0 的 strict checkpoint round-trip、p=.1
+checkpoint 互拒、A1K1 p=0 拒绝、训练 RNG 不额外消耗通过；新增/相关测试通过。
+未运行真实数据、GPU、远端环境或完整训练评估。完整命令见
+[LINEARNO_HISTORY_NO_DROPOUT.md](LINEARNO_HISTORY_NO_DROPOUT.md)。
