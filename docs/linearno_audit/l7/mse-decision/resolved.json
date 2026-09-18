@@ -1,0 +1,611 @@
+[
+  {
+    "family": "linearno",
+    "config_version": 1,
+    "task": "car",
+    "profile": "paper_table8_on_release_model",
+    "values": {
+      "runtime": {
+        "seed": 0,
+        "device": "cpu",
+        "save_name": null
+      },
+      "model": {
+        "dropout": 0.0,
+        "activation": "gelu",
+        "linearno_variant": "shapenet",
+        "linearno_rank": 32,
+        "hidden": 256,
+        "heads": 8,
+        "layers": 8,
+        "ffn_ratio": 2,
+        "space_dim": 3,
+        "fun_dim": 4,
+        "out_dim": 4,
+        "time_input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 85,
+        "W": 85
+      },
+      "training": {
+        "epochs": 200,
+        "lr": 0.001,
+        "optimizer": "Adam",
+        "weight_decay": 0,
+        "batch_size": 1,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": null,
+        "drop_last": true,
+        "scheduler": "OneCycleLR",
+        "total_steps": "(ntrain//batch+1)*epochs",
+        "final_div_factor": 1000,
+        "scheduler_step": "each optimizer step",
+        "validation_cadence": "ep%10==0 or final",
+        "preprocessed": 1,
+        "checkpoint_role": "final",
+        "seed_policy": "local [0,1,2]; release uncontrolled"
+      },
+      "objective": {
+        "kind": "MSE",
+        "volume_channels": [
+          0,
+          1,
+          2
+        ],
+        "surface_channels": [
+          3
+        ],
+        "volume_region": "all points",
+        "surface_region": "surf",
+        "surface_weight": 0.5,
+        "space": "normalized",
+        "reduction": "mean points per channel then mean3 velocity channels; scalar surface pressure mean",
+        "epsilon": null
+      },
+      "evaluation": {
+        "prediction_sampling": "full graph single forward; batch1",
+        "field_metric": {
+          "primary": "physical rL2 of flattened non-surface velocity3 and surface pressure",
+          "additional_release": "normalized channel MSE then aggregate RMSE and rescale std"
+        },
+        "force_metric": "mean abs(pred-true)/true (release signed denominator); Spearman over all test samples",
+        "force_input": "hxh_fixed_surface_velocity+real_sample_path",
+        "split": "fold0 full heldout list; get_samples retains os.listdir order",
+        "aggregation": "sample mean; per-member and per-seed axes separate; final checkpoint; no best seed",
+        "normalizer": "saved coef_norm; evaluation must not refit",
+        "diagnostic_force_input": "released_bug_volume_velocity+param0 explicit diagnostic ONLY"
+      },
+      "data": {
+        "files": [
+          "param0...param8/*/quadpress_smpl.vtk",
+          "param0...param8/*/hexvelo_smpl.vtk",
+          "preprocessed per sample x/y/pos/surf/edge_index.npy"
+        ],
+        "split": "fold_id0 heldout param0 (paper789/100); other eight heldouts optional, not paper9fold",
+        "normalizer": "all training points coef_norm(mean_in,std_in,mean_out,std_out),eps1e-8",
+        "checksums": null,
+        "integrity": "NOT RUN"
+      }
+    },
+    "field_sources": {
+      "runtime.seed": "family_default",
+      "runtime.device": "family_default",
+      "runtime.save_name": "family_default",
+      "model.dropout": "profile",
+      "model.activation": "profile",
+      "model.linearno_variant": "profile",
+      "model.linearno_rank": "profile",
+      "model.hidden": "profile",
+      "model.heads": "profile",
+      "model.layers": "profile",
+      "model.ffn_ratio": "profile",
+      "model.space_dim": "profile",
+      "model.fun_dim": "profile",
+      "model.out_dim": "profile",
+      "model.time_input": "profile",
+      "model.ref": "profile",
+      "model.unified_pos": "profile",
+      "model.H": "profile",
+      "model.W": "profile",
+      "training.epochs": "profile",
+      "training.lr": "profile",
+      "training.optimizer": "profile",
+      "training.weight_decay": "profile",
+      "training.batch_size": "profile",
+      "training.betas": "profile",
+      "training.eps": "profile",
+      "training.gradient_clip": "profile",
+      "training.drop_last": "profile",
+      "training.scheduler": "profile",
+      "training.total_steps": "profile",
+      "training.final_div_factor": "profile",
+      "training.scheduler_step": "profile",
+      "training.validation_cadence": "profile",
+      "training.preprocessed": "profile",
+      "training.checkpoint_role": "profile",
+      "training.seed_policy": "profile",
+      "objective.kind": "integration_contract",
+      "objective.volume_channels": "integration_contract",
+      "objective.surface_channels": "integration_contract",
+      "objective.volume_region": "integration_contract",
+      "objective.surface_region": "integration_contract",
+      "objective.surface_weight": "integration_contract",
+      "objective.space": "integration_contract",
+      "objective.reduction": "integration_contract",
+      "objective.epsilon": "integration_contract",
+      "evaluation.prediction_sampling": "profile",
+      "evaluation.field_metric.primary": "profile",
+      "evaluation.field_metric.additional_release": "profile",
+      "evaluation.force_metric": "profile",
+      "evaluation.force_input": "integration_contract",
+      "evaluation.split": "profile",
+      "evaluation.aggregation": "profile",
+      "evaluation.normalizer": "profile",
+      "evaluation.diagnostic_force_input": "profile",
+      "data.files": "profile",
+      "data.split": "profile",
+      "data.normalizer": "profile",
+      "data.checksums": "profile",
+      "data.integrity": "profile"
+    },
+    "derived_model": {
+      "rank_mapping": {
+        "original_parameter": "key_ratio",
+        "original_value": 1,
+        "semantics": "head_dim_multiplier",
+        "head_dim": 32,
+        "actual_M": 32
+      },
+      "q_softmax_axis": "M",
+      "k_softmax_axis": "N",
+      "qk_independent": true,
+      "projections_shared_across_heads": true,
+      "qkv_bias": false,
+      "attention_scale": null,
+      "attention_weight_dropout": false,
+      "layernorm_eps": 1e-05,
+      "input_projection": "linear",
+      "kernel_size": null,
+      "output_projection": "linear_gelu_linear",
+      "temperature": {
+        "initial": 0.5,
+        "clamp": [
+          0.1,
+          2.0
+        ],
+        "used": true,
+        "dead_parameter": false
+      },
+      "grid_range": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "position_mode": "replace_coordinates",
+      "official_unused_flags": {
+        "isregular": false
+      },
+      "initialization": "linear_trunc_normal_0.02;LN_1_0;standard_conv_kaiming_normal;placeholder_after_apply"
+    },
+    "unresolved": [],
+    "ignored_legacy_defaults": {},
+    "integration_contract": "car_transolver_mse_v1",
+    "config_hash": "c814ad92a8936c60db984c557cee5b7e70243cbb979ac660b4e3b5769e92da5e"
+  },
+  {
+    "family": "linearno",
+    "config_version": 1,
+    "task": "car",
+    "profile": "official_release",
+    "values": {
+      "runtime": {
+        "seed": 0,
+        "device": "cpu",
+        "save_name": null
+      },
+      "model": {
+        "dropout": 0.0,
+        "activation": "gelu",
+        "linearno_variant": "shapenet",
+        "linearno_rank": 32,
+        "hidden": 256,
+        "heads": 8,
+        "layers": 8,
+        "ffn_ratio": 2,
+        "space_dim": 3,
+        "fun_dim": 4,
+        "out_dim": 4,
+        "time_input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 85,
+        "W": 85
+      },
+      "training": {
+        "epochs": 200,
+        "lr": 0.001,
+        "optimizer": "Adam",
+        "weight_decay": 0,
+        "batch_size": 1,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": null,
+        "drop_last": true,
+        "scheduler": "OneCycleLR",
+        "total_steps": "(ntrain//batch+1)*epochs",
+        "final_div_factor": 1000,
+        "scheduler_step": "each optimizer step",
+        "validation_cadence": "ep%10==0 or final",
+        "preprocessed": 1,
+        "checkpoint_role": "final",
+        "seed_policy": "local [0,1,2]; release uncontrolled"
+      },
+      "objective": {
+        "kind": "MSE",
+        "volume_channels": [
+          0,
+          1,
+          2
+        ],
+        "surface_channels": [
+          3
+        ],
+        "volume_region": "all points",
+        "surface_region": "surf",
+        "surface_weight": 0.5,
+        "space": "normalized",
+        "reduction": "mean points per channel then mean3 velocity channels; scalar surface pressure mean",
+        "epsilon": null
+      },
+      "evaluation": {
+        "prediction_sampling": "full graph single forward; batch1",
+        "field_metric": {
+          "primary": "physical rL2 of flattened non-surface velocity3 and surface pressure",
+          "additional_release": "normalized channel MSE then aggregate RMSE and rescale std"
+        },
+        "force_metric": "mean abs(pred-true)/true (release signed denominator); Spearman over all test samples",
+        "force_input": "hxh_fixed_surface_velocity+real_sample_path",
+        "split": "fold0 full heldout list; get_samples retains os.listdir order",
+        "aggregation": "sample mean; per-member and per-seed axes separate; final checkpoint; no best seed",
+        "normalizer": "saved coef_norm; evaluation must not refit",
+        "diagnostic_force_input": "released_bug_volume_velocity+param0 explicit diagnostic ONLY"
+      },
+      "data": {
+        "files": [
+          "param0...param8/*/quadpress_smpl.vtk",
+          "param0...param8/*/hexvelo_smpl.vtk",
+          "preprocessed per sample x/y/pos/surf/edge_index.npy"
+        ],
+        "split": "fold_id0 heldout param0 (paper789/100); other eight heldouts optional, not paper9fold",
+        "normalizer": "all training points coef_norm(mean_in,std_in,mean_out,std_out),eps1e-8",
+        "checksums": null,
+        "integrity": "NOT RUN"
+      }
+    },
+    "field_sources": {
+      "runtime.seed": "family_default",
+      "runtime.device": "family_default",
+      "runtime.save_name": "family_default",
+      "model.dropout": "profile",
+      "model.activation": "profile",
+      "model.linearno_variant": "profile",
+      "model.linearno_rank": "profile",
+      "model.hidden": "profile",
+      "model.heads": "profile",
+      "model.layers": "profile",
+      "model.ffn_ratio": "profile",
+      "model.space_dim": "profile",
+      "model.fun_dim": "profile",
+      "model.out_dim": "profile",
+      "model.time_input": "profile",
+      "model.ref": "profile",
+      "model.unified_pos": "profile",
+      "model.H": "profile",
+      "model.W": "profile",
+      "training.epochs": "profile",
+      "training.lr": "profile",
+      "training.optimizer": "profile",
+      "training.weight_decay": "profile",
+      "training.batch_size": "profile",
+      "training.betas": "profile",
+      "training.eps": "profile",
+      "training.gradient_clip": "profile",
+      "training.drop_last": "profile",
+      "training.scheduler": "profile",
+      "training.total_steps": "profile",
+      "training.final_div_factor": "profile",
+      "training.scheduler_step": "profile",
+      "training.validation_cadence": "profile",
+      "training.preprocessed": "profile",
+      "training.checkpoint_role": "profile",
+      "training.seed_policy": "profile",
+      "objective.kind": "integration_contract",
+      "objective.volume_channels": "integration_contract",
+      "objective.surface_channels": "integration_contract",
+      "objective.volume_region": "integration_contract",
+      "objective.surface_region": "integration_contract",
+      "objective.surface_weight": "integration_contract",
+      "objective.space": "integration_contract",
+      "objective.reduction": "integration_contract",
+      "objective.epsilon": "integration_contract",
+      "evaluation.prediction_sampling": "profile",
+      "evaluation.field_metric.primary": "profile",
+      "evaluation.field_metric.additional_release": "profile",
+      "evaluation.force_metric": "profile",
+      "evaluation.force_input": "integration_contract",
+      "evaluation.split": "profile",
+      "evaluation.aggregation": "profile",
+      "evaluation.normalizer": "profile",
+      "evaluation.diagnostic_force_input": "profile",
+      "data.files": "profile",
+      "data.split": "profile",
+      "data.normalizer": "profile",
+      "data.checksums": "profile",
+      "data.integrity": "profile"
+    },
+    "derived_model": {
+      "rank_mapping": {
+        "original_parameter": "key_ratio",
+        "original_value": 1,
+        "semantics": "head_dim_multiplier",
+        "head_dim": 32,
+        "actual_M": 32
+      },
+      "q_softmax_axis": "M",
+      "k_softmax_axis": "N",
+      "qk_independent": true,
+      "projections_shared_across_heads": true,
+      "qkv_bias": false,
+      "attention_scale": null,
+      "attention_weight_dropout": false,
+      "layernorm_eps": 1e-05,
+      "input_projection": "linear",
+      "kernel_size": null,
+      "output_projection": "linear_gelu_linear",
+      "temperature": {
+        "initial": 0.5,
+        "clamp": [
+          0.1,
+          2.0
+        ],
+        "used": true,
+        "dead_parameter": false
+      },
+      "grid_range": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "position_mode": "replace_coordinates",
+      "official_unused_flags": {
+        "isregular": false
+      },
+      "initialization": "linear_trunc_normal_0.02;LN_1_0;standard_conv_kaiming_normal;placeholder_after_apply"
+    },
+    "unresolved": [],
+    "ignored_legacy_defaults": {},
+    "integration_contract": "car_transolver_mse_v1",
+    "config_hash": "f93ce2d6883e73e01dacfb81ec513b08590c38680f667a358f28d4dc2ac06528"
+  },
+  {
+    "family": "linearno",
+    "config_version": 1,
+    "task": "car",
+    "profile": "transolver_matched",
+    "values": {
+      "runtime": {
+        "seed": 0,
+        "device": "cpu",
+        "save_name": null
+      },
+      "model": {
+        "dropout": 0.0,
+        "activation": "gelu",
+        "linearno_variant": "shapenet",
+        "linearno_rank": 32,
+        "hidden": 256,
+        "heads": 8,
+        "layers": 8,
+        "ffn_ratio": 2,
+        "space_dim": 3,
+        "fun_dim": 4,
+        "out_dim": 4,
+        "time_input": false,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 85,
+        "W": 85
+      },
+      "training": {
+        "epochs": 200,
+        "lr": 0.001,
+        "optimizer": "Adam",
+        "weight_decay": 0,
+        "batch_size": 1,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": null,
+        "drop_last": true,
+        "scheduler": "OneCycleLR",
+        "total_steps": "(ntrain//batch+1)*epochs",
+        "final_div_factor": 1000,
+        "scheduler_step": "each optimizer step",
+        "validation_cadence": "ep%10==0 or final",
+        "preprocessed": 1,
+        "checkpoint_role": "final",
+        "seed_policy": "local [0,1,2]; release uncontrolled"
+      },
+      "objective": {
+        "kind": "MSE",
+        "volume_channels": [
+          0,
+          1,
+          2
+        ],
+        "surface_channels": [
+          3
+        ],
+        "volume_region": "all points",
+        "surface_region": "surf",
+        "surface_weight": 0.5,
+        "space": "normalized",
+        "reduction": "mean points per channel then mean3 velocity channels; scalar surface pressure mean",
+        "epsilon": null
+      },
+      "evaluation": {
+        "prediction_sampling": "full graph single forward; batch1",
+        "field_metric": {
+          "primary": "physical rL2 of flattened non-surface velocity3 and surface pressure",
+          "additional_release": "normalized channel MSE then aggregate RMSE and rescale std"
+        },
+        "force_metric": "mean abs(pred-true)/true (release signed denominator); Spearman over all test samples",
+        "force_input": "hxh_fixed_surface_velocity+real_sample_path",
+        "split": "fold0 full heldout list; get_samples retains os.listdir order",
+        "aggregation": "sample mean; per-member and per-seed axes separate; final checkpoint; no best seed",
+        "normalizer": "saved coef_norm; evaluation must not refit",
+        "diagnostic_force_input": "released_bug_volume_velocity+param0 explicit diagnostic ONLY"
+      },
+      "data": {
+        "files": [
+          "param0...param8/*/quadpress_smpl.vtk",
+          "param0...param8/*/hexvelo_smpl.vtk",
+          "preprocessed per sample x/y/pos/surf/edge_index.npy"
+        ],
+        "split": "fold_id0 heldout param0 (paper789/100); other eight heldouts optional, not paper9fold",
+        "normalizer": "all training points coef_norm(mean_in,std_in,mean_out,std_out),eps1e-8",
+        "checksums": null,
+        "integrity": "NOT RUN"
+      }
+    },
+    "field_sources": {
+      "runtime.seed": "family_default",
+      "runtime.device": "family_default",
+      "runtime.save_name": "family_default",
+      "model.dropout": "profile",
+      "model.activation": "profile",
+      "model.linearno_variant": "profile",
+      "model.linearno_rank": "profile",
+      "model.hidden": "profile",
+      "model.heads": "profile",
+      "model.layers": "profile",
+      "model.ffn_ratio": "profile",
+      "model.space_dim": "profile",
+      "model.fun_dim": "profile",
+      "model.out_dim": "profile",
+      "model.time_input": "profile",
+      "model.ref": "profile",
+      "model.unified_pos": "profile",
+      "model.H": "profile",
+      "model.W": "profile",
+      "training.epochs": "profile",
+      "training.lr": "profile",
+      "training.optimizer": "profile",
+      "training.weight_decay": "profile",
+      "training.batch_size": "profile",
+      "training.betas": "profile",
+      "training.eps": "profile",
+      "training.gradient_clip": "profile",
+      "training.drop_last": "profile",
+      "training.scheduler": "profile",
+      "training.total_steps": "profile",
+      "training.final_div_factor": "profile",
+      "training.scheduler_step": "profile",
+      "training.validation_cadence": "profile",
+      "training.preprocessed": "profile",
+      "training.checkpoint_role": "profile",
+      "training.seed_policy": "profile",
+      "objective.kind": "integration_contract",
+      "objective.volume_channels": "integration_contract",
+      "objective.surface_channels": "integration_contract",
+      "objective.volume_region": "integration_contract",
+      "objective.surface_region": "integration_contract",
+      "objective.surface_weight": "integration_contract",
+      "objective.space": "integration_contract",
+      "objective.reduction": "integration_contract",
+      "objective.epsilon": "integration_contract",
+      "evaluation.prediction_sampling": "profile",
+      "evaluation.field_metric.primary": "profile",
+      "evaluation.field_metric.additional_release": "profile",
+      "evaluation.force_metric": "profile",
+      "evaluation.force_input": "integration_contract",
+      "evaluation.split": "profile",
+      "evaluation.aggregation": "profile",
+      "evaluation.normalizer": "profile",
+      "evaluation.diagnostic_force_input": "profile",
+      "data.files": "profile",
+      "data.split": "profile",
+      "data.normalizer": "profile",
+      "data.checksums": "profile",
+      "data.integrity": "profile"
+    },
+    "derived_model": {
+      "rank_mapping": {
+        "original_parameter": "key_ratio",
+        "original_value": 1,
+        "semantics": "head_dim_multiplier",
+        "head_dim": 32,
+        "actual_M": 32
+      },
+      "q_softmax_axis": "M",
+      "k_softmax_axis": "N",
+      "qk_independent": true,
+      "projections_shared_across_heads": true,
+      "qkv_bias": false,
+      "attention_scale": null,
+      "attention_weight_dropout": false,
+      "layernorm_eps": 1e-05,
+      "input_projection": "linear",
+      "kernel_size": null,
+      "output_projection": "linear_gelu_linear",
+      "temperature": {
+        "initial": 0.5,
+        "clamp": [
+          0.1,
+          2.0
+        ],
+        "used": true,
+        "dead_parameter": false
+      },
+      "grid_range": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "position_mode": "replace_coordinates",
+      "official_unused_flags": {
+        "isregular": false
+      },
+      "initialization": "linear_trunc_normal_0.02;LN_1_0;standard_conv_kaiming_normal;placeholder_after_apply"
+    },
+    "unresolved": [],
+    "ignored_legacy_defaults": {},
+    "integration_contract": "car_transolver_mse_v1",
+    "config_hash": "bbd373cba4f5f1a926792dd920c33fb34cf1ca6b299f48c11cd3ebf7dc3bd046"
+  }
+]

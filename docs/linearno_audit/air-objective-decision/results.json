@@ -1,0 +1,16 @@
+{
+  "scope": "AirfRANS reviewed training-objective decision; not completed L6 integration",
+  "status": "PASS",
+  "stage_status": "L6 PARTIAL; L7 BLOCKED pending independent Car decision; L8-L10 NOT EXECUTED",
+  "command": "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_air_objective_decision linearno.test_profiles linearno.test_schema -v",
+  "tests": 15,
+  "seconds": 1.727,
+  "failures": 0,
+  "errors": 0,
+  "additional_run": "legacy-and-loss.json",
+  "additional_tests": 5,
+  "additional_unittest_seconds": 28.13,
+  "production_entry_changes": false,
+  "real_data": false,
+  "real_training": false
+}

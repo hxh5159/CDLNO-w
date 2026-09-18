@@ -1,0 +1,25 @@
+{
+  "scope": "L0 creates no ignored runtime products inside target; allowed descendants below require relevant later phase authorization",
+  "existing_ignored_policy": "all baseline ignored files protected by path/classification/size/sha256; no broad ignore exemption",
+  "allowed_new_ignored_paths": [
+    "output/_linearno_audit/",
+    "output/darcy/linearno/",
+    "output/elasticity/linearno/",
+    "output/airfoil/linearno/",
+    "output/pipe/linearno/",
+    "output/ns/linearno/",
+    "output/plasticity/linearno/",
+    "output/car/linearno/",
+    "output/airfrans/linearno/"
+  ],
+  "outside_target_artifacts": [
+    "/home/hwz/CDLNO-artifacts/linearno-l0-before-65a2wvms"
+  ],
+  "forbidden_shortcuts": [
+    "LINEARNO/**",
+    "old checkpoints/** or metrics/**",
+    "editing .gitignore to hide source changes",
+    "treating preexisting dirty/untracked/ignored files as task changes"
+  ],
+  "cache_policy": "use python -B/PYTHONDONTWRITEBYTECODE=1; no new __pycache__ paths are automatically allowed"
+}

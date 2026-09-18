@@ -1,0 +1,1351 @@
+{
+  "paths": [
+    "LINEARNO",
+    "Physics_Attention.py",
+    "PDE-Solving-StandardBenchmark/model",
+    "Car-Design-ShapeNetCar/models",
+    "Airfoil-Design-AirfRANS/models",
+    "cdlno",
+    "tests",
+    "tran_evaluate",
+    "train_and_evaluate",
+    "CODEX/train_and_evaluate",
+    "evaluate"
+  ],
+  "status": "",
+  "absent": [
+    "LINEARNO",
+    "train_and_evaluate",
+    "CODEX/train_and_evaluate",
+    "evaluate"
+  ],
+  "files": [
+    {
+      "path": "Airfoil-Design-AirfRANS/models/CDLNO.py",
+      "classification": "tracked",
+      "size": 135,
+      "sha256": "d5c16ef4cd152c3a11c0d7362f5bf88eeeab3a7f3f17ed7566fce05183a978ab"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/models/GUNet.py",
+      "classification": "tracked",
+      "size": 7572,
+      "sha256": "6218a72d071b265140371dac8d2586d0d10edf9803cecd16e1a6ddb2f385963c"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/models/GraphSAGE.py",
+      "classification": "tracked",
+      "size": 1792,
+      "sha256": "562738fafff0b9cf5cd3d90577197e243961b01742626debb19c0a14eac3db65"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/models/KCDNO.py",
+      "classification": "tracked",
+      "size": 135,
+      "sha256": "9f85732134354b5e6b4a1cb3208819e1ac4ce9599efb7b1745b1ebf2cf74aaa0"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/models/MLP.py",
+      "classification": "tracked",
+      "size": 2246,
+      "sha256": "7c34b97acaf3d26bd04570abf93b4a1291d6ca08fda1b2a749fc9180b0d7c72f"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/models/MSAR_LNO.py",
+      "classification": "tracked",
+      "size": 122,
+      "sha256": "c85a3edb777ac9a45d61b7bba26e373724130cfe0db8a1d357a7f7ffc450f8ac"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/models/NN.py",
+      "classification": "tracked",
+      "size": 742,
+      "sha256": "5dcd2b3ee2f192a7891c35ffef6fbe74aa2d509a08432577a95bdf0c57ea9345"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/models/PointNet.py",
+      "classification": "tracked",
+      "size": 1487,
+      "sha256": "825750d49f8dbad9e3d7cfa3c0f45bcdf19645c9c2696ae8fc3843147cd25313"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/models/Transolver.py",
+      "classification": "tracked",
+      "size": 8301,
+      "sha256": "1d0c1b932411ac408d8d00ca047d7f875c3176e7b001db802d30c065a7416d74"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/models/CDLNO.py",
+      "classification": "tracked",
+      "size": 4754,
+      "sha256": "3ac12891e508b4e47ecfd8f35d0169981e88ec9d8fb986460d71cda9dcbaad5f"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/models/KCDNO.py",
+      "classification": "tracked",
+      "size": 1788,
+      "sha256": "b526139652ef1521542044b5353cb8a61a5333bf280d9ddc7c0cce611e6599d9"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/models/MSAR_LNO.py",
+      "classification": "tracked",
+      "size": 112,
+      "sha256": "fc48f89d9ed209eace62e22d3417e93dba74b4d9234e3f6c27083771d88a086c"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/models/Transolver.py",
+      "classification": "tracked",
+      "size": 8465,
+      "sha256": "9dbea9edae30b0d8484a458b4bdb9b33427e9fda815c8011d64f19fb50e14ffa"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/models/cdlno_run.py",
+      "classification": "tracked",
+      "size": 10301,
+      "sha256": "f7547ac3a0f34ebdd261262a356b1efa5150eae8ad01376c85eebdb1e1943444"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/CDLNO_Irregular_Mesh.py",
+      "classification": "tracked",
+      "size": 178,
+      "sha256": "962bf6f9f475ba2ccc56993e19c160be983eefdd3928869d0dcba70fe1b87809"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/CDLNO_Structured_Mesh_2D.py",
+      "classification": "tracked",
+      "size": 193,
+      "sha256": "7a151a1ccba8cb129b858d550f129b3a2112462cb72d72b1bac63a8af258d876"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/CDLNO_Temporal_Structured_Mesh_2D.py",
+      "classification": "tracked",
+      "size": 172,
+      "sha256": "89d9a6eb45098f166f1f5cc462131b33841c017cd87076637c38a4cab524bd9e"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/Embedding.py",
+      "classification": "tracked",
+      "size": 2938,
+      "sha256": "1371e3c234d2d29be783ee817ecc7e65e8e0b36024b95b6c3c256b2054a9720d"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/KCDNO.py",
+      "classification": "tracked",
+      "size": 116,
+      "sha256": "208af8b30bfc23849642278fe3ce0b21bcda281696ff3cf748e5ef356c249b43"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/MSAR_LNO.py",
+      "classification": "tracked",
+      "size": 257,
+      "sha256": "f10f6b4ac6eb9dd74fd26ee0af28a26310affbd68a333cc06c7b1775bb10b689"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/MSAR_Standard.py",
+      "classification": "tracked",
+      "size": 139,
+      "sha256": "73a18913f1dc3c2162c295c91b26fc221d96339e08f71bdf71dbcec27396d7e0"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/MSAR_Temporal.py",
+      "classification": "tracked",
+      "size": 132,
+      "sha256": "9d1302a682bde21025d2ed538307e85e6e677ab102a8a3972a10a37c78318922"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/Physics_Attention.py",
+      "classification": "tracked",
+      "size": 7989,
+      "sha256": "4fc710f6f96788fb59cb19fab8d64873d3d16e9e182f12a544d451c74c548cc7"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/Transolver_Irregular_Mesh.py",
+      "classification": "tracked",
+      "size": 6096,
+      "sha256": "5259759f7ecc6a954c8442ac8359990b9f242f1437c452c69e5e0f03549b5311"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/Transolver_Structured_Mesh_2D.py",
+      "classification": "tracked",
+      "size": 6828,
+      "sha256": "d4b0db8a52c26ba6433f45a232947b380dfbaa4a31eac413a5e03fbef151acfc"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/Transolver_Structured_Mesh_3D.py",
+      "classification": "tracked",
+      "size": 7768,
+      "sha256": "8422abe388aab493a3d7673184bf9c59c5b49019d462631d38473f7cd848f314"
+    },
+    {
+      "path": "Physics_Attention.py",
+      "classification": "tracked",
+      "size": 7992,
+      "sha256": "f7feffd40e21863a2bd5809d9548a3417a7221a817f9e675ea969712c1d45a36"
+    },
+    {
+      "path": "cdlno/__init__.py",
+      "classification": "tracked",
+      "size": 601,
+      "sha256": "aa7e4e1d615e8a74bcb17899b526e2cfe09f9080754b2e48dcf5507cdddb0d7e"
+    },
+    {
+      "path": "cdlno/airfrans.py",
+      "classification": "tracked",
+      "size": 5358,
+      "sha256": "2e8bca413035807277d60cea9c64cae28f2f8067cb82d5053b4d29f2334b62b5"
+    },
+    {
+      "path": "cdlno/cdpa.py",
+      "classification": "tracked",
+      "size": 6225,
+      "sha256": "eb6f515508479066fe2a2086b70929b93914de218aaf55347ecaa71ebe05c4fa"
+    },
+    {
+      "path": "cdlno/checkpoint.py",
+      "classification": "tracked",
+      "size": 6339,
+      "sha256": "6e50e2d9e0514ba5c6beb2a289447ba8a1b171f067e44f179ce4fd955651fad9"
+    },
+    {
+      "path": "cdlno/config.py",
+      "classification": "tracked",
+      "size": 8581,
+      "sha256": "88da555b449857b96d08a721e38e229ef2274b63f66f00b9ec08dad4bb9db18d"
+    },
+    {
+      "path": "cdlno/core.py",
+      "classification": "tracked",
+      "size": 5154,
+      "sha256": "0b8565fe66d90f1c2e77e2147dfeb5a249220d5fc51d9a6784d0eab4085a23be"
+    },
+    {
+      "path": "cdlno/experiment.py",
+      "classification": "tracked",
+      "size": 14914,
+      "sha256": "e02d8c33ef57d4e7a4d1fc61f816ee40131d89eff76bcc6cf27e384c0c8858c9"
+    },
+    {
+      "path": "cdlno/kcdno/__init__.py",
+      "classification": "tracked",
+      "size": 428,
+      "sha256": "ed9285f06b21a936da9f114b4de0c6b7261849fd7b7c776b2b0b989d5f80e5de"
+    },
+    {
+      "path": "cdlno/kcdno/air_entry.py",
+      "classification": "tracked",
+      "size": 7998,
+      "sha256": "976ae8618393c9872c2e293e2054aecd55347c0c848ec53a6e958516ba700c61"
+    },
+    {
+      "path": "cdlno/kcdno/airfrans.py",
+      "classification": "tracked",
+      "size": 1506,
+      "sha256": "6ab4292b503058cacfe182ec3a28bbeb4b30dc82f3145df52f0766ca7a5ac6c0"
+    },
+    {
+      "path": "cdlno/kcdno/car_preflight.py",
+      "classification": "tracked",
+      "size": 1102,
+      "sha256": "81676c488976ed4104ccbb6b385f5923e98887970d32c560c11db2fe57193379"
+    },
+    {
+      "path": "cdlno/kcdno/config.py",
+      "classification": "tracked",
+      "size": 6876,
+      "sha256": "1b26788d373d6fa5dbfc5c67e0e126ef6bb9e2a6e7d528a09c0a921844a68dfd"
+    },
+    {
+      "path": "cdlno/kcdno/core.py",
+      "classification": "tracked",
+      "size": 6427,
+      "sha256": "e692cfbaba9b97326d62a148c10e172d530fe75e5c249a5f41474b5f1a7fbd88"
+    },
+    {
+      "path": "cdlno/kcdno/entry.py",
+      "classification": "tracked",
+      "size": 8872,
+      "sha256": "bd967d2629a73568ba34932a1836305a83c3d45952cdbfc2ea1f48a81e1ea72c"
+    },
+    {
+      "path": "cdlno/kcdno/families.py",
+      "classification": "tracked",
+      "size": 3388,
+      "sha256": "a567b990ae798b3ae319c5b6f14b3af2e5954f2e1ce1ad54b4bcd022ea9a1039"
+    },
+    {
+      "path": "cdlno/kcdno/history.py",
+      "classification": "tracked",
+      "size": 6500,
+      "sha256": "5f96b678eeb47574c0067aca5297f3464d139e3d8d62d0b0586ccbad425b019a"
+    },
+    {
+      "path": "cdlno/kcdno/industrial_entry.py",
+      "classification": "tracked",
+      "size": 6876,
+      "sha256": "a0d5b862b563b2c985c21f64b4c0822cf4645f645e8c87bf335841ec88b3f6d5"
+    },
+    {
+      "path": "cdlno/kcdno/loading.py",
+      "classification": "tracked",
+      "size": 1844,
+      "sha256": "432e86bc33467ce74c3a6d63c25e16263720f902d91e807052d6e7a6c0a021c2"
+    },
+    {
+      "path": "cdlno/kcdno/matched.py",
+      "classification": "tracked",
+      "size": 1797,
+      "sha256": "46de6072939da2eae47004cd07a21fbb1834e64c6af90c51a08a9abebc6b0d1d"
+    },
+    {
+      "path": "cdlno/kcdno/matched_config.py",
+      "classification": "tracked",
+      "size": 4545,
+      "sha256": "b57eb56f5266860a4cfd537ec67732f61323bcc2c447b93581404d9a14712124"
+    },
+    {
+      "path": "cdlno/kcdno/metadata.py",
+      "classification": "tracked",
+      "size": 8169,
+      "sha256": "6b5b247b6f98be00a99c61fbcb247333d21d72d5ef12d857d7b9807968192bfb"
+    },
+    {
+      "path": "cdlno/kcdno/options.py",
+      "classification": "tracked",
+      "size": 2796,
+      "sha256": "c008824e9acbe828281be98bd6402eb2455458a1126e09484c874c1cff01c1e2"
+    },
+    {
+      "path": "cdlno/kcdno/profiles.py",
+      "classification": "tracked",
+      "size": 1516,
+      "sha256": "83d79c263d15be52602529cf44e96b4c00d321e8b7975fb462bf3ee76318826d"
+    },
+    {
+      "path": "cdlno/kcdno/standard.py",
+      "classification": "tracked",
+      "size": 6116,
+      "sha256": "1ef85128193ec02eeaed45190bf421af6410ad1cad10c50a00ebd62992133720"
+    },
+    {
+      "path": "cdlno/modules.py",
+      "classification": "tracked",
+      "size": 18094,
+      "sha256": "ceca8a7efd17e06693905030a7cec19f3c533c2770e6458852a93089dd2de99a"
+    },
+    {
+      "path": "cdlno/msar_lno/__init__.py",
+      "classification": "tracked",
+      "size": 594,
+      "sha256": "ec35509e4eb2f477d4133a243fe6842ca9eb5a6515e60ac59c1593678fb3e8c7"
+    },
+    {
+      "path": "cdlno/msar_lno/__main__.py",
+      "classification": "tracked",
+      "size": 1425,
+      "sha256": "36a575e5ac828f27781425efa774fd8ad0b2716ebcfbafccef4d78afb99cd1eb"
+    },
+    {
+      "path": "cdlno/msar_lno/car_preflight.py",
+      "classification": "tracked",
+      "size": 1101,
+      "sha256": "b4b3ed7a07cd725408d7aa8a3201f183de61a937dcdc0e8b04ad1fe270075897"
+    },
+    {
+      "path": "cdlno/msar_lno/checkpoint.py",
+      "classification": "tracked",
+      "size": 8541,
+      "sha256": "cdd8c9b756b4421e0758b5fd189cbc704722b63ca174c895be62be11d4387f82"
+    },
+    {
+      "path": "cdlno/msar_lno/config.py",
+      "classification": "tracked",
+      "size": 7193,
+      "sha256": "6eefab6de4d5f116d52a78af26e7138e548e6d9b1fea6095f4c63e5d6e3b5d6b"
+    },
+    {
+      "path": "cdlno/msar_lno/core.py",
+      "classification": "tracked",
+      "size": 6699,
+      "sha256": "0cb07cf8fe4664473d58b9936e0c6807ad89794a4b071d1c8062008ca70f343f"
+    },
+    {
+      "path": "cdlno/msar_lno/diagnostics.py",
+      "classification": "tracked",
+      "size": 2470,
+      "sha256": "c32909febb2115c74eda8c0bc9c789911966f998deadadd7f623e448b8140c57"
+    },
+    {
+      "path": "cdlno/msar_lno/entry.py",
+      "classification": "tracked",
+      "size": 766,
+      "sha256": "5b3a4b9073620fa34d6f993d80e027d7572e314210f9fa0bdb1b232099457b3b"
+    },
+    {
+      "path": "cdlno/msar_lno/industrial.py",
+      "classification": "tracked",
+      "size": 4703,
+      "sha256": "9e2cde76835cfbfaab94a0ba2cff2f85947e310f811dc3f594fe7fba5a519274"
+    },
+    {
+      "path": "cdlno/msar_lno/industrial_entry.py",
+      "classification": "tracked",
+      "size": 12798,
+      "sha256": "fe7aee251cd254e5d0d5bab954e5898a1f0708bca169fde2d8b32018461f31b8"
+    },
+    {
+      "path": "cdlno/msar_lno/metadata.py",
+      "classification": "tracked",
+      "size": 7293,
+      "sha256": "9fb41a64aec8e330422e6f97f8c7e28ef687cd5d18bd668a7f418f30c82a2ec4"
+    },
+    {
+      "path": "cdlno/msar_lno/modules.py",
+      "classification": "tracked",
+      "size": 13587,
+      "sha256": "f284eda987284693675c6007451b6aa88bd58b1f856cc29e4cf8d39fa30540ec"
+    },
+    {
+      "path": "cdlno/msar_lno/objective.py",
+      "classification": "tracked",
+      "size": 6172,
+      "sha256": "b5badf9d97657b72768067456d0eedddf5bba362e375625d135a6f9057076dd6"
+    },
+    {
+      "path": "cdlno/msar_lno/options.py",
+      "classification": "tracked",
+      "size": 4710,
+      "sha256": "e74cd230abef53602d9336c4befaf0b992c6fdd7972b4b146c78c92ee16f500a"
+    },
+    {
+      "path": "cdlno/msar_lno/profiles.py",
+      "classification": "tracked",
+      "size": 1999,
+      "sha256": "f2172a39409c1380b6c3b3d616c34bb8c2e107b39328d42b3dc39f8d6dbb8d71"
+    },
+    {
+      "path": "cdlno/msar_lno/registry.py",
+      "classification": "tracked",
+      "size": 1048,
+      "sha256": "d2f0fb0b6d6affa607cedff42529dbabbaf88b9834a90cc65b464638debd4e3c"
+    },
+    {
+      "path": "cdlno/msar_lno/standard.py",
+      "classification": "tracked",
+      "size": 4970,
+      "sha256": "8541093f498a123b4b7552c403094c24fe402bc7f4f014c1901ff052dff4687c"
+    },
+    {
+      "path": "cdlno/msar_lno/standard_entry.py",
+      "classification": "tracked",
+      "size": 10320,
+      "sha256": "6f863fabe89d68219d084bae3fb3e2fbbe200b3fc4af4dea8be468521c7b9fac"
+    },
+    {
+      "path": "cdlno/msar_lno/temporal.py",
+      "classification": "tracked",
+      "size": 5942,
+      "sha256": "ac0bdc58e0a27b0f4c9cd72a78c3502908f3c7f9b0a1b81740aeb32fe82a285d"
+    },
+    {
+      "path": "cdlno/periodic_visualization.py",
+      "classification": "tracked",
+      "size": 15570,
+      "sha256": "cfb8041aadf0c6974ebfae1aae03627c040acbb22f0a344829c28a9dbfad61f7"
+    },
+    {
+      "path": "cdlno/standard.py",
+      "classification": "tracked",
+      "size": 13092,
+      "sha256": "ee9a547ded0fef9a46229d88c8c90ed0b86caf57a7c0387993d0a1471610f42e"
+    },
+    {
+      "path": "cdlno/training_observer.py",
+      "classification": "tracked",
+      "size": 3600,
+      "sha256": "6241bbc5b9bf61813b8045e0cedb49441f518aac4b67cea0c40b39315fff7af5"
+    },
+    {
+      "path": "cdlno/training_state.py",
+      "classification": "tracked",
+      "size": 34305,
+      "sha256": "4c6d83a7b5053889b5228ebfeef9149bf4d9966c5420ae0a0dc5847842496b63"
+    },
+    {
+      "path": "cdlno/visualization.py",
+      "classification": "tracked",
+      "size": 14831,
+      "sha256": "cec9b01741e897f625b8bb8ebb9e15254fe898f992b3771b45f4053b0c683bb5"
+    },
+    {
+      "path": "tests/cdpa_reference.py",
+      "classification": "tracked",
+      "size": 2969,
+      "sha256": "a110768c375a7cecedf4d7bf175191b262197d66b325248d72fdccbe7bcdb9f8"
+    },
+    {
+      "path": "tests/kernel_history_reference.py",
+      "classification": "tracked",
+      "size": 2977,
+      "sha256": "7e2aef19be71c57065857cde9c3d54239f1aeb683c6ed4440f021d47af65aaa5"
+    },
+    {
+      "path": "tests/msar_core_reference.py",
+      "classification": "tracked",
+      "size": 1916,
+      "sha256": "83318355f7a52f477ed73d76c098f6503c99c995ce0e98f0ef601b5c64a736a3"
+    },
+    {
+      "path": "tests/msar_entry_projection.py",
+      "classification": "tracked",
+      "size": 1561,
+      "sha256": "8cf69a03a49fef96cec8d0b58a4adaf348b150280dc2b8e49a16edc121d1b843"
+    },
+    {
+      "path": "tests/msar_reference.py",
+      "classification": "tracked",
+      "size": 3784,
+      "sha256": "aab57aa55530f748473e774556f5887351df1bc5f4437c984249efba442bf736"
+    },
+    {
+      "path": "tests/output_recording_projection.py",
+      "classification": "tracked",
+      "size": 3447,
+      "sha256": "2a7e1314f00374e931a8096349a4a4ae1e5ead44209a7c37ca52e05bf6703df8"
+    },
+    {
+      "path": "tests/test_airfrans.py",
+      "classification": "tracked",
+      "size": 25032,
+      "sha256": "094dae610e2c9d323ea84ac14cbfde6e70d8e346ca5900e7c498cb5cb559ba1b"
+    },
+    {
+      "path": "tests/test_cdpa.py",
+      "classification": "tracked",
+      "size": 27985,
+      "sha256": "d65fbbf05b02b9d7a48f3da9490c49860da676653049023f7998abef16f47dec"
+    },
+    {
+      "path": "tests/test_core.py",
+      "classification": "tracked",
+      "size": 23658,
+      "sha256": "c30bf6f4f23ec3f96fc0f82412ff6e3b59045b9050ef2b2c94627ae6875b74e1"
+    },
+    {
+      "path": "tests/test_core_config.py",
+      "classification": "tracked",
+      "size": 11009,
+      "sha256": "2f0c117810984734a40d708f3a99f604e68f34f38e1c37c014b47ede3dce73e4"
+    },
+    {
+      "path": "tests/test_experiment_records.py",
+      "classification": "tracked",
+      "size": 21749,
+      "sha256": "6a323772d2740ec379ddb247fdbd0f67d4cdfef50fe655559ea0a4b9018c4d6d"
+    },
+    {
+      "path": "tests/test_front_ablation.py",
+      "classification": "tracked",
+      "size": 21973,
+      "sha256": "5f45a15380edb912f673b89b0396a5efc2c375be167033537f423029fee812ca"
+    },
+    {
+      "path": "tests/test_front_task_modes.py",
+      "classification": "tracked",
+      "size": 21131,
+      "sha256": "f73a0b32536e9b8471d0c971909279938e5fe7726b34515c5dc2554a1e0967c2"
+    },
+    {
+      "path": "tests/test_front_training.py",
+      "classification": "tracked",
+      "size": 22499,
+      "sha256": "d6ca16b356e2efb7c4de67dae85b8dbcf13dd2dc6246fc6f12447b9b87555a7a"
+    },
+    {
+      "path": "tests/test_kcdno_airfrans.py",
+      "classification": "tracked",
+      "size": 6924,
+      "sha256": "f26b838191e955800bf86f530800a224e7c1b4bbcd3eae610fad0d2fe5eb9104"
+    },
+    {
+      "path": "tests/test_kcdno_car.py",
+      "classification": "tracked",
+      "size": 6027,
+      "sha256": "ddbb60484322f3c15caaca504089da1c9eab72cda7e3920317f7c99cd558d60c"
+    },
+    {
+      "path": "tests/test_kcdno_config.py",
+      "classification": "tracked",
+      "size": 17974,
+      "sha256": "4db8d8d85220426a3c39e85d1371e081b666c9b3605c7cfa1e8a79270c5e4804"
+    },
+    {
+      "path": "tests/test_kcdno_core.py",
+      "classification": "tracked",
+      "size": 25837,
+      "sha256": "79881e7ca1ee5d09c381d65d705d9f0c1befe4d796b69ca4cf55476919afab4e"
+    },
+    {
+      "path": "tests/test_kcdno_delivery.py",
+      "classification": "tracked",
+      "size": 9690,
+      "sha256": "3edd1ce1fa464d46e94ef0ad3ef4674c2a6e2eecdf7d9d2b0b3dca11bf60d679"
+    },
+    {
+      "path": "tests/test_kcdno_matched.py",
+      "classification": "tracked",
+      "size": 7837,
+      "sha256": "f418686117971a4bd99ad9824d6d6c4aa55d223d7ec347b02a16a6e23e522283"
+    },
+    {
+      "path": "tests/test_kcdno_performance.py",
+      "classification": "tracked",
+      "size": 2526,
+      "sha256": "81bc41230099ea164c5ca477dd345639adc9f8c57cb0bf96f0b5800c377e1197"
+    },
+    {
+      "path": "tests/test_kcdno_seed_suite.py",
+      "classification": "tracked",
+      "size": 11586,
+      "sha256": "cb966c8d1a220cd13d13dfd8daec0e181bdbe413e4021ea5d05baa054cfefe94"
+    },
+    {
+      "path": "tests/test_kcdno_tasks.py",
+      "classification": "tracked",
+      "size": 13001,
+      "sha256": "f05fa9fb056f4bf34b965e6d961a2b01f53d19d76eeceb6ca752b85b1ee00ee5"
+    },
+    {
+      "path": "tests/test_kcdno_temporal.py",
+      "classification": "tracked",
+      "size": 6812,
+      "sha256": "d4afa2d3b3c3771b90406134251a549460c54a2caaab9decde92d19d9f9e3133"
+    },
+    {
+      "path": "tests/test_kernel_history.py",
+      "classification": "tracked",
+      "size": 23555,
+      "sha256": "fe4f8f18317b3bc4434b1014733f798b1b85603808b16c7960798a8cb5c1a1e1"
+    },
+    {
+      "path": "tests/test_lrsa_reference.py",
+      "classification": "tracked",
+      "size": 5724,
+      "sha256": "73c4d7a6436852b2e0bf45e9795eb829f8d86c4c401e24e0989df7dbb32d5f39"
+    },
+    {
+      "path": "tests/test_modules.py",
+      "classification": "tracked",
+      "size": 25781,
+      "sha256": "6ef4b528d093a2258b4c84fe542e960e2e5df21b7d1e0fc0ac51f5510eb0bd6d"
+    },
+    {
+      "path": "tests/test_msar_acceptance.py",
+      "classification": "tracked",
+      "size": 19956,
+      "sha256": "a750fd1384f7dd39b99fc3cf32ed8a2f3ec687279cc8da726fa6d77b2c6a6e7b"
+    },
+    {
+      "path": "tests/test_msar_config.py",
+      "classification": "tracked",
+      "size": 20289,
+      "sha256": "617de7d7367554b2a571d9275115922d48e8757a1cea20fef2dd9d24f415e1d6"
+    },
+    {
+      "path": "tests/test_msar_core.py",
+      "classification": "tracked",
+      "size": 21910,
+      "sha256": "64f818fa3a9566ccf0f4bab45ab8d2b4a4559729d0bfa4039b48f537e8725cab"
+    },
+    {
+      "path": "tests/test_msar_industrial.py",
+      "classification": "tracked",
+      "size": 29267,
+      "sha256": "7b63d83c7d1ed58ba8f8234bda93d4b04511cb8efd448896a3738a80b6ff6607"
+    },
+    {
+      "path": "tests/test_msar_integration.py",
+      "classification": "tracked",
+      "size": 21068,
+      "sha256": "62724fbe6b149a3816e120460232c1849a4a45ffdee0d741bf5e120c2b175082"
+    },
+    {
+      "path": "tests/test_msar_modules.py",
+      "classification": "tracked",
+      "size": 23062,
+      "sha256": "7b1fe9637ce61d92d2917820dfbb0c50d56af0e6397f08373f68f9d207016a75"
+    },
+    {
+      "path": "tests/test_msar_performance.py",
+      "classification": "tracked",
+      "size": 9119,
+      "sha256": "3962f697140c79d827ba3f4731cc9e8ddac0cce71bbf0f31f9b9ffc27682443b"
+    },
+    {
+      "path": "tests/test_msar_static.py",
+      "classification": "tracked",
+      "size": 25376,
+      "sha256": "db256c2c01ee664ed89e90a58f3e951bb29163b8848a8d99fcfee9733ad0c8c9"
+    },
+    {
+      "path": "tests/test_msar_temporal.py",
+      "classification": "tracked",
+      "size": 26460,
+      "sha256": "e4c1a4ca4329631a9a79e9c1e9627ede73b76ba53899d8584e3b77eeceab659b"
+    },
+    {
+      "path": "tests/test_performance.py",
+      "classification": "tracked",
+      "size": 20082,
+      "sha256": "b4adbca94705e116562b4d715d26375ceee1e783caed7060a0dd8eca23a6b552"
+    },
+    {
+      "path": "tests/test_periodic_visualization.py",
+      "classification": "tracked",
+      "size": 14602,
+      "sha256": "dbc5c8060d2b85b3325705eea3efe0978aa1d331d8023d116d591ae4df9f5db1"
+    },
+    {
+      "path": "tests/test_shapenet_car.py",
+      "classification": "tracked",
+      "size": 24113,
+      "sha256": "3d206da3872f8f179b0801b3bbe078518143f8939ce3ef99f2b6ad6ba777b217"
+    },
+    {
+      "path": "tests/test_show_reports.py",
+      "classification": "tracked",
+      "size": 22162,
+      "sha256": "c57d391e353d9d6224c460a2ed3f2176f681324a3c0fc4437053b6618fa0c40e"
+    },
+    {
+      "path": "tests/test_static_standard.py",
+      "classification": "tracked",
+      "size": 28013,
+      "sha256": "2ebac50a642b87eef6d38396b6206075929d8d2d0dd28468e19b4a0c48700890"
+    },
+    {
+      "path": "tests/test_temporal_standard.py",
+      "classification": "tracked",
+      "size": 11718,
+      "sha256": "49c1f435c12d80b15b2c96f1092f1a32bc826ca8aaaa347c3e2488eceff3b1ec"
+    },
+    {
+      "path": "tests/test_training_state.py",
+      "classification": "tracked",
+      "size": 24113,
+      "sha256": "5b535086e5e751a91dbdca4b380b9211f56bc992cf64f4d4ad719a3a4566f736"
+    },
+    {
+      "path": "tests/test_visualization.py",
+      "classification": "tracked",
+      "size": 4305,
+      "sha256": "b4a0e88c728563e7e8d71a92df95877647b3726f3cf169cacbe983b6d4869d14"
+    },
+    {
+      "path": "tests/visualization_projection.py",
+      "classification": "tracked",
+      "size": 1102,
+      "sha256": "9444d30036db306f8e906f3c1e56885d1eca7c061d3dc6287827f42f01354df8"
+    },
+    {
+      "path": "tran_evaluate/README.md",
+      "classification": "tracked",
+      "size": 18918,
+      "sha256": "5a6d7f63dd5cf1c1d2b01b414b5f8b0e5702d50e4406f637ba5917337d286a46"
+    },
+    {
+      "path": "tran_evaluate/_common.sh",
+      "classification": "tracked",
+      "size": 5696,
+      "sha256": "dd6409998725ae9f053aad1b0db74e236596514c94e2767774a1b0681714779e"
+    },
+    {
+      "path": "tran_evaluate/_standard.sh",
+      "classification": "tracked",
+      "size": 3035,
+      "sha256": "9f7690e15d95c8dd04549c421664f4895e34e68c86dd1c6c5e7898ee18febcca"
+    },
+    {
+      "path": "tran_evaluate/ablation/README.md",
+      "classification": "tracked",
+      "size": 3563,
+      "sha256": "bcf82746b6f8bb1f91b25ab4b5ad4ca1829a5750382de2b6abd2d67e3250a7fb"
+    },
+    {
+      "path": "tran_evaluate/ablation/identity/eval.sh",
+      "classification": "tracked",
+      "size": 280,
+      "sha256": "47954572d8ae1c8ac4836bb7c1f6102f9f007a5811359ea567b67821b258ad8b"
+    },
+    {
+      "path": "tran_evaluate/ablation/identity/train.sh",
+      "classification": "tracked",
+      "size": 281,
+      "sha256": "58c9c8afb800f84997ad5e5765c1fc61a45e1b5edb1d7f16843bdedc8f6e4a7f"
+    },
+    {
+      "path": "tran_evaluate/ablation/identity/train_eval.sh",
+      "classification": "tracked",
+      "size": 286,
+      "sha256": "e36cf030bdbcbc8329ab87a8aebe52257b2dc5cc342047f8d03d48dbf5d9453e"
+    },
+    {
+      "path": "tran_evaluate/ablation/no_sa/eval.sh",
+      "classification": "tracked",
+      "size": 274,
+      "sha256": "00b304495e3c61ccb453950eb59efb7f7ca6fd784a2d20c0737a4111d868de1e"
+    },
+    {
+      "path": "tran_evaluate/ablation/no_sa/train.sh",
+      "classification": "tracked",
+      "size": 275,
+      "sha256": "7d699d4b32cb83cd78093cabb5e2d265bc12c4f8fe74a1476d07ecde24aa995c"
+    },
+    {
+      "path": "tran_evaluate/ablation/no_sa/train_eval.sh",
+      "classification": "tracked",
+      "size": 280,
+      "sha256": "be9b5076c2c66d3a3f113ddbed942c6052616c32fa99485e06c7cd6dbb066ddf"
+    },
+    {
+      "path": "tran_evaluate/ablation/verification.json",
+      "classification": "tracked",
+      "size": 3517,
+      "sha256": "13a112a59ab1f93e190244ef7025630b7c17f26315f71eec3de475ab044c160b"
+    },
+    {
+      "path": "tran_evaluate/airfoil.sh",
+      "classification": "tracked",
+      "size": 169,
+      "sha256": "4a5d1596fa2e473fa69cb0a46dbe29a6dd71900947a4c385c885c798a254104e"
+    },
+    {
+      "path": "tran_evaluate/airfrans.sh",
+      "classification": "tracked",
+      "size": 2357,
+      "sha256": "b3634006874e74fa3588a70855263b3abce90c3377f120f61f9fa57eefb1de92"
+    },
+    {
+      "path": "tran_evaluate/car.sh",
+      "classification": "tracked",
+      "size": 2227,
+      "sha256": "f6f28e7a8edcbd7aadccdafc53669d7c861873f1486ab4baa4ba858f445c6d21"
+    },
+    {
+      "path": "tran_evaluate/check_car_eval.py",
+      "classification": "tracked",
+      "size": 2509,
+      "sha256": "a2bf1cbc643ba27c828fcd461e8a35d6a1301efb97825f015fdacd1435a14a54"
+    },
+    {
+      "path": "tran_evaluate/darcy.sh",
+      "classification": "tracked",
+      "size": 167,
+      "sha256": "8f717553ecbc86f777113288a669d6aac2983708faffb1943c8b3b7e399275e3"
+    },
+    {
+      "path": "tran_evaluate/elasticity.sh",
+      "classification": "tracked",
+      "size": 172,
+      "sha256": "25ab6e5ae42efc9736b29c6d553940e6f866f82313e57bea4cf06c7cb1e2369b"
+    },
+    {
+      "path": "tran_evaluate/inspect_data.py",
+      "classification": "tracked",
+      "size": 11556,
+      "sha256": "09102d1bcc8b30310a3238fc6fdac756053f55f8d50627f9454db93b36b4b376"
+    },
+    {
+      "path": "tran_evaluate/inspect_data.sh",
+      "classification": "tracked",
+      "size": 1657,
+      "sha256": "fddf695de854eda5582159c27193a15d84b5bfb1b48e7d2b0bff70710b369961"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/README.md",
+      "classification": "tracked",
+      "size": 9356,
+      "sha256": "492080367a4fadbe740b000e74e74be40effb3fedd2294b8931afda70b15321e"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/_seed_suite.py",
+      "classification": "tracked",
+      "size": 6572,
+      "sha256": "7f491102ef7082ecf72f9f5f09d8b552c74687422cf72463fc4334552525e175"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/_task.sh",
+      "classification": "tracked",
+      "size": 1349,
+      "sha256": "9faa3a4b35380b9d85cc3114af5c1494c74cb5e4969db133b9a1884e4dee2c63"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/airfoil.sh",
+      "classification": "tracked",
+      "size": 124,
+      "sha256": "96e052bd02216687b3a4a4de0e48dfefa4512f18d05dd9ac9c3dd804d8b98ba9"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/airfrans.sh",
+      "classification": "tracked",
+      "size": 125,
+      "sha256": "3cc6d4d0d97a1bd4462e4a6a65130733ed709fd3518e966487fd543c6605d2b3"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/car.sh",
+      "classification": "tracked",
+      "size": 120,
+      "sha256": "d89ee33408093d90725630fe2269b2ab69972323a0532ebc822414a0d5063b28"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/darcy.sh",
+      "classification": "tracked",
+      "size": 122,
+      "sha256": "bd1994d97632e86bfb0fd8bb7f6d241b99b5a0987205cf827381183b2f88fe10"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/elasticity.sh",
+      "classification": "tracked",
+      "size": 127,
+      "sha256": "641613b44b350e0ca3105edd9e304b5d32628a89f37b5341d58eaeba7581dc27"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/ns.sh",
+      "classification": "tracked",
+      "size": 119,
+      "sha256": "065ff7b6c9cbeedaedec50468f71073a092f78f6018e13bb82441e6166ec8c97"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/pipe.sh",
+      "classification": "tracked",
+      "size": 121,
+      "sha256": "45cd214c62b8ddc2ff83f7fddb31d8ef80c726fdfa49621e7694f281f6388195"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/plasticity.sh",
+      "classification": "tracked",
+      "size": 127,
+      "sha256": "c87d8cd87c5d070eddef64948cf9614bf9665ea495f8c9c119da89a2c393d3ea"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/run_seed.sh",
+      "classification": "tracked",
+      "size": 1102,
+      "sha256": "25114eab94501aa57ec7aee8b273b4f47aa2e2818a59541642ca3c6a90a22c45"
+    },
+    {
+      "path": "tran_evaluate/kcdlno/verification.json",
+      "classification": "tracked",
+      "size": 21750,
+      "sha256": "a01b9ff4a5cd5542cf6b061d0772b82fbb7f8db79dda7739cab7c7a9efc5a73b"
+    },
+    {
+      "path": "tran_evaluate/kcdno/_dispatch.sh",
+      "classification": "tracked",
+      "size": 1375,
+      "sha256": "157c4906e9445c342c66ebc772450c4bc909e1b307b66b85c3325a124b8727ef"
+    },
+    {
+      "path": "tran_evaluate/kcdno/_standard.sh",
+      "classification": "tracked",
+      "size": 1537,
+      "sha256": "3934500dd20af9b8fb02ee0c12b3ea2ff15e297012d5932913107104c6417e8d"
+    },
+    {
+      "path": "tran_evaluate/kcdno/airfoil.sh",
+      "classification": "tracked",
+      "size": 149,
+      "sha256": "7e03f73f262cb9b98697ff83fe4e4ba0b823786a763a012f69cb3f65f0b9a2a6"
+    },
+    {
+      "path": "tran_evaluate/kcdno/airfrans.sh",
+      "classification": "tracked",
+      "size": 941,
+      "sha256": "d659f3455da2de3e64147f0527ce12a1821f311c2c084c032419a8bbd6561e25"
+    },
+    {
+      "path": "tran_evaluate/kcdno/car.sh",
+      "classification": "tracked",
+      "size": 728,
+      "sha256": "710f2f51db2b62d81089a804c83bfc248c86f7696318775f918a15eb20ab6f5c"
+    },
+    {
+      "path": "tran_evaluate/kcdno/darcy.sh",
+      "classification": "tracked",
+      "size": 147,
+      "sha256": "dc71af3c6c3500ede9b4d684708fc82a2e1e5a3ce72a4591f6bdcb7de303a0ba"
+    },
+    {
+      "path": "tran_evaluate/kcdno/elasticity.sh",
+      "classification": "tracked",
+      "size": 152,
+      "sha256": "b8a4b157b9882066ed53c395ac47e2985f62e0b7e45c1783ce1e5797497539e8"
+    },
+    {
+      "path": "tran_evaluate/kcdno/ns.sh",
+      "classification": "tracked",
+      "size": 144,
+      "sha256": "6ba2faf012ced6b2f913683b55b23d010e69cf7f7e98fa52e89b03ab208f796c"
+    },
+    {
+      "path": "tran_evaluate/kcdno/pipe.sh",
+      "classification": "tracked",
+      "size": 146,
+      "sha256": "77e00aadb3bc15741338cbff74865d9410f66373bca117beef0c0fc0f24452ef"
+    },
+    {
+      "path": "tran_evaluate/kcdno/plasticity.sh",
+      "classification": "tracked",
+      "size": 152,
+      "sha256": "9a3471d2becc6c4beedbdbb6bb2e92324647eab04c28d9209021633c2fde1cc3"
+    },
+    {
+      "path": "tran_evaluate/kcdno/train_eval.sh",
+      "classification": "tracked",
+      "size": 1101,
+      "sha256": "a8aabd8804703b2db2c0e2d07dde41ef8d6e4250a9e34b5e7628ff2b366db59e"
+    },
+    {
+      "path": "tran_evaluate/msar_lno/README.md",
+      "classification": "tracked",
+      "size": 13441,
+      "sha256": "ba1752ccb9a3ddd0621c73d2d78210a65cf24ab1fb9e8f22341382f564774765"
+    },
+    {
+      "path": "tran_evaluate/msar_lno/_dispatch.sh",
+      "classification": "tracked",
+      "size": 1376,
+      "sha256": "9f445d75e03baab1e047121627951f6c155a56227d97835d41f37144bdaedb6a"
+    },
+    {
+      "path": "tran_evaluate/msar_lno/_static.sh",
+      "classification": "tracked",
+      "size": 1533,
+      "sha256": "85cd17aea28c0b4c97818ed597963d851aaf2a75724f292ed711addcb5a11214"
+    },
+    {
+      "path": "tran_evaluate/msar_lno/airfoil.sh",
+      "classification": "tracked",
+      "size": 147,
+      "sha256": "294784347221144c70254c8f8c914018d77dee7efb456127d65d17a73d1eaf8e"
+    },
+    {
+      "path": "tran_evaluate/msar_lno/airfrans.sh",
+      "classification": "tracked",
+      "size": 941,
+      "sha256": "e11fb34399aa5f66d191cb91ff268111fa7eb700afbf6f63c601e3e7bf7d0e2b"
+    },
+    {
+      "path": "tran_evaluate/msar_lno/car.sh",
+      "classification": "tracked",
+      "size": 728,
+      "sha256": "154039093a7b906bef2c2545135069ff1fd522cccdd1739dbf1d6c162f0432de"
+    },
+    {
+      "path": "tran_evaluate/msar_lno/darcy.sh",
+      "classification": "tracked",
+      "size": 145,
+      "sha256": "a023f2d3bf35542cc27821ea5b831d61ba0aaca701af866d9f870e94204e0e88"
+    },
+    {
+      "path": "tran_evaluate/msar_lno/elasticity.sh",
+      "classification": "tracked",
+      "size": 150,
+      "sha256": "24cd867cc557d4b374273d350f112aefe0f70f702061f4f2821e917ce0ed7234"
+    },
+    {
+      "path": "tran_evaluate/msar_lno/ns.sh",
+      "classification": "tracked",
+      "size": 142,
+      "sha256": "e701d3c3e678637c635f640f7b42c68c91ec3bf81e7463a0348b11018af5c60d"
+    },
+    {
+      "path": "tran_evaluate/msar_lno/pipe.sh",
+      "classification": "tracked",
+      "size": 144,
+      "sha256": "5228c08d686031c66ecbbfe0d77cf285c921d01c51c4f8d95ca9b23bed59a47f"
+    },
+    {
+      "path": "tran_evaluate/msar_lno/plasticity.sh",
+      "classification": "tracked",
+      "size": 150,
+      "sha256": "3ab339933a20356742ed729f5391641b2ea0f2d02869d494850e658ca4f66875"
+    },
+    {
+      "path": "tran_evaluate/msar_lno/run_msar.sh",
+      "classification": "tracked",
+      "size": 2877,
+      "sha256": "767616173deed63409bdc9306debae94001a301d3555bc8d5dab2bf4f3735f52"
+    },
+    {
+      "path": "tran_evaluate/ns.sh",
+      "classification": "tracked",
+      "size": 164,
+      "sha256": "fe4ae30955ff9c030d0480b8e9458770a901229b8024264dc0fe3f71960c6ad9"
+    },
+    {
+      "path": "tran_evaluate/pipe.sh",
+      "classification": "tracked",
+      "size": 166,
+      "sha256": "45dd772c36cc56429451554ff22febdcc1a1c318564d4a59dd4bcfa55b9bb72b"
+    },
+    {
+      "path": "tran_evaluate/plasticity.sh",
+      "classification": "tracked",
+      "size": 172,
+      "sha256": "7c6cd3aebf50a70500a5666f3dc5bd632c5ea3f2f14d7db49abfc9a75b4edfa9"
+    },
+    {
+      "path": "tran_evaluate/show/Airfoil-Design-AirfRANS.sh",
+      "classification": "tracked",
+      "size": 266,
+      "sha256": "cccd231b34088214b06c0d8030b44bad85ed11508f28fce51bbea16b477aa51f"
+    },
+    {
+      "path": "tran_evaluate/show/Car-Design-ShapeNetCar.sh",
+      "classification": "tracked",
+      "size": 265,
+      "sha256": "8cadb215810597c8d01f317d643bec91d6588b7644085693b647d4695f58aac2"
+    },
+    {
+      "path": "tran_evaluate/show/PDE-Solving-StandardBenchmark.sh",
+      "classification": "tracked",
+      "size": 272,
+      "sha256": "0a0cee67074dd87441171d4a0985a8db0d7670299ab17f09c4a7b08a269aa746"
+    },
+    {
+      "path": "tran_evaluate/show/README.md",
+      "classification": "tracked",
+      "size": 13055,
+      "sha256": "44cad206617d7240acd0adb653a11c46df5264fddf1e5568badda153b0e41e3a"
+    },
+    {
+      "path": "tran_evaluate/show/_report.py",
+      "classification": "tracked",
+      "size": 53355,
+      "sha256": "e5d8afc7279b73ed0570bc4f0b8778bd68824d596952802764df4dceeadbc533"
+    },
+    {
+      "path": "tran_evaluate/train_eval.sh",
+      "classification": "tracked",
+      "size": 3948,
+      "sha256": "a7f6218d577713c8c0a23810e07d098f7de9f9513097ec2f9669ebaa1ec69298"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/models/__pycache__/CDLNO.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 4531,
+      "sha256": "594df0f44762077fad17ae7f9aea4c1360a8e7255768c5af8ea39e10ca5ea8c2"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/models/__pycache__/cdlno_run.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 14182,
+      "sha256": "8d6ffb25ab04772ddb1a8e6fe0ac4e7388457beda1e97ecba81c0d7a3b807123"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/__pycache__/Embedding.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 5866,
+      "sha256": "5b7cee7fdfc0b338cc2ce9c8a966bab8d49dd3f7aab5f1dbd5d7a808798ecb59"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/__pycache__/Physics_Attention.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 13084,
+      "sha256": "b6a7ee6aa15620b6dbaee7cb03dce2ae94ef67072281534348b5bac9ffb32b39"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/__pycache__/Transolver_Irregular_Mesh.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 10211,
+      "sha256": "34c7c6ba202f2732810aa13d249417272a42595a114d2858efbf339a1f033e02"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/__pycache__/Transolver_Structured_Mesh_2D.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 11305,
+      "sha256": "a4b8a58295b1b7b39fe64746d99e5628c13e48b5e8c04be68d7ef89f1d918809"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/__pycache__/Transolver_Structured_Mesh_3D.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 12604,
+      "sha256": "050baf92708bcaa254bbd5d980e0dcea1ec499abf37661e7b7f68bfa5addf6cd"
+    },
+    {
+      "path": "cdlno/__pycache__/__init__.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 858,
+      "sha256": "15ffd21c54832f33340b13634e9e949036750221acd0c02eefe2cb84fa1094db"
+    },
+    {
+      "path": "cdlno/__pycache__/cdpa.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 8746,
+      "sha256": "60c64d32dc527336c157eb980523d261ae1c7b173951cfc32320cb675e8961eb"
+    },
+    {
+      "path": "cdlno/__pycache__/checkpoint.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 6151,
+      "sha256": "16c5a2fd56d62d00a936560197664dc468b86aa9f2e14d14f130dd4eed14e67c"
+    },
+    {
+      "path": "cdlno/__pycache__/config.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 11943,
+      "sha256": "8d7516b07ac830d685cd422116cf45d62f90032d512c34aa0079d7c7695a6b40"
+    },
+    {
+      "path": "cdlno/__pycache__/core.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 6357,
+      "sha256": "5c23026630a00a8618b4a0cc6ce3ed2f9aa8153c7480b84dd0dcc713f06a790e"
+    },
+    {
+      "path": "cdlno/__pycache__/experiment.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 24020,
+      "sha256": "c54eb7293b6371cb2434e9467709ed15906ee85f52a93e1f5e4289fdc8e8aae7"
+    },
+    {
+      "path": "cdlno/__pycache__/modules.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 29177,
+      "sha256": "ab819fcebf7f3070a2e403e83684153fe3482e47864878cfc0dbe633b7561cd9"
+    },
+    {
+      "path": "cdlno/__pycache__/standard.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 17607,
+      "sha256": "090bd3598d629b9ab5f9c370b6057ce6de0f8426d067c31e6105a5fecec1a0e0"
+    },
+    {
+      "path": "cdlno/kcdno/__pycache__/__init__.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 539,
+      "sha256": "4cbcf46b73d8e6d01b9b86f6d9c8f54b3e3c5d7221655a8a73359775c361f872"
+    },
+    {
+      "path": "cdlno/kcdno/__pycache__/air_entry.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 12422,
+      "sha256": "ce5746d532a31e4c340dae182ee6064fc442f8298a79f3c3d381766fcd572e13"
+    },
+    {
+      "path": "cdlno/kcdno/__pycache__/airfrans.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 3398,
+      "sha256": "3f5ed66475d7e90ee9c2817e86f81796fba44b43c94bc067d6a97a1fccff7d97"
+    },
+    {
+      "path": "cdlno/kcdno/__pycache__/car_preflight.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 2566,
+      "sha256": "ca76d39698cfb9738b92bd9a4f8ebfe6cd35b0547e263fa649c91577ae013ecd"
+    },
+    {
+      "path": "cdlno/kcdno/__pycache__/config.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 10179,
+      "sha256": "327ef2ff6b5604c3b4a444625abc78ce24b57aeec7cd953b7195969ac38d133a"
+    },
+    {
+      "path": "cdlno/kcdno/__pycache__/core.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 9109,
+      "sha256": "b8c3291eab84e504a99aae713b85034e01900b9c2690a8c2f814f829a586956c"
+    },
+    {
+      "path": "cdlno/kcdno/__pycache__/entry.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 14104,
+      "sha256": "b1775243a7e94f4ce719f2a398bf2735e939b1c8b1f197611a349acf767eb65e"
+    },
+    {
+      "path": "cdlno/kcdno/__pycache__/families.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 6162,
+      "sha256": "2c79254a299ea92b0fdfaa6c14746b5fe6c2293409bd12f1192f9f74028e3179"
+    },
+    {
+      "path": "cdlno/kcdno/__pycache__/history.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 10342,
+      "sha256": "62651b80235b49e3c816c155d1e49def47e2d27e11aa5725f093af7d5874d12c"
+    },
+    {
+      "path": "cdlno/kcdno/__pycache__/industrial_entry.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 11394,
+      "sha256": "12511aa970544deb13f0e1a52f94e337d28856b1b5655d136cc5151ffcdedc73"
+    },
+    {
+      "path": "cdlno/kcdno/__pycache__/loading.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 2489,
+      "sha256": "b7df9b23df24246786403f5a3c7faeb2cd0e99818e5e3c50ccf9ee929c1fa39c"
+    },
+    {
+      "path": "cdlno/kcdno/__pycache__/matched.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 3445,
+      "sha256": "5eb743fad42e35207c1cb23e6b9551f7d7a34c9b76c7b9961d75b7556d47bfc6"
+    },
+    {
+      "path": "cdlno/kcdno/__pycache__/matched_config.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 8223,
+      "sha256": "28d6502d53949dcd23823aae515cf8df2f8904c9f40b7aeef0941d7644531ee1"
+    },
+    {
+      "path": "cdlno/kcdno/__pycache__/metadata.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 12068,
+      "sha256": "6fabb4402c63d9b64faa98762ab9bbc11b8258a90e998c6b7e81cbc2bbb5ccff"
+    },
+    {
+      "path": "cdlno/kcdno/__pycache__/options.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 3504,
+      "sha256": "8110ac4216b6509d352849019182f823143978f868b64aeb36292d228bc76ad2"
+    },
+    {
+      "path": "cdlno/kcdno/__pycache__/profiles.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 1854,
+      "sha256": "8acc2b2302dae1a473d3c77bc0c1bf5c1d3e2fea8ccd66b10bbc08d7c69c9d0d"
+    },
+    {
+      "path": "cdlno/kcdno/__pycache__/standard.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 10378,
+      "sha256": "29a942e0733fb4f4135eabce24a7d19ad089cf00c45caf33d500e6c15d149d6e"
+    },
+    {
+      "path": "tests/__pycache__/msar_entry_projection.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 2026,
+      "sha256": "48cfe955b1f3eb47a791d4eaa81767dea24b40740c75c63bfeb012b1c02bfd87"
+    },
+    {
+      "path": "tests/__pycache__/output_recording_projection.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 5511,
+      "sha256": "c242c2455b0c666d4ad07b1d8d6824215036d672310b5cb6f0ede35d000114f2"
+    },
+    {
+      "path": "tests/__pycache__/visualization_projection.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 2900,
+      "sha256": "a11f3bf292a8989c47ca28f4d34fa15bc0230e71e1a9dbbe730879f037b26976"
+    },
+    {
+      "path": "tran_evaluate/show/__pycache__/_report.cpython-313.pyc",
+      "classification": "ignored",
+      "size": 62029,
+      "sha256": "584dbe6e4312de4bf4e49fe21e21c8de546368f3a46494e6c6dc6a50bc08c415"
+    }
+  ],
+  "policy": "All preexisting tracked/untracked files protected during L0; ignored inventory includes current caches, no deletions. No repository ignored artifacts authorized during L0. External audit baseline directory is permitted; future artifact directories require explicit stage inventory."
+}

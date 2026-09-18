@@ -1,0 +1,171 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+____ AirEntryCycle.test_native_train_resume_fresh_eval_and_strict_metadata _____
+
+self = <linearno.test_air_entry.AirEntryCycle testMethod=test_native_train_resume_fresh_eval_and_strict_metadata>
+
+    def test_native_train_resume_fresh_eval_and_strict_metadata(self):
+        with tempfile.TemporaryDirectory(prefix='linearno-air-cycle-') as temp:
+            root = Path(temp)
+            continuous = root / 'continuous'
+            split = root / 'split'
+>           train = self._worker('train', continuous, root)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/linearno/test_air_entry.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/linearno/test_air_entry.py:23: in _worker
+    self.assertEqual(result.returncode, 0, result.stdout + '\n' + result.stderr)
+E   AssertionError: 1 != 0 : linearno experiment: /tmp/linearno-air-cycle-w8_weac5/continuous
+E   linearno phase: training
+E   linearno seed: 901
+E   
+E   Traceback (most recent call last):
+E     File "/home/hwz/CDLNO/tests/linearno/air_entry_worker.py", line 133, in <module>
+E       Path(report).write_text(json.dumps(run(action,Path(directory)))+'\n')
+E                                          ~~~^^^^^^^^^^^^^^^^^^^^^^^^
+E     File "/home/hwz/CDLNO/tests/linearno/air_entry_worker.py", line 103, in run
+E       run_cli(args)
+E       ~~~~~~~^^^^^^
+E     File "/home/hwz/CDLNO/cdlno/linearno/air_entry.py", line 646, in run_cli
+E       model = air_train.main(str(device), train_dataset, val_dataset, model, hparams,
+E                              str(run.member_dir), criterion='MSE_weighted', reg=args.weight,
+E                              val_iter=10, name_mod='LinearNO', val_sample=True,
+E                              record=recorder, record_member=index, visualization_norm=coef_norm,
+E                              linearno_run=run)
+E     File "/home/hwz/CDLNO/Airfoil-Design-AirfRANS/train.py", line 179, in main
+E       linearno_start_epoch, linearno_history = linearno_run.prepare(
+E                                                ~~~~~~~~~~~~~~~~~~~~^
+E           model, optimizer, lr_scheduler, train_dataset, val_dataset, criterion, reg, val_iter, val_sample)
+E           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E     File "/home/hwz/CDLNO/tests/linearno/air_entry_worker.py", line 83, in prepare
+E       return original_prepare(self, model, *args)
+E     File "/home/hwz/CDLNO/cdlno/linearno/air_entry.py", line 399, in prepare
+E       self._write_root_metadata(optimizer, scheduler)
+E       ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+E     File "/home/hwz/CDLNO/cdlno/linearno/air_entry.py", line 381, in _write_root_metadata
+E       metadata = self._metadata(self._resume_zero(optimizer, scheduler))
+E     File "/home/hwz/CDLNO/cdlno/linearno/air_entry.py", line 366, in _metadata
+E       return make_metadata(profile_spec=self.config, constructor=AirfRANSLinearNO,
+E           model_spec=self.model_spec,
+E           data_spec=self.data, objective_spec=self.config['values']['objective'],
+E           evaluation_spec=self.config['values']['evaluation'], provenance_spec=self.provenance,
+E           normalizer_spec=self.normalizers, resume_state=resume, ensemble_manifest=[])
+E     File "/home/hwz/CDLNO/cdlno/linearno/schema.py", line 365, in make_metadata
+E       return validate_metadata(result, constructor=constructor)
+E     File "/home/hwz/CDLNO/cdlno/linearno/schema.py", line 340, in validate_metadata
+E       raise ValueError('normalizer checksum is absent from data_spec')
+E   ValueError: normalizer checksum is absent from data_spec
+____ AirEntryCycle.test_native_two_member_ensemble_manifest_and_load_order _____
+
+self = <linearno.test_air_entry.AirEntryCycle testMethod=test_native_two_member_ensemble_manifest_and_load_order>
+
+    def test_native_two_member_ensemble_manifest_and_load_order(self):
+        with tempfile.TemporaryDirectory(prefix='linearno-air-ensemble-') as temp:
+            root = Path(temp)
+>           report = self._worker('ensemble', root / 'ensemble', root)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/linearno/test_air_entry.py:29: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/linearno/test_air_entry.py:23: in _worker
+    self.assertEqual(result.returncode, 0, result.stdout + '\n' + result.stderr)
+E   AssertionError: 1 != 0 : linearno experiment: /tmp/linearno-air-ensemble-doau2615/ensemble
+E   linearno phase: training
+E   linearno seed: 901
+E   
+E   Traceback (most recent call last):
+E     File "/home/hwz/CDLNO/tests/linearno/air_entry_worker.py", line 133, in <module>
+E       Path(report).write_text(json.dumps(run(action,Path(directory)))+'\n')
+E                                          ~~~^^^^^^^^^^^^^^^^^^^^^^^^
+E     File "/home/hwz/CDLNO/tests/linearno/air_entry_worker.py", line 103, in run
+E       run_cli(args)
+E       ~~~~~~~^^^^^^
+E     File "/home/hwz/CDLNO/cdlno/linearno/air_entry.py", line 646, in run_cli
+E       model = air_train.main(str(device), train_dataset, val_dataset, model, hparams,
+E                              str(run.member_dir), criterion='MSE_weighted', reg=args.weight,
+E                              val_iter=10, name_mod='LinearNO', val_sample=True,
+E                              record=recorder, record_member=index, visualization_norm=coef_norm,
+E                              linearno_run=run)
+E     File "/home/hwz/CDLNO/Airfoil-Design-AirfRANS/train.py", line 179, in main
+E       linearno_start_epoch, linearno_history = linearno_run.prepare(
+E                                                ~~~~~~~~~~~~~~~~~~~~^
+E           model, optimizer, lr_scheduler, train_dataset, val_dataset, criterion, reg, val_iter, val_sample)
+E           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E     File "/home/hwz/CDLNO/tests/linearno/air_entry_worker.py", line 83, in prepare
+E       return original_prepare(self, model, *args)
+E     File "/home/hwz/CDLNO/cdlno/linearno/air_entry.py", line 399, in prepare
+E       self._write_root_metadata(optimizer, scheduler)
+E       ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+E     File "/home/hwz/CDLNO/cdlno/linearno/air_entry.py", line 381, in _write_root_metadata
+E       metadata = self._metadata(self._resume_zero(optimizer, scheduler))
+E     File "/home/hwz/CDLNO/cdlno/linearno/air_entry.py", line 366, in _metadata
+E       return make_metadata(profile_spec=self.config, constructor=AirfRANSLinearNO,
+E           model_spec=self.model_spec,
+E           data_spec=self.data, objective_spec=self.config['values']['objective'],
+E           evaluation_spec=self.config['values']['evaluation'], provenance_spec=self.provenance,
+E           normalizer_spec=self.normalizers, resume_state=resume, ensemble_manifest=[])
+E     File "/home/hwz/CDLNO/cdlno/linearno/schema.py", line 365, in make_metadata
+E       return validate_metadata(result, constructor=constructor)
+E     File "/home/hwz/CDLNO/cdlno/linearno/schema.py", line 340, in validate_metadata
+E       raise ValueError('normalizer checksum is absent from data_spec')
+E   ValueError: normalizer checksum is absent from data_spec
+_____ AirEntryCycle.test_two_member_resume_before_and_during_later_member ______
+
+self = <linearno.test_air_entry.AirEntryCycle testMethod=test_two_member_resume_before_and_during_later_member>
+
+    def test_two_member_resume_before_and_during_later_member(self):
+        with tempfile.TemporaryDirectory(prefix='linearno-air-resume-members-') as temp:
+            root = Path(temp)
+>           complete = self._worker('ensemble', root/'complete', root)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/linearno/test_air_entry.py:71: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/linearno/test_air_entry.py:23: in _worker
+    self.assertEqual(result.returncode, 0, result.stdout + '\n' + result.stderr)
+E   AssertionError: 1 != 0 : linearno experiment: /tmp/linearno-air-resume-members-g6s2k7gl/complete
+E   linearno phase: training
+E   linearno seed: 901
+E   
+E   Traceback (most recent call last):
+E     File "/home/hwz/CDLNO/tests/linearno/air_entry_worker.py", line 133, in <module>
+E       Path(report).write_text(json.dumps(run(action,Path(directory)))+'\n')
+E                                          ~~~^^^^^^^^^^^^^^^^^^^^^^^^
+E     File "/home/hwz/CDLNO/tests/linearno/air_entry_worker.py", line 103, in run
+E       run_cli(args)
+E       ~~~~~~~^^^^^^
+E     File "/home/hwz/CDLNO/cdlno/linearno/air_entry.py", line 646, in run_cli
+E       model = air_train.main(str(device), train_dataset, val_dataset, model, hparams,
+E                              str(run.member_dir), criterion='MSE_weighted', reg=args.weight,
+E                              val_iter=10, name_mod='LinearNO', val_sample=True,
+E                              record=recorder, record_member=index, visualization_norm=coef_norm,
+E                              linearno_run=run)
+E     File "/home/hwz/CDLNO/Airfoil-Design-AirfRANS/train.py", line 179, in main
+E       linearno_start_epoch, linearno_history = linearno_run.prepare(
+E                                                ~~~~~~~~~~~~~~~~~~~~^
+E           model, optimizer, lr_scheduler, train_dataset, val_dataset, criterion, reg, val_iter, val_sample)
+E           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E     File "/home/hwz/CDLNO/tests/linearno/air_entry_worker.py", line 83, in prepare
+E       return original_prepare(self, model, *args)
+E     File "/home/hwz/CDLNO/cdlno/linearno/air_entry.py", line 399, in prepare
+E       self._write_root_metadata(optimizer, scheduler)
+E       ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+E     File "/home/hwz/CDLNO/cdlno/linearno/air_entry.py", line 381, in _write_root_metadata
+E       metadata = self._metadata(self._resume_zero(optimizer, scheduler))
+E     File "/home/hwz/CDLNO/cdlno/linearno/air_entry.py", line 366, in _metadata
+E       return make_metadata(profile_spec=self.config, constructor=AirfRANSLinearNO,
+E           model_spec=self.model_spec,
+E           data_spec=self.data, objective_spec=self.config['values']['objective'],
+E           evaluation_spec=self.config['values']['evaluation'], provenance_spec=self.provenance,
+E           normalizer_spec=self.normalizers, resume_state=resume, ensemble_manifest=[])
+E     File "/home/hwz/CDLNO/cdlno/linearno/schema.py", line 365, in make_metadata
+E       return validate_metadata(result, constructor=constructor)
+E     File "/home/hwz/CDLNO/cdlno/linearno/schema.py", line 340, in validate_metadata
+E       raise ValueError('normalizer checksum is absent from data_spec')
+E   ValueError: normalizer checksum is absent from data_spec
+=========================== short test summary info ============================
+FAILED tests/linearno/test_air_entry.py::AirEntryCycle::test_native_train_resume_fresh_eval_and_strict_metadata
+FAILED tests/linearno/test_air_entry.py::AirEntryCycle::test_native_two_member_ensemble_manifest_and_load_order
+FAILED tests/linearno/test_air_entry.py::AirEntryCycle::test_two_member_resume_before_and_during_later_member
+3 failed in 14.66s

@@ -1,0 +1,20 @@
+{
+  "new_tests": "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_profiles linearno.test_schema linearno.test_legacy linearno.test_rng -v",
+  "schema_final": "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_profiles linearno.test_schema -v",
+  "existing_tests": "test_training_state.TrainingStateChecks CPU methods (exclude test_gpu_fresh_process_identity_onecycle) + test_experiment_records; executable selection in L1 report",
+  "old_source_tests": {
+    "command": "PYTHONPATH=tests:. python -B -m unittest test_static_standard.StaticFrozenChecks.test_legacy_ast_recovered_exactly_from_limited_branches test_temporal_standard.StaticTemporalFreeze.test_complete_temporal_entries_project_to_baseline_ast test_shapenet_car.FrozenSourceAndScripts.test_original_entries_project_to_baseline_ast test_shapenet_car.FrozenSourceAndScripts.test_frozen_car_and_airfrans_original_files test_airfrans.AirFrozenChecks.test_complete_entry_ast_preserves_original_protocol test_airfrans.AirFrozenChecks.test_frozen_training_sampling_metrics_and_original_models -v",
+    "exit_code": 0,
+    "elapsed_seconds": 3.943602225000177,
+    "scope": "Existing source/AST/byte preservation tests only; no model numerical test"
+  },
+  "fixture_generation": "python -B tests/linearno/capture_fixtures.py /home/hwz/CDLNO-artifacts/linearno-l1-before-znfjyu2s/transolver_cpu_v2.json",
+  "not_run": [
+    "LinearNO operators/parity/real-model reconstruction",
+    "GPU/AMP",
+    "real task data/mini-run",
+    "Air full sampled epoch: torch_cluster absent",
+    "remote torch2.11/cu128",
+    "monitor: absent in checkout"
+  ]
+}

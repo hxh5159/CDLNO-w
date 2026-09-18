@@ -1,0 +1,21 @@
+{
+  "environment": {
+    "python": "3.13.9",
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "device": "NVIDIA GeForce RTX 5090 Laptop GPU",
+    "dtype": "float32",
+    "amp": false,
+    "compile": false,
+    "warmup": 3,
+    "measured": 5,
+    "batch": 1
+  },
+  "rows": [
+    {"name":"plain_small_N64_d32_L8","median_ms":3.0036770004,"p90_ms":4.0569960001,"peak_bytes":33901056},
+    {"name":"conv_temp_small_N15_d32_L8","median_ms":3.5518880004,"p90_ms":4.3054039998,"peak_bytes":36595200},
+    {"name":"plain_N1024_d32_L2","median_ms":0.6616709998,"p90_ms":0.7442090000,"peak_bytes":35083776},
+    {"name":"plain_N4096_d32_L2","median_ms":1.2271089999,"p90_ms":1.9634469999,"peak_bytes":39446016}
+  ],
+  "scope": "synthetic efficiency smoke only; not formal paper-scale training or fair baseline timing"
+}

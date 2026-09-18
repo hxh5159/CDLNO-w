@@ -1,0 +1,2860 @@
+[
+  {
+    "source": "target",
+    "path": "Airfoil-Design-AirfRANS/cdlno_entry.py",
+    "options": [
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--front_latent_mode', '--front-latent-mode', choices=('full', 'no_sa', 'identity'), default=None)"
+      },
+      {
+        "line": 28,
+        "expression": "parser.add_argument('--cdpa_mode', '--cdpa-mode', choices=('off', 'entry', 'every_block'), default=None)"
+      },
+      {
+        "line": 29,
+        "expression": "parser.add_argument('--run_dir', type=Path, default=None, help='new CDLNO training run, or existing run for evaluation')"
+      },
+      {
+        "line": 38,
+        "expression": "parser.add_argument('--profile', choices=('kcdno_v1', 'transolver_shape_match'), default='kcdno_v1')"
+      },
+      {
+        "line": 39,
+        "expression": "parser.add_argument('--kernel-rank', '--kernel_rank', type=int, default=16)"
+      },
+      {
+        "line": 40,
+        "expression": "parser.add_argument('--history-mode', '--history_mode', choices=('all', 'off'), default='all')"
+      },
+      {
+        "line": 41,
+        "expression": "parser.add_argument('--kcdno-run-dir', type=Path, default=None)"
+      },
+      {
+        "line": 47,
+        "expression": "selector.add_argument('--model')"
+      },
+      {
+        "line": 27,
+        "expression": "parser.add_argument(*flags, type=kind, default=None)"
+      },
+      {
+        "line": 32,
+        "expression": "parser.add_argument('--' + name, type=kind, default=None)"
+      },
+      {
+        "line": 34,
+        "expression": "parser.add_argument('--model', choices=('Transolver', 'CDLNO', 'kcdno', 'lrsa_matched'), default='Transolver')"
+      },
+      {
+        "line": 35,
+        "expression": "parser.add_argument('--task', choices=('full', 'scarce', 'reynolds', 'aoa'), default='full')"
+      },
+      {
+        "line": 36,
+        "expression": "parser.add_argument('--nmodel', type=int, default=1)"
+      },
+      {
+        "line": 37,
+        "expression": "parser.add_argument('--weight', type=float, default=1.0)"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "Airfoil-Design-AirfRANS/main.py",
+    "options": [
+      {
+        "line": 11,
+        "expression": "parser.add_argument('--model', help='The model you want to train, choose between MLP, GraphSAGE, PointNet, GUNet', type=str)"
+      },
+      {
+        "line": 13,
+        "expression": "parser.add_argument('-n', '--nmodel', help='Number of trained models for standard deviation estimation (default: 1)', default=1, type=int)"
+      },
+      {
+        "line": 15,
+        "expression": "parser.add_argument('-w', '--weight', help='Weight in front of the surface loss (default: 1)', default=1, type=float)"
+      },
+      {
+        "line": 16,
+        "expression": "parser.add_argument('-t', '--task', help='Task to train on. Choose between \"full\", \"scarce\", \"reynolds\" and \"aoa\" (default: full)', default='full', type=str)"
+      },
+      {
+        "line": 19,
+        "expression": "parser.add_argument('-s', '--score', help='If you want to compute the score of the models on the associated test set. (default: 0)', default=0, type=int)"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--my_path', default='/data/path', type=str)"
+      },
+      {
+        "line": 24,
+        "expression": "parser.add_argument('--save_path', default='metrics', type=str)"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "Airfoil-Design-AirfRANS/main_evaluation.py",
+    "options": [
+      {
+        "line": 11,
+        "expression": "parser.add_argument('--my_path', default='/data/path', type=str)"
+      },
+      {
+        "line": 12,
+        "expression": "parser.add_argument('--save_path', default='./', type=str)"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "Car-Design-ShapeNetCar/main.py",
+    "options": [
+      {
+        "line": 12,
+        "expression": "parser.add_argument('--data_dir', default='/data/PDE_data/mlcfd_data/training_data')"
+      },
+      {
+        "line": 13,
+        "expression": "parser.add_argument('--save_dir', default='/data/PDE_data/mlcfd_data/preprocessed_data')"
+      },
+      {
+        "line": 14,
+        "expression": "parser.add_argument('--fold_id', default=0, type=int)"
+      },
+      {
+        "line": 15,
+        "expression": "parser.add_argument('--gpu', default=0, type=int)"
+      },
+      {
+        "line": 16,
+        "expression": "parser.add_argument('--val_iter', default=10, type=int)"
+      },
+      {
+        "line": 17,
+        "expression": "parser.add_argument('--cfd_config_dir', default='cfd/cfd_params.yaml')"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('--cfd_model')"
+      },
+      {
+        "line": 19,
+        "expression": "parser.add_argument('--cfd_mesh', action='store_true')"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--r', default=0.2, type=float)"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--weight', default=0.5, type=float)"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--lr', default=0.001, type=float)"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--batch_size', default=1, type=int)"
+      },
+      {
+        "line": 24,
+        "expression": "parser.add_argument('--nb_epochs', default=200, type=int)"
+      },
+      {
+        "line": 25,
+        "expression": "parser.add_argument('--preprocessed', default=1, type=int)"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "Car-Design-ShapeNetCar/main_evaluation.py",
+    "options": [
+      {
+        "line": 16,
+        "expression": "parser.add_argument('--data_dir', default='/data/PDE_data/mlcfd_data/training_data')"
+      },
+      {
+        "line": 17,
+        "expression": "parser.add_argument('--save_dir', default='/data/PDE_data/mlcfd_data/preprocessed_data')"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('--fold_id', default=0, type=int)"
+      },
+      {
+        "line": 19,
+        "expression": "parser.add_argument('--gpu', default=0, type=int)"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--cfd_model')"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--cfd_mesh', action='store_true')"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--r', default=0.2, type=float)"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--weight', default=0.5, type=float)"
+      },
+      {
+        "line": 24,
+        "expression": "parser.add_argument('--nb_epochs', default=200, type=int)"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "Car-Design-ShapeNetCar/models/cdlno_run.py",
+    "options": [
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--profile', choices=('kcdno_v1', 'transolver_shape_match'), default='kcdno_v1')"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--kernel-rank', '--kernel_rank', type=int, default=16)"
+      },
+      {
+        "line": 24,
+        "expression": "parser.add_argument('--history-mode', '--history_mode', choices=('all', 'off'), default='all')"
+      },
+      {
+        "line": 25,
+        "expression": "parser.add_argument('--kcdno-run-dir', type=Path, default=None)"
+      },
+      {
+        "line": 26,
+        "expression": "parser.add_argument('--front_latent_mode', '--front-latent-mode', choices=('full', 'no_sa', 'identity'), default=None)"
+      },
+      {
+        "line": 33,
+        "expression": "parser.add_argument('--cdpa_mode', '--cdpa-mode', choices=('off', 'entry', 'every_block'), default=None)"
+      },
+      {
+        "line": 34,
+        "expression": "parser.add_argument('--run_dir', type=Path, default=None, help='new CDLNO training directory, or existing run for evaluation')"
+      },
+      {
+        "line": 41,
+        "expression": "selector.add_argument('--cfd_model')"
+      },
+      {
+        "line": 32,
+        "expression": "parser.add_argument(*flags, type=kind, default=None)"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "PDE-Solving-StandardBenchmark/cdlno_entry.py",
+    "options": [
+      {
+        "line": 19,
+        "expression": "parser.add_argument('--profile', choices=('kcdno_v1', 'transolver_shape_match'), default='kcdno_v1')"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--kernel-rank', '--kernel_rank', type=int, default=16)"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--history-mode', '--history_mode', choices=('all', 'off'), default='all')"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--kcdno-run-dir', type=Path, default=None)"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--seed', type=int, default=argparse.SUPPRESS, help='optional RNG seed for kcdno/lrsa_matched standard tasks')"
+      },
+      {
+        "line": 25,
+        "expression": "parser.add_argument('--front-latent-mode', '--front_latent_mode', choices=('full', 'no_sa', 'identity'), default=None)"
+      },
+      {
+        "line": 27,
+        "expression": "parser.add_argument('--front-blocks', type=int, default=2)"
+      },
+      {
+        "line": 28,
+        "expression": "parser.add_argument('--latent-ffn-ratio', type=float, default=2.0)"
+      },
+      {
+        "line": 29,
+        "expression": "parser.add_argument('--cdpa-mode', choices=('off', 'entry', 'every_block'), default='entry')"
+      },
+      {
+        "line": 30,
+        "expression": "parser.add_argument('--cdpa-source-chunk-size', type=int, default=0)"
+      },
+      {
+        "line": 31,
+        "expression": "parser.add_argument('--cdlno-run-dir', type=Path, default=None, help='new training directory, or existing checkpoint directory for eval')"
+      },
+      {
+        "line": 35,
+        "expression": "selector.add_argument('--model')"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "PDE-Solving-StandardBenchmark/exp_airfoil.py",
+    "options": [
+      {
+        "line": 13,
+        "expression": "parser.add_argument('--lr', type=float, default=0.001)"
+      },
+      {
+        "line": 14,
+        "expression": "parser.add_argument('--epochs', type=int, default=500)"
+      },
+      {
+        "line": 15,
+        "expression": "parser.add_argument('--weight_decay', type=float, default=1e-05)"
+      },
+      {
+        "line": 16,
+        "expression": "parser.add_argument('--model', type=str, default='Transolver_2D')"
+      },
+      {
+        "line": 17,
+        "expression": "parser.add_argument('--n-hidden', type=int, default=64, help='hidden dim')"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('--n-layers', type=int, default=3, help='layers')"
+      },
+      {
+        "line": 19,
+        "expression": "parser.add_argument('--n-heads', type=int, default=4)"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--batch-size', type=int, default=8)"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--gpu', type=str, default='0', help='GPU index to use')"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--max_grad_norm', type=float, default=None)"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--downsamplex', type=int, default=1)"
+      },
+      {
+        "line": 24,
+        "expression": "parser.add_argument('--downsampley', type=int, default=1)"
+      },
+      {
+        "line": 25,
+        "expression": "parser.add_argument('--mlp_ratio', type=int, default=1)"
+      },
+      {
+        "line": 26,
+        "expression": "parser.add_argument('--dropout', type=float, default=0.0)"
+      },
+      {
+        "line": 27,
+        "expression": "parser.add_argument('--unified_pos', type=int, default=0)"
+      },
+      {
+        "line": 28,
+        "expression": "parser.add_argument('--ref', type=int, default=8)"
+      },
+      {
+        "line": 29,
+        "expression": "parser.add_argument('--slice_num', type=int, default=32)"
+      },
+      {
+        "line": 30,
+        "expression": "parser.add_argument('--eval', type=int, default=0)"
+      },
+      {
+        "line": 31,
+        "expression": "parser.add_argument('--save_name', type=str, default='airfoil_Transolver')"
+      },
+      {
+        "line": 32,
+        "expression": "parser.add_argument('--data_path', type=str, default='/data/fno/airfoil/naca')"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "PDE-Solving-StandardBenchmark/exp_darcy.py",
+    "options": [
+      {
+        "line": 17,
+        "expression": "parser.add_argument('--lr', type=float, default=0.001)"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('--epochs', type=int, default=500)"
+      },
+      {
+        "line": 19,
+        "expression": "parser.add_argument('--weight_decay', type=float, default=1e-05)"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--model', type=str, default='Transolver_2D')"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--n-hidden', type=int, default=64, help='hidden dim')"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--n-layers', type=int, default=3, help='layers')"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--n-heads', type=int, default=4)"
+      },
+      {
+        "line": 24,
+        "expression": "parser.add_argument('--batch-size', type=int, default=8)"
+      },
+      {
+        "line": 25,
+        "expression": "parser.add_argument('--gpu', type=str, default='1', help='GPU index to use')"
+      },
+      {
+        "line": 26,
+        "expression": "parser.add_argument('--max_grad_norm', type=float, default=None)"
+      },
+      {
+        "line": 27,
+        "expression": "parser.add_argument('--downsample', type=int, default=5)"
+      },
+      {
+        "line": 28,
+        "expression": "parser.add_argument('--mlp_ratio', type=int, default=1)"
+      },
+      {
+        "line": 29,
+        "expression": "parser.add_argument('--dropout', type=float, default=0.0)"
+      },
+      {
+        "line": 30,
+        "expression": "parser.add_argument('--ntrain', type=int, default=1000)"
+      },
+      {
+        "line": 31,
+        "expression": "parser.add_argument('--unified_pos', type=int, default=0)"
+      },
+      {
+        "line": 32,
+        "expression": "parser.add_argument('--ref', type=int, default=8)"
+      },
+      {
+        "line": 33,
+        "expression": "parser.add_argument('--slice_num', type=int, default=32)"
+      },
+      {
+        "line": 34,
+        "expression": "parser.add_argument('--eval', type=int, default=0)"
+      },
+      {
+        "line": 35,
+        "expression": "parser.add_argument('--save_name', type=str, default='darcy_Transolver')"
+      },
+      {
+        "line": 36,
+        "expression": "parser.add_argument('--data_path', type=str, default='/data/fno')"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "PDE-Solving-StandardBenchmark/exp_elas.py",
+    "options": [
+      {
+        "line": 14,
+        "expression": "parser.add_argument('--lr', type=float, default=0.001)"
+      },
+      {
+        "line": 15,
+        "expression": "parser.add_argument('--epochs', type=int, default=500)"
+      },
+      {
+        "line": 16,
+        "expression": "parser.add_argument('--weight_decay', type=float, default=1e-05)"
+      },
+      {
+        "line": 17,
+        "expression": "parser.add_argument('--model', type=str, default='Transolver_1D')"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('--n-hidden', type=int, default=64, help='hidden dim')"
+      },
+      {
+        "line": 19,
+        "expression": "parser.add_argument('--n-layers', type=int, default=3, help='layers')"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--n-heads', type=int, default=4)"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--batch-size', type=int, default=8)"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--gpu', type=str, default='1', help='GPU index to use')"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--max_grad_norm', type=float, default=None)"
+      },
+      {
+        "line": 24,
+        "expression": "parser.add_argument('--downsample', type=int, default=5)"
+      },
+      {
+        "line": 25,
+        "expression": "parser.add_argument('--mlp_ratio', type=int, default=1)"
+      },
+      {
+        "line": 26,
+        "expression": "parser.add_argument('--dropout', type=float, default=0.0)"
+      },
+      {
+        "line": 27,
+        "expression": "parser.add_argument('--ntrain', type=int, default=1000)"
+      },
+      {
+        "line": 28,
+        "expression": "parser.add_argument('--unified_pos', type=int, default=0)"
+      },
+      {
+        "line": 29,
+        "expression": "parser.add_argument('--ref', type=int, default=8)"
+      },
+      {
+        "line": 30,
+        "expression": "parser.add_argument('--slice_num', type=int, default=32)"
+      },
+      {
+        "line": 31,
+        "expression": "parser.add_argument('--eval', type=int, default=0)"
+      },
+      {
+        "line": 32,
+        "expression": "parser.add_argument('--save_name', type=str, default='elas_Transolver')"
+      },
+      {
+        "line": 33,
+        "expression": "parser.add_argument('--data_path', type=str, default='/data/fno')"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "PDE-Solving-StandardBenchmark/exp_ns.py",
+    "options": [
+      {
+        "line": 14,
+        "expression": "parser.add_argument('--lr', type=float, default=0.001)"
+      },
+      {
+        "line": 15,
+        "expression": "parser.add_argument('--epochs', type=int, default=500)"
+      },
+      {
+        "line": 16,
+        "expression": "parser.add_argument('--weight_decay', type=float, default=1e-05)"
+      },
+      {
+        "line": 17,
+        "expression": "parser.add_argument('--model', type=str, default='Transolver_2D')"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('--n-hidden', type=int, default=64, help='hidden dim')"
+      },
+      {
+        "line": 19,
+        "expression": "parser.add_argument('--n-layers', type=int, default=3, help='layers')"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--n-heads', type=int, default=4)"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--batch-size', type=int, default=8)"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--gpu', type=str, default='0', help='GPU index to use')"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--max_grad_norm', type=float, default=None)"
+      },
+      {
+        "line": 24,
+        "expression": "parser.add_argument('--downsample', type=int, default=1)"
+      },
+      {
+        "line": 25,
+        "expression": "parser.add_argument('--mlp_ratio', type=int, default=1)"
+      },
+      {
+        "line": 26,
+        "expression": "parser.add_argument('--dropout', type=float, default=0.0)"
+      },
+      {
+        "line": 27,
+        "expression": "parser.add_argument('--unified_pos', type=int, default=0)"
+      },
+      {
+        "line": 28,
+        "expression": "parser.add_argument('--ref', type=int, default=8)"
+      },
+      {
+        "line": 29,
+        "expression": "parser.add_argument('--slice_num', type=int, default=32)"
+      },
+      {
+        "line": 30,
+        "expression": "parser.add_argument('--eval', type=int, default=0)"
+      },
+      {
+        "line": 31,
+        "expression": "parser.add_argument('--save_name', type=str, default='ns_2d_UniPDE')"
+      },
+      {
+        "line": 32,
+        "expression": "parser.add_argument('--data_path', type=str, default='/data/fno')"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "PDE-Solving-StandardBenchmark/exp_pipe.py",
+    "options": [
+      {
+        "line": 8,
+        "expression": "parser.add_argument('--lr', type=float, default=0.001)"
+      },
+      {
+        "line": 9,
+        "expression": "parser.add_argument('--epochs', type=int, default=500)"
+      },
+      {
+        "line": 10,
+        "expression": "parser.add_argument('--weight_decay', type=float, default=1e-05)"
+      },
+      {
+        "line": 11,
+        "expression": "parser.add_argument('--model', type=str, default='Transolver_2D')"
+      },
+      {
+        "line": 12,
+        "expression": "parser.add_argument('--n-hidden', type=int, default=64, help='hidden dim')"
+      },
+      {
+        "line": 13,
+        "expression": "parser.add_argument('--n-layers', type=int, default=3, help='layers')"
+      },
+      {
+        "line": 14,
+        "expression": "parser.add_argument('--n-heads', type=int, default=4)"
+      },
+      {
+        "line": 15,
+        "expression": "parser.add_argument('--batch-size', type=int, default=8)"
+      },
+      {
+        "line": 16,
+        "expression": "parser.add_argument('--gpu', type=str, default='0', help='GPU index to use')"
+      },
+      {
+        "line": 17,
+        "expression": "parser.add_argument('--max_grad_norm', type=float, default=None)"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('--downsamplex', type=int, default=1)"
+      },
+      {
+        "line": 19,
+        "expression": "parser.add_argument('--downsampley', type=int, default=1)"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--mlp_ratio', type=int, default=1)"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--dropout', type=float, default=0.0)"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--unified_pos', type=int, default=0)"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--ref', type=int, default=8)"
+      },
+      {
+        "line": 24,
+        "expression": "parser.add_argument('--slice_num', type=int, default=32)"
+      },
+      {
+        "line": 25,
+        "expression": "parser.add_argument('--eval', type=int, default=0)"
+      },
+      {
+        "line": 26,
+        "expression": "parser.add_argument('--save_name', type=str, default='pipe_UniPDE')"
+      },
+      {
+        "line": 27,
+        "expression": "parser.add_argument('--data_path', type=str, default='/data/fno/pipe')"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "PDE-Solving-StandardBenchmark/exp_plas.py",
+    "options": [
+      {
+        "line": 8,
+        "expression": "parser.add_argument('--lr', type=float, default=0.001)"
+      },
+      {
+        "line": 9,
+        "expression": "parser.add_argument('--epochs', type=int, default=500)"
+      },
+      {
+        "line": 10,
+        "expression": "parser.add_argument('--weight_decay', type=float, default=1e-05)"
+      },
+      {
+        "line": 11,
+        "expression": "parser.add_argument('--model', type=str, default='Transolver_2D')"
+      },
+      {
+        "line": 12,
+        "expression": "parser.add_argument('--n-hidden', type=int, default=64, help='hidden dim')"
+      },
+      {
+        "line": 13,
+        "expression": "parser.add_argument('--n-layers', type=int, default=3, help='layers')"
+      },
+      {
+        "line": 14,
+        "expression": "parser.add_argument('--n-heads', type=int, default=4)"
+      },
+      {
+        "line": 15,
+        "expression": "parser.add_argument('--batch-size', type=int, default=8)"
+      },
+      {
+        "line": 16,
+        "expression": "parser.add_argument('--gpu', type=str, default='0', help='GPU index to use')"
+      },
+      {
+        "line": 17,
+        "expression": "parser.add_argument('--max_grad_norm', type=float, default=None)"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('--downsamplex', type=int, default=1)"
+      },
+      {
+        "line": 19,
+        "expression": "parser.add_argument('--downsampley', type=int, default=1)"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--mlp_ratio', type=int, default=1)"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--dropout', type=float, default=0.0)"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--unified_pos', type=int, default=0)"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--ref', type=int, default=8)"
+      },
+      {
+        "line": 24,
+        "expression": "parser.add_argument('--slice_num', type=int, default=32)"
+      },
+      {
+        "line": 25,
+        "expression": "parser.add_argument('--eval', type=int, default=0)"
+      },
+      {
+        "line": 26,
+        "expression": "parser.add_argument('--save_name', type=str, default='plas_Transolver')"
+      },
+      {
+        "line": 27,
+        "expression": "parser.add_argument('--data_path', type=str, default='/data/fno/plas_N987_T20.mat')"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "PLAN_CDLNO/CDPA_v1_1/check_cdpa_environment.py",
+    "options": [
+      {
+        "line": 27,
+        "expression": "parser.add_argument('--device', choices=('cuda', 'cpu'), default='cuda')"
+      },
+      {
+        "line": 28,
+        "expression": "parser.add_argument('--repo', type=Path, help='Optional Transolver repository root')"
+      },
+      {
+        "line": 29,
+        "expression": "parser.add_argument('--json-path', type=Path, help='Optional machine-readable report')"
+      },
+      {
+        "line": 30,
+        "expression": "parser.add_argument('--check-amp', action='store_true', help='Optional CUDA BF16 SDPA check; does not enable AMP in training')"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "cdlno/checkpoint.py",
+    "options": [
+      {
+        "line": 138,
+        "expression": "parser.add_argument('sidecar', type=Path)"
+      },
+      {
+        "line": 139,
+        "expression": "parser.add_argument('--architecture-json', type=Path, required=True)"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "cdlno/kcdno/entry.py",
+    "options": [
+      {
+        "line": 25,
+        "expression": "parser.add_argument('--profile', choices=('kcdno_v1', 'transolver_shape_match'), default='kcdno_v1')"
+      },
+      {
+        "line": 26,
+        "expression": "parser.add_argument('--kernel-rank', '--kernel_rank', type=int, default=16)"
+      },
+      {
+        "line": 27,
+        "expression": "parser.add_argument('--history-mode', '--history_mode', choices=('all', 'off'), default='all')"
+      },
+      {
+        "line": 28,
+        "expression": "parser.add_argument('--kcdno-run-dir', type=Path, default=None)"
+      },
+      {
+        "line": 29,
+        "expression": "parser.add_argument('--seed', type=int, default=argparse.SUPPRESS, help='optional RNG seed for kcdno/lrsa_matched standard tasks')"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "cdlno/msar_lno/__main__.py",
+    "options": [
+      {
+        "line": 13,
+        "expression": "base.add_argument('--task', required=True, choices=TASKS)"
+      },
+      {
+        "line": 14,
+        "expression": "base.add_argument('--input-tokens', type=int, help='log the legal M1>N expansion, if applicable')"
+      },
+      {
+        "line": 15,
+        "expression": "base.add_argument('--output-root', default='output')"
+      },
+      {
+        "line": 16,
+        "expression": "base.add_argument('--save-name')"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "cdlno/msar_lno/industrial_entry.py",
+    "options": [
+      {
+        "line": 32,
+        "expression": "parser.add_argument('--msar-run-dir', type=Path)"
+      },
+      {
+        "line": 33,
+        "expression": "parser.add_argument('--save_name', type=str, default=None)"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "cdlno/msar_lno/options.py",
+    "options": [
+      {
+        "line": 77,
+        "expression": "probe.add_argument('--d', type=int)"
+      },
+      {
+        "line": 78,
+        "expression": "probe.add_argument('--num-latents', '--num_latents', nargs=4, type=int)"
+      },
+      {
+        "line": 79,
+        "expression": "probe.add_argument('--heads', nargs=4, type=int)"
+      },
+      {
+        "line": 80,
+        "expression": "probe.add_argument('--encoder-depths', '--encoder_depths', nargs=4, type=int)"
+      },
+      {
+        "line": 81,
+        "expression": "probe.add_argument('--decoder-depths', '--decoder_depths', nargs=4, type=int)"
+      },
+      {
+        "line": 82,
+        "expression": "probe.add_argument('--coverage-mode', '--coverage_mode', choices=('off', 'floor'))"
+      },
+      {
+        "line": 83,
+        "expression": "probe.add_argument('--coverage-weight', '--coverage_weight', type=float)"
+      },
+      {
+        "line": 84,
+        "expression": "probe.add_argument('--coverage-kappa', '--coverage_kappa', type=float)"
+      },
+      {
+        "line": 85,
+        "expression": "probe.add_argument('--coverage-eps', '--coverage_eps', type=float)"
+      },
+      {
+        "line": 86,
+        "expression": "probe.add_argument('--diagnostics', action=argparse.BooleanOptionalAction)"
+      },
+      {
+        "line": 76,
+        "expression": "probe.add_argument('--profile', choices=PROFILE_NAMES, default='light')"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "cdlno/msar_lno/standard_entry.py",
+    "options": [
+      {
+        "line": 38,
+        "expression": "parser.add_argument('--msar-run-dir', type=Path, default=None, help='new training directory, or explicit saved run for evaluation')"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "docs/front_ablation_audit/a1/capture_before.py",
+    "options": [
+      {
+        "line": 19,
+        "expression": "p.add_argument('baseline', type=Path)"
+      },
+      {
+        "line": 20,
+        "expression": "p.add_argument('group', choices=('core', 'car', 'airfrans'))"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "docs/front_ablation_audit/a1/verify_before.py",
+    "options": [
+      {
+        "line": 17,
+        "expression": "p.add_argument('baseline', type=Path)"
+      },
+      {
+        "line": 18,
+        "expression": "p.add_argument('group', choices=('core', 'car', 'airfrans'))"
+      },
+      {
+        "line": 19,
+        "expression": "p.add_argument('--results', type=Path, required=True)"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "docs/kcdno_audit/audit_static.py",
+    "options": [
+      {
+        "line": 112,
+        "expression": "p.add_argument('--project', choices=tuple(fixtures.PROJECTS))"
+      },
+      {
+        "line": 112,
+        "expression": "p.add_argument('--artifacts', type=Path)"
+      },
+      {
+        "line": 113,
+        "expression": "p.add_argument('--result', type=Path)"
+      },
+      {
+        "line": 113,
+        "expression": "p.add_argument('--freeze', action='store_true')"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "docs/kcdno_audit/k3/verify.py",
+    "options": [
+      {
+        "line": 106,
+        "expression": "p.add_argument('action', choices=('core', 'old-core', 'freeze'))"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "docs/kcdno_audit/make_regression_fixtures.py",
+    "options": [
+      {
+        "line": 318,
+        "expression": "p.add_argument('action', choices=('capture', 'replay'))"
+      },
+      {
+        "line": 319,
+        "expression": "p.add_argument('--artifacts', type=Path, required=True)"
+      },
+      {
+        "line": 320,
+        "expression": "p.add_argument('--result', type=Path, required=True)"
+      },
+      {
+        "line": 321,
+        "expression": "p.add_argument('--project', choices=tuple(PROJECTS))"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "docs/kcdno_audit/replay_subset.py",
+    "options": [
+      {
+        "line": 7,
+        "expression": "p.add_argument('group', choices=('static', 'temporal', 'car', 'airfrans'))"
+      },
+      {
+        "line": 7,
+        "expression": "p.add_argument('--result', type=Path, required=True)"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "docs/kcdno_audit/stages.py",
+    "options": [
+      {
+        "line": 34,
+        "expression": "p.add_argument('action', choices=('snapshot', 'diff'))"
+      },
+      {
+        "line": 34,
+        "expression": "p.add_argument('stage')"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "docs/msar_lno_audit/m0/other_model_fixtures.py",
+    "options": [
+      {
+        "line": 96,
+        "expression": "p.add_argument('action', choices=('capture', 'replay'))"
+      },
+      {
+        "line": 97,
+        "expression": "p.add_argument('--project', choices=('air', 'standard'))"
+      },
+      {
+        "line": 98,
+        "expression": "p.add_argument('--artifacts', type=Path, required=True)"
+      },
+      {
+        "line": 99,
+        "expression": "p.add_argument('--result', type=Path, required=True)"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "docs/msar_lno_audit/m0/wrapper_fixtures.py",
+    "options": [
+      {
+        "line": 113,
+        "expression": "parser.add_argument('action', choices=('capture', 'replay'))"
+      },
+      {
+        "line": 114,
+        "expression": "parser.add_argument('--project', choices=PROJECTS)"
+      },
+      {
+        "line": 115,
+        "expression": "parser.add_argument('--artifacts', type=Path, required=True)"
+      },
+      {
+        "line": 116,
+        "expression": "parser.add_argument('--result', type=Path, required=True)"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "docs/msar_lno_audit/m1/replay_current.py",
+    "options": [
+      {
+        "line": 19,
+        "expression": "parser.add_argument('mode', choices=('capture', 'replay'))"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--artifacts', type=Path, required=True)"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--result', type=Path, required=True)"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "docs/msar_lno_audit/m3/core_fixtures.py",
+    "options": [
+      {
+        "line": 25,
+        "expression": "parser.add_argument('action', choices=('capture', 'replay'))"
+      },
+      {
+        "line": 26,
+        "expression": "parser.add_argument('--artifacts', required=True, type=Path)"
+      },
+      {
+        "line": 27,
+        "expression": "parser.add_argument('--result', required=True, type=Path)"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "docs/msar_lno_audit/m4/construct_example.py",
+    "options": [
+      {
+        "line": 29,
+        "expression": "base.add_argument('--model', choices=('msar_lno',), default='msar_lno')"
+      },
+      {
+        "line": 30,
+        "expression": "base.add_argument('--output-root', type=Path)"
+      },
+      {
+        "line": 31,
+        "expression": "base.add_argument('--save-name')"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "docs/periodic_visualization_audit/make_demos.py",
+    "options": [
+      {
+        "line": 11,
+        "expression": "p.add_argument('--output', required=True)"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "tests/test_kcdno_config.py",
+    "options": [
+      {
+        "line": 40,
+        "expression": "parser.add_argument('--profile', choices=PROFILE_NAMES, default='kcdno_v1')"
+      },
+      {
+        "line": 41,
+        "expression": "parser.add_argument('--kernel-rank', type=int, default=16)"
+      },
+      {
+        "line": 42,
+        "expression": "parser.add_argument('--history-mode', choices=('all', 'off'), default='all')"
+      },
+      {
+        "line": 43,
+        "expression": "parser.add_argument('--front-blocks', type=int, default=2)"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "tools/cdlno_benchmark.py",
+    "options": [
+      {
+        "line": 30,
+        "expression": "p.add_argument('--task', choices=TASKS, default='elasticity')"
+      },
+      {
+        "line": 31,
+        "expression": "p.add_argument('--comparison', choices=('task', 'matched'), default='matched', help='task: original/new task presets; matched: common dimensions, architecture overrides allowed')"
+      },
+      {
+        "line": 33,
+        "expression": "p.add_argument('--models', nargs='+', choices=MODELS + KERNEL_MODELS, default=list(MODELS))"
+      },
+      {
+        "line": 34,
+        "expression": "p.add_argument('--chunks', nargs='+', type=int, default=[0, 1, 2])"
+      },
+      {
+        "line": 35,
+        "expression": "p.add_argument('--front-latent-mode', '--front_latent_mode', choices=('full', 'no_sa', 'identity'), default='full', help='CDLNO front processor only; matched LRSA always remains full')"
+      },
+      {
+        "line": 39,
+        "expression": "p.add_argument('--kernel-rank', type=int, default=16, help='new kernel models only; shared total rank')"
+      },
+      {
+        "line": 40,
+        "expression": "p.add_argument('--grid', nargs=2, type=int, metavar=('H', 'W'))"
+      },
+      {
+        "line": 41,
+        "expression": "p.add_argument('--device', default='cpu')"
+      },
+      {
+        "line": 42,
+        "expression": "p.add_argument('--precision', choices=('fp32', 'amp-fp16', 'amp-bf16'), default='fp32', help='parameters and inputs FP32; optional common autocast')"
+      },
+      {
+        "line": 44,
+        "expression": "p.add_argument('--backend', choices=('auto', 'math', 'flash', 'efficient', 'cudnn'), default='auto')"
+      },
+      {
+        "line": 45,
+        "expression": "p.add_argument('--tf32', action='store_true')"
+      },
+      {
+        "line": 46,
+        "expression": "p.add_argument('--compile', action='store_true', dest='compile_model')"
+      },
+      {
+        "line": 47,
+        "expression": "p.add_argument('--warmup', type=int, default=5)"
+      },
+      {
+        "line": 48,
+        "expression": "p.add_argument('--iterations', type=int, default=20)"
+      },
+      {
+        "line": 49,
+        "expression": "p.add_argument('--threads', type=int, default=1)"
+      },
+      {
+        "line": 50,
+        "expression": "p.add_argument('--seed', type=int, default=20260914)"
+      },
+      {
+        "line": 51,
+        "expression": "p.add_argument('--audit-only', action='store_true', help='cost/gradient/chunk audit, no timing/profiler')"
+      },
+      {
+        "line": 52,
+        "expression": "p.add_argument('--output', type=Path, required=True, help='new JSON file; existing files are rejected')"
+      },
+      {
+        "line": 38,
+        "expression": "p.add_argument('--' + name, type=int)"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "tools/msar_benchmark.py",
+    "options": [
+      {
+        "line": 30,
+        "expression": "p.add_argument('--task', choices=TASKS, default='elasticity')"
+      },
+      {
+        "line": 31,
+        "expression": "p.add_argument('--models', nargs='+', choices=MODELS + CONTROLS, default=list(MODELS) + list(CONTROLS[:3]))"
+      },
+      {
+        "line": 32,
+        "expression": "p.add_argument('--B', type=int, default=1)"
+      },
+      {
+        "line": 33,
+        "expression": "p.add_argument('--N', type=int)"
+      },
+      {
+        "line": 34,
+        "expression": "p.add_argument('--grid', type=int, nargs=2)"
+      },
+      {
+        "line": 35,
+        "expression": "p.add_argument('--device', default='cpu')"
+      },
+      {
+        "line": 36,
+        "expression": "p.add_argument('--backend', choices=('math', 'auto', 'flash', 'efficient', 'cudnn'), default='math')"
+      },
+      {
+        "line": 37,
+        "expression": "p.add_argument('--precision', choices=('fp32', 'amp-bf16', 'amp-fp16'), default='fp32')"
+      },
+      {
+        "line": 38,
+        "expression": "p.add_argument('--warmup', type=int, default=5)"
+      },
+      {
+        "line": 39,
+        "expression": "p.add_argument('--iterations', type=int, default=20)"
+      },
+      {
+        "line": 40,
+        "expression": "p.add_argument('--threads', type=int, default=1)"
+      },
+      {
+        "line": 41,
+        "expression": "p.add_argument('--seed', type=int, default=20260917)"
+      },
+      {
+        "line": 42,
+        "expression": "p.add_argument('--audit-only', action='store_true', help='live synthetic forward/backward cost; no timing')"
+      },
+      {
+        "line": 43,
+        "expression": "p.add_argument('--inventory-only', action='store_true', help='all8 actual Light/Full construction + formulas; no forward/timing')"
+      },
+      {
+        "line": 44,
+        "expression": "p.add_argument('--output', type=Path, required=True, help='new JSON only; never overwrite')"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "tran_evaluate/check_car_eval.py",
+    "options": [
+      {
+        "line": 29,
+        "expression": "parser.add_argument('--run_dir', type=Path, required=True)"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "tran_evaluate/inspect_data.py",
+    "options": [
+      {
+        "line": 169,
+        "expression": "parser.add_argument('--data-root', type=Path, default=Path(os.environ.get('CDLNO_DATA_ROOT', '.')))"
+      },
+      {
+        "line": 170,
+        "expression": "parser.add_argument('--max-depth', type=int, default=6)"
+      },
+      {
+        "line": 171,
+        "expression": "parser.add_argument('--max-entries', type=int, default=20000)"
+      },
+      {
+        "line": 172,
+        "expression": "parser.add_argument('--no-search', action='store_true', help='Only inspect configured expected paths')"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "tran_evaluate/kcdlno/_seed_suite.py",
+    "options": [
+      {
+        "line": 122,
+        "expression": "parser.add_argument('--seed', type=int, choices=(0, 1, 2), required=True)"
+      },
+      {
+        "line": 123,
+        "expression": "parser.add_argument('--gpu', default='0', help='original standard-task GPU selector')"
+      },
+      {
+        "line": 124,
+        "expression": "parser.add_argument('--dry-run', action='store_true', help='preview commands without dataset execution')"
+      }
+    ]
+  },
+  {
+    "source": "target",
+    "path": "tran_evaluate/show/_report.py",
+    "options": [
+      {
+        "line": 630,
+        "expression": "p.add_argument('project', choices=PROJECTS)"
+      },
+      {
+        "line": 631,
+        "expression": "p.add_argument('--repo-root', type=Path, default=Path(__file__).resolve().parents[2], help='Actual checkout, defaults to script location (not /home/hwz)')"
+      },
+      {
+        "line": 632,
+        "expression": "p.add_argument('--runs-root', type=Path, action='append', help='Scan this root; repeatable. Overrides default output/runs/project metrics+scores roots')"
+      },
+      {
+        "line": 633,
+        "expression": "p.add_argument('--run-dir', type=Path, action='append', help='Exact run directory; repeatable; disables automatic discovery')"
+      },
+      {
+        "line": 634,
+        "expression": "p.add_argument('--task', choices=PROJECTS['PDE-Solving-StandardBenchmark'], help='Restrict PDE tasks; also identifies an explicit legacy run lacking task metadata')"
+      },
+      {
+        "line": 635,
+        "expression": "p.add_argument('--model', help='Filter saved model family, e.g. kcdno/CDLNO/lrsa_matched')"
+      },
+      {
+        "line": 636,
+        "expression": "p.add_argument('--seed', type=int, help='Filter the explicitly recorded seed; never infer it from a filename')"
+      },
+      {
+        "line": 637,
+        "expression": "p.add_argument('--output-dir', type=Path, help='New bundle directory; existing paths are rejected')"
+      },
+      {
+        "line": 638,
+        "expression": "p.add_argument('--fields', choices=['latest', 'all', 'none'], default='latest', help='Copy latest stored epoch per member of the selected run; all copies all stored epochs of that run')"
+      },
+      {
+        "line": 639,
+        "expression": "p.add_argument('--include-arrays', action='store_true', help='Include copied field NPZ/NPY arrays (can be large)')"
+      },
+      {
+        "line": 640,
+        "expression": "p.add_argument('--dpi', type=int, default=600, choices=(300, 600))"
+      },
+      {
+        "line": 641,
+        "expression": "p.add_argument('--dry-run', action='store_true', help='Read/discover only; no plots or output directories')"
+      }
+    ]
+  },
+  {
+    "source": "transolver",
+    "path": "Airfoil-Design-AirfRANS/main.py",
+    "options": [
+      {
+        "line": 10,
+        "expression": "parser.add_argument('--model', help='The model you want to train, choose between MLP, GraphSAGE, PointNet, GUNet', type=str)"
+      },
+      {
+        "line": 12,
+        "expression": "parser.add_argument('-n', '--nmodel', help='Number of trained models for standard deviation estimation (default: 1)', default=1, type=int)"
+      },
+      {
+        "line": 14,
+        "expression": "parser.add_argument('-w', '--weight', help='Weight in front of the surface loss (default: 1)', default=1, type=float)"
+      },
+      {
+        "line": 15,
+        "expression": "parser.add_argument('-t', '--task', help='Task to train on. Choose between \"full\", \"scarce\", \"reynolds\" and \"aoa\" (default: full)', default='full', type=str)"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('-s', '--score', help='If you want to compute the score of the models on the associated test set. (default: 0)', default=0, type=int)"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--my_path', default='/data/path', type=str)"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--save_path', default='metrics', type=str)"
+      }
+    ]
+  },
+  {
+    "source": "transolver",
+    "path": "Airfoil-Design-AirfRANS/main_evaluation.py",
+    "options": [
+      {
+        "line": 10,
+        "expression": "parser.add_argument('--my_path', default='/data/path', type=str)"
+      },
+      {
+        "line": 11,
+        "expression": "parser.add_argument('--save_path', default='./', type=str)"
+      }
+    ]
+  },
+  {
+    "source": "transolver",
+    "path": "Car-Design-ShapeNetCar/main.py",
+    "options": [
+      {
+        "line": 11,
+        "expression": "parser.add_argument('--data_dir', default='/data/PDE_data/mlcfd_data/training_data')"
+      },
+      {
+        "line": 12,
+        "expression": "parser.add_argument('--save_dir', default='/data/PDE_data/mlcfd_data/preprocessed_data')"
+      },
+      {
+        "line": 13,
+        "expression": "parser.add_argument('--fold_id', default=0, type=int)"
+      },
+      {
+        "line": 14,
+        "expression": "parser.add_argument('--gpu', default=0, type=int)"
+      },
+      {
+        "line": 15,
+        "expression": "parser.add_argument('--val_iter', default=10, type=int)"
+      },
+      {
+        "line": 16,
+        "expression": "parser.add_argument('--cfd_config_dir', default='cfd/cfd_params.yaml')"
+      },
+      {
+        "line": 17,
+        "expression": "parser.add_argument('--cfd_model')"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('--cfd_mesh', action='store_true')"
+      },
+      {
+        "line": 19,
+        "expression": "parser.add_argument('--r', default=0.2, type=float)"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--weight', default=0.5, type=float)"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--lr', default=0.001, type=float)"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--batch_size', default=1, type=int)"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--nb_epochs', default=200, type=int)"
+      },
+      {
+        "line": 24,
+        "expression": "parser.add_argument('--preprocessed', default=1, type=int)"
+      }
+    ]
+  },
+  {
+    "source": "transolver",
+    "path": "Car-Design-ShapeNetCar/main_evaluation.py",
+    "options": [
+      {
+        "line": 15,
+        "expression": "parser.add_argument('--data_dir', default='/data/PDE_data/mlcfd_data/training_data')"
+      },
+      {
+        "line": 16,
+        "expression": "parser.add_argument('--save_dir', default='/data/PDE_data/mlcfd_data/preprocessed_data')"
+      },
+      {
+        "line": 17,
+        "expression": "parser.add_argument('--fold_id', default=0, type=int)"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('--gpu', default=0, type=int)"
+      },
+      {
+        "line": 19,
+        "expression": "parser.add_argument('--cfd_model')"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--cfd_mesh', action='store_true')"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--r', default=0.2, type=float)"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--weight', default=0.5, type=float)"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--nb_epochs', default=200, type=float)"
+      }
+    ]
+  },
+  {
+    "source": "transolver",
+    "path": "PDE-Solving-StandardBenchmark/exp_airfoil.py",
+    "options": [
+      {
+        "line": 12,
+        "expression": "parser.add_argument('--lr', type=float, default=0.001)"
+      },
+      {
+        "line": 13,
+        "expression": "parser.add_argument('--epochs', type=int, default=500)"
+      },
+      {
+        "line": 14,
+        "expression": "parser.add_argument('--weight_decay', type=float, default=1e-05)"
+      },
+      {
+        "line": 15,
+        "expression": "parser.add_argument('--model', type=str, default='Transolver_2D')"
+      },
+      {
+        "line": 16,
+        "expression": "parser.add_argument('--n-hidden', type=int, default=64, help='hidden dim')"
+      },
+      {
+        "line": 17,
+        "expression": "parser.add_argument('--n-layers', type=int, default=3, help='layers')"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('--n-heads', type=int, default=4)"
+      },
+      {
+        "line": 19,
+        "expression": "parser.add_argument('--batch-size', type=int, default=8)"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--gpu', type=str, default='0', help='GPU index to use')"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--max_grad_norm', type=float, default=None)"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--downsamplex', type=int, default=1)"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--downsampley', type=int, default=1)"
+      },
+      {
+        "line": 24,
+        "expression": "parser.add_argument('--mlp_ratio', type=int, default=1)"
+      },
+      {
+        "line": 25,
+        "expression": "parser.add_argument('--dropout', type=float, default=0.0)"
+      },
+      {
+        "line": 26,
+        "expression": "parser.add_argument('--unified_pos', type=int, default=0)"
+      },
+      {
+        "line": 27,
+        "expression": "parser.add_argument('--ref', type=int, default=8)"
+      },
+      {
+        "line": 28,
+        "expression": "parser.add_argument('--slice_num', type=int, default=32)"
+      },
+      {
+        "line": 29,
+        "expression": "parser.add_argument('--eval', type=int, default=0)"
+      },
+      {
+        "line": 30,
+        "expression": "parser.add_argument('--save_name', type=str, default='airfoil_Transolver')"
+      },
+      {
+        "line": 31,
+        "expression": "parser.add_argument('--data_path', type=str, default='/data/fno/airfoil/naca')"
+      }
+    ]
+  },
+  {
+    "source": "transolver",
+    "path": "PDE-Solving-StandardBenchmark/exp_darcy.py",
+    "options": [
+      {
+        "line": 16,
+        "expression": "parser.add_argument('--lr', type=float, default=0.001)"
+      },
+      {
+        "line": 17,
+        "expression": "parser.add_argument('--epochs', type=int, default=500)"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('--weight_decay', type=float, default=1e-05)"
+      },
+      {
+        "line": 19,
+        "expression": "parser.add_argument('--model', type=str, default='Transolver_2D')"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--n-hidden', type=int, default=64, help='hidden dim')"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--n-layers', type=int, default=3, help='layers')"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--n-heads', type=int, default=4)"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--batch-size', type=int, default=8)"
+      },
+      {
+        "line": 24,
+        "expression": "parser.add_argument('--gpu', type=str, default='1', help='GPU index to use')"
+      },
+      {
+        "line": 25,
+        "expression": "parser.add_argument('--max_grad_norm', type=float, default=None)"
+      },
+      {
+        "line": 26,
+        "expression": "parser.add_argument('--downsample', type=int, default=5)"
+      },
+      {
+        "line": 27,
+        "expression": "parser.add_argument('--mlp_ratio', type=int, default=1)"
+      },
+      {
+        "line": 28,
+        "expression": "parser.add_argument('--dropout', type=float, default=0.0)"
+      },
+      {
+        "line": 29,
+        "expression": "parser.add_argument('--ntrain', type=int, default=1000)"
+      },
+      {
+        "line": 30,
+        "expression": "parser.add_argument('--unified_pos', type=int, default=0)"
+      },
+      {
+        "line": 31,
+        "expression": "parser.add_argument('--ref', type=int, default=8)"
+      },
+      {
+        "line": 32,
+        "expression": "parser.add_argument('--slice_num', type=int, default=32)"
+      },
+      {
+        "line": 33,
+        "expression": "parser.add_argument('--eval', type=int, default=0)"
+      },
+      {
+        "line": 34,
+        "expression": "parser.add_argument('--save_name', type=str, default='darcy_Transolver')"
+      },
+      {
+        "line": 35,
+        "expression": "parser.add_argument('--data_path', type=str, default='/data/fno')"
+      }
+    ]
+  },
+  {
+    "source": "transolver",
+    "path": "PDE-Solving-StandardBenchmark/exp_elas.py",
+    "options": [
+      {
+        "line": 13,
+        "expression": "parser.add_argument('--lr', type=float, default=0.001)"
+      },
+      {
+        "line": 14,
+        "expression": "parser.add_argument('--epochs', type=int, default=500)"
+      },
+      {
+        "line": 15,
+        "expression": "parser.add_argument('--weight_decay', type=float, default=1e-05)"
+      },
+      {
+        "line": 16,
+        "expression": "parser.add_argument('--model', type=str, default='Transolver_1D')"
+      },
+      {
+        "line": 17,
+        "expression": "parser.add_argument('--n-hidden', type=int, default=64, help='hidden dim')"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('--n-layers', type=int, default=3, help='layers')"
+      },
+      {
+        "line": 19,
+        "expression": "parser.add_argument('--n-heads', type=int, default=4)"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--batch-size', type=int, default=8)"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--gpu', type=str, default='1', help='GPU index to use')"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--max_grad_norm', type=float, default=None)"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--downsample', type=int, default=5)"
+      },
+      {
+        "line": 24,
+        "expression": "parser.add_argument('--mlp_ratio', type=int, default=1)"
+      },
+      {
+        "line": 25,
+        "expression": "parser.add_argument('--dropout', type=float, default=0.0)"
+      },
+      {
+        "line": 26,
+        "expression": "parser.add_argument('--ntrain', type=int, default=1000)"
+      },
+      {
+        "line": 27,
+        "expression": "parser.add_argument('--unified_pos', type=int, default=0)"
+      },
+      {
+        "line": 28,
+        "expression": "parser.add_argument('--ref', type=int, default=8)"
+      },
+      {
+        "line": 29,
+        "expression": "parser.add_argument('--slice_num', type=int, default=32)"
+      },
+      {
+        "line": 30,
+        "expression": "parser.add_argument('--eval', type=int, default=0)"
+      },
+      {
+        "line": 31,
+        "expression": "parser.add_argument('--save_name', type=str, default='elas_Transolver')"
+      },
+      {
+        "line": 32,
+        "expression": "parser.add_argument('--data_path', type=str, default='/data/fno')"
+      }
+    ]
+  },
+  {
+    "source": "transolver",
+    "path": "PDE-Solving-StandardBenchmark/exp_ns.py",
+    "options": [
+      {
+        "line": 13,
+        "expression": "parser.add_argument('--lr', type=float, default=0.001)"
+      },
+      {
+        "line": 14,
+        "expression": "parser.add_argument('--epochs', type=int, default=500)"
+      },
+      {
+        "line": 15,
+        "expression": "parser.add_argument('--weight_decay', type=float, default=1e-05)"
+      },
+      {
+        "line": 16,
+        "expression": "parser.add_argument('--model', type=str, default='Transolver_2D')"
+      },
+      {
+        "line": 17,
+        "expression": "parser.add_argument('--n-hidden', type=int, default=64, help='hidden dim')"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('--n-layers', type=int, default=3, help='layers')"
+      },
+      {
+        "line": 19,
+        "expression": "parser.add_argument('--n-heads', type=int, default=4)"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--batch-size', type=int, default=8)"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--gpu', type=str, default='0', help='GPU index to use')"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--max_grad_norm', type=float, default=None)"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--downsample', type=int, default=1)"
+      },
+      {
+        "line": 24,
+        "expression": "parser.add_argument('--mlp_ratio', type=int, default=1)"
+      },
+      {
+        "line": 25,
+        "expression": "parser.add_argument('--dropout', type=float, default=0.0)"
+      },
+      {
+        "line": 26,
+        "expression": "parser.add_argument('--unified_pos', type=int, default=0)"
+      },
+      {
+        "line": 27,
+        "expression": "parser.add_argument('--ref', type=int, default=8)"
+      },
+      {
+        "line": 28,
+        "expression": "parser.add_argument('--slice_num', type=int, default=32)"
+      },
+      {
+        "line": 29,
+        "expression": "parser.add_argument('--eval', type=int, default=0)"
+      },
+      {
+        "line": 30,
+        "expression": "parser.add_argument('--save_name', type=str, default='ns_2d_UniPDE')"
+      },
+      {
+        "line": 31,
+        "expression": "parser.add_argument('--data_path', type=str, default='/data/fno')"
+      }
+    ]
+  },
+  {
+    "source": "transolver",
+    "path": "PDE-Solving-StandardBenchmark/exp_pipe.py",
+    "options": [
+      {
+        "line": 7,
+        "expression": "parser.add_argument('--lr', type=float, default=0.001)"
+      },
+      {
+        "line": 8,
+        "expression": "parser.add_argument('--epochs', type=int, default=500)"
+      },
+      {
+        "line": 9,
+        "expression": "parser.add_argument('--weight_decay', type=float, default=1e-05)"
+      },
+      {
+        "line": 10,
+        "expression": "parser.add_argument('--model', type=str, default='Transolver_2D')"
+      },
+      {
+        "line": 11,
+        "expression": "parser.add_argument('--n-hidden', type=int, default=64, help='hidden dim')"
+      },
+      {
+        "line": 12,
+        "expression": "parser.add_argument('--n-layers', type=int, default=3, help='layers')"
+      },
+      {
+        "line": 13,
+        "expression": "parser.add_argument('--n-heads', type=int, default=4)"
+      },
+      {
+        "line": 14,
+        "expression": "parser.add_argument('--batch-size', type=int, default=8)"
+      },
+      {
+        "line": 15,
+        "expression": "parser.add_argument('--gpu', type=str, default='0', help='GPU index to use')"
+      },
+      {
+        "line": 16,
+        "expression": "parser.add_argument('--max_grad_norm', type=float, default=None)"
+      },
+      {
+        "line": 17,
+        "expression": "parser.add_argument('--downsamplex', type=int, default=1)"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('--downsampley', type=int, default=1)"
+      },
+      {
+        "line": 19,
+        "expression": "parser.add_argument('--mlp_ratio', type=int, default=1)"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--dropout', type=float, default=0.0)"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--unified_pos', type=int, default=0)"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--ref', type=int, default=8)"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--slice_num', type=int, default=32)"
+      },
+      {
+        "line": 24,
+        "expression": "parser.add_argument('--eval', type=int, default=0)"
+      },
+      {
+        "line": 25,
+        "expression": "parser.add_argument('--save_name', type=str, default='pipe_UniPDE')"
+      },
+      {
+        "line": 26,
+        "expression": "parser.add_argument('--data_path', type=str, default='/data/fno/pipe')"
+      }
+    ]
+  },
+  {
+    "source": "transolver",
+    "path": "PDE-Solving-StandardBenchmark/exp_plas.py",
+    "options": [
+      {
+        "line": 7,
+        "expression": "parser.add_argument('--lr', type=float, default=0.001)"
+      },
+      {
+        "line": 8,
+        "expression": "parser.add_argument('--epochs', type=int, default=500)"
+      },
+      {
+        "line": 9,
+        "expression": "parser.add_argument('--weight_decay', type=float, default=1e-05)"
+      },
+      {
+        "line": 10,
+        "expression": "parser.add_argument('--model', type=str, default='Transolver_2D')"
+      },
+      {
+        "line": 11,
+        "expression": "parser.add_argument('--n-hidden', type=int, default=64, help='hidden dim')"
+      },
+      {
+        "line": 12,
+        "expression": "parser.add_argument('--n-layers', type=int, default=3, help='layers')"
+      },
+      {
+        "line": 13,
+        "expression": "parser.add_argument('--n-heads', type=int, default=4)"
+      },
+      {
+        "line": 14,
+        "expression": "parser.add_argument('--batch-size', type=int, default=8)"
+      },
+      {
+        "line": 15,
+        "expression": "parser.add_argument('--gpu', type=str, default='0', help='GPU index to use')"
+      },
+      {
+        "line": 16,
+        "expression": "parser.add_argument('--max_grad_norm', type=float, default=None)"
+      },
+      {
+        "line": 17,
+        "expression": "parser.add_argument('--downsamplex', type=int, default=1)"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('--downsampley', type=int, default=1)"
+      },
+      {
+        "line": 19,
+        "expression": "parser.add_argument('--mlp_ratio', type=int, default=1)"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--dropout', type=float, default=0.0)"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--unified_pos', type=int, default=0)"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--ref', type=int, default=8)"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--slice_num', type=int, default=32)"
+      },
+      {
+        "line": 24,
+        "expression": "parser.add_argument('--eval', type=int, default=0)"
+      },
+      {
+        "line": 25,
+        "expression": "parser.add_argument('--save_name', type=str, default='plas_Transolver')"
+      },
+      {
+        "line": 26,
+        "expression": "parser.add_argument('--data_path', type=str, default='/data/fno/plas_N987_T20.mat')"
+      }
+    ]
+  },
+  {
+    "source": "linearno",
+    "path": "AirfRANS/main.py",
+    "options": [
+      {
+        "line": 10,
+        "expression": "parser.add_argument('--model', help='The model you want to train, choose between MLP, GraphSAGE, PointNet, GUNet', type=str)"
+      },
+      {
+        "line": 12,
+        "expression": "parser.add_argument('-n', '--nmodel', help='Number of trained models for standard deviation estimation (default: 1)', default=1, type=int)"
+      },
+      {
+        "line": 14,
+        "expression": "parser.add_argument('-w', '--weight', help='Weight in front of the surface loss (default: 1)', default=1, type=float)"
+      },
+      {
+        "line": 15,
+        "expression": "parser.add_argument('-t', '--task', help='Task to train on. Choose between \"full\", \"scarce\", \"reynolds\" and \"aoa\" (default: full)', default='full', type=str)"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('-s', '--score', help='If you want to compute the score of the models on the associated test set. (default: 0)', default=0, type=int)"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--my_path', default='./datas/Dataset', type=str)"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--save_path', default='metrics', type=str)"
+      },
+      {
+        "line": 25,
+        "expression": "parser.add_argument('--save_name', default='default', type=str)"
+      },
+      {
+        "line": 27,
+        "expression": "parser.add_argument('--debug', default=1, type=int)"
+      }
+    ]
+  },
+  {
+    "source": "linearno",
+    "path": "AirfRANS/main_evaluation.py",
+    "options": [
+      {
+        "line": 10,
+        "expression": "parser.add_argument('--my_path', default='./data', type=str)"
+      },
+      {
+        "line": 11,
+        "expression": "parser.add_argument('--save_path', default='./', type=str)"
+      }
+    ]
+  },
+  {
+    "source": "linearno",
+    "path": "ShapeNetCar/main.py",
+    "options": [
+      {
+        "line": 10,
+        "expression": "parser.add_argument('--data_dir', default='./datas/mlcfd_data/training_data')"
+      },
+      {
+        "line": 11,
+        "expression": "parser.add_argument('--save_dir', default='./datas/mlcfd_data/preprocessed_data')"
+      },
+      {
+        "line": 12,
+        "expression": "parser.add_argument('--fold_id', default=0, type=int)"
+      },
+      {
+        "line": 13,
+        "expression": "parser.add_argument('--gpu', default=0, type=int)"
+      },
+      {
+        "line": 14,
+        "expression": "parser.add_argument('--val_iter', default=10, type=int)"
+      },
+      {
+        "line": 15,
+        "expression": "parser.add_argument('--cfd_config_dir', default='cfd/cfd_params.yaml')"
+      },
+      {
+        "line": 16,
+        "expression": "parser.add_argument('--cfd_model')"
+      },
+      {
+        "line": 17,
+        "expression": "parser.add_argument('--cfd_mesh', action='store_true')"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('--r', default=0.2, type=float)"
+      },
+      {
+        "line": 19,
+        "expression": "parser.add_argument('--weight', default=0.5, type=float)"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--lr', default=0.001, type=float)"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--batch_size', default=1, type=float)"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--nb_epochs', default=200, type=float)"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--preprocessed', default=1, type=int)"
+      }
+    ]
+  },
+  {
+    "source": "linearno",
+    "path": "ShapeNetCar/main_evaluation.py",
+    "options": [
+      {
+        "line": 15,
+        "expression": "parser.add_argument('--data_dir', default='/data/mlcfd_data/training_data')"
+      },
+      {
+        "line": 16,
+        "expression": "parser.add_argument('--save_dir', default='/data/mlcfd_data/preprocessed_data')"
+      },
+      {
+        "line": 17,
+        "expression": "parser.add_argument('--fold_id', default=0, type=int)"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('--gpu', default=0, type=int)"
+      },
+      {
+        "line": 19,
+        "expression": "parser.add_argument('--cfd_model')"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--cfd_mesh', action='store_true')"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--r', default=0.2, type=float)"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--weight', default=0.5, type=float)"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--nb_epochs', default=200, type=float)"
+      }
+    ]
+  },
+  {
+    "source": "linearno",
+    "path": "Standard_PDE_Benchmark/exp_airfoil.py",
+    "options": [
+      {
+        "line": 12,
+        "expression": "parser.add_argument('--lr', type=float, default=0.001)"
+      },
+      {
+        "line": 13,
+        "expression": "parser.add_argument('--epochs', type=int, default=500)"
+      },
+      {
+        "line": 14,
+        "expression": "parser.add_argument('--weight_decay', type=float, default=1e-05)"
+      },
+      {
+        "line": 15,
+        "expression": "parser.add_argument('--n-hidden', type=int, default=64, help='hidden dim')"
+      },
+      {
+        "line": 16,
+        "expression": "parser.add_argument('--n-layers', type=int, default=3, help='layers')"
+      },
+      {
+        "line": 17,
+        "expression": "parser.add_argument('--n-heads', type=int, default=4)"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('--batch-size', type=int, default=8)"
+      },
+      {
+        "line": 19,
+        "expression": "parser.add_argument('--gpu', type=str, default='0', help='GPU index to use')"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--max_grad_norm', type=float, default=None)"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--downsamplex', type=int, default=1)"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--downsampley', type=int, default=1)"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--mlp_ratio', type=int, default=1)"
+      },
+      {
+        "line": 24,
+        "expression": "parser.add_argument('--dropout', type=float, default=0.0)"
+      },
+      {
+        "line": 25,
+        "expression": "parser.add_argument('--unified_pos', type=int, default=0)"
+      },
+      {
+        "line": 26,
+        "expression": "parser.add_argument('--ref', type=int, default=8)"
+      },
+      {
+        "line": 27,
+        "expression": "parser.add_argument('--key_ratio', type=int, default=4)"
+      },
+      {
+        "line": 28,
+        "expression": "parser.add_argument('--eval', type=int, default=0)"
+      },
+      {
+        "line": 29,
+        "expression": "parser.add_argument('--save_name', type=str, default='airfoil_LinearAttnNeuralOperator')"
+      },
+      {
+        "line": 30,
+        "expression": "parser.add_argument('--data_path', type=str, default='/data/fno/airfoil/naca')"
+      },
+      {
+        "line": 31,
+        "expression": "parser.add_argument('--model', type=str, default='None')"
+      }
+    ]
+  },
+  {
+    "source": "linearno",
+    "path": "Standard_PDE_Benchmark/exp_darcy.py",
+    "options": [
+      {
+        "line": 17,
+        "expression": "parser.add_argument('--lr', type=float, default=0.001)"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('--epochs', type=int, default=500)"
+      },
+      {
+        "line": 19,
+        "expression": "parser.add_argument('--weight_decay', type=float, default=1e-05)"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--n-hidden', type=int, default=64, help='hidden dim')"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--n-layers', type=int, default=3, help='layers')"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--n-heads', type=int, default=4)"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--batch-size', type=int, default=8)"
+      },
+      {
+        "line": 24,
+        "expression": "parser.add_argument('--gpu', type=str, default='0', help='GPU index to use')"
+      },
+      {
+        "line": 25,
+        "expression": "parser.add_argument('--max_grad_norm', type=float, default=None)"
+      },
+      {
+        "line": 26,
+        "expression": "parser.add_argument('--downsample', type=int, default=5)"
+      },
+      {
+        "line": 27,
+        "expression": "parser.add_argument('--ntrain', type=int, default=1000)"
+      },
+      {
+        "line": 28,
+        "expression": "parser.add_argument('--mlp_ratio', type=int, default=1)"
+      },
+      {
+        "line": 29,
+        "expression": "parser.add_argument('--dropout', type=float, default=0.0)"
+      },
+      {
+        "line": 30,
+        "expression": "parser.add_argument('--unified_pos', type=int, default=0)"
+      },
+      {
+        "line": 31,
+        "expression": "parser.add_argument('--ref', type=int, default=8)"
+      },
+      {
+        "line": 32,
+        "expression": "parser.add_argument('--key_ratio', type=int, default=4)"
+      },
+      {
+        "line": 33,
+        "expression": "parser.add_argument('--eval', type=int, default=0)"
+      },
+      {
+        "line": 34,
+        "expression": "parser.add_argument('--save_name', type=str, default='darcy_LinearAttnNeuralOperator')"
+      },
+      {
+        "line": 35,
+        "expression": "parser.add_argument('--data_path', type=str, default='/data/fno')"
+      },
+      {
+        "line": 36,
+        "expression": "parser.add_argument('--model', type=str, default='None')"
+      }
+    ]
+  },
+  {
+    "source": "linearno",
+    "path": "Standard_PDE_Benchmark/exp_elas.py",
+    "options": [
+      {
+        "line": 14,
+        "expression": "parser.add_argument('--lr', type=float, default=0.001)"
+      },
+      {
+        "line": 15,
+        "expression": "parser.add_argument('--epochs', type=int, default=500)"
+      },
+      {
+        "line": 16,
+        "expression": "parser.add_argument('--weight_decay', type=float, default=1e-05)"
+      },
+      {
+        "line": 17,
+        "expression": "parser.add_argument('--n-hidden', type=int, default=64, help='hidden dim')"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('--n-layers', type=int, default=3, help='layers')"
+      },
+      {
+        "line": 19,
+        "expression": "parser.add_argument('--n-heads', type=int, default=4)"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--batch-size', type=int, default=8)"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--gpu', type=str, default='0', help='GPU index to use')"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--max_grad_norm', type=float, default=None)"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--downsample', type=int, default=1)"
+      },
+      {
+        "line": 24,
+        "expression": "parser.add_argument('--ntrain', type=int, default=1000)"
+      },
+      {
+        "line": 25,
+        "expression": "parser.add_argument('--mlp_ratio', type=int, default=1)"
+      },
+      {
+        "line": 26,
+        "expression": "parser.add_argument('--dropout', type=float, default=0.0)"
+      },
+      {
+        "line": 27,
+        "expression": "parser.add_argument('--unified_pos', type=int, default=0)"
+      },
+      {
+        "line": 28,
+        "expression": "parser.add_argument('--ref', type=int, default=8)"
+      },
+      {
+        "line": 29,
+        "expression": "parser.add_argument('--key_ratio', type=int, default=4)"
+      },
+      {
+        "line": 30,
+        "expression": "parser.add_argument('--eval', type=int, default=0)"
+      },
+      {
+        "line": 31,
+        "expression": "parser.add_argument('--save_name', type=str, default='elas_LinearAttnNeuralOperator')"
+      },
+      {
+        "line": 32,
+        "expression": "parser.add_argument('--data_path', type=str, default='/data/fno')"
+      },
+      {
+        "line": 33,
+        "expression": "parser.add_argument('--model', type=str, default='2D_temp')"
+      }
+    ]
+  },
+  {
+    "source": "linearno",
+    "path": "Standard_PDE_Benchmark/exp_ns.py",
+    "options": [
+      {
+        "line": 12,
+        "expression": "parser.add_argument('--lr', type=float, default=0.001)"
+      },
+      {
+        "line": 13,
+        "expression": "parser.add_argument('--epochs', type=int, default=500)"
+      },
+      {
+        "line": 14,
+        "expression": "parser.add_argument('--weight_decay', type=float, default=1e-05)"
+      },
+      {
+        "line": 15,
+        "expression": "parser.add_argument('--n-hidden', type=int, default=64, help='hidden dim')"
+      },
+      {
+        "line": 16,
+        "expression": "parser.add_argument('--n-layers', type=int, default=3, help='layers')"
+      },
+      {
+        "line": 17,
+        "expression": "parser.add_argument('--n-heads', type=int, default=4)"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('--batch-size', type=int, default=8)"
+      },
+      {
+        "line": 19,
+        "expression": "parser.add_argument('--gpu', type=str, default='0', help='GPU index to use')"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--max_grad_norm', type=float, default=None)"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--downsample', type=int, default=1)"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--mlp_ratio', type=int, default=1)"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--dropout', type=float, default=0.0)"
+      },
+      {
+        "line": 24,
+        "expression": "parser.add_argument('--unified_pos', type=int, default=0)"
+      },
+      {
+        "line": 25,
+        "expression": "parser.add_argument('--ref', type=int, default=8)"
+      },
+      {
+        "line": 26,
+        "expression": "parser.add_argument('--key_ratio', type=int, default=64)"
+      },
+      {
+        "line": 27,
+        "expression": "parser.add_argument('--eval', type=int, default=0)"
+      },
+      {
+        "line": 28,
+        "expression": "parser.add_argument('--save_name', type=str, default='ns_UniPDE_LinearAttnNeuralOperator')"
+      },
+      {
+        "line": 29,
+        "expression": "parser.add_argument('--data_path', type=str, default='/data/fno')"
+      },
+      {
+        "line": 30,
+        "expression": "parser.add_argument('--model', type=str, default='None')"
+      }
+    ]
+  },
+  {
+    "source": "linearno",
+    "path": "Standard_PDE_Benchmark/exp_pipe.py",
+    "options": [
+      {
+        "line": 7,
+        "expression": "parser.add_argument('--lr', type=float, default=0.001)"
+      },
+      {
+        "line": 8,
+        "expression": "parser.add_argument('--epochs', type=int, default=500)"
+      },
+      {
+        "line": 9,
+        "expression": "parser.add_argument('--weight_decay', type=float, default=1e-05)"
+      },
+      {
+        "line": 10,
+        "expression": "parser.add_argument('--n-hidden', type=int, default=64, help='hidden dim')"
+      },
+      {
+        "line": 11,
+        "expression": "parser.add_argument('--n-layers', type=int, default=3, help='layers')"
+      },
+      {
+        "line": 12,
+        "expression": "parser.add_argument('--n-heads', type=int, default=4)"
+      },
+      {
+        "line": 13,
+        "expression": "parser.add_argument('--batch-size', type=int, default=8)"
+      },
+      {
+        "line": 14,
+        "expression": "parser.add_argument('--gpu', type=str, default='0', help='GPU index to use')"
+      },
+      {
+        "line": 15,
+        "expression": "parser.add_argument('--max_grad_norm', type=float, default=None)"
+      },
+      {
+        "line": 16,
+        "expression": "parser.add_argument('--downsamplex', type=int, default=1)"
+      },
+      {
+        "line": 17,
+        "expression": "parser.add_argument('--downsampley', type=int, default=1)"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('--mlp_ratio', type=int, default=1)"
+      },
+      {
+        "line": 19,
+        "expression": "parser.add_argument('--dropout', type=float, default=0.0)"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--unified_pos', type=int, default=0)"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--ref', type=int, default=8)"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--key_ratio', type=int, default=4)"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--eval', type=int, default=0)"
+      },
+      {
+        "line": 24,
+        "expression": "parser.add_argument('--save_name', type=str, default='pipe_UniPDE')"
+      },
+      {
+        "line": 25,
+        "expression": "parser.add_argument('--data_path', type=str, default='/data/fno/pipe')"
+      },
+      {
+        "line": 26,
+        "expression": "parser.add_argument('--model', type=str, default='None')"
+      }
+    ]
+  },
+  {
+    "source": "linearno",
+    "path": "Standard_PDE_Benchmark/exp_plas.py",
+    "options": [
+      {
+        "line": 7,
+        "expression": "parser.add_argument('--lr', type=float, default=0.001)"
+      },
+      {
+        "line": 8,
+        "expression": "parser.add_argument('--epochs', type=int, default=500)"
+      },
+      {
+        "line": 9,
+        "expression": "parser.add_argument('--weight_decay', type=float, default=1e-05)"
+      },
+      {
+        "line": 10,
+        "expression": "parser.add_argument('--n-hidden', type=int, default=64, help='hidden dim')"
+      },
+      {
+        "line": 11,
+        "expression": "parser.add_argument('--n-layers', type=int, default=3, help='layers')"
+      },
+      {
+        "line": 12,
+        "expression": "parser.add_argument('--n-heads', type=int, default=4)"
+      },
+      {
+        "line": 13,
+        "expression": "parser.add_argument('--batch-size', type=int, default=8)"
+      },
+      {
+        "line": 14,
+        "expression": "parser.add_argument('--gpu', type=str, default='0', help='GPU index to use')"
+      },
+      {
+        "line": 15,
+        "expression": "parser.add_argument('--max_grad_norm', type=float, default=None)"
+      },
+      {
+        "line": 16,
+        "expression": "parser.add_argument('--downsamplex', type=int, default=1)"
+      },
+      {
+        "line": 17,
+        "expression": "parser.add_argument('--downsampley', type=int, default=1)"
+      },
+      {
+        "line": 18,
+        "expression": "parser.add_argument('--mlp_ratio', type=int, default=1)"
+      },
+      {
+        "line": 19,
+        "expression": "parser.add_argument('--dropout', type=float, default=0.0)"
+      },
+      {
+        "line": 20,
+        "expression": "parser.add_argument('--unified_pos', type=int, default=0)"
+      },
+      {
+        "line": 21,
+        "expression": "parser.add_argument('--ref', type=int, default=8)"
+      },
+      {
+        "line": 22,
+        "expression": "parser.add_argument('--key_ratio', type=int, default=4)"
+      },
+      {
+        "line": 23,
+        "expression": "parser.add_argument('--eval', type=int, default=0)"
+      },
+      {
+        "line": 24,
+        "expression": "parser.add_argument('--save_name', type=str, default='plas_LinearAttnNeuralOperator')"
+      },
+      {
+        "line": 25,
+        "expression": "parser.add_argument('--data_path', type=str, default='/data/fno/plas_N987_T20.mat')"
+      },
+      {
+        "line": 26,
+        "expression": "parser.add_argument('--model', type=str, default='None')"
+      }
+    ]
+  },
+  {
+    "source": "linearno",
+    "path": "Super-Resoltion-AppendixE/prepare.py",
+    "options": [
+      {
+        "line": 151,
+        "expression": "parser.add_argument('--data_name', type=str, default=None, choices=['AllenCahn_IC_Force_big', 'AllenCahn_IC_Force_std', 'AllenCahn_IC_Force_small', 'AllenCahn_IC_Force_try', 'AllenCahn_IC_big', 'AllenCahn_IC_std', 'AllenCahn_IC_small', 'AllenCahn_IC_try', 'Burgers_IC_Force_big', 'Burgers_IC_Force_std', 'Burgers_IC_Force_small', 'Burgers_IC_Force_try', 'Burgers_IC_big', 'Burgers_IC_std', 'Burgers_IC_small', 'Burgers_IC_try', 'AllenCahn_IC_fine_Force_big', 'AllenCahn_IC_fine_Force_std', 'AllenCahn_IC_fine_Force_small', 'AllenCahn_IC_fine_Force_try', 'AllenCahn_IC_fine_big', 'AllenCahn_IC_fine_std', 'AllenCahn_IC_fine_small', 'AllenCahn_IC_fine_try', 'Burgers_IC_fine_Force_big', 'Burgers_IC_fine_Force_std', 'Burgers_IC_fine_Force_small', 'Burgers_IC_fine_Force_try', 'Burgers_IC_fine_big', 'Burgers_IC_fine_std', 'Burgers_IC_fine_small', 'Burgers_IC_fine_try'], required=True)"
+      }
+    ]
+  },
+  {
+    "source": "linearno",
+    "path": "Super-Resoltion-AppendixE/test.py",
+    "options": [
+      {
+        "line": 7,
+        "expression": "parser.add_argument('--config', type=str, default=None, required=True)"
+      },
+      {
+        "line": 8,
+        "expression": "parser.add_argument('--device', type=str, default=None, required=True)"
+      },
+      {
+        "line": 9,
+        "expression": "parser.add_argument('--seed', type=int, default=0)"
+      }
+    ]
+  },
+  {
+    "source": "linearno",
+    "path": "Super-Resoltion-AppendixE/train.py",
+    "options": [
+      {
+        "line": 7,
+        "expression": "parser.add_argument('--config', type=str, default=None, required=True)"
+      },
+      {
+        "line": 8,
+        "expression": "parser.add_argument('--device', type=str, default=None, required=True)"
+      },
+      {
+        "line": 9,
+        "expression": "parser.add_argument('--seed', type=int, default=0)"
+      }
+    ]
+  }
+]

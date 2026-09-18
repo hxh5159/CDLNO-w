@@ -1,0 +1,103 @@
+..................................F..................................... [ 69%]
+.................F..............                                         [100%]
+=================================== FAILURES ===================================
+__ LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories ___
+
+self = <linearno.test_legacy.LegacyRegression testMethod=test_all_preexisting_files_and_absent_frozen_directories>
+
+    def test_all_preexisting_files_and_absent_frozen_directories(self):
+        baseline = json.loads((ROOT/'docs/linearno_audit/l1/baseline.json').read_text())
+        allowed = {'docs/LINEARNO_IMPLEMENTATION_STATUS.md'}
+        # L6 authorizes the AirfRANS-only LinearNO adapter and its three thin
+        # entry/train guards.  Their old behavior is covered by the dedicated
+        # AirfRANS legacy fixture; this inventory must not mistake the new
+        # branch for an accidental edit to the frozen Transolver path.
+        air_integrated = {
+            'Airfoil-Design-AirfRANS/cdlno_entry.py',
+            'Airfoil-Design-AirfRANS/main.py',
+            'Airfoil-Design-AirfRANS/main_evaluation.py',
+            'Airfoil-Design-AirfRANS/train.py',
+        }
+        # L4 authorizes guarded entry/recording branches. Recover and compare the
+        # ENTIRE old AST; retain byte hashes for every other baseline file.
+        from linearno_entry_projection import strip_linearno
+        integrated = {'PDE-Solving-StandardBenchmark/' + name for name in
+                      ('exp_darcy.py','exp_elas.py','exp_airfoil.py','exp_pipe.py','exp_ns.py','exp_plas.py','model_dict.py','cdlno_entry.py')}
+        integrated.add('cdlno/experiment.py')
+        integrated.update('Car-Design-ShapeNetCar/'+name for name in
+                          ('main.py','main_evaluation.py','train.py','models/cdlno_run.py'))
+        for row in baseline['files']:
+            if '__pycache__' in Path(row['path']).parts or row['path'].endswith(('.pyc', '.pyo')):
+                continue
+            if row['path'] in allowed:
+                continue
+            if row['path'] in air_integrated:
+                continue
+            with self.subTest(path=row['path']):
+                if row['path']=='docs/LINEARNO_REPRODUCTION_MATRIX.md':
+                    old=(Path(baseline['snapshot'])/'source'/row['path']).read_text()
+                    now=(ROOT/row['path']).read_text()
+                    self.assertTrue(now.startswith(old.split('\n\n',1)[0]+'\n\n'))
+                    self.assertTrue(now.endswith(old.split('\n\n',1)[1]))
+                    continue
+                if row['path'] in integrated:
+                    before=(Path(baseline['snapshot'])/'source'/row['path']).read_text()
+                    self.assertEqual(ast.dump(strip_linearno(ast.parse((ROOT/row['path']).read_text()))),
+                                     ast.dump(ast.parse(before)))
+                    continue
+                if row['path']=='tests/msar_entry_projection.py':
+                    before=(Path(baseline['snapshot'])/'source'/row['path']).read_text()
+                    expected=before.replace('def strip_msar(tree):\n', 'def strip_msar(tree):\n    from linearno_entry_projection import strip_linearno\n    tree = strip_linearno(tree)\n')
+                    self.assertEqual((ROOT/row['path']).read_text(),expected)
+                    continue
+                if row['path']=='tests/test_front_task_modes.py':
+                    before=(Path(baseline['snapshot'])/'source'/row['path']).read_text()
+                    expected=before.replace('next(n for n in main.body if isinstance(n, ast.If)',
+                                            'next(n for n in ast.walk(main) if isinstance(n, ast.If)')
+                    self.assertEqual((ROOT/row['path']).read_text(),expected)
+                    continue
+>               self.assertEqual(hashlib.sha256((ROOT/row['path']).read_bytes()).hexdigest(), row['sha256'])
+E               AssertionError: 'd9eb86ff747d90ab59531763f0fd64072a6c922f739b4a8f670394fb08d22afb' != '094dae610e2c9d323ea84ac14cbfde6e70d8e346ca5900e7c498cb5cb559ba1b'
+E               - d9eb86ff747d90ab59531763f0fd64072a6c922f739b4a8f670394fb08d22afb
+E               + 094dae610e2c9d323ea84ac14cbfde6e70d8e346ca5900e7c498cb5cb559ba1b
+
+tests/linearno/test_legacy.py:110: AssertionError
+______ FrozenSourceAndScripts.test_frozen_car_and_airfrans_original_files ______
+
+self = <test_shapenet_car.FrozenSourceAndScripts testMethod=test_frozen_car_and_airfrans_original_files>
+
+    def test_frozen_car_and_airfrans_original_files(self):
+        # Enumerate original files at the frozen commit, not newly tracked
+        # CDLNO additions that never existed in that commit.
+        names = subprocess.check_output(['git', 'ls-tree', '-r', '--name-only',
+                                         '75e0f67643806a81cd1d3f6adc88dd8c02416fe7', '--', 'Car-Design-ShapeNetCar',
+                                         'Airfoil-Design-AirfRANS'], cwd=ROOT, text=True).splitlines()
+        count = 0
+        for name in names:
+            # Phase8 now separately audits the authorized AirfRANS entry/YAML
+            # changes; its train/dataset/metrics/model files remain frozen here.
+            if name in ('Car-Design-ShapeNetCar/main.py', 'Car-Design-ShapeNetCar/main_evaluation.py',
+                        'Airfoil-Design-AirfRANS/main.py', 'Airfoil-Design-AirfRANS/main_evaluation.py',
+                        'Airfoil-Design-AirfRANS/params.yaml'):
+                continue
+            before = subprocess.check_output(['git', 'show', '75e0f67643806a81cd1d3f6adc88dd8c02416fe7:' + name], cwd=ROOT)
+            if Path(name).name == 'train.py':
+>               self.assertEqual(ast.dump(strip_recording(ast.parse((ROOT/name).read_text()))), ast.dump(ast.parse(before)), name)
+E               AssertionError: 'Modu[21468 chars]id=\'linearno_start_epoch\', ctx=Store())], va[33434 chars]])])' != 'Modu[21468 chars]id=\'pbar_train\', ctx=Store())], value=Call(f[33094 chars]])])'
+E               Diff is 173959 characters long. Set self.maxDiff to None to see it. : Airfoil-Design-AirfRANS/train.py
+
+tests/test_shapenet_car.py:418: AssertionError
+=============================== warnings summary ===============================
+../anaconda3/lib/python3.13/site-packages/timm/models/layers/__init__.py:49
+  /home/hwz/anaconda3/lib/python3.13/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+    warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+
+PDE-Solving-StandardBenchmark/utils/testloss.py:4
+  /home/hwz/CDLNO/PDE-Solving-StandardBenchmark/utils/testloss.py:4: PytestCollectionWarning: cannot collect test class 'TestLoss' because it has a __init__ constructor (from: tests/linearno/test_static_integration.py)
+    class TestLoss(object):
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/linearno/test_legacy.py::LegacyRegression::test_all_preexisting_files_and_absent_frozen_directories
+FAILED tests/test_shapenet_car.py::FrozenSourceAndScripts::test_frozen_car_and_airfrans_original_files
+2 failed, 102 passed, 2 warnings in 278.12s (0:04:38)

@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "baseline_files": 1419,
+  "changed": [
+    "cdlno/linearno/profiles.py",
+    "docs/LINEARNO_IMPLEMENTATION_STATUS.md",
+    "docs/LINEARNO_L6_REPORT.md",
+    "docs/LINEARNO_REPRODUCTION_MATRIX.md",
+    "tests/linearno/test_profiles.py"
+  ],
+  "new": [
+    "docs/LINEARNO_AIRFRANS_OBJECTIVE_DECISION.md",
+    "docs/linearno_audit/air-objective-decision/baseline.json",
+    "docs/linearno_audit/air-objective-decision/before.diff",
+    "docs/linearno_audit/air-objective-decision/legacy-and-loss.json",
+    "docs/linearno_audit/air-objective-decision/legacy-and-loss.txt",
+    "docs/linearno_audit/air-objective-decision/results.json",
+    "tests/linearno/test_air_objective_decision.py"
+  ],
+  "new_ignored": [],
+  "old_production_models_entries_training_checkpoints_data_dependencies_launchers_byte_identical": true,
+  "tracked_diff_unchanged": true,
+  "l0_broad_freeze_changes_preexisting_L4_L5": [
+    "cdlno/experiment.py",
+    "tests/msar_entry_projection.py",
+    "tests/test_front_task_modes.py"
+  ],
+  "snapshot": "/home/hwz/CDLNO-artifacts/linearno-air-decision-before-4wddqp4h",
+  "python310_syntax": true
+}

@@ -1,0 +1,108 @@
+{
+  "head": "bb73b3099d3b8ce45bd939156b737453b9ca5454",
+  "baseline_count": 1192,
+  "unchanged_count": 1191,
+  "changed": [
+    "docs/LINEARNO_IMPLEMENTATION_STATUS.md"
+  ],
+  "missing": [],
+  "new_files": [
+    "cdlno/linearno/__init__.py",
+    "cdlno/linearno/_profile_data.py",
+    "cdlno/linearno/profiles.py",
+    "cdlno/linearno/schema.py",
+    "docs/LINEARNO_L1_REPORT.md",
+    "docs/linearno_audit/l1/baseline.json",
+    "docs/linearno_audit/l1/checkpoint-conversion-policy.json",
+    "docs/linearno_audit/l1/commands.json",
+    "docs/linearno_audit/l1/config-schema-final.txt",
+    "docs/linearno_audit/l1/config-schema-tests.txt",
+    "docs/linearno_audit/l1/delivery-check.json",
+    "docs/linearno_audit/l1/environment.json",
+    "docs/linearno_audit/l1/existing-foundations-results.json",
+    "docs/linearno_audit/l1/existing-foundations-tests.txt",
+    "docs/linearno_audit/l1/final-new-results.json",
+    "docs/linearno_audit/l1/final-new-tests.txt",
+    "docs/linearno_audit/l1/fixture-generation.txt",
+    "docs/linearno_audit/l1/fixture-index.json",
+    "docs/linearno_audit/l1/legacy-rng-tests.txt",
+    "docs/linearno_audit/l1/old-source-tests.txt",
+    "docs/linearno_audit/l1/resolved-profiles.json",
+    "tests/linearno/README.md",
+    "tests/linearno/__init__.py",
+    "tests/linearno/capture_fixtures.py",
+    "tests/linearno/fixtures/transolver_cpu.json",
+    "tests/linearno/legacy_worker.py",
+    "tests/linearno/rng_worker.py",
+    "tests/linearno/test_legacy.py",
+    "tests/linearno/test_profiles.py",
+    "tests/linearno/test_rng.py",
+    "tests/linearno/test_schema.py"
+  ],
+  "unexpected_new": [],
+  "ignored_new": [],
+  "l0_frozen_count": 221,
+  "l0_frozen_changes": [],
+  "syntax_python310": [
+    "cdlno/linearno/__init__.py",
+    "cdlno/linearno/_profile_data.py",
+    "cdlno/linearno/profiles.py",
+    "cdlno/linearno/schema.py",
+    "tests/linearno/__init__.py",
+    "tests/linearno/capture_fixtures.py",
+    "tests/linearno/legacy_worker.py",
+    "tests/linearno/rng_worker.py",
+    "tests/linearno/test_legacy.py",
+    "tests/linearno/test_profiles.py",
+    "tests/linearno/test_rng.py",
+    "tests/linearno/test_schema.py"
+  ],
+  "tracked_diff": "",
+  "stage_status": "PASS",
+  "schema_final": {
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 0.159
+  },
+  "new_tests": {
+    "tests": 16,
+    "failures": 0,
+    "errors": 0,
+    "skipped": [],
+    "seconds": 46.24126667099972
+  },
+  "existing_foundations": {
+    "tests": 22,
+    "failures": 0,
+    "errors": 0,
+    "skipped": [
+      [
+        "test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values (test_experiment_records.ExperimentRecords.test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values) (task='airfrans')",
+        "AirfRANS complete sampled epoch not run: torch_cluster is absent; no dependency was installed"
+      ]
+    ],
+    "seconds": 67.78487436099931,
+    "scope": "existing CPU CDLNO archive/artifact foundations, not new LinearNO integration",
+    "gpu_test": "NOT RUN: L1 CPU-only checks"
+  },
+  "git_status": "?? PLAN_LinearNO/LinearNO_Codex_Staged_Prompts_hxh_Transolver.md\n?? \"PLAN_LinearNO/\\346\\257\\224\\350\\276\\203\\346\\250\\241\\345\\236\\213\\346\\236\\266\\346\\236\\204 (2).md\"\n?? cdlno/linearno/__init__.py\n?? cdlno/linearno/_profile_data.py\n?? cdlno/linearno/profiles.py\n?? cdlno/linearno/schema.py\n?? docs/LINEARNO_IMPLEMENTATION_STATUS.md\n?? docs/LINEARNO_L1_REPORT.md\n?? docs/LINEARNO_REFERENCE_AUDIT.md\n?? docs/LINEARNO_REPRODUCTION_MATRIX.md\n?? docs/linearno_audit/l0/READING_LEDGER.md\n?? docs/linearno_audit/l0/ast-comparison.json\n?? docs/linearno_audit/l0/baseline.json\n?? docs/linearno_audit/l0/cli-inventory.json\n?? docs/linearno_audit/l0/configuration-shells.json\n?? docs/linearno_audit/l0/delivery-check.json\n?? docs/linearno_audit/l0/document-sections.json\n?? docs/linearno_audit/l0/environment.json\n?? docs/linearno_audit/l0/freeze-manifest.json\n?? docs/linearno_audit/l0/ignored-output-policy.json\n?? docs/linearno_audit/l0/legacy-static-results.json\n?? docs/linearno_audit/l0/legacy-static-tests.txt\n?? docs/linearno_audit/l0/manifest.json\n?? docs/linearno_audit/l0/paper-equations.json\n?? docs/linearno_audit/l0/profile-inventory.json\n?? docs/linearno_audit/l0/reading-inventory.json\n?? docs/linearno_audit/l0/regression-index.json\n?? docs/linearno_audit/l0/released-standard-commands.json\n?? docs/linearno_audit/l0/rg-files.txt\n?? docs/linearno_audit/l0/source-anchors.json\n?? docs/linearno_audit/l0/source-contracts.json\n?? docs/linearno_audit/l0/sources.json\n?? docs/linearno_audit/l0/staged.diff\n?? docs/linearno_audit/l0/syntax-checks.json\n?? docs/linearno_audit/l0/tracked.diff\n?? docs/linearno_audit/l0/transolver-comparison.json\n?? docs/linearno_audit/l0/transolver-to-linearno.diff\n?? docs/linearno_audit/l0/upstream-to-target.diff\n?? docs/linearno_audit/l1/baseline.json\n?? docs/linearno_audit/l1/checkpoint-conversion-policy.json\n?? docs/linearno_audit/l1/commands.json\n?? docs/linearno_audit/l1/config-schema-final.txt\n?? docs/linearno_audit/l1/config-schema-tests.txt\n?? docs/linearno_audit/l1/delivery-check.json\n?? docs/linearno_audit/l1/environment.json\n?? docs/linearno_audit/l1/existing-foundations-results.json\n?? docs/linearno_audit/l1/existing-foundations-tests.txt\n?? docs/linearno_audit/l1/final-new-results.json\n?? docs/linearno_audit/l1/final-new-tests.txt\n?? docs/linearno_audit/l1/fixture-generation.txt\n?? docs/linearno_audit/l1/fixture-index.json\n?? docs/linearno_audit/l1/legacy-rng-tests.txt\n?? docs/linearno_audit/l1/old-source-tests.txt\n?? docs/linearno_audit/l1/resolved-profiles.json\n?? tests/linearno/README.md\n?? tests/linearno/__init__.py\n?? tests/linearno/capture_fixtures.py\n?? tests/linearno/fixtures/transolver_cpu.json\n?? tests/linearno/legacy_worker.py\n?? tests/linearno/rng_worker.py\n?? tests/linearno/test_legacy.py\n?? tests/linearno/test_profiles.py\n?? tests/linearno/test_rng.py\n?? tests/linearno/test_schema.py\n",
+  "status": "PASS",
+  "new_source_hashes": {
+    "cdlno/linearno/__init__.py": "ab68d22eed9bc03a15b23e201fcfaa9b6a939cd2ba8a4366aae5222feb8151c5",
+    "cdlno/linearno/_profile_data.py": "c303d38fd3a6fe4be59a3c06c40e991c94fafd56cc8e48d8b57b2b3971e6b404",
+    "cdlno/linearno/profiles.py": "5e20d88b40d4693d38b94b19764a554d4065f874620924f103920fcd507683b9",
+    "cdlno/linearno/schema.py": "b8e76a1f2aa0d09d2126abd58cbf421f90e7d18450001922358b1fdcd1befb21",
+    "tests/linearno/README.md": "606ab8e324adda5c3419ec6d21cbbab2d8b410287899078efec68687dbbd8c5f",
+    "tests/linearno/__init__.py": "872aee5a5357b8d81b213f9ee24bb741100b8593ae3878b253cd555d9075b334",
+    "tests/linearno/capture_fixtures.py": "a30c757f364da75993840a9ba0e64be9cccff3c1d5cd4c4c92727d441eeae127",
+    "tests/linearno/fixtures/transolver_cpu.json": "7473f14217312da5895771487aa19c20234976193c8a91ae42c13a92c81e41db",
+    "tests/linearno/legacy_worker.py": "41e9e0c586d9ddc13c88e5007d285111c22c3569d4c9f7d0c1913af95f946f97",
+    "tests/linearno/rng_worker.py": "8ecd3fd2f1d7bcacb57437831ee29d41f9526eae2dfafc292a240cfa2ad431f8",
+    "tests/linearno/test_legacy.py": "579657508f3b1353bd4bb2d5f581257d11dfabb7ecbd40997de4e8ba1c79e392",
+    "tests/linearno/test_profiles.py": "7bf2bfc6348f195b3c456b96fdf7f61cd5c7b94de80c1d99636850f5cd6156ef",
+    "tests/linearno/test_rng.py": "1982612a8e680409c06e76ded8aeeecd9b777b89bc32787a3a611a99bb6f1fef",
+    "tests/linearno/test_schema.py": "340b19d6b5269fbf13c0abd9e8b7c25ee1fc7211a4ff02928454cc852e686a87"
+  },
+  "l0_all_baseline_unchanged": 1161
+}

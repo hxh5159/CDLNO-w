@@ -1,0 +1,38 @@
+{
+  "stage": "L1 inventory only; no converter, no external pickle loaded",
+  "source_commit": "3f2b80df13c17a09e250f2ebe4d4ecdfd4acf269",
+  "formats": {
+    "standard": {
+      "source": "Standard_PDE_Benchmark/model/LinearAttnNeuralOperator.py",
+      "class_path": "model.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "format": "bare state_dict",
+      "key_policy": "identity when target parity established; separate all four variants; reject guessing task/rank/variant from legacy defaults",
+      "source_sha256": "2019eacb9c6b61b3b7ede6a94e4ebfa3acb6ab95b25c1ab22299ab3dcc6c79d6"
+    },
+    "car": {
+      "source": "ShapeNetCar/models/LinearAttnNeuralOperator.py",
+      "class_path": "models.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "format": "trusted whole model only after explicit user provenance authorization",
+      "key_policy": "preserve blocks.<i>.Attn.tempreature_q and tempreature_k misspelling; no rename by default; any future rename must be bijective with inverse and exhaustive key/shape checks",
+      "source_sha256": "8f67b64e4d0372ddbf356124d3dbb88b1c13af670e503f072fce460862278dcd"
+    },
+    "airfrans": {
+      "source": "AirfRANS/models/LinearAttnNeuralOperator.py",
+      "class_path": "models.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "format": "trusted whole model or model list after explicit user provenance authorization",
+      "key_policy": "preserve blocks.<i>.Attn.temperature even though forward never uses it; do not drop dead parameters; explicit ensemble member id/order/path/hash",
+      "source_sha256": "d7af7b4aa86280789438e3f0bf9db750714d56d6ea8ce912f3ec0d9ca1978ed0"
+    }
+  },
+  "conversion_requirements": [
+    "fixed source task/commit/class/constructor fields supplied explicitly",
+    "no automatic unpickle, imports, or task data reads",
+    "external whole object requires explicit provenance/trust before isolated local weights_only=False conversion",
+    "unknown, missing, duplicate or shape-mismatched keys rejected; no random filling",
+    "all renamed keys recorded both directions; identity preferred",
+    "target load_state_dict(strict=True) followed by layer/final forward, input/parameter gradient, optimizer-step parity",
+    "bare release weights have no fitted normalizers, optimizer/scheduler/RNG; cannot claim complete resume",
+    "legacy no-family checkpoint uses existing path, never inferred as LinearNO"
+  ],
+  "normalizer_and_resume": "new schema is metadata protocol only; task adapters/model spec signature validation/strict weight loading are deferred to authorized later stages"
+}

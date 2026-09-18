@@ -1,0 +1,32 @@
+/home/hwz/anaconda3/lib/python3.13/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+test_committed_pair_survives_failed_latest_and_prevents_rollback (test_training_state.TrainingStateChecks.test_committed_pair_survives_failed_latest_and_prevents_rollback) ... ok
+test_cpu_fresh_process_continuation_all_modes_both_schedulers (test_training_state.TrainingStateChecks.test_cpu_fresh_process_continuation_all_modes_both_schedulers) ... ok
+test_failed_second_file_write_preserves_last_commit_and_retry (test_training_state.TrainingStateChecks.test_failed_second_file_write_preserves_last_commit_and_retry) ... ok
+test_idempotent_final_no_duplicate_or_overwrite (test_training_state.TrainingStateChecks.test_idempotent_final_no_duplicate_or_overwrite) ... ok
+test_missing_state_fields_and_bad_weights_cannot_resume (test_training_state.TrainingStateChecks.test_missing_state_fields_and_bad_weights_cannot_resume) ... ok
+test_policy_all_eight_completed_epoch_boundaries_and_final (test_training_state.TrainingStateChecks.test_policy_all_eight_completed_epoch_boundaries_and_final) ... ok
+test_protocol_and_data_order_are_not_model_architecture (test_training_state.TrainingStateChecks.test_protocol_and_data_order_are_not_model_architecture) ... ok
+test_rng_roundtrip_generators_and_exception_isolation (test_training_state.TrainingStateChecks.test_rng_roundtrip_generators_and_exception_isolation) ... ok
+test_roundtrip_weights_pair_sidecar_and_structure_unchanged (test_training_state.TrainingStateChecks.test_roundtrip_weights_pair_sidecar_and_structure_unchanged) ... ok
+test_semantically_damaged_state_rejected_before_model_or_rng_mutation (test_training_state.TrainingStateChecks.test_semantically_damaged_state_rejected_before_model_or_rng_mutation) ... ok
+test_visualization_enabled_disabled_gives_identical_training (test_training_state.TrainingStateChecks.test_visualization_enabled_disabled_gives_identical_training) ... ok
+test_visualization_failure_still_saves_complete_checkpoint (test_training_state.TrainingStateChecks.test_visualization_failure_still_saves_complete_checkpoint) ... ok
+test_wrong_protocol_normalizer_groups_plan_and_mode_rejected_before_weights (test_training_state.TrainingStateChecks.test_wrong_protocol_normalizer_groups_plan_and_mode_rejected_before_weights) ... ok
+test_air_weighted_loss_and_real_epoch_record_fragment_without_sampling (test_experiment_records.ExperimentRecords.test_air_weighted_loss_and_real_epoch_record_fragment_without_sampling) ... ok
+test_all_launch_pairs_same_timestamp_explicit_override_and_no_writes (test_experiment_records.ExperimentRecords.test_all_launch_pairs_same_timestamp_explicit_override_and_no_writes) ... ok
+test_all_task_modes_early_config_actual_counts_epochs_repeat_eval_checkpoint (test_experiment_records.ExperimentRecords.test_all_task_modes_early_config_actual_counts_epochs_repeat_eval_checkpoint) ... ok
+test_entries_early_lifecycle_and_complete_observation_only_ast (test_experiment_records.ExperimentRecords.test_entries_early_lifecycle_and_complete_observation_only_ast) ... ok
+test_exceptions_and_incomplete_exit_leave_early_records (test_experiment_records.ExperimentRecords.test_exceptions_and_incomplete_exit_leave_early_records) ... ok
+test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values (test_experiment_records.ExperimentRecords.test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values) ...   0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s, train_loss=1.33, val_loss=1.32]  0%|          | 0/2 [00:00<?, ?it/s, train_loss=1.32, val_loss=1.32]100%|██████████| 2/2 [00:00<00:00, 45.51it/s, train_loss=1.32, val_loss=1.32]
+  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s, train_loss=1.33, val_loss=1.32]  0%|          | 0/2 [00:00<?, ?it/s, train_loss=1.32, val_loss=1.32]100%|██████████| 2/2 [00:12<00:00,  6.24s/it, train_loss=1.32, val_loss=1.32]100%|██████████| 2/2 [00:12<00:00,  6.24s/it, train_loss=1.32, val_loss=1.32]
+
+  test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values (test_experiment_records.ExperimentRecords.test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values) (task='airfrans') ... skipped 'AirfRANS complete sampled epoch not run: torch_cluster is absent; no dependency was installed'
+test_old_runs_without_config_keep_loadable (test_experiment_records.ExperimentRecords.test_old_runs_without_config_keep_loadable) ... ok
+test_recording_lifecycle_in_three_original_fresh_workdirs (test_experiment_records.ExperimentRecords.test_recording_lifecycle_in_three_original_fresh_workdirs) ... ok
+test_same_process_only_reservation_and_unique_defaults (test_experiment_records.ExperimentRecords.test_same_process_only_reservation_and_unique_defaults) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 67.785s
+
+OK (skipped=1)

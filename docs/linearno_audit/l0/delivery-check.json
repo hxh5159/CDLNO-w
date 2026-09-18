@@ -1,0 +1,283 @@
+{
+  "stage": "L0",
+  "checked_utc": "2026-09-17T12:07:47.212093+00:00",
+  "head": "bb73b3099d3b8ce45bd939156b737453b9ca5454",
+  "baseline_files": 1161,
+  "baseline_classifications": {
+    "tracked": 910,
+    "untracked": 2,
+    "ignored": 249
+  },
+  "unchanged_files": 1161,
+  "freeze_files": 221,
+  "frozen_status_matches": true,
+  "original_transolver_model_files": [
+    {
+      "path": "Airfoil-Design-AirfRANS/models/GUNet.py",
+      "status": "same",
+      "target_blob": "cf61ad2d77006e049b2e091c814d40380b515f1c",
+      "upstream_blob": "cf61ad2d77006e049b2e091c814d40380b515f1c"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/models/GraphSAGE.py",
+      "status": "same",
+      "target_blob": "765c1d69c7f4f8c6512910d7d60e6e080ca1a459",
+      "upstream_blob": "765c1d69c7f4f8c6512910d7d60e6e080ca1a459"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/models/MLP.py",
+      "status": "same",
+      "target_blob": "9592692df0a526221103db9ba307f188a39c9c0f",
+      "upstream_blob": "9592692df0a526221103db9ba307f188a39c9c0f"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/models/NN.py",
+      "status": "same",
+      "target_blob": "d9b8609c3c17d1a99f1a20f70b737b0f77a2e2d1",
+      "upstream_blob": "d9b8609c3c17d1a99f1a20f70b737b0f77a2e2d1"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/models/PointNet.py",
+      "status": "same",
+      "target_blob": "b27d0239135780a28a1ed527b848158bd422499f",
+      "upstream_blob": "b27d0239135780a28a1ed527b848158bd422499f"
+    },
+    {
+      "path": "Airfoil-Design-AirfRANS/models/Transolver.py",
+      "status": "same",
+      "target_blob": "9f0ac404f9b24957fb46881f1b0d0afea61f26fc",
+      "upstream_blob": "9f0ac404f9b24957fb46881f1b0d0afea61f26fc"
+    },
+    {
+      "path": "Car-Design-ShapeNetCar/models/Transolver.py",
+      "status": "same",
+      "target_blob": "e3c9e6b8e99947eb5022a5efa5724ed08737d4e6",
+      "upstream_blob": "e3c9e6b8e99947eb5022a5efa5724ed08737d4e6"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/Embedding.py",
+      "status": "same",
+      "target_blob": "06d4c33d4b59f6ab401cc10bc30d3091eb1db1cf",
+      "upstream_blob": "06d4c33d4b59f6ab401cc10bc30d3091eb1db1cf"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/Physics_Attention.py",
+      "status": "same",
+      "target_blob": "eb16ed494c9b33ba4cb45f76f9f5c8a5f2a1983c",
+      "upstream_blob": "eb16ed494c9b33ba4cb45f76f9f5c8a5f2a1983c"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/Transolver_Irregular_Mesh.py",
+      "status": "same",
+      "target_blob": "e9484c9f132b3da57e4086d7f4db0cda239325f6",
+      "upstream_blob": "e9484c9f132b3da57e4086d7f4db0cda239325f6"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/Transolver_Structured_Mesh_2D.py",
+      "status": "same",
+      "target_blob": "0f1769d6b6d71f55da3a39aaeeea8ecd3c7520bb",
+      "upstream_blob": "0f1769d6b6d71f55da3a39aaeeea8ecd3c7520bb"
+    },
+    {
+      "path": "PDE-Solving-StandardBenchmark/model/Transolver_Structured_Mesh_3D.py",
+      "status": "same",
+      "target_blob": "f5ecf17ff0561b868476895f0d087178e3817be2",
+      "upstream_blob": "f5ecf17ff0561b868476895f0d087178e3817be2"
+    },
+    {
+      "path": "Physics_Attention.py",
+      "status": "same",
+      "target_blob": "d72bda486b7041762eeab82feed02498d294b7b9",
+      "upstream_blob": "d72bda486b7041762eeab82feed02498d294b7b9"
+    }
+  ],
+  "reference_exports": [
+    {
+      "source": "transolver",
+      "checked": 71,
+      "bad": []
+    },
+    {
+      "source": "linearno",
+      "checked": 61,
+      "bad": []
+    }
+  ],
+  "inventory_counts": {
+    "target": {
+      "read": 795,
+      "excluded": 25,
+      "group": 90
+    },
+    "transolver": {
+      "read": 16,
+      "group": 43,
+      "excluded": 12
+    },
+    "linearno": {
+      "read": 60,
+      "group": 1
+    }
+  },
+  "profile_records": 24,
+  "new_files": [
+    {
+      "path": "docs/LINEARNO_IMPLEMENTATION_STATUS.md",
+      "classification": "untracked",
+      "size": 5060
+    },
+    {
+      "path": "docs/LINEARNO_REFERENCE_AUDIT.md",
+      "classification": "untracked",
+      "size": 27145
+    },
+    {
+      "path": "docs/LINEARNO_REPRODUCTION_MATRIX.md",
+      "classification": "untracked",
+      "size": 31662
+    },
+    {
+      "path": "docs/linearno_audit/l0/READING_LEDGER.md",
+      "classification": "untracked",
+      "size": 3130
+    },
+    {
+      "path": "docs/linearno_audit/l0/ast-comparison.json",
+      "classification": "untracked",
+      "size": 13090
+    },
+    {
+      "path": "docs/linearno_audit/l0/baseline.json",
+      "classification": "untracked",
+      "size": 891
+    },
+    {
+      "path": "docs/linearno_audit/l0/cli-inventory.json",
+      "classification": "untracked",
+      "size": 86950
+    },
+    {
+      "path": "docs/linearno_audit/l0/configuration-shells.json",
+      "classification": "untracked",
+      "size": 153291
+    },
+    {
+      "path": "docs/linearno_audit/l0/delivery-check.json",
+      "classification": "untracked",
+      "size": 7769
+    },
+    {
+      "path": "docs/linearno_audit/l0/document-sections.json",
+      "classification": "untracked",
+      "size": 74911
+    },
+    {
+      "path": "docs/linearno_audit/l0/environment.json",
+      "classification": "untracked",
+      "size": 998
+    },
+    {
+      "path": "docs/linearno_audit/l0/freeze-manifest.json",
+      "classification": "untracked",
+      "size": 45700
+    },
+    {
+      "path": "docs/linearno_audit/l0/ignored-output-policy.json",
+      "classification": "untracked",
+      "size": 1011
+    },
+    {
+      "path": "docs/linearno_audit/l0/legacy-static-results.json",
+      "classification": "untracked",
+      "size": 746
+    },
+    {
+      "path": "docs/linearno_audit/l0/legacy-static-tests.txt",
+      "classification": "untracked",
+      "size": 1388
+    },
+    {
+      "path": "docs/linearno_audit/l0/manifest.json",
+      "classification": "untracked",
+      "size": 229853
+    },
+    {
+      "path": "docs/linearno_audit/l0/paper-equations.json",
+      "classification": "untracked",
+      "size": 51727
+    },
+    {
+      "path": "docs/linearno_audit/l0/profile-inventory.json",
+      "classification": "untracked",
+      "size": 96378
+    },
+    {
+      "path": "docs/linearno_audit/l0/reading-inventory.json",
+      "classification": "untracked",
+      "size": 606139
+    },
+    {
+      "path": "docs/linearno_audit/l0/regression-index.json",
+      "classification": "untracked",
+      "size": 46920
+    },
+    {
+      "path": "docs/linearno_audit/l0/released-standard-commands.json",
+      "classification": "untracked",
+      "size": 11820
+    },
+    {
+      "path": "docs/linearno_audit/l0/rg-files.txt",
+      "classification": "untracked",
+      "size": 36593
+    },
+    {
+      "path": "docs/linearno_audit/l0/source-anchors.json",
+      "classification": "untracked",
+      "size": 6728
+    },
+    {
+      "path": "docs/linearno_audit/l0/source-contracts.json",
+      "classification": "untracked",
+      "size": 2260154
+    },
+    {
+      "path": "docs/linearno_audit/l0/sources.json",
+      "classification": "untracked",
+      "size": 1982
+    },
+    {
+      "path": "docs/linearno_audit/l0/staged.diff",
+      "classification": "untracked",
+      "size": 0
+    },
+    {
+      "path": "docs/linearno_audit/l0/syntax-checks.json",
+      "classification": "untracked",
+      "size": 53157
+    },
+    {
+      "path": "docs/linearno_audit/l0/tracked.diff",
+      "classification": "untracked",
+      "size": 0
+    },
+    {
+      "path": "docs/linearno_audit/l0/transolver-comparison.json",
+      "classification": "untracked",
+      "size": 167836
+    },
+    {
+      "path": "docs/linearno_audit/l0/transolver-to-linearno.diff",
+      "classification": "untracked",
+      "size": 82817
+    },
+    {
+      "path": "docs/linearno_audit/l0/upstream-to-target.diff",
+      "classification": "untracked",
+      "size": 123674
+    }
+  ],
+  "issues": [],
+  "scope": "source/hash/AST/metadata inventory only; no model parity or real data",
+  "status": "PASS"
+}

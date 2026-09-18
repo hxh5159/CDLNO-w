@@ -24,6 +24,10 @@ parser.add_argument('--batch_size', default=1, type=int)
 parser.add_argument('--nb_epochs', default=200, type=int)
 parser.add_argument('--preprocessed', default=1, type=int)
 args = parse_cdlno_args(parser)
+if args.cfd_model == 'LinearNO':
+    from cdlno.linearno.car_entry import run_cli
+    run_cli(args)
+    raise SystemExit(0)
 if args.cfd_model == 'CDLNO':
     from cdlno.experiment import start as start_experiment, finish as finish_experiment
     start_experiment(args, 'car', evaluation=False)

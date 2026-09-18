@@ -1,0 +1,240 @@
+{
+  "stage": "L5",
+  "cwd": "/home/hwz/CDLNO",
+  "RUN_REAL_BATCH": false,
+  "RUN_MINIRUN": false,
+  "MAX_STEPS": 0,
+  "note": "Unittest inline runner selectors normalized to equivalent CLI commands. No real task entry import/data reads. Existing report paths are evidence; use new paths for replay.",
+  "checks": [
+    {
+      "name": "new temporal static checks",
+      "command": "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_temporal_integration.TemporalIntegration.test_profiles_real_counts_and_explicit_override linearno.test_temporal_integration.TemporalIntegration.test_time_condition_gradient_and_historical_point_order linearno.test_temporal_integration.TemporalIntegration.test_unchanged_complete_temporal_AST_and_real_collate linearno.test_temporal_integration.TemporalIntegration.test_launchers_and_file_path_contract -v",
+      "log": "initial-temporal-static.txt"
+    },
+    {
+      "name": "native temporal cycles",
+      "command": "CUDA_VISIBLE_DEVICES='' PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_temporal_integration.TemporalIntegration.test_native_temporal_cycles_and_negative_checkpoints -v",
+      "environment": {
+        "LINEARNO_L5_ARTIFACT_ROOT": "/home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks",
+        "LINEARNO_L5_REPORT": "/home/hwz/CDLNO/docs/linearno_audit/l5/native.json"
+      },
+      "log": "initial-native.txt"
+    },
+    {
+      "name": "L4 static regression",
+      "command": "CUDA_VISIBLE_DEVICES='' PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_static_integration -v",
+      "environment": {
+        "LINEARNO_L4_ARTIFACT_ROOT": "/home/hwz/CDLNO-artifacts/linearno-l5-static-regression-af4pqkxa",
+        "LINEARNO_L4_INTEGRATION_REPORT": "/home/hwz/CDLNO/docs/linearno_audit/l5/static-integration.json"
+      },
+      "log": "static-regression.txt"
+    },
+    {
+      "name": "L1-L3 and legacy",
+      "commands": [
+        "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_profiles -v",
+        "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_schema -v",
+        "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_legacy -v",
+        "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_rng -v",
+        "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_attention_parity -v",
+        "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_attention_structure -v",
+        "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_standard_model -v",
+        "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_standard_structure -v",
+        "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest test_static_standard.StaticFrozenChecks -v",
+        "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest test_temporal_standard -v",
+        "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest test_experiment_records -v"
+      ],
+      "execution": "inline TextTestRunner per module in one process",
+      "environment": {
+        "LINEARNO_L2_PARITY_REPORT": "/home/hwz/CDLNO/docs/linearno_audit/l5/l2-parity.json",
+        "LINEARNO_L3_PARITY_REPORT": "/home/hwz/CDLNO/docs/linearno_audit/l5/l3-parity.json"
+      },
+      "log": "regression.txt",
+      "result": "regression-results.json"
+    },
+    {
+      "name": "affected test helper rerun",
+      "commands": [
+        "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest test_front_task_modes -v",
+        "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest test_experiment_records.ExperimentRecords.test_all_task_modes_early_config_actual_counts_epochs_repeat_eval_checkpoint -v",
+        "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories -v"
+      ],
+      "log": "affected-regression.txt",
+      "result": "affected-regression-results.json"
+    },
+    {
+      "name": "complete trajectory metric and optimizer counters",
+      "command": "CUDA_VISIBLE_DEVICES='' PYTHONDONTWRITEBYTECODE=1 python -B docs/linearno_audit/l5/audit_outputs.py /home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks",
+      "result": "output-records.json"
+    },
+    {
+      "name": "L0 and L5 freeze",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python -B docs/linearno_audit/l5/verify_freeze.py",
+      "result": "delivery-check.json"
+    },
+    {
+      "name": "documentation preservation",
+      "command": "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories -v",
+      "log": "final-doc-preservation.txt"
+    },
+    {
+      "name": "whitespace",
+      "command": "git diff --check"
+    }
+  ],
+  "native_subprocesses": [
+    {
+      "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+      "argv": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno/temporal_worker.py",
+        "ns",
+        "train",
+        "/home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks/ns-continuous",
+        "/home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks/ns-continuous.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/hwz/CDLNO",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "log": "/home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks/ns-continuous.log"
+    },
+    {
+      "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+      "argv": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno/temporal_worker.py",
+        "ns",
+        "interrupt",
+        "/home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks/ns-split",
+        "/home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks/ns-interrupt.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/hwz/CDLNO",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "log": "/home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks/ns-interrupt.log"
+    },
+    {
+      "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+      "argv": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno/temporal_worker.py",
+        "ns",
+        "resume",
+        "/home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks/ns-split",
+        "/home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks/ns-resume.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/hwz/CDLNO",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "log": "/home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks/ns-resume.log"
+    },
+    {
+      "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+      "argv": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno/temporal_worker.py",
+        "ns",
+        "eval",
+        "/home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks/ns-split",
+        "/home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks/ns-eval.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/hwz/CDLNO",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "log": "/home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks/ns-eval.log"
+    },
+    {
+      "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+      "argv": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno/temporal_worker.py",
+        "plasticity",
+        "train",
+        "/home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks/plasticity-continuous",
+        "/home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks/plasticity-continuous.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/hwz/CDLNO",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "log": "/home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks/plasticity-continuous.log"
+    },
+    {
+      "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+      "argv": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno/temporal_worker.py",
+        "plasticity",
+        "interrupt",
+        "/home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks/plasticity-split",
+        "/home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks/plasticity-interrupt.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/hwz/CDLNO",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "log": "/home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks/plasticity-interrupt.log"
+    },
+    {
+      "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+      "argv": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno/temporal_worker.py",
+        "plasticity",
+        "resume",
+        "/home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks/plasticity-split",
+        "/home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks/plasticity-resume.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/hwz/CDLNO",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "log": "/home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks/plasticity-resume.log"
+    },
+    {
+      "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+      "argv": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno/temporal_worker.py",
+        "plasticity",
+        "eval",
+        "/home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks/plasticity-split",
+        "/home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks/plasticity-eval.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/hwz/CDLNO",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "log": "/home/hwz/CDLNO-artifacts/linearno-l5-native-yhs6wuks/plasticity-eval.log"
+    }
+  ],
+  "production_templates": "tran_evaluate/linearno/README.md; NOT RUN",
+  "not_run": [
+    "real data loader",
+    "real batch",
+    "real minirun/full training",
+    "NS/Plasticity GPU/AMP native cycles",
+    "remote Python3.10/torch2.11/cu128",
+    "external official checkpoint conversion"
+  ]
+}

@@ -1,0 +1,2828 @@
+{
+  "kind": "non-executable L0 audit inventory",
+  "rows": [
+    {
+      "task": "darcy",
+      "profile": "paper_table8_on_release_model",
+      "status": "L0 audit record, NOT implemented configuration",
+      "official_class_path": "model.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "official_constructor_kwargs": {
+        "space_dim": 2,
+        "n_layers": 8,
+        "n_hidden": 128,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": false,
+        "act": "gelu",
+        "mlp_ratio": 1,
+        "fun_dim": 1,
+        "out_dim": 1,
+        "key_ratio": 64,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 85,
+        "W": 85,
+        "args": {
+          "model": "conv_temp"
+        }
+      },
+      "model_spec_summary": {
+        "variant": "conv_temp",
+        "actual_M": 64,
+        "key_ratio_semantics": "absolute",
+        "layernorm_eps": 1e-05,
+        "qk_shared_across_heads": true,
+        "conv": "each attention block"
+      },
+      "training_config": {
+        "epochs": 500,
+        "optimizer": "AdamW",
+        "lr": 0.001,
+        "weight_decay": 1e-06,
+        "batch_size": 4,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": 1.0,
+        "train_shuffle": true,
+        "test_batch_size": 1,
+        "scheduler": "OneCycleLR",
+        "scheduler_step": "one per outer batch",
+        "optimizer_step": "one per outer batch",
+        "validation_cadence": "every epoch",
+        "checkpoint_role": "final",
+        "selection_split": null,
+        "selection_metric": null,
+        "seed_policy": "local declared seeds [0,1,2]; not author seeds; release has no active seed control",
+        "onecycle_defaults": {
+          "pct_start": 0.3,
+          "anneal_strategy": "cos",
+          "cycle_momentum": true,
+          "base_momentum": 0.85,
+          "max_momentum": 0.95,
+          "div_factor": 25,
+          "final_div_factor": 10000,
+          "three_phase": false
+        },
+        "scheduler_epochs": "fixed500 (release)"
+      },
+      "objective_spec": {
+        "kind": "relative_L2",
+        "channels": "all task output channels",
+        "region": "all task points",
+        "space": "physical (decode before loss if normalized)",
+        "reduction": "sum sample-wise flattened ratios per batch; epoch display divided by ntrain; no epsilon",
+        "epsilon": 0,
+        "gradient_weight": 0.1,
+        "gradient": "sum dx/dy relative L2; prediction cropped then zero-padded only for derivative branch; central_diff zero padding dx=1/85; l2 computed before crop"
+      },
+      "evaluation_spec": {
+        "prediction_sampling": "full points",
+        "field_metric": "physical sample-wise relative L2",
+        "field_channels": "all output channels",
+        "field_region": "all points",
+        "force_metric": null,
+        "force_input": null,
+        "split": "smooth1 first1000 train; smooth2 first200 test",
+        "aggregation": "sample arithmetic mean; report each local seed and mean/std; never best-test seed",
+        "batch_size": 1,
+        "selection": "final checkpoint only",
+        "normalizer": "saved train-fit numerical states; no eval refit"
+      },
+      "data_spec": {
+        "files": [
+          "piececonst_r421_N1024_smooth1.mat:coeff,sol",
+          "piececonst_r421_N1024_smooth2.mat:coeff,sol"
+        ],
+        "split": "smooth1 first1000 train; smooth2 first200 test",
+        "normalizer": "input coefficient and output UnitTransformer; fit train only; output decoded before loss",
+        "sampling": "stride5 spatial; 421x421->85x85",
+        "checksums": null,
+        "integrity": "NOT RUN: no real data"
+      },
+      "evidence": [
+        "Standard_PDE_Benchmark/exp_darcy.py",
+        "Standard_PDE_Benchmark/scripts/LinearNO_Darcy.sh",
+        "paper-v3 Table8 / AppendixB"
+      ],
+      "unresolved": []
+    },
+    {
+      "task": "darcy",
+      "profile": "official_release",
+      "status": "L0 audit record, NOT implemented configuration",
+      "official_class_path": "model.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "official_constructor_kwargs": {
+        "space_dim": 2,
+        "n_layers": 8,
+        "n_hidden": 128,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": false,
+        "act": "gelu",
+        "mlp_ratio": 1,
+        "fun_dim": 1,
+        "out_dim": 1,
+        "key_ratio": 64,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 85,
+        "W": 85,
+        "args": {
+          "model": "conv_temp"
+        }
+      },
+      "model_spec_summary": {
+        "variant": "conv_temp",
+        "actual_M": 64,
+        "key_ratio_semantics": "absolute",
+        "layernorm_eps": 1e-05,
+        "qk_shared_across_heads": true,
+        "conv": "each attention block"
+      },
+      "training_config": {
+        "epochs": 500,
+        "optimizer": "AdamW",
+        "lr": 0.001,
+        "weight_decay": 1e-06,
+        "batch_size": 4,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": 1.0,
+        "train_shuffle": true,
+        "test_batch_size": 1,
+        "scheduler": "OneCycleLR",
+        "scheduler_step": "one per outer batch",
+        "optimizer_step": "one per outer batch",
+        "validation_cadence": "every epoch",
+        "checkpoint_role": "final",
+        "selection_split": null,
+        "selection_metric": null,
+        "seed_policy": "local declared seeds [0,1,2]; not author seeds; release has no active seed control",
+        "onecycle_defaults": {
+          "pct_start": 0.3,
+          "anneal_strategy": "cos",
+          "cycle_momentum": true,
+          "base_momentum": 0.85,
+          "max_momentum": 0.95,
+          "div_factor": 25,
+          "final_div_factor": 10000,
+          "three_phase": false
+        },
+        "scheduler_epochs": "fixed500 (release)"
+      },
+      "objective_spec": {
+        "kind": "relative_L2",
+        "channels": "all task output channels",
+        "region": "all task points",
+        "space": "physical (decode before loss if normalized)",
+        "reduction": "sum sample-wise flattened ratios per batch; epoch display divided by ntrain; no epsilon",
+        "epsilon": 0,
+        "gradient_weight": 0.1,
+        "gradient": "sum dx/dy relative L2; prediction cropped then zero-padded only for derivative branch; central_diff zero padding dx=1/85; l2 computed before crop"
+      },
+      "evaluation_spec": {
+        "prediction_sampling": "full points",
+        "field_metric": "physical sample-wise relative L2",
+        "field_channels": "all output channels",
+        "field_region": "all points",
+        "force_metric": null,
+        "force_input": null,
+        "split": "smooth1 first1000 train; smooth2 first200 test",
+        "aggregation": "sample arithmetic mean; report each local seed and mean/std; never best-test seed",
+        "batch_size": 1,
+        "selection": "final checkpoint only",
+        "normalizer": "saved train-fit numerical states; no eval refit"
+      },
+      "data_spec": {
+        "files": [
+          "piececonst_r421_N1024_smooth1.mat:coeff,sol",
+          "piececonst_r421_N1024_smooth2.mat:coeff,sol"
+        ],
+        "split": "smooth1 first1000 train; smooth2 first200 test",
+        "normalizer": "input coefficient and output UnitTransformer; fit train only; output decoded before loss",
+        "sampling": "stride5 spatial; 421x421->85x85",
+        "checksums": null,
+        "integrity": "NOT RUN: no real data"
+      },
+      "evidence": [
+        "Standard_PDE_Benchmark/exp_darcy.py",
+        "Standard_PDE_Benchmark/scripts/LinearNO_Darcy.sh",
+        "paper-v3 Table8 / AppendixB"
+      ],
+      "unresolved": []
+    },
+    {
+      "task": "elasticity",
+      "profile": "paper_table8_on_release_model",
+      "status": "L0 audit record, NOT implemented configuration",
+      "official_class_path": "model.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "official_constructor_kwargs": {
+        "space_dim": 2,
+        "n_layers": 8,
+        "n_hidden": 128,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": false,
+        "act": "gelu",
+        "mlp_ratio": 1,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "key_ratio": 64,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 85,
+        "W": 85,
+        "args": {
+          "model": "temp"
+        }
+      },
+      "model_spec_summary": {
+        "variant": "temp",
+        "actual_M": 64,
+        "key_ratio_semantics": "absolute",
+        "layernorm_eps": 1e-05,
+        "qk_shared_across_heads": true,
+        "conv": "none"
+      },
+      "training_config": {
+        "epochs": 500,
+        "optimizer": "AdamW",
+        "lr": 0.001,
+        "weight_decay": 1e-05,
+        "batch_size": 1,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": 1.0,
+        "train_shuffle": true,
+        "test_batch_size": 1,
+        "scheduler": "CosineAnnealingLR",
+        "scheduler_step": "epoch",
+        "optimizer_step": "one per outer batch",
+        "validation_cadence": "every epoch",
+        "checkpoint_role": "final",
+        "selection_split": null,
+        "selection_metric": null,
+        "seed_policy": "local declared seeds [0,1,2]; not author seeds; release has no active seed control",
+        "onecycle_defaults": null,
+        "scheduler_epochs": 500
+      },
+      "objective_spec": {
+        "kind": "relative_L2",
+        "channels": "all task output channels",
+        "region": "all task points",
+        "space": "physical (decode before loss if normalized)",
+        "reduction": "sum sample-wise flattened ratios per batch; epoch display divided by ntrain; no epsilon",
+        "epsilon": 0
+      },
+      "evaluation_spec": {
+        "prediction_sampling": "full points",
+        "field_metric": "physical sample-wise relative L2",
+        "field_channels": "all output channels",
+        "field_region": "all points",
+        "force_metric": null,
+        "force_input": null,
+        "split": "first1000 train; last200 test",
+        "aggregation": "sample arithmetic mean; report each local seed and mean/std; never best-test seed",
+        "batch_size": 1,
+        "selection": "final checkpoint only",
+        "normalizer": "saved train-fit numerical states; no eval refit"
+      },
+      "data_spec": {
+        "files": [
+          "elasticity/Meshes/Random_UnitCell_XY_10.npy",
+          "elasticity/Meshes/Random_UnitCell_sigma_10.npy"
+        ],
+        "split": "first1000 train; last200 test",
+        "normalizer": "output UnitTransformer fit train; decode before loss",
+        "sampling": "all972 unordered points",
+        "checksums": null,
+        "integrity": "NOT RUN: no real data"
+      },
+      "evidence": [
+        "Standard_PDE_Benchmark/exp_elas.py",
+        "Standard_PDE_Benchmark/scripts/LinearNO_Elas.sh",
+        "paper-v3 Table8 / AppendixB"
+      ],
+      "unresolved": []
+    },
+    {
+      "task": "elasticity",
+      "profile": "official_release",
+      "status": "L0 audit record, NOT implemented configuration",
+      "official_class_path": "model.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "official_constructor_kwargs": {
+        "space_dim": 2,
+        "n_layers": 8,
+        "n_hidden": 128,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": false,
+        "act": "gelu",
+        "mlp_ratio": 1,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "key_ratio": 64,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 85,
+        "W": 85,
+        "args": {
+          "model": "temp"
+        }
+      },
+      "model_spec_summary": {
+        "variant": "temp",
+        "actual_M": 64,
+        "key_ratio_semantics": "absolute",
+        "layernorm_eps": 1e-05,
+        "qk_shared_across_heads": true,
+        "conv": "none"
+      },
+      "training_config": {
+        "epochs": 500,
+        "optimizer": "AdamW",
+        "lr": 0.001,
+        "weight_decay": 1e-05,
+        "batch_size": 1,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": 1.0,
+        "train_shuffle": true,
+        "test_batch_size": 1,
+        "scheduler": "CosineAnnealingLR",
+        "scheduler_step": "epoch",
+        "optimizer_step": "one per outer batch",
+        "validation_cadence": "every epoch",
+        "checkpoint_role": "final",
+        "selection_split": null,
+        "selection_metric": null,
+        "seed_policy": "local declared seeds [0,1,2]; not author seeds; release has no active seed control",
+        "onecycle_defaults": null,
+        "scheduler_epochs": 500
+      },
+      "objective_spec": {
+        "kind": "relative_L2",
+        "channels": "all task output channels",
+        "region": "all task points",
+        "space": "physical (decode before loss if normalized)",
+        "reduction": "sum sample-wise flattened ratios per batch; epoch display divided by ntrain; no epsilon",
+        "epsilon": 0
+      },
+      "evaluation_spec": {
+        "prediction_sampling": "full points",
+        "field_metric": "physical sample-wise relative L2",
+        "field_channels": "all output channels",
+        "field_region": "all points",
+        "force_metric": null,
+        "force_input": null,
+        "split": "first1000 train; last200 test",
+        "aggregation": "sample arithmetic mean; report each local seed and mean/std; never best-test seed",
+        "batch_size": 1,
+        "selection": "final checkpoint only",
+        "normalizer": "saved train-fit numerical states; no eval refit"
+      },
+      "data_spec": {
+        "files": [
+          "elasticity/Meshes/Random_UnitCell_XY_10.npy",
+          "elasticity/Meshes/Random_UnitCell_sigma_10.npy"
+        ],
+        "split": "first1000 train; last200 test",
+        "normalizer": "output UnitTransformer fit train; decode before loss",
+        "sampling": "all972 unordered points",
+        "checksums": null,
+        "integrity": "NOT RUN: no real data"
+      },
+      "evidence": [
+        "Standard_PDE_Benchmark/exp_elas.py",
+        "Standard_PDE_Benchmark/scripts/LinearNO_Elas.sh",
+        "paper-v3 Table8 / AppendixB"
+      ],
+      "unresolved": []
+    },
+    {
+      "task": "ns",
+      "profile": "paper_table8_on_release_model",
+      "status": "L0 audit record, NOT implemented configuration",
+      "official_class_path": "model.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "official_constructor_kwargs": {
+        "space_dim": 2,
+        "n_layers": 8,
+        "n_hidden": 256,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": false,
+        "act": "gelu",
+        "mlp_ratio": 2,
+        "fun_dim": 10,
+        "out_dim": 1,
+        "key_ratio": 32,
+        "ref": 10,
+        "unified_pos": true,
+        "H": 64,
+        "W": 64,
+        "args": {
+          "model": "no_temp"
+        }
+      },
+      "model_spec_summary": {
+        "variant": "plain",
+        "actual_M": 32,
+        "key_ratio_semantics": "absolute",
+        "layernorm_eps": 1e-05,
+        "qk_shared_across_heads": true,
+        "conv": "none"
+      },
+      "training_config": {
+        "epochs": 500,
+        "optimizer": "AdamW",
+        "lr": 0.001,
+        "weight_decay": 1e-06,
+        "batch_size": 2,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": null,
+        "train_shuffle": true,
+        "test_batch_size": 1,
+        "scheduler": "OneCycleLR",
+        "scheduler_step": "one per outer batch",
+        "optimizer_step": "one per outer batch",
+        "validation_cadence": "every epoch",
+        "checkpoint_role": "final",
+        "selection_split": null,
+        "selection_metric": null,
+        "seed_policy": "local declared seeds [0,1,2]; not author seeds; release has no active seed control",
+        "onecycle_defaults": {
+          "pct_start": 0.3,
+          "anneal_strategy": "cos",
+          "cycle_momentum": true,
+          "base_momentum": 0.85,
+          "max_momentum": 0.95,
+          "div_factor": 25,
+          "final_div_factor": 10000,
+          "three_phase": false
+        },
+        "scheduler_epochs": 500
+      },
+      "objective_spec": {
+        "kind": "relative_L2",
+        "channels": "all task output channels",
+        "region": "all task points",
+        "space": "physical (decode before loss if normalized)",
+        "reduction": "sum sample-wise flattened ratios per batch; epoch display divided by ntrain; no epsilon",
+        "epsilon": 0,
+        "time_reduction": "sum10 step losses for backward; train feedback=truth; eval feedback=prediction; display step mean and flattened trajectory rL2"
+      },
+      "evaluation_spec": {
+        "prediction_sampling": "10-step prediction-fed rollout; same ten-frame sliding window",
+        "field_metric": "physical sample-wise relative L2",
+        "field_channels": "all output channels",
+        "field_region": "all points",
+        "force_metric": null,
+        "force_input": null,
+        "split": "first1000 train; last200 test",
+        "aggregation": "sample arithmetic mean; report each local seed and mean/std; never best-test seed; distinguish mean step rL2 and flattened full-trajectory rL2",
+        "batch_size": 1,
+        "selection": "final checkpoint only",
+        "normalizer": "saved train-fit numerical states; no eval refit"
+      },
+      "data_spec": {
+        "files": [
+          "NavierStokes_V1e-5_N1200_T20/NavierStokes_V1e-5_N1200_T20.mat:u (target fno root)"
+        ],
+        "split": "first1000 train; last200 test",
+        "normalizer": "none",
+        "sampling": "64x64; 10 input frames->10 future; one frame each model call",
+        "checksums": null,
+        "integrity": "NOT RUN: no real data"
+      },
+      "evidence": [
+        "Standard_PDE_Benchmark/exp_ns.py",
+        "Standard_PDE_Benchmark/scripts/LinearNO_NS.sh",
+        "paper-v3 Table8 / AppendixB"
+      ],
+      "unresolved": []
+    },
+    {
+      "task": "ns",
+      "profile": "official_release",
+      "status": "L0 audit record, NOT implemented configuration",
+      "official_class_path": "model.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "official_constructor_kwargs": {
+        "space_dim": 2,
+        "n_layers": 8,
+        "n_hidden": 256,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": false,
+        "act": "gelu",
+        "mlp_ratio": 2,
+        "fun_dim": 10,
+        "out_dim": 1,
+        "key_ratio": 32,
+        "ref": 10,
+        "unified_pos": true,
+        "H": 64,
+        "W": 64,
+        "args": {
+          "model": "no_temp"
+        }
+      },
+      "model_spec_summary": {
+        "variant": "plain",
+        "actual_M": 32,
+        "key_ratio_semantics": "absolute",
+        "layernorm_eps": 1e-05,
+        "qk_shared_across_heads": true,
+        "conv": "none"
+      },
+      "training_config": {
+        "epochs": 500,
+        "optimizer": "AdamW",
+        "lr": 0.001,
+        "weight_decay": 1e-06,
+        "batch_size": 2,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": null,
+        "train_shuffle": true,
+        "test_batch_size": 1,
+        "scheduler": "OneCycleLR",
+        "scheduler_step": "one per outer batch",
+        "optimizer_step": "one per outer batch",
+        "validation_cadence": "every epoch",
+        "checkpoint_role": "final",
+        "selection_split": null,
+        "selection_metric": null,
+        "seed_policy": "local declared seeds [0,1,2]; not author seeds; release has no active seed control",
+        "onecycle_defaults": {
+          "pct_start": 0.3,
+          "anneal_strategy": "cos",
+          "cycle_momentum": true,
+          "base_momentum": 0.85,
+          "max_momentum": 0.95,
+          "div_factor": 25,
+          "final_div_factor": 10000,
+          "three_phase": false
+        },
+        "scheduler_epochs": 500
+      },
+      "objective_spec": {
+        "kind": "relative_L2",
+        "channels": "all task output channels",
+        "region": "all task points",
+        "space": "physical (decode before loss if normalized)",
+        "reduction": "sum sample-wise flattened ratios per batch; epoch display divided by ntrain; no epsilon",
+        "epsilon": 0,
+        "time_reduction": "sum10 step losses for backward; train feedback=truth; eval feedback=prediction; display step mean and flattened trajectory rL2"
+      },
+      "evaluation_spec": {
+        "prediction_sampling": "10-step prediction-fed rollout; same ten-frame sliding window",
+        "field_metric": "physical sample-wise relative L2",
+        "field_channels": "all output channels",
+        "field_region": "all points",
+        "force_metric": null,
+        "force_input": null,
+        "split": "first1000 train; last200 test",
+        "aggregation": "sample arithmetic mean; report each local seed and mean/std; never best-test seed; distinguish mean step rL2 and flattened full-trajectory rL2",
+        "batch_size": 1,
+        "selection": "final checkpoint only",
+        "normalizer": "saved train-fit numerical states; no eval refit"
+      },
+      "data_spec": {
+        "files": [
+          "NavierStokes_V1e-5_N1200_T20/NavierStokes_V1e-5_N1200_T20.mat:u (target fno root)"
+        ],
+        "split": "first1000 train; last200 test",
+        "normalizer": "none",
+        "sampling": "64x64; 10 input frames->10 future; one frame each model call",
+        "checksums": null,
+        "integrity": "NOT RUN: no real data"
+      },
+      "evidence": [
+        "Standard_PDE_Benchmark/exp_ns.py",
+        "Standard_PDE_Benchmark/scripts/LinearNO_NS.sh",
+        "paper-v3 Table8 / AppendixB"
+      ],
+      "unresolved": []
+    },
+    {
+      "task": "pipe",
+      "profile": "paper_table8_on_release_model",
+      "status": "L0 audit record, NOT implemented configuration",
+      "official_class_path": "model.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "official_constructor_kwargs": {
+        "space_dim": 2,
+        "n_layers": 8,
+        "n_hidden": 128,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": false,
+        "act": "gelu",
+        "mlp_ratio": 1,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "key_ratio": 64,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 129,
+        "W": 129,
+        "args": {
+          "model": "conv_temp"
+        }
+      },
+      "model_spec_summary": {
+        "variant": "conv_temp",
+        "actual_M": 64,
+        "key_ratio_semantics": "absolute",
+        "layernorm_eps": 1e-05,
+        "qk_shared_across_heads": true,
+        "conv": "each attention block"
+      },
+      "training_config": {
+        "epochs": 500,
+        "optimizer": "AdamW",
+        "lr": 0.001,
+        "weight_decay": 1e-05,
+        "batch_size": 4,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": 1.0,
+        "train_shuffle": true,
+        "test_batch_size": 1,
+        "scheduler": "OneCycleLR",
+        "scheduler_step": "one per outer batch",
+        "optimizer_step": "one per outer batch",
+        "validation_cadence": "every epoch",
+        "checkpoint_role": "final",
+        "selection_split": null,
+        "selection_metric": null,
+        "seed_policy": "local declared seeds [0,1,2]; not author seeds; release has no active seed control",
+        "onecycle_defaults": {
+          "pct_start": 0.3,
+          "anneal_strategy": "cos",
+          "cycle_momentum": true,
+          "base_momentum": 0.85,
+          "max_momentum": 0.95,
+          "div_factor": 25,
+          "final_div_factor": 10000,
+          "three_phase": false
+        },
+        "scheduler_epochs": 500
+      },
+      "objective_spec": {
+        "kind": "relative_L2",
+        "channels": "all task output channels",
+        "region": "all task points",
+        "space": "physical (decode before loss if normalized)",
+        "reduction": "sum sample-wise flattened ratios per batch; epoch display divided by ntrain; no epsilon",
+        "epsilon": 0
+      },
+      "evaluation_spec": {
+        "prediction_sampling": "full points",
+        "field_metric": "physical sample-wise relative L2",
+        "field_channels": "all output channels",
+        "field_region": "all points",
+        "force_metric": null,
+        "force_input": null,
+        "split": "target first1200 then first1000/last200; release first1000/last200 of entire file; equivalent only if length1200",
+        "aggregation": "sample arithmetic mean; report each local seed and mean/std; never best-test seed",
+        "batch_size": 1,
+        "selection": "final checkpoint only",
+        "normalizer": "saved train-fit numerical states; no eval refit"
+      },
+      "data_spec": {
+        "files": [
+          "Pipe_X.npy",
+          "Pipe_Y.npy",
+          "Pipe_Q.npy:channel0"
+        ],
+        "split": "target first1200 then first1000/last200; release first1000/last200 of entire file; equivalent only if length1200",
+        "normalizer": "input coordinates and output UnitTransformer fit train; decode output before loss",
+        "sampling": "full129x129",
+        "checksums": null,
+        "integrity": "NOT RUN: no real data"
+      },
+      "evidence": [
+        "Standard_PDE_Benchmark/exp_pipe.py",
+        "Standard_PDE_Benchmark/scripts/LinearNO_Pipe.sh",
+        "paper-v3 Table8 / AppendixB"
+      ],
+      "unresolved": [
+        "Pipe actual length/order identity requires checksum"
+      ]
+    },
+    {
+      "task": "pipe",
+      "profile": "official_release",
+      "status": "L0 audit record, NOT implemented configuration",
+      "official_class_path": "model.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "official_constructor_kwargs": {
+        "space_dim": 2,
+        "n_layers": 8,
+        "n_hidden": 128,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": false,
+        "act": "gelu",
+        "mlp_ratio": 1,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "key_ratio": 64,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 129,
+        "W": 129,
+        "args": {
+          "model": "conv_temp"
+        }
+      },
+      "model_spec_summary": {
+        "variant": "conv_temp",
+        "actual_M": 64,
+        "key_ratio_semantics": "absolute",
+        "layernorm_eps": 1e-05,
+        "qk_shared_across_heads": true,
+        "conv": "each attention block"
+      },
+      "training_config": {
+        "epochs": 500,
+        "optimizer": "AdamW",
+        "lr": 0.001,
+        "weight_decay": 1e-05,
+        "batch_size": 4,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": 1.0,
+        "train_shuffle": true,
+        "test_batch_size": 1,
+        "scheduler": "OneCycleLR",
+        "scheduler_step": "one per outer batch",
+        "optimizer_step": "one per outer batch",
+        "validation_cadence": "every epoch",
+        "checkpoint_role": "final",
+        "selection_split": null,
+        "selection_metric": null,
+        "seed_policy": "local declared seeds [0,1,2]; not author seeds; release has no active seed control",
+        "onecycle_defaults": {
+          "pct_start": 0.3,
+          "anneal_strategy": "cos",
+          "cycle_momentum": true,
+          "base_momentum": 0.85,
+          "max_momentum": 0.95,
+          "div_factor": 25,
+          "final_div_factor": 10000,
+          "three_phase": false
+        },
+        "scheduler_epochs": 500
+      },
+      "objective_spec": {
+        "kind": "relative_L2",
+        "channels": "all task output channels",
+        "region": "all task points",
+        "space": "physical (decode before loss if normalized)",
+        "reduction": "sum sample-wise flattened ratios per batch; epoch display divided by ntrain; no epsilon",
+        "epsilon": 0
+      },
+      "evaluation_spec": {
+        "prediction_sampling": "full points",
+        "field_metric": "physical sample-wise relative L2",
+        "field_channels": "all output channels",
+        "field_region": "all points",
+        "force_metric": null,
+        "force_input": null,
+        "split": "target first1200 then first1000/last200; release first1000/last200 of entire file; equivalent only if length1200",
+        "aggregation": "sample arithmetic mean; report each local seed and mean/std; never best-test seed",
+        "batch_size": 1,
+        "selection": "final checkpoint only",
+        "normalizer": "saved train-fit numerical states; no eval refit"
+      },
+      "data_spec": {
+        "files": [
+          "Pipe_X.npy",
+          "Pipe_Y.npy",
+          "Pipe_Q.npy:channel0"
+        ],
+        "split": "target first1200 then first1000/last200; release first1000/last200 of entire file; equivalent only if length1200",
+        "normalizer": "input coordinates and output UnitTransformer fit train; decode output before loss",
+        "sampling": "full129x129",
+        "checksums": null,
+        "integrity": "NOT RUN: no real data"
+      },
+      "evidence": [
+        "Standard_PDE_Benchmark/exp_pipe.py",
+        "Standard_PDE_Benchmark/scripts/LinearNO_Pipe.sh",
+        "paper-v3 Table8 / AppendixB"
+      ],
+      "unresolved": [
+        "Pipe actual length/order identity requires checksum"
+      ]
+    },
+    {
+      "task": "plasticity",
+      "profile": "paper_table8_on_release_model",
+      "status": "L0 audit record, NOT implemented configuration",
+      "official_class_path": "model.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "official_constructor_kwargs": {
+        "space_dim": 2,
+        "n_layers": 8,
+        "n_hidden": 128,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": true,
+        "act": "gelu",
+        "mlp_ratio": 1,
+        "fun_dim": 1,
+        "out_dim": 4,
+        "key_ratio": 64,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 101,
+        "W": 31,
+        "args": {
+          "model": "conv"
+        }
+      },
+      "model_spec_summary": {
+        "variant": "conv",
+        "actual_M": 64,
+        "key_ratio_semantics": "absolute",
+        "layernorm_eps": 1e-05,
+        "qk_shared_across_heads": true,
+        "conv": "each attention block"
+      },
+      "training_config": {
+        "epochs": 500,
+        "optimizer": "AdamW",
+        "lr": 0.001,
+        "weight_decay": 1e-06,
+        "batch_size": 8,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": 1.0,
+        "train_shuffle": true,
+        "test_batch_size": 1,
+        "scheduler": "OneCycleLR",
+        "scheduler_step": "one per outer batch",
+        "optimizer_step": "20 time updates per outer batch",
+        "validation_cadence": "every epoch",
+        "checkpoint_role": "final",
+        "selection_split": null,
+        "selection_metric": null,
+        "seed_policy": "local declared seeds [0,1,2]; not author seeds; release has no active seed control",
+        "onecycle_defaults": {
+          "pct_start": 0.3,
+          "anneal_strategy": "cos",
+          "cycle_momentum": true,
+          "base_momentum": 0.85,
+          "max_momentum": 0.95,
+          "div_factor": 25,
+          "final_div_factor": 10000,
+          "three_phase": false
+        },
+        "scheduler_epochs": 500
+      },
+      "objective_spec": {
+        "kind": "relative_L2",
+        "channels": "all task output channels",
+        "region": "all task points",
+        "space": "physical (decode before loss if normalized)",
+        "reduction": "sum sample-wise flattened ratios per batch; epoch display divided by ntrain; no epsilon",
+        "epsilon": 0,
+        "time_reduction": "individual time-step loss/backward/optimizer20; test mean step and full trajectory rL2"
+      },
+      "evaluation_spec": {
+        "prediction_sampling": "20 separate time-conditioned forwards; concatenate original time order",
+        "field_metric": "physical sample-wise relative L2",
+        "field_channels": "all output channels",
+        "field_region": "all points",
+        "force_metric": null,
+        "force_input": null,
+        "split": "first900 train; last80 test of987",
+        "aggregation": "sample arithmetic mean; report each local seed and mean/std; never best-test seed; distinguish mean step and full-trajectory rL2",
+        "batch_size": 1,
+        "selection": "final checkpoint only",
+        "normalizer": "saved train-fit numerical states; no eval refit"
+      },
+      "data_spec": {
+        "files": [
+          "plas_N987_T20.mat:input,output"
+        ],
+        "split": "first900 train; last80 test of987",
+        "normalizer": "input force UnitTransformer fit train",
+        "sampling": "101x31 spatial;20 time queries; per-sample torch.randperm20 in train collate",
+        "checksums": null,
+        "integrity": "NOT RUN: no real data"
+      },
+      "evidence": [
+        "Standard_PDE_Benchmark/exp_plas.py",
+        "Standard_PDE_Benchmark/scripts/LinearNO_Plas.sh",
+        "paper-v3 Table8 / AppendixB"
+      ],
+      "unresolved": []
+    },
+    {
+      "task": "plasticity",
+      "profile": "official_release",
+      "status": "L0 audit record, NOT implemented configuration",
+      "official_class_path": "model.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "official_constructor_kwargs": {
+        "space_dim": 2,
+        "n_layers": 8,
+        "n_hidden": 128,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": true,
+        "act": "gelu",
+        "mlp_ratio": 1,
+        "fun_dim": 1,
+        "out_dim": 4,
+        "key_ratio": 64,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 101,
+        "W": 31,
+        "args": {
+          "model": "conv"
+        }
+      },
+      "model_spec_summary": {
+        "variant": "conv",
+        "actual_M": 64,
+        "key_ratio_semantics": "absolute",
+        "layernorm_eps": 1e-05,
+        "qk_shared_across_heads": true,
+        "conv": "each attention block"
+      },
+      "training_config": {
+        "epochs": 500,
+        "optimizer": "AdamW",
+        "lr": 0.001,
+        "weight_decay": 1e-06,
+        "batch_size": 8,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": 1.0,
+        "train_shuffle": true,
+        "test_batch_size": 1,
+        "scheduler": "OneCycleLR",
+        "scheduler_step": "one per outer batch",
+        "optimizer_step": "20 time updates per outer batch",
+        "validation_cadence": "every epoch",
+        "checkpoint_role": "final",
+        "selection_split": null,
+        "selection_metric": null,
+        "seed_policy": "local declared seeds [0,1,2]; not author seeds; release has no active seed control",
+        "onecycle_defaults": {
+          "pct_start": 0.3,
+          "anneal_strategy": "cos",
+          "cycle_momentum": true,
+          "base_momentum": 0.85,
+          "max_momentum": 0.95,
+          "div_factor": 25,
+          "final_div_factor": 10000,
+          "three_phase": false
+        },
+        "scheduler_epochs": 500
+      },
+      "objective_spec": {
+        "kind": "relative_L2",
+        "channels": "all task output channels",
+        "region": "all task points",
+        "space": "physical (decode before loss if normalized)",
+        "reduction": "sum sample-wise flattened ratios per batch; epoch display divided by ntrain; no epsilon",
+        "epsilon": 0,
+        "time_reduction": "individual time-step loss/backward/optimizer20; test mean step and full trajectory rL2"
+      },
+      "evaluation_spec": {
+        "prediction_sampling": "20 separate time-conditioned forwards; concatenate original time order",
+        "field_metric": "physical sample-wise relative L2",
+        "field_channels": "all output channels",
+        "field_region": "all points",
+        "force_metric": null,
+        "force_input": null,
+        "split": "first900 train; last80 test of987",
+        "aggregation": "sample arithmetic mean; report each local seed and mean/std; never best-test seed; distinguish mean step and full-trajectory rL2",
+        "batch_size": 1,
+        "selection": "final checkpoint only",
+        "normalizer": "saved train-fit numerical states; no eval refit"
+      },
+      "data_spec": {
+        "files": [
+          "plas_N987_T20.mat:input,output"
+        ],
+        "split": "first900 train; last80 test of987",
+        "normalizer": "input force UnitTransformer fit train",
+        "sampling": "101x31 spatial;20 time queries; per-sample torch.randperm20 in train collate",
+        "checksums": null,
+        "integrity": "NOT RUN: no real data"
+      },
+      "evidence": [
+        "Standard_PDE_Benchmark/exp_plas.py",
+        "Standard_PDE_Benchmark/scripts/LinearNO_Plas.sh",
+        "paper-v3 Table8 / AppendixB"
+      ],
+      "unresolved": []
+    },
+    {
+      "task": "airfoil",
+      "profile": "paper_table8_on_release_model",
+      "status": "L0 audit record, NOT implemented configuration",
+      "official_class_path": "model.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "official_constructor_kwargs": {
+        "space_dim": 2,
+        "n_layers": 8,
+        "n_hidden": 128,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": false,
+        "act": "gelu",
+        "mlp_ratio": 1,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "key_ratio": 64,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 221,
+        "W": 51,
+        "args": {
+          "model": "conv_temp"
+        }
+      },
+      "model_spec_summary": {
+        "variant": "conv_temp",
+        "actual_M": 64,
+        "key_ratio_semantics": "absolute",
+        "layernorm_eps": 1e-05,
+        "qk_shared_across_heads": true,
+        "conv": "each attention block"
+      },
+      "training_config": {
+        "epochs": 500,
+        "optimizer": "AdamW",
+        "lr": 0.001,
+        "weight_decay": 1e-05,
+        "batch_size": 4,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": 1.0,
+        "train_shuffle": true,
+        "test_batch_size": 1,
+        "scheduler": "OneCycleLR",
+        "scheduler_step": "one per outer batch",
+        "optimizer_step": "one per outer batch",
+        "validation_cadence": "ep%10==0 or final",
+        "checkpoint_role": "final",
+        "selection_split": null,
+        "selection_metric": null,
+        "seed_policy": "local declared seeds [0,1,2]; not author seeds; release has no active seed control",
+        "onecycle_defaults": {
+          "pct_start": 0.3,
+          "anneal_strategy": "cos",
+          "cycle_momentum": true,
+          "base_momentum": 0.85,
+          "max_momentum": 0.95,
+          "div_factor": 25,
+          "final_div_factor": 10000,
+          "three_phase": false
+        },
+        "scheduler_epochs": 500
+      },
+      "objective_spec": {
+        "kind": "relative_L2",
+        "channels": "all task output channels",
+        "region": "all task points",
+        "space": "physical (decode before loss if normalized)",
+        "reduction": "sum sample-wise flattened ratios per batch; epoch display divided by ntrain; no epsilon",
+        "epsilon": 0
+      },
+      "evaluation_spec": {
+        "prediction_sampling": "full points",
+        "field_metric": "physical sample-wise relative L2",
+        "field_channels": "all output channels",
+        "field_region": "all points",
+        "force_metric": null,
+        "force_input": null,
+        "split": "first1000 train; next200 test",
+        "aggregation": "sample arithmetic mean; report each local seed and mean/std; never best-test seed",
+        "batch_size": 1,
+        "selection": "final checkpoint only",
+        "normalizer": "saved train-fit numerical states; no eval refit"
+      },
+      "data_spec": {
+        "files": [
+          "NACA_Cylinder_X.npy",
+          "NACA_Cylinder_Y.npy",
+          "NACA_Cylinder_Q.npy:channel4"
+        ],
+        "split": "first1000 train; next200 test",
+        "normalizer": "none",
+        "sampling": "full221x51",
+        "checksums": null,
+        "integrity": "NOT RUN: no real data"
+      },
+      "evidence": [
+        "Standard_PDE_Benchmark/exp_airfoil.py",
+        "Standard_PDE_Benchmark/scripts/LinearNO_airfoil.sh",
+        "paper-v3 Table8 / AppendixB"
+      ],
+      "unresolved": []
+    },
+    {
+      "task": "airfoil",
+      "profile": "official_release",
+      "status": "L0 audit record, NOT implemented configuration",
+      "official_class_path": "model.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "official_constructor_kwargs": {
+        "space_dim": 2,
+        "n_layers": 8,
+        "n_hidden": 128,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": false,
+        "act": "gelu",
+        "mlp_ratio": 1,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "key_ratio": 64,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 221,
+        "W": 51,
+        "args": {
+          "model": "conv_temp"
+        }
+      },
+      "model_spec_summary": {
+        "variant": "conv_temp",
+        "actual_M": 64,
+        "key_ratio_semantics": "absolute",
+        "layernorm_eps": 1e-05,
+        "qk_shared_across_heads": true,
+        "conv": "each attention block"
+      },
+      "training_config": {
+        "epochs": 500,
+        "optimizer": "AdamW",
+        "lr": 0.001,
+        "weight_decay": 1e-05,
+        "batch_size": 4,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": 1.0,
+        "train_shuffle": true,
+        "test_batch_size": 1,
+        "scheduler": "OneCycleLR",
+        "scheduler_step": "one per outer batch",
+        "optimizer_step": "one per outer batch",
+        "validation_cadence": "ep%10==0 or final",
+        "checkpoint_role": "final",
+        "selection_split": null,
+        "selection_metric": null,
+        "seed_policy": "local declared seeds [0,1,2]; not author seeds; release has no active seed control",
+        "onecycle_defaults": {
+          "pct_start": 0.3,
+          "anneal_strategy": "cos",
+          "cycle_momentum": true,
+          "base_momentum": 0.85,
+          "max_momentum": 0.95,
+          "div_factor": 25,
+          "final_div_factor": 10000,
+          "three_phase": false
+        },
+        "scheduler_epochs": 500
+      },
+      "objective_spec": {
+        "kind": "relative_L2",
+        "channels": "all task output channels",
+        "region": "all task points",
+        "space": "physical (decode before loss if normalized)",
+        "reduction": "sum sample-wise flattened ratios per batch; epoch display divided by ntrain; no epsilon",
+        "epsilon": 0
+      },
+      "evaluation_spec": {
+        "prediction_sampling": "full points",
+        "field_metric": "physical sample-wise relative L2",
+        "field_channels": "all output channels",
+        "field_region": "all points",
+        "force_metric": null,
+        "force_input": null,
+        "split": "first1000 train; next200 test",
+        "aggregation": "sample arithmetic mean; report each local seed and mean/std; never best-test seed",
+        "batch_size": 1,
+        "selection": "final checkpoint only",
+        "normalizer": "saved train-fit numerical states; no eval refit"
+      },
+      "data_spec": {
+        "files": [
+          "NACA_Cylinder_X.npy",
+          "NACA_Cylinder_Y.npy",
+          "NACA_Cylinder_Q.npy:channel4"
+        ],
+        "split": "first1000 train; next200 test",
+        "normalizer": "none",
+        "sampling": "full221x51",
+        "checksums": null,
+        "integrity": "NOT RUN: no real data"
+      },
+      "evidence": [
+        "Standard_PDE_Benchmark/exp_airfoil.py",
+        "Standard_PDE_Benchmark/scripts/LinearNO_airfoil.sh",
+        "paper-v3 Table8 / AppendixB"
+      ],
+      "unresolved": []
+    },
+    {
+      "official_class_path": "models.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "official_constructor_kwargs": {
+        "space_dim": 3,
+        "n_layers": 8,
+        "n_hidden": 256,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": false,
+        "act": "gelu",
+        "mlp_ratio": 2,
+        "fun_dim": 4,
+        "out_dim": 4,
+        "key_ratio": 1,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 85,
+        "W": 85,
+        "isregular": false
+      },
+      "model_spec_summary": {
+        "variant": "shapenet",
+        "actual_M": 32,
+        "key_ratio_semantics": "multiplier of head_dim32",
+        "input": "cfd_data.x[N,7] in tuple(cfd_data,geom); geom unused",
+        "output": "[N,4] vx,vy,vz,p",
+        "temperature": "tempreature_q/k .5 clamp[.1,2]"
+      },
+      "training_config": {
+        "epochs": 200,
+        "lr": 0.001,
+        "optimizer": "Adam",
+        "weight_decay": 0,
+        "batch_size": 1,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": null,
+        "drop_last": true,
+        "scheduler": "OneCycleLR",
+        "total_steps": "(ntrain//batch+1)*epochs",
+        "final_div_factor": 1000,
+        "scheduler_step": "each optimizer step",
+        "validation_cadence": "ep%10==0 or final",
+        "preprocessed": 1,
+        "checkpoint_role": "final",
+        "seed_policy": "local [0,1,2]; release uncontrolled"
+      },
+      "data_spec": {
+        "files": [
+          "param0...param8/*/quadpress_smpl.vtk",
+          "param0...param8/*/hexvelo_smpl.vtk",
+          "preprocessed per sample x/y/pos/surf/edge_index.npy"
+        ],
+        "split": "fold_id0 heldout param0 (paper789/100); other eight heldouts optional, not paper9fold",
+        "normalizer": "all training points coef_norm(mean_in,std_in,mean_out,std_out),eps1e-8",
+        "checksums": null,
+        "integrity": "NOT RUN"
+      },
+      "task": "car",
+      "profile": "paper_table8_on_release_model",
+      "status": "L0 audit record, NOT implemented configuration",
+      "evidence": [
+        "ShapeNetCar/main.py",
+        "paper-v3 Table8 / AppendixB"
+      ],
+      "objective_spec": {
+        "kind": "relative_L2",
+        "volume_channels": [
+          0,
+          1,
+          2
+        ],
+        "surface_channels": [
+          3
+        ],
+        "volume_region": "~surf",
+        "surface_region": "surf",
+        "surface_weight": 1,
+        "space": "UNRESOLVED: physical vs normalized training rL2",
+        "reduction": "UNRESOLVED: concatenate3 velocity channels vs channelwise ratios then mean; sample mean",
+        "epsilon": 0
+      },
+      "evaluation_spec": {
+        "prediction_sampling": "full graph single forward; batch1",
+        "field_metric": {
+          "primary": "physical rL2 of flattened non-surface velocity3 and surface pressure",
+          "additional_release": "normalized channel MSE then aggregate RMSE and rescale std"
+        },
+        "force_metric": "mean abs(pred-true)/true (release signed denominator); Spearman over all test samples",
+        "force_input": "hxh existing surface velocities; raw/cache roots and param0 still hardcoded",
+        "split": "fold0 full heldout list; get_samples retains os.listdir order",
+        "aggregation": "sample mean; per-member and per-seed axes separate; final checkpoint; no best seed",
+        "normalizer": "saved coef_norm; evaluation must not refit",
+        "diagnostic_force_input": "released_bug_volume_velocity+param0 explicit diagnostic ONLY"
+      },
+      "unresolved": [
+        "paper training rL2 norm/channel/reduction definition must be reviewed before L6/L7"
+      ]
+    },
+    {
+      "official_class_path": "models.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "official_constructor_kwargs": {
+        "space_dim": 3,
+        "n_layers": 8,
+        "n_hidden": 256,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": false,
+        "act": "gelu",
+        "mlp_ratio": 2,
+        "fun_dim": 4,
+        "out_dim": 4,
+        "key_ratio": 1,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 85,
+        "W": 85,
+        "isregular": false
+      },
+      "model_spec_summary": {
+        "variant": "shapenet",
+        "actual_M": 32,
+        "key_ratio_semantics": "multiplier of head_dim32",
+        "input": "cfd_data.x[N,7] in tuple(cfd_data,geom); geom unused",
+        "output": "[N,4] vx,vy,vz,p",
+        "temperature": "tempreature_q/k .5 clamp[.1,2]"
+      },
+      "training_config": {
+        "epochs": 200,
+        "lr": 0.001,
+        "optimizer": "Adam",
+        "weight_decay": 0,
+        "batch_size": 1,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": null,
+        "drop_last": true,
+        "scheduler": "OneCycleLR",
+        "total_steps": "(ntrain//batch+1)*epochs",
+        "final_div_factor": 1000,
+        "scheduler_step": "each optimizer step",
+        "validation_cadence": "ep%10==0 or final",
+        "preprocessed": 1,
+        "checkpoint_role": "final",
+        "seed_policy": "local [0,1,2]; release uncontrolled"
+      },
+      "data_spec": {
+        "files": [
+          "param0...param8/*/quadpress_smpl.vtk",
+          "param0...param8/*/hexvelo_smpl.vtk",
+          "preprocessed per sample x/y/pos/surf/edge_index.npy"
+        ],
+        "split": "fold_id0 heldout param0 (paper789/100); other eight heldouts optional, not paper9fold",
+        "normalizer": "all training points coef_norm(mean_in,std_in,mean_out,std_out),eps1e-8",
+        "checksums": null,
+        "integrity": "NOT RUN"
+      },
+      "task": "car",
+      "profile": "official_release",
+      "status": "L0 audit record, NOT implemented configuration",
+      "evidence": [
+        "ShapeNetCar/main.py",
+        "paper-v3 Table8 / AppendixB"
+      ],
+      "objective_spec": {
+        "kind": "MSE",
+        "volume_channels": [
+          0,
+          1,
+          2
+        ],
+        "surface_channels": [
+          3
+        ],
+        "volume_region": "all points",
+        "surface_region": "surf",
+        "surface_weight": 0.5,
+        "space": "normalized",
+        "reduction": "mean points per channel then mean3 velocity channels; scalar surface pressure mean",
+        "epsilon": null
+      },
+      "evaluation_spec": {
+        "prediction_sampling": "full graph single forward; batch1",
+        "field_metric": {
+          "primary": "physical rL2 of flattened non-surface velocity3 and surface pressure",
+          "additional_release": "normalized channel MSE then aggregate RMSE and rescale std"
+        },
+        "force_metric": "mean abs(pred-true)/true (release signed denominator); Spearman over all test samples",
+        "force_input": "hxh existing surface velocities; raw/cache roots and param0 still hardcoded",
+        "split": "fold0 full heldout list; get_samples retains os.listdir order",
+        "aggregation": "sample mean; per-member and per-seed axes separate; final checkpoint; no best seed",
+        "normalizer": "saved coef_norm; evaluation must not refit",
+        "diagnostic_force_input": "released_bug_volume_velocity+param0 explicit diagnostic ONLY"
+      },
+      "unresolved": []
+    },
+    {
+      "official_class_path": "models.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "official_constructor_kwargs": {
+        "space_dim": 7,
+        "n_layers": 8,
+        "n_hidden": 256,
+        "dropout": 0,
+        "n_head": 8,
+        "act": "gelu",
+        "mlp_ratio": 2,
+        "fun_dim": 0,
+        "out_dim": 4,
+        "slice_num": 32,
+        "ref": 8,
+        "unified_pos": true,
+        "linear": true
+      },
+      "model_spec_summary": {
+        "variant": "airfrans",
+        "actual_M": 32,
+        "key_ratio_semantics": "absolute slice_num in release; explicit linearno_rank in target",
+        "input": "Data x[N,7]+64 ref distances from pos[N,2]",
+        "output": "[N,4] vx,vy,p,nut",
+        "temperature": "unused .5 parameter preserved"
+      },
+      "training_config": {
+        "epochs": 400,
+        "lr": 0.001,
+        "optimizer": "Adam",
+        "weight_decay": 0,
+        "batch_size": 1,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": null,
+        "scheduler": "OneCycleLR",
+        "total_steps": "(ntrain//batch+1)*epochs",
+        "final_div_factor": 10000,
+        "scheduler_step": "each optimizer step",
+        "validation_cadence": "ep%10==0 or final,20 random resamplings",
+        "subsampling": 32000,
+        "debug": 0,
+        "nmodel": 1,
+        "r": 0.05,
+        "max_neighbors": 64,
+        "checkpoint_role": "final",
+        "seed_policy": "local [0,1,2]; release uncontrolled"
+      },
+      "data_spec": {
+        "files": [
+          "Dataset/manifest.json",
+          "Dataset/<simulation>/<simulation>_internal.vtu",
+          "Dataset/<simulation>/<simulation>_aerofoil.vtp"
+        ],
+        "split": "full_train last10%validation;720train80val200full_test; scarce uses full_test, aoa/reynolds separate",
+        "normalizer": "coef_norm fit train only,eps1e-8; x normalized but pos raw",
+        "checksums": null,
+        "integrity": "NOT RUN",
+        "sdf_source": "VTK internal.point_data[implicit_distance] with sign inversion"
+      },
+      "task": "airfrans",
+      "profile": "paper_table8_on_release_model",
+      "status": "L0 audit record, NOT implemented configuration",
+      "evidence": [
+        "AirfRANS/main.py",
+        "paper-v3 Table8 / AppendixB"
+      ],
+      "objective_spec": {
+        "kind": "relative_L2",
+        "volume_channels": "UNRESOLVED: all4 vs pressure-only (paper evaluation pressure-only is explicit)",
+        "surface_channels": "UNRESOLVED: all4 vs pressure-only",
+        "volume_region": "~surf",
+        "surface_region": "surf",
+        "surface_weight": 0.5,
+        "space": "UNRESOLVED: physical vs normalized training rL2",
+        "reduction": "UNRESOLVED: channelwise mean vs combined per-sample norm",
+        "epsilon": 0
+      },
+      "evaluation_spec": {
+        "prediction_sampling": "random32000 subsets until all coordinate pairs covered; repeated-node prediction mean; physical surface velocities/nut fixed0",
+        "field_metric": {
+          "primary": "physical pressure channel2 rL2",
+          "secondary": "release normalized MSE4 channels"
+        },
+        "field_region": [
+          "~surf",
+          "surf"
+        ],
+        "force_metric": "per-sample abs((Ctrue-Cpred)/Ctrue),testmean; C_L Spearman all test",
+        "force_input": "full scattered predicted velocity and pressure; VTK derivatives/normals/length integration; same boundary fixing and rotation",
+        "split": "entire manifest full_test; n_test3 only chooses exports",
+        "aggregation": "sample metrics then member mean/std; seed mean/std kept separate; prediction ensemble not silently substituted",
+        "normalizer": "saved train-fit coef_norm; no eval refit"
+      },
+      "unresolved": [
+        "paper training rL2 norm/channel/reduction definition must be reviewed before L6/L7"
+      ]
+    },
+    {
+      "official_class_path": "models.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "official_constructor_kwargs": {
+        "space_dim": 7,
+        "n_layers": 8,
+        "n_hidden": 256,
+        "dropout": 0,
+        "n_head": 8,
+        "act": "gelu",
+        "mlp_ratio": 2,
+        "fun_dim": 0,
+        "out_dim": 4,
+        "slice_num": 32,
+        "ref": 8,
+        "unified_pos": true,
+        "linear": true
+      },
+      "model_spec_summary": {
+        "variant": "airfrans",
+        "actual_M": 32,
+        "key_ratio_semantics": "absolute slice_num in release; explicit linearno_rank in target",
+        "input": "Data x[N,7]+64 ref distances from pos[N,2]",
+        "output": "[N,4] vx,vy,p,nut",
+        "temperature": "unused .5 parameter preserved"
+      },
+      "training_config": {
+        "epochs": 400,
+        "lr": 0.001,
+        "optimizer": "Adam",
+        "weight_decay": 0,
+        "batch_size": 1,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": null,
+        "scheduler": "OneCycleLR",
+        "total_steps": "(ntrain//batch+1)*epochs",
+        "final_div_factor": 10000,
+        "scheduler_step": "each optimizer step",
+        "validation_cadence": "ep%10==0 or final,20 random resamplings",
+        "subsampling": 32000,
+        "debug": 0,
+        "nmodel": 1,
+        "r": 0.05,
+        "max_neighbors": 64,
+        "checkpoint_role": "final",
+        "seed_policy": "local [0,1,2]; release uncontrolled"
+      },
+      "data_spec": {
+        "files": [
+          "Dataset/manifest.json",
+          "Dataset/<simulation>/<simulation>_internal.vtu",
+          "Dataset/<simulation>/<simulation>_aerofoil.vtp"
+        ],
+        "split": "full_train last10%validation;720train80val200full_test; scarce uses full_test, aoa/reynolds separate",
+        "normalizer": "coef_norm fit train only,eps1e-8; x normalized but pos raw",
+        "checksums": null,
+        "integrity": "NOT RUN",
+        "sdf_source": "VTK internal.point_data[implicit_distance] with sign inversion"
+      },
+      "task": "airfrans",
+      "profile": "official_release",
+      "status": "L0 audit record, NOT implemented configuration",
+      "evidence": [
+        "AirfRANS/main.py",
+        "paper-v3 Table8 / AppendixB"
+      ],
+      "objective_spec": {
+        "kind": "MSE",
+        "volume_channels": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "surface_channels": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "volume_region": "~surf",
+        "surface_region": "surf",
+        "surface_weight": 1,
+        "space": "normalized",
+        "reduction": "per-region point mean per channel then4-channel mean; batch1",
+        "epsilon": null
+      },
+      "evaluation_spec": {
+        "prediction_sampling": "random32000 subsets until all coordinate pairs covered; repeated-node prediction mean; physical surface velocities/nut fixed0",
+        "field_metric": {
+          "primary": "normalized MSE4 channels per region",
+          "secondary": "physical pressure rL2 as separately labelled audit metric"
+        },
+        "field_region": [
+          "~surf",
+          "surf"
+        ],
+        "force_metric": "per-sample abs((Ctrue-Cpred)/Ctrue),testmean; C_L Spearman all test",
+        "force_input": "full scattered predicted velocity and pressure; VTK derivatives/normals/length integration; same boundary fixing and rotation",
+        "split": "entire manifest full_test; n_test3 only chooses exports",
+        "aggregation": "sample metrics then member mean/std; seed mean/std kept separate; prediction ensemble not silently substituted",
+        "normalizer": "saved train-fit coef_norm; no eval refit"
+      },
+      "unresolved": []
+    },
+    {
+      "task": "darcy",
+      "profile": "transolver_matched",
+      "status": "OPTIONAL proposed hyperparameter/data matching, NOT a fair parameter/latency match; not implemented",
+      "official_class_path": "model.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "official_constructor_kwargs": {
+        "space_dim": 2,
+        "n_layers": 8,
+        "n_hidden": 128,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": false,
+        "act": "gelu",
+        "mlp_ratio": 1,
+        "fun_dim": 1,
+        "out_dim": 1,
+        "key_ratio": 64,
+        "ref": 8,
+        "unified_pos": 1,
+        "H": 85,
+        "W": 85,
+        "args": {
+          "model": "conv_temp"
+        }
+      },
+      "model_spec_summary": {
+        "variant": "conv_temp",
+        "actual_M": 64,
+        "key_ratio_semantics": "absolute",
+        "layernorm_eps": 1e-05,
+        "qk_shared_across_heads": true,
+        "conv": "each attention block"
+      },
+      "training_config": {
+        "epochs": 500,
+        "optimizer": "AdamW",
+        "lr": 0.001,
+        "weight_decay": 1e-05,
+        "batch_size": 4,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": 0.1,
+        "train_shuffle": true,
+        "test_batch_size": 4,
+        "scheduler": "OneCycleLR",
+        "scheduler_step": "one per outer batch",
+        "optimizer_step": "one per outer batch",
+        "validation_cadence": "current target every epoch",
+        "checkpoint_role": "final",
+        "selection_split": null,
+        "selection_metric": null,
+        "seed_policy": "local declared seeds [0,1,2]; not author seeds; release has no active seed control",
+        "onecycle_defaults": {
+          "pct_start": 0.3,
+          "anneal_strategy": "cos",
+          "cycle_momentum": true,
+          "base_momentum": 0.85,
+          "max_momentum": 0.95,
+          "div_factor": 25,
+          "final_div_factor": 10000,
+          "three_phase": false
+        },
+        "scheduler_epochs": 500
+      },
+      "objective_spec": {
+        "kind": "relative_L2",
+        "channels": "all task output channels",
+        "region": "all task points",
+        "space": "physical (decode before loss if normalized)",
+        "reduction": "sum sample-wise flattened ratios per batch; epoch display divided by ntrain; no epsilon",
+        "epsilon": 0,
+        "gradient_weight": 0.1,
+        "gradient": "sum dx/dy relative L2; prediction cropped then zero-padded only for derivative branch; central_diff zero padding dx=1/85; l2 computed before crop"
+      },
+      "evaluation_spec": {
+        "prediction_sampling": "full points",
+        "field_metric": "physical sample-wise relative L2",
+        "field_channels": "all output channels",
+        "field_region": "all points",
+        "force_metric": null,
+        "force_input": null,
+        "split": "smooth1 first1000 train; smooth2 first200 test",
+        "aggregation": "sample arithmetic mean; report each local seed and mean/std; never best-test seed",
+        "batch_size": 1,
+        "selection": "final checkpoint only",
+        "normalizer": "saved train-fit numerical states; no eval refit"
+      },
+      "data_spec": {
+        "files": [
+          "piececonst_r421_N1024_smooth1.mat:coeff,sol",
+          "piececonst_r421_N1024_smooth2.mat:coeff,sol"
+        ],
+        "split": "smooth1 first1000 train; smooth2 first200 test",
+        "normalizer": "input coefficient and output UnitTransformer; fit train only; output decoded before loss",
+        "sampling": "stride5 spatial; 421x421->85x85",
+        "checksums": null,
+        "integrity": "NOT RUN: no real data"
+      },
+      "evidence": [
+        "Standard_PDE_Benchmark/exp_darcy.py",
+        "Standard_PDE_Benchmark/scripts/LinearNO_Darcy.sh",
+        "paper-v3 Table8 / AppendixB"
+      ],
+      "unresolved": [
+        "optional objective/evaluation alignment scope must be explicit; retain release model topology"
+      ],
+      "matched_source_resolved": {
+        "lr": 0.001,
+        "epochs": 500,
+        "weight_decay": 1e-05,
+        "model": "Transolver_Structured_Mesh_2D",
+        "n_hidden": 128,
+        "n_layers": 8,
+        "n_heads": 8,
+        "batch_size": 4,
+        "gpu": "4",
+        "max_grad_norm": 0.1,
+        "downsample": 5,
+        "mlp_ratio": 1,
+        "dropout": 0.0,
+        "ntrain": 1000,
+        "unified_pos": 1,
+        "ref": 8,
+        "slice_num": 64,
+        "eval": 0,
+        "save_name": "darcy_UniPDE",
+        "data_path": "/data/fno"
+      },
+      "matching_scope": [
+        "d",
+        "L",
+        "heads",
+        "actual_M",
+        "ffn_ratio",
+        "position/ref",
+        "batch",
+        "lr",
+        "epochs",
+        "weight_decay",
+        "clip",
+        "current_task_data_protocol"
+      ],
+      "not_matched": [
+        "parameter_count",
+        "runtime",
+        "release LinearNO attention topology vs Transolver",
+        "accuracy"
+      ]
+    },
+    {
+      "task": "elasticity",
+      "profile": "transolver_matched",
+      "status": "OPTIONAL proposed hyperparameter/data matching, NOT a fair parameter/latency match; not implemented",
+      "official_class_path": "model.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "official_constructor_kwargs": {
+        "space_dim": 2,
+        "n_layers": 8,
+        "n_hidden": 128,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": false,
+        "act": "gelu",
+        "mlp_ratio": 1,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "key_ratio": 64,
+        "ref": 8,
+        "unified_pos": 0,
+        "H": 85,
+        "W": 85,
+        "args": {
+          "model": "temp"
+        }
+      },
+      "model_spec_summary": {
+        "variant": "temp",
+        "actual_M": 64,
+        "key_ratio_semantics": "absolute",
+        "layernorm_eps": 1e-05,
+        "qk_shared_across_heads": true,
+        "conv": "none"
+      },
+      "training_config": {
+        "epochs": 500,
+        "optimizer": "AdamW",
+        "lr": 0.001,
+        "weight_decay": 1e-05,
+        "batch_size": 1,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": 0.1,
+        "train_shuffle": true,
+        "test_batch_size": 1,
+        "scheduler": "CosineAnnealingLR",
+        "scheduler_step": "epoch",
+        "optimizer_step": "one per outer batch",
+        "validation_cadence": "current target every epoch",
+        "checkpoint_role": "final",
+        "selection_split": null,
+        "selection_metric": null,
+        "seed_policy": "local declared seeds [0,1,2]; not author seeds; release has no active seed control",
+        "onecycle_defaults": null,
+        "scheduler_epochs": 500
+      },
+      "objective_spec": {
+        "kind": "relative_L2",
+        "channels": "all task output channels",
+        "region": "all task points",
+        "space": "physical (decode before loss if normalized)",
+        "reduction": "sum sample-wise flattened ratios per batch; epoch display divided by ntrain; no epsilon",
+        "epsilon": 0
+      },
+      "evaluation_spec": {
+        "prediction_sampling": "full points",
+        "field_metric": "physical sample-wise relative L2",
+        "field_channels": "all output channels",
+        "field_region": "all points",
+        "force_metric": null,
+        "force_input": null,
+        "split": "first1000 train; last200 test",
+        "aggregation": "sample arithmetic mean; report each local seed and mean/std; never best-test seed",
+        "batch_size": 1,
+        "selection": "final checkpoint only",
+        "normalizer": "saved train-fit numerical states; no eval refit"
+      },
+      "data_spec": {
+        "files": [
+          "elasticity/Meshes/Random_UnitCell_XY_10.npy",
+          "elasticity/Meshes/Random_UnitCell_sigma_10.npy"
+        ],
+        "split": "first1000 train; last200 test",
+        "normalizer": "output UnitTransformer fit train; decode before loss",
+        "sampling": "all972 unordered points",
+        "checksums": null,
+        "integrity": "NOT RUN: no real data"
+      },
+      "evidence": [
+        "Standard_PDE_Benchmark/exp_elas.py",
+        "Standard_PDE_Benchmark/scripts/LinearNO_Elas.sh",
+        "paper-v3 Table8 / AppendixB"
+      ],
+      "unresolved": [
+        "optional objective/evaluation alignment scope must be explicit; retain release model topology"
+      ],
+      "matched_source_resolved": {
+        "lr": 0.001,
+        "epochs": 500,
+        "weight_decay": 1e-05,
+        "model": "Transolver_Irregular_Mesh",
+        "n_hidden": 128,
+        "n_layers": 8,
+        "n_heads": 8,
+        "batch_size": 1,
+        "gpu": "6",
+        "max_grad_norm": 0.1,
+        "downsample": 5,
+        "mlp_ratio": 1,
+        "dropout": 0.0,
+        "ntrain": 1000,
+        "unified_pos": 0,
+        "ref": 8,
+        "slice_num": 64,
+        "eval": 0,
+        "save_name": "elas_Transolver",
+        "data_path": "/data/fno"
+      },
+      "matching_scope": [
+        "d",
+        "L",
+        "heads",
+        "actual_M",
+        "ffn_ratio",
+        "position/ref",
+        "batch",
+        "lr",
+        "epochs",
+        "weight_decay",
+        "clip",
+        "current_task_data_protocol"
+      ],
+      "not_matched": [
+        "parameter_count",
+        "runtime",
+        "release LinearNO attention topology vs Transolver",
+        "accuracy"
+      ]
+    },
+    {
+      "task": "ns",
+      "profile": "transolver_matched",
+      "status": "OPTIONAL proposed hyperparameter/data matching, NOT a fair parameter/latency match; not implemented",
+      "official_class_path": "model.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "official_constructor_kwargs": {
+        "space_dim": 2,
+        "n_layers": 8,
+        "n_hidden": 256,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": false,
+        "act": "gelu",
+        "mlp_ratio": 1,
+        "fun_dim": 10,
+        "out_dim": 1,
+        "key_ratio": 32,
+        "ref": 8,
+        "unified_pos": 1,
+        "H": 64,
+        "W": 64,
+        "args": {
+          "model": "no_temp"
+        }
+      },
+      "model_spec_summary": {
+        "variant": "plain",
+        "actual_M": 32,
+        "key_ratio_semantics": "absolute",
+        "layernorm_eps": 1e-05,
+        "qk_shared_across_heads": true,
+        "conv": "none"
+      },
+      "training_config": {
+        "epochs": 500,
+        "optimizer": "AdamW",
+        "lr": 0.001,
+        "weight_decay": 1e-05,
+        "batch_size": 2,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": null,
+        "train_shuffle": true,
+        "test_batch_size": 2,
+        "scheduler": "OneCycleLR",
+        "scheduler_step": "one per outer batch",
+        "optimizer_step": "one per outer batch",
+        "validation_cadence": "current target every epoch",
+        "checkpoint_role": "final",
+        "selection_split": null,
+        "selection_metric": null,
+        "seed_policy": "local declared seeds [0,1,2]; not author seeds; release has no active seed control",
+        "onecycle_defaults": {
+          "pct_start": 0.3,
+          "anneal_strategy": "cos",
+          "cycle_momentum": true,
+          "base_momentum": 0.85,
+          "max_momentum": 0.95,
+          "div_factor": 25,
+          "final_div_factor": 10000,
+          "three_phase": false
+        },
+        "scheduler_epochs": 500
+      },
+      "objective_spec": {
+        "kind": "relative_L2",
+        "channels": "all task output channels",
+        "region": "all task points",
+        "space": "physical (decode before loss if normalized)",
+        "reduction": "sum sample-wise flattened ratios per batch; epoch display divided by ntrain; no epsilon",
+        "epsilon": 0,
+        "time_reduction": "sum10 step losses for backward; train feedback=truth; eval feedback=prediction; display step mean and flattened trajectory rL2"
+      },
+      "evaluation_spec": {
+        "prediction_sampling": "10-step prediction-fed rollout; same ten-frame sliding window",
+        "field_metric": "physical sample-wise relative L2",
+        "field_channels": "all output channels",
+        "field_region": "all points",
+        "force_metric": null,
+        "force_input": null,
+        "split": "first1000 train; last200 test",
+        "aggregation": "sample arithmetic mean; report each local seed and mean/std; never best-test seed; distinguish mean step rL2 and flattened full-trajectory rL2",
+        "batch_size": 1,
+        "selection": "final checkpoint only",
+        "normalizer": "saved train-fit numerical states; no eval refit"
+      },
+      "data_spec": {
+        "files": [
+          "NavierStokes_V1e-5_N1200_T20/NavierStokes_V1e-5_N1200_T20.mat:u (target fno root)"
+        ],
+        "split": "first1000 train; last200 test",
+        "normalizer": "none",
+        "sampling": "64x64; 10 input frames->10 future; one frame each model call",
+        "checksums": null,
+        "integrity": "NOT RUN: no real data"
+      },
+      "evidence": [
+        "Standard_PDE_Benchmark/exp_ns.py",
+        "Standard_PDE_Benchmark/scripts/LinearNO_NS.sh",
+        "paper-v3 Table8 / AppendixB"
+      ],
+      "unresolved": [
+        "optional objective/evaluation alignment scope must be explicit; retain release model topology"
+      ],
+      "matched_source_resolved": {
+        "lr": 0.001,
+        "epochs": 500,
+        "weight_decay": 1e-05,
+        "model": "Transolver_Structured_Mesh_2D",
+        "n_hidden": 256,
+        "n_layers": 8,
+        "n_heads": 8,
+        "batch_size": 2,
+        "gpu": "2",
+        "max_grad_norm": null,
+        "downsample": 1,
+        "mlp_ratio": 1,
+        "dropout": 0.0,
+        "unified_pos": 1,
+        "ref": 8,
+        "slice_num": 32,
+        "eval": 0,
+        "save_name": "ns_Transolver",
+        "data_path": "/data/fno"
+      },
+      "matching_scope": [
+        "d",
+        "L",
+        "heads",
+        "actual_M",
+        "ffn_ratio",
+        "position/ref",
+        "batch",
+        "lr",
+        "epochs",
+        "weight_decay",
+        "clip",
+        "current_task_data_protocol"
+      ],
+      "not_matched": [
+        "parameter_count",
+        "runtime",
+        "release LinearNO attention topology vs Transolver",
+        "accuracy"
+      ]
+    },
+    {
+      "task": "pipe",
+      "profile": "transolver_matched",
+      "status": "OPTIONAL proposed hyperparameter/data matching, NOT a fair parameter/latency match; not implemented",
+      "official_class_path": "model.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "official_constructor_kwargs": {
+        "space_dim": 2,
+        "n_layers": 8,
+        "n_hidden": 128,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": false,
+        "act": "gelu",
+        "mlp_ratio": 2,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "key_ratio": 64,
+        "ref": 8,
+        "unified_pos": 0,
+        "H": 129,
+        "W": 129,
+        "args": {
+          "model": "conv_temp"
+        }
+      },
+      "model_spec_summary": {
+        "variant": "conv_temp",
+        "actual_M": 64,
+        "key_ratio_semantics": "absolute",
+        "layernorm_eps": 1e-05,
+        "qk_shared_across_heads": true,
+        "conv": "each attention block"
+      },
+      "training_config": {
+        "epochs": 500,
+        "optimizer": "AdamW",
+        "lr": 0.001,
+        "weight_decay": 1e-05,
+        "batch_size": 8,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": 0.1,
+        "train_shuffle": true,
+        "test_batch_size": 8,
+        "scheduler": "OneCycleLR",
+        "scheduler_step": "one per outer batch",
+        "optimizer_step": "one per outer batch",
+        "validation_cadence": "current target every epoch",
+        "checkpoint_role": "final",
+        "selection_split": null,
+        "selection_metric": null,
+        "seed_policy": "local declared seeds [0,1,2]; not author seeds; release has no active seed control",
+        "onecycle_defaults": {
+          "pct_start": 0.3,
+          "anneal_strategy": "cos",
+          "cycle_momentum": true,
+          "base_momentum": 0.85,
+          "max_momentum": 0.95,
+          "div_factor": 25,
+          "final_div_factor": 10000,
+          "three_phase": false
+        },
+        "scheduler_epochs": 500
+      },
+      "objective_spec": {
+        "kind": "relative_L2",
+        "channels": "all task output channels",
+        "region": "all task points",
+        "space": "physical (decode before loss if normalized)",
+        "reduction": "sum sample-wise flattened ratios per batch; epoch display divided by ntrain; no epsilon",
+        "epsilon": 0
+      },
+      "evaluation_spec": {
+        "prediction_sampling": "full points",
+        "field_metric": "physical sample-wise relative L2",
+        "field_channels": "all output channels",
+        "field_region": "all points",
+        "force_metric": null,
+        "force_input": null,
+        "split": "target first1200 then first1000/last200; release first1000/last200 of entire file; equivalent only if length1200",
+        "aggregation": "sample arithmetic mean; report each local seed and mean/std; never best-test seed",
+        "batch_size": 1,
+        "selection": "final checkpoint only",
+        "normalizer": "saved train-fit numerical states; no eval refit"
+      },
+      "data_spec": {
+        "files": [
+          "Pipe_X.npy",
+          "Pipe_Y.npy",
+          "Pipe_Q.npy:channel0"
+        ],
+        "split": "target first1200 then first1000/last200; release first1000/last200 of entire file; equivalent only if length1200",
+        "normalizer": "input coordinates and output UnitTransformer fit train; decode output before loss",
+        "sampling": "full129x129",
+        "checksums": null,
+        "integrity": "NOT RUN: no real data"
+      },
+      "evidence": [
+        "Standard_PDE_Benchmark/exp_pipe.py",
+        "Standard_PDE_Benchmark/scripts/LinearNO_Pipe.sh",
+        "paper-v3 Table8 / AppendixB"
+      ],
+      "unresolved": [
+        "Pipe actual length/order identity requires checksum",
+        "optional objective/evaluation alignment scope must be explicit; retain release model topology"
+      ],
+      "matched_source_resolved": {
+        "lr": 0.001,
+        "epochs": 500,
+        "weight_decay": 1e-05,
+        "model": "Transolver_Structured_Mesh_2D",
+        "n_hidden": 128,
+        "n_layers": 8,
+        "n_heads": 8,
+        "batch_size": 8,
+        "gpu": "7",
+        "max_grad_norm": 0.1,
+        "downsamplex": 1,
+        "downsampley": 1,
+        "mlp_ratio": 2,
+        "dropout": 0.0,
+        "unified_pos": 0,
+        "ref": 8,
+        "slice_num": 64,
+        "eval": 0,
+        "save_name": "pipe_Transolver",
+        "data_path": "/data/fno/pipe"
+      },
+      "matching_scope": [
+        "d",
+        "L",
+        "heads",
+        "actual_M",
+        "ffn_ratio",
+        "position/ref",
+        "batch",
+        "lr",
+        "epochs",
+        "weight_decay",
+        "clip",
+        "current_task_data_protocol"
+      ],
+      "not_matched": [
+        "parameter_count",
+        "runtime",
+        "release LinearNO attention topology vs Transolver",
+        "accuracy"
+      ]
+    },
+    {
+      "task": "plasticity",
+      "profile": "transolver_matched",
+      "status": "OPTIONAL proposed hyperparameter/data matching, NOT a fair parameter/latency match; not implemented",
+      "official_class_path": "model.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "official_constructor_kwargs": {
+        "space_dim": 2,
+        "n_layers": 8,
+        "n_hidden": 128,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": true,
+        "act": "gelu",
+        "mlp_ratio": 1,
+        "fun_dim": 1,
+        "out_dim": 4,
+        "key_ratio": 64,
+        "ref": 8,
+        "unified_pos": 0,
+        "H": 101,
+        "W": 31,
+        "args": {
+          "model": "conv"
+        }
+      },
+      "model_spec_summary": {
+        "variant": "conv",
+        "actual_M": 64,
+        "key_ratio_semantics": "absolute",
+        "layernorm_eps": 1e-05,
+        "qk_shared_across_heads": true,
+        "conv": "each attention block"
+      },
+      "training_config": {
+        "epochs": 500,
+        "optimizer": "AdamW",
+        "lr": 0.001,
+        "weight_decay": 1e-05,
+        "batch_size": 8,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": 0.1,
+        "train_shuffle": true,
+        "test_batch_size": 8,
+        "scheduler": "OneCycleLR",
+        "scheduler_step": "one per outer batch",
+        "optimizer_step": "20 time updates per outer batch",
+        "validation_cadence": "current target every epoch",
+        "checkpoint_role": "final",
+        "selection_split": null,
+        "selection_metric": null,
+        "seed_policy": "local declared seeds [0,1,2]; not author seeds; release has no active seed control",
+        "onecycle_defaults": {
+          "pct_start": 0.3,
+          "anneal_strategy": "cos",
+          "cycle_momentum": true,
+          "base_momentum": 0.85,
+          "max_momentum": 0.95,
+          "div_factor": 25,
+          "final_div_factor": 10000,
+          "three_phase": false
+        },
+        "scheduler_epochs": 500
+      },
+      "objective_spec": {
+        "kind": "relative_L2",
+        "channels": "all task output channels",
+        "region": "all task points",
+        "space": "physical (decode before loss if normalized)",
+        "reduction": "sum sample-wise flattened ratios per batch; epoch display divided by ntrain; no epsilon",
+        "epsilon": 0,
+        "time_reduction": "individual time-step loss/backward/optimizer20; test mean step and full trajectory rL2"
+      },
+      "evaluation_spec": {
+        "prediction_sampling": "20 separate time-conditioned forwards; concatenate original time order",
+        "field_metric": "physical sample-wise relative L2",
+        "field_channels": "all output channels",
+        "field_region": "all points",
+        "force_metric": null,
+        "force_input": null,
+        "split": "first900 train; last80 test of987",
+        "aggregation": "sample arithmetic mean; report each local seed and mean/std; never best-test seed; distinguish mean step and full-trajectory rL2",
+        "batch_size": 1,
+        "selection": "final checkpoint only",
+        "normalizer": "saved train-fit numerical states; no eval refit"
+      },
+      "data_spec": {
+        "files": [
+          "plas_N987_T20.mat:input,output"
+        ],
+        "split": "first900 train; last80 test of987",
+        "normalizer": "input force UnitTransformer fit train",
+        "sampling": "101x31 spatial;20 time queries; per-sample torch.randperm20 in train collate",
+        "checksums": null,
+        "integrity": "NOT RUN: no real data"
+      },
+      "evidence": [
+        "Standard_PDE_Benchmark/exp_plas.py",
+        "Standard_PDE_Benchmark/scripts/LinearNO_Plas.sh",
+        "paper-v3 Table8 / AppendixB"
+      ],
+      "unresolved": [
+        "optional objective/evaluation alignment scope must be explicit; retain release model topology"
+      ],
+      "matched_source_resolved": {
+        "lr": 0.001,
+        "epochs": 500,
+        "weight_decay": 1e-05,
+        "model": "Transolver_Structured_Mesh_2D",
+        "n_hidden": 128,
+        "n_layers": 8,
+        "n_heads": 8,
+        "batch_size": 8,
+        "gpu": "3",
+        "max_grad_norm": 0.1,
+        "downsamplex": 1,
+        "downsampley": 1,
+        "mlp_ratio": 1,
+        "dropout": 0.0,
+        "unified_pos": 0,
+        "ref": 8,
+        "slice_num": 64,
+        "eval": 0,
+        "save_name": "plas_Transolver",
+        "data_path": "/data/fno/plas_N987_T20.mat"
+      },
+      "matching_scope": [
+        "d",
+        "L",
+        "heads",
+        "actual_M",
+        "ffn_ratio",
+        "position/ref",
+        "batch",
+        "lr",
+        "epochs",
+        "weight_decay",
+        "clip",
+        "current_task_data_protocol"
+      ],
+      "not_matched": [
+        "parameter_count",
+        "runtime",
+        "release LinearNO attention topology vs Transolver",
+        "accuracy"
+      ]
+    },
+    {
+      "task": "airfoil",
+      "profile": "transolver_matched",
+      "status": "OPTIONAL proposed hyperparameter/data matching, NOT a fair parameter/latency match; not implemented",
+      "official_class_path": "model.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "official_constructor_kwargs": {
+        "space_dim": 2,
+        "n_layers": 8,
+        "n_hidden": 128,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": false,
+        "act": "gelu",
+        "mlp_ratio": 1,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "key_ratio": 64,
+        "ref": 8,
+        "unified_pos": 0,
+        "H": 221,
+        "W": 51,
+        "args": {
+          "model": "conv_temp"
+        }
+      },
+      "model_spec_summary": {
+        "variant": "conv_temp",
+        "actual_M": 64,
+        "key_ratio_semantics": "absolute",
+        "layernorm_eps": 1e-05,
+        "qk_shared_across_heads": true,
+        "conv": "each attention block"
+      },
+      "training_config": {
+        "epochs": 500,
+        "optimizer": "AdamW",
+        "lr": 0.001,
+        "weight_decay": 1e-05,
+        "batch_size": 4,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": 0.1,
+        "train_shuffle": true,
+        "test_batch_size": 4,
+        "scheduler": "OneCycleLR",
+        "scheduler_step": "one per outer batch",
+        "optimizer_step": "one per outer batch",
+        "validation_cadence": "current target every epoch",
+        "checkpoint_role": "final",
+        "selection_split": null,
+        "selection_metric": null,
+        "seed_policy": "local declared seeds [0,1,2]; not author seeds; release has no active seed control",
+        "onecycle_defaults": {
+          "pct_start": 0.3,
+          "anneal_strategy": "cos",
+          "cycle_momentum": true,
+          "base_momentum": 0.85,
+          "max_momentum": 0.95,
+          "div_factor": 25,
+          "final_div_factor": 10000,
+          "three_phase": false
+        },
+        "scheduler_epochs": 500
+      },
+      "objective_spec": {
+        "kind": "relative_L2",
+        "channels": "all task output channels",
+        "region": "all task points",
+        "space": "physical (decode before loss if normalized)",
+        "reduction": "sum sample-wise flattened ratios per batch; epoch display divided by ntrain; no epsilon",
+        "epsilon": 0
+      },
+      "evaluation_spec": {
+        "prediction_sampling": "full points",
+        "field_metric": "physical sample-wise relative L2",
+        "field_channels": "all output channels",
+        "field_region": "all points",
+        "force_metric": null,
+        "force_input": null,
+        "split": "first1000 train; next200 test",
+        "aggregation": "sample arithmetic mean; report each local seed and mean/std; never best-test seed",
+        "batch_size": 1,
+        "selection": "final checkpoint only",
+        "normalizer": "saved train-fit numerical states; no eval refit"
+      },
+      "data_spec": {
+        "files": [
+          "NACA_Cylinder_X.npy",
+          "NACA_Cylinder_Y.npy",
+          "NACA_Cylinder_Q.npy:channel4"
+        ],
+        "split": "first1000 train; next200 test",
+        "normalizer": "none",
+        "sampling": "full221x51",
+        "checksums": null,
+        "integrity": "NOT RUN: no real data"
+      },
+      "evidence": [
+        "Standard_PDE_Benchmark/exp_airfoil.py",
+        "Standard_PDE_Benchmark/scripts/LinearNO_airfoil.sh",
+        "paper-v3 Table8 / AppendixB"
+      ],
+      "unresolved": [
+        "optional objective/evaluation alignment scope must be explicit; retain release model topology"
+      ],
+      "matched_source_resolved": {
+        "lr": 0.001,
+        "epochs": 500,
+        "weight_decay": 1e-05,
+        "model": "Transolver_Structured_Mesh_2D",
+        "n_hidden": 128,
+        "n_layers": 8,
+        "n_heads": 8,
+        "batch_size": 4,
+        "gpu": "5",
+        "max_grad_norm": 0.1,
+        "downsamplex": 1,
+        "downsampley": 1,
+        "mlp_ratio": 1,
+        "dropout": 0.0,
+        "unified_pos": 0,
+        "ref": 8,
+        "slice_num": 64,
+        "eval": 0,
+        "save_name": "airfoil_Transolver",
+        "data_path": "/data/fno/airfoil/naca"
+      },
+      "matching_scope": [
+        "d",
+        "L",
+        "heads",
+        "actual_M",
+        "ffn_ratio",
+        "position/ref",
+        "batch",
+        "lr",
+        "epochs",
+        "weight_decay",
+        "clip",
+        "current_task_data_protocol"
+      ],
+      "not_matched": [
+        "parameter_count",
+        "runtime",
+        "release LinearNO attention topology vs Transolver",
+        "accuracy"
+      ]
+    },
+    {
+      "official_class_path": "models.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "official_constructor_kwargs": {
+        "space_dim": 3,
+        "n_layers": 8,
+        "n_hidden": 256,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": false,
+        "act": "gelu",
+        "mlp_ratio": 2,
+        "fun_dim": 4,
+        "out_dim": 4,
+        "key_ratio": 1,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 85,
+        "W": 85,
+        "isregular": false
+      },
+      "model_spec_summary": {
+        "variant": "shapenet",
+        "actual_M": 32,
+        "key_ratio_semantics": "multiplier of head_dim32",
+        "input": "cfd_data.x[N,7] in tuple(cfd_data,geom); geom unused",
+        "output": "[N,4] vx,vy,vz,p",
+        "temperature": "tempreature_q/k .5 clamp[.1,2]"
+      },
+      "training_config": {
+        "epochs": 200,
+        "lr": 0.001,
+        "optimizer": "Adam",
+        "weight_decay": 0,
+        "batch_size": 1,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": null,
+        "drop_last": true,
+        "scheduler": "OneCycleLR",
+        "total_steps": "(ntrain//batch+1)*epochs",
+        "final_div_factor": 1000,
+        "scheduler_step": "each optimizer step",
+        "validation_cadence": "ep%10==0 or final",
+        "preprocessed": 1,
+        "checkpoint_role": "final",
+        "seed_policy": "local [0,1,2]; release uncontrolled"
+      },
+      "data_spec": {
+        "files": [
+          "param0...param8/*/quadpress_smpl.vtk",
+          "param0...param8/*/hexvelo_smpl.vtk",
+          "preprocessed per sample x/y/pos/surf/edge_index.npy"
+        ],
+        "split": "fold_id0 heldout param0 (paper789/100); other eight heldouts optional, not paper9fold",
+        "normalizer": "all training points coef_norm(mean_in,std_in,mean_out,std_out),eps1e-8",
+        "checksums": null,
+        "integrity": "NOT RUN"
+      },
+      "task": "car",
+      "profile": "transolver_matched",
+      "status": "OPTIONAL proposed hyperparameter/data matching, NOT a fair parameter/latency match; not implemented",
+      "evidence": [
+        "ShapeNetCar/main.py",
+        "paper-v3 Table8 / AppendixB"
+      ],
+      "objective_spec": {
+        "kind": "MSE",
+        "volume_channels": [
+          0,
+          1,
+          2
+        ],
+        "surface_channels": [
+          3
+        ],
+        "volume_region": "all points",
+        "surface_region": "surf",
+        "surface_weight": 0.5,
+        "space": "normalized",
+        "reduction": "mean points per channel then mean3 velocity channels; scalar surface pressure mean",
+        "epsilon": null
+      },
+      "evaluation_spec": {
+        "prediction_sampling": "full graph single forward; batch1",
+        "field_metric": {
+          "primary": "physical rL2 of flattened non-surface velocity3 and surface pressure",
+          "additional_release": "normalized channel MSE then aggregate RMSE and rescale std"
+        },
+        "force_metric": "mean abs(pred-true)/true (release signed denominator); Spearman over all test samples",
+        "force_input": "hxh existing surface velocities; raw/cache roots and param0 still hardcoded",
+        "split": "fold0 full heldout list; get_samples retains os.listdir order",
+        "aggregation": "sample mean; per-member and per-seed axes separate; final checkpoint; no best seed",
+        "normalizer": "saved coef_norm; evaluation must not refit",
+        "diagnostic_force_input": "released_bug_volume_velocity+param0 explicit diagnostic ONLY"
+      },
+      "unresolved": [
+        "optional objective/evaluation alignment scope must be explicit; retain release model topology"
+      ],
+      "matching_scope": [
+        "d",
+        "L",
+        "heads",
+        "actual_M",
+        "ffn_ratio",
+        "position/ref",
+        "batch",
+        "lr",
+        "epochs",
+        "weight_decay",
+        "clip",
+        "current_task_data_protocol"
+      ],
+      "not_matched": [
+        "parameter_count",
+        "runtime",
+        "release LinearNO attention topology vs Transolver",
+        "accuracy"
+      ]
+    },
+    {
+      "official_class_path": "models.LinearAttnNeuralOperator.LinearAttentionNeuralOperator",
+      "official_constructor_kwargs": {
+        "space_dim": 7,
+        "n_layers": 8,
+        "n_hidden": 256,
+        "dropout": 0,
+        "n_head": 8,
+        "act": "gelu",
+        "mlp_ratio": 2,
+        "fun_dim": 0,
+        "out_dim": 4,
+        "slice_num": 32,
+        "ref": 8,
+        "unified_pos": true,
+        "linear": true
+      },
+      "model_spec_summary": {
+        "variant": "airfrans",
+        "actual_M": 32,
+        "key_ratio_semantics": "absolute slice_num in release; explicit linearno_rank in target",
+        "input": "Data x[N,7]+64 ref distances from pos[N,2]",
+        "output": "[N,4] vx,vy,p,nut",
+        "temperature": "unused .5 parameter preserved"
+      },
+      "training_config": {
+        "epochs": 398,
+        "lr": 0.001,
+        "optimizer": "Adam",
+        "weight_decay": 0,
+        "batch_size": 1,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "eps": 1e-08,
+        "gradient_clip": null,
+        "scheduler": "OneCycleLR",
+        "total_steps": "(ntrain//batch+1)*epochs",
+        "final_div_factor": 10000,
+        "scheduler_step": "each optimizer step",
+        "validation_cadence": "ep%10==0 or final,20 random resamplings",
+        "subsampling": 32000,
+        "debug": 0,
+        "nmodel": 1,
+        "r": 0.05,
+        "max_neighbors": 64,
+        "checkpoint_role": "final",
+        "seed_policy": "local [0,1,2]; release uncontrolled"
+      },
+      "data_spec": {
+        "files": [
+          "Dataset/manifest.json",
+          "Dataset/<simulation>/<simulation>_internal.vtu",
+          "Dataset/<simulation>/<simulation>_aerofoil.vtp"
+        ],
+        "split": "full_train last10%validation;720train80val200full_test; scarce uses full_test, aoa/reynolds separate",
+        "normalizer": "coef_norm fit train only,eps1e-8; x normalized but pos raw",
+        "checksums": null,
+        "integrity": "NOT RUN",
+        "sdf_source": "VTK internal.point_data[implicit_distance] with sign inversion"
+      },
+      "task": "airfrans",
+      "profile": "transolver_matched",
+      "status": "OPTIONAL proposed hyperparameter/data matching, NOT a fair parameter/latency match; not implemented",
+      "evidence": [
+        "AirfRANS/main.py",
+        "paper-v3 Table8 / AppendixB"
+      ],
+      "objective_spec": {
+        "kind": "MSE",
+        "volume_channels": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "surface_channels": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "volume_region": "~surf",
+        "surface_region": "surf",
+        "surface_weight": 1,
+        "space": "normalized",
+        "reduction": "per-region point mean per channel then4-channel mean; batch1",
+        "epsilon": null
+      },
+      "evaluation_spec": {
+        "prediction_sampling": "random32000 subsets until all coordinate pairs covered; repeated-node prediction mean; physical surface velocities/nut fixed0",
+        "field_metric": {
+          "primary": "normalized MSE4 channels per region",
+          "secondary": "physical pressure rL2 as separately labelled audit metric"
+        },
+        "field_region": [
+          "~surf",
+          "surf"
+        ],
+        "force_metric": "per-sample abs((Ctrue-Cpred)/Ctrue),testmean; C_L Spearman all test",
+        "force_input": "full scattered predicted velocity and pressure; VTK derivatives/normals/length integration; same boundary fixing and rotation",
+        "split": "entire manifest full_test; n_test3 only chooses exports",
+        "aggregation": "sample metrics then member mean/std; seed mean/std kept separate; prediction ensemble not silently substituted",
+        "normalizer": "saved train-fit coef_norm; no eval refit"
+      },
+      "unresolved": [
+        "optional objective/evaluation alignment scope must be explicit; retain release model topology"
+      ],
+      "matching_scope": [
+        "d",
+        "L",
+        "heads",
+        "actual_M",
+        "ffn_ratio",
+        "position/ref",
+        "batch",
+        "lr",
+        "epochs",
+        "weight_decay",
+        "clip",
+        "current_task_data_protocol"
+      ],
+      "not_matched": [
+        "parameter_count",
+        "runtime",
+        "release LinearNO attention topology vs Transolver",
+        "accuracy"
+      ]
+    }
+  ]
+}

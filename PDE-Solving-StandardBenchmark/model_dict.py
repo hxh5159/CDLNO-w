@@ -2,6 +2,9 @@ from model import Transolver_Irregular_Mesh, Transolver_Structured_Mesh_2D, Tran
 
 
 def get_model(args):
+    if args.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):
+        from model import LinearNO
+        return LinearNO
     if args.model == 'msar_lno':
         if getattr(args, 'msar_task', None) in ('ns', 'plasticity'):
             from model import MSAR_Temporal

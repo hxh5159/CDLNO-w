@@ -8,6 +8,8 @@ import copy
 
 
 def strip_msar(tree):
+    from linearno_entry_projection import strip_linearno
+    tree = strip_linearno(tree)
     class Strip(ast.NodeTransformer):
         def visit_FunctionDef(self, node):
             if node.name == 'train' and node.args.args[-1].arg == 'msar_metrics':

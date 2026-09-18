@@ -1,0 +1,50 @@
+{
+  "cwd": "/home/hwz/CDLNO",
+  "stage": "L7",
+  "RUN_REAL_BATCH": false,
+  "RUN_MINIRUN": false,
+  "MAX_STEPS": 0,
+  "checks": [
+    {
+      "command": "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 LINEARNO_L7_MODEL_REPORT=docs/linearno_audit/l7/model.json python -B -m unittest linearno.test_shapenet_model -v",
+      "log": "model-tests.txt"
+    },
+    {
+      "command": "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_car_metrics -v",
+      "log": "metrics-tests.txt"
+    },
+    {
+      "command": "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_legacy -v",
+      "log": "test_legacy.txt"
+    },
+    {
+      "command": "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest test_shapenet_car -v",
+      "log": "test_shapenet_car.txt"
+    },
+    {
+      "command": "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_airfrans_model -v",
+      "log": "test_airfrans_model.txt"
+    },
+    {
+      "command": "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_attention_parity -v",
+      "log": "test_attention_parity.txt"
+    },
+    {
+      "command": "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_attention_structure -v",
+      "log": "test_attention_structure.txt"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python -B docs/linearno_audit/l7/verify_freeze.py",
+      "result": "delivery-check.json"
+    },
+    {
+      "command": "git diff --check"
+    }
+  ],
+  "environment": {
+    "CDLNO_RUNS_ROOT": "/home/hwz/CDLNO-artifacts/linearno-l7-regression-f36x9erk/legacy-output",
+    "LINEARNO_L6_MODEL_REPORT": "docs/linearno_audit/l7/air-regression.json",
+    "LINEARNO_L2_PARITY_REPORT": "docs/linearno_audit/l7/attention-regression.json"
+  },
+  "note": "Actual regressions run as isolated subprocesses from an inline runner. Use fresh report/output paths to preserve evidence. No production task command was run."
+}

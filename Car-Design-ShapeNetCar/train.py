@@ -88,7 +88,10 @@ class NumpyEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def main(device, train_dataset, val_dataset, Net, hparams, path, reg=1, val_iter=1, coef_norm=[], record=None):
+def main(device, train_dataset, val_dataset, Net, hparams, path, reg=1, val_iter=1, coef_norm=[], record=None, linearno_run=None):
+    if linearno_run is not None:
+        return linearno_run.train(device, train_dataset, val_dataset, Net, hparams, path,
+                                 reg, val_iter, coef_norm, record)
     model = Net.to(device)
     msar_training = getattr(getattr(model, 'config', None), 'family', None) == 'msar_lno'
     if msar_training:

@@ -1,0 +1,36 @@
+test_all_preexisting_files_and_absent_frozen_directories (linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) ... ok
+test_eight_real_models_same_weights_and_checkpoints_fresh_workdirs (linearno.test_legacy.LegacyRegression.test_eight_real_models_same_weights_and_checkpoints_fresh_workdirs) ... ok
+test_no_task_parser_factory_imports_from_new_namespace (linearno.test_legacy.LegacyRegression.test_no_task_parser_factory_imports_from_new_namespace) ... ok
+test_real_parser_AST_defaults_unchanged_and_new_flags_isolated (linearno.test_legacy.LegacyRegression.test_real_parser_AST_defaults_unchanged_and_new_flags_isolated) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 53.425s
+
+OK
+test_complete_entry_ast_preserves_original_protocol (test_airfrans.AirFrozenChecks.test_complete_entry_ast_preserves_original_protocol) ... ok
+test_frozen_training_sampling_metrics_and_original_models (test_airfrans.AirFrozenChecks.test_frozen_training_sampling_metrics_and_original_models) ... ok
+test_scripts_configuration_and_evaluation_model_selection (test_airfrans.AirFrozenChecks.test_scripts_configuration_and_evaluation_model_selection) ... ok
+test_32000_synthetic_points_small_width_backward (test_airfrans.AirRealPyG.test_32000_synthetic_points_small_width_backward) ... ok
+test_original_weighted_loss_train_and_test (test_airfrans.AirRealPyG.test_original_weighted_loss_train_and_test) ... ok
+test_sampled_single_graph_ptr_and_multiple_graph_rejection (test_airfrans.AirRealPyG.test_sampled_single_graph_ptr_and_multiple_graph_rejection) ... ok
+test_variable_nodes_batch_and_immutable_fields_no_y_leak (test_airfrans.AirRealPyG.test_variable_nodes_batch_and_immutable_fields_no_y_leak) ... ok
+test_checkpoint_list_type_length_and_strict_keys (test_airfrans.AirWrapperChecks.test_checkpoint_list_type_length_and_strict_keys) ... ok
+test_cli_yaml_inheritance_and_explicit_overrides (test_airfrans.AirWrapperChecks.test_cli_yaml_inheritance_and_explicit_overrides) ... ok
+test_defaults_modes_gradients_placeholder_initialization (test_airfrans.AirWrapperChecks.test_defaults_modes_gradients_placeholder_initialization) ... ok
+test_reference_matches_original_get_grid_and_lifting (test_airfrans.AirWrapperChecks.test_reference_matches_original_get_grid_and_lifting) ... /home/hwz/anaconda3/lib/python3.13/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+ok
+test_sidecar_read_first_member_paths_and_runtime (test_airfrans.AirWrapperChecks.test_sidecar_read_first_member_paths_and_runtime) ... ok
+test_whole_model_and_list_fresh_processes_in_air_cwd (test_airfrans.AirWrapperChecks.test_whole_model_and_list_fresh_processes_in_air_cwd) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 14.096s
+
+OK
+test_air_weighted_loss_and_real_epoch_record_fragment_without_sampling (test_experiment_records.ExperimentRecords.test_air_weighted_loss_and_real_epoch_record_fragment_without_sampling) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.162s
+
+OK
+AirfRANS original frozen files byte-identical: 21

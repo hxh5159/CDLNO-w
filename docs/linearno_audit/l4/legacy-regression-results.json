@@ -1,0 +1,87 @@
+[
+  {
+    "module": "linearno.test_profiles",
+    "tests": 6,
+    "seconds": 0.07740410699989297,
+    "failures": 0,
+    "errors": 0,
+    "skips": []
+  },
+  {
+    "module": "linearno.test_schema",
+    "tests": 5,
+    "seconds": 1.0218765640001948,
+    "failures": 0,
+    "errors": 0,
+    "skips": []
+  },
+  {
+    "module": "linearno.test_legacy",
+    "tests": 4,
+    "seconds": 35.77091049499904,
+    "failures": 0,
+    "errors": 0,
+    "skips": []
+  },
+  {
+    "module": "linearno.test_rng",
+    "tests": 1,
+    "seconds": 73.7973923720001,
+    "failures": 0,
+    "errors": 0,
+    "skips": []
+  },
+  {
+    "module": "linearno.test_attention_parity",
+    "tests": 4,
+    "seconds": 9.98442600099952,
+    "failures": 0,
+    "errors": 0,
+    "skips": []
+  },
+  {
+    "module": "linearno.test_attention_structure",
+    "tests": 10,
+    "seconds": 18.570722291999118,
+    "failures": 0,
+    "errors": 0,
+    "skips": []
+  },
+  {
+    "module": "linearno.test_standard_model",
+    "tests": 5,
+    "seconds": 9.139002403000632,
+    "failures": 0,
+    "errors": 0,
+    "skips": []
+  },
+  {
+    "module": "linearno.test_standard_structure",
+    "tests": 5,
+    "seconds": 6.444121451000683,
+    "failures": 0,
+    "errors": 0,
+    "skips": []
+  },
+  {
+    "module": "test_static_standard.StaticFrozenChecks",
+    "tests": 2,
+    "seconds": 8.253908176999175,
+    "failures": 0,
+    "errors": 0,
+    "skips": []
+  },
+  {
+    "module": "test_experiment_records",
+    "tests": 9,
+    "seconds": 73.20443531700039,
+    "failures": 1,
+    "errors": 0,
+    "skips": [
+      [
+        "test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values (test_experiment_records.ExperimentRecords.test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values) (task='airfrans')",
+        "AirfRANS complete sampled epoch not run: torch_cluster is absent; no dependency was installed"
+      ]
+    ]
+  }
+]

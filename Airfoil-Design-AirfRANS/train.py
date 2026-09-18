@@ -133,7 +133,8 @@ class NumpyEncoder(json.JSONEncoder):
 
 
 def main(device, train_dataset, val_dataset, Net, hparams, path, criterion='MSE', reg=1, val_iter=10,
-         name_mod='GraphSAGE', val_sample=True, record=None, record_member=0, visualization_norm=None):
+         name_mod='GraphSAGE', val_sample=True, record=None, record_member=0, visualization_norm=None,
+         linearno_run=None):
     '''
         Args:
         device (str): device on which you want to do the computation.
@@ -173,7 +174,17 @@ def main(device, train_dataset, val_dataset, Net, hparams, path, criterion='MSE'
     val_surf_var_list = []
     val_vol_var_list = []
 
-    pbar_train = tqdm(range(hparams['nb_epochs']), position=0)
+    linearno_start_epoch = 0
+    if linearno_run is not None:
+        linearno_start_epoch, linearno_history = linearno_run.prepare(
+            model, optimizer, lr_scheduler, train_dataset, val_dataset, criterion, reg, val_iter, val_sample)
+        if linearno_history:
+            (train_loss_surf_list, train_loss_vol_list, loss_surf_var_list, loss_vol_var_list,
+             val_surf_list, val_vol_list, val_surf_var_list, val_vol_var_list) = linearno_history['curves']
+            val_loss = linearno_history['val_loss']
+            if val_surf_list:
+                val_surf = val_surf_list[-1]
+    pbar_train = tqdm(range(linearno_start_epoch, hparams['nb_epochs']), position=0)
     for epoch in pbar_train:
         train_dataset_sampled = []
         for data in train_dataset:
@@ -186,7 +197,7 @@ def main(device, train_dataset, val_dataset, Net, hparams, path, criterion='MSE'
             data_sampled.y = data_sampled.y[idx]
             data_sampled.surf = data_sampled.surf[idx]
 
-            if name_mod != 'PointNet' and name_mod != 'MLP':
+            if name_mod != 'PointNet' and name_mod != 'MLP' and linearno_run is None:
                 data_sampled.edge_index = nng.radius_graph(x=data_sampled.pos.to(device), r=hparams['r'], loop=True,
                                                            max_num_neighbors=int(hparams['max_neighbors'])).cpu()
 
@@ -234,7 +245,7 @@ def main(device, train_dataset, val_dataset, Net, hparams, path, criterion='MSE'
                             data_sampled.y = data_sampled.y[idx]
                             data_sampled.surf = data_sampled.surf[idx]
 
-                            if name_mod != 'PointNet' and name_mod != 'MLP':
+                            if name_mod != 'PointNet' and name_mod != 'MLP' and linearno_run is None:
                                 data_sampled.edge_index = nng.radius_graph(x=data_sampled.pos.to(device),
                                                                            r=hparams['r'], loop=True,
                                                                            max_num_neighbors=int(
@@ -300,6 +311,12 @@ def main(device, train_dataset, val_dataset, Net, hparams, path, criterion='MSE'
             record.record_epoch(epoch + 1, recorded_metrics, member=record_member)
             record.visualize(model, epoch + 1, hparams['nb_epochs'], member=record_member,
                              dataset=val_dataset, coef_norm=visualization_norm, hparams=hparams)
+
+        if linearno_run is not None:
+            linearno_run.complete_epoch(epoch + 1, model, dict(curves=[
+                train_loss_surf_list, train_loss_vol_list, loss_surf_var_list, loss_vol_var_list,
+                val_surf_list, val_vol_list, val_surf_var_list, val_vol_var_list],
+                val_loss=val_loss if val_iter is not None else None))
 
     loss_surf_var_list = np.array(loss_surf_var_list)
     loss_vol_var_list = np.array(loss_vol_var_list)

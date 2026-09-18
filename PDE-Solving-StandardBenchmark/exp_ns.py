@@ -48,6 +48,12 @@ if args.model == 'msar_lno':
 
 os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
 
+if args.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):
+    from linearno_entry import model_kwargs as linearno_model_kwargs, StandardRun as LinearNORun
+    from linearno_entry import start as start_linearno, finish as finish_linearno
+    from linearno_entry import normalizer as linearno_normalizer, verify_data as verify_linearno_data
+    start_linearno(args, 'ns')
+
 data_path = args.data_path + '/NavierStokes_V1e-5_N1200_T20/NavierStokes_V1e-5_N1200_T20.mat'
 # data_path = args.data_path + '/NavierStokes_V1e-5_N1200_T20.mat'
 ntrain = 1000
@@ -70,6 +76,8 @@ def count_parameters(model):
 
 
 def main():
+    if args.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):
+        verify_linearno_data(args)
     r = args.downsample
     h = int(((64 - 1) / r) + 1)
 
@@ -99,13 +107,20 @@ def main():
 
     train_loader = torch.utils.data.DataLoader(torch.utils.data.TensorDataset(pos_train, train_a, train_u),
                                                batch_size=args.batch_size, shuffle=True)
-    test_loader = torch.utils.data.DataLoader(torch.utils.data.TensorDataset(pos_test, test_a, test_u),
-                                              batch_size=args.batch_size, shuffle=False)
+    if args.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):
+        test_loader = torch.utils.data.DataLoader(torch.utils.data.TensorDataset(pos_test, test_a, test_u),
+                                                  batch_size=args._linearno_config['values']['training']['test_batch_size'], shuffle=False)
+    else:
+        test_loader = torch.utils.data.DataLoader(torch.utils.data.TensorDataset(pos_test, test_a, test_u),
+                                                  batch_size=args.batch_size, shuffle=False)
 
     print("Dataloading is over.")
 
     cdlno_run = None
-    if args.model == 'CDLNO':
+    if args.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):
+        model = get_model(args).Model(**linearno_model_kwargs(args, H=h, W=h)).cuda()
+        cdlno_run = LinearNORun(args, model)
+    elif args.model == 'CDLNO':
         model = get_model(args).Model(space_dim=2,
                                       n_layers=args.n_layers,
                                       n_hidden=args.n_hidden,
@@ -159,6 +174,8 @@ def main():
     if cdlno_run is not None and cdlno_run.recorder is not None:
         cdlno_run.recorder.record_training_setup(optimizer, scheduler)
     myloss = TestLoss(size_average=False)
+    if args.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):
+        cdlno_run.prepare(optimizer, scheduler, train_loader, test_loader)
 
     if eval:
         if cdlno_run is not None:
@@ -223,6 +240,9 @@ def main():
                 cdlno_run.recorder.record_metrics(dict(test_full_loss=test_l2_full / ntest))
     else:
         for ep in range(args.epochs):
+            if args.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):
+                if ep < cdlno_run.start_epoch:
+                    continue
 
             model.train()
             if args.model == 'msar_lno':
@@ -302,6 +322,8 @@ def main():
                     cdlno_run.recorder.record_epoch(ep + 1, dict(train_step_loss=train_l2_step / ntrain / (T / step), test_step_loss=test_l2_step / ntest / (T / step), test_full_loss=test_l2_full / ntest, train_full_loss=train_l2_full / ntrain))
                 cdlno_run.recorder.visualize(model, ep + 1, args.epochs, dataset=test_loader.dataset,
                                            grid_shape=(h, h))
+            if args.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):
+                cdlno_run.complete_epoch(ep + 1)
             if ep % 100 == 0:
                 if cdlno_run is not None:
                     cdlno_run.save(model)
@@ -331,3 +353,5 @@ if __name__ == "__main__":
         finish_experiment(args)
     if args.model == 'msar_lno':
         finish_experiment(args)
+    if args.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):
+        finish_linearno(args)

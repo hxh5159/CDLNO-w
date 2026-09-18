@@ -1,0 +1,34 @@
+{
+  "stage": "L7",
+  "status": "BLOCKED",
+  "reason": "Car paper objective space and velocity-channel reduction await explicit user decision; Air decision does not extend to Car",
+  "acceptance": {
+    "car_official_native_cycle": "PASS",
+    "car_formal_parameters": 3852420,
+    "legacy_same_weight": "PASS",
+    "legacy_protocol_AST": "PASS",
+    "default_paper_objective": "BLOCKED; fails before creating run/data reads"
+  },
+  "tests": {
+    "full_initial": {
+      "passed": 102,
+      "failed": 2
+    },
+    "affected_final": {
+      "passed": 34,
+      "failed": 0
+    },
+    "unique_covered_after_fixes": 105,
+    "full_suite_rerun_after_test_only_corrections": false
+  },
+  "not_run": [
+    "real data/files",
+    "default radius_graph path (torch_cluster unavailable)",
+    "real training",
+    "remote Torch2.11/cu128",
+    "L8",
+    "L9",
+    "L10"
+  ],
+  "next_stage": "No L8 before L7 objective is resolved; continuous-stage authorization persists"
+}

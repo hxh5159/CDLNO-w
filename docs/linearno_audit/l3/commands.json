@@ -1,0 +1,19 @@
+{
+  "cwd": "/home/hwz/CDLNO",
+  "regression_command": "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 LINEARNO_L3_PARITY_REPORT=docs/linearno_audit/l3/model-parity.json LINEARNO_L3_STRUCTURE_REPORT=docs/linearno_audit/l3/structure.json LINEARNO_L2_PARITY_REPORT=docs/linearno_audit/l3/l2-parity.json python -B - <<'PY' > docs/linearno_audit/l3/regression-tests.txt 2>&1\nimport unittest,time,json\nfrom pathlib import Path\nmodules=['linearno.test_standard_model','linearno.test_standard_structure','linearno.test_profiles','linearno.test_schema','linearno.test_legacy','linearno.test_rng','linearno.test_attention_parity','linearno.test_attention_structure']\nloader=unittest.TestLoader();overall=True;results=[]\nfor module in modules:\n t=time.perf_counter();result=unittest.TextTestRunner(verbosity=2).run(loader.loadTestsFromName(module))\n results.append(dict(module=module,tests=result.testsRun,seconds=time.perf_counter()-t,failures=len(result.failures),errors=len(result.errors),skips=[(str(case),why) for case,why in result.skipped]));overall &= result.wasSuccessful()\nPath('docs/linearno_audit/l3/regression-results.json').write_text(json.dumps(results,indent=2)+'\\n')\nraise SystemExit(not overall)\nPY",
+  "existing_regression_command": "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B - <<'PY' > docs/linearno_audit/l3/existing-regression-tests.txt 2>&1\nimport unittest,time,json,test_training_state\nfrom pathlib import Path\nloader=unittest.TestLoader();suite=unittest.TestSuite()\nfor name in loader.getTestCaseNames(test_training_state.TrainingStateChecks):\n if name!='test_gpu_fresh_process_identity_onecycle':suite.addTest(test_training_state.TrainingStateChecks(name))\nsuite.addTests(loader.loadTestsFromName('test_experiment_records'))\nfor name in ['test_static_standard.StaticFrozenChecks.test_legacy_ast_recovered_exactly_from_limited_branches','test_temporal_standard.StaticTemporalFreeze.test_complete_temporal_entries_project_to_baseline_ast','test_shapenet_car.FrozenSourceAndScripts.test_original_entries_project_to_baseline_ast','test_shapenet_car.FrozenSourceAndScripts.test_frozen_car_and_airfrans_original_files','test_airfrans.AirFrozenChecks.test_complete_entry_ast_preserves_original_protocol','test_airfrans.AirFrozenChecks.test_frozen_training_sampling_metrics_and_original_models']:\n suite.addTests(loader.loadTestsFromName(name))\nt=time.perf_counter();result=unittest.TextTestRunner(verbosity=2).run(suite)\nPath('docs/linearno_audit/l3/existing-regression-results.json').write_text(json.dumps(dict(tests=result.testsRun,seconds=time.perf_counter()-t,failures=len(result.failures),errors=len(result.errors),skips=[(str(case),why) for case,why in result.skipped]),indent=2)+'\\n')\nraise SystemExit(not result.wasSuccessful())\nPY",
+  "freeze": "PYTHONDONTWRITEBYTECODE=1 python -B docs/linearno_audit/l3/verify_freeze.py > docs/linearno_audit/l3/delivery-check.json",
+  "fixture_generation": "Before Model implementation: official_class() with release_configs(), seed310; measured full state key/shape/count, concatenated float32 state SHA256, CPU RNG SHA256. Native official CUDA pos for NS; no monkeypatch; fixtures/official_standard_models.json.",
+  "reproduction_note": "Use new report paths on future runs; preserve accepted stage evidence.",
+  "resource_limits": {
+    "real_data": false,
+    "minirun": false,
+    "max_steps": 0,
+    "synthetic_gpu_parity": true
+  },
+  "construction_example": {
+    "location": "docs/LINEARNO_L3_REPORT.md",
+    "executed": true,
+    "result": "forward/backward PASS, shape [2,35,1]"
+  }
+}

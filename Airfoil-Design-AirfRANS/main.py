@@ -24,6 +24,10 @@ parser.add_argument('--my_path',
 parser.add_argument('--save_path',
                     default='metrics', type=str)
 args = parse_cdlno_args(parser)
+if args.model == 'LinearNO':
+    from cdlno.linearno.air_entry import run_cli
+    run_cli(args)
+    raise SystemExit(0)
 if args.model == 'CDLNO':
     from cdlno.experiment import start as start_experiment, finish as finish_experiment
     with open('params.yaml', 'r') as config_file:

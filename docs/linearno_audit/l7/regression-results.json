@@ -1,0 +1,72 @@
+[
+  {
+    "module": "linearno.test_legacy",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-m",
+      "unittest",
+      "linearno.test_legacy",
+      "-v"
+    ],
+    "seconds": 74.99547924099898,
+    "returncode": 0,
+    "log": "test_legacy.txt"
+  },
+  {
+    "module": "test_shapenet_car",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-m",
+      "unittest",
+      "test_shapenet_car",
+      "-v"
+    ],
+    "seconds": 22.14523987299981,
+    "returncode": 0,
+    "log": "test_shapenet_car.txt"
+  },
+  {
+    "module": "linearno.test_airfrans_model",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-m",
+      "unittest",
+      "linearno.test_airfrans_model",
+      "-v"
+    ],
+    "seconds": 25.768601997999212,
+    "returncode": 0,
+    "log": "test_airfrans_model.txt"
+  },
+  {
+    "module": "linearno.test_attention_parity",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-m",
+      "unittest",
+      "linearno.test_attention_parity",
+      "-v"
+    ],
+    "seconds": 17.90962336300072,
+    "returncode": 0,
+    "log": "test_attention_parity.txt"
+  },
+  {
+    "module": "linearno.test_attention_structure",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-m",
+      "unittest",
+      "linearno.test_attention_structure",
+      "-v"
+    ],
+    "seconds": 32.41504684699976,
+    "returncode": 0,
+    "log": "test_attention_structure.txt"
+  }
+]

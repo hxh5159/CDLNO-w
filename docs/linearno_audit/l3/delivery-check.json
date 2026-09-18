@@ -1,0 +1,141 @@
+{
+  "status": "PASS",
+  "head": "bb73b3099d3b8ce45bd939156b737453b9ca5454",
+  "baseline_files": 1252,
+  "unchanged": 1251,
+  "changed": [
+    "docs/LINEARNO_IMPLEMENTATION_STATUS.md"
+  ],
+  "new_files": [
+    "PDE-Solving-StandardBenchmark/model/LinearNO.py",
+    "docs/LINEARNO_L3_REPORT.md",
+    "docs/linearno_audit/l3/baseline.json",
+    "docs/linearno_audit/l3/commands.json",
+    "docs/linearno_audit/l3/delivery-check.json",
+    "docs/linearno_audit/l3/environment.json",
+    "docs/linearno_audit/l3/existing-regression-results.json",
+    "docs/linearno_audit/l3/existing-regression-tests.txt",
+    "docs/linearno_audit/l3/initial-model-parity.json",
+    "docs/linearno_audit/l3/initial-model-tests.txt",
+    "docs/linearno_audit/l3/initial-structure-tests.txt",
+    "docs/linearno_audit/l3/initial-structure.json",
+    "docs/linearno_audit/l3/l2-parity.json",
+    "docs/linearno_audit/l3/model-parity.json",
+    "docs/linearno_audit/l3/parity-summary.json",
+    "docs/linearno_audit/l3/regression-results.json",
+    "docs/linearno_audit/l3/regression-tests.txt",
+    "docs/linearno_audit/l3/staged.diff",
+    "docs/linearno_audit/l3/structure.json",
+    "docs/linearno_audit/l3/tracked.diff",
+    "docs/linearno_audit/l3/verify_freeze.py",
+    "tests/linearno/fixtures/official_standard_models.json",
+    "tests/linearno/standard_reference.py",
+    "tests/linearno/standard_support.py",
+    "tests/linearno/test_standard_model.py",
+    "tests/linearno/test_standard_structure.py"
+  ],
+  "new_ignored": [],
+  "python310_syntax": [
+    "PDE-Solving-StandardBenchmark/model/LinearNO.py",
+    "docs/linearno_audit/l3/verify_freeze.py",
+    "tests/linearno/standard_reference.py",
+    "tests/linearno/standard_support.py",
+    "tests/linearno/test_standard_model.py",
+    "tests/linearno/test_standard_structure.py"
+  ],
+  "new_source_hashes": {
+    "PDE-Solving-StandardBenchmark/model/LinearNO.py": "6b63ed88ca38673a9112873df27ebf9f48e5607c8f38d176aa17affd6506cfcb",
+    "docs/linearno_audit/l3/verify_freeze.py": "86ef314c401aa859dbcb950924e92b54add9e61ac225dcb372549b9a0c5e95f5",
+    "tests/linearno/fixtures/official_standard_models.json": "d4610cfde3cb614f2eb1fde234c8dcb939a67d05fde7936901b6b6faaae8d0d7",
+    "tests/linearno/standard_reference.py": "a23c0714eb9aaa23e013ef6a174d54687ea5313fd36ffd0f1574b06ac5fa05c4",
+    "tests/linearno/standard_support.py": "d10c4778c9a6fcce11fd1651a2596cb2fbf69b0a68b261d5373e1d18849c03cb",
+    "tests/linearno/test_standard_model.py": "99e896987ebe51e919beb425a44aaffd70e673d5880e9c53592017f7786b5c4d",
+    "tests/linearno/test_standard_structure.py": "0980983d58641f77d6798c0939e7bd1c6522e6556f88d3fc5d68457ee552e0d1"
+  },
+  "l0_original_unchanged": 1161,
+  "l0_frozen_unchanged": 221,
+  "l1_new_sources_unchanged": true,
+  "l2_new_sources_unchanged": true,
+  "results": [
+    {
+      "module": "linearno.test_standard_model",
+      "tests": 5,
+      "seconds": 6.79725752900049,
+      "failures": 0,
+      "errors": 0,
+      "skips": []
+    },
+    {
+      "module": "linearno.test_standard_structure",
+      "tests": 5,
+      "seconds": 2.7970173690009688,
+      "failures": 0,
+      "errors": 0,
+      "skips": []
+    },
+    {
+      "module": "linearno.test_profiles",
+      "tests": 6,
+      "seconds": 0.05904700300015975,
+      "failures": 0,
+      "errors": 0,
+      "skips": []
+    },
+    {
+      "module": "linearno.test_schema",
+      "tests": 5,
+      "seconds": 0.10677538799973263,
+      "failures": 0,
+      "errors": 0,
+      "skips": []
+    },
+    {
+      "module": "linearno.test_legacy",
+      "tests": 4,
+      "seconds": 17.50615076699978,
+      "failures": 0,
+      "errors": 0,
+      "skips": []
+    },
+    {
+      "module": "linearno.test_rng",
+      "tests": 1,
+      "seconds": 28.187204057998315,
+      "failures": 0,
+      "errors": 0,
+      "skips": []
+    },
+    {
+      "module": "linearno.test_attention_parity",
+      "tests": 4,
+      "seconds": 1.3746194970008219,
+      "failures": 0,
+      "errors": 0,
+      "skips": []
+    },
+    {
+      "module": "linearno.test_attention_structure",
+      "tests": 10,
+      "seconds": 7.225376207001318,
+      "failures": 0,
+      "errors": 0,
+      "skips": []
+    }
+  ],
+  "existing_regression": {
+    "tests": 28,
+    "seconds": 68.30168960300034,
+    "failures": 0,
+    "errors": 0,
+    "skips": [
+      [
+        "test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values (test_experiment_records.ExperimentRecords.test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values) (task='airfrans')",
+        "AirfRANS complete sampled epoch not run: torch_cluster is absent; no dependency was installed"
+      ]
+    ]
+  },
+  "git_status": "?? Airfoil-Design-AirfRANS/models/LinearNO_Attention.py\n?? Car-Design-ShapeNetCar/models/LinearNO_Attention.py\n?? PDE-Solving-StandardBenchmark/model/LinearNO.py\n?? PDE-Solving-StandardBenchmark/model/LinearNO_Attention.py\n?? PLAN_LinearNO/LinearNO_Codex_Staged_Prompts_hxh_Transolver.md\n?? \"PLAN_LinearNO/\\346\\257\\224\\350\\276\\203\\346\\250\\241\\345\\236\\213\\346\\236\\266\\346\\236\\204 (2).md\"\n?? cdlno/linearno/__init__.py\n?? cdlno/linearno/_profile_data.py\n?? cdlno/linearno/attention.py\n?? cdlno/linearno/profiles.py\n?? cdlno/linearno/schema.py\n?? docs/LINEARNO_IMPLEMENTATION_STATUS.md\n?? docs/LINEARNO_L1_REPORT.md\n?? docs/LINEARNO_L2_REPORT.md\n?? docs/LINEARNO_L3_REPORT.md\n?? docs/LINEARNO_REFERENCE_AUDIT.md\n?? docs/LINEARNO_REPRODUCTION_MATRIX.md\n?? docs/linearno_audit/l0/READING_LEDGER.md\n?? docs/linearno_audit/l0/ast-comparison.json\n?? docs/linearno_audit/l0/baseline.json\n?? docs/linearno_audit/l0/cli-inventory.json\n?? docs/linearno_audit/l0/configuration-shells.json\n?? docs/linearno_audit/l0/delivery-check.json\n?? docs/linearno_audit/l0/document-sections.json\n?? docs/linearno_audit/l0/environment.json\n?? docs/linearno_audit/l0/freeze-manifest.json\n?? docs/linearno_audit/l0/ignored-output-policy.json\n?? docs/linearno_audit/l0/legacy-static-results.json\n?? docs/linearno_audit/l0/legacy-static-tests.txt\n?? docs/linearno_audit/l0/manifest.json\n?? docs/linearno_audit/l0/paper-equations.json\n?? docs/linearno_audit/l0/profile-inventory.json\n?? docs/linearno_audit/l0/reading-inventory.json\n?? docs/linearno_audit/l0/regression-index.json\n?? docs/linearno_audit/l0/released-standard-commands.json\n?? docs/linearno_audit/l0/rg-files.txt\n?? docs/linearno_audit/l0/source-anchors.json\n?? docs/linearno_audit/l0/source-contracts.json\n?? docs/linearno_audit/l0/sources.json\n?? docs/linearno_audit/l0/staged.diff\n?? docs/linearno_audit/l0/syntax-checks.json\n?? docs/linearno_audit/l0/tracked.diff\n?? docs/linearno_audit/l0/transolver-comparison.json\n?? docs/linearno_audit/l0/transolver-to-linearno.diff\n?? docs/linearno_audit/l0/upstream-to-target.diff\n?? docs/linearno_audit/l1/baseline.json\n?? docs/linearno_audit/l1/checkpoint-conversion-policy.json\n?? docs/linearno_audit/l1/commands.json\n?? docs/linearno_audit/l1/config-schema-final.txt\n?? docs/linearno_audit/l1/config-schema-tests.txt\n?? docs/linearno_audit/l1/delivery-check.json\n?? docs/linearno_audit/l1/environment.json\n?? docs/linearno_audit/l1/existing-foundations-results.json\n?? docs/linearno_audit/l1/existing-foundations-tests.txt\n?? docs/linearno_audit/l1/final-new-results.json\n?? docs/linearno_audit/l1/final-new-tests.txt\n?? docs/linearno_audit/l1/fixture-generation.txt\n?? docs/linearno_audit/l1/fixture-index.json\n?? docs/linearno_audit/l1/legacy-rng-tests.txt\n?? docs/linearno_audit/l1/old-source-tests.txt\n?? docs/linearno_audit/l1/resolved-profiles.json\n?? docs/linearno_audit/l2/attention-tests.txt\n?? docs/linearno_audit/l2/baseline.json\n?? docs/linearno_audit/l2/commands.json\n?? docs/linearno_audit/l2/delivery-check.json\n?? docs/linearno_audit/l2/environment.json\n?? docs/linearno_audit/l2/existing-regression-results.json\n?? docs/linearno_audit/l2/existing-regression-tests.txt\n?? docs/linearno_audit/l2/final-attention-results.json\n?? docs/linearno_audit/l2/final-attention-tests.txt\n?? docs/linearno_audit/l2/initial-parity-tests.txt\n?? docs/linearno_audit/l2/initial-parity.json\n?? docs/linearno_audit/l2/initialization-investigation.json\n?? docs/linearno_audit/l2/l1-regression-results.json\n?? docs/linearno_audit/l2/l1-regression-tests.txt\n?? docs/linearno_audit/l2/oracle-table.md\n?? docs/linearno_audit/l2/parity-summary.json\n?? docs/linearno_audit/l2/parity-tests.txt\n?? docs/linearno_audit/l2/parity.json\n?? docs/linearno_audit/l2/structure-tests.txt\n?? docs/linearno_audit/l3/baseline.json\n?? docs/linearno_audit/l3/commands.json\n?? docs/linearno_audit/l3/delivery-check.json\n?? docs/linearno_audit/l3/environment.json\n?? docs/linearno_audit/l3/existing-regression-results.json\n?? docs/linearno_audit/l3/existing-regression-tests.txt\n?? docs/linearno_audit/l3/initial-model-parity.json\n?? docs/linearno_audit/l3/initial-model-tests.txt\n?? docs/linearno_audit/l3/initial-structure-tests.txt\n?? docs/linearno_audit/l3/initial-structure.json\n?? docs/linearno_audit/l3/l2-parity.json\n?? docs/linearno_audit/l3/model-parity.json\n?? docs/linearno_audit/l3/parity-summary.json\n?? docs/linearno_audit/l3/regression-results.json\n?? docs/linearno_audit/l3/regression-tests.txt\n?? docs/linearno_audit/l3/staged.diff\n?? docs/linearno_audit/l3/structure.json\n?? docs/linearno_audit/l3/tracked.diff\n?? docs/linearno_audit/l3/verify_freeze.py\n?? tests/linearno/README.md\n?? tests/linearno/__init__.py\n?? tests/linearno/attention_reference.py\n?? tests/linearno/attention_support.py\n?? tests/linearno/capture_fixtures.py\n?? tests/linearno/fixtures/official_attention_sources.json\n?? tests/linearno/fixtures/official_standard_models.json\n?? tests/linearno/fixtures/transolver_cpu.json\n?? tests/linearno/legacy_worker.py\n?? tests/linearno/rng_worker.py\n?? tests/linearno/standard_reference.py\n?? tests/linearno/standard_support.py\n?? tests/linearno/test_attention_parity.py\n?? tests/linearno/test_attention_structure.py\n?? tests/linearno/test_legacy.py\n?? tests/linearno/test_profiles.py\n?? tests/linearno/test_rng.py\n?? tests/linearno/test_schema.py\n?? tests/linearno/test_standard_model.py\n?? tests/linearno/test_standard_structure.py\n",
+  "frozen_path_status": "?? Airfoil-Design-AirfRANS/models/LinearNO_Attention.py\n?? Car-Design-ShapeNetCar/models/LinearNO_Attention.py\n?? PDE-Solving-StandardBenchmark/model/LinearNO.py\n?? PDE-Solving-StandardBenchmark/model/LinearNO_Attention.py\n?? cdlno/linearno/__init__.py\n?? cdlno/linearno/_profile_data.py\n?? cdlno/linearno/attention.py\n?? cdlno/linearno/profiles.py\n?? cdlno/linearno/schema.py\n?? tests/linearno/README.md\n?? tests/linearno/__init__.py\n?? tests/linearno/attention_reference.py\n?? tests/linearno/attention_support.py\n?? tests/linearno/capture_fixtures.py\n?? tests/linearno/fixtures/official_attention_sources.json\n?? tests/linearno/fixtures/official_standard_models.json\n?? tests/linearno/fixtures/transolver_cpu.json\n?? tests/linearno/legacy_worker.py\n?? tests/linearno/rng_worker.py\n?? tests/linearno/standard_reference.py\n?? tests/linearno/standard_support.py\n?? tests/linearno/test_attention_parity.py\n?? tests/linearno/test_attention_structure.py\n?? tests/linearno/test_legacy.py\n?? tests/linearno/test_profiles.py\n?? tests/linearno/test_rng.py\n?? tests/linearno/test_schema.py\n?? tests/linearno/test_standard_model.py\n?? tests/linearno/test_standard_structure.py\n",
+  "monitor": "N/A: absent at L0 and delivery",
+  "tracked_diff": ""
+}

@@ -1,0 +1,3543 @@
+{
+  "source": {
+    "path": "Standard_PDE_Benchmark/model/LinearAttnNeuralOperator.py",
+    "sha256": "2019eacb9c6b61b3b7ede6a94e4ebfa3acb6ab95b25c1ab22299ab3dcc6c79d6"
+  },
+  "embedding_sha256": "e3a4f71c4378b7cce09a43b8c306d6d8a17edb4cd69db5eb069e55a57d2affe2",
+  "commit": "3f2b80df13c17a09e250f2ebe4d4ecdfd4acf269",
+  "seed": 310,
+  "torch": "2.13.0+cu130",
+  "scope": "unchanged official full Model constructed BEFORE L3 implementation; NS native CUDA position",
+  "tasks": {
+    "darcy": {
+      "config": {
+        "space_dim": 2,
+        "n_layers": 8,
+        "n_hidden": 128,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": false,
+        "act": "gelu",
+        "mlp_ratio": 1,
+        "fun_dim": 1,
+        "out_dim": 1,
+        "key_ratio": 64,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 85,
+        "W": 85,
+        "args": {
+          "model": "conv_temp"
+        }
+      },
+      "parameters": 1766145,
+      "keys": {
+        "placeholder": [
+          128
+        ],
+        "preprocess.linear_pre.0.weight": [
+          256,
+          3
+        ],
+        "preprocess.linear_pre.0.bias": [
+          256
+        ],
+        "preprocess.linear_post.weight": [
+          128,
+          256
+        ],
+        "preprocess.linear_post.bias": [
+          128
+        ],
+        "blocks.0.ln_1.weight": [
+          128
+        ],
+        "blocks.0.ln_1.bias": [
+          128
+        ],
+        "blocks.0.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.0.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.0.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.0.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.0.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.0.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.0.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.0.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.0.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.0.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.0.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.0.ln_2.weight": [
+          128
+        ],
+        "blocks.0.ln_2.bias": [
+          128
+        ],
+        "blocks.0.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.0.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.0.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.0.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.1.ln_1.weight": [
+          128
+        ],
+        "blocks.1.ln_1.bias": [
+          128
+        ],
+        "blocks.1.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.1.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.1.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.1.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.1.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.1.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.1.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.1.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.1.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.1.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.1.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.1.ln_2.weight": [
+          128
+        ],
+        "blocks.1.ln_2.bias": [
+          128
+        ],
+        "blocks.1.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.1.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.1.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.1.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.2.ln_1.weight": [
+          128
+        ],
+        "blocks.2.ln_1.bias": [
+          128
+        ],
+        "blocks.2.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.2.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.2.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.2.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.2.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.2.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.2.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.2.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.2.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.2.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.2.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.2.ln_2.weight": [
+          128
+        ],
+        "blocks.2.ln_2.bias": [
+          128
+        ],
+        "blocks.2.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.2.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.2.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.2.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.3.ln_1.weight": [
+          128
+        ],
+        "blocks.3.ln_1.bias": [
+          128
+        ],
+        "blocks.3.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.3.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.3.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.3.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.3.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.3.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.3.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.3.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.3.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.3.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.3.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.3.ln_2.weight": [
+          128
+        ],
+        "blocks.3.ln_2.bias": [
+          128
+        ],
+        "blocks.3.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.3.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.3.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.3.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.4.ln_1.weight": [
+          128
+        ],
+        "blocks.4.ln_1.bias": [
+          128
+        ],
+        "blocks.4.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.4.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.4.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.4.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.4.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.4.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.4.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.4.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.4.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.4.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.4.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.4.ln_2.weight": [
+          128
+        ],
+        "blocks.4.ln_2.bias": [
+          128
+        ],
+        "blocks.4.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.4.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.4.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.4.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.5.ln_1.weight": [
+          128
+        ],
+        "blocks.5.ln_1.bias": [
+          128
+        ],
+        "blocks.5.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.5.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.5.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.5.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.5.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.5.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.5.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.5.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.5.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.5.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.5.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.5.ln_2.weight": [
+          128
+        ],
+        "blocks.5.ln_2.bias": [
+          128
+        ],
+        "blocks.5.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.5.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.5.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.5.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.6.ln_1.weight": [
+          128
+        ],
+        "blocks.6.ln_1.bias": [
+          128
+        ],
+        "blocks.6.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.6.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.6.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.6.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.6.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.6.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.6.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.6.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.6.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.6.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.6.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.6.ln_2.weight": [
+          128
+        ],
+        "blocks.6.ln_2.bias": [
+          128
+        ],
+        "blocks.6.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.6.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.6.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.6.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.7.ln_1.weight": [
+          128
+        ],
+        "blocks.7.ln_1.bias": [
+          128
+        ],
+        "blocks.7.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.7.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.7.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.7.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.7.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.7.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.7.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.7.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.7.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.7.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.7.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.7.ln_2.weight": [
+          128
+        ],
+        "blocks.7.ln_2.bias": [
+          128
+        ],
+        "blocks.7.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.7.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.7.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.7.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.7.ln_3.weight": [
+          128
+        ],
+        "blocks.7.ln_3.bias": [
+          128
+        ],
+        "blocks.7.mlp2.weight": [
+          1,
+          128
+        ],
+        "blocks.7.mlp2.bias": [
+          1
+        ]
+      },
+      "init_hash": "15ed44cfdf1ba7c71fa2042d0aa85fbdc9f7c324741fd9c0933f45b01626f8e8",
+      "rng_hash": "1489f74025a15094c20789d330731aadddf91c2c6c483284dd362a4396da416b",
+      "position_device": null
+    },
+    "elasticity": {
+      "config": {
+        "space_dim": 2,
+        "n_layers": 8,
+        "n_hidden": 128,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": false,
+        "act": "gelu",
+        "mlp_ratio": 1,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "key_ratio": 64,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 85,
+        "W": 85,
+        "args": {
+          "model": "temp"
+        }
+      },
+      "parameters": 585217,
+      "keys": {
+        "placeholder": [
+          128
+        ],
+        "preprocess.linear_pre.0.weight": [
+          256,
+          2
+        ],
+        "preprocess.linear_pre.0.bias": [
+          256
+        ],
+        "preprocess.linear_post.weight": [
+          128,
+          256
+        ],
+        "preprocess.linear_post.bias": [
+          128
+        ],
+        "blocks.0.ln_1.weight": [
+          128
+        ],
+        "blocks.0.ln_1.bias": [
+          128
+        ],
+        "blocks.0.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.0.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.0.Attn.in_project_x.weight": [
+          128,
+          128
+        ],
+        "blocks.0.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.0.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.0.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.0.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.0.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.0.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.0.ln_2.weight": [
+          128
+        ],
+        "blocks.0.ln_2.bias": [
+          128
+        ],
+        "blocks.0.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.0.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.0.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.0.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.1.ln_1.weight": [
+          128
+        ],
+        "blocks.1.ln_1.bias": [
+          128
+        ],
+        "blocks.1.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.1.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.1.Attn.in_project_x.weight": [
+          128,
+          128
+        ],
+        "blocks.1.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.1.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.1.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.1.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.1.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.1.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.1.ln_2.weight": [
+          128
+        ],
+        "blocks.1.ln_2.bias": [
+          128
+        ],
+        "blocks.1.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.1.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.1.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.1.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.2.ln_1.weight": [
+          128
+        ],
+        "blocks.2.ln_1.bias": [
+          128
+        ],
+        "blocks.2.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.2.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.2.Attn.in_project_x.weight": [
+          128,
+          128
+        ],
+        "blocks.2.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.2.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.2.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.2.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.2.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.2.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.2.ln_2.weight": [
+          128
+        ],
+        "blocks.2.ln_2.bias": [
+          128
+        ],
+        "blocks.2.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.2.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.2.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.2.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.3.ln_1.weight": [
+          128
+        ],
+        "blocks.3.ln_1.bias": [
+          128
+        ],
+        "blocks.3.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.3.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.3.Attn.in_project_x.weight": [
+          128,
+          128
+        ],
+        "blocks.3.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.3.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.3.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.3.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.3.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.3.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.3.ln_2.weight": [
+          128
+        ],
+        "blocks.3.ln_2.bias": [
+          128
+        ],
+        "blocks.3.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.3.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.3.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.3.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.4.ln_1.weight": [
+          128
+        ],
+        "blocks.4.ln_1.bias": [
+          128
+        ],
+        "blocks.4.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.4.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.4.Attn.in_project_x.weight": [
+          128,
+          128
+        ],
+        "blocks.4.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.4.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.4.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.4.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.4.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.4.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.4.ln_2.weight": [
+          128
+        ],
+        "blocks.4.ln_2.bias": [
+          128
+        ],
+        "blocks.4.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.4.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.4.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.4.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.5.ln_1.weight": [
+          128
+        ],
+        "blocks.5.ln_1.bias": [
+          128
+        ],
+        "blocks.5.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.5.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.5.Attn.in_project_x.weight": [
+          128,
+          128
+        ],
+        "blocks.5.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.5.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.5.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.5.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.5.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.5.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.5.ln_2.weight": [
+          128
+        ],
+        "blocks.5.ln_2.bias": [
+          128
+        ],
+        "blocks.5.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.5.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.5.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.5.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.6.ln_1.weight": [
+          128
+        ],
+        "blocks.6.ln_1.bias": [
+          128
+        ],
+        "blocks.6.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.6.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.6.Attn.in_project_x.weight": [
+          128,
+          128
+        ],
+        "blocks.6.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.6.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.6.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.6.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.6.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.6.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.6.ln_2.weight": [
+          128
+        ],
+        "blocks.6.ln_2.bias": [
+          128
+        ],
+        "blocks.6.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.6.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.6.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.6.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.7.ln_1.weight": [
+          128
+        ],
+        "blocks.7.ln_1.bias": [
+          128
+        ],
+        "blocks.7.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.7.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.7.Attn.in_project_x.weight": [
+          128,
+          128
+        ],
+        "blocks.7.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.7.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.7.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.7.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.7.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.7.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.7.ln_2.weight": [
+          128
+        ],
+        "blocks.7.ln_2.bias": [
+          128
+        ],
+        "blocks.7.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.7.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.7.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.7.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.7.ln_3.weight": [
+          128
+        ],
+        "blocks.7.ln_3.bias": [
+          128
+        ],
+        "blocks.7.mlp2.weight": [
+          1,
+          128
+        ],
+        "blocks.7.mlp2.bias": [
+          1
+        ]
+      },
+      "init_hash": "3fee3e9b505af33822ea837e5c143a359bbd0481f179b40a619c1cb660cf366d",
+      "rng_hash": "d2296a49715b4277f2dfbd7891adf7e138f8f173886571edf080f5437c6a2277",
+      "position_device": null
+    },
+    "ns": {
+      "config": {
+        "space_dim": 2,
+        "n_layers": 8,
+        "n_hidden": 256,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": false,
+        "act": "gelu",
+        "mlp_ratio": 2,
+        "fun_dim": 10,
+        "out_dim": 1,
+        "key_ratio": 32,
+        "ref": 10,
+        "unified_pos": true,
+        "H": 64,
+        "W": 64,
+        "args": {
+          "model": "no_temp"
+        }
+      },
+      "parameters": 3377921,
+      "keys": {
+        "placeholder": [
+          256
+        ],
+        "preprocess.linear_pre.0.weight": [
+          512,
+          110
+        ],
+        "preprocess.linear_pre.0.bias": [
+          512
+        ],
+        "preprocess.linear_post.weight": [
+          256,
+          512
+        ],
+        "preprocess.linear_post.bias": [
+          256
+        ],
+        "blocks.0.ln_1.weight": [
+          256
+        ],
+        "blocks.0.ln_1.bias": [
+          256
+        ],
+        "blocks.0.Attn.in_project_x.weight": [
+          256,
+          256
+        ],
+        "blocks.0.Attn.in_project_x.bias": [
+          256
+        ],
+        "blocks.0.Attn.to_q.weight": [
+          32,
+          32
+        ],
+        "blocks.0.Attn.to_k.weight": [
+          32,
+          32
+        ],
+        "blocks.0.Attn.to_v.weight": [
+          32,
+          32
+        ],
+        "blocks.0.Attn.to_out.0.weight": [
+          256,
+          256
+        ],
+        "blocks.0.Attn.to_out.0.bias": [
+          256
+        ],
+        "blocks.0.ln_2.weight": [
+          256
+        ],
+        "blocks.0.ln_2.bias": [
+          256
+        ],
+        "blocks.0.mlp.linear_pre.0.weight": [
+          512,
+          256
+        ],
+        "blocks.0.mlp.linear_pre.0.bias": [
+          512
+        ],
+        "blocks.0.mlp.linear_post.weight": [
+          256,
+          512
+        ],
+        "blocks.0.mlp.linear_post.bias": [
+          256
+        ],
+        "blocks.1.ln_1.weight": [
+          256
+        ],
+        "blocks.1.ln_1.bias": [
+          256
+        ],
+        "blocks.1.Attn.in_project_x.weight": [
+          256,
+          256
+        ],
+        "blocks.1.Attn.in_project_x.bias": [
+          256
+        ],
+        "blocks.1.Attn.to_q.weight": [
+          32,
+          32
+        ],
+        "blocks.1.Attn.to_k.weight": [
+          32,
+          32
+        ],
+        "blocks.1.Attn.to_v.weight": [
+          32,
+          32
+        ],
+        "blocks.1.Attn.to_out.0.weight": [
+          256,
+          256
+        ],
+        "blocks.1.Attn.to_out.0.bias": [
+          256
+        ],
+        "blocks.1.ln_2.weight": [
+          256
+        ],
+        "blocks.1.ln_2.bias": [
+          256
+        ],
+        "blocks.1.mlp.linear_pre.0.weight": [
+          512,
+          256
+        ],
+        "blocks.1.mlp.linear_pre.0.bias": [
+          512
+        ],
+        "blocks.1.mlp.linear_post.weight": [
+          256,
+          512
+        ],
+        "blocks.1.mlp.linear_post.bias": [
+          256
+        ],
+        "blocks.2.ln_1.weight": [
+          256
+        ],
+        "blocks.2.ln_1.bias": [
+          256
+        ],
+        "blocks.2.Attn.in_project_x.weight": [
+          256,
+          256
+        ],
+        "blocks.2.Attn.in_project_x.bias": [
+          256
+        ],
+        "blocks.2.Attn.to_q.weight": [
+          32,
+          32
+        ],
+        "blocks.2.Attn.to_k.weight": [
+          32,
+          32
+        ],
+        "blocks.2.Attn.to_v.weight": [
+          32,
+          32
+        ],
+        "blocks.2.Attn.to_out.0.weight": [
+          256,
+          256
+        ],
+        "blocks.2.Attn.to_out.0.bias": [
+          256
+        ],
+        "blocks.2.ln_2.weight": [
+          256
+        ],
+        "blocks.2.ln_2.bias": [
+          256
+        ],
+        "blocks.2.mlp.linear_pre.0.weight": [
+          512,
+          256
+        ],
+        "blocks.2.mlp.linear_pre.0.bias": [
+          512
+        ],
+        "blocks.2.mlp.linear_post.weight": [
+          256,
+          512
+        ],
+        "blocks.2.mlp.linear_post.bias": [
+          256
+        ],
+        "blocks.3.ln_1.weight": [
+          256
+        ],
+        "blocks.3.ln_1.bias": [
+          256
+        ],
+        "blocks.3.Attn.in_project_x.weight": [
+          256,
+          256
+        ],
+        "blocks.3.Attn.in_project_x.bias": [
+          256
+        ],
+        "blocks.3.Attn.to_q.weight": [
+          32,
+          32
+        ],
+        "blocks.3.Attn.to_k.weight": [
+          32,
+          32
+        ],
+        "blocks.3.Attn.to_v.weight": [
+          32,
+          32
+        ],
+        "blocks.3.Attn.to_out.0.weight": [
+          256,
+          256
+        ],
+        "blocks.3.Attn.to_out.0.bias": [
+          256
+        ],
+        "blocks.3.ln_2.weight": [
+          256
+        ],
+        "blocks.3.ln_2.bias": [
+          256
+        ],
+        "blocks.3.mlp.linear_pre.0.weight": [
+          512,
+          256
+        ],
+        "blocks.3.mlp.linear_pre.0.bias": [
+          512
+        ],
+        "blocks.3.mlp.linear_post.weight": [
+          256,
+          512
+        ],
+        "blocks.3.mlp.linear_post.bias": [
+          256
+        ],
+        "blocks.4.ln_1.weight": [
+          256
+        ],
+        "blocks.4.ln_1.bias": [
+          256
+        ],
+        "blocks.4.Attn.in_project_x.weight": [
+          256,
+          256
+        ],
+        "blocks.4.Attn.in_project_x.bias": [
+          256
+        ],
+        "blocks.4.Attn.to_q.weight": [
+          32,
+          32
+        ],
+        "blocks.4.Attn.to_k.weight": [
+          32,
+          32
+        ],
+        "blocks.4.Attn.to_v.weight": [
+          32,
+          32
+        ],
+        "blocks.4.Attn.to_out.0.weight": [
+          256,
+          256
+        ],
+        "blocks.4.Attn.to_out.0.bias": [
+          256
+        ],
+        "blocks.4.ln_2.weight": [
+          256
+        ],
+        "blocks.4.ln_2.bias": [
+          256
+        ],
+        "blocks.4.mlp.linear_pre.0.weight": [
+          512,
+          256
+        ],
+        "blocks.4.mlp.linear_pre.0.bias": [
+          512
+        ],
+        "blocks.4.mlp.linear_post.weight": [
+          256,
+          512
+        ],
+        "blocks.4.mlp.linear_post.bias": [
+          256
+        ],
+        "blocks.5.ln_1.weight": [
+          256
+        ],
+        "blocks.5.ln_1.bias": [
+          256
+        ],
+        "blocks.5.Attn.in_project_x.weight": [
+          256,
+          256
+        ],
+        "blocks.5.Attn.in_project_x.bias": [
+          256
+        ],
+        "blocks.5.Attn.to_q.weight": [
+          32,
+          32
+        ],
+        "blocks.5.Attn.to_k.weight": [
+          32,
+          32
+        ],
+        "blocks.5.Attn.to_v.weight": [
+          32,
+          32
+        ],
+        "blocks.5.Attn.to_out.0.weight": [
+          256,
+          256
+        ],
+        "blocks.5.Attn.to_out.0.bias": [
+          256
+        ],
+        "blocks.5.ln_2.weight": [
+          256
+        ],
+        "blocks.5.ln_2.bias": [
+          256
+        ],
+        "blocks.5.mlp.linear_pre.0.weight": [
+          512,
+          256
+        ],
+        "blocks.5.mlp.linear_pre.0.bias": [
+          512
+        ],
+        "blocks.5.mlp.linear_post.weight": [
+          256,
+          512
+        ],
+        "blocks.5.mlp.linear_post.bias": [
+          256
+        ],
+        "blocks.6.ln_1.weight": [
+          256
+        ],
+        "blocks.6.ln_1.bias": [
+          256
+        ],
+        "blocks.6.Attn.in_project_x.weight": [
+          256,
+          256
+        ],
+        "blocks.6.Attn.in_project_x.bias": [
+          256
+        ],
+        "blocks.6.Attn.to_q.weight": [
+          32,
+          32
+        ],
+        "blocks.6.Attn.to_k.weight": [
+          32,
+          32
+        ],
+        "blocks.6.Attn.to_v.weight": [
+          32,
+          32
+        ],
+        "blocks.6.Attn.to_out.0.weight": [
+          256,
+          256
+        ],
+        "blocks.6.Attn.to_out.0.bias": [
+          256
+        ],
+        "blocks.6.ln_2.weight": [
+          256
+        ],
+        "blocks.6.ln_2.bias": [
+          256
+        ],
+        "blocks.6.mlp.linear_pre.0.weight": [
+          512,
+          256
+        ],
+        "blocks.6.mlp.linear_pre.0.bias": [
+          512
+        ],
+        "blocks.6.mlp.linear_post.weight": [
+          256,
+          512
+        ],
+        "blocks.6.mlp.linear_post.bias": [
+          256
+        ],
+        "blocks.7.ln_1.weight": [
+          256
+        ],
+        "blocks.7.ln_1.bias": [
+          256
+        ],
+        "blocks.7.Attn.in_project_x.weight": [
+          256,
+          256
+        ],
+        "blocks.7.Attn.in_project_x.bias": [
+          256
+        ],
+        "blocks.7.Attn.to_q.weight": [
+          32,
+          32
+        ],
+        "blocks.7.Attn.to_k.weight": [
+          32,
+          32
+        ],
+        "blocks.7.Attn.to_v.weight": [
+          32,
+          32
+        ],
+        "blocks.7.Attn.to_out.0.weight": [
+          256,
+          256
+        ],
+        "blocks.7.Attn.to_out.0.bias": [
+          256
+        ],
+        "blocks.7.ln_2.weight": [
+          256
+        ],
+        "blocks.7.ln_2.bias": [
+          256
+        ],
+        "blocks.7.mlp.linear_pre.0.weight": [
+          512,
+          256
+        ],
+        "blocks.7.mlp.linear_pre.0.bias": [
+          512
+        ],
+        "blocks.7.mlp.linear_post.weight": [
+          256,
+          512
+        ],
+        "blocks.7.mlp.linear_post.bias": [
+          256
+        ],
+        "blocks.7.ln_3.weight": [
+          256
+        ],
+        "blocks.7.ln_3.bias": [
+          256
+        ],
+        "blocks.7.mlp2.weight": [
+          1,
+          256
+        ],
+        "blocks.7.mlp2.bias": [
+          1
+        ]
+      },
+      "init_hash": "8149d1559a59f80ea21b6cbd5d273a6876c355d95f3162aee992811ac2cb3d00",
+      "rng_hash": "445286887cf2694328061a1397e7f7e2448151d8d8371f980d0f7dc1ccfdb551",
+      "position_device": "cuda:0"
+    },
+    "pipe": {
+      "config": {
+        "space_dim": 2,
+        "n_layers": 8,
+        "n_hidden": 128,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": false,
+        "act": "gelu",
+        "mlp_ratio": 1,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "key_ratio": 64,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 129,
+        "W": 129,
+        "args": {
+          "model": "conv_temp"
+        }
+      },
+      "parameters": 1765889,
+      "keys": {
+        "placeholder": [
+          128
+        ],
+        "preprocess.linear_pre.0.weight": [
+          256,
+          2
+        ],
+        "preprocess.linear_pre.0.bias": [
+          256
+        ],
+        "preprocess.linear_post.weight": [
+          128,
+          256
+        ],
+        "preprocess.linear_post.bias": [
+          128
+        ],
+        "blocks.0.ln_1.weight": [
+          128
+        ],
+        "blocks.0.ln_1.bias": [
+          128
+        ],
+        "blocks.0.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.0.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.0.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.0.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.0.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.0.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.0.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.0.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.0.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.0.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.0.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.0.ln_2.weight": [
+          128
+        ],
+        "blocks.0.ln_2.bias": [
+          128
+        ],
+        "blocks.0.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.0.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.0.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.0.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.1.ln_1.weight": [
+          128
+        ],
+        "blocks.1.ln_1.bias": [
+          128
+        ],
+        "blocks.1.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.1.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.1.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.1.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.1.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.1.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.1.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.1.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.1.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.1.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.1.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.1.ln_2.weight": [
+          128
+        ],
+        "blocks.1.ln_2.bias": [
+          128
+        ],
+        "blocks.1.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.1.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.1.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.1.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.2.ln_1.weight": [
+          128
+        ],
+        "blocks.2.ln_1.bias": [
+          128
+        ],
+        "blocks.2.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.2.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.2.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.2.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.2.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.2.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.2.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.2.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.2.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.2.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.2.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.2.ln_2.weight": [
+          128
+        ],
+        "blocks.2.ln_2.bias": [
+          128
+        ],
+        "blocks.2.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.2.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.2.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.2.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.3.ln_1.weight": [
+          128
+        ],
+        "blocks.3.ln_1.bias": [
+          128
+        ],
+        "blocks.3.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.3.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.3.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.3.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.3.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.3.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.3.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.3.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.3.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.3.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.3.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.3.ln_2.weight": [
+          128
+        ],
+        "blocks.3.ln_2.bias": [
+          128
+        ],
+        "blocks.3.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.3.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.3.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.3.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.4.ln_1.weight": [
+          128
+        ],
+        "blocks.4.ln_1.bias": [
+          128
+        ],
+        "blocks.4.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.4.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.4.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.4.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.4.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.4.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.4.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.4.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.4.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.4.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.4.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.4.ln_2.weight": [
+          128
+        ],
+        "blocks.4.ln_2.bias": [
+          128
+        ],
+        "blocks.4.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.4.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.4.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.4.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.5.ln_1.weight": [
+          128
+        ],
+        "blocks.5.ln_1.bias": [
+          128
+        ],
+        "blocks.5.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.5.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.5.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.5.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.5.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.5.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.5.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.5.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.5.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.5.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.5.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.5.ln_2.weight": [
+          128
+        ],
+        "blocks.5.ln_2.bias": [
+          128
+        ],
+        "blocks.5.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.5.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.5.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.5.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.6.ln_1.weight": [
+          128
+        ],
+        "blocks.6.ln_1.bias": [
+          128
+        ],
+        "blocks.6.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.6.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.6.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.6.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.6.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.6.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.6.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.6.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.6.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.6.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.6.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.6.ln_2.weight": [
+          128
+        ],
+        "blocks.6.ln_2.bias": [
+          128
+        ],
+        "blocks.6.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.6.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.6.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.6.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.7.ln_1.weight": [
+          128
+        ],
+        "blocks.7.ln_1.bias": [
+          128
+        ],
+        "blocks.7.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.7.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.7.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.7.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.7.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.7.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.7.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.7.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.7.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.7.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.7.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.7.ln_2.weight": [
+          128
+        ],
+        "blocks.7.ln_2.bias": [
+          128
+        ],
+        "blocks.7.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.7.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.7.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.7.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.7.ln_3.weight": [
+          128
+        ],
+        "blocks.7.ln_3.bias": [
+          128
+        ],
+        "blocks.7.mlp2.weight": [
+          1,
+          128
+        ],
+        "blocks.7.mlp2.bias": [
+          1
+        ]
+      },
+      "init_hash": "8c83cc512d20a71fd2c8314cba488bb387f079e57be6eea4948b15076b5f0efe",
+      "rng_hash": "8957dd163dc023ee375acf4da63171837334bb7df28ce807bb7dbbe84694cff4",
+      "position_device": null
+    },
+    "plasticity": {
+      "config": {
+        "space_dim": 2,
+        "n_layers": 8,
+        "n_hidden": 128,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": true,
+        "act": "gelu",
+        "mlp_ratio": 1,
+        "fun_dim": 1,
+        "out_dim": 4,
+        "key_ratio": 64,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 101,
+        "W": 31,
+        "args": {
+          "model": "conv"
+        }
+      },
+      "parameters": 1799428,
+      "keys": {
+        "placeholder": [
+          128
+        ],
+        "preprocess.linear_pre.0.weight": [
+          256,
+          3
+        ],
+        "preprocess.linear_pre.0.bias": [
+          256
+        ],
+        "preprocess.linear_post.weight": [
+          128,
+          256
+        ],
+        "preprocess.linear_post.bias": [
+          128
+        ],
+        "time_fc.0.weight": [
+          128,
+          128
+        ],
+        "time_fc.0.bias": [
+          128
+        ],
+        "time_fc.2.weight": [
+          128,
+          128
+        ],
+        "time_fc.2.bias": [
+          128
+        ],
+        "blocks.0.ln_1.weight": [
+          128
+        ],
+        "blocks.0.ln_1.bias": [
+          128
+        ],
+        "blocks.0.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.0.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.0.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.0.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.0.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.0.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.0.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.0.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.0.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.0.ln_2.weight": [
+          128
+        ],
+        "blocks.0.ln_2.bias": [
+          128
+        ],
+        "blocks.0.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.0.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.0.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.0.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.1.ln_1.weight": [
+          128
+        ],
+        "blocks.1.ln_1.bias": [
+          128
+        ],
+        "blocks.1.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.1.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.1.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.1.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.1.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.1.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.1.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.1.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.1.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.1.ln_2.weight": [
+          128
+        ],
+        "blocks.1.ln_2.bias": [
+          128
+        ],
+        "blocks.1.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.1.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.1.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.1.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.2.ln_1.weight": [
+          128
+        ],
+        "blocks.2.ln_1.bias": [
+          128
+        ],
+        "blocks.2.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.2.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.2.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.2.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.2.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.2.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.2.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.2.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.2.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.2.ln_2.weight": [
+          128
+        ],
+        "blocks.2.ln_2.bias": [
+          128
+        ],
+        "blocks.2.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.2.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.2.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.2.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.3.ln_1.weight": [
+          128
+        ],
+        "blocks.3.ln_1.bias": [
+          128
+        ],
+        "blocks.3.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.3.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.3.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.3.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.3.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.3.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.3.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.3.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.3.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.3.ln_2.weight": [
+          128
+        ],
+        "blocks.3.ln_2.bias": [
+          128
+        ],
+        "blocks.3.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.3.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.3.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.3.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.4.ln_1.weight": [
+          128
+        ],
+        "blocks.4.ln_1.bias": [
+          128
+        ],
+        "blocks.4.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.4.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.4.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.4.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.4.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.4.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.4.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.4.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.4.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.4.ln_2.weight": [
+          128
+        ],
+        "blocks.4.ln_2.bias": [
+          128
+        ],
+        "blocks.4.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.4.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.4.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.4.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.5.ln_1.weight": [
+          128
+        ],
+        "blocks.5.ln_1.bias": [
+          128
+        ],
+        "blocks.5.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.5.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.5.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.5.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.5.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.5.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.5.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.5.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.5.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.5.ln_2.weight": [
+          128
+        ],
+        "blocks.5.ln_2.bias": [
+          128
+        ],
+        "blocks.5.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.5.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.5.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.5.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.6.ln_1.weight": [
+          128
+        ],
+        "blocks.6.ln_1.bias": [
+          128
+        ],
+        "blocks.6.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.6.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.6.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.6.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.6.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.6.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.6.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.6.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.6.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.6.ln_2.weight": [
+          128
+        ],
+        "blocks.6.ln_2.bias": [
+          128
+        ],
+        "blocks.6.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.6.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.6.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.6.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.7.ln_1.weight": [
+          128
+        ],
+        "blocks.7.ln_1.bias": [
+          128
+        ],
+        "blocks.7.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.7.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.7.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.7.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.7.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.7.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.7.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.7.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.7.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.7.ln_2.weight": [
+          128
+        ],
+        "blocks.7.ln_2.bias": [
+          128
+        ],
+        "blocks.7.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.7.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.7.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.7.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.7.ln_3.weight": [
+          128
+        ],
+        "blocks.7.ln_3.bias": [
+          128
+        ],
+        "blocks.7.mlp2.weight": [
+          4,
+          128
+        ],
+        "blocks.7.mlp2.bias": [
+          4
+        ]
+      },
+      "init_hash": "9a33604c28eddd2e8966b87cb9268e84ca2717b76e3f6cc848cd3f06015047d3",
+      "rng_hash": "7e36de472184aa832d11b43c392316f09e6c7b653b5beb88fdf433c9764ceb6a",
+      "position_device": null
+    },
+    "airfoil": {
+      "config": {
+        "space_dim": 2,
+        "n_layers": 8,
+        "n_hidden": 128,
+        "dropout": 0.0,
+        "n_head": 8,
+        "Time_Input": false,
+        "act": "gelu",
+        "mlp_ratio": 1,
+        "fun_dim": 0,
+        "out_dim": 1,
+        "key_ratio": 64,
+        "ref": 8,
+        "unified_pos": false,
+        "H": 221,
+        "W": 51,
+        "args": {
+          "model": "conv_temp"
+        }
+      },
+      "parameters": 1765889,
+      "keys": {
+        "placeholder": [
+          128
+        ],
+        "preprocess.linear_pre.0.weight": [
+          256,
+          2
+        ],
+        "preprocess.linear_pre.0.bias": [
+          256
+        ],
+        "preprocess.linear_post.weight": [
+          128,
+          256
+        ],
+        "preprocess.linear_post.bias": [
+          128
+        ],
+        "blocks.0.ln_1.weight": [
+          128
+        ],
+        "blocks.0.ln_1.bias": [
+          128
+        ],
+        "blocks.0.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.0.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.0.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.0.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.0.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.0.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.0.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.0.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.0.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.0.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.0.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.0.ln_2.weight": [
+          128
+        ],
+        "blocks.0.ln_2.bias": [
+          128
+        ],
+        "blocks.0.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.0.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.0.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.0.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.1.ln_1.weight": [
+          128
+        ],
+        "blocks.1.ln_1.bias": [
+          128
+        ],
+        "blocks.1.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.1.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.1.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.1.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.1.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.1.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.1.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.1.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.1.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.1.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.1.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.1.ln_2.weight": [
+          128
+        ],
+        "blocks.1.ln_2.bias": [
+          128
+        ],
+        "blocks.1.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.1.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.1.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.1.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.2.ln_1.weight": [
+          128
+        ],
+        "blocks.2.ln_1.bias": [
+          128
+        ],
+        "blocks.2.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.2.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.2.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.2.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.2.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.2.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.2.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.2.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.2.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.2.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.2.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.2.ln_2.weight": [
+          128
+        ],
+        "blocks.2.ln_2.bias": [
+          128
+        ],
+        "blocks.2.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.2.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.2.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.2.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.3.ln_1.weight": [
+          128
+        ],
+        "blocks.3.ln_1.bias": [
+          128
+        ],
+        "blocks.3.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.3.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.3.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.3.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.3.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.3.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.3.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.3.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.3.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.3.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.3.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.3.ln_2.weight": [
+          128
+        ],
+        "blocks.3.ln_2.bias": [
+          128
+        ],
+        "blocks.3.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.3.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.3.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.3.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.4.ln_1.weight": [
+          128
+        ],
+        "blocks.4.ln_1.bias": [
+          128
+        ],
+        "blocks.4.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.4.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.4.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.4.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.4.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.4.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.4.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.4.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.4.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.4.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.4.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.4.ln_2.weight": [
+          128
+        ],
+        "blocks.4.ln_2.bias": [
+          128
+        ],
+        "blocks.4.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.4.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.4.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.4.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.5.ln_1.weight": [
+          128
+        ],
+        "blocks.5.ln_1.bias": [
+          128
+        ],
+        "blocks.5.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.5.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.5.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.5.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.5.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.5.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.5.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.5.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.5.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.5.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.5.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.5.ln_2.weight": [
+          128
+        ],
+        "blocks.5.ln_2.bias": [
+          128
+        ],
+        "blocks.5.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.5.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.5.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.5.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.6.ln_1.weight": [
+          128
+        ],
+        "blocks.6.ln_1.bias": [
+          128
+        ],
+        "blocks.6.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.6.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.6.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.6.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.6.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.6.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.6.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.6.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.6.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.6.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.6.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.6.ln_2.weight": [
+          128
+        ],
+        "blocks.6.ln_2.bias": [
+          128
+        ],
+        "blocks.6.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.6.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.6.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.6.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.7.ln_1.weight": [
+          128
+        ],
+        "blocks.7.ln_1.bias": [
+          128
+        ],
+        "blocks.7.Attn.temperature_q": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.7.Attn.temperature_k": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "blocks.7.Attn.in_project_x.weight": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "blocks.7.Attn.in_project_x.bias": [
+          128
+        ],
+        "blocks.7.Attn.to_q.weight": [
+          64,
+          16
+        ],
+        "blocks.7.Attn.to_k.weight": [
+          64,
+          16
+        ],
+        "blocks.7.Attn.to_v.weight": [
+          16,
+          16
+        ],
+        "blocks.7.Attn.to_out.0.weight": [
+          128,
+          128
+        ],
+        "blocks.7.Attn.to_out.0.bias": [
+          128
+        ],
+        "blocks.7.Attn.to_out.2.weight": [
+          128,
+          128
+        ],
+        "blocks.7.Attn.to_out.2.bias": [
+          128
+        ],
+        "blocks.7.ln_2.weight": [
+          128
+        ],
+        "blocks.7.ln_2.bias": [
+          128
+        ],
+        "blocks.7.mlp.linear_pre.0.weight": [
+          128,
+          128
+        ],
+        "blocks.7.mlp.linear_pre.0.bias": [
+          128
+        ],
+        "blocks.7.mlp.linear_post.weight": [
+          128,
+          128
+        ],
+        "blocks.7.mlp.linear_post.bias": [
+          128
+        ],
+        "blocks.7.ln_3.weight": [
+          128
+        ],
+        "blocks.7.ln_3.bias": [
+          128
+        ],
+        "blocks.7.mlp2.weight": [
+          1,
+          128
+        ],
+        "blocks.7.mlp2.bias": [
+          1
+        ]
+      },
+      "init_hash": "8c83cc512d20a71fd2c8314cba488bb387f079e57be6eea4948b15076b5f0efe",
+      "rng_hash": "8957dd163dc023ee375acf4da63171837334bb7df28ce807bb7dbbe84694cff4",
+      "position_device": null
+    }
+  }
+}

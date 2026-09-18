@@ -129,6 +129,19 @@ python -B tools/cdlno_benchmark.py --task elasticity --models cdlno_entry --fron
 
 矩阵成本采用1 MAC=1乘加、2 FLOPs/MAC；额外norm/softmax/depth/临时stack与历史/点特征存储单列，SDPA不会按0计。实测报告forward及合成MSE/AdamW步的median/p90、GPU同步、峰值allocated显存、初始化optimizer state和精度/backend/warmup。所有模型用相同AMP/TF32/compile条件。详细口径、原始数据和限制见 [工具说明](docs/CDLNO_PERFORMANCE_TOOLS.md) 与 [阶段9报告](docs/CDLNO_PHASE9_PERFORMANCE.md)。模型计时不能换算真实epoch；已有结果也不构成普遍加速保证。
 
+## 纯 LinearNO（linearno）
+
+仓库现在包含独立的纯 LinearNO family `linearno`，实现论文 v3 与固定官方 LinearNO 源码的因式注意力 `Q=softmax_M(XWq)`、`K=softmax_N(XWk)`、`Y=Q(K^T V)`。Standard 六任务使用 `plain/temp/conv/conv_temp` 四种官方变体；AirfRANS 使用 7 维输入拼接 64 维 reference-distance；ShapeNet-Car 使用实际 `M=key_ratio*head_dim` 和官方 `tempreature_q/k` 键。旧 Transolver、CDLNO、KCDNO、MSAR-LNO 和既有任务协议保持独立。
+
+LinearNO 的可执行配置是 `paper_table8_on_release_model`、`official_release` 和 `transolver_matched`。AirfRANS 默认训练为标准化四通道 `volume MSE + surface MSE`，Car 默认训练为全点三速度 normalized MSE 加 `0.5*surface pressure MSE`，这是用户确认的官方代码合同；论文中的 physical rL2、drag 和 Spearman 作为独立评价字段保存。完整配置、八任务命令、checkpoint 转换、测试结果和未验证边界见 [最终实施报告](docs/LINEARNO_IMPLEMENTATION_REPORT.md)、[复现矩阵](docs/LINEARNO_REPRODUCTION_MATRIX.md) 和 [LinearNO launcher说明](tran_evaluate/linearno/README.md)。本地无数据验收可运行：
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. python -B -m pytest -q -p no:cacheprovider tests/linearno
+bash -n tran_evaluate/linearno/*.sh
+```
+
+真实数据训练、论文完整 epoch、收敛/精度、目标远端 Torch2.11/CUDA12.8 尚未在本仓库执行；LinearNO 不会改变旧模型默认选择或旧 checkpoint 读取规则。
+
 ## 独立 MSAR-LNO（msar_lno）
 
 MSAR-LNO使用四级latent encoder–decoder：4次learned-query Down、6个encoder和6个decoder的FFN–SA–FFN block、4次以对应encoder特征为query的Up、3处两来源AttnRes（零初始化时等于E+U），最后逐点LN/head。没有卷积、CDPA/kernel history或最终E0跳连。原Transolver、CDLNO及前段消融、KCDNO all/off和matched LRSA继续保留。

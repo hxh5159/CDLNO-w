@@ -1,0 +1,394 @@
+{
+  "stage": "L4",
+  "cwd": "/home/hwz/CDLNO",
+  "RUN_REAL_BATCH": false,
+  "RUN_MINIRUN": false,
+  "MAX_STEPS": 0,
+  "format_note": "Unittest commands normalize the executed inline TextTestRunner/module selectors to equivalent CLI invocations. Result JSON includes enclosing elapsed time; unittest logs report runner time. Native worker commands below are actual subprocess argv; no exp was imported to read real data.",
+  "checks": [
+    {
+      "name": "final four-task integration",
+      "command": "CUDA_VISIBLE_DEVICES='' PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_static_integration -v",
+      "executed_report_environment": {
+        "LINEARNO_L4_ARTIFACT_ROOT": "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown",
+        "LINEARNO_L4_INTEGRATION_REPORT": "/home/hwz/CDLNO/docs/linearno_audit/l4/final-integration.json"
+      },
+      "replay_note": "Omit report env variables or choose new output paths. Never replay training into the existing accepted artifacts.",
+      "result": "final-integration-results.json",
+      "log": "final-integration-tests.txt"
+    },
+    {
+      "name": "legacy and L1/L2/L3 regression",
+      "commands": [
+        "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_profiles -v",
+        "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_schema -v",
+        "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_legacy -v",
+        "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_rng -v",
+        "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_attention_parity -v",
+        "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_attention_structure -v",
+        "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_standard_model -v",
+        "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_standard_structure -v",
+        "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest test_static_standard.StaticFrozenChecks -v",
+        "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest test_experiment_records -v"
+      ],
+      "executed_report_environment": {
+        "LINEARNO_L2_PARITY_REPORT": "/home/hwz/CDLNO/docs/linearno_audit/l4/l2-parity.json",
+        "LINEARNO_L3_PARITY_REPORT": "/home/hwz/CDLNO/docs/linearno_audit/l4/l3-parity.json"
+      },
+      "result": "legacy-regression-results.json",
+      "log": "legacy-regression-tests.txt",
+      "note": "Initial experiment-record AST test failure was corrected in the test-only projection and rerun below; one preexisting AirfRANS sampled epoch subcase requires absent torch_cluster."
+    },
+    {
+      "name": "affected static rerun",
+      "command": "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories linearno.test_legacy.LegacyRegression.test_no_task_parser_factory_imports_from_new_namespace test_static_standard.StaticFrozenChecks.test_legacy_ast_recovered_exactly_from_limited_branches test_static_standard.StaticFrozenChecks.test_scripts_syntax_arguments_and_fresh_imports test_experiment_records.ExperimentRecords.test_entries_early_lifecycle_and_complete_observation_only_ast linearno.test_static_integration.StaticIntegration.test_full_entry_AST_projects_to_pre_L4_all_legacy_paths -v",
+      "result": "final-static-results.json",
+      "log": "final-static-regression.txt"
+    },
+    {
+      "name": "post-document preservation",
+      "command": "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories -v",
+      "log": "final-doc-preservation.txt"
+    },
+    {
+      "name": "28 negative checks, read-only replay",
+      "command": "CUDA_VISIBLE_DEVICES='' PYTHONDONTWRITEBYTECODE=1 python -B docs/linearno_audit/l4/verify_negatives.py /home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown",
+      "result": "negative-replay.json",
+      "earlier_evidence": [
+        "final-negatives.json",
+        "final-negative-tests.txt"
+      ]
+    },
+    {
+      "name": "launcher checks",
+      "command": "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_static_integration.StaticIntegration.test_all_new_launcher_actions_profiles_and_old_scripts_static -v",
+      "executed_within": "final four-task integration",
+      "new_dry_runs": 16,
+      "old_shell_byte_and_syntax_checks": 81
+    },
+    {
+      "name": "content/classification/AST/Python3.10 syntax freeze",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python -B docs/linearno_audit/l4/verify_freeze.py",
+      "result": "delivery-check.json"
+    },
+    {
+      "name": "whitespace",
+      "command": "git diff --check",
+      "result": "exit 0; no output"
+    }
+  ],
+  "native_subprocesses": [
+    {
+      "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+      "argv": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno/static_worker.py",
+        "darcy",
+        "train",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/darcy-continuous",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/darcy-continuous.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/hwz/CDLNO",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "log": "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/darcy-continuous.log",
+      "scope": "synthetic in-memory prefix; original main AST loops and native checkpoint/recording; CPU transfers; no standalone showcase"
+    },
+    {
+      "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+      "argv": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno/static_worker.py",
+        "darcy",
+        "interrupt",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/darcy-split",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/darcy-interrupt.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/hwz/CDLNO",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "log": "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/darcy-interrupt.log",
+      "scope": "synthetic in-memory prefix; original main AST loops and native checkpoint/recording; CPU transfers; no standalone showcase"
+    },
+    {
+      "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+      "argv": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno/static_worker.py",
+        "darcy",
+        "resume",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/darcy-split",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/darcy-resume.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/hwz/CDLNO",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "log": "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/darcy-resume.log",
+      "scope": "synthetic in-memory prefix; original main AST loops and native checkpoint/recording; CPU transfers; no standalone showcase"
+    },
+    {
+      "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+      "argv": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno/static_worker.py",
+        "darcy",
+        "eval",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/darcy-split",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/darcy-eval.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/hwz/CDLNO",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "log": "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/darcy-eval.log",
+      "scope": "synthetic in-memory prefix; original main AST loops and native checkpoint/recording; CPU transfers; no standalone showcase"
+    },
+    {
+      "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+      "argv": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno/static_worker.py",
+        "elasticity",
+        "train",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/elasticity-continuous",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/elasticity-continuous.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/hwz/CDLNO",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "log": "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/elasticity-continuous.log",
+      "scope": "synthetic in-memory prefix; original main AST loops and native checkpoint/recording; CPU transfers; no standalone showcase"
+    },
+    {
+      "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+      "argv": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno/static_worker.py",
+        "elasticity",
+        "interrupt",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/elasticity-split",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/elasticity-interrupt.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/hwz/CDLNO",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "log": "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/elasticity-interrupt.log",
+      "scope": "synthetic in-memory prefix; original main AST loops and native checkpoint/recording; CPU transfers; no standalone showcase"
+    },
+    {
+      "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+      "argv": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno/static_worker.py",
+        "elasticity",
+        "resume",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/elasticity-split",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/elasticity-resume.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/hwz/CDLNO",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "log": "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/elasticity-resume.log",
+      "scope": "synthetic in-memory prefix; original main AST loops and native checkpoint/recording; CPU transfers; no standalone showcase"
+    },
+    {
+      "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+      "argv": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno/static_worker.py",
+        "elasticity",
+        "eval",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/elasticity-split",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/elasticity-eval.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/hwz/CDLNO",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "log": "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/elasticity-eval.log",
+      "scope": "synthetic in-memory prefix; original main AST loops and native checkpoint/recording; CPU transfers; no standalone showcase"
+    },
+    {
+      "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+      "argv": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno/static_worker.py",
+        "airfoil",
+        "train",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/airfoil-continuous",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/airfoil-continuous.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/hwz/CDLNO",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "log": "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/airfoil-continuous.log",
+      "scope": "synthetic in-memory prefix; original main AST loops and native checkpoint/recording; CPU transfers; no standalone showcase"
+    },
+    {
+      "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+      "argv": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno/static_worker.py",
+        "airfoil",
+        "interrupt",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/airfoil-split",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/airfoil-interrupt.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/hwz/CDLNO",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "log": "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/airfoil-interrupt.log",
+      "scope": "synthetic in-memory prefix; original main AST loops and native checkpoint/recording; CPU transfers; no standalone showcase"
+    },
+    {
+      "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+      "argv": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno/static_worker.py",
+        "airfoil",
+        "resume",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/airfoil-split",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/airfoil-resume.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/hwz/CDLNO",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "log": "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/airfoil-resume.log",
+      "scope": "synthetic in-memory prefix; original main AST loops and native checkpoint/recording; CPU transfers; no standalone showcase"
+    },
+    {
+      "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+      "argv": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno/static_worker.py",
+        "airfoil",
+        "eval",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/airfoil-split",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/airfoil-eval.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/hwz/CDLNO",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "log": "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/airfoil-eval.log",
+      "scope": "synthetic in-memory prefix; original main AST loops and native checkpoint/recording; CPU transfers; no standalone showcase"
+    },
+    {
+      "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+      "argv": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno/static_worker.py",
+        "pipe",
+        "train",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/pipe-continuous",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/pipe-continuous.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/hwz/CDLNO",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "log": "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/pipe-continuous.log",
+      "scope": "synthetic in-memory prefix; original main AST loops and native checkpoint/recording; CPU transfers; no standalone showcase"
+    },
+    {
+      "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+      "argv": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno/static_worker.py",
+        "pipe",
+        "interrupt",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/pipe-split",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/pipe-interrupt.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/hwz/CDLNO",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "log": "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/pipe-interrupt.log",
+      "scope": "synthetic in-memory prefix; original main AST loops and native checkpoint/recording; CPU transfers; no standalone showcase"
+    },
+    {
+      "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+      "argv": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno/static_worker.py",
+        "pipe",
+        "resume",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/pipe-split",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/pipe-resume.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/hwz/CDLNO",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "log": "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/pipe-resume.log",
+      "scope": "synthetic in-memory prefix; original main AST loops and native checkpoint/recording; CPU transfers; no standalone showcase"
+    },
+    {
+      "cwd": "/home/hwz/CDLNO/PDE-Solving-StandardBenchmark",
+      "argv": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno/static_worker.py",
+        "pipe",
+        "eval",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/pipe-split",
+        "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/pipe-eval.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/hwz/CDLNO",
+        "CUDA_VISIBLE_DEVICES": ""
+      },
+      "log": "/home/hwz/CDLNO-artifacts/linearno-l4-accepted-rn4epown/pipe-eval.log",
+      "scope": "synthetic in-memory prefix; original main AST loops and native checkpoint/recording; CPU transfers; no standalone showcase"
+    }
+  ],
+  "not_run": [
+    "real dataset loader",
+    "real batch/minirun/full training",
+    "four-task GPU/AMP training-resume cycle",
+    "remote Python3.10/torch2.11/cu128",
+    "official external checkpoint conversion"
+  ],
+  "production_commands": "tran_evaluate/linearno/README.md; templates only, not executed as real training/eval"
+}

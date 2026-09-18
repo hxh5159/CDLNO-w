@@ -50,7 +50,7 @@ def build(task, args):
         stem = 'ns' if task == 'ns' else 'plas'
         tree = ast.parse((static.PROJECT / f'exp_{stem}.py').read_text())
         main = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'main')
-        branch = next(n for n in main.body if isinstance(n, ast.If) and ast.unparse(n.test) == "args.model == 'CDLNO'")
+        branch = next(n for n in ast.walk(main) if isinstance(n, ast.If) and ast.unparse(n.test) == "args.model == 'CDLNO'")
         call = branch.body[0].value.func.value
         return eval(compile(ast.Expression(call), '<task-constructor-only>', 'eval'),
                     dict(args=args, get_model=static.get_model, cdlno_model_kwargs=static.model_kwargs,

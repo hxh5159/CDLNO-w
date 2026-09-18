@@ -1,0 +1,42 @@
+{
+  "stage": "L8",
+  "status": "PASS",
+  "head": "bb73b3099d3b8ce45bd939156b737453b9ca5454",
+  "source": {
+    "transolver": "75e0f67643806a81cd1d3f6adc88dd8c02416fe7",
+    "linearno": "3f2b80df13c17a09e250f2ebe4d4ecdfd4acf269",
+    "paper": "2511.06294v3"
+  },
+  "profiles": [
+    "paper_table8_on_release_model",
+    "official_release",
+    "transolver_matched"
+  ],
+  "tasks": [
+    "darcy", "elasticity", "airfoil", "pipe", "ns", "plasticity", "car", "airfrans"
+  ],
+  "objective_contracts": {
+    "car": "car_transolver_mse_v1: all-point velocity normalized MSE + 0.5*surface pressure normalized MSE",
+    "airfrans": "airfrans_transolver_mse_v1: normalized four-channel volume MSE + 1*surface MSE"
+  },
+  "conversion": {
+    "standard": "bare state_dict; explicit source_task; strict key/shape validation",
+    "airfrans": "trusted whole-object extraction in isolated child process; dead temperature retained",
+    "shapenet": "trusted whole-object extraction in isolated child process; tempreature_q/k retained",
+    "module_prefix": "reversible",
+    "unknown_external_pickle": "not loaded"
+  },
+  "checks": {
+    "converter": "2 passed",
+    "existing_standard_native_roundtrip": "covered by tests/linearno/test_static_integration.py",
+    "airfrans_native_ensemble_roundtrip": "covered by tests/linearno/test_air_entry.py",
+    "shapenet_native_roundtrip": "covered by tests/linearno/test_car_entry.py",
+    "real_data": "NOT RUN",
+    "full_training": "NOT RUN",
+    "remote_torch211_cuda128": "NOT RUN"
+  },
+  "commands": [
+    "PYTHONDONTWRITEBYTECODE=1 python -B -m pytest -q -p no:cacheprovider tests/linearno/test_converter.py",
+    "PYTHONDONTWRITEBYTECODE=1 python -B -m pytest -q -p no:cacheprovider tests/linearno/test_profiles.py tests/linearno/test_schema.py"
+  ]
+}

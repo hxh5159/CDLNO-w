@@ -1,0 +1,57 @@
+{
+  "stage": "L6",
+  "status": "BLOCKED pending C08",
+  "cwd": "/home/hwz/CDLNO",
+  "RUN_REAL_BATCH": false,
+  "RUN_MINIRUN": false,
+  "MAX_STEPS": 0,
+  "checks": [
+    {
+      "name": "Air model final7",
+      "command": "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 LINEARNO_L6_MODEL_REPORT=docs/linearno_audit/l6/air-model-final.json python -B -m unittest linearno.test_airfrans_model -v",
+      "log": "air-model-final-tests.txt",
+      "note": "Reuse a new output path to preserve this evidence."
+    },
+    {
+      "name": "existing regressions18",
+      "command": "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_legacy test_airfrans test_experiment_records.ExperimentRecords.test_air_weighted_loss_and_real_epoch_record_fragment_without_sampling -v",
+      "log": "legacy-tests.txt",
+      "result": "legacy-results.json",
+      "execution": "Equivalent selectors; actual inline TextTestRunner ran each selector separately."
+    },
+    {
+      "name": "L1-L5 replay",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python -B docs/linearno_audit/l6/run_regressions.py",
+      "result": "regression-results.json",
+      "note": "Per-module subprocesses and outputs stored by script. CPU native synthetic cycles; other tests retain their device selection."
+    },
+    {
+      "name": "freeze",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python -B docs/linearno_audit/l6/verify_freeze.py",
+      "result": "delivery-check.json"
+    },
+    {
+      "name": "whitespace",
+      "command": "git diff --check"
+    },
+    {
+      "name": "task-created legacy-test artifacts preservation",
+      "manifest": "relocated-test-artifacts.json",
+      "result": "initial freeze caught two task-created default sidecars; moved byte-identically outside checkout, then original freeze assertions passed"
+    },
+    {
+      "name": "documentation preservation final replay",
+      "command": "PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 python -B -m unittest linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories -v",
+      "log": "final-doc-preservation.txt"
+    }
+  ],
+  "not_run": [
+    "Air production CLI/native checkpoint-resume-eval",
+    "Air nmodel>1 ensemble",
+    "paper objective pending C08",
+    "real loader/batch/training",
+    "remote torch2.11/cu128",
+    "external official pickle conversion",
+    "L7-L10"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "command": "PYTHONDONTWRITEBYTECODE=1 python -B -m pytest -q -p no:cacheprovider tests/linearno/test_air_entry.py tests/linearno/test_airfrans_model.py tests/linearno/test_air_objective_decision.py tests/linearno/test_legacy.py tests/test_airfrans.py",
+  "passed": 31,
+  "seconds": 157.67,
+  "not_run": [
+    "real data",
+    "real training",
+    "real sampled VTK force evaluation",
+    "remote Torch2.11/cu128"
+  ],
+  "initial_failures_resolved": [
+    "normalizer aggregate hash must occur in data_spec",
+    "test instrumentation hook must be removed before trusted whole-object save"
+  ],
+  "artifact": "/home/hwz/CDLNO-artifacts/linearno-l6-review-t98rh7a2"
+}

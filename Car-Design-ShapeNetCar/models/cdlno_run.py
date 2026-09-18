@@ -40,6 +40,9 @@ def parse_args(parser, *, evaluation=False, argv=None):
     selector = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     selector.add_argument('--cfd_model')
     selected, _ = selector.parse_known_args(tokens)
+    if selected.cfd_model == 'LinearNO':
+        from cdlno.linearno.car_entry import parse_args as parse_linearno_args
+        return parse_linearno_args(parser, tokens, evaluation=evaluation)
     if selected.cfd_model == 'msar_lno':
         from cdlno.msar_lno.industrial_entry import parse_args as parse_msar_args
         return parse_msar_args(parser, tokens, task='car', evaluation=evaluation)

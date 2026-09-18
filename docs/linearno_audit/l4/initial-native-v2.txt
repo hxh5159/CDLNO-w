@@ -1,0 +1,76 @@
+/home/hwz/anaconda3/lib/python3.13/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+linearno experiment: /home/hwz/CDLNO-artifacts/linearno-l4-native-po_itbpc/darcy-v2
+linearno phase: training
+linearno seed: 17
+Dataloading is over.
+Namespace(lr=0.001, epochs=3, weight_decay=1e-06, model='LinearNO_Structured_Mesh_2D', n_hidden=8, n_layers=2, n_heads=2, batch_size=2, gpu='1', max_grad_norm=1.0, downsample=5, mlp_ratio=1, dropout=0.0, ntrain=1000, unified_pos=False, ref=8, slice_num=32, eval=0, save_name='darcy_linearno_paper_table8_on_release_model_conv_temp_M4_seed17', data_path='/data/fno', profile='kcdno_v1', kernel_rank=16, history_mode='all', kcdno_run_dir=None, front_latent_mode=None, front_blocks=2, latent_ffn_ratio=2.0, cdpa_mode='entry', cdpa_source_chunk_size=0, cdlno_run_dir=None, linearno_run_dir=PosixPath('/home/hwz/CDLNO-artifacts/linearno-l4-native-po_itbpc/darcy-v2'), resume=False, checkpoint=None, linearno_rank=4, seed=17, linearno_family='linearno', linearno_task='darcy', _linearno_config={'family': 'linearno', 'config_version': 1, 'task': 'darcy', 'profile': 'paper_table8_on_release_model', 'values': {'runtime': {'seed': 17, 'device': 'cuda', 'save_name': None}, 'model': {'dropout': 0.0, 'activation': 'gelu', 'linearno_variant': 'conv_temp', 'linearno_rank': 4, 'hidden': 8, 'heads': 2, 'layers': 2, 'ffn_ratio': 1, 'space_dim': 2, 'fun_dim': 1, 'out_dim': 1, 'time_input': False, 'ref': 8, 'unified_pos': False, 'H': 85, 'W': 85}, 'training': {'epochs': 3, 'optimizer': 'AdamW', 'lr': 0.001, 'weight_decay': 1e-06, 'batch_size': 2, 'betas': [0.9, 0.999], 'eps': 1e-08, 'gradient_clip': 1.0, 'train_shuffle': True, 'test_batch_size': 1, 'scheduler': 'OneCycleLR', 'scheduler_step': 'one per outer batch', 'optimizer_step': 'one per outer batch', 'validation_cadence': 'every epoch', 'checkpoint_role': 'final', 'selection_split': None, 'selection_metric': None, 'seed_policy': 'local declared seeds [0,1,2]; not author seeds; release has no active seed control', 'onecycle_defaults': {'pct_start': 0.3, 'anneal_strategy': 'cos', 'cycle_momentum': True, 'base_momentum': 0.85, 'max_momentum': 0.95, 'div_factor': 25, 'final_div_factor': 10000, 'three_phase': False}, 'scheduler_epochs': 'resolved training.epochs (hxh)'}, 'objective': {'kind': 'relative_L2', 'channels': 'all task output channels', 'region': 'all task points', 'space': 'physical (decode before loss if normalized)', 'reduction': 'mean sample-wise flattened ratios per batch; no epsilon', 'epsilon': 0, 'gradient_weight': 0.1, 'gradient': 'sum dx/dy relative L2; prediction cropped then zero-padded only for derivative branch; central_diff zero padding dx=1/85; l2 computed before crop'}, 'evaluation': {'prediction_sampling': 'full points', 'field_metric': 'physical sample-wise relative L2', 'field_channels': 'all output channels', 'field_region': 'all points', 'force_metric': None, 'force_input': None, 'split': 'smooth1 first1000 train; smooth2 first200 test', 'aggregation': 'sample arithmetic mean; report each local seed and mean/std; never best-test seed', 'batch_size': 1, 'selection': 'final checkpoint only', 'normalizer': 'saved train-fit numerical states; no eval refit'}, 'data': {'files': ['piececonst_r421_N1024_smooth1.mat:coeff,sol', 'piececonst_r421_N1024_smooth2.mat:coeff,sol'], 'split': 'smooth1 first1000 train; smooth2 first200 test', 'normalizer': 'input coefficient and output UnitTransformer; fit train only; output decoded before loss', 'sampling': 'stride5 spatial; 421x421->85x85', 'checksums': None, 'integrity': 'NOT RUN: no real data'}}, 'field_sources': {'runtime.seed': 'cli_explicit', 'runtime.device': 'integration_contract', 'runtime.save_name': 'family_default', 'model.dropout': 'profile', 'model.activation': 'profile', 'model.linearno_variant': 'profile', 'model.linearno_rank': 'cli_explicit', 'model.hidden': 'cli_explicit', 'model.heads': 'cli_explicit', 'model.layers': 'cli_explicit', 'model.ffn_ratio': 'profile', 'model.space_dim': 'profile', 'model.fun_dim': 'profile', 'model.out_dim': 'profile', 'model.time_input': 'profile', 'model.ref': 'profile', 'model.unified_pos': 'profile', 'model.H': 'profile', 'model.W': 'profile', 'training.epochs': 'cli_explicit', 'training.optimizer': 'profile', 'training.lr': 'profile', 'training.weight_decay': 'profile', 'training.batch_size': 'cli_explicit', 'training.betas': 'profile', 'training.eps': 'profile', 'training.gradient_clip': 'profile', 'training.train_shuffle': 'profile', 'training.test_batch_size': 'profile', 'training.scheduler': 'profile', 'training.scheduler_step': 'profile', 'training.optimizer_step': 'profile', 'training.validation_cadence': 'integration_contract', 'training.checkpoint_role': 'profile', 'training.selection_split': 'profile', 'training.selection_metric': 'profile', 'training.seed_policy': 'profile', 'training.onecycle_defaults.pct_start': 'profile', 'training.onecycle_defaults.anneal_strategy': 'profile', 'training.onecycle_defaults.cycle_momentum': 'profile', 'training.onecycle_defaults.base_momentum': 'profile', 'training.onecycle_defaults.max_momentum': 'profile', 'training.onecycle_defaults.div_factor': 'profile', 'training.onecycle_defaults.final_div_factor': 'profile', 'training.onecycle_defaults.three_phase': 'profile', 'training.scheduler_epochs': 'integration_contract', 'objective.kind': 'profile', 'objective.channels': 'profile', 'objective.region': 'profile', 'objective.space': 'profile', 'objective.reduction': 'integration_contract', 'objective.epsilon': 'profile', 'objective.gradient_weight': 'profile', 'objective.gradient': 'profile', 'evaluation.prediction_sampling': 'profile', 'evaluation.field_metric': 'profile', 'evaluation.field_channels': 'profile', 'evaluation.field_region': 'profile', 'evaluation.force_metric': 'profile', 'evaluation.force_input': 'profile', 'evaluation.split': 'profile', 'evaluation.aggregation': 'profile', 'evaluation.batch_size': 'profile', 'evaluation.selection': 'profile', 'evaluation.normalizer': 'profile', 'data.files': 'profile', 'data.split': 'profile', 'data.normalizer': 'profile', 'data.sampling': 'profile', 'data.checksums': 'profile', 'data.integrity': 'profile'}, 'derived_model': {'rank_mapping': {'original_parameter': 'key_ratio', 'original_value': 4, 'semantics': 'absolute', 'actual_M': 4}, 'q_softmax_axis': 'M', 'k_softmax_axis': 'N', 'qk_independent': True, 'projections_shared_across_heads': True, 'qkv_bias': False, 'attention_scale': None, 'attention_weight_dropout': False, 'layernorm_eps': 1e-05, 'input_projection': 'conv2d_each_block', 'kernel_size': 3, 'output_projection': 'linear_gelu_linear', 'temperature': {'initial': 0.5, 'clamp': [0.01, 1.0], 'used': True, 'dead_parameter': False}, 'grid_range': [[0, 1], [0, 1]], 'position_mode': 'replace_coordinates', 'official_unused_flags': {}, 'initialization': 'linear_trunc_normal_0.02;LN_1_0;standard_conv_kaiming_normal;placeholder_after_apply'}, 'unresolved': [], 'ignored_legacy_defaults': {}, 'integration_contract': 'standard_static_l4', 'config_hash': 'e6f9109dca2f77a88aca3e6dad1fe0ab5fd630a86dffe54dfc1f699e7f208234'}, _linearno_model_spec={'class_path': 'model.LinearNO.Model', 'constructor_kwargs': {'space_dim': 2, 'n_layers': 2, 'n_hidden': 8, 'n_head': 2, 'dropout': 0.0, 'Time_Input': False, 'act': 'gelu', 'mlp_ratio': 1, 'fun_dim': 1, 'out_dim': 1, 'ref': 8, 'unified_pos': False, 'H': 85, 'W': 85, 'linearno_variant': 'conv_temp', 'linearno_rank': 4}}, _linearno_normalizers={'input': <utils.normalizer.UnitTransformer object at 0x7f209beb4ec0>, 'output': <utils.normalizer.UnitTransformer object at 0x7f209be1fd90>}, linearno_variant='conv_temp', linearno_profile='paper_table8_on_release_model', _linearno_data={'split': 'smooth1 first1000 train; smooth2 first200 test', 'sampling': 'stride5 spatial; 421x421->85x85', 'checksums': {'SYNTHETIC_full_spatial_shape': '78778c3fe86e18051b9db3994cb40ccd2d1810e6eadac26dfcf952819524c146'}, 'scope': 'SYNTHETIC tensors, 4 train/2 test; no real loader acceptance'})
+Model(
+  (preprocess): PointwiseMLP(
+    (linear_pre): Sequential(
+      (0): Linear(in_features=3, out_features=16, bias=True)
+      (1): GELU(approximate='none')
+    )
+    (linear_post): Linear(in_features=16, out_features=8, bias=True)
+    (linears): ModuleList()
+  )
+  (blocks): ModuleList(
+    (0): LinearNOBlock(
+      (ln_1): LayerNorm((8,), eps=1e-05, elementwise_affine=True, bias=True)
+      (Attn): LinearNO_Conv_temp(
+        (in_project_x): Conv2d(8, 8, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (to_q): Linear(in_features=4, out_features=4, bias=False)
+        (to_k): Linear(in_features=4, out_features=4, bias=False)
+        (to_v): Linear(in_features=4, out_features=4, bias=False)
+        (to_out): Sequential(
+          (0): Linear(in_features=8, out_features=8, bias=True)
+          (1): GELU(approximate='none')
+          (2): Linear(in_features=8, out_features=8, bias=True)
+          (3): Dropout(p=0.0, inplace=False)
+        )
+      )
+      (ln_2): LayerNorm((8,), eps=1e-05, elementwise_affine=True, bias=True)
+      (mlp): PointwiseMLP(
+        (linear_pre): Sequential(
+          (0): Linear(in_features=8, out_features=8, bias=True)
+          (1): GELU(approximate='none')
+        )
+        (linear_post): Linear(in_features=8, out_features=8, bias=True)
+        (linears): ModuleList()
+      )
+    )
+    (1): LinearNOBlock(
+      (ln_1): LayerNorm((8,), eps=1e-05, elementwise_affine=True, bias=True)
+      (Attn): LinearNO_Conv_temp(
+        (in_project_x): Conv2d(8, 8, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (to_q): Linear(in_features=4, out_features=4, bias=False)
+        (to_k): Linear(in_features=4, out_features=4, bias=False)
+        (to_v): Linear(in_features=4, out_features=4, bias=False)
+        (to_out): Sequential(
+          (0): Linear(in_features=8, out_features=8, bias=True)
+          (1): GELU(approximate='none')
+          (2): Linear(in_features=8, out_features=8, bias=True)
+          (3): Dropout(p=0.0, inplace=False)
+        )
+      )
+      (ln_2): LayerNorm((8,), eps=1e-05, elementwise_affine=True, bias=True)
+      (mlp): PointwiseMLP(
+        (linear_pre): Sequential(
+          (0): Linear(in_features=8, out_features=8, bias=True)
+          (1): GELU(approximate='none')
+        )
+        (linear_post): Linear(in_features=8, out_features=8, bias=True)
+        (linears): ModuleList()
+      )
+      (ln_3): LayerNorm((8,), eps=1e-05, elementwise_affine=True, bias=True)
+      (mlp2): Linear(in_features=8, out_features=1, bias=True)
+    )
+  )
+)
+Total Trainable Params: 2145
+Epoch 0 Reg : 2.06290 Train loss : 0.19187
+rel_err:0.1794484779238701
+Epoch 1 Reg : 2.01000 Train loss : 0.19344
+rel_err:0.18086348474025726
+Epoch 2 Reg : 2.00490 Train loss : 0.19394
+rel_err:0.18105915188789368

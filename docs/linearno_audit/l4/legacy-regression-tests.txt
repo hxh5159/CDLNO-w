@@ -1,0 +1,117 @@
+test_all_24_match_independent_L0_inventory_and_roundtrip (linearno.test_profiles.ProfileChecks.test_all_24_match_independent_L0_inventory_and_roundtrip) ... ok
+test_explicit_priority_no_legacy_defaults_and_alias (linearno.test_profiles.ProfileChecks.test_explicit_priority_no_legacy_defaults_and_alias) ... ok
+test_hash_and_resolution_provenance_cannot_be_forged_by_rehash (linearno.test_profiles.ProfileChecks.test_hash_and_resolution_provenance_cannot_be_forged_by_rehash) ... ok
+test_industrial_pending_decisions_and_objective_axes (linearno.test_profiles.ProfileChecks.test_industrial_pending_decisions_and_objective_axes) ... ok
+test_invalid_values_and_non_square_grid (linearno.test_profiles.ProfileChecks.test_invalid_values_and_non_square_grid) ... ok
+test_schema_namespace_does_not_import_torch_or_task_factories (linearno.test_profiles.ProfileChecks.test_schema_namespace_does_not_import_torch_or_task_factories) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.065s
+
+OK
+test_conflicts_required_state_and_legacy_recognition (linearno.test_schema.SchemaChecks.test_conflicts_required_state_and_legacy_recognition) ... ok
+test_numerical_normalizers_and_rng_optimizer_tree_are_lossless (linearno.test_schema.SchemaChecks.test_numerical_normalizers_and_rng_optimizer_tree_are_lossless) ... ok
+test_real_constructor_signature_rejects_runtime_fields (linearno.test_schema.SchemaChecks.test_real_constructor_signature_rejects_runtime_fields) ... ok
+test_roundtrip_is_read_only_and_no_overwrite (linearno.test_schema.SchemaChecks.test_roundtrip_is_read_only_and_no_overwrite) ... ok
+test_structural_rejection_runtime_reporting_and_resume_rules (linearno.test_schema.SchemaChecks.test_structural_rejection_runtime_reporting_and_resume_rules) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.111s
+
+OK
+test_all_preexisting_files_and_absent_frozen_directories (linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) ... ok
+test_eight_real_models_same_weights_and_checkpoints_fresh_workdirs (linearno.test_legacy.LegacyRegression.test_eight_real_models_same_weights_and_checkpoints_fresh_workdirs) ... ok
+test_no_task_parser_factory_imports_from_new_namespace (linearno.test_legacy.LegacyRegression.test_no_task_parser_factory_imports_from_new_namespace) ... ok
+test_real_parser_AST_defaults_unchanged_and_new_flags_isolated (linearno.test_legacy.LegacyRegression.test_real_parser_AST_defaults_unchanged_and_new_flags_isolated) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 35.768s
+
+OK
+test_fresh_process_continuation_and_real_visualization (linearno.test_rng.RandomStreamRegression.test_fresh_process_continuation_and_real_visualization) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 73.795s
+
+OK
+test_cpu_double_and_float_oracle_all_variants (linearno.test_attention_parity.AttentionParity.test_cpu_double_and_float_oracle_all_variants) ... ok
+test_fixed_official_cpu_forward_all_grads_step_checkpoint (linearno.test_attention_parity.AttentionParity.test_fixed_official_cpu_forward_all_grads_step_checkpoint) ... ok
+test_fixed_official_cuda_fp32_fp16_bfloat16 (linearno.test_attention_parity.AttentionParity.test_fixed_official_cuda_fp32_fp16_bfloat16) ... ok
+test_release_constructor_and_outer_initialization_RNG_keys (linearno.test_attention_parity.AttentionParity.test_release_constructor_and_outer_initialization_RNG_keys) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 7.323s
+
+OK
+test_batch_isolation_gradients_and_point_equivariance (linearno.test_attention_structure.AttentionStructure.test_batch_isolation_gradients_and_point_equivariance) ... ok
+test_conv_grid_order_projection_and_noncontiguous_input (linearno.test_attention_structure.AttentionStructure.test_conv_grid_order_projection_and_noncontiguous_input) ... ok
+test_double_gradcheck_independent_reference (linearno.test_attention_structure.AttentionStructure.test_double_gradcheck_independent_reference) ... ok
+test_dropout_only_on_output_and_forward_no_debug_state (linearno.test_attention_structure.AttentionStructure.test_dropout_only_on_output_and_forward_no_debug_state) ... ok
+test_illegal_shapes_types_and_constructors (linearno.test_attention_structure.AttentionStructure.test_illegal_shapes_types_and_constructors) ... ok
+test_no_old_transolver_or_history_dependencies (linearno.test_attention_structure.AttentionStructure.test_no_old_transolver_or_history_dependencies) ... ok
+test_normalization_factorized_dense_and_execution_shapes (linearno.test_attention_structure.AttentionStructure.test_normalization_factorized_dense_and_execution_shapes) ... ok
+test_shared_head_projections_and_independent_parameters (linearno.test_attention_structure.AttentionStructure.test_shared_head_projections_and_independent_parameters) ... ok
+test_task_local_imports_from_three_fresh_workdirs (linearno.test_attention_structure.AttentionStructure.test_task_local_imports_from_three_fresh_workdirs) ... ok
+test_temperature_clamp_boundary_gradients_and_air_dead_parameter (linearno.test_attention_structure.AttentionStructure.test_temperature_clamp_boundary_gradients_and_air_dead_parameter) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 18.537s
+
+OK
+test_cpu_official_all_variants_full_forward_gradients_step (linearno.test_standard_model.StandardModelParity.test_cpu_official_all_variants_full_forward_gradients_step) ... ok
+test_default_allocations_single_apply_then_placeholder_RNG (linearno.test_standard_model.StandardModelParity.test_default_allocations_single_apply_then_placeholder_RNG) ... ok
+test_independent_double_complete_equations_and_all_gradients (linearno.test_standard_model.StandardModelParity.test_independent_double_complete_equations_and_all_gradients) ... ok
+test_native_cuda_official_unified_replacement_all_variants (linearno.test_standard_model.StandardModelParity.test_native_cuda_official_unified_replacement_all_variants) ... ok
+test_six_release_configurations_and_parameter_counts (linearno.test_standard_model.StandardModelParity.test_six_release_configurations_and_parameter_counts) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 9.098s
+
+OK
+test_batches_point_permutation_variable_N_and_no_inplace_or_cache (linearno.test_standard_structure.StandardModelStructure.test_batches_point_permutation_variable_N_and_no_inplace_or_cache) ... ok
+test_eighth_block_executes_all_sublayers_no_quadratic_attention (linearno.test_standard_structure.StandardModelStructure.test_eighth_block_executes_all_sublayers_no_quadratic_attention) ... ok
+test_fresh_standard_cwd_import_strict_checkpoint_and_legacy_registry (linearno.test_standard_structure.StandardModelStructure.test_fresh_standard_cwd_import_strict_checkpoint_and_legacy_registry) ... ok
+test_rejected_shapes_configuration_and_registration_name_isolation (linearno.test_standard_structure.StandardModelStructure.test_rejected_shapes_configuration_and_registration_name_isolation) ... ok
+test_unified_position_replaces_coordinates_nonpersistent_device_buffer (linearno.test_standard_structure.StandardModelStructure.test_unified_position_replaces_coordinates_nonpersistent_device_buffer) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 6.411s
+
+OK
+/home/hwz/anaconda3/lib/python3.13/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+test_legacy_ast_recovered_exactly_from_limited_branches (test_static_standard.StaticFrozenChecks.test_legacy_ast_recovered_exactly_from_limited_branches) ... ok
+test_scripts_syntax_arguments_and_fresh_imports (test_static_standard.StaticFrozenChecks.test_scripts_syntax_arguments_and_fresh_imports) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 8.234s
+
+OK
+test_air_weighted_loss_and_real_epoch_record_fragment_without_sampling (test_experiment_records.ExperimentRecords.test_air_weighted_loss_and_real_epoch_record_fragment_without_sampling) ... ok
+test_all_launch_pairs_same_timestamp_explicit_override_and_no_writes (test_experiment_records.ExperimentRecords.test_all_launch_pairs_same_timestamp_explicit_override_and_no_writes) ... ok
+test_all_task_modes_early_config_actual_counts_epochs_repeat_eval_checkpoint (test_experiment_records.ExperimentRecords.test_all_task_modes_early_config_actual_counts_epochs_repeat_eval_checkpoint) ... ok
+test_entries_early_lifecycle_and_complete_observation_only_ast (test_experiment_records.ExperimentRecords.test_entries_early_lifecycle_and_complete_observation_only_ast) ... 
+  test_entries_early_lifecycle_and_complete_observation_only_ast (test_experiment_records.ExperimentRecords.test_entries_early_lifecycle_and_complete_observation_only_ast) (path='Airfoil-Design-AirfRANS/train.py') ... FAIL
+test_exceptions_and_incomplete_exit_leave_early_records (test_experiment_records.ExperimentRecords.test_exceptions_and_incomplete_exit_leave_early_records) ... ok
+test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values (test_experiment_records.ExperimentRecords.test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values) ...   0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s, train_loss=1.28, val_loss=1.26]  0%|          | 0/2 [00:00<?, ?it/s, train_loss=1.25, val_loss=1.24]100%|██████████| 2/2 [00:00<00:00, 16.67it/s, train_loss=1.25, val_loss=1.24]100%|██████████| 2/2 [00:00<00:00, 16.65it/s, train_loss=1.25, val_loss=1.24]
+  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s, train_loss=1.28, val_loss=1.26]  0%|          | 0/2 [00:00<?, ?it/s, train_loss=1.25, val_loss=1.24]100%|██████████| 2/2 [00:28<00:00, 14.49s/it, train_loss=1.25, val_loss=1.24]100%|██████████| 2/2 [00:28<00:00, 14.49s/it, train_loss=1.25, val_loss=1.24]
+
+  test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values (test_experiment_records.ExperimentRecords.test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values) (task='airfrans') ... skipped 'AirfRANS complete sampled epoch not run: torch_cluster is absent; no dependency was installed'
+test_old_runs_without_config_keep_loadable (test_experiment_records.ExperimentRecords.test_old_runs_without_config_keep_loadable) ... ok
+test_recording_lifecycle_in_three_original_fresh_workdirs (test_experiment_records.ExperimentRecords.test_recording_lifecycle_in_three_original_fresh_workdirs) ... ok
+test_same_process_only_reservation_and_unique_defaults (test_experiment_records.ExperimentRecords.test_same_process_only_reservation_and_unique_defaults) ... ok
+
+======================================================================
+FAIL: test_entries_early_lifecycle_and_complete_observation_only_ast (test_experiment_records.ExperimentRecords.test_entries_early_lifecycle_and_complete_observation_only_ast) (path='Airfoil-Design-AirfRANS/train.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/test_experiment_records.py", line 150, in test_entries_early_lifecycle_and_complete_observation_only_ast
+    self.assertEqual(ast.dump(strip_recording(copy.deepcopy(now))),ast.dump(old))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Modu[11642 chars]))), Assign(targets=[Name(id=\'loss_criterion\[42394 chars]])])' != 'Modu[11642 chars]))), If(test=BoolOp(op=Or(), values=[Compare(l[42920 chars]])])'
+Diff is 128417 characters long. Set self.maxDiff to None to see it.
+
+----------------------------------------------------------------------
+Ran 9 tests in 72.730s
+
+FAILED (failures=1, skipped=1)

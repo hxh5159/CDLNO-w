@@ -1,0 +1,95 @@
+[
+  {
+    "module": "linearno.test_profiles",
+    "tests": 6,
+    "seconds": 0.2332967649999773,
+    "failures": 0,
+    "errors": 0,
+    "skips": []
+  },
+  {
+    "module": "linearno.test_schema",
+    "tests": 5,
+    "seconds": 2.457660493999356,
+    "failures": 0,
+    "errors": 0,
+    "skips": []
+  },
+  {
+    "module": "linearno.test_legacy",
+    "tests": 4,
+    "seconds": 52.393263935000505,
+    "failures": 0,
+    "errors": 0,
+    "skips": []
+  },
+  {
+    "module": "linearno.test_rng",
+    "tests": 1,
+    "seconds": 73.038879189,
+    "failures": 0,
+    "errors": 0,
+    "skips": []
+  },
+  {
+    "module": "linearno.test_attention_parity",
+    "tests": 4,
+    "seconds": 8.05144601199936,
+    "failures": 0,
+    "errors": 0,
+    "skips": []
+  },
+  {
+    "module": "linearno.test_attention_structure",
+    "tests": 10,
+    "seconds": 18.06961837000017,
+    "failures": 0,
+    "errors": 0,
+    "skips": []
+  },
+  {
+    "module": "linearno.test_standard_model",
+    "tests": 5,
+    "seconds": 8.838057703000231,
+    "failures": 0,
+    "errors": 0,
+    "skips": []
+  },
+  {
+    "module": "linearno.test_standard_structure",
+    "tests": 5,
+    "seconds": 6.238000887999078,
+    "failures": 0,
+    "errors": 0,
+    "skips": []
+  },
+  {
+    "module": "test_static_standard.StaticFrozenChecks",
+    "tests": 2,
+    "seconds": 8.081972273999781,
+    "failures": 0,
+    "errors": 0,
+    "skips": []
+  },
+  {
+    "module": "test_temporal_standard",
+    "tests": 10,
+    "seconds": 26.178684201999204,
+    "failures": 0,
+    "errors": 0,
+    "skips": []
+  },
+  {
+    "module": "test_experiment_records",
+    "tests": 9,
+    "seconds": 74.78352015100063,
+    "failures": 0,
+    "errors": 6,
+    "skips": [
+      [
+        "test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values (test_experiment_records.ExperimentRecords.test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values) (task='airfrans')",
+        "AirfRANS complete sampled epoch not run: torch_cluster is absent; no dependency was installed"
+      ]
+    ]
+  }
+]

@@ -1,0 +1,162 @@
+{
+  "file": "tests/linearno/fixtures/transolver_cpu.json",
+  "sha256": "7473f14217312da5895771487aa19c20234976193c8a91ae42c13a92c81e41db",
+  "bytes": 144539,
+  "generator": "tests/linearno/capture_fixtures.py",
+  "generator_worker": "tests/linearno/legacy_worker.py",
+  "worker_sha256": "41e9e0c586d9ddc13c88e5007d285111c22c3569d4c9f7d0c1913af95f946f97",
+  "source_head": "bb73b3099d3b8ce45bd939156b737453b9ca5454",
+  "tasks": [
+    {
+      "task": "darcy",
+      "parameters": 3589,
+      "shape": [
+        2,
+        35,
+        1
+      ],
+      "factory": {
+        "class_path": "model.Transolver_Structured_Mesh_2D.Model",
+        "key": "Transolver_Structured_Mesh_2D",
+        "kind": "real model_dict.get_model"
+      },
+      "atol": 1e-06,
+      "rtol": 1e-05,
+      "roundtrip_max_error": 0.0,
+      "device": "cpu",
+      "dtype": "float32"
+    },
+    {
+      "task": "elasticity",
+      "parameters": 1413,
+      "shape": [
+        2,
+        19,
+        1
+      ],
+      "factory": {
+        "class_path": "model.Transolver_Irregular_Mesh.Model",
+        "key": "Transolver_Irregular_Mesh",
+        "kind": "real model_dict.get_model"
+      },
+      "atol": 1e-06,
+      "rtol": 1e-05,
+      "roundtrip_max_error": 0.0,
+      "device": "cpu",
+      "dtype": "float32"
+    },
+    {
+      "task": "airfoil",
+      "parameters": 3461,
+      "shape": [
+        2,
+        35,
+        1
+      ],
+      "factory": {
+        "class_path": "model.Transolver_Structured_Mesh_2D.Model",
+        "key": "Transolver_Structured_Mesh_2D",
+        "kind": "real model_dict.get_model"
+      },
+      "atol": 1e-06,
+      "rtol": 1e-05,
+      "roundtrip_max_error": 0.0,
+      "device": "cpu",
+      "dtype": "float32"
+    },
+    {
+      "task": "pipe",
+      "parameters": 3461,
+      "shape": [
+        2,
+        35,
+        1
+      ],
+      "factory": {
+        "class_path": "model.Transolver_Structured_Mesh_2D.Model",
+        "key": "Transolver_Structured_Mesh_2D",
+        "kind": "real model_dict.get_model"
+      },
+      "atol": 1e-06,
+      "rtol": 1e-05,
+      "roundtrip_max_error": 0.0,
+      "device": "cpu",
+      "dtype": "float32"
+    },
+    {
+      "task": "ns",
+      "parameters": 3733,
+      "shape": [
+        2,
+        35,
+        1
+      ],
+      "factory": {
+        "class_path": "model.Transolver_Structured_Mesh_2D.Model",
+        "key": "Transolver_Structured_Mesh_2D",
+        "kind": "real model_dict.get_model"
+      },
+      "atol": 1e-06,
+      "rtol": 1e-05,
+      "roundtrip_max_error": 0.0,
+      "device": "cpu",
+      "dtype": "float32"
+    },
+    {
+      "task": "plasticity",
+      "parameters": 3648,
+      "shape": [
+        2,
+        35,
+        4
+      ],
+      "factory": {
+        "class_path": "model.Transolver_Structured_Mesh_2D.Model",
+        "key": "Transolver_Structured_Mesh_2D",
+        "kind": "real model_dict.get_model"
+      },
+      "atol": 1e-06,
+      "rtol": 1e-05,
+      "roundtrip_max_error": 0.0,
+      "device": "cpu",
+      "dtype": "float32"
+    },
+    {
+      "task": "car",
+      "parameters": 1520,
+      "shape": [
+        19,
+        4
+      ],
+      "factory": {
+        "class_path": "models.Transolver.Model",
+        "key": "Transolver",
+        "kind": "real main selection AST + safe original class import"
+      },
+      "atol": 1e-06,
+      "rtol": 1e-05,
+      "roundtrip_max_error": 0.0,
+      "device": "cpu",
+      "dtype": "float32"
+    },
+    {
+      "task": "airfrans",
+      "parameters": 2224,
+      "shape": [
+        19,
+        4
+      ],
+      "factory": {
+        "class_path": "models.Transolver.Transolver",
+        "key": "Transolver",
+        "kind": "real main selection AST + safe original class import"
+      },
+      "atol": 1e-06,
+      "rtol": 1e-05,
+      "roundtrip_max_error": 0.0,
+      "device": "cpu",
+      "dtype": "float32"
+    }
+  ],
+  "limitation": "small widths/depths/nodes, real original classes, test-only CPU position-device shim; not trained checkpoint/real-data/GPU/LinearNO parity evidence"
+}

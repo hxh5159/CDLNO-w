@@ -1,0 +1,40 @@
+[
+  {
+    "command": "python -B -m pytest -q tests/linearno/test_profiles.py tests/linearno/test_air_objective_decision.py tests/linearno/test_schema.py",
+    "result": "15 passed",
+    "seconds": 3.18
+  },
+  {
+    "command": "python -B -m pytest -q tests/linearno tests/test_shapenet_car.py tests/test_airfrans.py",
+    "result": "102 passed, 2 failed (pre-existing L6 source-audit omissions)",
+    "seconds": 278.12,
+    "log": "full-regression-initial.txt"
+  },
+  {
+    "command": "python -B -m pytest -q -p no:cacheprovider tests/linearno/test_car_entry.py tests/linearno/test_legacy.py tests/test_shapenet_car.py tests/test_airfrans.py",
+    "result": "34 passed, 1 warning; both earlier audit failures corrected without production Air/model changes",
+    "seconds": 80.98,
+    "log": "affected-final.txt"
+  },
+  {
+    "command": "bash -n tran_evaluate/linearno/car_train.sh tran_evaluate/linearno/car_eval.sh",
+    "result": "PASS"
+  },
+  {
+    "command": "bash tran_evaluate/linearno/car_train.sh --dry-run --linearno-profile official_release --data_dir /tmp/car-raw --save_dir /tmp/car-cache --experiment-dir /tmp/car-linearno",
+    "result": "preview only; no data or Python entry executed"
+  },
+  {
+    "command": "bash tran_evaluate/linearno/car_eval.sh --dry-run --experiment-dir /tmp/car-linearno --data_dir /tmp/car-raw --save_dir /tmp/car-cache",
+    "result": "preview only; no data or Python entry executed"
+  },
+  {
+    "command": "python -B docs/linearno_audit/l7/integration/verify.py",
+    "result": "PASS; original model math unchanged; complete Car legacy AST equal; original ignored files restored exactly; new legacy-test sidecars retained outside repo"
+  },
+  {
+    "command": "python -B -m pytest -q -p no:cacheprovider tests/linearno/test_legacy.py::LegacyRegression::test_all_preexisting_files_and_absent_frozen_directories tests/linearno/test_car_entry.py::CarEntry::test_exact_legacy_source_projection",
+    "result": "2 passed after documentation updates",
+    "seconds": 1.36
+  }
+]

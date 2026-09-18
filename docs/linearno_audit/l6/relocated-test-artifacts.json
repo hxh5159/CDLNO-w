@@ -1,0 +1,16 @@
+{
+  "reason": "Existing tests/test_airfrans.py:test_sidecar_read_first_member_paths_and_runtime automatic-run case creates two default output sidecars even with save_path override. Only those two L6-created files were moved; no preexisting file removed or changed.",
+  "initial_freeze": "FAILED on newly ignored output paths; corrected by preserving task-created evidence outside checkout, not by allowing extra frozen changes.",
+  "files": [
+    {
+      "original": "output/airfrans/20260917T153345723337Z/architecture.json",
+      "relocated": "/home/hwz/CDLNO-artifacts/linearno-l6-old-air-test-output-r141xkk6/20260917T153345723337Z/architecture.json",
+      "sha256": "8e14d5fbbb7ac53a43536a65f916d7288d350dc73144b7c887c0caccac73c657"
+    },
+    {
+      "original": "output/airfrans/20260917T153345736788Z/architecture.json",
+      "relocated": "/home/hwz/CDLNO-artifacts/linearno-l6-old-air-test-output-r141xkk6/20260917T153345736788Z/architecture.json",
+      "sha256": "8e14d5fbbb7ac53a43536a65f916d7288d350dc73144b7c887c0caccac73c657"
+    }
+  ]
+}

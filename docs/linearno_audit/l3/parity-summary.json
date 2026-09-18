@@ -1,0 +1,142 @@
+{
+  "independent_oracle": {
+    "cases": 8,
+    "max_abs": 1.1368683772161603e-13
+  },
+  "initialization": {
+    "cases": 8,
+    "max_abs": 0
+  },
+  "official_parity": {
+    "cases": 18,
+    "max_abs": 1.4156103134155273e-07,
+    "by_device": {
+      "cpu": {
+        "cases": 10,
+        "categories": {
+          "forward": {
+            "max_abs": 0.0,
+            "mean_abs": 0.0,
+            "max_relative": 0.0,
+            "mean_relative": 0.0,
+            "relative_l2": 0.0
+          },
+          "block/": {
+            "max_abs": 0.0,
+            "mean_abs": 0.0,
+            "max_relative": 0.0,
+            "mean_relative": 0.0,
+            "relative_l2": 0.0
+          },
+          "loss": {
+            "max_abs": 0.0,
+            "mean_abs": 0.0,
+            "max_relative": 0.0,
+            "mean_relative": 0.0,
+            "relative_l2": 0.0
+          },
+          "input_grad/": {
+            "max_abs": 1.0164395367051604e-20,
+            "mean_abs": 6.776263578034403e-22,
+            "max_relative": 5.728113927967703e-16,
+            "mean_relative": 1.9931019426028348e-17,
+            "relative_l2": 3.271054099771091e-17
+          },
+          "grad/": {
+            "max_abs": 2.7755575615628914e-17,
+            "mean_abs": 2.3129646346357427e-18,
+            "max_relative": 1.7175381354918536e-12,
+            "mean_relative": 2.1251226527387603e-13,
+            "relative_l2": 1.0894154477344612e-13
+          },
+          "step/": {
+            "max_abs": 1.8735013540549517e-16,
+            "mean_abs": 3.700743415417188e-17,
+            "max_relative": 1.5347772949259925e-13,
+            "mean_relative": 2.6394274139609054e-15,
+            "relative_l2": 3.772185247235152e-15
+          },
+          "checkpoint": {
+            "max_abs": 0.0,
+            "mean_abs": 0.0,
+            "max_relative": 0.0,
+            "mean_relative": 0.0,
+            "relative_l2": 0.0
+          },
+          "position": {
+            "max_abs": 0,
+            "mean_abs": 0,
+            "max_relative": 0,
+            "mean_relative": 0,
+            "relative_l2": 0
+          }
+        }
+      },
+      "cuda": {
+        "cases": 8,
+        "categories": {
+          "forward": {
+            "max_abs": 8.381903171539307e-09,
+            "mean_abs": 8.381903171539307e-10,
+            "max_relative": 7.442833456925718e-07,
+            "mean_relative": 5.059430392679304e-08,
+            "relative_l2": 1.1041922535803265e-07
+          },
+          "block/": {
+            "max_abs": 8.381903171539307e-09,
+            "mean_abs": 8.381903171539307e-10,
+            "max_relative": 7.442833456925718e-07,
+            "mean_relative": 5.059430392679304e-08,
+            "relative_l2": 1.1041922535803265e-07
+          },
+          "loss": {
+            "max_abs": 4.656612873077393e-10,
+            "mean_abs": 4.656612873077393e-10,
+            "max_relative": 1.2757565682964797e-07,
+            "mean_relative": 1.2757565682964797e-07,
+            "relative_l2": 1.2757565682964797e-07
+          },
+          "input_grad/": {
+            "max_abs": 3.637978807091713e-11,
+            "mean_abs": 3.637978807091713e-11,
+            "max_relative": 9.546891178997145e-07,
+            "mean_relative": 9.546891178997145e-07,
+            "relative_l2": 9.546891178997145e-07
+          },
+          "grad/": {
+            "max_abs": 2.9802322387695312e-08,
+            "mean_abs": 7.295360167821248e-09,
+            "max_relative": 0.00424459215295564,
+            "mean_relative": 0.000269024561622984,
+            "relative_l2": 2.332056379878091e-05
+          },
+          "step/": {
+            "max_abs": 1.4156103134155273e-07,
+            "mean_abs": 1.6145349945873022e-08,
+            "max_relative": 1.4109436783632063e-05,
+            "mean_relative": 1.908231314158941e-06,
+            "relative_l2": 1.8832795151043788e-06
+          },
+          "checkpoint": {
+            "max_abs": 0.0,
+            "mean_abs": 0.0,
+            "max_relative": 0.0,
+            "mean_relative": 0.0,
+            "relative_l2": 0.0
+          },
+          "position": {
+            "max_abs": 0.0,
+            "mean_abs": 0.0,
+            "max_relative": 0.0,
+            "mean_relative": 0.0,
+            "relative_l2": 0.0
+          }
+        }
+      }
+    }
+  },
+  "published_config": {
+    "cases": 6,
+    "max_abs": 0.0
+  }
+}

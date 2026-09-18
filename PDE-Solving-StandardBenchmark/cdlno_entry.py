@@ -34,6 +34,9 @@ def parse_args(parser, task, argv=None):
     selector = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     selector.add_argument('--model')
     selected, _ = selector.parse_known_args(tokens)
+    if selected.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):
+        from cdlno.linearno.standard_entry import parse_args as parse_linearno_args
+        return parse_linearno_args(parser, task, tokens)
     if selected.model == 'msar_lno':
         from cdlno.msar_lno.standard_entry import parse_args as parse_msar_args
         return parse_msar_args(parser, task, tokens)

@@ -1,0 +1,29 @@
+{
+  "L6_status": "BLOCKED",
+  "L7_scope": "independent model/evaluation components only",
+  "unresolved": [
+    {
+      "task": "airfrans",
+      "unresolved": [
+        "objective.volume_channels",
+        "objective.surface_channels",
+        "objective.space",
+        "objective.reduction"
+      ],
+      "error": "paper industrial objective requires reviewed decisions: objective.volume_channels, objective.surface_channels, objective.space, objective.reduction"
+    },
+    {
+      "task": "car",
+      "unresolved": [
+        "objective.space",
+        "objective.reduction"
+      ],
+      "error": "paper industrial objective requires reviewed decisions: objective.space, objective.reduction"
+    }
+  ],
+  "production_integration": {
+    "airfrans": false,
+    "car": false
+  },
+  "L8_L10": "NOT EXECUTED; required native task integration unavailable"
+}

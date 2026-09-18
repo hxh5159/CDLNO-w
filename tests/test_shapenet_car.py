@@ -415,7 +415,9 @@ class FrozenSourceAndScripts(unittest.TestCase):
                 continue
             before = subprocess.check_output(['git', 'show', '75e0f67643806a81cd1d3f6adc88dd8c02416fe7:' + name], cwd=ROOT)
             if Path(name).name == 'train.py':
-                self.assertEqual(ast.dump(strip_recording(ast.parse((ROOT/name).read_text()))), ast.dump(ast.parse(before)), name)
+                from test_airfrans import AirFrozenChecks
+                tree = AirFrozenChecks._strip_linearno_air(ast.parse((ROOT/name).read_text()))
+                self.assertEqual(ast.dump(strip_recording(tree)), ast.dump(ast.parse(before)), name)
             else:
                 self.assertEqual((ROOT / name).read_bytes(), before, name)
             count += 1

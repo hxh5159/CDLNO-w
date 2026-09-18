@@ -23,6 +23,10 @@ parser.add_argument('--r', default=0.2, type=float)
 parser.add_argument('--weight', default=0.5, type=float)
 parser.add_argument('--nb_epochs', default=200, type=int)
 args = parse_cdlno_args(parser, evaluation=True)
+if args.cfd_model == 'LinearNO':
+    from cdlno.linearno.car_entry import run_cli
+    run_cli(args)
+    raise SystemExit(0)
 if args.cfd_model == 'CDLNO':
     from cdlno.experiment import start as start_experiment, finish as finish_experiment
     start_experiment(args, 'car', evaluation=True)

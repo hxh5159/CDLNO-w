@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:arxiv.org)",
+      "Bash(curl -sL --max-time 60 \"https://arxiv.org/abs/2402.02366\" -o transolver_abs.html)",
+      "Bash(wc -c)",
+      "Bash(echo \"transolver_abs exit=$? size=$\\(wc -c < transolver_abs.html 2>/dev/null\\)\")",
+      "Bash(curl -sL --max-time 90 \"https://arxiv.org/html/2511.06294v3\" -o linearno.html)",
+      "Bash(echo \"linearno exit=$? size=$\\(wc -c < linearno.html 2>/dev/null\\)\")",
+      "Bash(curl -sL --max-time 90 \"https://arxiv.org/html/2402.02366v2\" -o transolver_full.html)",
+      "Bash(echo \"exit=$? size=$\\(wc -c < transolver_full.html 2>/dev/null\\)\")"
+    ]
+  }
+}

@@ -1,0 +1,117 @@
+test_cpu_double_and_float_oracle_all_variants (linearno.test_attention_parity.AttentionParity.test_cpu_double_and_float_oracle_all_variants) ... ok
+test_fixed_official_cpu_forward_all_grads_step_checkpoint (linearno.test_attention_parity.AttentionParity.test_fixed_official_cpu_forward_all_grads_step_checkpoint) ... ok
+test_fixed_official_cuda_fp32_fp16_bfloat16 (linearno.test_attention_parity.AttentionParity.test_fixed_official_cuda_fp32_fp16_bfloat16) ... ok
+test_release_constructor_and_outer_initialization_RNG_keys (linearno.test_attention_parity.AttentionParity.test_release_constructor_and_outer_initialization_RNG_keys) ... 
+  test_release_constructor_and_outer_initialization_RNG_keys (linearno.test_attention_parity.AttentionParity.test_release_constructor_and_outer_initialization_RNG_keys) (variant='plain') ... FAIL
+  test_release_constructor_and_outer_initialization_RNG_keys (linearno.test_attention_parity.AttentionParity.test_release_constructor_and_outer_initialization_RNG_keys) (variant='temp') ... FAIL
+  test_release_constructor_and_outer_initialization_RNG_keys (linearno.test_attention_parity.AttentionParity.test_release_constructor_and_outer_initialization_RNG_keys) (variant='conv') ... FAIL
+  test_release_constructor_and_outer_initialization_RNG_keys (linearno.test_attention_parity.AttentionParity.test_release_constructor_and_outer_initialization_RNG_keys) (variant='conv_temp') ... FAIL
+  test_release_constructor_and_outer_initialization_RNG_keys (linearno.test_attention_parity.AttentionParity.test_release_constructor_and_outer_initialization_RNG_keys) (variant='airfrans') ... FAIL
+  test_release_constructor_and_outer_initialization_RNG_keys (linearno.test_attention_parity.AttentionParity.test_release_constructor_and_outer_initialization_RNG_keys) (variant='shapenet') ... FAIL
+
+======================================================================
+FAIL: test_release_constructor_and_outer_initialization_RNG_keys (linearno.test_attention_parity.AttentionParity.test_release_constructor_and_outer_initialization_RNG_keys) (variant='plain')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_attention_parity.py", line 58, in test_release_constructor_and_outer_initialization_RNG_keys
+    torch.testing.assert_close(a.state_dict(),b.state_dict(),atol=0,rtol=0)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/site-packages/torch/testing/_comparison.py", line 1631, in assert_close
+    raise error_metas[0].to_error(msg)
+AssertionError: Tensor-likes are not equal!
+
+Mismatched elements: 144 / 144 (100.0%)
+Greatest absolute difference: 0.08134589344263077 at index (1, 5)
+Greatest relative difference: 49.10545349121094 at index (8, 5)
+
+The failure occurred for item ['in_project_x.weight']
+
+======================================================================
+FAIL: test_release_constructor_and_outer_initialization_RNG_keys (linearno.test_attention_parity.AttentionParity.test_release_constructor_and_outer_initialization_RNG_keys) (variant='temp')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_attention_parity.py", line 58, in test_release_constructor_and_outer_initialization_RNG_keys
+    torch.testing.assert_close(a.state_dict(),b.state_dict(),atol=0,rtol=0)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/site-packages/torch/testing/_comparison.py", line 1631, in assert_close
+    raise error_metas[0].to_error(msg)
+AssertionError: Tensor-likes are not equal!
+
+Mismatched elements: 144 / 144 (100.0%)
+Greatest absolute difference: 0.08134589344263077 at index (1, 5)
+Greatest relative difference: 49.10545349121094 at index (8, 5)
+
+The failure occurred for item ['in_project_x.weight']
+
+======================================================================
+FAIL: test_release_constructor_and_outer_initialization_RNG_keys (linearno.test_attention_parity.AttentionParity.test_release_constructor_and_outer_initialization_RNG_keys) (variant='conv')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_attention_parity.py", line 58, in test_release_constructor_and_outer_initialization_RNG_keys
+    torch.testing.assert_close(a.state_dict(),b.state_dict(),atol=0,rtol=0)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/site-packages/torch/testing/_comparison.py", line 1631, in assert_close
+    raise error_metas[0].to_error(msg)
+AssertionError: Tensor-likes are not equal!
+
+Mismatched elements: 32 / 32 (100.0%)
+Greatest absolute difference: 0.05007946863770485 at index (2, 1)
+Greatest relative difference: 7.45180082321167 at index (4, 3)
+
+The failure occurred for item ['to_k.weight']
+
+======================================================================
+FAIL: test_release_constructor_and_outer_initialization_RNG_keys (linearno.test_attention_parity.AttentionParity.test_release_constructor_and_outer_initialization_RNG_keys) (variant='conv_temp')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_attention_parity.py", line 58, in test_release_constructor_and_outer_initialization_RNG_keys
+    torch.testing.assert_close(a.state_dict(),b.state_dict(),atol=0,rtol=0)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/site-packages/torch/testing/_comparison.py", line 1631, in assert_close
+    raise error_metas[0].to_error(msg)
+AssertionError: Tensor-likes are not equal!
+
+Mismatched elements: 32 / 32 (100.0%)
+Greatest absolute difference: 0.05007946863770485 at index (2, 1)
+Greatest relative difference: 7.45180082321167 at index (4, 3)
+
+The failure occurred for item ['to_k.weight']
+
+======================================================================
+FAIL: test_release_constructor_and_outer_initialization_RNG_keys (linearno.test_attention_parity.AttentionParity.test_release_constructor_and_outer_initialization_RNG_keys) (variant='airfrans')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_attention_parity.py", line 58, in test_release_constructor_and_outer_initialization_RNG_keys
+    torch.testing.assert_close(a.state_dict(),b.state_dict(),atol=0,rtol=0)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/site-packages/torch/testing/_comparison.py", line 1631, in assert_close
+    raise error_metas[0].to_error(msg)
+AssertionError: Tensor-likes are not equal!
+
+Mismatched elements: 144 / 144 (100.0%)
+Greatest absolute difference: 0.08134589344263077 at index (1, 5)
+Greatest relative difference: 49.10545349121094 at index (8, 5)
+
+The failure occurred for item ['in_project_x.weight']
+
+======================================================================
+FAIL: test_release_constructor_and_outer_initialization_RNG_keys (linearno.test_attention_parity.AttentionParity.test_release_constructor_and_outer_initialization_RNG_keys) (variant='shapenet')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno/test_attention_parity.py", line 58, in test_release_constructor_and_outer_initialization_RNG_keys
+    torch.testing.assert_close(a.state_dict(),b.state_dict(),atol=0,rtol=0)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/anaconda3/lib/python3.13/site-packages/torch/testing/_comparison.py", line 1631, in assert_close
+    raise error_metas[0].to_error(msg)
+AssertionError: Tensor-likes are not equal!
+
+Mismatched elements: 144 / 144 (100.0%)
+Greatest absolute difference: 0.08134589344263077 at index (1, 5)
+Greatest relative difference: 49.10545349121094 at index (8, 5)
+
+The failure occurred for item ['in_project_x.weight']
+
+----------------------------------------------------------------------
+Ran 4 tests in 3.099s
+
+FAILED (failures=6)

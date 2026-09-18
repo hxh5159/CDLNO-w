@@ -1,0 +1,818 @@
+[
+  {
+    "id": "Sx3.E1",
+    "text": "𝒘 i = Softmax ​ ( Linear ( Q / K ) ​ ( 𝒉 i ) ) i = 1 , … , N \\bm{w}_{i}=\\text{Softmax}(\\text{Linear}^{(Q/K)}(\\bm{h}_{i}))\\quad i=1,\\dots,N (1)",
+    "latex": [
+      "\\bm{w}_{i}=\\text{Softmax}(\\text{Linear}^{(Q/K)}(\\bm{h}_{i}))\\quad i=1,\\dots,N"
+    ]
+  },
+  {
+    "id": "Sx3.E1.m1",
+    "text": "𝒘 i = Softmax ​ ( Linear ( Q / K ) ​ ( 𝒉 i ) ) i = 1 , … , N \\bm{w}_{i}=\\text{Softmax}(\\text{Linear}^{(Q/K)}(\\bm{h}_{i}))\\quad i=1,\\dots,N",
+    "latex": []
+  },
+  {
+    "id": "Sx3.E2",
+    "text": "𝒗 i = Linear ( V ) ​ ( 𝒉 i ) i = 1 , … , N \\bm{v}_{i}=\\text{Linear}^{(V)}(\\bm{h}_{i})\\quad i=1,\\dots,N (2)",
+    "latex": [
+      "\\bm{v}_{i}=\\text{Linear}^{(V)}(\\bm{h}_{i})\\quad i=1,\\dots,N"
+    ]
+  },
+  {
+    "id": "Sx3.E2.m1",
+    "text": "𝒗 i = Linear ( V ) ​ ( 𝒉 i ) i = 1 , … , N \\bm{v}_{i}=\\text{Linear}^{(V)}(\\bm{h}_{i})\\quad i=1,\\dots,N",
+    "latex": []
+  },
+  {
+    "id": "Sx3.E3",
+    "text": "𝒔 j = ∑ i = 1 N 𝒘 i ​ j ​ 𝒗 i ∑ i = 1 N 𝒘 i ​ j j = 1 , … , M \\bm{s}_{j}=\\frac{\\sum_{i=1}^{N}\\bm{w}_{ij}\\bm{v}_{i}}{\\sum_{i=1}^{N}\\bm{w}_{ij}}\\quad j=1,\\dots,M (3)",
+    "latex": [
+      "\\bm{s}_{j}=\\frac{\\sum_{i=1}^{N}\\bm{w}_{ij}\\bm{v}_{i}}{\\sum_{i=1}^{N}\\bm{w}_{ij}}\\quad j=1,\\dots,M"
+    ]
+  },
+  {
+    "id": "Sx3.E3.m1",
+    "text": "𝒔 j = ∑ i = 1 N 𝒘 i ​ j ​ 𝒗 i ∑ i = 1 N 𝒘 i ​ j j = 1 , … , M \\bm{s}_{j}=\\frac{\\sum_{i=1}^{N}\\bm{w}_{ij}\\bm{v}_{i}}{\\sum_{i=1}^{N}\\bm{w}_{ij}}\\quad j=1,\\dots,M",
+    "latex": []
+  },
+  {
+    "id": "Sx3.E4",
+    "text": "𝑺 ′ M = Self-Attention ​ ( 𝑺 M ) \\bm{S^{\\prime}}_{M}=\\text{Self-Attention}(\\bm{S}_{M}) (4)",
+    "latex": [
+      "\\bm{S^{\\prime}}_{M}=\\text{Self-Attention}(\\bm{S}_{M})"
+    ]
+  },
+  {
+    "id": "Sx3.E4.m1",
+    "text": "𝑺 ′ M = Self-Attention ​ ( 𝑺 M ) \\bm{S^{\\prime}}_{M}=\\text{Self-Attention}(\\bm{S}_{M})",
+    "latex": []
+  },
+  {
+    "id": "Sx3.E5",
+    "text": "𝒉 ′ i = ∑ j = 1 M 𝒘 i ​ j ​ 𝒔 ′ j i = 1 , … , N \\bm{h^{\\prime}}_{i}=\\sum_{j=1}^{M}\\bm{w}_{ij}\\bm{s^{\\prime}}_{j}\\quad i=1,\\dots,N (5)",
+    "latex": [
+      "\\bm{h^{\\prime}}_{i}=\\sum_{j=1}^{M}\\bm{w}_{ij}\\bm{s^{\\prime}}_{j}\\quad i=1,\\dots,N"
+    ]
+  },
+  {
+    "id": "Sx3.E5.m1",
+    "text": "𝒉 ′ i = ∑ j = 1 M 𝒘 i ​ j ​ 𝒔 ′ j i = 1 , … , N \\bm{h^{\\prime}}_{i}=\\sum_{j=1}^{M}\\bm{w}_{ij}\\bm{s^{\\prime}}_{j}\\quad i=1,\\dots,N",
+    "latex": []
+  },
+  {
+    "id": "Sx3.E6",
+    "text": "Attention ​ ( 𝑸 , 𝑲 , 𝑽 ) \\displaystyle\\text{Attention}(\\bm{Q},\\bm{K},\\bm{V}) = Softmax ​ ( 𝑸 ​ 𝑲 ⊤ d ) ​ 𝑽 \\displaystyle=\\text{Softmax}(\\frac{\\bm{QK}^{\\top}}{\\sqrt{d}})\\bm{V} (6) ≈ φ ⁡ ( 𝑸 ) ​ ( ψ ⊤ ​ ( 𝑲 ) ​ 𝑽 ) \\displaystyle\\approx\\varphi(\\bm{Q})(\\psi^{\\top}(\\bm{K})\\bm{V})",
+    "latex": [
+      "\\displaystyle\\text{Attention}(\\bm{Q},\\bm{K},\\bm{V})",
+      "\\displaystyle=\\text{Softmax}(\\frac{\\bm{QK}^{\\top}}{\\sqrt{d}})\\bm{V}",
+      "\\displaystyle\\approx\\varphi(\\bm{Q})(\\psi^{\\top}(\\bm{K})\\bm{V})"
+    ]
+  },
+  {
+    "id": "Sx3.E6X.m2",
+    "text": "Attention ​ ( 𝑸 , 𝑲 , 𝑽 ) \\displaystyle\\text{Attention}(\\bm{Q},\\bm{K},\\bm{V})",
+    "latex": []
+  },
+  {
+    "id": "Sx3.E6X.m3",
+    "text": "= Softmax ​ ( 𝑸 ​ 𝑲 ⊤ d ) ​ 𝑽 \\displaystyle=\\text{Softmax}(\\frac{\\bm{QK}^{\\top}}{\\sqrt{d}})\\bm{V}",
+    "latex": []
+  },
+  {
+    "id": "Sx3.E6Xa.m2",
+    "text": "≈ φ ⁡ ( 𝑸 ) ​ ( ψ ⊤ ​ ( 𝑲 ) ​ 𝑽 ) \\displaystyle\\approx\\varphi(\\bm{Q})(\\psi^{\\top}(\\bm{K})\\bm{V})",
+    "latex": []
+  },
+  {
+    "id": "Sx3.E7",
+    "text": "φ ⁡ ( 𝑸 ) \\displaystyle\\varphi(\\bm{Q}) = { Softmax ​ ( Linear ( Q / K ) ​ ( 𝒉 i ) ) } i = 1 N = { 𝒘 i } i = 1 N \\displaystyle=\\left\\{\\text{Softmax}(\\text{Linear}^{(Q/K)}(\\bm{h}_{i}))\\right\\}_{i=1}^{N}=\\left\\{\\bm{w}_{i}\\right\\}_{i=1}^{N} (7) ψ ⁡ ( 𝑲 ) \\displaystyle\\psi(\\bm{K}) = { 𝒘 i ∑ j = 1 N 𝒘 j } i = 1 N \\displaystyle=\\left\\{\\frac{\\bm{w}_{i}}{\\sum_{j=1}^{N}\\bm{w}_{j}}\\right\\}_{i=1}^{N} 𝑽 \\displaystyle\\bm{V} = { Linear ( V ) ​ ( 𝒉 i ) } i = 1 N \\displaystyle=\\left\\{\\text{Linear}^{(V)}(\\bm{h}_{i})\\right\\}_{i=1}^{N}",
+    "latex": [
+      "\\displaystyle\\varphi(\\bm{Q})",
+      "\\displaystyle=\\left\\{\\text{Softmax}(\\text{Linear}^{(Q/K)}(\\bm{h}_{i}))\\right\\}_{i=1}^{N}=\\left\\{\\bm{w}_{i}\\right\\}_{i=1}^{N}",
+      "\\displaystyle\\psi(\\bm{K})",
+      "\\displaystyle=\\left\\{\\frac{\\bm{w}_{i}}{\\sum_{j=1}^{N}\\bm{w}_{j}}\\right\\}_{i=1}^{N}",
+      "\\displaystyle\\bm{V}",
+      "\\displaystyle=\\left\\{\\text{Linear}^{(V)}(\\bm{h}_{i})\\right\\}_{i=1}^{N}"
+    ]
+  },
+  {
+    "id": "Sx3.E7X.m2",
+    "text": "φ ⁡ ( 𝑸 ) \\displaystyle\\varphi(\\bm{Q})",
+    "latex": []
+  },
+  {
+    "id": "Sx3.E7X.m3",
+    "text": "= { Softmax ​ ( Linear ( Q / K ) ​ ( 𝒉 i ) ) } i = 1 N = { 𝒘 i } i = 1 N \\displaystyle=\\left\\{\\text{Softmax}(\\text{Linear}^{(Q/K)}(\\bm{h}_{i}))\\right\\}_{i=1}^{N}=\\left\\{\\bm{w}_{i}\\right\\}_{i=1}^{N}",
+    "latex": []
+  },
+  {
+    "id": "Sx3.E7Xa.m2",
+    "text": "ψ ⁡ ( 𝑲 ) \\displaystyle\\psi(\\bm{K})",
+    "latex": []
+  },
+  {
+    "id": "Sx3.E7Xa.m3",
+    "text": "= { 𝒘 i ∑ j = 1 N 𝒘 j } i = 1 N \\displaystyle=\\left\\{\\frac{\\bm{w}_{i}}{\\sum_{j=1}^{N}\\bm{w}_{j}}\\right\\}_{i=1}^{N}",
+    "latex": []
+  },
+  {
+    "id": "Sx3.E7Xb.m2",
+    "text": "𝑽 \\displaystyle\\bm{V}",
+    "latex": []
+  },
+  {
+    "id": "Sx3.E7Xb.m3",
+    "text": "= { Linear ( V ) ​ ( 𝒉 i ) } i = 1 N \\displaystyle=\\left\\{\\text{Linear}^{(V)}(\\bm{h}_{i})\\right\\}_{i=1}^{N}",
+    "latex": []
+  },
+  {
+    "id": "Sx3.E8",
+    "text": "φ ⁡ ( 𝑸 ) \\displaystyle\\varphi(\\bm{Q}) = Softmax ​ ( Linear ( Q ) ​ ( 𝑯 N ) ) \\displaystyle=\\text{Softmax}(\\text{Linear}^{(Q)}(\\bm{H}_{N})) (8) ψ ⊤ ​ ( 𝑲 ) \\displaystyle\\psi^{\\top}(\\bm{K}) = Softmax ​ ( Linear ( K ) ​ ( 𝑯 N ) ⊤ ) \\displaystyle=\\text{Softmax}(\\text{Linear}^{(K)}(\\bm{H}_{N})^{\\top})",
+    "latex": [
+      "\\displaystyle\\varphi(\\bm{Q})",
+      "\\displaystyle=\\text{Softmax}(\\text{Linear}^{(Q)}(\\bm{H}_{N}))",
+      "\\displaystyle\\psi^{\\top}(\\bm{K})",
+      "\\displaystyle=\\text{Softmax}(\\text{Linear}^{(K)}(\\bm{H}_{N})^{\\top})"
+    ]
+  },
+  {
+    "id": "Sx3.E8X.m2",
+    "text": "φ ⁡ ( 𝑸 ) \\displaystyle\\varphi(\\bm{Q})",
+    "latex": []
+  },
+  {
+    "id": "Sx3.E8X.m3",
+    "text": "= Softmax ​ ( Linear ( Q ) ​ ( 𝑯 N ) ) \\displaystyle=\\text{Softmax}(\\text{Linear}^{(Q)}(\\bm{H}_{N}))",
+    "latex": []
+  },
+  {
+    "id": "Sx3.E8Xa.m2",
+    "text": "ψ ⊤ ​ ( 𝑲 ) \\displaystyle\\psi^{\\top}(\\bm{K})",
+    "latex": []
+  },
+  {
+    "id": "Sx3.E8Xa.m3",
+    "text": "= Softmax ​ ( Linear ( K ) ​ ( 𝑯 N ) ⊤ ) \\displaystyle=\\text{Softmax}(\\text{Linear}^{(K)}(\\bm{H}_{N})^{\\top})",
+    "latex": []
+  },
+  {
+    "id": "Sx3.E9",
+    "text": "LinearNO ​ ( 𝑯 N ) = φ ⁡ ( 𝑸 ) ​ ( ψ ⊤ ​ ( 𝑲 ) ⋅ Linear ( V ) ​ ( 𝑯 N ) ) \\text{LinearNO}(\\bm{H}_{N})=\\varphi(\\bm{Q})\\left(\\psi^{\\top}(\\bm{K})\\cdot\\text{Linear}^{(V)}(\\bm{H}_{N})\\right) (9)",
+    "latex": [
+      "\\text{LinearNO}(\\bm{H}_{N})=\\varphi(\\bm{Q})\\left(\\psi^{\\top}(\\bm{K})\\cdot\\text{Linear}^{(V)}(\\bm{H}_{N})\\right)"
+    ]
+  },
+  {
+    "id": "Sx3.E9.m1",
+    "text": "LinearNO ​ ( 𝑯 N ) = φ ⁡ ( 𝑸 ) ​ ( ψ ⊤ ​ ( 𝑲 ) ⋅ Linear ( V ) ​ ( 𝑯 N ) ) \\text{LinearNO}(\\bm{H}_{N})=\\varphi(\\bm{Q})\\left(\\psi^{\\top}(\\bm{K})\\cdot\\text{Linear}^{(V)}(\\bm{H}_{N})\\right)",
+    "latex": []
+  },
+  {
+    "id": "Sx3.Ex1",
+    "text": "lim n → + ∞ Pr { 1 N ∥ LinearNO ( 𝒙 ) − ℱ ( 𝒙 ) ∥ ≤ ϵ } = 1 \\lim_{n\\to+\\infty}\\Pr\\left\\{\\frac{1}{N}\\|\\text{LinearNO}(\\bm{x})-\\mathcal{F}(\\bm{x})\\|\\leq\\epsilon\\right\\}=1",
+    "latex": [
+      "\\lim_{n\\to+\\infty}\\Pr\\left\\{\\frac{1}{N}\\|\\text{LinearNO}(\\bm{x})-\\mathcal{F}(\\bm{x})\\|\\leq\\epsilon\\right\\}=1"
+    ]
+  },
+  {
+    "id": "Sx3.Ex1.m1",
+    "text": "lim n → + ∞ Pr { 1 N ∥ LinearNO ( 𝒙 ) − ℱ ( 𝒙 ) ∥ ≤ ϵ } = 1 \\lim_{n\\to+\\infty}\\Pr\\left\\{\\frac{1}{N}\\|\\text{LinearNO}(\\bm{x})-\\mathcal{F}(\\bm{x})\\|\\leq\\epsilon\\right\\}=1",
+    "latex": []
+  },
+  {
+    "id": "Sx3.Ex2",
+    "text": "ℱ ⁡ ( 𝒙 ) := ∫ Ω κ ⁡ ( v ⁡ ( 𝒙 ) , v ⁡ ( 𝒚 ) ) ​ v ​ ( 𝒚 ) ​ 𝑹 ​ d ​ μ Ω ​ ( 𝒚 ) \\mathcal{F}(\\bm{x}):=\\int_{\\Omega}\\kappa(v(\\bm{x}),v(\\bm{y}))v(\\bm{y})\\bm{R}\\,d\\mu_{\\Omega}(\\bm{y})",
+    "latex": [
+      "\\mathcal{F}(\\bm{x}):=\\int_{\\Omega}\\kappa(v(\\bm{x}),v(\\bm{y}))v(\\bm{y})\\bm{R}\\,d\\mu_{\\Omega}(\\bm{y})"
+    ]
+  },
+  {
+    "id": "Sx3.Ex2.m1",
+    "text": "ℱ ⁡ ( 𝒙 ) := ∫ Ω κ ⁡ ( v ⁡ ( 𝒙 ) , v ⁡ ( 𝒚 ) ) ​ v ​ ( 𝒚 ) ​ 𝑹 ​ d ​ μ Ω ​ ( 𝒚 ) \\mathcal{F}(\\bm{x}):=\\int_{\\Omega}\\kappa(v(\\bm{x}),v(\\bm{y}))v(\\bm{y})\\bm{R}\\,d\\mu_{\\Omega}(\\bm{y})",
+    "latex": []
+  },
+  {
+    "id": "Sx3.Ex3",
+    "text": "κ ⁡ ( v ⁡ ( 𝒙 ) , v ⁡ ( 𝒚 ) ) = φ ⁡ ( v ⁡ ( 𝒙 ) ) ​ exp ⁡ ( 𝑩 ⊤ ​ v ​ ( 𝒚 ) ⊤ ) ∫ Ω exp ⁡ ( 𝑩 ⊤ ​ v ​ ( 𝒚 ) ⊤ ) ​ d ​ μ Ω ​ ( 𝒚 ) \\kappa(v(\\bm{x}),v(\\bm{y}))=\\frac{\\varphi(v(\\bm{x}))\\exp(\\bm{B}^{\\top}v(\\bm{y})^{\\top})}{\\int_{\\Omega}\\exp{(\\bm{B}^{\\top}v(\\bm{y})^{\\top})}\\,d\\mu_{\\Omega}(\\bm{y})}",
+    "latex": [
+      "\\kappa(v(\\bm{x}),v(\\bm{y}))=\\frac{\\varphi(v(\\bm{x}))\\exp(\\bm{B}^{\\top}v(\\bm{y})^{\\top})}{\\int_{\\Omega}\\exp{(\\bm{B}^{\\top}v(\\bm{y})^{\\top})}\\,d\\mu_{\\Omega}(\\bm{y})}"
+    ]
+  },
+  {
+    "id": "Sx3.Ex3.m1",
+    "text": "κ ⁡ ( v ⁡ ( 𝒙 ) , v ⁡ ( 𝒚 ) ) = φ ⁡ ( v ⁡ ( 𝒙 ) ) ​ exp ⁡ ( 𝑩 ⊤ ​ v ​ ( 𝒚 ) ⊤ ) ∫ Ω exp ⁡ ( 𝑩 ⊤ ​ v ​ ( 𝒚 ) ⊤ ) ​ d ​ μ Ω ​ ( 𝒚 ) \\kappa(v(\\bm{x}),v(\\bm{y}))=\\frac{\\varphi(v(\\bm{x}))\\exp(\\bm{B}^{\\top}v(\\bm{y})^{\\top})}{\\int_{\\Omega}\\exp{(\\bm{B}^{\\top}v(\\bm{y})^{\\top})}\\,d\\mu_{\\Omega}(\\bm{y})}",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E10",
+    "text": "𝒢 n ​ ( x ) := 1 N ​ ∑ k = 1 N φ ⁡ ( v ⁡ ( x ) ) ​ exp ⁡ ( B ⊤ ​ v ​ ( x k ) ⊤ ) ​ ( v ⁡ ( x k ) ​ R ) \\displaystyle\\mathcal{G}_{n}(x):=\\frac{1}{N}\\sum_{k=1}^{N}\\varphi(v({x}))\\exp({B}^{\\top}v({x_{k}})^{\\top})(v(x_{k})R) (10)",
+    "latex": [
+      "\\displaystyle\\mathcal{G}_{n}(x):=\\frac{1}{N}\\sum_{k=1}^{N}\\varphi(v({x}))\\exp({B}^{\\top}v({x_{k}})^{\\top})(v(x_{k})R)"
+    ]
+  },
+  {
+    "id": "Sx8.E10X.m2",
+    "text": "𝒢 n ​ ( x ) := 1 N ​ ∑ k = 1 N φ ⁡ ( v ⁡ ( x ) ) ​ exp ⁡ ( B ⊤ ​ v ​ ( x k ) ⊤ ) ​ ( v ⁡ ( x k ) ​ R ) \\displaystyle\\mathcal{G}_{n}(x):=\\frac{1}{N}\\sum_{k=1}^{N}\\varphi(v({x}))\\exp({B}^{\\top}v({x_{k}})^{\\top})(v(x_{k})R)",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E11",
+    "text": "ℋ n := 1 N ​ ∑ j = 1 N exp ⁡ ( B ⊤ ​ v ​ ( x j ) ⊤ ) \\displaystyle\\mathcal{H}_{n}:=\\frac{1}{N}\\sum_{j=1}^{N}\\exp{({B}^{\\top}v({x_{j}})^{\\top})} (11)",
+    "latex": [
+      "\\displaystyle\\mathcal{H}_{n}:=\\frac{1}{N}\\sum_{j=1}^{N}\\exp{({B}^{\\top}v({x_{j}})^{\\top})}"
+    ]
+  },
+  {
+    "id": "Sx8.E11X.m2",
+    "text": "ℋ n := 1 N ​ ∑ j = 1 N exp ⁡ ( B ⊤ ​ v ​ ( x j ) ⊤ ) \\displaystyle\\mathcal{H}_{n}:=\\frac{1}{N}\\sum_{j=1}^{N}\\exp{({B}^{\\top}v({x_{j}})^{\\top})}",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E12",
+    "text": "LinearNO ​ ( x i ) \\displaystyle\\text{LinearNO}(x_{i}) = ∑ k = 1 N φ ⁡ ( v ⁡ ( x i ) ) ​ exp ⁡ ( B ⊤ ​ v ​ ( x k ) ⊤ ) ∑ j = 1 N exp ⁡ ( B ⊤ ​ v ​ ( x j ) ⊤ ) ​ ( v ⁡ ( x k ) ​ R ) \\displaystyle=\\sum_{k=1}^{N}\\frac{\\varphi(v({x_{i}}))\\exp({B}^{\\top}v({x_{k}})^{\\top})}{\\sum_{j=1}^{N}\\exp{({B}^{\\top}v({x_{j}})^{\\top})}}(v(x_{k})R) (12) = 1 N ​ ∑ k = 1 N φ ⁡ ( v ⁡ ( x i ) ) ​ exp ⁡ ( B ⊤ ​ v ​ ( x k ) ⊤ ​ ( v ⁡ ( x k ) ​ R ) ) 1 N ​ ∑ j = 1 N exp ⁡ ( B ⊤ ​ v ​ ( x j ) ⊤ ) \\displaystyle=\\frac{\\frac{1}{N}\\sum_{k=1}^{N}\\varphi(v({x_{i}}))\\exp({B}^{\\top}v({x_{k}})^{\\top}(v(x_{k})R))}{\\frac{1}{N}\\sum_{j=1}^{N}\\exp{({B}^{\\top}v({x_{j}})^{\\top})}} = 𝒢 n ​ ( x i ) ℋ n = : ℱ n ​ ( x i ) \\displaystyle=\\frac{\\mathcal{G}_{n}(x_{i})}{\\mathcal{H}_{n}}=:\\mathcal{F}_{n}(x_{i})",
+    "latex": [
+      "\\displaystyle\\text{LinearNO}(x_{i})",
+      "\\displaystyle=\\sum_{k=1}^{N}\\frac{\\varphi(v({x_{i}}))\\exp({B}^{\\top}v({x_{k}})^{\\top})}{\\sum_{j=1}^{N}\\exp{({B}^{\\top}v({x_{j}})^{\\top})}}(v(x_{k})R)",
+      "\\displaystyle=\\frac{\\frac{1}{N}\\sum_{k=1}^{N}\\varphi(v({x_{i}}))\\exp({B}^{\\top}v({x_{k}})^{\\top}(v(x_{k})R))}{\\frac{1}{N}\\sum_{j=1}^{N}\\exp{({B}^{\\top}v({x_{j}})^{\\top})}}",
+      "\\displaystyle=\\frac{\\mathcal{G}_{n}(x_{i})}{\\mathcal{H}_{n}}=:\\mathcal{F}_{n}(x_{i})"
+    ]
+  },
+  {
+    "id": "Sx8.E12X.m2",
+    "text": "LinearNO ​ ( x i ) \\displaystyle\\text{LinearNO}(x_{i})",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E12X.m3",
+    "text": "= ∑ k = 1 N φ ⁡ ( v ⁡ ( x i ) ) ​ exp ⁡ ( B ⊤ ​ v ​ ( x k ) ⊤ ) ∑ j = 1 N exp ⁡ ( B ⊤ ​ v ​ ( x j ) ⊤ ) ​ ( v ⁡ ( x k ) ​ R ) \\displaystyle=\\sum_{k=1}^{N}\\frac{\\varphi(v({x_{i}}))\\exp({B}^{\\top}v({x_{k}})^{\\top})}{\\sum_{j=1}^{N}\\exp{({B}^{\\top}v({x_{j}})^{\\top})}}(v(x_{k})R)",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E12Xa.m2",
+    "text": "= 1 N ​ ∑ k = 1 N φ ⁡ ( v ⁡ ( x i ) ) ​ exp ⁡ ( B ⊤ ​ v ​ ( x k ) ⊤ ​ ( v ⁡ ( x k ) ​ R ) ) 1 N ​ ∑ j = 1 N exp ⁡ ( B ⊤ ​ v ​ ( x j ) ⊤ ) \\displaystyle=\\frac{\\frac{1}{N}\\sum_{k=1}^{N}\\varphi(v({x_{i}}))\\exp({B}^{\\top}v({x_{k}})^{\\top}(v(x_{k})R))}{\\frac{1}{N}\\sum_{j=1}^{N}\\exp{({B}^{\\top}v({x_{j}})^{\\top})}}",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E12Xb.m2",
+    "text": "= 𝒢 n ​ ( x i ) ℋ n = : ℱ n ​ ( x i ) \\displaystyle=\\frac{\\mathcal{G}_{n}(x_{i})}{\\mathcal{H}_{n}}=:\\mathcal{F}_{n}(x_{i})",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E13",
+    "text": "𝒢 ⁡ ( x ) \\displaystyle\\mathcal{G}(x) = ∫ Ω φ ⁡ ( v ⁡ ( x ) ) ​ exp ⁡ ( B ⊤ ​ v ​ ( y ) ⊤ ) ​ ( v ⁡ ( y ) ​ R ) ​ d ​ μ Ω ​ ( y ) \\displaystyle=\\int_{\\Omega}\\varphi(v(x))\\exp({B}^{\\top}v(y)^{\\top})(v(y)R)d\\mu_{\\Omega}(y) (13) ℋ \\displaystyle\\mathcal{H} = ∫ Ω exp ⁡ ( B ⊤ ​ v ​ ( y ) ⊤ ) ​ d ​ μ Ω ​ ( y ) \\displaystyle=\\int_{\\Omega}\\exp({B}^{\\top}v(y)^{\\top})d\\mu_{\\Omega}(y)",
+    "latex": [
+      "\\displaystyle\\mathcal{G}(x)",
+      "\\displaystyle=\\int_{\\Omega}\\varphi(v(x))\\exp({B}^{\\top}v(y)^{\\top})(v(y)R)d\\mu_{\\Omega}(y)",
+      "\\displaystyle\\mathcal{H}",
+      "\\displaystyle=\\int_{\\Omega}\\exp({B}^{\\top}v(y)^{\\top})d\\mu_{\\Omega}(y)"
+    ]
+  },
+  {
+    "id": "Sx8.E13X.m2",
+    "text": "𝒢 ⁡ ( x ) \\displaystyle\\mathcal{G}(x)",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E13X.m3",
+    "text": "= ∫ Ω φ ⁡ ( v ⁡ ( x ) ) ​ exp ⁡ ( B ⊤ ​ v ​ ( y ) ⊤ ) ​ ( v ⁡ ( y ) ​ R ) ​ d ​ μ Ω ​ ( y ) \\displaystyle=\\int_{\\Omega}\\varphi(v(x))\\exp({B}^{\\top}v(y)^{\\top})(v(y)R)d\\mu_{\\Omega}(y)",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E13Xa.m2",
+    "text": "ℋ \\displaystyle\\mathcal{H}",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E13Xa.m3",
+    "text": "= ∫ Ω exp ⁡ ( B ⊤ ​ v ​ ( y ) ⊤ ) ​ d ​ μ Ω ​ ( y ) \\displaystyle=\\int_{\\Omega}\\exp({B}^{\\top}v(y)^{\\top})d\\mu_{\\Omega}(y)",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E14",
+    "text": "Pr { lim n → ∞ 𝒢 n ( x ) = 𝒢 ( x ) } = 1 \\displaystyle\\Pr\\left\\{\\lim_{n\\rightarrow\\infty}\\mathcal{G}_{n}(x)=\\mathcal{G}(x)\\right\\}=1 (14) Pr { lim n → ∞ ℋ n = ℋ } = 1 \\displaystyle\\Pr\\left\\{\\lim_{n\\rightarrow\\infty}\\mathcal{H}_{n}=\\mathcal{H}\\right\\}=1",
+    "latex": [
+      "\\displaystyle\\Pr\\left\\{\\lim_{n\\rightarrow\\infty}\\mathcal{G}_{n}(x)=\\mathcal{G}(x)\\right\\}=1",
+      "\\displaystyle\\Pr\\left\\{\\lim_{n\\rightarrow\\infty}\\mathcal{H}_{n}=\\mathcal{H}\\right\\}=1"
+    ]
+  },
+  {
+    "id": "Sx8.E14X.m2",
+    "text": "Pr { lim n → ∞ 𝒢 n ( x ) = 𝒢 ( x ) } = 1 \\displaystyle\\Pr\\left\\{\\lim_{n\\rightarrow\\infty}\\mathcal{G}_{n}(x)=\\mathcal{G}(x)\\right\\}=1",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E14Xa.m2",
+    "text": "Pr { lim n → ∞ ℋ n = ℋ } = 1 \\displaystyle\\Pr\\left\\{\\lim_{n\\rightarrow\\infty}\\mathcal{H}_{n}=\\mathcal{H}\\right\\}=1",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E15",
+    "text": "ℱ n ​ ( x ) − ℱ ​ ( x ) \\displaystyle\\mathcal{F}_{n}(x)-\\mathcal{F}(x) = 𝒢 n ​ ( x ) ℋ n − 𝒢 ⁡ ( x ) ℋ → a.s. 0 \\displaystyle=\\frac{\\mathcal{G}_{n}(x)}{\\mathcal{H}_{n}}-\\frac{\\mathcal{G}(x)}{\\mathcal{H}}\\xrightarrow{\\text{ a.s. }}0 (15)",
+    "latex": [
+      "\\displaystyle\\mathcal{F}_{n}(x)-\\mathcal{F}(x)",
+      "\\displaystyle=\\frac{\\mathcal{G}_{n}(x)}{\\mathcal{H}_{n}}-\\frac{\\mathcal{G}(x)}{\\mathcal{H}}\\xrightarrow{\\text{ a.s. }}0"
+    ]
+  },
+  {
+    "id": "Sx8.E15X.m2",
+    "text": "ℱ n ​ ( x ) − ℱ ​ ( x ) \\displaystyle\\mathcal{F}_{n}(x)-\\mathcal{F}(x)",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E15X.m3",
+    "text": "= 𝒢 n ​ ( x ) ℋ n − 𝒢 ⁡ ( x ) ℋ → a.s. 0 \\displaystyle=\\frac{\\mathcal{G}_{n}(x)}{\\mathcal{H}_{n}}-\\frac{\\mathcal{G}(x)}{\\mathcal{H}}\\xrightarrow{\\text{ a.s. }}0",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E16",
+    "text": "A n : \\displaystyle A_{n}: = ∫ Ω | 𝒢 n ​ ( x ) ℋ n − 𝒢 ⁡ ( x ) ℋ | ​ d ​ μ Ω ​ ( x ) \\displaystyle=\\int_{\\Omega}\\left|\\frac{\\mathcal{G}_{n}(x)}{\\mathcal{H}_{n}}-\\frac{\\mathcal{G}(x)}{\\mathcal{H}}\\right|d\\mu_{\\Omega}(x) (16) = ∫ Ω | ℱ n ​ ( x ) − ℱ ⁡ ( x ) | ​ d ​ μ Ω ​ ( x ) \\displaystyle=\\int_{\\Omega}\\left|\\mathcal{F}_{n}(x)-\\mathcal{F}(x)\\right|d\\mu_{\\Omega}(x)",
+    "latex": [
+      "\\displaystyle A_{n}:",
+      "\\displaystyle=\\int_{\\Omega}\\left|\\frac{\\mathcal{G}_{n}(x)}{\\mathcal{H}_{n}}-\\frac{\\mathcal{G}(x)}{\\mathcal{H}}\\right|d\\mu_{\\Omega}(x)",
+      "\\displaystyle=\\int_{\\Omega}\\left|\\mathcal{F}_{n}(x)-\\mathcal{F}(x)\\right|d\\mu_{\\Omega}(x)"
+    ]
+  },
+  {
+    "id": "Sx8.E16X.m2",
+    "text": "A n : \\displaystyle A_{n}:",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E16X.m3",
+    "text": "= ∫ Ω | 𝒢 n ​ ( x ) ℋ n − 𝒢 ⁡ ( x ) ℋ | ​ d ​ μ Ω ​ ( x ) \\displaystyle=\\int_{\\Omega}\\left|\\frac{\\mathcal{G}_{n}(x)}{\\mathcal{H}_{n}}-\\frac{\\mathcal{G}(x)}{\\mathcal{H}}\\right|d\\mu_{\\Omega}(x)",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E16Xa.m2",
+    "text": "= ∫ Ω | ℱ n ​ ( x ) − ℱ ⁡ ( x ) | ​ d ​ μ Ω ​ ( x ) \\displaystyle=\\int_{\\Omega}\\left|\\mathcal{F}_{n}(x)-\\mathcal{F}(x)\\right|d\\mu_{\\Omega}(x)",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E17",
+    "text": "Pr { lim n → ∞ A n = 0 } = 1 , lim n → ∞ Pr { A n ≤ ε 2 } = 1 \\displaystyle\\operatorname{Pr}\\left\\{\\lim_{n\\rightarrow\\infty}A_{n}=0\\right\\}=1,\\quad\\lim_{n\\rightarrow\\infty}\\operatorname{Pr}\\left\\{A_{n}\\leq\\frac{\\varepsilon}{2}\\right\\}=1 (17)",
+    "latex": [
+      "\\displaystyle\\operatorname{Pr}\\left\\{\\lim_{n\\rightarrow\\infty}A_{n}=0\\right\\}=1,\\quad\\lim_{n\\rightarrow\\infty}\\operatorname{Pr}\\left\\{A_{n}\\leq\\frac{\\varepsilon}{2}\\right\\}=1"
+    ]
+  },
+  {
+    "id": "Sx8.E17X.m2",
+    "text": "Pr { lim n → ∞ A n = 0 } = 1 , lim n → ∞ Pr { A n ≤ ε 2 } = 1 \\displaystyle\\operatorname{Pr}\\left\\{\\lim_{n\\rightarrow\\infty}A_{n}=0\\right\\}=1,\\quad\\lim_{n\\rightarrow\\infty}\\operatorname{Pr}\\left\\{A_{n}\\leq\\frac{\\varepsilon}{2}\\right\\}=1",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E18",
+    "text": "Pr { | 1 N ∑ i = 1 N | ℱ n ( x i ) − ℱ ( x i ) | − A n | > ε 2 } \\displaystyle\\operatorname{Pr}\\left\\{\\left|\\frac{1}{N}\\sum_{i=1}^{N}\\right|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\left|-A_{n}\\right|>\\frac{\\varepsilon}{2}\\right\\} (18) ≤ 4 N ​ ε 2 ​ ∫ Ω ( | ℱ n ​ ( x ) − ℱ ⁡ ( x ) | − A n ) 2 ​ d ​ μ Ω ​ ( x ) \\displaystyle\\leq\\frac{4}{N\\varepsilon^{2}}\\int_{\\Omega}\\left(\\left|\\mathcal{F}_{n}(x)-\\mathcal{F}(x)\\right|-A_{n}\\right)^{2}d\\mu_{\\Omega}(x) ≤ 4 N ​ ε 2 ​ ( A n 2 + ∫ Ω ( ℱ n ​ ( x ) − ℱ ⁡ ( x ) ) 2 ​ d ​ μ Ω ​ ( x ) ) \\displaystyle\\leq\\frac{4}{N\\varepsilon^{2}}\\left(A_{n}^{2}+\\int_{\\Omega}\\left(\\mathcal{F}_{n}(x)-\\mathcal{F}(x)\\right)^{2}d\\mu_{\\Omega}(x)\\right)",
+    "latex": [
+      "\\displaystyle\\operatorname{Pr}\\left\\{\\left|\\frac{1}{N}\\sum_{i=1}^{N}\\right|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\left|-A_{n}\\right|>\\frac{\\varepsilon}{2}\\right\\}",
+      "\\displaystyle\\leq\\frac{4}{N\\varepsilon^{2}}\\int_{\\Omega}\\left(\\left|\\mathcal{F}_{n}(x)-\\mathcal{F}(x)\\right|-A_{n}\\right)^{2}d\\mu_{\\Omega}(x)",
+      "\\displaystyle\\leq\\frac{4}{N\\varepsilon^{2}}\\left(A_{n}^{2}+\\int_{\\Omega}\\left(\\mathcal{F}_{n}(x)-\\mathcal{F}(x)\\right)^{2}d\\mu_{\\Omega}(x)\\right)"
+    ]
+  },
+  {
+    "id": "Sx8.E18X.m2",
+    "text": "Pr { | 1 N ∑ i = 1 N | ℱ n ( x i ) − ℱ ( x i ) | − A n | > ε 2 } \\displaystyle\\operatorname{Pr}\\left\\{\\left|\\frac{1}{N}\\sum_{i=1}^{N}\\right|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\left|-A_{n}\\right|>\\frac{\\varepsilon}{2}\\right\\}",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E18Xa.m2",
+    "text": "≤ 4 N ​ ε 2 ​ ∫ Ω ( | ℱ n ​ ( x ) − ℱ ⁡ ( x ) | − A n ) 2 ​ d ​ μ Ω ​ ( x ) \\displaystyle\\leq\\frac{4}{N\\varepsilon^{2}}\\int_{\\Omega}\\left(\\left|\\mathcal{F}_{n}(x)-\\mathcal{F}(x)\\right|-A_{n}\\right)^{2}d\\mu_{\\Omega}(x)",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E18Xb.m2",
+    "text": "≤ 4 N ​ ε 2 ​ ( A n 2 + ∫ Ω ( ℱ n ​ ( x ) − ℱ ⁡ ( x ) ) 2 ​ d ​ μ Ω ​ ( x ) ) \\displaystyle\\leq\\frac{4}{N\\varepsilon^{2}}\\left(A_{n}^{2}+\\int_{\\Omega}\\left(\\mathcal{F}_{n}(x)-\\mathcal{F}(x)\\right)^{2}d\\mu_{\\Omega}(x)\\right)",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E19",
+    "text": "Pr { | 1 N ∑ i = 1 N | ℱ n ( x i ) − ℱ ( x i ) | − A n | ≤ ε 2 } \\displaystyle\\operatorname{Pr}\\left\\{\\left|\\frac{1}{N}\\sum_{i=1}^{N}\\right|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\left|-A_{n}\\right|\\leq\\frac{\\varepsilon}{2}\\right\\} (19) ≥ 1 − 4 N ​ ε 2 ​ ( A n 2 + ∫ Ω ( ℱ n ​ ( x ) − ℱ ⁡ ( x ) ) 2 ​ d ​ μ Ω ​ ( x ) ) . \\displaystyle\\geq 1-\\frac{4}{N\\varepsilon^{2}}\\left(A_{n}^{2}+\\int_{\\Omega}\\left(\\mathcal{F}_{n}(x)-\\mathcal{F}(x)\\right)^{2}d\\mu_{\\Omega}(x)\\right).",
+    "latex": [
+      "\\displaystyle\\operatorname{Pr}\\left\\{\\left|\\frac{1}{N}\\sum_{i=1}^{N}\\right|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\left|-A_{n}\\right|\\leq\\frac{\\varepsilon}{2}\\right\\}",
+      "\\displaystyle\\geq 1-\\frac{4}{N\\varepsilon^{2}}\\left(A_{n}^{2}+\\int_{\\Omega}\\left(\\mathcal{F}_{n}(x)-\\mathcal{F}(x)\\right)^{2}d\\mu_{\\Omega}(x)\\right)."
+    ]
+  },
+  {
+    "id": "Sx8.E19X.m2",
+    "text": "Pr { | 1 N ∑ i = 1 N | ℱ n ( x i ) − ℱ ( x i ) | − A n | ≤ ε 2 } \\displaystyle\\operatorname{Pr}\\left\\{\\left|\\frac{1}{N}\\sum_{i=1}^{N}\\right|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\left|-A_{n}\\right|\\leq\\frac{\\varepsilon}{2}\\right\\}",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E19Xa.m2",
+    "text": "≥ 1 − 4 N ​ ε 2 ​ ( A n 2 + ∫ Ω ( ℱ n ​ ( x ) − ℱ ⁡ ( x ) ) 2 ​ d ​ μ Ω ​ ( x ) ) . \\displaystyle\\geq 1-\\frac{4}{N\\varepsilon^{2}}\\left(A_{n}^{2}+\\int_{\\Omega}\\left(\\mathcal{F}_{n}(x)-\\mathcal{F}(x)\\right)^{2}d\\mu_{\\Omega}(x)\\right).",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E20",
+    "text": "Pr { 1 N ∑ i = 1 N | ℱ n ( x i ) − ℱ ( x i ) | ≤ A n + ε 2 } \\displaystyle\\operatorname{Pr}\\left\\{\\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq A_{n}+\\frac{\\varepsilon}{2}\\right\\} (20) ≥ Pr { | 1 N ∑ i = 1 N | ℱ n ( x i ) − ℱ ( x i ) | − A n | ≤ ε 2 } , \\displaystyle\\geq\\operatorname{Pr}\\left\\{\\left|\\frac{1}{N}\\sum_{i=1}^{N}\\right|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\left|-A_{n}\\right|\\leq\\frac{\\varepsilon}{2}\\right\\},",
+    "latex": [
+      "\\displaystyle\\operatorname{Pr}\\left\\{\\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq A_{n}+\\frac{\\varepsilon}{2}\\right\\}",
+      "\\displaystyle\\geq\\operatorname{Pr}\\left\\{\\left|\\frac{1}{N}\\sum_{i=1}^{N}\\right|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\left|-A_{n}\\right|\\leq\\frac{\\varepsilon}{2}\\right\\},"
+    ]
+  },
+  {
+    "id": "Sx8.E20X.m2",
+    "text": "Pr { 1 N ∑ i = 1 N | ℱ n ( x i ) − ℱ ( x i ) | ≤ A n + ε 2 } \\displaystyle\\operatorname{Pr}\\left\\{\\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq A_{n}+\\frac{\\varepsilon}{2}\\right\\}",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E20Xa.m2",
+    "text": "≥ Pr { | 1 N ∑ i = 1 N | ℱ n ( x i ) − ℱ ( x i ) | − A n | ≤ ε 2 } , \\displaystyle\\geq\\operatorname{Pr}\\left\\{\\left|\\frac{1}{N}\\sum_{i=1}^{N}\\right|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\left|-A_{n}\\right|\\leq\\frac{\\varepsilon}{2}\\right\\},",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E21",
+    "text": "Pr { 1 N ∑ i = 1 N | ℱ n ( x i ) − ℱ ( x i ) | ≤ A n + ε 2 } \\displaystyle\\operatorname{Pr}\\left\\{\\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq A_{n}+\\frac{\\varepsilon}{2}\\right\\} (21) ≥ 1 − 4 N ​ ε 2 ​ ( A n 2 + ∫ Ω ( ℱ n ​ ( x ) − ℱ ⁡ ( x ) ) 2 ​ d ​ μ Ω ​ ( x ) ) \\displaystyle\\geq 1-\\frac{4}{N\\varepsilon^{2}}\\left(A_{n}^{2}+\\int_{\\Omega}\\left(\\mathcal{F}_{n}(x)-\\mathcal{F}(x)\\right)^{2}d\\mu_{\\Omega}(x)\\right)",
+    "latex": [
+      "\\displaystyle\\operatorname{Pr}\\left\\{\\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq A_{n}+\\frac{\\varepsilon}{2}\\right\\}",
+      "\\displaystyle\\geq 1-\\frac{4}{N\\varepsilon^{2}}\\left(A_{n}^{2}+\\int_{\\Omega}\\left(\\mathcal{F}_{n}(x)-\\mathcal{F}(x)\\right)^{2}d\\mu_{\\Omega}(x)\\right)"
+    ]
+  },
+  {
+    "id": "Sx8.E21X.m2",
+    "text": "Pr { 1 N ∑ i = 1 N | ℱ n ( x i ) − ℱ ( x i ) | ≤ A n + ε 2 } \\displaystyle\\operatorname{Pr}\\left\\{\\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq A_{n}+\\frac{\\varepsilon}{2}\\right\\}",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E21Xa.m2",
+    "text": "≥ 1 − 4 N ​ ε 2 ​ ( A n 2 + ∫ Ω ( ℱ n ​ ( x ) − ℱ ⁡ ( x ) ) 2 ​ d ​ μ Ω ​ ( x ) ) \\displaystyle\\geq 1-\\frac{4}{N\\varepsilon^{2}}\\left(A_{n}^{2}+\\int_{\\Omega}\\left(\\mathcal{F}_{n}(x)-\\mathcal{F}(x)\\right)^{2}d\\mu_{\\Omega}(x)\\right)",
+    "latex": []
+  },
+  {
+    "id": "Sx8.Ex4",
+    "text": "1 N ​ ∑ i = 1 N | ℱ n ​ ( x i ) − ℱ ⁡ ( x i ) | ≤ A n + ε 2 and A n ≤ ε 2 , \\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq A_{n}+\\frac{\\varepsilon}{2}\\quad\\text{ and }\\quad A_{n}\\leq\\frac{\\varepsilon}{2},",
+    "latex": [
+      "\\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq A_{n}+\\frac{\\varepsilon}{2}\\quad\\text{ and }\\quad A_{n}\\leq\\frac{\\varepsilon}{2},"
+    ]
+  },
+  {
+    "id": "Sx8.Ex4.m1",
+    "text": "1 N ​ ∑ i = 1 N | ℱ n ​ ( x i ) − ℱ ⁡ ( x i ) | ≤ A n + ε 2 and A n ≤ ε 2 , \\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq A_{n}+\\frac{\\varepsilon}{2}\\quad\\text{ and }\\quad A_{n}\\leq\\frac{\\varepsilon}{2},",
+    "latex": []
+  },
+  {
+    "id": "Sx8.Ex5",
+    "text": "1 N ​ ∑ i = 1 N | ℱ n ​ ( x i ) − ℱ ⁡ ( x i ) | ≤ ε \\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq\\varepsilon",
+    "latex": [
+      "\\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq\\varepsilon"
+    ]
+  },
+  {
+    "id": "Sx8.Ex5.m1",
+    "text": "1 N ​ ∑ i = 1 N | ℱ n ​ ( x i ) − ℱ ⁡ ( x i ) | ≤ ε \\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq\\varepsilon",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E22",
+    "text": "Pr { 1 N ∑ i = 1 N | ℱ n ( x i ) − ℱ ( x i ) | ≤ ε } \\displaystyle\\operatorname{Pr}\\left\\{\\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq\\varepsilon\\right\\} (22) ≥ Pr { 1 N ∑ i = 1 N | ℱ n ( x i ) − ℱ ( x i ) | ≤ A n + ε 2 and A n ≤ ε 2 } \\displaystyle\\geq\\operatorname{Pr}\\left\\{\\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq A_{n}+\\frac{\\varepsilon}{2}\\text{ and }A_{n}\\leq\\frac{\\varepsilon}{2}\\right\\} ≥ Pr { 1 N ∑ i = 1 N | ℱ n ( x i ) − ℱ ( x i ) | ≤ A n + ε 2 } \\displaystyle\\geq\\operatorname{Pr}\\left\\{\\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq A_{n}+\\frac{\\varepsilon}{2}\\right\\} + Pr { A n ≤ ε 2 } − 1 \\displaystyle+\\operatorname{Pr}\\left\\{A_{n}\\leq\\frac{\\varepsilon}{2}\\right\\}-1",
+    "latex": [
+      "\\displaystyle\\operatorname{Pr}\\left\\{\\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq\\varepsilon\\right\\}",
+      "\\displaystyle\\geq\\operatorname{Pr}\\left\\{\\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq A_{n}+\\frac{\\varepsilon}{2}\\text{ and }A_{n}\\leq\\frac{\\varepsilon}{2}\\right\\}",
+      "\\displaystyle\\geq\\operatorname{Pr}\\left\\{\\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq A_{n}+\\frac{\\varepsilon}{2}\\right\\}",
+      "\\displaystyle+\\operatorname{Pr}\\left\\{A_{n}\\leq\\frac{\\varepsilon}{2}\\right\\}-1"
+    ]
+  },
+  {
+    "id": "Sx8.E22X.m2",
+    "text": "Pr { 1 N ∑ i = 1 N | ℱ n ( x i ) − ℱ ( x i ) | ≤ ε } \\displaystyle\\operatorname{Pr}\\left\\{\\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq\\varepsilon\\right\\}",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E22Xa.m2",
+    "text": "≥ Pr { 1 N ∑ i = 1 N | ℱ n ( x i ) − ℱ ( x i ) | ≤ A n + ε 2 and A n ≤ ε 2 } \\displaystyle\\geq\\operatorname{Pr}\\left\\{\\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq A_{n}+\\frac{\\varepsilon}{2}\\text{ and }A_{n}\\leq\\frac{\\varepsilon}{2}\\right\\}",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E22Xb.m2",
+    "text": "≥ Pr { 1 N ∑ i = 1 N | ℱ n ( x i ) − ℱ ( x i ) | ≤ A n + ε 2 } \\displaystyle\\geq\\operatorname{Pr}\\left\\{\\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq A_{n}+\\frac{\\varepsilon}{2}\\right\\}",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E22Xc.m2",
+    "text": "+ Pr { A n ≤ ε 2 } − 1 \\displaystyle+\\operatorname{Pr}\\left\\{A_{n}\\leq\\frac{\\varepsilon}{2}\\right\\}-1",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E23",
+    "text": "Pr { 1 N ∑ i = 1 N | ℱ n ( x i ) − ℱ ( x i ) | ≤ ε } \\displaystyle\\operatorname{Pr}\\left\\{\\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq\\varepsilon\\right\\} (23) ≥ Pr { A n ≤ ε 2 } \\displaystyle\\geq\\operatorname{Pr}\\left\\{A_{n}\\leq\\frac{\\varepsilon}{2}\\right\\} − 4 N ​ ε 2 ​ ( A n 2 + ∫ Ω ( ℱ n ​ ( x ) − ℱ ⁡ ( x ) ) 2 ​ d ​ μ Ω ​ ( x ) ) \\displaystyle-\\frac{4}{N\\varepsilon^{2}}\\left(A_{n}^{2}+\\int_{\\Omega}\\left(\\mathcal{F}_{n}(x)-\\mathcal{F}(x)\\right)^{2}d\\mu_{\\Omega}(x)\\right)",
+    "latex": [
+      "\\displaystyle\\operatorname{Pr}\\left\\{\\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq\\varepsilon\\right\\}",
+      "\\displaystyle\\geq\\operatorname{Pr}\\left\\{A_{n}\\leq\\frac{\\varepsilon}{2}\\right\\}",
+      "\\displaystyle-\\frac{4}{N\\varepsilon^{2}}\\left(A_{n}^{2}+\\int_{\\Omega}\\left(\\mathcal{F}_{n}(x)-\\mathcal{F}(x)\\right)^{2}d\\mu_{\\Omega}(x)\\right)"
+    ]
+  },
+  {
+    "id": "Sx8.E23X.m2",
+    "text": "Pr { 1 N ∑ i = 1 N | ℱ n ( x i ) − ℱ ( x i ) | ≤ ε } \\displaystyle\\operatorname{Pr}\\left\\{\\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq\\varepsilon\\right\\}",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E23Xa.m2",
+    "text": "≥ Pr { A n ≤ ε 2 } \\displaystyle\\geq\\operatorname{Pr}\\left\\{A_{n}\\leq\\frac{\\varepsilon}{2}\\right\\}",
+    "latex": []
+  },
+  {
+    "id": "Sx8.E23Xb.m2",
+    "text": "− 4 N ​ ε 2 ​ ( A n 2 + ∫ Ω ( ℱ n ​ ( x ) − ℱ ⁡ ( x ) ) 2 ​ d ​ μ Ω ​ ( x ) ) \\displaystyle-\\frac{4}{N\\varepsilon^{2}}\\left(A_{n}^{2}+\\int_{\\Omega}\\left(\\mathcal{F}_{n}(x)-\\mathcal{F}(x)\\right)^{2}d\\mu_{\\Omega}(x)\\right)",
+    "latex": []
+  },
+  {
+    "id": "Sx8.Ex6",
+    "text": "1 ≥ lim n → + ∞ Pr { 1 N ∑ i = 1 N | ℱ n ( x i ) − ℱ ( x i ) | ≤ ε } ≥ 1 1\\geq\\lim_{n\\rightarrow+\\infty}\\operatorname{Pr}\\left\\{\\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq\\varepsilon\\right\\}\\geq 1",
+    "latex": [
+      "1\\geq\\lim_{n\\rightarrow+\\infty}\\operatorname{Pr}\\left\\{\\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq\\varepsilon\\right\\}\\geq 1"
+    ]
+  },
+  {
+    "id": "Sx8.Ex6.m1",
+    "text": "1 ≥ lim n → + ∞ Pr { 1 N ∑ i = 1 N | ℱ n ( x i ) − ℱ ( x i ) | ≤ ε } ≥ 1 1\\geq\\lim_{n\\rightarrow+\\infty}\\operatorname{Pr}\\left\\{\\frac{1}{N}\\sum_{i=1}^{N}\\left|\\mathcal{F}_{n}\\left(x_{i}\\right)-\\mathcal{F}\\left(x_{i}\\right)\\right|\\leq\\varepsilon\\right\\}\\geq 1",
+    "latex": []
+  },
+  {
+    "id": "Sx8.Ex7",
+    "text": "lim n → + ∞ Pr { 1 N ‖ LinearNO ( x ) − ℱ ( x ) ‖ ≤ ε } = 1 \\lim_{n\\rightarrow+\\infty}\\operatorname{Pr}\\left\\{\\frac{1}{N}\\left\\|\\operatorname{LinearNO}\\left(x\\right)-\\mathcal{F}(x)\\right\\|\\leq\\varepsilon\\right\\}=1",
+    "latex": [
+      "\\lim_{n\\rightarrow+\\infty}\\operatorname{Pr}\\left\\{\\frac{1}{N}\\left\\|\\operatorname{LinearNO}\\left(x\\right)-\\mathcal{F}(x)\\right\\|\\leq\\varepsilon\\right\\}=1"
+    ]
+  },
+  {
+    "id": "Sx8.Ex7.m1",
+    "text": "lim n → + ∞ Pr { 1 N ‖ LinearNO ( x ) − ℱ ( x ) ‖ ≤ ε } = 1 \\lim_{n\\rightarrow+\\infty}\\operatorname{Pr}\\left\\{\\frac{1}{N}\\left\\|\\operatorname{LinearNO}\\left(x\\right)-\\mathcal{F}(x)\\right\\|\\leq\\varepsilon\\right\\}=1",
+    "latex": []
+  },
+  {
+    "id": "Sx9.E24",
+    "text": "∂ ∂ t ​ u ​ ( x , t ) = \\displaystyle\\frac{\\partial}{\\partial t}u(x,t)= 0.01 ​ ∂ 2 ∂ x 2 ​ u ​ ( x , t ) − u ⁡ ( x , t ) ​ ∂ ∂ x ​ u ​ ( x , t ) , \\displaystyle 0.01\\frac{\\partial^{2}}{\\partial x^{2}}u(x,t)-u(x,t)\\frac{\\partial}{\\partial x}u(x,t), (24) u ⁡ ( x , 0 ) ∼ \\displaystyle u(x,0)\\sim G ​ P ​ ( 0 , exp ⁡ ( − 2 p ​ l 2 ​ sin 2 ⁡ ( π ⁡ ‖ x − x ′ ‖ ) ) ) , \\displaystyle GP\\left(0,\\exp\\left(-\\frac{2}{pl^{2}}\\sin^{2}\\left(\\pi\\left\\|x-x^{\\prime}\\right\\|\\right)\\right)\\right), u ⁡ ( 0 , t ) = \\displaystyle u(0,t)= u ⁡ ( 1 , t ) , x ∈ [ 0 , 1 ] , t ∈ [ 0 , 1 ] \\displaystyle u(1,t),x\\in[0,1],t\\in[0,1]",
+    "latex": [
+      "\\displaystyle\\frac{\\partial}{\\partial t}u(x,t)=",
+      "\\displaystyle 0.01\\frac{\\partial^{2}}{\\partial x^{2}}u(x,t)-u(x,t)\\frac{\\partial}{\\partial x}u(x,t),",
+      "\\displaystyle u(x,0)\\sim",
+      "\\displaystyle GP\\left(0,\\exp\\left(-\\frac{2}{pl^{2}}\\sin^{2}\\left(\\pi\\left\\|x-x^{\\prime}\\right\\|\\right)\\right)\\right),",
+      "\\displaystyle u(0,t)=",
+      "\\displaystyle u(1,t),x\\in[0,1],t\\in[0,1]"
+    ]
+  },
+  {
+    "id": "Sx9.E24X.m2",
+    "text": "∂ ∂ t ​ u ​ ( x , t ) = \\displaystyle\\frac{\\partial}{\\partial t}u(x,t)=",
+    "latex": []
+  },
+  {
+    "id": "Sx9.E24X.m3",
+    "text": "0.01 ​ ∂ 2 ∂ x 2 ​ u ​ ( x , t ) − u ⁡ ( x , t ) ​ ∂ ∂ x ​ u ​ ( x , t ) , \\displaystyle 0.01\\frac{\\partial^{2}}{\\partial x^{2}}u(x,t)-u(x,t)\\frac{\\partial}{\\partial x}u(x,t),",
+    "latex": []
+  },
+  {
+    "id": "Sx9.E24Xa.m2",
+    "text": "u ⁡ ( x , 0 ) ∼ \\displaystyle u(x,0)\\sim",
+    "latex": []
+  },
+  {
+    "id": "Sx9.E24Xa.m3",
+    "text": "G ​ P ​ ( 0 , exp ⁡ ( − 2 p ​ l 2 ​ sin 2 ⁡ ( π ⁡ ‖ x − x ′ ‖ ) ) ) , \\displaystyle GP\\left(0,\\exp\\left(-\\frac{2}{pl^{2}}\\sin^{2}\\left(\\pi\\left\\|x-x^{\\prime}\\right\\|\\right)\\right)\\right),",
+    "latex": []
+  },
+  {
+    "id": "Sx9.E24Xb.m2",
+    "text": "u ⁡ ( 0 , t ) = \\displaystyle u(0,t)=",
+    "latex": []
+  },
+  {
+    "id": "Sx9.E24Xb.m3",
+    "text": "u ⁡ ( 1 , t ) , x ∈ [ 0 , 1 ] , t ∈ [ 0 , 1 ] \\displaystyle u(1,t),x\\in[0,1],t\\in[0,1]",
+    "latex": []
+  },
+  {
+    "id": "Sx9.Ex8",
+    "text": "Relative L2 Eorr = ‖ y − y ^ ‖ 2 ‖ y ‖ 2 \\text{Relative L2 Eorr}=\\frac{\\|y-\\hat{y}\\|_{2}}{\\|y\\|_{2}}",
+    "latex": [
+      "\\text{Relative L2 Eorr}=\\frac{\\|y-\\hat{y}\\|_{2}}{\\|y\\|_{2}}"
+    ]
+  },
+  {
+    "id": "Sx9.Ex8.m1",
+    "text": "Relative L2 Eorr = ‖ y − y ^ ‖ 2 ‖ y ‖ 2 \\text{Relative L2 Eorr}=\\frac{\\|y-\\hat{y}\\|_{2}}{\\|y\\|_{2}}",
+    "latex": []
+  },
+  {
+    "id": "Sx9.E25",
+    "text": "𝐅 = ∫ S ( − p ​ 𝐧 + 𝝉 ⋅ 𝐧 ) ​ 𝑑 S \\mathbf{F}=\\int_{S}\\left(-p\\mathbf{n}+\\bm{\\tau}\\cdot\\mathbf{n}\\right)\\,dS (25)",
+    "latex": [
+      "\\mathbf{F}=\\int_{S}\\left(-p\\mathbf{n}+\\bm{\\tau}\\cdot\\mathbf{n}\\right)\\,dS"
+    ]
+  },
+  {
+    "id": "Sx9.E25.m1",
+    "text": "𝐅 = ∫ S ( − p ​ 𝐧 + 𝝉 ⋅ 𝐧 ) ​ 𝑑 S \\mathbf{F}=\\int_{S}\\left(-p\\mathbf{n}+\\bm{\\tau}\\cdot\\mathbf{n}\\right)\\,dS",
+    "latex": []
+  },
+  {
+    "id": "Sx9.E26",
+    "text": "𝝉 = μ ⁡ [ ∇ 𝐮 + ( ∇ 𝐮 ) ⊤ ] \\bm{\\tau}=\\mu\\left[\\nabla\\mathbf{u}+(\\nabla\\mathbf{u})^{\\top}\\right] (26)",
+    "latex": [
+      "\\bm{\\tau}=\\mu\\left[\\nabla\\mathbf{u}+(\\nabla\\mathbf{u})^{\\top}\\right]"
+    ]
+  },
+  {
+    "id": "Sx9.E26.m1",
+    "text": "𝝉 = μ ⁡ [ ∇ 𝐮 + ( ∇ 𝐮 ) ⊤ ] \\bm{\\tau}=\\mu\\left[\\nabla\\mathbf{u}+(\\nabla\\mathbf{u})^{\\top}\\right]",
+    "latex": []
+  },
+  {
+    "id": "Sx9.E27",
+    "text": "F D = 𝐅 ⋅ 𝐞 x , F L = 𝐅 ⋅ 𝐞 y F_{D}=\\mathbf{F}\\cdot\\mathbf{e}_{x},\\quad F_{L}=\\mathbf{F}\\cdot\\mathbf{e}_{y} (27)",
+    "latex": [
+      "F_{D}=\\mathbf{F}\\cdot\\mathbf{e}_{x},\\quad F_{L}=\\mathbf{F}\\cdot\\mathbf{e}_{y}"
+    ]
+  },
+  {
+    "id": "Sx9.E27.m1",
+    "text": "F D = 𝐅 ⋅ 𝐞 x , F L = 𝐅 ⋅ 𝐞 y F_{D}=\\mathbf{F}\\cdot\\mathbf{e}_{x},\\quad F_{L}=\\mathbf{F}\\cdot\\mathbf{e}_{y}",
+    "latex": []
+  },
+  {
+    "id": "Sx9.E28",
+    "text": "C L = F L 1 2 ​ ρ ​ U ∞ 2 ​ A , C D = F D 1 2 ​ ρ ​ U ∞ 2 ​ A C_{L}=\\frac{F_{L}}{\\frac{1}{2}\\rho U_{\\infty}^{2}A},\\quad C_{D}=\\frac{F_{D}}{\\frac{1}{2}\\rho U_{\\infty}^{2}A} (28)",
+    "latex": [
+      "C_{L}=\\frac{F_{L}}{\\frac{1}{2}\\rho U_{\\infty}^{2}A},\\quad C_{D}=\\frac{F_{D}}{\\frac{1}{2}\\rho U_{\\infty}^{2}A}"
+    ]
+  },
+  {
+    "id": "Sx9.E28.m1",
+    "text": "C L = F L 1 2 ​ ρ ​ U ∞ 2 ​ A , C D = F D 1 2 ​ ρ ​ U ∞ 2 ​ A C_{L}=\\frac{F_{L}}{\\frac{1}{2}\\rho U_{\\infty}^{2}A},\\quad C_{D}=\\frac{F_{D}}{\\frac{1}{2}\\rho U_{\\infty}^{2}A}",
+    "latex": []
+  },
+  {
+    "id": "Sx9.E29",
+    "text": "ρ = Cov ⁡ ( rank ⁡ ( C ) , rank ⁡ ( C ^ ) ) σ rank ⁡ ( C ) ​ σ rank ⁡ ( C ^ ) \\rho=\\frac{\\operatorname{Cov}(\\operatorname{rank}(C),\\operatorname{rank}(\\hat{C}))}{\\sigma_{\\operatorname{rank}(C)}\\sigma_{\\operatorname{rank}(\\hat{C})}} (29)",
+    "latex": [
+      "\\rho=\\frac{\\operatorname{Cov}(\\operatorname{rank}(C),\\operatorname{rank}(\\hat{C}))}{\\sigma_{\\operatorname{rank}(C)}\\sigma_{\\operatorname{rank}(\\hat{C})}}"
+    ]
+  },
+  {
+    "id": "Sx9.E29.m1",
+    "text": "ρ = Cov ⁡ ( rank ⁡ ( C ) , rank ⁡ ( C ^ ) ) σ rank ⁡ ( C ) ​ σ rank ⁡ ( C ^ ) \\rho=\\frac{\\operatorname{Cov}(\\operatorname{rank}(C),\\operatorname{rank}(\\hat{C}))}{\\sigma_{\\operatorname{rank}(C)}\\sigma_{\\operatorname{rank}(\\hat{C})}}",
+    "latex": []
+  },
+  {
+    "id": "Sx12.E30",
+    "text": "φ ⁡ ( 𝑸 ) = \\displaystyle\\varphi(\\bm{Q})= Softmax ​ ( Linear ( Q ) ​ ( 𝑯 N ) ) \\displaystyle\\text{Softmax}(\\text{Linear}^{(Q)}(\\bm{H}_{N})) (30) ψ ⊤ ​ ( 𝑲 ) = \\displaystyle\\psi^{\\top}(\\bm{K})= Softmax ​ ( Linear ( K ) ​ ( 𝑯 K ( L ) ) ⊤ ) \\displaystyle\\text{Softmax}(\\text{Linear}^{(K)}(\\bm{H}^{(L)}_{K})^{\\top}) Cross-LinearNO \\displaystyle\\text{Cross-LinearNO} ( 𝑯 N , 𝑯 K ( L ) ) = \\displaystyle(\\bm{H}_{N},\\bm{H}^{(L)}_{K})= φ ⁡ ( 𝑸 ) ​ ( ψ ⊤ ​ ( 𝑲 ) ⋅ Linear ( V ) ​ ( 𝑯 K ) ) \\displaystyle\\varphi(\\bm{Q})\\left(\\psi^{\\top}(\\bm{K})\\cdot\\text{Linear}^{(V)}(\\bm{H}_{K})\\right)",
+    "latex": [
+      "\\displaystyle\\varphi(\\bm{Q})=",
+      "\\displaystyle\\text{Softmax}(\\text{Linear}^{(Q)}(\\bm{H}_{N}))",
+      "\\displaystyle\\psi^{\\top}(\\bm{K})=",
+      "\\displaystyle\\text{Softmax}(\\text{Linear}^{(K)}(\\bm{H}^{(L)}_{K})^{\\top})",
+      "\\displaystyle\\text{Cross-LinearNO}",
+      "\\displaystyle(\\bm{H}_{N},\\bm{H}^{(L)}_{K})=",
+      "\\displaystyle\\varphi(\\bm{Q})\\left(\\psi^{\\top}(\\bm{K})\\cdot\\text{Linear}^{(V)}(\\bm{H}_{K})\\right)"
+    ]
+  },
+  {
+    "id": "Sx12.E30X.m2",
+    "text": "φ ⁡ ( 𝑸 ) = \\displaystyle\\varphi(\\bm{Q})=",
+    "latex": []
+  },
+  {
+    "id": "Sx12.E30X.m3",
+    "text": "Softmax ​ ( Linear ( Q ) ​ ( 𝑯 N ) ) \\displaystyle\\text{Softmax}(\\text{Linear}^{(Q)}(\\bm{H}_{N}))",
+    "latex": []
+  },
+  {
+    "id": "Sx12.E30Xa.m2",
+    "text": "ψ ⊤ ​ ( 𝑲 ) = \\displaystyle\\psi^{\\top}(\\bm{K})=",
+    "latex": []
+  },
+  {
+    "id": "Sx12.E30Xa.m3",
+    "text": "Softmax ​ ( Linear ( K ) ​ ( 𝑯 K ( L ) ) ⊤ ) \\displaystyle\\text{Softmax}(\\text{Linear}^{(K)}(\\bm{H}^{(L)}_{K})^{\\top})",
+    "latex": []
+  },
+  {
+    "id": "Sx12.E30Xb.m2",
+    "text": "Cross-LinearNO \\displaystyle\\text{Cross-LinearNO}",
+    "latex": []
+  },
+  {
+    "id": "Sx12.E30Xb.m3",
+    "text": "( 𝑯 N , 𝑯 K ( L ) ) = \\displaystyle(\\bm{H}_{N},\\bm{H}^{(L)}_{K})=",
+    "latex": []
+  },
+  {
+    "id": "Sx12.E30Xc.m2",
+    "text": "φ ⁡ ( 𝑸 ) ​ ( ψ ⊤ ​ ( 𝑲 ) ⋅ Linear ( V ) ​ ( 𝑯 K ) ) \\displaystyle\\varphi(\\bm{Q})\\left(\\psi^{\\top}(\\bm{K})\\cdot\\text{Linear}^{(V)}(\\bm{H}_{K})\\right)",
+    "latex": []
+  },
+  {
+    "id": "Sx13.E31",
+    "text": "𝑺 M \\displaystyle\\bm{S}_{M} = Physics-Cross-Attention ​ ( 𝒁 M , 𝑯 N , 𝑯 ^ N ) \\displaystyle=\\text{Physics-Cross-Attention}(\\bm{Z}_{M},\\bm{H}_{N},\\bm{\\hat{H}}_{N}) (31) = Softmax ​ ( 1 d h ​ 𝒁 𝑴 ​ W q ​ W k ⊤ ​ 𝑯 N ⊤ ) ​ 𝑯 ^ N ​ W v \\displaystyle=\\text{Softmax}\\left(\\frac{1}{\\sqrt{d_{h}}}\\bm{Z_{M}}{{W}_{q}}{{W}_{k}}^{\\top}\\bm{H}_{N}^{\\top}\\right)\\bm{\\hat{H}}_{N}{W}_{v} = Softmax ​ ( W 1 ​ 𝑯 N ⊤ ) ​ 𝑯 ^ N ​ W v \\displaystyle=\\text{Softmax}\\left({W}_{1}\\bm{H}_{N}^{\\top}\\right)\\bm{\\hat{H}}_{N}{W}_{v} = Softmax ​ ( ( Linear ( K ) ​ ( 𝑯 N ) ⊤ ) ​ Linear ( V ) ​ ( 𝑯 ^ N ) CLOSE \\displaystyle=\\text{Softmax}((\\text{Linear}^{(K)}(\\bm{H}_{N})^{\\top})\\text{Linear}^{(V)}(\\bm{\\hat{H}}_{N})",
+    "latex": [
+      "\\displaystyle\\bm{S}_{M}",
+      "\\displaystyle=\\text{Physics-Cross-Attention}(\\bm{Z}_{M},\\bm{H}_{N},\\bm{\\hat{H}}_{N})",
+      "\\displaystyle=\\text{Softmax}\\left(\\frac{1}{\\sqrt{d_{h}}}\\bm{Z_{M}}{{W}_{q}}{{W}_{k}}^{\\top}\\bm{H}_{N}^{\\top}\\right)\\bm{\\hat{H}}_{N}{W}_{v}",
+      "\\displaystyle=\\text{Softmax}\\left({W}_{1}\\bm{H}_{N}^{\\top}\\right)\\bm{\\hat{H}}_{N}{W}_{v}",
+      "\\displaystyle=\\text{Softmax}((\\text{Linear}^{(K)}(\\bm{H}_{N})^{\\top})\\text{Linear}^{(V)}(\\bm{\\hat{H}}_{N})"
+    ]
+  },
+  {
+    "id": "Sx13.E31X.m2",
+    "text": "𝑺 M \\displaystyle\\bm{S}_{M}",
+    "latex": []
+  },
+  {
+    "id": "Sx13.E31X.m3",
+    "text": "= Physics-Cross-Attention ​ ( 𝒁 M , 𝑯 N , 𝑯 ^ N ) \\displaystyle=\\text{Physics-Cross-Attention}(\\bm{Z}_{M},\\bm{H}_{N},\\bm{\\hat{H}}_{N})",
+    "latex": []
+  },
+  {
+    "id": "Sx13.E31Xa.m2",
+    "text": "= Softmax ​ ( 1 d h ​ 𝒁 𝑴 ​ W q ​ W k ⊤ ​ 𝑯 N ⊤ ) ​ 𝑯 ^ N ​ W v \\displaystyle=\\text{Softmax}\\left(\\frac{1}{\\sqrt{d_{h}}}\\bm{Z_{M}}{{W}_{q}}{{W}_{k}}^{\\top}\\bm{H}_{N}^{\\top}\\right)\\bm{\\hat{H}}_{N}{W}_{v}",
+    "latex": []
+  },
+  {
+    "id": "Sx13.E31Xb.m2",
+    "text": "= Softmax ​ ( W 1 ​ 𝑯 N ⊤ ) ​ 𝑯 ^ N ​ W v \\displaystyle=\\text{Softmax}\\left({W}_{1}\\bm{H}_{N}^{\\top}\\right)\\bm{\\hat{H}}_{N}{W}_{v}",
+    "latex": []
+  },
+  {
+    "id": "Sx13.E31Xc.m2",
+    "text": "= Softmax ​ ( ( Linear ( K ) ​ ( 𝑯 N ) ⊤ ) ​ Linear ( V ) ​ ( 𝑯 ^ N ) CLOSE \\displaystyle=\\text{Softmax}((\\text{Linear}^{(K)}(\\bm{H}_{N})^{\\top})\\text{Linear}^{(V)}(\\bm{\\hat{H}}_{N})",
+    "latex": []
+  },
+  {
+    "id": "Sx13.E32",
+    "text": "𝑺 M ′ = Self-Attention ∘ ⋯ ∘ Self-Attention ​ ( 𝑺 M ) \\displaystyle\\bm{S}_{M}^{\\prime}=\\text{Self-Attention}\\circ\\dots\\circ\\text{Self-Attention}(\\bm{S}_{M}) (32)",
+    "latex": [
+      "\\displaystyle\\bm{S}_{M}^{\\prime}=\\text{Self-Attention}\\circ\\dots\\circ\\text{Self-Attention}(\\bm{S}_{M})"
+    ]
+  },
+  {
+    "id": "Sx13.E32X.m2",
+    "text": "𝑺 M ′ = Self-Attention ∘ ⋯ ∘ Self-Attention ​ ( 𝑺 M ) \\displaystyle\\bm{S}_{M}^{\\prime}=\\text{Self-Attention}\\circ\\dots\\circ\\text{Self-Attention}(\\bm{S}_{M})",
+    "latex": []
+  },
+  {
+    "id": "Sx13.E33",
+    "text": "𝑯 N ′ \\displaystyle\\bm{H}_{N}^{\\prime} = Physics-Cross-Attention ​ ( 𝑯 N , 𝒁 M , 𝑺 M ′ ) \\displaystyle=\\text{Physics-Cross-Attention}(\\bm{H}_{N},\\bm{Z}_{M},\\bm{S}^{\\prime}_{M}) (33) = Softmax ​ ( 1 d h ​ 𝑯 N ​ W q ′ ​ W k ⊤ ​ 𝒁 M ⊤ ) ​ 𝑺 M ′ ​ W v ′ \\displaystyle=\\text{Softmax}\\left(\\frac{1}{\\sqrt{d_{h}}}\\bm{H}_{N}{W}_{q}^{\\prime}{W}_{k}^{\\top}\\bm{Z}_{M}^{\\top}\\right)\\bm{S}^{\\prime}_{M}{W}_{v}^{\\prime} = Softmax ​ ( 𝑯 N ​ W 2 ⊤ ) ​ 𝑺 M ′ ​ W v ′ \\displaystyle=\\text{Softmax}\\left(\\bm{H}_{N}{W}_{2}^{\\top}\\right)\\bm{S}^{\\prime}_{M}{W}_{v}^{\\prime} = Softmax ​ ( Linear ( Q ) ​ ( 𝑯 N ) ) ​ 𝑺 M ′ ​ W v ′ \\displaystyle=\\text{Softmax}(\\text{Linear}^{(Q)}(\\bm{H}_{N}))\\bm{S}^{\\prime}_{M}{W}_{v}^{\\prime}",
+    "latex": [
+      "\\displaystyle\\bm{H}_{N}^{\\prime}",
+      "\\displaystyle=\\text{Physics-Cross-Attention}(\\bm{H}_{N},\\bm{Z}_{M},\\bm{S}^{\\prime}_{M})",
+      "\\displaystyle=\\text{Softmax}\\left(\\frac{1}{\\sqrt{d_{h}}}\\bm{H}_{N}{W}_{q}^{\\prime}{W}_{k}^{\\top}\\bm{Z}_{M}^{\\top}\\right)\\bm{S}^{\\prime}_{M}{W}_{v}^{\\prime}",
+      "\\displaystyle=\\text{Softmax}\\left(\\bm{H}_{N}{W}_{2}^{\\top}\\right)\\bm{S}^{\\prime}_{M}{W}_{v}^{\\prime}",
+      "\\displaystyle=\\text{Softmax}(\\text{Linear}^{(Q)}(\\bm{H}_{N}))\\bm{S}^{\\prime}_{M}{W}_{v}^{\\prime}"
+    ]
+  },
+  {
+    "id": "Sx13.E33X.m2",
+    "text": "𝑯 N ′ \\displaystyle\\bm{H}_{N}^{\\prime}",
+    "latex": []
+  },
+  {
+    "id": "Sx13.E33X.m3",
+    "text": "= Physics-Cross-Attention ​ ( 𝑯 N , 𝒁 M , 𝑺 M ′ ) \\displaystyle=\\text{Physics-Cross-Attention}(\\bm{H}_{N},\\bm{Z}_{M},\\bm{S}^{\\prime}_{M})",
+    "latex": []
+  },
+  {
+    "id": "Sx13.E33Xa.m2",
+    "text": "= Softmax ​ ( 1 d h ​ 𝑯 N ​ W q ′ ​ W k ⊤ ​ 𝒁 M ⊤ ) ​ 𝑺 M ′ ​ W v ′ \\displaystyle=\\text{Softmax}\\left(\\frac{1}{\\sqrt{d_{h}}}\\bm{H}_{N}{W}_{q}^{\\prime}{W}_{k}^{\\top}\\bm{Z}_{M}^{\\top}\\right)\\bm{S}^{\\prime}_{M}{W}_{v}^{\\prime}",
+    "latex": []
+  },
+  {
+    "id": "Sx13.E33Xb.m2",
+    "text": "= Softmax ​ ( 𝑯 N ​ W 2 ⊤ ) ​ 𝑺 M ′ ​ W v ′ \\displaystyle=\\text{Softmax}\\left(\\bm{H}_{N}{W}_{2}^{\\top}\\right)\\bm{S}^{\\prime}_{M}{W}_{v}^{\\prime}",
+    "latex": []
+  },
+  {
+    "id": "Sx13.E33Xc.m2",
+    "text": "= Softmax ​ ( Linear ( Q ) ​ ( 𝑯 N ) ) ​ 𝑺 M ′ ​ W v ′ \\displaystyle=\\text{Softmax}(\\text{Linear}^{(Q)}(\\bm{H}_{N}))\\bm{S}^{\\prime}_{M}{W}_{v}^{\\prime}",
+    "latex": []
+  },
+  {
+    "id": "Sx13.E34",
+    "text": "φ ⁡ ( 𝑸 ) = Softmax ​ ( Linear ( Q ) ​ ( 𝑯 N ) ) \\displaystyle\\varphi(\\bm{Q})=\\text{Softmax}(\\text{Linear}^{(Q)}(\\bm{H}_{N})) (34) ψ ⊤ ​ ( 𝑲 ) = Softmax ​ ( Linear ( K ) ​ ( 𝑯 N ) ⊤ ) \\displaystyle\\psi^{\\top}(\\bm{K})=\\text{Softmax}(\\text{Linear}^{(K)}(\\bm{H}_{N})^{\\top}) 𝑽 = Linear ( V ) ​ ( 𝑯 ^ N ) \\displaystyle\\bm{V}=\\text{Linear}^{(V)}(\\bm{\\hat{H}}_{N}) 𝒢 = W v ′ ∘ Self-Attention ∘ ⋯ ∘ Self-Attention \\displaystyle\\mathcal{G}=W^{\\prime}_{v}\\circ\\text{Self-Attention}\\circ\\dots\\circ\\text{Self-Attention}",
+    "latex": [
+      "\\displaystyle\\varphi(\\bm{Q})=\\text{Softmax}(\\text{Linear}^{(Q)}(\\bm{H}_{N}))",
+      "\\displaystyle\\psi^{\\top}(\\bm{K})=\\text{Softmax}(\\text{Linear}^{(K)}(\\bm{H}_{N})^{\\top})",
+      "\\displaystyle\\bm{V}=\\text{Linear}^{(V)}(\\bm{\\hat{H}}_{N})",
+      "\\displaystyle\\mathcal{G}=W^{\\prime}_{v}\\circ\\text{Self-Attention}\\circ\\dots\\circ\\text{Self-Attention}"
+    ]
+  },
+  {
+    "id": "Sx13.E34X.m2",
+    "text": "φ ⁡ ( 𝑸 ) = Softmax ​ ( Linear ( Q ) ​ ( 𝑯 N ) ) \\displaystyle\\varphi(\\bm{Q})=\\text{Softmax}(\\text{Linear}^{(Q)}(\\bm{H}_{N}))",
+    "latex": []
+  },
+  {
+    "id": "Sx13.E34Xa.m2",
+    "text": "ψ ⊤ ​ ( 𝑲 ) = Softmax ​ ( Linear ( K ) ​ ( 𝑯 N ) ⊤ ) \\displaystyle\\psi^{\\top}(\\bm{K})=\\text{Softmax}(\\text{Linear}^{(K)}(\\bm{H}_{N})^{\\top})",
+    "latex": []
+  },
+  {
+    "id": "Sx13.E34Xb.m2",
+    "text": "𝑽 = Linear ( V ) ​ ( 𝑯 ^ N ) \\displaystyle\\bm{V}=\\text{Linear}^{(V)}(\\bm{\\hat{H}}_{N})",
+    "latex": []
+  },
+  {
+    "id": "Sx13.E34Xc.m2",
+    "text": "𝒢 = W v ′ ∘ Self-Attention ∘ ⋯ ∘ Self-Attention \\displaystyle\\mathcal{G}=W^{\\prime}_{v}\\circ\\text{Self-Attention}\\circ\\dots\\circ\\text{Self-Attention}",
+    "latex": []
+  }
+]

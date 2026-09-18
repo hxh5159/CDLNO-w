@@ -31,7 +31,10 @@ def parse_args(parser, *, evaluation=False, argv=None):
     for name, kind in dict(nb_epochs=int, batch_size=int, lr=float).items():
         parser.add_argument('--' + name, type=kind, default=None)
     if evaluation:
-        parser.add_argument('--model', choices=('Transolver', 'CDLNO', 'kcdno', 'lrsa_matched'), default='Transolver')
+        # LinearNO is routed below before any legacy branch executes.  Keeping
+        # it in this parser's choices lets main_evaluation.py accept the new
+        # family while all historical choices and defaults stay unchanged.
+        parser.add_argument('--model', choices=('Transolver', 'CDLNO', 'kcdno', 'lrsa_matched', 'LinearNO'), default='Transolver')
         parser.add_argument('--task', choices=('full', 'scarce', 'reynolds', 'aoa'), default='full')
         parser.add_argument('--nmodel', type=int, default=1)
         parser.add_argument('--weight', type=float, default=1.)
@@ -46,6 +49,9 @@ def parse_args(parser, *, evaluation=False, argv=None):
     selector = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     selector.add_argument('--model')
     selected, _ = selector.parse_known_args(tokens)
+    if selected.model == 'LinearNO':
+        from cdlno.linearno.air_entry import parse_args as parse_linearno_args
+        return parse_linearno_args(parser, tokens, evaluation=evaluation)
     if selected.model == 'msar_lno':
         from cdlno.msar_lno.industrial_entry import parse_args as parse_msar_args
         return parse_msar_args(parser, tokens, task='airfrans', evaluation=evaluation)

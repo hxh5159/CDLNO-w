@@ -1,0 +1,92 @@
+{
+  "status": "PASS",
+  "head": "bb73b3099d3b8ce45bd939156b737453b9ca5454",
+  "baseline_files": 1223,
+  "unchanged": 1222,
+  "changed": [
+    "docs/LINEARNO_IMPLEMENTATION_STATUS.md"
+  ],
+  "new_files": [
+    "Airfoil-Design-AirfRANS/models/LinearNO_Attention.py",
+    "Car-Design-ShapeNetCar/models/LinearNO_Attention.py",
+    "PDE-Solving-StandardBenchmark/model/LinearNO_Attention.py",
+    "cdlno/linearno/attention.py",
+    "docs/LINEARNO_L2_REPORT.md",
+    "docs/linearno_audit/l2/attention-tests.txt",
+    "docs/linearno_audit/l2/baseline.json",
+    "docs/linearno_audit/l2/environment.json",
+    "docs/linearno_audit/l2/existing-regression-results.json",
+    "docs/linearno_audit/l2/existing-regression-tests.txt",
+    "docs/linearno_audit/l2/final-attention-results.json",
+    "docs/linearno_audit/l2/final-attention-tests.txt",
+    "docs/linearno_audit/l2/initial-parity-tests.txt",
+    "docs/linearno_audit/l2/initial-parity.json",
+    "docs/linearno_audit/l2/initialization-investigation.json",
+    "docs/linearno_audit/l2/l1-regression-results.json",
+    "docs/linearno_audit/l2/l1-regression-tests.txt",
+    "docs/linearno_audit/l2/oracle-table.md",
+    "docs/linearno_audit/l2/parity-summary.json",
+    "docs/linearno_audit/l2/parity-tests.txt",
+    "docs/linearno_audit/l2/parity.json",
+    "docs/linearno_audit/l2/structure-tests.txt",
+    "tests/linearno/attention_reference.py",
+    "tests/linearno/attention_support.py",
+    "tests/linearno/fixtures/official_attention_sources.json",
+    "tests/linearno/test_attention_parity.py",
+    "tests/linearno/test_attention_structure.py"
+  ],
+  "new_ignored": [],
+  "l0_original_unchanged": 1161,
+  "l0_frozen_unchanged": 221,
+  "l1_new_sources_unchanged": true,
+  "python310_syntax": [
+    "Airfoil-Design-AirfRANS/models/LinearNO_Attention.py",
+    "Car-Design-ShapeNetCar/models/LinearNO_Attention.py",
+    "PDE-Solving-StandardBenchmark/model/LinearNO_Attention.py",
+    "cdlno/linearno/attention.py",
+    "tests/linearno/attention_reference.py",
+    "tests/linearno/attention_support.py",
+    "tests/linearno/test_attention_parity.py",
+    "tests/linearno/test_attention_structure.py"
+  ],
+  "results": {
+    "final-attention-results": {
+      "tests": 14,
+      "seconds": 8.979601991999516,
+      "failures": 0,
+      "errors": 0,
+      "skips": []
+    },
+    "l1-regression-results": {
+      "tests": 16,
+      "seconds": 47.9607364099993,
+      "failures": 0,
+      "errors": 0,
+      "skips": []
+    },
+    "existing-regression-results": {
+      "tests": 28,
+      "seconds": 66.4397592009991,
+      "failures": 0,
+      "errors": 0,
+      "skips": [
+        [
+          "test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values (test_experiment_records.ExperimentRecords.test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values) (task='airfrans')",
+          "AirfRANS complete sampled epoch not run: torch_cluster is absent; no dependency was installed"
+        ]
+      ]
+    }
+  },
+  "git_status": "?? Airfoil-Design-AirfRANS/models/LinearNO_Attention.py\n?? Car-Design-ShapeNetCar/models/LinearNO_Attention.py\n?? PDE-Solving-StandardBenchmark/model/LinearNO_Attention.py\n?? PLAN_LinearNO/LinearNO_Codex_Staged_Prompts_hxh_Transolver.md\n?? \"PLAN_LinearNO/\\346\\257\\224\\350\\276\\203\\346\\250\\241\\345\\236\\213\\346\\236\\266\\346\\236\\204 (2).md\"\n?? cdlno/linearno/__init__.py\n?? cdlno/linearno/_profile_data.py\n?? cdlno/linearno/attention.py\n?? cdlno/linearno/profiles.py\n?? cdlno/linearno/schema.py\n?? docs/LINEARNO_IMPLEMENTATION_STATUS.md\n?? docs/LINEARNO_L1_REPORT.md\n?? docs/LINEARNO_L2_REPORT.md\n?? docs/LINEARNO_REFERENCE_AUDIT.md\n?? docs/LINEARNO_REPRODUCTION_MATRIX.md\n?? docs/linearno_audit/l0/READING_LEDGER.md\n?? docs/linearno_audit/l0/ast-comparison.json\n?? docs/linearno_audit/l0/baseline.json\n?? docs/linearno_audit/l0/cli-inventory.json\n?? docs/linearno_audit/l0/configuration-shells.json\n?? docs/linearno_audit/l0/delivery-check.json\n?? docs/linearno_audit/l0/document-sections.json\n?? docs/linearno_audit/l0/environment.json\n?? docs/linearno_audit/l0/freeze-manifest.json\n?? docs/linearno_audit/l0/ignored-output-policy.json\n?? docs/linearno_audit/l0/legacy-static-results.json\n?? docs/linearno_audit/l0/legacy-static-tests.txt\n?? docs/linearno_audit/l0/manifest.json\n?? docs/linearno_audit/l0/paper-equations.json\n?? docs/linearno_audit/l0/profile-inventory.json\n?? docs/linearno_audit/l0/reading-inventory.json\n?? docs/linearno_audit/l0/regression-index.json\n?? docs/linearno_audit/l0/released-standard-commands.json\n?? docs/linearno_audit/l0/rg-files.txt\n?? docs/linearno_audit/l0/source-anchors.json\n?? docs/linearno_audit/l0/source-contracts.json\n?? docs/linearno_audit/l0/sources.json\n?? docs/linearno_audit/l0/staged.diff\n?? docs/linearno_audit/l0/syntax-checks.json\n?? docs/linearno_audit/l0/tracked.diff\n?? docs/linearno_audit/l0/transolver-comparison.json\n?? docs/linearno_audit/l0/transolver-to-linearno.diff\n?? docs/linearno_audit/l0/upstream-to-target.diff\n?? docs/linearno_audit/l1/baseline.json\n?? docs/linearno_audit/l1/checkpoint-conversion-policy.json\n?? docs/linearno_audit/l1/commands.json\n?? docs/linearno_audit/l1/config-schema-final.txt\n?? docs/linearno_audit/l1/config-schema-tests.txt\n?? docs/linearno_audit/l1/delivery-check.json\n?? docs/linearno_audit/l1/environment.json\n?? docs/linearno_audit/l1/existing-foundations-results.json\n?? docs/linearno_audit/l1/existing-foundations-tests.txt\n?? docs/linearno_audit/l1/final-new-results.json\n?? docs/linearno_audit/l1/final-new-tests.txt\n?? docs/linearno_audit/l1/fixture-generation.txt\n?? docs/linearno_audit/l1/fixture-index.json\n?? docs/linearno_audit/l1/legacy-rng-tests.txt\n?? docs/linearno_audit/l1/old-source-tests.txt\n?? docs/linearno_audit/l1/resolved-profiles.json\n?? docs/linearno_audit/l2/attention-tests.txt\n?? docs/linearno_audit/l2/baseline.json\n?? docs/linearno_audit/l2/environment.json\n?? docs/linearno_audit/l2/existing-regression-results.json\n?? docs/linearno_audit/l2/existing-regression-tests.txt\n?? docs/linearno_audit/l2/final-attention-results.json\n?? docs/linearno_audit/l2/final-attention-tests.txt\n?? docs/linearno_audit/l2/initial-parity-tests.txt\n?? docs/linearno_audit/l2/initial-parity.json\n?? docs/linearno_audit/l2/initialization-investigation.json\n?? docs/linearno_audit/l2/l1-regression-results.json\n?? docs/linearno_audit/l2/l1-regression-tests.txt\n?? docs/linearno_audit/l2/oracle-table.md\n?? docs/linearno_audit/l2/parity-summary.json\n?? docs/linearno_audit/l2/parity-tests.txt\n?? docs/linearno_audit/l2/parity.json\n?? docs/linearno_audit/l2/structure-tests.txt\n?? tests/linearno/README.md\n?? tests/linearno/__init__.py\n?? tests/linearno/attention_reference.py\n?? tests/linearno/attention_support.py\n?? tests/linearno/capture_fixtures.py\n?? tests/linearno/fixtures/official_attention_sources.json\n?? tests/linearno/fixtures/transolver_cpu.json\n?? tests/linearno/legacy_worker.py\n?? tests/linearno/rng_worker.py\n?? tests/linearno/test_attention_parity.py\n?? tests/linearno/test_attention_structure.py\n?? tests/linearno/test_legacy.py\n?? tests/linearno/test_profiles.py\n?? tests/linearno/test_rng.py\n?? tests/linearno/test_schema.py\n",
+  "tracked_diff": "",
+  "new_source_hashes": {
+    "Airfoil-Design-AirfRANS/models/LinearNO_Attention.py": "c33bc1bd7d8bc69f609511951d613c08c0a760452c117aae608ddb3b3b96e442",
+    "Car-Design-ShapeNetCar/models/LinearNO_Attention.py": "76605fb3f0daf41750b9ec64e86423b42072f03f53988c9864e9de2f409db72b",
+    "PDE-Solving-StandardBenchmark/model/LinearNO_Attention.py": "eddfbb9b15435eae0b55a2fcd50b32871ab9ee4d4f206aef065b1eb8e13c4032",
+    "cdlno/linearno/attention.py": "fb96a125617b7ef28870d941a5b59b68dba8fd3196dd1704a0af470070dc84aa",
+    "tests/linearno/attention_reference.py": "19d1bdc1e1cb293606fba7e6a800735edb687221a94cf2d7403e1603f8512a6e",
+    "tests/linearno/attention_support.py": "85271d0d21198428e600031d0e3368ec31e72e1e045250574c2f41b3caf10fa7",
+    "tests/linearno/test_attention_parity.py": "9dbf9ff7f4f1779cf026faeecff15d23ffa32c79b2cf8353560cbc6bee6efab7",
+    "tests/linearno/test_attention_structure.py": "59f06080412ef682279cca3a3655a10273ecea20269559bb482acb977e8cb7a4"
+  }
+}

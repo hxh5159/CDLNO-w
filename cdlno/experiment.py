@@ -119,9 +119,12 @@ class Experiment:
                         ('cdlno_run_dir' if hasattr(args, 'cdlno_run_dir') else 'run_dir'))
         if getattr(args, 'msar_family', None) == 'msar_lno':
             self.family, self.run_key = 'msar_lno', 'msar_run_dir'
+        if getattr(args, 'linearno_family', None) == 'linearno':
+            self.family, self.run_key = 'linearno', 'linearno_run_dir'
+        self.resuming = self.family == 'linearno' and getattr(args, 'resume', False)
         requested = getattr(args, self.run_key)
         self.directory = Path(requested).resolve() if requested is not None else default_directory(task)
-        if evaluation:
+        if evaluation or self.resuming:
             if requested is None or not (self.directory / 'architecture.json').is_file():
                 raise ValueError('evaluation requires an existing run with architecture.json')
         else:
@@ -144,19 +147,30 @@ class Experiment:
                            hparams=_json(hparams), parameter_count_status='pending_model_construction',
                            parameters=None, architecture=None, environment=self._environment(),
                            code=self._code(), command=sys.argv, cwd=str(Path.cwd()))
+        if self.family == 'linearno':
+            self.result['seed'] = args.seed
+            self.config['resolved_arguments'] = _json({k: v for k, v in vars(args).items()
+                                                       if not k.startswith('_linearno')})
+            self.config['linearno_profile'] = _json(args._linearno_config)
         if evaluation:
-            self.result['resolved_arguments'] = _json(vars(args))
+            if self.family == 'linearno':
+                self.result['resolved_arguments'] = self.config['resolved_arguments']
+            else:
+                self.result['resolved_arguments'] = _json(vars(args))
             self.result['environment'] = self.config['environment']
             self.result['code'] = self.config['code']
             self.result['command'] = sys.argv
             self.result['hparams'] = _json(hparams)
             self._ensure_eval()
-        else:
+        elif not self.resuming:
             write_json(self.directory / 'config.json', self.config)
+        if self.resuming:
+            self.config = json.loads((self.directory / 'config.json').read_text())
+            self.result['resume_from'] = str(args._linearno_checkpoint)
         self._write_result()
         self.stdout, self.stderr, self.exception_hook = sys.stdout, sys.stderr, sys.excepthook
         log_path = (self.eval_directory / 'eval.log') if evaluation else (self.directory / 'train.log')
-        self.log = log_path.open('x', encoding='utf-8')
+        self.log = log_path.open('a' if self.resuming else 'x', encoding='utf-8')
         sys.stdout, sys.stderr = _Tee(self.stdout, self.log), _Tee(self.stderr, self.log)
         sys.excepthook = self._exception
         atexit.register(self._unfinished)
@@ -210,11 +224,16 @@ class Experiment:
         params = dict(total=sum(p.numel() for p in model.parameters()),
                       trainable=sum(p.numel() for p in model.parameters() if p.requires_grad))
         parameter = next(model.parameters())
-        actual = dict(parameters=params, architecture=model.config.to_dict(),
-                      wrapper_architecture=model.adapter_architecture(),
-                      device=str(parameter.device), dtype=str(parameter.dtype))
+        if self.family == 'linearno':
+            actual = dict(parameters=params, architecture=self.args._linearno_model_spec,
+                          wrapper_architecture=dict(task=self.task),
+                          device=str(parameter.device), dtype=str(parameter.dtype))
+        else:
+            actual = dict(parameters=params, architecture=model.config.to_dict(),
+                          wrapper_architecture=model.adapter_architecture(),
+                          device=str(parameter.device), dtype=str(parameter.dtype))
         self.members[str(member)] = actual
-        if not self.evaluation:
+        if not self.evaluation and not self.resuming:
             self.config.update(parameter_count_status='measured', parameters=params,
                                architecture=actual['architecture'], wrapper_architecture=actual['wrapper_architecture'],
                                members=self.members)
@@ -232,12 +251,12 @@ class Experiment:
         self._write_result()
 
     def update_protocol(self, values):
-        if not self.evaluation:
+        if not self.evaluation and not self.resuming:
             self.config.setdefault('protocol', {}).update(_json(values))
             write_json(self.directory / 'config.json', self.config)
 
     def record_training_setup(self, optimizer, scheduler):
-        if self.evaluation:
+        if self.evaluation or self.resuming:
             return
         self.config['optimizer'] = dict(
             type=type(optimizer).__module__ + '.' + type(optimizer).__name__,
@@ -272,7 +291,7 @@ class Experiment:
         if not hasattr(self, '_field_visualizers'):
             self._field_visualizers = {}
         if member not in self._field_visualizers:
-            name = {'kcdno':'KCDNO', 'lrsa_matched':'LRSA matched', 'CDLNO':'CDLNO', 'msar_lno':'MSAR-LNO'}[self.family]
+            name = {'kcdno':'KCDNO', 'lrsa_matched':'LRSA matched', 'CDLNO':'CDLNO', 'msar_lno':'MSAR-LNO', 'linearno':'LinearNO'}[self.family]
             self._field_visualizers[member] = PeriodicFields(self.directory, self.task, name,
                                                            seed=getattr(self.args, 'seed', None), member=member)
         event = self._field_visualizers[member].after_epoch(model, completed_epoch, total_epochs, **task_inputs)

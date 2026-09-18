@@ -1,0 +1,476 @@
+[
+  {
+    "reference": "transolver",
+    "path": "PDE-Solving-StandardBenchmark/exp_airfoil.py",
+    "target": "PDE-Solving-StandardBenchmark/exp_airfoil.py",
+    "whole_ast_equal": false,
+    "symbols": {
+      "count_parameters": "same",
+      "main": "changed"
+    }
+  },
+  {
+    "reference": "transolver",
+    "path": "PDE-Solving-StandardBenchmark/exp_darcy.py",
+    "target": "PDE-Solving-StandardBenchmark/exp_darcy.py",
+    "whole_ast_equal": false,
+    "symbols": {
+      "central_diff": "same",
+      "count_parameters": "same",
+      "main": "changed"
+    }
+  },
+  {
+    "reference": "transolver",
+    "path": "PDE-Solving-StandardBenchmark/exp_elas.py",
+    "target": "PDE-Solving-StandardBenchmark/exp_elas.py",
+    "whole_ast_equal": false,
+    "symbols": {
+      "count_parameters": "same",
+      "main": "changed"
+    }
+  },
+  {
+    "reference": "transolver",
+    "path": "PDE-Solving-StandardBenchmark/exp_ns.py",
+    "target": "PDE-Solving-StandardBenchmark/exp_ns.py",
+    "whole_ast_equal": false,
+    "symbols": {
+      "count_parameters": "same",
+      "main": "changed"
+    }
+  },
+  {
+    "reference": "transolver",
+    "path": "PDE-Solving-StandardBenchmark/exp_pipe.py",
+    "target": "PDE-Solving-StandardBenchmark/exp_pipe.py",
+    "whole_ast_equal": false,
+    "symbols": {
+      "count_parameters": "same",
+      "main": "changed"
+    }
+  },
+  {
+    "reference": "transolver",
+    "path": "PDE-Solving-StandardBenchmark/exp_plas.py",
+    "target": "PDE-Solving-StandardBenchmark/exp_plas.py",
+    "whole_ast_equal": false,
+    "symbols": {
+      "count_parameters": "same",
+      "main": "changed",
+      "random_collate_fn": "same"
+    }
+  },
+  {
+    "reference": "transolver",
+    "path": "PDE-Solving-StandardBenchmark/model/Embedding.py",
+    "target": "PDE-Solving-StandardBenchmark/model/Embedding.py",
+    "whole_ast_equal": true,
+    "symbols": {
+      "PositionalEncoding": "same",
+      "RotaryEmbedding": "same",
+      "apply_2d_rotary_pos_emb": "same",
+      "apply_rotary_pos_emb": "same",
+      "rotate_half": "same",
+      "timestep_embedding": "same"
+    }
+  },
+  {
+    "reference": "transolver",
+    "path": "PDE-Solving-StandardBenchmark/model/Physics_Attention.py",
+    "target": "PDE-Solving-StandardBenchmark/model/Physics_Attention.py",
+    "whole_ast_equal": true,
+    "symbols": {
+      "Physics_Attention_Irregular_Mesh": "same",
+      "Physics_Attention_Structured_Mesh_2D": "same",
+      "Physics_Attention_Structured_Mesh_3D": "same"
+    }
+  },
+  {
+    "reference": "transolver",
+    "path": "PDE-Solving-StandardBenchmark/model/Transolver_Irregular_Mesh.py",
+    "target": "PDE-Solving-StandardBenchmark/model/Transolver_Irregular_Mesh.py",
+    "whole_ast_equal": true,
+    "symbols": {
+      "MLP": "same",
+      "Model": "same",
+      "Transolver_block": "same"
+    }
+  },
+  {
+    "reference": "transolver",
+    "path": "PDE-Solving-StandardBenchmark/model/Transolver_Structured_Mesh_2D.py",
+    "target": "PDE-Solving-StandardBenchmark/model/Transolver_Structured_Mesh_2D.py",
+    "whole_ast_equal": true,
+    "symbols": {
+      "MLP": "same",
+      "Model": "same",
+      "Transolver_block": "same"
+    }
+  },
+  {
+    "reference": "transolver",
+    "path": "PDE-Solving-StandardBenchmark/model/Transolver_Structured_Mesh_3D.py",
+    "target": "PDE-Solving-StandardBenchmark/model/Transolver_Structured_Mesh_3D.py",
+    "whole_ast_equal": true,
+    "symbols": {
+      "MLP": "same",
+      "Model": "same",
+      "Transolver_block": "same"
+    }
+  },
+  {
+    "reference": "transolver",
+    "path": "PDE-Solving-StandardBenchmark/model_dict.py",
+    "target": "PDE-Solving-StandardBenchmark/model_dict.py",
+    "whole_ast_equal": false,
+    "symbols": {
+      "get_model": "changed"
+    }
+  },
+  {
+    "reference": "transolver",
+    "path": "PDE-Solving-StandardBenchmark/utils/normalizer.py",
+    "target": "PDE-Solving-StandardBenchmark/utils/normalizer.py",
+    "whole_ast_equal": true,
+    "symbols": {
+      "IdentityTransformer": "same",
+      "UnitGaussianNormalizer": "same",
+      "UnitTransformer": "same"
+    }
+  },
+  {
+    "reference": "transolver",
+    "path": "PDE-Solving-StandardBenchmark/utils/testloss.py",
+    "target": "PDE-Solving-StandardBenchmark/utils/testloss.py",
+    "whole_ast_equal": true,
+    "symbols": {
+      "TestLoss": "same"
+    }
+  },
+  {
+    "reference": "transolver",
+    "path": "Physics_Attention.py",
+    "target": "Physics_Attention.py",
+    "whole_ast_equal": true,
+    "symbols": {
+      "Physics_Attention_Irregular_Mesh": "same",
+      "Physics_Attention_Structured_Mesh_2D": "same",
+      "Physics_Attention_Structured_Mesh_3D": "same"
+    }
+  },
+  {
+    "reference": "linearno",
+    "path": "AirfRANS/dataset/dataset.py",
+    "target": "Airfoil-Design-AirfRANS/dataset/dataset.py",
+    "whole_ast_equal": true,
+    "symbols": {
+      "Dataset": "same",
+      "cell_sampling_1d": "same",
+      "cell_sampling_2d": "same"
+    }
+  },
+  {
+    "reference": "linearno",
+    "path": "AirfRANS/main.py",
+    "target": "Airfoil-Design-AirfRANS/main.py",
+    "whole_ast_equal": false,
+    "symbols": {}
+  },
+  {
+    "reference": "linearno",
+    "path": "AirfRANS/main_evaluation.py",
+    "target": "Airfoil-Design-AirfRANS/main_evaluation.py",
+    "whole_ast_equal": false,
+    "symbols": {}
+  },
+  {
+    "reference": "linearno",
+    "path": "AirfRANS/models/GUNet.py",
+    "target": "Airfoil-Design-AirfRANS/models/GUNet.py",
+    "whole_ast_equal": true,
+    "symbols": {
+      "DownSample": "same",
+      "GUNet": "same",
+      "UpSample": "same"
+    }
+  },
+  {
+    "reference": "linearno",
+    "path": "AirfRANS/models/GraphSAGE.py",
+    "target": "Airfoil-Design-AirfRANS/models/GraphSAGE.py",
+    "whole_ast_equal": true,
+    "symbols": {
+      "GraphSAGE": "same"
+    }
+  },
+  {
+    "reference": "linearno",
+    "path": "AirfRANS/models/MLP.py",
+    "target": "Airfoil-Design-AirfRANS/models/MLP.py",
+    "whole_ast_equal": true,
+    "symbols": {
+      "MLP": "same"
+    }
+  },
+  {
+    "reference": "linearno",
+    "path": "AirfRANS/models/NN.py",
+    "target": "Airfoil-Design-AirfRANS/models/NN.py",
+    "whole_ast_equal": true,
+    "symbols": {
+      "NN": "same"
+    }
+  },
+  {
+    "reference": "linearno",
+    "path": "AirfRANS/models/PointNet.py",
+    "target": "Airfoil-Design-AirfRANS/models/PointNet.py",
+    "whole_ast_equal": true,
+    "symbols": {
+      "PointNet": "same"
+    }
+  },
+  {
+    "reference": "linearno",
+    "path": "AirfRANS/train.py",
+    "target": "Airfoil-Design-AirfRANS/train.py",
+    "whole_ast_equal": false,
+    "symbols": {
+      "NumpyEncoder": "changed",
+      "get_nb_trainable_params": "same",
+      "main": "changed",
+      "test": "same",
+      "train": "changed"
+    }
+  },
+  {
+    "reference": "linearno",
+    "path": "AirfRANS/utils/metrics.py",
+    "target": "Airfoil-Design-AirfRANS/utils/metrics.py",
+    "whole_ast_equal": false,
+    "symbols": {
+      "Airfoil_mean": "same",
+      "Airfoil_test": "same",
+      "Compute_coefficients": "same",
+      "Infer_test": "same",
+      "NumpyEncoder": "same",
+      "Results_test": "changed",
+      "WallShearStress": "same",
+      "rel_err": "same",
+      "rsquared": "same"
+    }
+  },
+  {
+    "reference": "linearno",
+    "path": "AirfRANS/utils/metrics_NACA.py",
+    "target": "Airfoil-Design-AirfRANS/utils/metrics_NACA.py",
+    "whole_ast_equal": true,
+    "symbols": {
+      "boundary_layer": "same",
+      "compare_boundary_layer": "same",
+      "compare_surface_coefs": "same",
+      "plot_coef_convergence": "same",
+      "plot_residuals": "same",
+      "surface_coefficients": "same"
+    }
+  },
+  {
+    "reference": "linearno",
+    "path": "AirfRANS/utils/naca_generator.py",
+    "target": "Airfoil-Design-AirfRANS/utils/naca_generator.py",
+    "whole_ast_equal": true,
+    "symbols": {
+      "camber_line": "same",
+      "naca_generator": "same",
+      "thickness_dist": "same"
+    }
+  },
+  {
+    "reference": "linearno",
+    "path": "AirfRANS/utils/reorganize.py",
+    "target": "Airfoil-Design-AirfRANS/utils/reorganize.py",
+    "whole_ast_equal": true,
+    "symbols": {
+      "reorganize": "same"
+    }
+  },
+  {
+    "reference": "linearno",
+    "path": "ShapeNetCar/dataset/dataset.py",
+    "target": "Car-Design-ShapeNetCar/dataset/dataset.py",
+    "whole_ast_equal": true,
+    "symbols": {
+      "GraphDataset": "same",
+      "create_edge_index_radius": "same",
+      "get_datalist": "same",
+      "get_edge_index": "same",
+      "get_edges": "same",
+      "get_induced_graph": "same",
+      "get_normal": "same",
+      "get_sdf": "same",
+      "get_shape": "same",
+      "load_unstructured_grid_data": "same",
+      "pc_normalize": "same",
+      "unstructured_grid_data_to_poly_data": "same",
+      "visualize_poly_data": "same"
+    }
+  },
+  {
+    "reference": "linearno",
+    "path": "ShapeNetCar/dataset/load_dataset.py",
+    "target": "Car-Design-ShapeNetCar/dataset/load_dataset.py",
+    "whole_ast_equal": true,
+    "symbols": {
+      "get_samples": "same",
+      "load_train_val_fold": "same",
+      "load_train_val_fold_file": "same"
+    }
+  },
+  {
+    "reference": "linearno",
+    "path": "ShapeNetCar/main.py",
+    "target": "Car-Design-ShapeNetCar/main.py",
+    "whole_ast_equal": false,
+    "symbols": {}
+  },
+  {
+    "reference": "linearno",
+    "path": "ShapeNetCar/main_evaluation.py",
+    "target": "Car-Design-ShapeNetCar/main_evaluation.py",
+    "whole_ast_equal": false,
+    "symbols": {}
+  },
+  {
+    "reference": "linearno",
+    "path": "ShapeNetCar/train.py",
+    "target": "Car-Design-ShapeNetCar/train.py",
+    "whole_ast_equal": false,
+    "symbols": {
+      "NumpyEncoder": "same",
+      "get_nb_trainable_params": "same",
+      "main": "changed",
+      "test": "same",
+      "train": "changed"
+    }
+  },
+  {
+    "reference": "linearno",
+    "path": "ShapeNetCar/utils/drag_coefficient.py",
+    "target": "Car-Design-ShapeNetCar/utils/drag_coefficient.py",
+    "whole_ast_equal": false,
+    "symbols": {
+      "cal_coefficient": "changed",
+      "calculate_cell_velocity_gradient": "same",
+      "calculate_drag_force": "same",
+      "calculate_mesh_cell_area": "same",
+      "calculate_pos": "same",
+      "get_normal": "same",
+      "load_unstructured_grid_data": "same",
+      "unstructured_grid_data_to_poly_data": "same"
+    }
+  },
+  {
+    "reference": "linearno",
+    "path": "Standard_PDE_Benchmark/exp_airfoil.py",
+    "target": "PDE-Solving-StandardBenchmark/exp_airfoil.py",
+    "whole_ast_equal": false,
+    "symbols": {
+      "count_parameters": "same",
+      "count_parameters1": "removed",
+      "main": "changed",
+      "set_seed": "removed"
+    }
+  },
+  {
+    "reference": "linearno",
+    "path": "Standard_PDE_Benchmark/exp_darcy.py",
+    "target": "PDE-Solving-StandardBenchmark/exp_darcy.py",
+    "whole_ast_equal": false,
+    "symbols": {
+      "central_diff": "same",
+      "count_parameters": "same",
+      "main": "changed",
+      "set_seed": "removed"
+    }
+  },
+  {
+    "reference": "linearno",
+    "path": "Standard_PDE_Benchmark/exp_elas.py",
+    "target": "PDE-Solving-StandardBenchmark/exp_elas.py",
+    "whole_ast_equal": false,
+    "symbols": {
+      "count_parameters": "same",
+      "main": "changed",
+      "set_seed": "removed"
+    }
+  },
+  {
+    "reference": "linearno",
+    "path": "Standard_PDE_Benchmark/exp_ns.py",
+    "target": "PDE-Solving-StandardBenchmark/exp_ns.py",
+    "whole_ast_equal": false,
+    "symbols": {
+      "count_parameters": "same",
+      "main": "changed",
+      "set_seed": "removed"
+    }
+  },
+  {
+    "reference": "linearno",
+    "path": "Standard_PDE_Benchmark/exp_pipe.py",
+    "target": "PDE-Solving-StandardBenchmark/exp_pipe.py",
+    "whole_ast_equal": false,
+    "symbols": {
+      "count_parameters": "same",
+      "main": "changed",
+      "set_seed": "removed"
+    }
+  },
+  {
+    "reference": "linearno",
+    "path": "Standard_PDE_Benchmark/exp_plas.py",
+    "target": "PDE-Solving-StandardBenchmark/exp_plas.py",
+    "whole_ast_equal": false,
+    "symbols": {
+      "count_parameters": "same",
+      "main": "changed",
+      "random_collate_fn": "same",
+      "set_seed": "removed"
+    }
+  },
+  {
+    "reference": "linearno",
+    "path": "Standard_PDE_Benchmark/model/Embedding.py",
+    "target": "PDE-Solving-StandardBenchmark/model/Embedding.py",
+    "whole_ast_equal": true,
+    "symbols": {
+      "PositionalEncoding": "same",
+      "RotaryEmbedding": "same",
+      "apply_2d_rotary_pos_emb": "same",
+      "apply_rotary_pos_emb": "same",
+      "rotate_half": "same",
+      "timestep_embedding": "same"
+    }
+  },
+  {
+    "reference": "linearno",
+    "path": "Standard_PDE_Benchmark/utils/normalizer.py",
+    "target": "PDE-Solving-StandardBenchmark/utils/normalizer.py",
+    "whole_ast_equal": true,
+    "symbols": {
+      "IdentityTransformer": "same",
+      "UnitGaussianNormalizer": "same",
+      "UnitTransformer": "same"
+    }
+  },
+  {
+    "reference": "linearno",
+    "path": "Standard_PDE_Benchmark/utils/testloss.py",
+    "target": "PDE-Solving-StandardBenchmark/utils/testloss.py",
+    "whole_ast_equal": true,
+    "symbols": {
+      "TestLoss": "same"
+    }
+  }
+]

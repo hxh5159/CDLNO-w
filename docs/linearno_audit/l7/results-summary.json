@@ -1,0 +1,113 @@
+{
+  "stage_status": "BLOCKED",
+  "new_model": {
+    "tests": 6,
+    "seconds": 24.198
+  },
+  "new_metrics": {
+    "tests": 4,
+    "seconds": 4.231
+  },
+  "regression": [
+    {
+      "module": "linearno.test_legacy",
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "linearno.test_legacy",
+        "-v"
+      ],
+      "seconds": 74.99547924099898,
+      "returncode": 0,
+      "log": "test_legacy.txt",
+      "tests": 4,
+      "unittest_seconds": 71.092,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "module": "test_shapenet_car",
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "test_shapenet_car",
+        "-v"
+      ],
+      "seconds": 22.14523987299981,
+      "returncode": 0,
+      "log": "test_shapenet_car.txt",
+      "tests": 13,
+      "unittest_seconds": 15.455,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "module": "linearno.test_airfrans_model",
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "linearno.test_airfrans_model",
+        "-v"
+      ],
+      "seconds": 25.768601997999212,
+      "returncode": 0,
+      "log": "test_airfrans_model.txt",
+      "tests": 7,
+      "unittest_seconds": 16.428,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "module": "linearno.test_attention_parity",
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "linearno.test_attention_parity",
+        "-v"
+      ],
+      "seconds": 17.90962336300072,
+      "returncode": 0,
+      "log": "test_attention_parity.txt",
+      "tests": 4,
+      "unittest_seconds": 9.7,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "module": "linearno.test_attention_structure",
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "linearno.test_attention_structure",
+        "-v"
+      ],
+      "seconds": 32.41504684699976,
+      "returncode": 0,
+      "log": "test_attention_structure.txt",
+      "tests": 10,
+      "unittest_seconds": 24.746,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    }
+  ],
+  "total_distinct_methods": 48,
+  "new_model_OFFICIAL_max_abs": 0.0,
+  "independent_double_forward_max_abs": 1.3877787807814457e-17,
+  "independent_double_gradient_max_abs": 4.440892098500626e-16,
+  "L8_L10": "NOT EXECUTED"
+}

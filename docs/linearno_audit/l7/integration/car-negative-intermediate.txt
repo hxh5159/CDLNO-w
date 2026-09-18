@@ -1,0 +1,57 @@
+F...                                                                     [100%]
+=================================== FAILURES ===================================
+______ CarEntry.test_data_preflight_order_and_eval_uses_saved_normalizer _______
+
+self = <linearno.test_car_entry.CarEntry testMethod=test_data_preflight_order_and_eval_uses_saved_normalizer>
+
+        def test_data_preflight_order_and_eval_uses_saved_normalizer(self):
+            code = r'''
+    import sys
+    from pathlib import Path
+    from types import SimpleNamespace
+    from unittest.mock import patch
+    import numpy as np
+    from cdlno.linearno.car_entry import inspect_data,load_data
+    from cdlno.linearno.schema import normalizer_record
+    args=SimpleNamespace(data_dir='/SYNTHETIC_ONLY/raw',save_dir='/SYNTHETIC_ONLY/cache',
+        preprocessed=1,fold_id=2,cfd_mesh=True,r=.2,val_iter=10,eval=1)
+    folds=[[f'param{i}/sample-b',f'param{i}/sample-a'] for i in range(9)]
+    with patch('pathlib.Path.is_dir',return_value=True),patch('dataset.load_dataset.get_samples',return_value=folds),patch('pathlib.Path.is_file',return_value=True),patch('cdlno.linearno.car_entry.sha256',return_value='a'*64):
+        spec=inspect_data(args)
+        assert spec['test_samples']==folds[2]
+        assert spec['train_samples'][:2]==folds[0]
+        args._linearno_metadata={'data_spec':dict(spec,checksums=dict(spec['checksums'],normalizer_fit_dataset='b'*64))}
+        assert inspect_data(args)==spec
+        with patch('pathlib.Path.is_file',side_effect=lambda p: not str(p).endswith('surf.npy'),autospec=True):
+            try:inspect_data(args)
+            except FileNotFoundError as error:assert 'surf.npy' in str(error)
+            else:raise AssertionError('incomplete preprocessed sample silently accepted')
+    coef=(np.zeros(7),np.ones(7),np.zeros(4),np.ones(4))
+    args._linearno_metadata['normalizer_spec']={'records':{'coef_norm':normalizer_record(
+        dict(zip(('input_mean','input_std','output_mean','output_std'),coef)),fit_split='train',data_checksum='a'*64,algorithm='synthetic')}}
+    calls=[]
+    def get_data(root,names,**kwargs):
+        assert names==folds[2] and 'norm' not in kwargs
+        for a,b in zip(kwargs['coef_norm'],coef):np.testing.assert_array_equal(a,b)
+        calls.append(names);return ['in-memory-placeholder-for-routing']*len(names)
+    with patch('dataset.dataset.get_datalist',side_effect=get_data),patch('dataset.dataset.GraphDataset',side_effect=lambda data,**kwargs:data):
+        train,test,restored=load_data(args,spec)
+        assert train is None and len(test)==2 and len(calls)==1
+    '''
+            result=subprocess.run([sys.executable,'-B','-c',code],cwd=ROOT/'Car-Design-ShapeNetCar',
+                env=dict(os.environ,PYTHONPATH=str(ROOT),PYTHONDONTWRITEBYTECODE='1'),capture_output=True,text=True)
+>           self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+E           AssertionError: 1 != 0 : Traceback (most recent call last):
+E             File "<string>", line 18, in <module>
+E               with patch('pathlib.Path.is_file',side_effect=lambda p: not str(p).endswith('surf.npy'),autospec=True):
+E                    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E             File "/home/hwz/anaconda3/lib/python3.13/unittest/mock.py", line 1592, in __enter__
+E               raise InvalidSpecError(
+E               ...<2 lines>...
+E                   f'[target={self.target!r}, attr={autospec!r}]')
+E           unittest.mock.InvalidSpecError: Cannot autospec attr 'is_file' from target 'Path' as it has already been mocked out. [target=<class 'pathlib._local.Path'>, attr=<MagicMock name='is_file' id='131335980639504'>]
+
+tests/linearno/test_car_entry.py:114: AssertionError
+=========================== short test summary info ============================
+FAILED tests/linearno/test_car_entry.py::CarEntry::test_data_preflight_order_and_eval_uses_saved_normalizer
+1 failed, 3 passed in 58.62s

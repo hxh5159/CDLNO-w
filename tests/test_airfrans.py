@@ -374,6 +374,52 @@ class AirRealPyG(unittest.TestCase):
 
 
 class AirFrozenChecks(unittest.TestCase):
+    @staticmethod
+    def _strip_linearno_air(tree):
+        """Project the authorized AirfRANS family branch out of old-source checks."""
+        class Project(ast.NodeTransformer):
+            def visit_Assign(self, node):
+                if ast.unparse(node.targets[0]) == 'linearno_start_epoch':
+                    return None
+                return self.generic_visit(node)
+
+            def visit_Call(self, node):
+                node = self.generic_visit(node)
+                if (ast.unparse(node.func) == 'range' and node.args and
+                        ast.unparse(node.args[0]) == 'linearno_start_epoch'):
+                    node.args = node.args[1:]
+                return node
+
+            def visit_If(self, node):
+                expression = ast.unparse(node.test)
+                if expression == "args.model == 'LinearNO'":
+                    return None
+                if expression == 'linearno_run is not None':
+                    return None
+                if isinstance(node.test, ast.BoolOp) and isinstance(node.test.op, ast.And):
+                    node.test.values = [value for value in node.test.values
+                                        if ast.unparse(value) != 'linearno_run is None']
+                    if not node.test.values:
+                        return None
+                    if len(node.test.values) == 1:
+                        node.test = node.test.values[0]
+                return self.generic_visit(node)
+
+            def visit_arguments(self, node):
+                node = self.generic_visit(node)
+                for index, argument in enumerate(list(node.args)):
+                    if argument.arg != 'linearno_run':
+                        continue
+                    default_index = index - (len(node.args) - len(node.defaults))
+                    del node.args[index]
+                    if default_index >= 0:
+                        del node.defaults[default_index]
+                    break
+                return node
+
+        projected = Project().visit(copy.deepcopy(tree))
+        return ast.fix_missing_locations(projected)
+
     def test_complete_entry_ast_preserves_original_protocol(self):
         class Project(ast.NodeTransformer):
             def visit_ImportFrom(self,node):
@@ -407,7 +453,7 @@ class AirFrozenChecks(unittest.TestCase):
                 if node.id=='score_path': return ast.Constant(value='scores')
                 return node
         for filename in ('main.py','main_evaluation.py'):
-            projected=Project().visit(strip_recording(ast.parse((AIR/filename).read_text())))
+            projected=Project().visit(self._strip_linearno_air(strip_recording(ast.parse((AIR/filename).read_text()))))
             self.assertEqual(ast.dump(projected),ast.dump(ast.parse(original(filename))),filename)
 
     def test_frozen_training_sampling_metrics_and_original_models(self):
@@ -419,7 +465,8 @@ class AirFrozenChecks(unittest.TestCase):
             if Path(name).name in ('main.py','main_evaluation.py','params.yaml'): continue
             expected=subprocess.check_output(['git','show',BASE+':'+name],cwd=ROOT)
             if Path(name).name == 'train.py':
-                self.assertEqual(ast.dump(strip_recording(ast.parse((ROOT/name).read_text()))), ast.dump(ast.parse(expected)), name)
+                projected = strip_recording(self._strip_linearno_air(ast.parse((ROOT/name).read_text())))
+                self.assertEqual(ast.dump(projected), ast.dump(ast.parse(expected)), name)
             else:
                 self.assertEqual((ROOT/name).read_bytes(),expected,name)
             count+=1

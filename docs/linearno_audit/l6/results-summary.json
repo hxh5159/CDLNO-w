@@ -1,0 +1,215 @@
+{
+  "stage_status": "BLOCKED",
+  "blocker": "L0 C08 AirfRANS paper objective not decided",
+  "new_model": {
+    "tests": 7,
+    "seconds": 12.086,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0
+  },
+  "legacy": [
+    {
+      "module": "linearno.test_legacy",
+      "tests": 4,
+      "seconds": 55.4144908399976,
+      "errors": 0,
+      "failures": 0,
+      "skips": []
+    },
+    {
+      "module": "test_airfrans",
+      "tests": 13,
+      "seconds": 16.04984217799938,
+      "errors": 0,
+      "failures": 0,
+      "skips": []
+    },
+    {
+      "module": "test_experiment_records.ExperimentRecords.test_air_weighted_loss_and_real_epoch_record_fragment_without_sampling",
+      "tests": 1,
+      "seconds": 0.2161798369997996,
+      "errors": 0,
+      "failures": 0,
+      "skips": []
+    }
+  ],
+  "L1_L5": [
+    {
+      "module": "linearno.test_profiles",
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "linearno.test_profiles",
+        "-v"
+      ],
+      "returncode": 0,
+      "seconds": 0.24897205899833352,
+      "log": "test_profiles.txt",
+      "tests": 6,
+      "unittest_seconds": 0.142,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "module": "linearno.test_schema",
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "linearno.test_schema",
+        "-v"
+      ],
+      "returncode": 0,
+      "seconds": 3.3880582790006883,
+      "log": "test_schema.txt",
+      "tests": 5,
+      "unittest_seconds": 0.278,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "module": "linearno.test_rng",
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "linearno.test_rng",
+        "-v"
+      ],
+      "returncode": 0,
+      "seconds": 85.39403252500051,
+      "log": "test_rng.txt",
+      "tests": 1,
+      "unittest_seconds": 82.728,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "module": "linearno.test_attention_parity",
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "linearno.test_attention_parity",
+        "-v"
+      ],
+      "returncode": 0,
+      "seconds": 14.521482397998625,
+      "log": "test_attention_parity.txt",
+      "tests": 4,
+      "unittest_seconds": 7.341,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "module": "linearno.test_attention_structure",
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "linearno.test_attention_structure",
+        "-v"
+      ],
+      "returncode": 0,
+      "seconds": 22.928969253000105,
+      "log": "test_attention_structure.txt",
+      "tests": 10,
+      "unittest_seconds": 17.464,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "module": "linearno.test_standard_model",
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "linearno.test_standard_model",
+        "-v"
+      ],
+      "returncode": 0,
+      "seconds": 18.143638264999026,
+      "log": "test_standard_model.txt",
+      "tests": 5,
+      "unittest_seconds": 11.867,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "module": "linearno.test_standard_structure",
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "linearno.test_standard_structure",
+        "-v"
+      ],
+      "returncode": 0,
+      "seconds": 12.920891683002992,
+      "log": "test_standard_structure.txt",
+      "tests": 5,
+      "unittest_seconds": 7.368,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "module": "linearno.test_static_integration",
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "linearno.test_static_integration",
+        "-v"
+      ],
+      "returncode": 0,
+      "seconds": 218.09779278299902,
+      "log": "test_static_integration.txt",
+      "tests": 7,
+      "unittest_seconds": 211.42,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "module": "linearno.test_temporal_integration",
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "linearno.test_temporal_integration",
+        "-v"
+      ],
+      "returncode": 0,
+      "seconds": 202.3112610040007,
+      "log": "test_temporal_integration.txt",
+      "tests": 5,
+      "unittest_seconds": 193.694,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    }
+  ],
+  "distinct_methods": 73,
+  "additional_doc_preservation_replay": 1,
+  "real_data": false,
+  "remote_target": "NOT RUN",
+  "L7_L10": "NOT EXECUTED"
+}

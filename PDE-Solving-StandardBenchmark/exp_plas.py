@@ -44,6 +44,12 @@ if args.model == 'msar_lno':
 
 os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
 
+if args.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):
+    from linearno_entry import model_kwargs as linearno_model_kwargs, StandardRun as LinearNORun
+    from linearno_entry import start as start_linearno, finish as finish_linearno
+    from linearno_entry import normalizer as linearno_normalizer, verify_data as verify_linearno_data
+    start_linearno(args, 'plasticity')
+
 import numpy as np
 import scipy.io as scio
 import torch
@@ -101,6 +107,8 @@ def random_collate_fn(batch):
 
 
 def main():
+    if args.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):
+        verify_linearno_data(args)
     DATA_PATH = args.data_path
 
     N = 987
@@ -131,7 +139,10 @@ def main():
     y_test = y_test.reshape(ntest, -1, Deformation, T)
     print(x_train.shape, y_train.shape)
 
-    x_normalizer = UnitTransformer(x_train)
+    if args.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):
+        x_normalizer = linearno_normalizer(args, 'input', x_train, UnitTransformer)
+    else:
+        x_normalizer = UnitTransformer(x_train)
     x_train = x_normalizer.encode(x_train)
     x_test = x_normalizer.encode(x_test)
     x_normalizer.cuda()
@@ -153,12 +164,19 @@ def main():
 
     train_loader = torch.utils.data.DataLoader(torch.utils.data.TensorDataset(pos_train, t_train, x_train, y_train),
                                                batch_size=args.batch_size, shuffle=True, collate_fn=random_collate_fn)
-    test_loader = torch.utils.data.DataLoader(torch.utils.data.TensorDataset(pos_test, t_test, x_test, y_test),
-                                              batch_size=args.batch_size, shuffle=False)
+    if args.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):
+        test_loader = torch.utils.data.DataLoader(torch.utils.data.TensorDataset(pos_test, t_test, x_test, y_test),
+                                                  batch_size=args._linearno_config['values']['training']['test_batch_size'], shuffle=False)
+    else:
+        test_loader = torch.utils.data.DataLoader(torch.utils.data.TensorDataset(pos_test, t_test, x_test, y_test),
+                                                  batch_size=args.batch_size, shuffle=False)
 
     print("Dataloading is over.")
     cdlno_run = None
-    if args.model == 'CDLNO':
+    if args.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):
+        model = get_model(args).Model(**linearno_model_kwargs(args, H=s1, W=s2)).cuda()
+        cdlno_run = LinearNORun(args, model)
+    elif args.model == 'CDLNO':
         model = get_model(args).Model(space_dim=2,
                                       n_hidden=args.n_hidden,
                                       n_layers=args.n_layers,
@@ -210,6 +228,8 @@ def main():
     if cdlno_run is not None and cdlno_run.recorder is not None:
         cdlno_run.recorder.record_training_setup(optimizer, scheduler)
     myloss = TestLoss(size_average=False)
+    if args.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):
+        cdlno_run.prepare(optimizer, scheduler, train_loader, test_loader)
 
     if eval:
         if cdlno_run is not None:
@@ -282,6 +302,9 @@ def main():
             cdlno_run.recorder.record_metrics(dict(test_step_loss=test_l2_step / ntest / T, test_full_loss=test_l2_full / ntest))
     else:
         for ep in range(args.epochs):
+            if args.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):
+                if ep < cdlno_run.start_epoch:
+                    continue
 
             model.train()
             if args.model == 'msar_lno':
@@ -349,6 +372,8 @@ def main():
                     cdlno_run.recorder.record_epoch(ep + 1, dict(train_step_loss=train_l2_step / ntrain / T, test_step_loss=test_l2_step / ntest / T, test_full_loss=test_l2_full / ntest))
                 cdlno_run.recorder.visualize(model, ep + 1, args.epochs, dataset=test_loader.dataset,
                                            grid_shape=(s1, s2))
+            if args.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):
+                cdlno_run.complete_epoch(ep + 1)
             if ep % 100 == 0:
                 if cdlno_run is not None:
                     cdlno_run.save(model)
@@ -378,3 +403,5 @@ if __name__ == "__main__":
         finish_experiment(args)
     if args.model == 'msar_lno':
         finish_experiment(args)
+    if args.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):
+        finish_linearno(args)
