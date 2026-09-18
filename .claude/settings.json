@@ -9,7 +9,9 @@
       "Bash(echo \"linearno exit=$? size=$\\(wc -c < linearno.html 2>/dev/null\\)\")",
       "Bash(curl -sL --max-time 90 \"https://arxiv.org/html/2402.02366v2\" -o transolver_full.html)",
       "Bash(echo \"exit=$? size=$\\(wc -c < transolver_full.html 2>/dev/null\\)\")",
-      "Bash(git status *)"
+      "Bash(git status *)",
+      "Bash(bash depth_ablation/train_eval.sh airfoil 4 --seed 0 --gpu 0 --dry-run)",
+      "Bash(bash depth_ablation/train_eval.sh elasticity 16 --seed 1 --gpu 0 --dry-run)"
     ]
   }
 }
