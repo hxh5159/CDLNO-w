@@ -11,7 +11,12 @@
       "Bash(echo \"exit=$? size=$\\(wc -c < transolver_full.html 2>/dev/null\\)\")",
       "Bash(git status *)",
       "Bash(bash depth_ablation/train_eval.sh airfoil 4 --seed 0 --gpu 0 --dry-run)",
-      "Bash(bash depth_ablation/train_eval.sh elasticity 16 --seed 1 --gpu 0 --dry-run)"
+      "Bash(bash depth_ablation/train_eval.sh elasticity 16 --seed 1 --gpu 0 --dry-run)",
+      "Bash(chmod +x depth_ablation/schedule.sh)",
+      "Bash(bash -n depth_ablation/schedule.sh)",
+      "Bash(bash depth_ablation/schedule.sh elasticity --seed 0 --dry-run)",
+      "Bash(bash depth_ablation/schedule.sh airfoil --seed 0 --dry-run)",
+      "Bash(bash depth_ablation/schedule.sh pipe --seed 0 --dry-run)"
     ]
   }
 }
