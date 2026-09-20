@@ -1,0 +1,36 @@
+{
+  "name": "regressions",
+  "argv": [
+    "/home/hwz/anaconda3/bin/python",
+    "-B",
+    "docs/loop_linearno_audit/ll9r/run_regressions.py"
+  ],
+  "cwd": "/home/hwz/CDLNO",
+  "environment": {
+    "PYTHONPATH": "/home/hwz/CDLNO/tests:/home/hwz/CDLNO",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "CUDA_VISIBLE_DEVICES": "",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MPLBACKEND": "Agg"
+  },
+  "exit_code": 1,
+  "seconds": 1350.529,
+  "log": "regressions.log",
+  "evidence_directory": "/home/hwz/CDLNO/docs/loop_linearno_audit/ll10/attempt2",
+  "continued_from_interrupted_attempt": 2,
+  "modules": 80,
+  "tests": 689,
+  "failures": 260,
+  "errors": 220,
+  "skipped": 36,
+  "failed_modules": [
+    "linearno.test_car_entry",
+    "linearno.test_legacy",
+    "loop_linearno.test_isolation",
+    "loop_linearno.test_standard_entry"
+  ],
+  "passed": 173,
+  "status": "FAIL"
+}

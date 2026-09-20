@@ -1,0 +1,27 @@
+{
+  "name": "native_standard",
+  "argv": [
+    "/home/hwz/anaconda3/bin/python",
+    "-B",
+    "-c",
+    "import importlib.util, pathlib, sys\np=pathlib.Path(sys.argv[1]);spec=importlib.util.spec_from_file_location('_ll10_existing_check',p)\nm=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)\nm.OUT=pathlib.Path(sys.argv[2]);m.main()\n",
+    "/home/hwz/CDLNO/docs/loop_linearno_audit/ll9r/run_native_matrix.py",
+    "/home/hwz/CDLNO/docs/loop_linearno_audit/ll10"
+  ],
+  "cwd": "/home/hwz/CDLNO",
+  "environment": {
+    "PYTHONPATH": "/home/hwz/CDLNO/tests:/home/hwz/CDLNO",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "CUDA_VISIBLE_DEVICES": "",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MPLBACKEND": "Agg"
+  },
+  "exit_code": 0,
+  "seconds": 597.769,
+  "log": "native_standard.log",
+  "evidence_directory": "/home/hwz/CDLNO/docs/loop_linearno_audit/ll10/attempt2",
+  "continued_from_interrupted_attempt": 2,
+  "status": "PASS"
+}

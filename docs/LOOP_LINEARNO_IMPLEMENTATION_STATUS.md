@@ -1,3 +1,15 @@
+# LL10 — 2026-09-20
+
+**唯一状态：PARTIAL（loop 实现、公式审查与无数据合成验收完成；完整旧回归存在已定位的历史/环境失败）。LL10已结束，未执行真实实验。**
+
+- 完成最终源码审查：`LoopedStandardModel`、`LoopedAirfRANSModel`、`LoopedShapeNetModel` 复用纯模型输入/位置/时间和输出合同；`LinearNOLoopCore` 只注册一次 P+C+S 物理 blocks，按 P→R轮共享C→S 执行，最终 suffix head 只调用一次。SR 的两条 branch 各为1/R；RB按独立(receiver round/sublayer/output)读取anchor、raw partial和round summary，不使用1/R；LB从实际 `Y-H` 得Delta，boundary/final仅读取anchor+Delta，不二次缩放。`PointDepthAttnRes`沿来源轴softmax，RMS key、raw value、zero query、one scale、eps1e-6，无N×N/M×M。
+- 无数据验收：96项全宽配置/分项参数与LL9R逐行相等；48项canonical-N前向/反向/AdamW/strict reload和诊断通过；六个Standard原生闭环36/36；AirfRANS/Car闭环12/12；9个旧loop archive新进程strict replay；LL9R修复专项11/11；CUDA合成144/144（FP32/FP16 AMP/BF16 AMP各48）；335 Python compile、129 shell `bash -n`、git diff check及142固定来源hash通过。证据见 [LL10报告](LOOP_LINEARNO_IMPLEMENTATION_REPORT.md) 和 [LL10审计目录](loop_linearno_audit/ll10/)。
+- 完整80模块/689方法回归真实记录36 skip、4个失败模块。失败来源已定位：Car一次无GPU eval超时且独立4/4复测通过；旧legacy缺失历史docs审计产物；isolation使用的历史快照文件/分类不匹配；standard legacy provenance hash与既有基准不一致。排除这4个既有/环境模块后为638通过、36 skip、0 failure、0 error；没有改旧测试、golden或容差。因完整回归不能报告全绿，最终实现状态保持PARTIAL，不伪报PASS。
+- [production-freeze.json](loop_linearno_audit/ll10/production-freeze.json) 对 loop、纯LinearNO、linearno_history、Transolver/CDLNO 相关源、任务入口、测试、工具和launcher集合报告0项新增/缺失/改变；完整工作树快照的用户/历史catalog、experiment_config、审计产物差异单独记录，未回滚用户修改。固定来源142份hash重新核验通过。
+- 明确 NOT RUN：真实数据/VTK、真实训练与完整epoch、三seed精度/收敛/SOTA、真实epoch效率、远端Python3.10+torch2.11/cu128、正式全宽GPU训练、compile/distributed、断电和mid-batch恢复。CUDA只覆盖本机小型合成；原生闭环使用任务真实shape/interface的内存合成输入，不等同真实指标。
+
+**本 LL10 阶段结束，未执行真实实验**
+
 # LL9R — 2026-09-20
 
 **唯一状态：PASS（RB AMP、入口隔离、历史冻结和完整回归修复完成）。LL10未执行。**
