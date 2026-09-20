@@ -1,0 +1,33 @@
+{
+  "stage": "LL9",
+  "status": "PARTIAL",
+  "reason": "20 RB AMP mixed source dtype smoke failures plus one newly triggered ignored-pyc freeze assertion; no production source edits",
+  "full_profile_counts": 96,
+  "canonical_spatial_small_width_cases": 48,
+  "new_tests": 7,
+  "new_tests_passed": 7,
+  "cpu_timing_cases": 48,
+  "cpu_warmup": 3,
+  "cpu_measured": 12,
+  "cuda_smoke_cases": 144,
+  "cuda_pass": 124,
+  "cuda_fail": 20,
+  "cuda_FP32_pass": 48,
+  "native_standard_closures": 18,
+  "native_industrial_closures": 6,
+  "native_new_processes": 105,
+  "regression": {
+    "modules": 80,
+    "methods": 689,
+    "failed_methods": 10,
+    "failed_assertions": 15,
+    "errors": 0,
+    "skips": 36
+  },
+  "not_run": [
+    "real data/VTK metrics/real training/epoch efficiency/SOTA",
+    "remote Python3.10 torch2.11 cu128",
+    "full-profile full-N training",
+    "LL10"
+  ]
+}

@@ -65,7 +65,7 @@ assert not any(k=='cdlno' or k.startswith('cdlno.') for k in sys.modules)
 print('legacy parser independent:',kind)
 '''
         for kind,project in (('standard','PDE-Solving-StandardBenchmark'),('car','Car-Design-ShapeNetCar'),('air','Airfoil-Design-AirfRANS')):
-            r=subprocess.run([sys.executable,'-I','-c',code,str(ROOT/project),kind],cwd=ROOT/project,capture_output=True,text=True,timeout=30)
+            r=subprocess.run([sys.executable,'-I','-B','-c',code,str(ROOT/project),kind],cwd=ROOT/project,capture_output=True,text=True,timeout=30)
             self.assertEqual(r.returncode,0,r.stdout+r.stderr)
         # New-package imports also occur only inside the new-model branch.
         for project,names in [('PDE-Solving-StandardBenchmark',[f'exp_{x[0]}.py' for x in (TASKS|TEMPORAL).values()]),('Car-Design-ShapeNetCar',['main.py','main_evaluation.py']),('Airfoil-Design-AirfRANS',['main.py','main_evaluation.py'])]:

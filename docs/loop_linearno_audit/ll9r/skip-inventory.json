@@ -1,0 +1,186 @@
+{
+  "cuda_explicitly_disabled": 33,
+  "torch_cluster_missing": 3,
+  "rows": [
+    {
+      "module": "test_cdpa",
+      "test": "test_gpu_depth_autocast_precision_and_gradients (test_cdpa.CDPACUDAChecks.test_gpu_depth_autocast_precision_and_gradients)",
+      "reason": "GPU unavailable; CUDA precision checks not run"
+    },
+    {
+      "module": "test_cdpa",
+      "test": "test_gpu_fp32_reference_and_fused_sdpa (test_cdpa.CDPACUDAChecks.test_gpu_fp32_reference_and_fused_sdpa)",
+      "reason": "GPU unavailable; CUDA precision checks not run"
+    },
+    {
+      "module": "test_cdpa",
+      "test": "test_gpu_half_bfloat16_outputs_chunks_and_extremes (test_cdpa.CDPACUDAChecks.test_gpu_half_bfloat16_outputs_chunks_and_extremes)",
+      "reason": "GPU unavailable; CUDA precision checks not run"
+    },
+    {
+      "module": "test_core",
+      "test": "test_small_core_fp32_and_amp_modes_point_and_grid (test_core.CoreCUDAChecks.test_small_core_fp32_and_amp_modes_point_and_grid)",
+      "reason": "GPU unavailable: core CUDA checks not run"
+    },
+    {
+      "module": "test_experiment_records",
+      "test": "test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values (test_experiment_records.ExperimentRecords.test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values) (task='airfrans')",
+      "reason": "AirfRANS complete sampled epoch not run: torch_cluster is absent; no dependency was installed"
+    },
+    {
+      "module": "test_front_training",
+      "test": "test_cuda_car_full (test_front_training.FrontTraining.test_cuda_car_full)",
+      "reason": "CUDA unavailable: GPU check NOT run"
+    },
+    {
+      "module": "test_front_training",
+      "test": "test_cuda_car_identity (test_front_training.FrontTraining.test_cuda_car_identity)",
+      "reason": "CUDA unavailable: GPU check NOT run"
+    },
+    {
+      "module": "test_front_training",
+      "test": "test_cuda_car_no_sa (test_front_training.FrontTraining.test_cuda_car_no_sa)",
+      "reason": "CUDA unavailable: GPU check NOT run"
+    },
+    {
+      "module": "test_front_training",
+      "test": "test_cuda_darcy_full (test_front_training.FrontTraining.test_cuda_darcy_full)",
+      "reason": "CUDA unavailable: GPU check NOT run"
+    },
+    {
+      "module": "test_front_training",
+      "test": "test_cuda_darcy_identity (test_front_training.FrontTraining.test_cuda_darcy_identity)",
+      "reason": "CUDA unavailable: GPU check NOT run"
+    },
+    {
+      "module": "test_front_training",
+      "test": "test_cuda_darcy_no_sa (test_front_training.FrontTraining.test_cuda_darcy_no_sa)",
+      "reason": "CUDA unavailable: GPU check NOT run"
+    },
+    {
+      "module": "test_front_training",
+      "test": "test_cuda_ns_full (test_front_training.FrontTraining.test_cuda_ns_full)",
+      "reason": "CUDA unavailable: GPU check NOT run"
+    },
+    {
+      "module": "test_front_training",
+      "test": "test_cuda_ns_identity (test_front_training.FrontTraining.test_cuda_ns_identity)",
+      "reason": "CUDA unavailable: GPU check NOT run"
+    },
+    {
+      "module": "test_front_training",
+      "test": "test_cuda_ns_no_sa (test_front_training.FrontTraining.test_cuda_ns_no_sa)",
+      "reason": "CUDA unavailable: GPU check NOT run"
+    },
+    {
+      "module": "test_front_training",
+      "test": "test_cuda_plasticity_full (test_front_training.FrontTraining.test_cuda_plasticity_full)",
+      "reason": "CUDA unavailable: GPU check NOT run"
+    },
+    {
+      "module": "test_front_training",
+      "test": "test_cuda_plasticity_identity (test_front_training.FrontTraining.test_cuda_plasticity_identity)",
+      "reason": "CUDA unavailable: GPU check NOT run"
+    },
+    {
+      "module": "test_front_training",
+      "test": "test_cuda_plasticity_no_sa (test_front_training.FrontTraining.test_cuda_plasticity_no_sa)",
+      "reason": "CUDA unavailable: GPU check NOT run"
+    },
+    {
+      "module": "test_kcdno_core",
+      "test": "test_limited_gpu_fp32_and_amp_backward (test_kcdno_core.KCDNOCoreTests.test_limited_gpu_fp32_and_amp_backward)",
+      "reason": "no actual CUDA GPU"
+    },
+    {
+      "module": "test_kernel_history",
+      "test": "test_gpu_autocast_fp32_operations (test_kernel_history.KernelHistoryTests.test_gpu_autocast_fp32_operations)",
+      "reason": "CUDA unavailable: K2 GPU AMP not run"
+    },
+    {
+      "module": "test_modules",
+      "test": "test_small_cuda_fp32_and_amp (test_modules.CUDAModuleChecks.test_small_cuda_fp32_and_amp)",
+      "reason": "CUDA unavailable; GPU module checks not run"
+    },
+    {
+      "module": "test_msar_core",
+      "test": "test_cuda_amp_core_aux_and_off_prediction (test_msar_core.MSARCoreTests.test_cuda_amp_core_aux_and_off_prediction)",
+      "reason": "CUDA unavailable"
+    },
+    {
+      "module": "test_msar_industrial",
+      "test": "test_air_original_sampled_epoch_when_extension_available (test_msar_industrial.IndustrialMSAR.test_air_original_sampled_epoch_when_extension_available)",
+      "reason": "torch_cluster absent: original sampled epoch/graph rebuild not executed"
+    },
+    {
+      "module": "test_msar_industrial",
+      "test": "test_cuda_real_graph_loss_steps (test_msar_industrial.IndustrialMSAR.test_cuda_real_graph_loss_steps)",
+      "reason": "real PyG/CUDA unavailable"
+    },
+    {
+      "module": "test_msar_integration",
+      "test": "test_gpu_explicit_objective_step_and_checkpoint (test_msar_integration.MSARIntegrationTests.test_gpu_explicit_objective_step_and_checkpoint)",
+      "reason": "CUDA unavailable: M4 adapter GPU check not run"
+    },
+    {
+      "module": "test_msar_modules",
+      "test": "test_cuda_fp32_and_amp_primitives_finite_and_critical_dtypes (test_msar_modules.MSARPrimitiveTests.test_cuda_fp32_and_amp_primitives_finite_and_critical_dtypes)",
+      "reason": "CUDA unavailable; no AMP acceptance"
+    },
+    {
+      "module": "test_msar_static",
+      "test": "test_four_static_gpu_small_original_loss_steps (test_msar_static.MSARStaticTests.test_four_static_gpu_small_original_loss_steps)",
+      "reason": "CUDA unavailable"
+    },
+    {
+      "module": "test_msar_temporal",
+      "test": "test_gpu_original_temporal_loss_steps (test_msar_temporal.MSARTemporalTests.test_gpu_original_temporal_loss_steps)",
+      "reason": "CUDA unavailable"
+    },
+    {
+      "module": "test_periodic_visualization",
+      "test": "test_air_real_sampling_graph_dependency (test_periodic_visualization.PeriodicChecks.test_air_real_sampling_graph_dependency)",
+      "reason": "real torch_cluster missing: AirfRANS sampling/graph integration not executed"
+    },
+    {
+      "module": "test_static_standard",
+      "test": "test_static_wrapper_device_and_amp_backward (test_static_standard.StaticGPUChecks.test_static_wrapper_device_and_amp_backward)",
+      "reason": "GPU unavailable: wrapper GPU checks not run"
+    },
+    {
+      "module": "test_training_state",
+      "test": "test_gpu_fresh_process_identity_onecycle (test_training_state.TrainingStateChecks.test_gpu_fresh_process_identity_onecycle)",
+      "reason": "GPU continuation not run: CUDA unavailable"
+    },
+    {
+      "module": "linearno.test_airfrans_model",
+      "test": "test_native_cuda_full_official_parity (linearno.test_airfrans_model.AirfRANSModelChecks.test_native_cuda_full_official_parity)",
+      "reason": "native release get_grid requires CUDA"
+    },
+    {
+      "module": "linearno.test_attention_parity",
+      "test": "test_fixed_official_cuda_fp32_fp16_bfloat16 (linearno.test_attention_parity.AttentionParity.test_fixed_official_cuda_fp32_fp16_bfloat16)",
+      "reason": "CUDA not available; GPU FP32/AMP NOT RUN"
+    },
+    {
+      "module": "linearno.test_shapenet_model",
+      "test": "test_native_cuda_official_full_parity (linearno.test_shapenet_model.ShapeNetModelChecks.test_native_cuda_official_full_parity)",
+      "reason": "CUDA unavailable"
+    },
+    {
+      "module": "linearno.test_standard_model",
+      "test": "test_native_cuda_official_unified_replacement_all_variants (linearno.test_standard_model.StandardModelParity.test_native_cuda_official_unified_replacement_all_variants)",
+      "reason": "native official unified Model requires CUDA"
+    },
+    {
+      "module": "loop_linearno.test_block_body",
+      "test": "test_six_variants_cuda_float32 (loop_linearno.test_block_body.BlockBodyTests.test_six_variants_cuda_float32)",
+      "reason": "CUDA unavailable"
+    },
+    {
+      "module": "loop_linearno.test_point_attnres",
+      "test": "test_cuda_float32_oracle (loop_linearno.test_point_attnres.PointAttnResTests.test_cuda_float32_oracle)",
+      "reason": "CUDA unavailable"
+    }
+  ]
+}

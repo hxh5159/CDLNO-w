@@ -1,0 +1,1010 @@
+--- /dev/null
++++ cdlno/linearno_loop/airfrans.py
+@@ -0,0 +1,27 @@
++"""Synthetic AirfRANS loop wrapper; reuse native Data/position/forward code."""
++import numpy as np
++import torch
++from torch import nn
++
++from cdlno.linearno.airfrans import AirfRANSLinearNO, AirfRANSBlock, PointMLP, initialize_release_weights
++from .construction import LoopForwardView, validate_arguments
++from .core import LinearNOLoopCore
++
++
++class LoopedAirfRANSModel(LoopForwardView,AirfRANSLinearNO):
++    def __init__(self,*,space_dim,n_hidden,n_head,dropout,act,mlp_ratio,fun_dim,out_dim,
++                 ref,unified_pos,prefix_blocks,recurrent_core_blocks,loop_repeats,suffix_blocks,
++                 residual_mode,linearno_rank,linear):
++        validate_arguments('airfrans',{k:v for k,v in locals().items() if k!='self'})
++        nn.Module.__init__(self)
++        self.__name__='LoopedLinearNO';self.ref=ref;self.unified_pos=unified_pos
++        self.preprocess=PointMLP(space_dim+(ref*ref if unified_pos else 0),n_hidden*2,n_hidden)
++        self.n_hidden=n_hidden;self.space_dim=space_dim
++        self.loop=LinearNOLoopCore(prefix_blocks=prefix_blocks,recurrent_core_blocks=recurrent_core_blocks,
++            loop_repeats=loop_repeats,suffix_blocks=suffix_blocks,residual_mode=residual_mode,
++            block_factory=lambda *,last_layer:AirfRANSBlock(n_hidden,n_head,linearno_rank,mlp_ratio,dropout,out_dim,last_layer))
++        self.apply(initialize_release_weights)
++        self.placeholder=nn.Parameter((1/n_hidden)*torch.rand(n_hidden,dtype=torch.float))
++        gx=torch.tensor(np.linspace(-2,4,ref),dtype=torch.float)
++        gy=torch.tensor(np.linspace(-1.5,1.5,ref),dtype=torch.float)
++        self.register_buffer('reference',torch.stack(torch.meshgrid(gx,gy,indexing='ij'),-1).reshape(ref*ref,2),persistent=False)
+--- /dev/null
++++ cdlno/linearno_loop/construction.py
+@@ -0,0 +1,79 @@
++"""Internal synthetic construction from LL1 contracts; no production registry."""
++import importlib
++
++import torch
++
++from cdlno.linearno.profiles import validate_model
++from linearno_loop.config import validate_config
++from linearno_loop.contracts import integer
++from linearno_loop.schema import validate_constructor
++from .core import require_sr, topology
++
++
++def validate_arguments(kind,kw):
++    require_sr(kw['residual_mode'])
++    U,_=topology(kw['prefix_blocks'],kw['recurrent_core_blocks'],kw['loop_repeats'],kw['suffix_blocks'])
++    variant=kw.get('linearno_variant',{'airfrans':'airfrans','car':'shapenet'}.get(kind))
++    m=dict(hidden=kw['n_hidden'],heads=kw['n_head'],layers=U,linearno_rank=kw['linearno_rank'],
++        ffn_ratio=kw['mlp_ratio'],space_dim=kw['space_dim'],out_dim=kw['out_dim'],ref=kw['ref'],
++        fun_dim=kw['fun_dim'],linearno_variant=variant,dropout=kw['dropout'],activation=kw['act'],
++        unified_pos=kw['unified_pos'],time_input=kw.get('Time_Input',False),H=kw.get('H'),W=kw.get('W'))
++    validate_model('darcy' if kind=='standard' else kind,m)
++    if kind!='airfrans':
++        integer(kw['H'],'H',1);integer(kw['W'],'W',1)
++    if m['time_input'] and m['hidden']%2:raise ValueError('time embedding requires even hidden')
++    if kind=='airfrans':
++        if (m['space_dim'],m['fun_dim'],m['out_dim'])!=(7,0,4) or type(kw['linear']) is not bool:
++            raise ValueError('AirfRANS requires channels 7/0/4 and boolean linear')
++    if kind=='car':
++        if m['space_dim']+m['fun_dim']!=7 or m['out_dim']!=4 or type(kw['isregular']) is not bool:
++            raise ValueError('Car requires input7/output4 and boolean isregular')
++        if m['unified_pos'] and m['fun_dim']:raise ValueError('Car unified position requires fun_dim=0')
++
++
++class LoopForwardView:
++    family='linearno_loop'
++    architecture_extension='loop_linearno_v1'
++
++    @property
++    def blocks(self):
++        # Native forward reuses its exact stem/position/time/validation code,
++        # then invokes this one loop. No second module registration.
++        return (self.loop,)
++
++
++def build_from_config(config):
++    """Validate before import/allocation, initialize under the recorded CPU seed.
++
++    Intended for LL3 synthetic verification only. No parser, filesystem output,
++    task data, weight loading or legacy dispatch. Unsupported modes fail first.
++    """
++    checked=validate_config(config)
++    require_sr(checked['loop_spec']['residual_mode'])
++    seed=checked['profile_spec']['values']['runtime']['seed']
++    if seed>=2**64:raise ValueError('initialization seed must fit the Torch uint64 range')
++    spec=checked['model_spec'];path,name=spec['class_path'].rsplit('.',1)
++    cls=getattr(importlib.import_module(path),name)
++    validate_constructor(spec,cls)
++    with torch.random.fork_rng(devices=[]):
++        torch.random.default_generator.manual_seed(seed)
++        model=cls(**spec['constructor_kwargs'])
++    model.config_hash=checked['config_hash']
++    model.task=checked['loop_spec']['task'];model.profile=checked['loop_spec']['profile']
++    model.topology_preset=checked['loop_spec']['topology_preset']
++    model.initialization_seed=seed
++    return model
++
++
++def common_initial_state(config):
++    """Produce only common backbone weights for all three declared modes.
++
++    This is NOT an RB/LB model or factory: it returns a detached state_dict and
++    never an executable unsupported model. Future routers must be added after
++    this common initialization using their independent recorded seed.
++    """
++    from linearno_loop.config import resolve_config
++    c=validate_config(config);r=c['request']
++    sr=resolve_config(r['task'],r['profile'],options={**r['options'],'residual_mode':'sr_1_over_r'},
++                      profile_overrides=r['profile_overrides'])
++    return {k:v.detach().clone() for k,v in build_from_config(sr).state_dict().items()}
+--- /dev/null
++++ cdlno/linearno_loop/core.py
+@@ -0,0 +1,90 @@
++"""Shared physical LinearNO blocks with the frozen SR 1/R execution rule."""
++from torch import nn
++
++from linearno_loop.contracts import integer
++from .body import LinearNOBlockBody
++
++
++def topology(P,C,R,S):
++    for name,value,minimum in (('prefix_blocks',P,0),('recurrent_core_blocks',C,1),
++                                ('loop_repeats',R,1),('suffix_blocks',S,1)):
++        integer(value,name,minimum)
++    return P+C+S,P+C*R+S
++
++
++def require_sr(mode):
++    if mode != 'sr_1_over_r' or type(mode) is not str:
++        raise ValueError('LL3 implements sr_1_over_r only; RB/LB are not implemented')
++
++
++class PhysicalBlock(nn.Module):
++    """Register exactly one original block; expose actual visit hooks.
++
++    An ephemeral LL2 view executes its original submodules. No parameter
++    cloning, initialization, per-round module, or retained activation.
++    """
++    def __init__(self,block):
++        super().__init__()
++        LinearNOBlockBody(block)  # Validate without invoking or initializing.
++        self.block=block
++
++    def forward(self,x,*,scale=None,finalize=False):
++        body=LinearNOBlockBody(self.block)
++        x=body.native(x) if scale is None else body.scaled(x,scale)
++        return body.finalize(x) if finalize else x
++
++
++class LinearNOLoopCore(nn.Module):
++    """Own P+C+S physical blocks; no stem or construction-time weight reset.
++
++    block_factory(last_layer=bool) must create one fresh pure LinearNO block.
++    The enclosing wrapper performs the sole native apply after its complete
++    stem/time/core tree exists. Only suffix[-1] owns the native final head.
++    """
++    def __init__(self,*,prefix_blocks,recurrent_core_blocks,loop_repeats,suffix_blocks,
++                 residual_mode,block_factory):
++        super().__init__()
++        require_sr(residual_mode)
++        P,C,R,S=prefix_blocks,recurrent_core_blocks,loop_repeats,suffix_blocks
++        topology(P,C,R,S)
++        self.prefix_blocks=P;self.recurrent_core_blocks=C;self.loop_repeats=R;self.suffix_blocks=S
++        self.residual_mode=residual_mode
++        self.prefix=nn.ModuleList([PhysicalBlock(block_factory(last_layer=False)) for _ in range(P)])
++        self.core=nn.ModuleList([PhysicalBlock(block_factory(last_layer=False)) for _ in range(C)])
++        self.suffix=nn.ModuleList([PhysicalBlock(block_factory(last_layer=i==S-1)) for i in range(S)])
++        self.validate_structure()
++
++    @property
++    def unique_depth(self):return self.prefix_blocks+self.recurrent_core_blocks+self.suffix_blocks
++
++    @property
++    def executed_depth(self):return self.prefix_blocks+self.recurrent_core_blocks*self.loop_repeats+self.suffix_blocks
++
++    def validate_structure(self):
++        """Scalar/tree checks only, including malicious reused factory modules."""
++        require_sr(self.residual_mode)
++        topology(self.prefix_blocks,self.recurrent_core_blocks,self.loop_repeats,self.suffix_blocks)
++        for group,count in ((self.prefix,self.prefix_blocks),(self.core,self.recurrent_core_blocks),(self.suffix,self.suffix_blocks)):
++            if len(group)!=count:raise ValueError('physical block count disagrees with topology')
++        seen=set();signature=None
++        for block in (*self.prefix,*self.core,*self.suffix):
++            raw=block.block
++            expected=block is self.suffix[-1]
++            if raw.last_layer is not expected or (not expected and any(hasattr(raw,k) for k in ('ln_3','mlp2'))):
++                raise ValueError('only final suffix may own ln_3/mlp2')
++            attention=raw.Attn
++            current=tuple(getattr(attention,k,None) for k in ('dim','heads','dim_head','rank','variant'))
++            if None in current or signature is not None and current!=signature:
++                raise ValueError('all physical blocks require matching LinearNO width/heads/rank/variant')
++            signature=current
++            for parameter in raw.parameters():
++                if id(parameter) in seen:raise ValueError('physical prefix/core/suffix blocks must be distinct')
++                seen.add(id(parameter))
++
++    def forward(self,x):
++        self.validate_structure()
++        for block in self.prefix:x=block(x)
++        for _ in range(self.loop_repeats):
++            for block in self.core:x=block(x,scale=1/self.loop_repeats)
++        for index,block in enumerate(self.suffix):x=block(x,finalize=index==self.suffix_blocks-1)
++        return x
+--- /dev/null
++++ cdlno/linearno_loop/shapenet.py
+@@ -0,0 +1,25 @@
++"""Synthetic ShapeNet loop wrapper; preserve native tuple/geometry semantics."""
++import torch
++from torch import nn
++
++from cdlno.linearno.shapenet import ShapeNetLinearNO, ShapeNetBlock, PointMLP, initialize_release_weights
++from .construction import LoopForwardView, validate_arguments
++from .core import LinearNOLoopCore
++
++
++class LoopedShapeNetModel(LoopForwardView,ShapeNetLinearNO):
++    def __init__(self,*,space_dim,n_hidden,n_head,dropout,act,mlp_ratio,fun_dim,out_dim,
++                 ref,unified_pos,prefix_blocks,recurrent_core_blocks,loop_repeats,suffix_blocks,
++                 residual_mode,linearno_rank,Time_Input,H,W,isregular):
++        validate_arguments('car',{k:v for k,v in locals().items() if k!='self'})
++        nn.Module.__init__(self)
++        self.H=H;self.W=W;self.ref=ref;self.unified_pos=unified_pos;self.Time_Input=Time_Input
++        if unified_pos:self.register_buffer('pos',self.get_grid(),persistent=False)
++        self.preprocess=PointMLP(ref*ref if unified_pos else space_dim+fun_dim,n_hidden*2,n_hidden)
++        self.n_hidden=n_hidden;self.space_dim=space_dim
++        if Time_Input:self.time_fc=nn.Sequential(nn.Linear(n_hidden,n_hidden),nn.SiLU(),nn.Linear(n_hidden,n_hidden))
++        self.loop=LinearNOLoopCore(prefix_blocks=prefix_blocks,recurrent_core_blocks=recurrent_core_blocks,
++            loop_repeats=loop_repeats,suffix_blocks=suffix_blocks,residual_mode=residual_mode,
++            block_factory=lambda *,last_layer:ShapeNetBlock(n_hidden,n_head,linearno_rank,mlp_ratio,dropout,out_dim,last_layer))
++        self.apply(initialize_release_weights)
++        self.placeholder=nn.Parameter((1/n_hidden)*torch.rand(n_hidden,dtype=torch.float))
+--- /dev/null
++++ cdlno/linearno_loop/standard.py
+@@ -0,0 +1,32 @@
++"""Synthetic Standard loop wrapper, preserving the native forward contract."""
++import importlib
++
++import torch
++from torch import nn
++
++from .construction import LoopForwardView, validate_arguments
++from .core import LinearNOLoopCore
++
++# Absolute namespace package import: no sys.path mutation or generic 'model'
++# module collision across the three benchmark working directories.
++native=importlib.import_module('PDE-Solving-StandardBenchmark.model.LinearNO')
++
++
++class LoopedStandardModel(LoopForwardView,native.Model):
++    def __init__(self,*,space_dim,n_hidden,n_head,dropout,act,mlp_ratio,fun_dim,out_dim,
++                 ref,unified_pos,prefix_blocks,recurrent_core_blocks,loop_repeats,suffix_blocks,
++                 residual_mode,linearno_rank,Time_Input,H,W,linearno_variant):
++        validate_arguments('standard',{k:v for k,v in locals().items() if k!='self'})
++        nn.Module.__init__(self)
++        self.H=H;self.W=W;self.ref=ref;self.unified_pos=unified_pos
++        self.fun_dim=fun_dim;self.out_dim=out_dim;self.linearno_variant=linearno_variant;self.linearno_rank=linearno_rank
++        if unified_pos:self.register_buffer('pos',native._unified_positions(H,W,ref),persistent=False)
++        self.preprocess=native.PointwiseMLP(fun_dim+(ref*ref if unified_pos else space_dim),n_hidden*2,n_hidden)
++        self.Time_Input=Time_Input;self.n_hidden=n_hidden;self.space_dim=space_dim
++        if Time_Input:self.time_fc=nn.Sequential(nn.Linear(n_hidden,n_hidden),nn.SiLU(),nn.Linear(n_hidden,n_hidden))
++        self.loop=LinearNOLoopCore(prefix_blocks=prefix_blocks,recurrent_core_blocks=recurrent_core_blocks,
++            loop_repeats=loop_repeats,suffix_blocks=suffix_blocks,residual_mode=residual_mode,
++            block_factory=lambda *,last_layer:native.LinearNOBlock(hidden=n_hidden,heads=n_head,rank=linearno_rank,
++                variant=linearno_variant,dropout=dropout,mlp_ratio=mlp_ratio,H=H,W=W,last_layer=last_layer,out_dim=out_dim))
++        self.apply(native.initialize_release_weights)
++        self.placeholder=nn.Parameter(torch.rand(n_hidden,dtype=torch.float32)*(1/n_hidden))
+--- /dev/null
++++ docs/LOOP_LINEARNO_SR_CORE.md
+@@ -0,0 +1,154 @@
++# Looped LinearNO LL3：共享 core 与 SR 1/R
++
++**唯一阶段状态：PASS。仅完成 LL3；LL4–LL10 未执行。**
++
++## A. 范围、真值和审计
++
++2026-09-20，目标 `/home/hwz/CDLNO`，remote `https://github.com/hxh5159/CDLNO-w.git`，branch `main`，HEAD `5b991226c5354af3332b2f7306b370aef0950c79`，tree `a661e0a53d367e09dfe9b5afaabcab29ee8aec63`。起点 tracked/staged diff 均为空，但存在用户计划、LL0–LL2 未跟踪文件和 ignored 产物，绝未把“未跟踪”视为可覆盖。
++
++先读根 AGENTS、其引用状态/报告、LL0–LL2 报告/证据、用户冻结规格/LL3 提示词，核对实际三套纯模型、LL1 config/schema/class path、LL2 body/AttnRes 和现有测试。沿用已审查的 fixed-source/基线结论，不重新获取数据或改写旧报告。本阶段真值为用户 LL3 八条要求，以及 [冻结规格](../PLAN_Looped_LinearNO/Looped_LinearNO_Codex_Staged_Prompts_CDLNO-w.md) §2、§4.1、LL3。
++
++新增内容仅为独立 `linearno_loop` 内部 SR core、三套合成 wrapper、oracle/测试/计数及本报告。RB/LB 可执行模型、八任务 parser/factory/CLI/launcher、生产 checkpoint/resume、monitor/输出接线均未实施。`build_from_config` 是合成构造入口，不是旧 factory 的替换。
++
++起点 [start-manifest](loop_linearno_audit/ll3/start-manifest.json) 保存 **2069 个** tracked/untracked/ignored 文件的分类、size、SHA-256；[status](loop_linearno_audit/ll3/start-status.txt)、[tracked diff](loop_linearno_audit/ll3/start-tracked.diff)、[staged diff](loop_linearno_audit/ll3/start-staged.diff) 保留原状。
++
++## B. 实际改动与构造路径
++
++| 文件 | 职责 |
++|---|---|
++| `cdlno/linearno_loop/core.py` | `PhysicalBlock` 注册一份原 block；`LinearNOLoopCore` 分开注册 prefix/core/suffix，检查唯一 head、参数不跨物理 block 别名共享，按 SR 执行 |
++| `cdlno/linearno_loop/construction.py` | LL1 配置校验、真实 constructor 校验、隔离 CPU seed 的合成构造；三 mode 公共主干初值导出 |
++| `cdlno/linearno_loop/standard.py` | `LoopedStandardModel`，原 Standard 输入/位置/time 合同 |
++| `cdlno/linearno_loop/airfrans.py` | `LoopedAirfRANSModel`，原 `Data -> [N,4]`、位置距离拼接及 single-graph 校验 |
++| `cdlno/linearno_loop/shapenet.py` | `LoopedShapeNetModel`，原 `(Data,geom) -> [N,4]`，位置替换和原字段合同 |
++| `tests/loop_linearno/sr_oracle.py` | 先写的独立 SR 全 core 公式，不调用生产 core/body/attention forward |
++| `tests/loop_linearno/sr_support.py` | 小型 LL1 config/输入、纯 U 层参数映射、解析计数 |
++| `tests/loop_linearno/test_sr_core.py` | 11 项 core/oracle/共享/初始化/梯度/RNG/strict 测试 |
++| `tests/loop_linearno/test_sr_accounting.py` | 3 项参数/MAC/非法 factory 测试 |
++| 本文、状态、`docs/loop_linearno_audit/ll3/` | 来源、命令、数值、完整差异与冻结清单 |
++
++已有文件仅增量改动：`cdlno/linearno_loop/__init__.py` 的说明（无 eager import）；`tests/loop_linearno/test_artifacts.py` 将“完整模型文件不存在”的 LL1 阶段断言更新为历史 fixture 仍是 `LL1-contract-only`，保留无生产 launcher 的断言；本研究 STATUS 追加 LL3。旧 LL1 合同/catalog/fixture 和顶层无 torch schema 原样保留。
++
++稳定类路径与 LL1 `model_spec` 完全相同。真实流程为：
++
++```text
++LL1 resolve_config / validate_config
++  -> build_from_config：完整结构/hash校验 -> require_sr -> validate_constructor
++  -> 已记录的 CPU seed 下构造对应 Looped*Model
++  -> 原 stem / 可选 time_fc -> U 个原 block -> 一次 native whole-tree apply
++  -> 最后创建原 placeholder；保留原 reference/pos buffer 的时序
++  -> 原模型 forward：输入/位置/时间处理 -> self.blocks 中唯一 loop -> 原输出形状
++```
++
++wrapper 不调用原完整模型 constructor，不先建 8 层再丢弃；只复用原 block、stem 类及完整原 `forward`。`LoopForwardView.blocks` 是返回 `(self.loop,)` 的非注册 property，避免重复 state 键。loop 真正注册的路径为 `loop.prefix.i.block.*`、`loop.core.i.block.*`、`loop.suffix.i.block.*`，与 stem/placeholder 一起形成 state_dict；没有 round2/round3 副本。
++
++`PhysicalBlock.forward` 调用已验收 LL2 的非持有型 body adapter，每次重新调用原 LN/Attn/MLP。新 wrapper 模块本身可被 hook，底下的原 Attn、Q/K/V、MLP 也都按 visit 执行。原 block 的 full-forward 不在缩放 core 中使用，防止隐含未缩放 residual/head。
++
++`common_initial_state` 对三种 mode **只返回公共主干 tensor 字典**。它不返回可执行 RB/LB 模型；这两种 mode 调用 `build_from_config` 会在 import/分配前明确报错。后续实际 router 仍须在公共主干初始化之后创建，并重新验证跨 mode 键/值公平性。
++
++## C. 公式 → 实现 → 验证
++
++令 (A_b(x)=\mathrm{Attn}_b(\mathrm{LN}_{1,b}(x)))，(F_b(x)=\mathrm{MLP}_b(\mathrm{LN}_{2,b}(x)))。
++
++- prefix/suffix：(u=x+A_b(x),\ y=u+F_b(u))。
++- core 每个 visit：(u=x+\frac1R A_b(x),\ y=u+\frac1R F_b(u))。identity 始终系数 1。
++- 唯一最终 head：最后 suffix 完成两条 branch 后，执行 `mlp2(ln_3(y))`。
++- (U=P+C+S\)，(E=P+CR+S\)。模块分配数由 U 决定，算子 visit 数由 E 决定。
++
++| 合同 | 实现 | 验证证据 |
++|---|---|---|
++| P1/C3/R2/S1 | U5/E8 | hook 次序 `P1,C1,C2,C3,C1,C2,C3,S1` |
++| P2/C2/R2/S2 | U6/E8 | hook 次序 `P1,P2,C1,C2,C1,C2,S1,S2` |
++| custom P0/C2/R3/S1 | U3/E7 | `C1,C2` 重复 3 次，后接 S1；同时验证 R1 |
++| 真正权重共享 | `ModuleList core` 被反复调用 | 同 module/native block/parameter id；state 无 round 副本；共享梯度等于独立展开各轮梯度之和 |
++| 每次重算 Q/K/V/C/O | 原 Attn forward | Q/K/V hook 每轮值变化；每 visit `K^T V` 与 `QC` 各一次；24 个完整 wrapper 的 MAC hook 也计入重复计算 |
++| 两分支都除 R | LL2 body.scaled | 独立公式 36 案例；手算 A(x)=2x、F(x)=3x、R2/C1，core=25x，native suffix 后=300x |
++| 单次最终 LN/head | suffix[-1] finalize | ln_3/mlp2 各恰一次；core 没有 head；非法 factory 提前拒绝 |
++| 跨轮 autograd | 不 detach、不保存 history | 仅从第二轮 raw Attn loss 对第一轮输出及同一 core.to_v VJP，均 finite/nonzero |
++| native 初始化顺序 | 唯一完整 apply、placeholder 最后 | 6 类任务 × 3 拓扑 = 18 次，对同 seed 的原 U 层模型逐键值及构造后 RNG **完全一致** |
++| 无跨 forward 状态 | forward 只用局部 x | 连续 forward、异常退出后 B/N 改变；模块属性集合不增加，没有新 tensor cache |
++| strict state roundtrip | 先 config 后构造、weights_only/strict=True | Standard/Air/Car 三个独立进程和临时 cwd，输出完全相同；删键必失败 |
++| 构造校验 | LL1 validate + core 再验 | C/R/S=0、bool/string 冒充 int、伪造 U/E/M、重复物理参数、非法 core head、宽度/rank 结构损坏拒绝 |
++
++Standard 普通/统一位置、Plasticity 时间输入、Air 距离拼接、Car 原 tuple/通道、Air dead temperature、Car `tempreature` 键及各 variant 的温度/投影均来自原子模块。R1 下八任务完整 wrapper 与对应纯 U 层模型同权重输出逐位相等，且 `type(loop).forward is type(pure).forward`。Plasticity 不同 T 产生不同输出，time_fc 有非零梯度。NS/Plasticity 没有跨物理时间缓存；本阶段未执行真实时序训练循环。
++
++## D. 命令、环境、结果和数值限度
++
++本地 Python 3.13.9、torch 2.13.0+cu130、NumPy 2.2.6、timm 1.0.28、einops 0.8.2、PyG 2.3.1；本轮显式 `CUDA_VISIBLE_DEVICES=''`，全部 CPU。详见 [environment](loop_linearno_audit/ll3/environment.json)。没有安装/升级依赖。
++
++在仓库根执行的最终 loop 测试命令：
++
++```bash
++PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 CUDA_VISIBLE_DEVICES='' \
++OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 \
++LOOP_LL2_ATTNRES_REPORT=docs/loop_linearno_audit/ll3/attnres-report.json \
++LOOP_LL2_BODY_REPORT=docs/loop_linearno_audit/ll3/body-report.json \
++LOOP_LL3_PARITY_REPORT=docs/loop_linearno_audit/ll3/sr-parity.json \
++LOOP_LL3_ACCOUNTING_REPORT=docs/loop_linearno_audit/ll3/accounting.json \
++python -B -m unittest discover -s tests/loop_linearno -p 'test_*.py' -v \
++> docs/loop_linearno_audit/ll3/loop-tests.log 2>&1
++```
++
++**55 方法：53 通过、0 failure/error、2 CUDA skip，20.902s。** LL3 新增的 14 方法全部通过；2 skip 是本轮 CPU 隔离下的 LL2 CUDA 方法，不能将以前 LL2 CUDA 成功写成本轮 GPU 验收。详细 [log](loop_linearno_audit/ll3/loop-tests.log)、[逐张量数值](loop_linearno_audit/ll3/sr-parity.json)、[数值汇总](loop_linearno_audit/ll3/numeric-summary.json)。
++
++| 对照 | 案例 | atol/rtol | 最大 abs | 各张量 mean abs 的最大值 | 最大 relative / mean relative |
++|---|---:|---|---:|---:|---:|
++| 独立公式 FP64（含 AdamW） | 18 | 1e-12 / 1e-10 | 8.57821e-16 | 2.22045e-16 | 5.08351e-11 / 1.69519e-12 |
++| 独立公式 FP32（含 SGD） | 18 | 1e-6 / 1e-5 | 1.78814e-7 | 1.19209e-7 | 8.41266e-3 / 6.32470e-4 |
++| 原子模块独立展开 FP64（含 AdamW） | 18 | 0 / 0 | 0 | 0 | 0 / 0 |
++| 原子模块独立展开 FP32（含 AdamW） | 18 | 0 / 0 | 0 | 0 | 0 / 0 |
++
++独立公式覆盖六 attention 变体 × 三拓扑 × 两 dtype 的每 visit、final、loss、输入及所有活动参数梯度。Air 已知 dead temperature 单独记录 grad=None。relative 定义为 `abs(error)/max(abs(reference),1e-12)`；近零梯度处 relative 比值会放大，验收仍使用原先声明的 atol+rtol，没有单独放宽 relative 门槛。原子模块参考独立书写循环而不调用被测 core/body，测试 train dropout=.2，逐位比较最终权重、AdamW step/exp_avg/exp_avg_sq 和随机流。
++
++**保留的一次新测试失败及定位：** 首轮 10 方法有 1 个失败子例，Car/P2/FP32 的独立公式 AdamW 一步；forward 最大差 2.23517e-8，某个 MLP 梯度为 -4.07363e-9 与 -4.10819e-9，差仅 3.45608e-11，经过 `g/(abs(g)+eps)`（eps1e-8）变成参数差 1.74064e-6，超过既定容差。用标量首步公式重算得到**完全相同**的差值。原 [失败日志](loop_linearno_audit/ll3/sr-first-tests.log) 和 [诊断数值](loop_linearno_audit/ll3/adamw-oracle-roundoff.json) 均保留。
++
++没有修改模型或放宽容差。最终独立 FP32 公式使用对梯度误差线性敏感的 SGD 更新；独立 FP64 仍测 AdamW；额外 36 例使用相同 native 数值核、独立控制流对照 AdamW，全部逐位相同。这是明确记录的参考方法拆分，**不宣称原 FP32 数学 oracle 的 AdamW 比较通过**，也没有更改任何训练 optimizer。可复现诊断：
++
++```bash
++PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 CUDA_VISIBLE_DEVICES='' \
++OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
++python -B docs/loop_linearno_audit/ll3/reproduce_adamw_roundoff.py
++```
++
++旧回归实跑命令：
++
++```bash
++PYTHONDONTWRITEBYTECODE=1 python -B docs/loop_linearno_audit/ll3/run_existing_regressions.py \
++> docs/loop_linearno_audit/ll3/regression-progress.jsonl 2>&1
++python -B docs/loop_linearno_audit/ll3/finalize_evidence.py
++```
++
++24 个原模块共 153 方法，147 pass、2 历史失败方法（4 断言）、4 CUDA skip、0 error。pure/原 Transolver、history、monitor 结果与用户批准的 LL0 完全一致，失败 ID 和断言文本也精确对照。历史失败只涉及先前 README/path.sh/纯复现矩阵冻结预期，不改旧 golden；不能称“全仓测试全绿”。[逐模块结果](loop_linearno_audit/ll3/regression-results.json)、[历史结果比较](loop_linearno_audit/ll3/regression-summary.json)。
++
++## E. 参数与 MAC：分开报告存储和执行
++
++以下来自 `paper_table8_on_release_model` 的真实 d/head/ratio、M×2；B=1，N 取该任务标准点数。**全尺寸只构造/计参数，不执行 forward、不读数据**。32 配置（八任务 × 两 preset × rank1/2）解析参数量与实际 `.parameters().numel()` 全等；另外 24 个小型真实 wrapper forward，通过 Linear/Conv hook 和 KTV/QC 形状计数核验每个实际执行 MAC。全部原始行见 [accounting.json](loop_linearno_audit/ll3/accounting.json)。
++
++| 任务 | actual M | P1 unique参数（5块） | P2 unique参数（6块） | 两preset executed参数使用数（8 visits） | P1物理块各一次 MAC | P2物理块各一次 MAC | 两preset实际执行 MAC |
++|---|---:|---:|---:|---:|---:|---:|---:|
++| Airfoil | 128 | 1,126,737 | 1,345,249 | 1,782,273 | 16,188,402,048 | 19,350,774,144 | 25,675,518,336 |
++| Darcy | 128 | 1,126,993 | 1,345,505 | 1,782,529 | 10,379,030,400 | 12,406,192,000 | 16,460,515,200 |
++| Elasticity | 128 | 388,817 | 459,745 | 601,601 | 679,435,776 | 808,828,416 | 1,067,613,696 |
++| Pipe | 128 | 1,126,737 | 1,345,249 | 1,782,273 | 23,901,268,608 | 28,570,333,824 | 37,908,464,256 |
++| NS | 64 | 2,192,385 | 2,593,025 | 3,394,305 | 10,331,619,328 | 12,244,221,952 | 16,069,427,200 |
++| Plasticity | 128 | 1,160,324 | 1,378,820 | 1,815,812 | 4,601,618,176 | 5,480,101,632 | 7,237,068,544 |
++| AirfRANS | 64 | 2,173,228 | 2,573,876 | 3,375,172 | 80,101,376,000 | 95,043,584,000 | 124,928,000,000 |
++| Car | 64 | 2,469,460 | 2,935,908 | 3,868,804 | 90,059,002,880 | 107,197,404,160 | 141,474,206,720 |
++
++executed 参数使用数是按 block visit 多重计数（含 dead parameter）的展开等价值，**不是额外分配的参数量**。物理块各一次 MAC 只作组织对照，实际 forward 应看最右列。MAC 只含 dense Linear/Conv、K^T V、QC；不含 norm/GELU/softmax/位置与时间编码/加法/访存；1 MAC=2 dense FLOPs 也不代表完整 profiler FLOPs。NS 是单次模型调用，非 10 步 rollout；Plasticity 是单次 T 查询，非 20 次训练更新。不由参数减少推论算量下降或速度提升。
++
++## F. 冻结、未运行项与交付自审
++
++完整 [末次冻结](loop_linearno_audit/ll3/end-freeze.json) 对起点 2069 文件逐项比较内容和分类。仅上述 3 个已有研究文件修改；其他 **2066 文件完全不变**。所有旧模型/训练/CLI/factory/metadata/checkpoint/launcher/monitor、顶层纯 schema、LL2 原语、AGENTS 和既存 ignored/untracked 内容均保留。无新缓存/运行目录，新增 ignored 仅 `docs/loop_linearno_audit/ll3/*.log`。HEAD/tree 不变、tracked/staged diff 仍空；新文件和已有 untracked 文件差异另存 [source.diff](loop_linearno_audit/ll3/source.diff)，不让未跟踪文件逃过检查。
++
++| 自审重点 | 已完成检查 |
++|---|---|
++| 是否真正共享且未误放 head | id、key、重复 call、ln_3/mlp2 单次、非法 factory、梯度累加证据一致 |
++| 是否两 branch 缩放而 identity 不缩放 | 独立 36 例、300x 手算、R1 native 输出精确一致 |
++| 是否初始化公平且未多构造/二次 apply | 18 次原 U 层完整初值/RNG 相等；三 mode 公共字典相等，unsupported 模式不伪装可执行 |
++| 是否把数值测试失败隐藏为通过 | 首次 FP32 AdamW 失败、定位脚本/数值原样保留；数值核独立展开验证与数学 oracle 分别列明 |
++| 是否破坏既有模型或夸大验收 | 原153回归精确对照、2069文件冻结；真值/数据/生产流程和远端明确 NOT RUN |
++
++没有新增待用户裁定的架构冲突。未运行/未实现：RB/LB、生产任务与输出/monitor 接线、完整 loop optimizer/RNG resume archive、真实数据/训练、GPU/AMP/compile、远端 Python3.10/torch2.11 cu128、性能计时和精度。当前 strict round-trip 是合成 state_dict 新进程验证，不能称完整生产 train/resume/eval 已完成。
++
++**本 LL3 阶段结束，未执行下一阶段。**
+--- /dev/null
++++ tests/loop_linearno/sr_oracle.py
+@@ -0,0 +1,32 @@
++"""Independent full SR equations; never invokes loop/body/attention forward."""
++import torch
++from linearno.attention_reference import reference as attention_reference
++
++
++def core_reference(x, state, *, P, C, R, S, variant, heads, H, W):
++    """Explicit physical-key reuse, independent LN/MLP/operator equations."""
++    trace=[]
++    def norm(z,key):
++        z=z-z.mean(-1,keepdim=True)
++        return z/torch.sqrt(z.square().mean(-1,keepdim=True)+1e-5)*state[key+'.weight']+state[key+'.bias']
++    def linear(z,key):return z@state[key+'.weight'].T+state[key+'.bias']
++    def mlp(z,key):
++        z=linear(z,key+'.linear_pre.0')
++        z=.5*z*(1+torch.erf(z/(2**.5)))
++        return linear(z,key+'.linear_post')
++    def visit(z,group,index,scale):
++        key=f'{group}.{index}.block'
++        attn={k[len(key+'.Attn.'):]:v for k,v in state.items() if k.startswith(key+'.Attn.')}
++        out,_=attention_reference(norm(z,key+'.ln_1'),attn,heads=heads,variant=variant,H=H,W=W)
++        z=z+scale*out
++        z=z+scale*mlp(norm(z,key+'.ln_2'),key+'.mlp')
++        trace.append(z)
++        return z
++    for i in range(P):x=visit(x,'prefix',i,1)
++    for _ in range(R):
++        for i in range(C):x=visit(x,'core',i,1/R)
++    for i in range(S):x=visit(x,'suffix',i,1)
++    key=f'suffix.{S-1}.block'
++    output=linear(norm(x,key+'.ln_3'),key+'.mlp2')
++    trace[-1]=output
++    return output,trace
+--- /dev/null
++++ tests/loop_linearno/sr_support.py
+@@ -0,0 +1,81 @@
++"""LL3 synthetic fixtures and accounting; never a task launcher."""
++import importlib
++import torch
++
++from linearno_loop.config import resolve_config
++
++TOPOLOGIES=('p1_c3_r2_s1','p2_c2_r2_s2','custom')
++
++
++def config(task='darcy',preset='p1_c3_r2_s1',*,variant=None,R=None,seed=7):
++    options=dict(topology_preset=preset,residual_mode='sr_1_over_r',linearno_rank=4)
++    if preset=='custom':options.update(prefix_blocks=0,recurrent_core_blocks=2,loop_repeats=3 if R is None else R,suffix_blocks=1)
++    overrides={'model.hidden':8,'model.heads':2,'model.ref':3,'runtime.seed':seed}
++    if task not in ('airfrans','car'):overrides.update({'model.H':3,'model.W':5})
++    if variant is not None:overrides['model.linearno_variant']=variant
++    return resolve_config(task,options=options,profile_overrides=overrides)
++
++
++def pure_constructor(c):
++    task=c['loop_spec']['task']
++    if task=='airfrans':return importlib.import_module('cdlno.linearno.airfrans').AirfRANSLinearNO
++    if task=='car':return importlib.import_module('cdlno.linearno.shapenet').ShapeNetLinearNO
++    return importlib.import_module('PDE-Solving-StandardBenchmark.model.LinearNO').Model
++
++
++def pure_kwargs(c):
++    kw=dict(c['model_spec']['constructor_kwargs'])
++    for key in ('prefix_blocks','recurrent_core_blocks','loop_repeats','suffix_blocks','residual_mode'):kw.pop(key)
++    kw['n_layers']=c['loop_spec']['unique_depth']
++    return kw
++
++
++def to_pure_state(state,P,C,S):
++    result={}
++    offsets={'prefix':0,'core':P,'suffix':P+C}
++    for key,value in state.items():
++        if key.startswith('loop.'):
++            _,group,index,block,suffix=key.split('.',4)
++            assert block=='block'
++            result[f'blocks.{offsets[group]+int(index)}.{suffix}']=value
++        else:result[key]=value
++    return result
++
++
++def inputs(c,dtype=torch.float32):
++    from torch_geometric.data import Data
++    m=c['profile_spec']['values']['model'];task=c['loop_spec']['task']
++    g=torch.Generator().manual_seed(902)
++    if task in ('airfrans','car'):
++        data=Data(x=torch.randn(13,7,generator=g,dtype=dtype),pos=torch.randn(13,2,generator=g,dtype=dtype),
++                  batch=torch.zeros(13,dtype=torch.long),ptr=torch.tensor([0,13]))
++        return (data,) if task=='airfrans' else ((data,object()),)
++    N=m['H']*m['W'];x=torch.randn(2,N,m['space_dim'],generator=g,dtype=dtype)
++    fx=torch.randn(2,N,m['fun_dim'],generator=g,dtype=dtype) if m['fun_dim'] else None
++    T=torch.tensor([[.1],[.8]],dtype=dtype) if m['time_input'] else None
++    return x,fx,T
++
++
++def counts(c,*,B=1,N=None):
++    """Analytic dense matrix MACs only; biases/norm/nonlinear/softmax excluded."""
++    s=c['loop_spec'];m=c['profile_spec']['values']['model'];task=s['task']
++    d,h,M,r=m['hidden'],m['heads'],s['resolved_rank'],m['ffn_ratio'];dh=d//h
++    variant=m['linearno_variant'];conv=variant in ('conv','conv_temp');outlayers=2 if conv or task=='car' else 1
++    temp=2*h if variant in ('temp','conv_temp','shapenet') else h if task=='airfrans' else 0
++    body_params=(9 if conv else 1)*d*d+d+2*dh*M+dh*dh+outlayers*(d*d+d)+temp+4*d+2*r*d*d+(r+1)*d
++    head_params=2*d+d*m['out_dim']+m['out_dim']
++    lift=(m['space_dim']+m['ref']**2 if task=='airfrans' and m['unified_pos'] else
++          m['ref']**2 if task=='car' and m['unified_pos'] else
++          m['fun_dim']+(m['ref']**2 if m['unified_pos'] else m['space_dim']))
++    stem_params=lift*2*d+2*d+2*d*d+d+d+(2*d*d+2*d if m['time_input'] else 0)
++    if N is None:N={'airfrans':32000,'car':32186,'elasticity':972}.get(task,m['H']*m['W'] if m['H'] else 0)
++    body_mac=B*N*((9 if conv else 1)*d*d+outlayers*d*d+2*r*d*d+d*dh+4*d*M)
++    stem_mac=B*N*(lift*2*d+2*d*d+(2*d*d if m['time_input'] else 0))
++    head_mac=B*N*d*m['out_dim']
++    return dict(B=B,N=N,unique_depth=s['unique_depth'],executed_depth=s['executed_depth'],
++        unique_parameters=stem_params+s['unique_depth']*body_params+head_params,
++        executed_parameter_uses=stem_params+s['executed_depth']*body_params+head_params,
++        one_visit_per_physical_block_macs=stem_mac+s['unique_depth']*body_mac+head_mac,
++        executed_macs=stem_mac+s['executed_depth']*body_mac+head_mac,
++        dead_temperature_parameters=s['unique_depth']*h if task=='airfrans' else 0,
++        mac_scope='Linear/Conv projections, K^T V, QC; no norm/GELU/softmax/bias/residual/sinusoid/storage cost')
+--- /dev/null
++++ tests/loop_linearno/test_sr_accounting.py
+@@ -0,0 +1,108 @@
++import json
++import os
++from pathlib import Path
++import unittest
++from unittest.mock import patch
++
++import torch
++from torch import nn
++
++from cdlno.linearno_loop.construction import build_from_config
++from cdlno.linearno_loop.core import LinearNOLoopCore
++from linearno_loop.config import resolve_config
++from loop_linearno.sr_support import config, counts, inputs, TOPOLOGIES
++
++
++TASKS=('airfoil','darcy','elasticity','pipe','ns','plasticity','airfrans','car')
++
++
++class SRAccountingTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):cls.profile_rows=[];cls.hook_rows=[]
++
++    @classmethod
++    def tearDownClass(cls):
++        if path:=os.environ.get('LOOP_LL3_ACCOUNTING_REPORT'):
++            Path(path).write_text(json.dumps(dict(profile='paper_table8_on_release_model',
++                profile_rows=cls.profile_rows,hook_rows=cls.hook_rows,
++                limits='B=1 full-profile counts use canonical N, constructor only; no real data/forward/timing. '
++                       'Executed parameter uses count shared and dead slots per visit, not extra storage. '
++                       'Dense MACs exclude nonlinear/norm/softmax/bias/residual/position/sinusoid costs.'),indent=2)+'\n')
++
++    def test_full_profile_unique_parameters_eight_tasks_presets_rank_controls(self):
++        for task in TASKS:
++            for preset in TOPOLOGIES[:2]:
++                for multiplier in (1,2):
++                    with self.subTest(task=task,preset=preset,multiplier=multiplier):
++                        c=resolve_config(task,options=dict(topology_preset=preset,
++                            residual_mode='sr_1_over_r',rank_multiplier=multiplier))
++                        model=build_from_config(c);expected=counts(c)
++                        actual=sum(p.numel() for p in model.parameters())
++                        self.assertEqual(actual,expected['unique_parameters'])
++                        # Multiplicity accounting, not allocation or measured FLOPs.
++                        core_parameters=sum(p.numel() for b in model.loop.core for p in b.parameters())
++                        executed=actual+(model.loop.loop_repeats-1)*core_parameters
++                        self.assertEqual(executed,expected['executed_parameter_uses'])
++                        self.assertLess(actual,executed)
++                        self.assertLess(expected['one_visit_per_physical_block_macs'],expected['executed_macs'])
++                        self.profile_rows.append(dict(task=task,topology=preset,rank_multiplier=multiplier,
++                            actual_rank=c['loop_spec']['resolved_rank'],measured_unique_parameters=actual,
++                            **expected))
++
++    def test_dense_mac_hooks_actual_executed_and_unique_visits(self):
++        for task in TASKS:
++            for preset in TOPOLOGIES:
++                with self.subTest(task=task,preset=preset):
++                    c=config(task,preset);model=build_from_config(c).eval();args=inputs(c)
++                    B,N=(1,13) if task in ('airfrans','car') else (2,15)
++                    expected=counts(c,B=B,N=N);observed={};ctx=[None];handles=[]
++                    def matrix(mod,inputs,output):
++                        if isinstance(mod,nn.Linear):value=output.numel()*mod.in_features
++                        else:value=output.numel()*mod.in_channels//mod.groups*mod.kernel_size[0]*mod.kernel_size[1]
++                        observed.setdefault(ctx[0],[]).append(value)
++                    for mod in model.modules():
++                        if isinstance(mod,(nn.Linear,nn.Conv2d)):handles.append(mod.register_forward_hook(matrix))
++                    # Each visit gets its own list. Group repeats afterward to
++                    # count one physical visit without hiding repeated matmuls.
++                    visits={};physical={}
++                    for group in ('prefix','core','suffix'):
++                        for i,block in enumerate(getattr(model.loop,group)):
++                            key=f'{group}.{i}'
++                            def enter(mod,args,key=key):
++                                j=visits.get(key,0);visits[key]=j+1;ctx[0]=key+':'+str(j)
++                                physical[ctx[0]]=key
++                            def leave(*args):ctx[0]=None
++                            handles.append(block.register_forward_pre_hook(enter))
++                            handles.append(block.register_forward_hook(leave))
++                    original=torch.einsum
++                    def einsum(eq,*values,**kw):
++                        if eq in ('bhnm,bhnd->bhmd','bhnm,bhmd->bhnd'):
++                            q=values[0];v=values[1]
++                            observed.setdefault(ctx[0],[]).append(q.numel()*v.shape[-1])
++                        return original(eq,*values,**kw)
++                    try:
++                        with torch.no_grad(),patch('torch.einsum',side_effect=einsum):model(*args)
++                    finally:
++                        for handle in handles:handle.remove()
++                    actual=sum(sum(values) for values in observed.values())
++                    one_visit=sum(sum(values) for key,values in observed.items() if key is None or key.endswith(':0'))
++                    self.assertEqual(actual,expected['executed_macs'])
++                    self.assertEqual(one_visit,expected['one_visit_per_physical_block_macs'])
++                    self.assertEqual(sum(visits.values()),expected['executed_depth'])
++                    self.hook_rows.append(dict(task=task,topology=preset,measured_executed_macs=actual,
++                        measured_one_visit_macs=one_visit,visits=visits,**expected))
++
++    def test_factory_reused_modules_and_illegal_core_head_rejected(self):
++        from loop_linearno.test_block_body import make_block
++        kw=dict(prefix_blocks=0,recurrent_core_blocks=2,loop_repeats=2,suffix_blocks=1,residual_mode='sr_1_over_r')
++        reused=make_block('plain',False)
++        with self.assertRaisesRegex(ValueError,'must be distinct'):
++            LinearNOLoopCore(**kw,block_factory=lambda *,last_layer:make_block('plain',True) if last_layer else reused)
++        with self.assertRaisesRegex(ValueError,'only final suffix'):
++            LinearNOLoopCore(**kw,block_factory=lambda *,last_layer:make_block('plain',True))
++        model=build_from_config(config())
++        model.loop.core[0].block.Attn.rank=5
++        with self.assertRaisesRegex(ValueError,'matching LinearNO'):model.loop(torch.zeros(1,15,8))
++
++
++if __name__=='__main__':unittest.main()
+--- /dev/null
++++ tests/loop_linearno/test_sr_core.py
+@@ -0,0 +1,305 @@
++import copy
++import importlib
++import json
++import os
++from pathlib import Path
++import subprocess
++import sys
++import tempfile
++import unittest
++from unittest.mock import patch
++
++import torch
++from torch import nn
++
++from cdlno.linearno_loop.construction import build_from_config, common_initial_state
++from cdlno.linearno_loop.core import LinearNOLoopCore
++from linearno_loop.config import resolve_config
++from linearno_loop.contracts import seal, RESIDUAL_MODES
++from loop_linearno.sr_support import config, pure_constructor, pure_kwargs, to_pure_state, inputs, TOPOLOGIES
++from loop_linearno.sr_oracle import core_reference
++from loop_linearno.test_point_attnres import errors
++
++
++class SRCoreTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):cls.rows=[]
++
++    @classmethod
++    def tearDownClass(cls):
++        if path:=os.environ.get('LOOP_LL3_PARITY_REPORT'):
++            Path(path).write_text(json.dumps(dict(torch=str(torch.__version__),rows=cls.rows),indent=2)+'\n')
++
++    def test_presets_custom_module_identity_visit_order_qkv_and_single_head(self):
++        expected={
++            'p1_c3_r2_s1':['prefix.0','core.0','core.1','core.2','core.0','core.1','core.2','suffix.0'],
++            'p2_c2_r2_s2':['prefix.0','prefix.1','core.0','core.1','core.0','core.1','suffix.0','suffix.1'],
++            'custom':['core.0','core.1','core.0','core.1','core.0','core.1','suffix.0']}
++        for preset in TOPOLOGIES:
++            model=build_from_config(config(preset=preset));core=model.loop
++            order=[];values={};identities={};heads=[];handles=[];events=[]
++            for name,block in [(f'{g}.{i}',b) for g in ('prefix','core','suffix') for i,b in enumerate(getattr(core,g))]:
++                def visit(mod,args,out,name=name):
++                    order.append(name);identities.setdefault(name,[]).append((id(mod),id(mod.block),*(id(p) for p in mod.parameters())))
++                handles.append(block.register_forward_hook(visit))
++                for factor in ('to_q','to_k','to_v'):
++                    def trace(mod,args,out,name=name,factor=factor):
++                        values.setdefault(name+'.'+factor,[]).append(out.detach().clone())
++                    handles.append(getattr(block.block.Attn,factor).register_forward_hook(trace))
++            handles.append(core.suffix[-1].block.ln_3.register_forward_hook(lambda *a:heads.append('ln_3')))
++            handles.append(core.suffix[-1].block.mlp2.register_forward_hook(lambda *a:heads.append('mlp2')))
++            original=torch.einsum
++            def einsum(equation,*args,**kwargs):
++                events.append(equation)
++                return original(equation,*args,**kwargs)
++            try:
++                with patch('torch.einsum',side_effect=einsum):core(torch.randn(2,15,8))
++            finally:
++                for h in handles:h.remove()
++            self.assertEqual(order,expected[preset]);self.assertEqual(heads,['ln_3','mlp2'])
++            self.assertEqual(core.executed_depth,len(order))
++            self.assertEqual(core.unique_depth,len(set(order)))
++            self.assertEqual(events.count('bhnm,bhnd->bhmd'),len(order))
++            self.assertEqual(events.count('bhnm,bhmd->bhnd'),len(order))
++            for name,ids in identities.items():
++                self.assertTrue(all(x==ids[0] for x in ids))
++                self.assertEqual(len(ids),core.loop_repeats if name.startswith('core.') else 1)
++            for name,series in values.items():
++                if name.startswith('core.'):
++                    self.assertEqual(len(series),core.loop_repeats)
++                    self.assertFalse(torch.equal(series[0],series[1]),name+' must recompute from updated input')
++            parameters=list(model.named_parameters(remove_duplicate=False))
++            self.assertEqual(len({id(p) for _,p in parameters}),len(parameters))
++            self.assertFalse(any('round' in k or k.startswith('blocks.') for k in model.state_dict()))
++            self.assertTrue(all(not b.block.last_layer and not hasattr(b.block,'mlp2') for b in core.core))
++
++    def test_independent_core_oracle_all_six_variants_three_topologies_two_dtypes(self):
++        for variant in ('plain','temp','conv','conv_temp','airfrans','shapenet'):
++            task='airfrans' if variant=='airfrans' else 'car' if variant=='shapenet' else 'darcy'
++            for preset in TOPOLOGIES:
++                for dtype in (torch.float64,torch.float32):
++                    with self.subTest(variant=variant,preset=preset,dtype=dtype):
++                        c=config(task,preset,variant=variant if task=='darcy' else None)
++                        model=build_from_config(c).to(dtype=dtype);core=model.loop
++                        gen=torch.Generator().manual_seed(44)
++                        x=torch.randn(2,15,8,generator=gen,dtype=dtype,requires_grad=True)
++                        rx=x.detach().clone().requires_grad_()
++                        state={k:v.detach().clone().requires_grad_() for k,v in core.named_parameters()}
++                        seen=[];handles=[b.register_forward_hook(lambda m,a,y:seen.append(y)) for b in (*core.prefix,*core.core,*core.suffix)]
++                        try:actual=core(x)
++                        finally:
++                            for h in handles:h.remove()
++                        expected,steps=core_reference(rx,state,P=core.prefix_blocks,C=core.recurrent_core_blocks,
++                            R=core.loop_repeats,S=core.suffix_blocks,variant=variant,heads=2,H=3,W=5)
++                        atol,rtol=(1e-12,1e-10) if dtype==torch.float64 else (1e-6,1e-5)
++                        row=dict(variant=variant,topology=preset,dtype=str(dtype),device='cpu',atol=atol,rtol=rtol,errors={},unused=[])
++                        def check(a,b,name):
++                            torch.testing.assert_close(a,b,atol=atol,rtol=rtol,msg=name)
++                            self.assertTrue(torch.isfinite(a).all())
++                            row['errors'][name]=errors(a,b)
++                        check(actual,expected,'final')
++                        for i,(a,b) in enumerate(zip(seen,steps)):check(a,b,'visit_'+str(i))
++                        self.assertEqual(len(seen),core.executed_depth)
++                        target=torch.randn(actual.shape,generator=gen,dtype=dtype)
++                        loss=(actual-target).square().mean();rloss=(expected-target).square().mean()
++                        check(loss,rloss,'loss');loss.backward();rloss.backward();check(x.grad,rx.grad,'input_gradient')
++                        for name,param in core.named_parameters():
++                            if name.endswith('Attn.temperature'):
++                                self.assertEqual(variant,'airfrans');self.assertIsNone(param.grad);self.assertIsNone(state[name].grad);row['unused'].append(name)
++                            else:check(param.grad,state[name].grad,'gradient.'+name)
++                        # Independent FP32 LN/erf reductions can perturb ~1e-9
++                        # gradients: AdamW's g/(abs(g)+eps) amplifies this. Keep
++                        # the declared tolerances; use linear SGD for this
++                        # FP32 mathematical oracle, AdamW in FP64 and a separate
++                        # same-kernel, independently unrolled reference below.
++                        optimizer=torch.optim.AdamW if dtype==torch.float64 else torch.optim.SGD
++                        row['optimizer']=optimizer.__name__
++                        opt=optimizer(core.parameters(),lr=.001);refopt=optimizer(state.values(),lr=.001)
++                        opt.step();refopt.step()
++                        for name,param in core.named_parameters():check(param,state[name],'step.'+name)
++                        self.rows.append(row)
++
++    def test_native_unrolled_adamw_step_and_train_dropout_rng(self):
++        for variant in ('plain','temp','conv','conv_temp','airfrans','shapenet'):
++            task='airfrans' if variant=='airfrans' else 'car' if variant=='shapenet' else 'darcy'
++            for preset in TOPOLOGIES:
++                for dtype in (torch.float64,torch.float32):
++                    with self.subTest(variant=variant,preset=preset,dtype=dtype):
++                        c=config(task,preset,variant=variant if task=='darcy' else None)
++                        r=c['request']
++                        c=resolve_config(task,options=r['options'],profile_overrides={**r['profile_overrides'],'model.dropout':.2})
++                        core=build_from_config(c).loop.to(dtype=dtype).train()
++                        # Independent loop control over the original native
++                        # submodules, with shared reference blocks across rounds.
++                        refs={f'{g}.{i}.block':copy.deepcopy(b.block) for g in ('prefix','core','suffix')
++                              for i,b in enumerate(getattr(core,g))}
++                        reference_params={f'{key}.{k}':v for key,b in refs.items() for k,v in b.named_parameters()}
++                        gen=torch.Generator().manual_seed(321)
++                        x=torch.randn(2,15,8,generator=gen,dtype=dtype,requires_grad=True)
++                        rx=x.detach().clone().requires_grad_()
++                        rng=torch.get_rng_state().clone();actual=core(x);after=torch.get_rng_state().clone()
++                        torch.set_rng_state(rng);expected=rx
++                        for i in range(core.prefix_blocks):expected=refs[f'prefix.{i}.block'](expected)
++                        for _ in range(core.loop_repeats):
++                            for i in range(core.recurrent_core_blocks):
++                                b=refs[f'core.{i}.block']
++                                expected=expected+(1/core.loop_repeats)*b.Attn(b.ln_1(expected))
++                                expected=expected+(1/core.loop_repeats)*b.mlp(b.ln_2(expected))
++                        for i in range(core.suffix_blocks):expected=refs[f'suffix.{i}.block'](expected)
++                        self.assertTrue(torch.equal(after,torch.get_rng_state()))
++                        row=dict(reference='independent native-submodule unroll',variant=variant,topology=preset,
++                                 dtype=str(dtype),device='cpu',atol=0.,rtol=0.,optimizer='AdamW',dropout=.2,errors={})
++                        def exact(a,b,name):
++                            torch.testing.assert_close(a,b,atol=0,rtol=0,msg=name)
++                            row['errors'][name]=errors(a,b)
++                        exact(actual,expected,'final')
++                        target=torch.randn(actual.shape,generator=gen,dtype=dtype)
++                        loss=(actual-target).square().mean();ref_loss=(expected-target).square().mean()
++                        exact(loss,ref_loss,'loss');loss.backward();ref_loss.backward();exact(x.grad,rx.grad,'input_gradient')
++                        for name,param in core.named_parameters():
++                            if param.grad is None:self.assertIsNone(reference_params[name].grad)
++                            else:exact(param.grad,reference_params[name].grad,'gradient.'+name)
++                        optimizer=torch.optim.AdamW(core.parameters(),lr=.001)
++                        ref_optimizer=torch.optim.AdamW(reference_params.values(),lr=.001)
++                        optimizer.step();ref_optimizer.step()
++                        for name,param in core.named_parameters():
++                            exact(param,reference_params[name],'step.'+name)
++                            for k,v in optimizer.state[param].items():
++                                exact(v,ref_optimizer.state[reference_params[name]][k],'adamw_state.'+name+'.'+k)
++                        self.rows.append(row)
++
++    def test_single_apply_unique_initialization_matches_native_U_model_and_rng(self):
++        # This catches constructing eight and discarding modules, reinitializing
++        # per round, or creating placeholder before the native whole-tree apply.
++        for task in ('darcy','elasticity','ns','plasticity','airfrans','car'):
++            for preset in TOPOLOGIES:
++                c=config(task,preset);cls=pure_constructor(c)
++                kw=c['model_spec']['constructor_kwargs'];path,name=c['model_spec']['class_path'].rsplit('.',1)
++                target=getattr(importlib.import_module(path),name)
++                torch.manual_seed(19);pure=cls(**pure_kwargs(c));rng=torch.get_rng_state().clone()
++                torch.manual_seed(19);loop=target(**kw)
++                self.assertTrue(torch.equal(rng,torch.get_rng_state()),(task,preset))
++                s=c['loop_spec'];mapped=to_pure_state(loop.state_dict(),s['prefix_blocks'],s['recurrent_core_blocks'],s['suffix_blocks'])
++                self.assertEqual(set(mapped),set(pure.state_dict()))
++                for k,v in mapped.items():torch.testing.assert_close(v,pure.state_dict()[k],atol=0,rtol=0,msg=k)
++
++    def test_common_initial_state_three_mode_configs_and_unsupported_execution(self):
++        for task in ('darcy','plasticity','airfrans','car'):
++            c=config(task);r=c['request'];states=[]
++            before=torch.get_rng_state().clone()
++            for mode in RESIDUAL_MODES:
++                request=resolve_config(task,options={**r['options'],'residual_mode':mode},profile_overrides=r['profile_overrides'])
++                states.append(common_initial_state(request))
++                if mode!='sr_1_over_r':
++                    with self.assertRaisesRegex(ValueError,'not implemented'):build_from_config(request)
++            self.assertTrue(torch.equal(before,torch.get_rng_state()))
++            for state in states[1:]:
++                self.assertEqual(set(state),set(states[0]))
++                for k,v in state.items():torch.testing.assert_close(v,states[0][k],atol=0,rtol=0)
++            self.assertFalse(any('query' in k or 'norm_scale' in k for k in states[0]))
++
++    def test_r1_full_wrapper_equivalence_inputs_time_and_positions(self):
++        for task in ('darcy','elasticity','airfoil','pipe','ns','plasticity','airfrans','car'):
++            c=config(task,'custom',R=1);model=build_from_config(c);pure=pure_constructor(c)(**pure_kwargs(c))
++            s=c['loop_spec'];pure.load_state_dict(to_pure_state(model.state_dict(),s['prefix_blocks'],s['recurrent_core_blocks'],s['suffix_blocks']),strict=True)
++            args=inputs(c);out=model(*args);reference=pure(*args)
++            torch.testing.assert_close(out,reference,atol=0,rtol=0)
++            self.assertIs(type(model).forward,type(pure).forward)
++            if task=='plasticity':
++                x,fx,T=args;self.assertFalse(torch.equal(out,model(x,fx,T+1)))
++                out.square().sum().backward()
++                self.assertGreater(model.time_fc[0].weight.grad.abs().sum().item(),0)
++            for name,value in model.named_buffers():
++                self.assertTrue(name in ('pos','reference'))
++                self.assertNotIn(name,model.state_dict())
++
++    def test_hand_computed_two_branches_and_unscaled_suffix(self):
++        from loop_linearno.test_block_body import make_block
++        class Multiply(nn.Module):
++            def __init__(self,k):
++                super().__init__();self.k=k
++                self.dim=8;self.heads=2;self.dim_head=4;self.rank=4;self.variant='plain'
++            def forward(self,x):return self.k*x
++        def factory(*,last_layer):
++            block=make_block('plain',last_layer)
++            block.ln_1=nn.Identity();block.ln_2=nn.Identity();block.Attn=Multiply(2);block.mlp=Multiply(3)
++            if last_layer:block.ln_3=nn.Identity();block.mlp2=nn.Identity()
++            return block
++        core=LinearNOLoopCore(prefix_blocks=0,recurrent_core_blocks=1,loop_repeats=2,suffix_blocks=1,
++                             residual_mode='sr_1_over_r',block_factory=factory)
++        x=torch.tensor([[[1.,-2.]]]);torch.testing.assert_close(core(x),300*x,atol=0,rtol=0)
++
++    def test_second_round_branch_vjp_reaches_first_graph_and_same_parameter(self):
++        c=config('elasticity','custom');model=build_from_config(c).double();core=model.loop
++        outputs=[];raw=[]
++        h=core.core[0].register_forward_hook(lambda m,a,y:outputs.append(y))
++        a=core.core[0].block.Attn.register_forward_hook(lambda m,x,y:raw.append(y))
++        try:core(torch.randn(2,9,8,dtype=torch.float64,requires_grad=True))
++        finally:h.remove();a.remove()
++        param=core.core[0].block.Attn.to_v.weight
++        grad_old,grad_shared=torch.autograd.grad(raw[1].square().sum(),(outputs[0],param))
++        for grad in (grad_old,grad_shared):
++            self.assertTrue(torch.isfinite(grad).all());self.assertGreater(grad.abs().sum().item(),0)
++
++    def test_no_forward_tensor_cache_and_exception_then_new_batch(self):
++        model=build_from_config(config('elasticity'));known={name:set(vars(m)) for name,m in model.named_modules()}
++        args=inputs(config('elasticity'));first=model(*args)
++        with self.assertRaises(ValueError):model(torch.randn(2,3,4),None)
++        second=model(torch.randn(1,6,2),None)
++        self.assertEqual(second.shape,(1,6,1))
++        torch.testing.assert_close(model(*args),first,atol=0,rtol=0)
++        for name,m in model.named_modules():
++            self.assertEqual(set(vars(m)),known[name])
++            self.assertFalse(any(isinstance(v,torch.Tensor) for v in vars(m).values()))
++
++    def test_invalid_config_model_structure_and_strict_fresh_process_roundtrip(self):
++        c=config();before=torch.get_rng_state().clone()
++        for field,value in (('executed_depth',9),('unique_depth',8),('resolved_rank',64)):
++            bad=copy.deepcopy(c);bad['loop_spec'][field]=value
++            with self.assertRaises(ValueError):build_from_config(seal(bad,'config_hash'))
++        model=build_from_config(c);kw=dict(c['model_spec']['constructor_kwargs'])
++        for field in ('recurrent_core_blocks','loop_repeats','suffix_blocks'):
++            for value in (0,True,'2'):
++                with self.assertRaises(ValueError):type(model)(**{**kw,field:value})
++        self.assertTrue(torch.equal(before,torch.get_rng_state()))
++        with self.assertRaises(TypeError):type(model)(**{**kw,'executed_depth':8})
++        for task in ('darcy','airfrans','car'):
++            c=config(task);model=build_from_config(c).eval();args=inputs(c)
++            expected=model(*args).detach()
++            with tempfile.TemporaryDirectory() as directory:
++                p=Path(directory);(p/'config.json').write_text(json.dumps(c))
++                torch.save(model.state_dict(),p/'weights.pt')
++                code='''import json,sys,torch
++from pathlib import Path
++from cdlno.linearno_loop.construction import build_from_config
++from loop_linearno.sr_support import inputs
++p=Path(sys.argv[1]);c=json.loads((p/'config.json').read_text())
++m=build_from_config(c).eval();m.load_state_dict(torch.load(p/'weights.pt',weights_only=True),strict=True)
++torch.save(m(*inputs(c)).detach(),p/'output.pt')
++'''
++                root=Path(__file__).resolve().parents[2]
++                proc=subprocess.run([sys.executable,'-B','-c',code,directory],cwd=directory,
++                    env={**os.environ,'PYTHONPATH':str(root/'tests')+':'+str(root),'PYTHONDONTWRITEBYTECODE':'1'},capture_output=True,text=True)
++                self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
++                torch.testing.assert_close(torch.load(p/'output.pt',weights_only=True),expected,atol=0,rtol=0)
++            state=model.state_dict();state.pop(next(iter(state)))
++            with self.assertRaises(RuntimeError):model.load_state_dict(state,strict=True)
++
++    def test_shared_core_gradients_sum_across_unrolled_independent_copies(self):
++        c=config('elasticity','custom',R=2);model=build_from_config(c).double();core=model.loop
++        x=torch.randn(2,7,8,dtype=torch.float64,requires_grad=True);rx=x.detach().clone().requires_grad_()
++        copies=[[copy.deepcopy(b) for b in core.core] for _ in range(core.loop_repeats)]
++        suffix=copy.deepcopy(core.suffix)
++        out=core(x);y=rx
++        for blocks in copies:
++            for b in blocks:y=b(y,scale=.5)
++        for i,b in enumerate(suffix):y=b(y,finalize=i==len(suffix)-1)
++        torch.testing.assert_close(out,y,atol=0,rtol=0)
++        out.square().sum().backward();y.square().sum().backward()
++        for i,b in enumerate(core.core):
++            for name,param in b.named_parameters():
++                expected=sum(dict(row[i].named_parameters())[name].grad for row in copies)
++                torch.testing.assert_close(param.grad,expected,atol=1e-12,rtol=1e-10)
++
++
++if __name__=='__main__':unittest.main()
+--- LL2/cdlno/linearno_loop/__init__.py
++++ cdlno/linearno_loop/__init__.py
+@@ -1,4 +1,4 @@
+-"""Loop research primitives only; no complete model, factory or task imports.
++"""Loop primitives and synthetic SR wrappers; no production task integration.
+ 
+-Import attnres/body explicitly. Pure schema remains in top-level linearno_loop.
++Import submodules explicitly. Pure schema remains in top-level linearno_loop.
+ """
+--- LL2/docs/LOOP_LINEARNO_IMPLEMENTATION_STATUS.md
++++ docs/LOOP_LINEARNO_IMPLEMENTATION_STATUS.md
+@@ -1,4 +1,20 @@
+ # Looped LinearNO 实施状态
++
++## LL3 — 2026-09-20
++
++**唯一状态：PASS（共享 P/C/R/S core、SR 1/R 与三套合成 wrapper 完成）。LL4–LL10 未执行。**
++
++- A 范围：新增独立 core/construction/Standard/Air/Car wrapper，复用纯模型完整输入 forward 与原 block；prefix/core/suffix 分开注册，仅 suffix[-1] 有 head。RB/LB 明确不可构造；八任务生产接线未动。[报告/公式映射](LOOP_LINEARNO_SR_CORE.md)。
++- B 数学：U=P+C+S、E=P+CR+S；prefix/suffix native，core 两条 raw branch 各乘 1/R、identity 不缩放。两 preset U5/E8、U6/E8，custom P0/C2/R3/S1 U3/E7；每 visit 重算 Q/K/V/KTV/QC，末 LN/head 恰一次。无跨 forward cache。
++- C 验证：LL1–LL3 共 **55 方法：53 pass、2 CUDA skip、0 failure/error，20.902s**；14 项 LL3 新方法全通过。36 独立数学案例、36 native 独立展开 AdamW/dropout 案例、18 组 native-U 初值/RNG 逐位比较、三套新进程 strict state_dict 通过；三 mode 公共初值是字典比较，不冒充 RB/LB 实现。[日志](loop_linearno_audit/ll3/loop-tests.log)、[数值](loop_linearno_audit/ll3/numeric-summary.json)。
++- D 数值定位：首轮 Car/P2 FP32 显式公式的 AdamW 有一次 1.74064e-6 参数误差，定位为 3.45608e-11 梯度舍入差经 AdamW 小分母放大，保留原失败和重现脚本。未改模型/容差；独立 FP32 oracle 测 SGD、FP64 测 AdamW，另36例 native 展开 AdamW 权重/状态/RNG 全0差。[诊断](loop_linearno_audit/ll3/adamw-oracle-roundoff.json)。
++- E 计数：八任务×两preset×rank1/2 共32配置，实际 unique 参数量与解析值全等；24 小型 wrapper hook MAC 与解析 executed MAC 全等。报告分开 unique/executed，不把参数存储减少当作 FLOPs/速度改善。[计数](loop_linearno_audit/ll3/accounting.json)。
++- F 兼容：原 LL0 153方法仍147 pass、2历史失败方法/4断言、4 CUDA skip、0error；24模块结果及历史失败文本与已批准LL0一致。起点2069文件仅3项授权研究文件变更，其他2066内容/分类不变；所有旧生产/测试/纯schema/LL2原语/monitor/launcher冻结。[回归](loop_linearno_audit/ll3/regression-summary.json)、[冻结](loop_linearno_audit/ll3/end-freeze.json)、[diff](loop_linearno_audit/ll3/source.diff)。
++- G 边界：仅CPU合成，本地Python3.13.9/torch2.13+cu130/PyG2.3.1；未访问真实数据、GPU/远端、任务训练、生产full checkpoint/resume。五项自审完成，无新增需裁定冲突。生产输出兼容要在后续授权阶段接线，当前不提供loop训练命令。
++
++**本 LL3 阶段结束，未执行下一阶段。**
++
++以下为已审查通过的 LL2–LL0 历史记录；其“未执行”表述对应当时状态。
+ 
+ ## LL2 — 2026-09-19
+ 
+--- LL2/tests/loop_linearno/test_artifacts.py
++++ tests/loop_linearno/test_artifacts.py
+@@ -21,9 +21,9 @@
+         m=read_metadata(directory/'synthetic-metadata.json')
+         self.assertEqual(m['data_spec']['scope'],'synthetic')
+         self.assertTrue(restore_config(m)['load_policy']['strict'])
+-        # LL2 adds primitives; the LL1 planned full-model classes remain absent.
+-        for name in ('standard.py', 'airfrans.py', 'shapenet.py', 'core.py'):
+-            self.assertFalse((ROOT/'cdlno/linearno_loop'/name).exists())
++        # This saved LL1 fixture is metadata only; LL3 now supplies synthetic
++        # SR classes, without turning the historical fixture into trained data.
++        self.assertEqual(m['provenance_spec']['code_version'],'LL1-contract-only')
+         self.assertFalse((ROOT/'tran_evaluate/linearno_loop').exists())
+ 
+ 

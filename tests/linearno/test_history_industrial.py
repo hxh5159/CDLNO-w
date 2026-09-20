@@ -98,7 +98,9 @@ class HistoryIndustrial(unittest.TestCase):
         from cdlno.linearno.car_entry import task_provenance
         old=json.loads((ROOT/'docs/linearno_history_audit/r8/baseline-provenance.json').read_text())
         for task,fn in [('standard',provenance),('airfrans',_provenance),('car',task_provenance)]:
-            now=fn()
+            from historical_git_base import historical_git_base
+            with historical_git_base(old[task]['base_commit']):
+                now=fn()
             for key in ('source_sha256','normalized_patch_sha256'):self.assertEqual(now[key],old[task][key])
         before=Path(json.loads((ROOT/'docs/linearno_history_audit/r8/baseline.json').read_text())['snapshot'])/'source'
         for relative in ('Airfoil-Design-AirfRANS/train.py','cdlno/linearno/air_entry.py','cdlno/linearno/car_entry.py'):

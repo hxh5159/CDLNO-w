@@ -1,0 +1,167 @@
+{
+  "status": "PASS: historical failure explained, original test remains failed and unchanged",
+  "cause": "normalized_patch_sha256 includes git HEAD before-AST; R8 used d5abe014, current checkout uses 5b991226. Changing only git-show comparison base reproduces all three R8 hashes exactly.",
+  "original_suite": {
+    "methods": 5,
+    "passed": 4,
+    "failures": 1,
+    "errors": 0,
+    "seconds": 688.606
+  },
+  "hashes": {
+    "standard": {
+      "source_sha256": {
+        "current": "805320c2e75b017bb24c7b79a5fbfd20f3bc02f60c573abd003ba3ef659eff54",
+        "pre_LL7": "805320c2e75b017bb24c7b79a5fbfd20f3bc02f60c573abd003ba3ef659eff54",
+        "R8": "805320c2e75b017bb24c7b79a5fbfd20f3bc02f60c573abd003ba3ef659eff54",
+        "recomputed_with_R8_git_base": "805320c2e75b017bb24c7b79a5fbfd20f3bc02f60c573abd003ba3ef659eff54"
+      },
+      "normalized_patch_sha256": {
+        "current": "a5359e7402e0915a8ed1cee90ec9ce31a8c8d6e5f0368876966be30645142760",
+        "pre_LL7": "a5359e7402e0915a8ed1cee90ec9ce31a8c8d6e5f0368876966be30645142760",
+        "R8": "c72a40db7a8073d5bca307f98dc02baa38008ff5e22c0bcd15790cbe092005c4",
+        "recomputed_with_R8_git_base": "c72a40db7a8073d5bca307f98dc02baa38008ff5e22c0bcd15790cbe092005c4"
+      }
+    },
+    "airfrans": {
+      "source_sha256": {
+        "current": "34ab92cd6792ce7554d634fab5a43e9194359be400e7c23495d0c9959cd881cf",
+        "pre_LL7": "34ab92cd6792ce7554d634fab5a43e9194359be400e7c23495d0c9959cd881cf",
+        "R8": "34ab92cd6792ce7554d634fab5a43e9194359be400e7c23495d0c9959cd881cf",
+        "recomputed_with_R8_git_base": "34ab92cd6792ce7554d634fab5a43e9194359be400e7c23495d0c9959cd881cf"
+      },
+      "normalized_patch_sha256": {
+        "current": "b2d0bf71f2dbf9408d3ac87aeefe3a9ff5c4656854398adee6e565364869867e",
+        "pre_LL7": "b2d0bf71f2dbf9408d3ac87aeefe3a9ff5c4656854398adee6e565364869867e",
+        "R8": "c058941382b797f2fc9d5ca130c7fadfb006a86a89946a1f6d7a4f69143e4ea6",
+        "recomputed_with_R8_git_base": "c058941382b797f2fc9d5ca130c7fadfb006a86a89946a1f6d7a4f69143e4ea6"
+      }
+    },
+    "car": {
+      "source_sha256": {
+        "current": "9bd77c1b1cb37a8e40279901b5e1c3e5db8f8807004afcf25e262e34ffb362d7",
+        "pre_LL7": "9bd77c1b1cb37a8e40279901b5e1c3e5db8f8807004afcf25e262e34ffb362d7",
+        "R8": "9bd77c1b1cb37a8e40279901b5e1c3e5db8f8807004afcf25e262e34ffb362d7",
+        "recomputed_with_R8_git_base": "9bd77c1b1cb37a8e40279901b5e1c3e5db8f8807004afcf25e262e34ffb362d7"
+      },
+      "normalized_patch_sha256": {
+        "current": "2746c031c87e88c4ab0617be665e15cbec0779b7b0d90fe325449713f35f2adb",
+        "pre_LL7": "2746c031c87e88c4ab0617be665e15cbec0779b7b0d90fe325449713f35f2adb",
+        "R8": "b0de94b2bb8a492a4c91dd918ad4583bf519bbdce7c95dbb3fb022ae75207231",
+        "recomputed_with_R8_git_base": "b0de94b2bb8a492a4c91dd918ad4583bf519bbdce7c95dbb3fb022ae75207231"
+      }
+    }
+  },
+  "projected_sources": {
+    "Airfoil-Design-AirfRANS/train.py": {
+      "exact_bytes": true,
+      "sha256": "d2bc4abc1f9a105fea444032b3e55c24d73d2cc034aff8252bf41788a0f075fb"
+    },
+    "cdlno/linearno/air_entry.py": {
+      "exact_bytes": true,
+      "sha256": "4f5af7a4b6c7e6cf5f3684c7077356d812ab4ebdaeefda0668e41ec05fb709fa"
+    },
+    "cdlno/linearno/car_entry.py": {
+      "exact_bytes": true,
+      "sha256": "08d1a2cc6021238ef71cd5e98c6e9bc71d078493f3d04ca4b9ef42832e0ae843"
+    }
+  },
+  "launcher_checks": [
+    {
+      "task": "car",
+      "action": "train",
+      "command": [
+        "bash",
+        "/home/hwz/CDLNO/tran_evaluate/linearno_history/car.sh",
+        "train",
+        "--dry-run",
+        "--experiment-dir",
+        "test-run"
+      ],
+      "exit_code": 0,
+      "stdout": "Working directory: /home/hwz/CDLNO/Car-Design-ShapeNetCar\nCommand: python -u main.py --cfd_model LinearNO --data_dir /inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/data/mlcfd_data/training_data --save_dir /inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/data/mlcfd_data/preprocessed_data --linearno-fair-run 1 --experiment-dir /home/hwz/CDLNO/test-run\nDRY RUN: command only; no Python entry, data, training or evaluation executed.\n"
+    },
+    {
+      "task": "car",
+      "action": "resume",
+      "command": [
+        "bash",
+        "/home/hwz/CDLNO/tran_evaluate/linearno_history/car.sh",
+        "resume",
+        "--dry-run",
+        "--experiment-dir",
+        "test-run"
+      ],
+      "exit_code": 0,
+      "stdout": "Working directory: /home/hwz/CDLNO/Car-Design-ShapeNetCar\nCommand: python -u main.py --cfd_model LinearNO --data_dir /inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/data/mlcfd_data/training_data --save_dir /inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/data/mlcfd_data/preprocessed_data --resume --experiment-dir /home/hwz/CDLNO/test-run\nDRY RUN: command only; no Python entry, data, training or evaluation executed.\n"
+    },
+    {
+      "task": "car",
+      "action": "eval",
+      "command": [
+        "bash",
+        "/home/hwz/CDLNO/tran_evaluate/linearno_history/car.sh",
+        "eval",
+        "--dry-run",
+        "--experiment-dir",
+        "test-run"
+      ],
+      "exit_code": 0,
+      "stdout": "Working directory: /home/hwz/CDLNO/Car-Design-ShapeNetCar\nCommand: python -u main_evaluation.py --cfd_model LinearNO --data_dir /inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/data/mlcfd_data/training_data --save_dir /inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/data/mlcfd_data/preprocessed_data --experiment-dir /home/hwz/CDLNO/test-run\nDRY RUN: command only; no Python entry, data, training or evaluation executed.\n"
+    },
+    {
+      "task": "airfrans",
+      "action": "train",
+      "command": [
+        "bash",
+        "/home/hwz/CDLNO/tran_evaluate/linearno_history/airfrans.sh",
+        "train",
+        "--dry-run",
+        "--experiment-dir",
+        "test-run"
+      ],
+      "exit_code": 0,
+      "stdout": "Working directory: /home/hwz/CDLNO/Airfoil-Design-AirfRANS\nCommand: python -u main.py --model LinearNO --eval 0 --my_path /inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/data/AirfRANS/Dataset --linearno-fair-run 1 --experiment-dir /home/hwz/CDLNO/test-run\nDRY RUN: command only; no Python entry, data, training or evaluation executed.\n"
+    },
+    {
+      "task": "airfrans",
+      "action": "resume",
+      "command": [
+        "bash",
+        "/home/hwz/CDLNO/tran_evaluate/linearno_history/airfrans.sh",
+        "resume",
+        "--dry-run",
+        "--experiment-dir",
+        "test-run"
+      ],
+      "exit_code": 0,
+      "stdout": "Working directory: /home/hwz/CDLNO/Airfoil-Design-AirfRANS\nCommand: python -u main.py --model LinearNO --eval 0 --my_path /inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/data/AirfRANS/Dataset --resume --experiment-dir /home/hwz/CDLNO/test-run\nDRY RUN: command only; no Python entry, data, training or evaluation executed.\n"
+    },
+    {
+      "task": "airfrans",
+      "action": "eval",
+      "command": [
+        "bash",
+        "/home/hwz/CDLNO/tran_evaluate/linearno_history/airfrans.sh",
+        "eval",
+        "--dry-run",
+        "--experiment-dir",
+        "test-run"
+      ],
+      "exit_code": 0,
+      "stdout": "Working directory: /home/hwz/CDLNO/Airfoil-Design-AirfRANS\nCommand: python -u main_evaluation.py --model LinearNO --my_path /inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/data/AirfRANS/Dataset --experiment-dir /home/hwz/CDLNO/test-run\nDRY RUN: command only; no Python entry, data, training or evaluation executed.\n"
+    }
+  ],
+  "identical_helpers": [
+    "cdlno.linearno.car_entry.evaluate",
+    "cdlno.linearno.car_entry.inspect_data",
+    "cdlno.linearno.car_entry.load_data",
+    "cdlno.linearno.car_entry.restore_coef_norm",
+    "cdlno.linearno.air_entry._load_dataset",
+    "cdlno.linearno.air_entry._data_spec",
+    "cdlno.linearno.air_entry._pressure_rL2_dataset",
+    "cdlno.linearno.air_entry._restore_coef_norm"
+  ],
+  "car_objective_ast_equal": true,
+  "production_or_golden_changed": false
+}

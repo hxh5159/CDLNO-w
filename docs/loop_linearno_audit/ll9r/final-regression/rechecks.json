@@ -1,0 +1,14 @@
+[
+  {
+    "module": "loop_linearno.test_isolation",
+    "reason": "Excluded pytest runtime cache from source inventory; .py/.pyc rules otherwise unchanged",
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=tests:. CUDA_VISIBLE_DEVICES='' python -B -m unittest loop_linearno.test_isolation -v",
+    "tests": 3,
+    "passed": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "log": "../final-isolation-structured.log",
+    "structured_result": "recheck-result.json"
+  }
+]

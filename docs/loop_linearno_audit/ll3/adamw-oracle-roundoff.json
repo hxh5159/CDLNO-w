@@ -1,0 +1,22 @@
+{
+  "case": "car/P2/FP32",
+  "field": "core.0.block.mlp.linear_pre.0.weight",
+  "index": [
+    15,
+    2
+  ],
+  "initial": 0.0032087808940559626,
+  "native_gradient": -4.0736267692409456e-09,
+  "oracle_gradient": -4.108187567908317e-09,
+  "gradient_abs_error": 3.456079866737127e-11,
+  "native_after": 0.003498199861496687,
+  "oracle_after": 0.0034999405033886433,
+  "step_abs_error": 1.7406418919563293e-06,
+  "scalar_formula_step_difference": 1.7406418919563293e-06,
+  "forward_max": 2.2351741790771484e-08,
+  "gradient_range": [
+    -0.00032162058050744236,
+    0.0002558532287366688
+  ],
+  "explanation": "FP32 explicit LN/erf/attention summation roundoff amplified by AdamW g/(abs(g)+eps) near a small gradient; no tolerance changed"
+}

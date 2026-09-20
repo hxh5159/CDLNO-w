@@ -1,0 +1,1443 @@
+[
+  {
+    "module": "test_airfrans",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_airfrans"
+    ],
+    "exit_code": 0,
+    "seconds": 8.787,
+    "tests": 13,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "test_cdpa",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_cdpa"
+    ],
+    "exit_code": 0,
+    "seconds": 2.421,
+    "tests": 21,
+    "failures": [],
+    "errors": [],
+    "skipped": [
+      [
+        "test_gpu_depth_autocast_precision_and_gradients (test_cdpa.CDPACUDAChecks.test_gpu_depth_autocast_precision_and_gradients)",
+        "GPU unavailable; CUDA precision checks not run"
+      ],
+      [
+        "test_gpu_fp32_reference_and_fused_sdpa (test_cdpa.CDPACUDAChecks.test_gpu_fp32_reference_and_fused_sdpa)",
+        "GPU unavailable; CUDA precision checks not run"
+      ],
+      [
+        "test_gpu_half_bfloat16_outputs_chunks_and_extremes (test_cdpa.CDPACUDAChecks.test_gpu_half_bfloat16_outputs_chunks_and_extremes)",
+        "GPU unavailable; CUDA precision checks not run"
+      ]
+    ]
+  },
+  {
+    "module": "test_core",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_core"
+    ],
+    "exit_code": 0,
+    "seconds": 5.128,
+    "tests": 13,
+    "failures": [],
+    "errors": [],
+    "skipped": [
+      [
+        "test_small_core_fp32_and_amp_modes_point_and_grid (test_core.CoreCUDAChecks.test_small_core_fp32_and_amp_modes_point_and_grid)",
+        "GPU unavailable: core CUDA checks not run"
+      ]
+    ]
+  },
+  {
+    "module": "test_core_config",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_core_config"
+    ],
+    "exit_code": 0,
+    "seconds": 7.745,
+    "tests": 6,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "test_experiment_records",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_experiment_records"
+    ],
+    "exit_code": 0,
+    "seconds": 42.478,
+    "tests": 9,
+    "failures": [],
+    "errors": [],
+    "skipped": [
+      [
+        "test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values (test_experiment_records.ExperimentRecords.test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values) (task='airfrans')",
+        "AirfRANS complete sampled epoch not run: torch_cluster is absent; no dependency was installed"
+      ]
+    ]
+  },
+  {
+    "module": "test_front_ablation",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_front_ablation"
+    ],
+    "exit_code": 0,
+    "seconds": 2.822,
+    "tests": 13,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "test_front_task_modes",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_front_task_modes"
+    ],
+    "exit_code": 0,
+    "seconds": 44.385,
+    "tests": 8,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "test_front_training",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_front_training"
+    ],
+    "exit_code": 0,
+    "seconds": 40.922,
+    "tests": 43,
+    "failures": [],
+    "errors": [],
+    "skipped": [
+      [
+        "test_cuda_car_full (test_front_training.FrontTraining.test_cuda_car_full)",
+        "CUDA unavailable: GPU check NOT run"
+      ],
+      [
+        "test_cuda_car_identity (test_front_training.FrontTraining.test_cuda_car_identity)",
+        "CUDA unavailable: GPU check NOT run"
+      ],
+      [
+        "test_cuda_car_no_sa (test_front_training.FrontTraining.test_cuda_car_no_sa)",
+        "CUDA unavailable: GPU check NOT run"
+      ],
+      [
+        "test_cuda_darcy_full (test_front_training.FrontTraining.test_cuda_darcy_full)",
+        "CUDA unavailable: GPU check NOT run"
+      ],
+      [
+        "test_cuda_darcy_identity (test_front_training.FrontTraining.test_cuda_darcy_identity)",
+        "CUDA unavailable: GPU check NOT run"
+      ],
+      [
+        "test_cuda_darcy_no_sa (test_front_training.FrontTraining.test_cuda_darcy_no_sa)",
+        "CUDA unavailable: GPU check NOT run"
+      ],
+      [
+        "test_cuda_ns_full (test_front_training.FrontTraining.test_cuda_ns_full)",
+        "CUDA unavailable: GPU check NOT run"
+      ],
+      [
+        "test_cuda_ns_identity (test_front_training.FrontTraining.test_cuda_ns_identity)",
+        "CUDA unavailable: GPU check NOT run"
+      ],
+      [
+        "test_cuda_ns_no_sa (test_front_training.FrontTraining.test_cuda_ns_no_sa)",
+        "CUDA unavailable: GPU check NOT run"
+      ],
+      [
+        "test_cuda_plasticity_full (test_front_training.FrontTraining.test_cuda_plasticity_full)",
+        "CUDA unavailable: GPU check NOT run"
+      ],
+      [
+        "test_cuda_plasticity_identity (test_front_training.FrontTraining.test_cuda_plasticity_identity)",
+        "CUDA unavailable: GPU check NOT run"
+      ],
+      [
+        "test_cuda_plasticity_no_sa (test_front_training.FrontTraining.test_cuda_plasticity_no_sa)",
+        "CUDA unavailable: GPU check NOT run"
+      ]
+    ]
+  },
+  {
+    "module": "test_kcdno_airfrans",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_kcdno_airfrans"
+    ],
+    "exit_code": 0,
+    "seconds": 10.039,
+    "tests": 2,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "test_kcdno_car",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_kcdno_car"
+    ],
+    "exit_code": 0,
+    "seconds": 8.536,
+    "tests": 2,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "test_kcdno_config",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_kcdno_config"
+    ],
+    "exit_code": 0,
+    "seconds": 0.215,
+    "tests": 13,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "test_kcdno_core",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_kcdno_core"
+    ],
+    "exit_code": 0,
+    "seconds": 1.869,
+    "tests": 10,
+    "failures": [],
+    "errors": [],
+    "skipped": [
+      [
+        "test_limited_gpu_fp32_and_amp_backward (test_kcdno_core.KCDNOCoreTests.test_limited_gpu_fp32_and_amp_backward)",
+        "no actual CUDA GPU"
+      ]
+    ]
+  },
+  {
+    "module": "test_kcdno_delivery",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_kcdno_delivery"
+    ],
+    "exit_code": 0,
+    "seconds": 19.366,
+    "tests": 4,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "test_kcdno_matched",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_kcdno_matched"
+    ],
+    "exit_code": 0,
+    "seconds": 13.045,
+    "tests": 4,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "test_kcdno_performance",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_kcdno_performance"
+    ],
+    "exit_code": 0,
+    "seconds": 2.42,
+    "tests": 2,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "test_kcdno_seed_suite",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_kcdno_seed_suite"
+    ],
+    "exit_code": 0,
+    "seconds": 16.355,
+    "tests": 6,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "test_kcdno_tasks",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_kcdno_tasks"
+    ],
+    "exit_code": 0,
+    "seconds": 23.425,
+    "tests": 6,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "test_kcdno_temporal",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_kcdno_temporal"
+    ],
+    "exit_code": 0,
+    "seconds": 7.884,
+    "tests": 4,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "test_kernel_history",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_kernel_history"
+    ],
+    "exit_code": 0,
+    "seconds": 2.07,
+    "tests": 16,
+    "failures": [],
+    "errors": [],
+    "skipped": [
+      [
+        "test_gpu_autocast_fp32_operations (test_kernel_history.KernelHistoryTests.test_gpu_autocast_fp32_operations)",
+        "CUDA unavailable: K2 GPU AMP not run"
+      ]
+    ]
+  },
+  {
+    "module": "test_lrsa_reference",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_lrsa_reference"
+    ],
+    "exit_code": 0,
+    "seconds": 1.969,
+    "tests": 2,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "test_modules",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_modules"
+    ],
+    "exit_code": 0,
+    "seconds": 1.568,
+    "tests": 18,
+    "failures": [],
+    "errors": [],
+    "skipped": [
+      [
+        "test_small_cuda_fp32_and_amp (test_modules.CUDAModuleChecks.test_small_cuda_fp32_and_amp)",
+        "CUDA unavailable; GPU module checks not run"
+      ]
+    ]
+  },
+  {
+    "module": "test_msar_acceptance",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_msar_acceptance"
+    ],
+    "exit_code": 0,
+    "seconds": 51.755,
+    "tests": 19,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "test_msar_config",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_msar_config"
+    ],
+    "exit_code": 0,
+    "seconds": 0.415,
+    "tests": 13,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "test_msar_core",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_msar_core"
+    ],
+    "exit_code": 0,
+    "seconds": 7.685,
+    "tests": 16,
+    "failures": [],
+    "errors": [],
+    "skipped": [
+      [
+        "test_cuda_amp_core_aux_and_off_prediction (test_msar_core.MSARCoreTests.test_cuda_amp_core_aux_and_off_prediction)",
+        "CUDA unavailable"
+      ]
+    ]
+  },
+  {
+    "module": "test_msar_industrial",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_msar_industrial"
+    ],
+    "exit_code": 0,
+    "seconds": 43.784,
+    "tests": 14,
+    "failures": [],
+    "errors": [],
+    "skipped": [
+      [
+        "test_air_original_sampled_epoch_when_extension_available (test_msar_industrial.IndustrialMSAR.test_air_original_sampled_epoch_when_extension_available)",
+        "torch_cluster absent: original sampled epoch/graph rebuild not executed"
+      ],
+      [
+        "test_cuda_real_graph_loss_steps (test_msar_industrial.IndustrialMSAR.test_cuda_real_graph_loss_steps)",
+        "real PyG/CUDA unavailable"
+      ]
+    ]
+  },
+  {
+    "module": "test_msar_integration",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_msar_integration"
+    ],
+    "exit_code": 0,
+    "seconds": 10.942,
+    "tests": 18,
+    "failures": [],
+    "errors": [],
+    "skipped": [
+      [
+        "test_gpu_explicit_objective_step_and_checkpoint (test_msar_integration.MSARIntegrationTests.test_gpu_explicit_objective_step_and_checkpoint)",
+        "CUDA unavailable: M4 adapter GPU check not run"
+      ]
+    ]
+  },
+  {
+    "module": "test_msar_modules",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_msar_modules"
+    ],
+    "exit_code": 0,
+    "seconds": 2.019,
+    "tests": 20,
+    "failures": [],
+    "errors": [],
+    "skipped": [
+      [
+        "test_cuda_fp32_and_amp_primitives_finite_and_critical_dtypes (test_msar_modules.MSARPrimitiveTests.test_cuda_fp32_and_amp_primitives_finite_and_critical_dtypes)",
+        "CUDA unavailable; no AMP acceptance"
+      ]
+    ]
+  },
+  {
+    "module": "test_msar_performance",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_msar_performance"
+    ],
+    "exit_code": 0,
+    "seconds": 11.847,
+    "tests": 6,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "test_msar_static",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_msar_static"
+    ],
+    "exit_code": 0,
+    "seconds": 25.48,
+    "tests": 15,
+    "failures": [],
+    "errors": [],
+    "skipped": [
+      [
+        "test_four_static_gpu_small_original_loss_steps (test_msar_static.MSARStaticTests.test_four_static_gpu_small_original_loss_steps)",
+        "CUDA unavailable"
+      ]
+    ]
+  },
+  {
+    "module": "test_msar_temporal",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_msar_temporal"
+    ],
+    "exit_code": 0,
+    "seconds": 10.991,
+    "tests": 11,
+    "failures": [],
+    "errors": [],
+    "skipped": [
+      [
+        "test_gpu_original_temporal_loss_steps (test_msar_temporal.MSARTemporalTests.test_gpu_original_temporal_loss_steps)",
+        "CUDA unavailable"
+      ]
+    ]
+  },
+  {
+    "module": "test_performance",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_performance"
+    ],
+    "exit_code": 0,
+    "seconds": 17.712,
+    "tests": 13,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "test_periodic_visualization",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_periodic_visualization"
+    ],
+    "exit_code": 0,
+    "seconds": 8.186,
+    "tests": 8,
+    "failures": [],
+    "errors": [],
+    "skipped": [
+      [
+        "test_air_real_sampling_graph_dependency (test_periodic_visualization.PeriodicChecks.test_air_real_sampling_graph_dependency)",
+        "real torch_cluster missing: AirfRANS sampling/graph integration not executed"
+      ]
+    ]
+  },
+  {
+    "module": "test_shapenet_car",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_shapenet_car"
+    ],
+    "exit_code": 0,
+    "seconds": 7.565,
+    "tests": 13,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "test_show_reports",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_show_reports"
+    ],
+    "exit_code": 0,
+    "seconds": 3.072,
+    "tests": 14,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "test_static_standard",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_static_standard"
+    ],
+    "exit_code": 0,
+    "seconds": 41.999,
+    "tests": 13,
+    "failures": [],
+    "errors": [],
+    "skipped": [
+      [
+        "test_static_wrapper_device_and_amp_backward (test_static_standard.StaticGPUChecks.test_static_wrapper_device_and_amp_backward)",
+        "GPU unavailable: wrapper GPU checks not run"
+      ]
+    ]
+  },
+  {
+    "module": "test_temporal_standard",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_temporal_standard"
+    ],
+    "exit_code": 0,
+    "seconds": 13.3,
+    "tests": 10,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "test_training_state",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_training_state"
+    ],
+    "exit_code": 0,
+    "seconds": 46.198,
+    "tests": 14,
+    "failures": [],
+    "errors": [],
+    "skipped": [
+      [
+        "test_gpu_fresh_process_identity_onecycle (test_training_state.TrainingStateChecks.test_gpu_fresh_process_identity_onecycle)",
+        "GPU continuation not run: CUDA unavailable"
+      ]
+    ]
+  },
+  {
+    "module": "test_visualization",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "test_visualization"
+    ],
+    "exit_code": 0,
+    "seconds": 2.521,
+    "tests": 3,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "linearno.test_air_entry",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_air_entry"
+    ],
+    "exit_code": 0,
+    "seconds": 129.249,
+    "tests": 3,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "linearno.test_air_objective_decision",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_air_objective_decision"
+    ],
+    "exit_code": 0,
+    "seconds": 2.37,
+    "tests": 4,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "linearno.test_airfrans_model",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_airfrans_model"
+    ],
+    "exit_code": 0,
+    "seconds": 6.23,
+    "tests": 7,
+    "failures": [],
+    "errors": [],
+    "skipped": [
+      [
+        "test_native_cuda_full_official_parity (linearno.test_airfrans_model.AirfRANSModelChecks.test_native_cuda_full_official_parity)",
+        "native release get_grid requires CUDA"
+      ]
+    ]
+  },
+  {
+    "module": "linearno.test_attention_parity",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_attention_parity"
+    ],
+    "exit_code": 0,
+    "seconds": 3.024,
+    "tests": 4,
+    "failures": [],
+    "errors": [],
+    "skipped": [
+      [
+        "test_fixed_official_cuda_fp32_fp16_bfloat16 (linearno.test_attention_parity.AttentionParity.test_fixed_official_cuda_fp32_fp16_bfloat16)",
+        "CUDA not available; GPU FP32/AMP NOT RUN"
+      ]
+    ]
+  },
+  {
+    "module": "linearno.test_attention_structure",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_attention_structure"
+    ],
+    "exit_code": 0,
+    "seconds": 10.04,
+    "tests": 10,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "linearno.test_car_entry",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_car_entry"
+    ],
+    "exit_code": 0,
+    "seconds": 63.534,
+    "tests": 4,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "linearno.test_car_metrics",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_car_metrics"
+    ],
+    "exit_code": 0,
+    "seconds": 2.571,
+    "tests": 4,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "linearno.test_car_objective_decision",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_car_objective_decision"
+    ],
+    "exit_code": 0,
+    "seconds": 2.722,
+    "tests": 2,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "linearno.test_converter",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_converter"
+    ],
+    "exit_code": 0,
+    "seconds": 14.7,
+    "tests": 2,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "linearno.test_history_core",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_history_core"
+    ],
+    "exit_code": 0,
+    "seconds": 14.002,
+    "tests": 11,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "linearno.test_history_industrial",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_history_industrial"
+    ],
+    "exit_code": 0,
+    "seconds": 626.972,
+    "tests": 5,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "linearno.test_history_integration",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_history_integration"
+    ],
+    "exit_code": 0,
+    "seconds": 15.555,
+    "tests": 12,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "linearno.test_history_k",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_history_k"
+    ],
+    "exit_code": 0,
+    "seconds": 13.399,
+    "tests": 13,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "linearno.test_history_schema",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_history_schema"
+    ],
+    "exit_code": 0,
+    "seconds": 0.114,
+    "tests": 10,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "linearno.test_history_static",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_history_static"
+    ],
+    "exit_code": 0,
+    "seconds": 330.363,
+    "tests": 4,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "linearno.test_history_temporal",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_history_temporal"
+    ],
+    "exit_code": 0,
+    "seconds": 263.914,
+    "tests": 3,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "linearno.test_latent_attnres",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_latent_attnres"
+    ],
+    "exit_code": 0,
+    "seconds": 12.547,
+    "tests": 13,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "linearno.test_legacy",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_legacy"
+    ],
+    "exit_code": 0,
+    "seconds": 35.087,
+    "tests": 4,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "linearno.test_profiles",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_profiles"
+    ],
+    "exit_code": 0,
+    "seconds": 0.114,
+    "tests": 6,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "linearno.test_rng",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_rng"
+    ],
+    "exit_code": 0,
+    "seconds": 30.294,
+    "tests": 1,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "linearno.test_schema",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_schema"
+    ],
+    "exit_code": 0,
+    "seconds": 1.217,
+    "tests": 5,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "linearno.test_shapenet_model",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_shapenet_model"
+    ],
+    "exit_code": 0,
+    "seconds": 6.08,
+    "tests": 6,
+    "failures": [],
+    "errors": [],
+    "skipped": [
+      [
+        "test_native_cuda_official_full_parity (linearno.test_shapenet_model.ShapeNetModelChecks.test_native_cuda_official_full_parity)",
+        "CUDA unavailable"
+      ]
+    ]
+  },
+  {
+    "module": "linearno.test_standard_model",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_standard_model"
+    ],
+    "exit_code": 0,
+    "seconds": 3.623,
+    "tests": 5,
+    "failures": [],
+    "errors": [],
+    "skipped": [
+      [
+        "test_native_cuda_official_unified_replacement_all_variants (linearno.test_standard_model.StandardModelParity.test_native_cuda_official_unified_replacement_all_variants)",
+        "native official unified Model requires CUDA"
+      ]
+    ]
+  },
+  {
+    "module": "linearno.test_standard_structure",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_standard_structure"
+    ],
+    "exit_code": 0,
+    "seconds": 5.025,
+    "tests": 5,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "linearno.test_static_integration",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_static_integration"
+    ],
+    "exit_code": 0,
+    "seconds": 79.667,
+    "tests": 7,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "linearno.test_temporal_integration",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_temporal_integration"
+    ],
+    "exit_code": 0,
+    "seconds": 60.624,
+    "tests": 5,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "loop_linearno.test_artifacts",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "loop_linearno.test_artifacts"
+    ],
+    "exit_code": 0,
+    "seconds": 0.515,
+    "tests": 2,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "loop_linearno.test_block_body",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "loop_linearno.test_block_body"
+    ],
+    "exit_code": 0,
+    "seconds": 2.821,
+    "tests": 5,
+    "failures": [],
+    "errors": [],
+    "skipped": [
+      [
+        "test_six_variants_cuda_float32 (loop_linearno.test_block_body.BlockBodyTests.test_six_variants_cuda_float32)",
+        "CUDA unavailable"
+      ]
+    ]
+  },
+  {
+    "module": "loop_linearno.test_config",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "loop_linearno.test_config"
+    ],
+    "exit_code": 0,
+    "seconds": 0.916,
+    "tests": 9,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "loop_linearno.test_industrial",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "loop_linearno.test_industrial"
+    ],
+    "exit_code": 0,
+    "seconds": 8.686,
+    "tests": 5,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "loop_linearno.test_isolation",
+    "tests": 3,
+    "seconds": 1.723,
+    "exit_code": 0,
+    "failures": [],
+    "errors": [],
+    "skipped": [],
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=tests:. CUDA_VISIBLE_DEVICES='' python -B (unittest isolated module)",
+    "log": "../final-isolation-structured.log"
+  },
+  {
+    "module": "loop_linearno.test_launchers",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "loop_linearno.test_launchers"
+    ],
+    "exit_code": 0,
+    "seconds": 7.683,
+    "tests": 6,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "loop_linearno.test_lb_core",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "loop_linearno.test_lb_core"
+    ],
+    "exit_code": 0,
+    "seconds": 4.828,
+    "tests": 6,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "loop_linearno.test_modes",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "loop_linearno.test_modes"
+    ],
+    "exit_code": 0,
+    "seconds": 7.986,
+    "tests": 4,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "loop_linearno.test_point_attnres",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "loop_linearno.test_point_attnres"
+    ],
+    "exit_code": 0,
+    "seconds": 2.47,
+    "tests": 12,
+    "failures": [],
+    "errors": [],
+    "skipped": [
+      [
+        "test_cuda_float32_oracle (loop_linearno.test_point_attnres.PointAttnResTests.test_cuda_float32_oracle)",
+        "CUDA unavailable"
+      ]
+    ]
+  },
+  {
+    "module": "loop_linearno.test_rb_core",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "loop_linearno.test_rb_core"
+    ],
+    "exit_code": 0,
+    "seconds": 14.35,
+    "tests": 9,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "loop_linearno.test_schema",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "loop_linearno.test_schema"
+    ],
+    "exit_code": 0,
+    "seconds": 1.618,
+    "tests": 10,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "loop_linearno.test_sr_accounting",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "loop_linearno.test_sr_accounting"
+    ],
+    "exit_code": 0,
+    "seconds": 3.323,
+    "tests": 3,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "loop_linearno.test_sr_core",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "loop_linearno.test_sr_core"
+    ],
+    "exit_code": 0,
+    "seconds": 14.001,
+    "tests": 11,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "loop_linearno.test_standard_entry",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "loop_linearno.test_standard_entry"
+    ],
+    "exit_code": 0,
+    "seconds": 5.478,
+    "tests": 4,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "monitor.test_export_linearno_results",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "monitor.test_export_linearno_results"
+    ],
+    "exit_code": 0,
+    "seconds": 1.167,
+    "tests": 7,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  {
+    "module": "monitor.test_monitor",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName(sys.argv[1])\nr=unittest.TextTestRunner(verbosity=2).run(suite)\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "monitor.test_monitor"
+    ],
+    "exit_code": 0,
+    "seconds": 2.37,
+    "tests": 3,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  }
+]

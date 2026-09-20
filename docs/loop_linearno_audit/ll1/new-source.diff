@@ -1,0 +1,1254 @@
+--- /dev/null
++++ linearno_loop/__init__.py
+@@ -0,0 +1,5 @@
++"""Looped LinearNO contracts only. No model, registry, launcher or torch import."""
++
++from .config import resolve_config, validate_config
++
++__all__ = ['resolve_config', 'validate_config']
+--- /dev/null
++++ linearno_loop/config.py
+@@ -0,0 +1,224 @@
++"""Pure loop resolution on immutable existing profiles; no production parser."""
++from copy import deepcopy
++import hashlib
++
++from cdlno.linearno.profiles import (
++    DEFAULT_PROFILE, TASKS, PROFILES, resolve_config as resolve_base,
++    derived_model, validate_model,
++)
++from .contracts import (
++    FAMILY, ARCHITECTURE_EXTENSION, SCHEMA_VERSION, CONFIG_VERSION, FORMULA_VERSION,
++    PRESETS, RESIDUAL_MODES, TOPOLOGY_FIELDS, OPTIONS, SHARING, CLASS_PATHS,
++    HISTORY_FLAGS, LoopSchemaError, integer, exact, json_value, require_equal, digest, seal,
++)
++
++
++def route_intent(family, explicit):
++    """Contract guard on TYPED explicit fields, NOT an argv parser or dispatcher.
++
++    None means leave the old parser/metadata untouched. Existing actual-M alone
++    is not a loop flag. Presence of old A/K flags (even false) is a conflict.
++    """
++    if type(explicit) is not dict:
++        raise LoopSchemaError('explicit: expected mapping of supplied fields')
++    active = set(explicit) & (OPTIONS - {'linearno_rank'} | {'linearno_loop'})
++    if not active:
++        return None
++    if set(explicit) & set(HISTORY_FLAGS):
++        raise LoopSchemaError('loop flags cannot mix with any linearno_history flags')
++    if type(explicit.get('linearno_loop')) is not bool:
++        raise LoopSchemaError('linearno_loop: explicit typed bool required with loop fields')
++    if not explicit['linearno_loop']:
++        if active != {'linearno_loop'}:
++            raise LoopSchemaError('disabled loop cannot receive topology/residual/rank policy')
++        return None
++    if family not in ('linearno', FAMILY):
++        raise LoopSchemaError('loop requires a LinearNO selection, never another model family')
++    return FAMILY
++
++
++def _profile(task, profile, overrides):
++    json_value(overrides, 'profile_overrides')
++    if type(overrides) is not dict:
++        raise LoopSchemaError('profile_overrides: expected object')
++    prohibited = {'model.layers', 'model.linearno_rank', 'model.qk_dim'} & overrides.keys()
++    if prohibited:
++        raise LoopSchemaError('loop topology/rank have sole truth; prohibited profile overrides: '+str(sorted(prohibited)))
++    if any(k.startswith(('data.', 'objective.', 'evaluation.')) for k in overrides):
++        raise LoopSchemaError('data/objective/evaluation protocols remain those of the selected profile')
++    options = {} if task in ('airfrans', 'car') else {
++        'contract': 'standard_temporal_l5' if task in ('ns', 'plasticity') else 'standard_static_l4'}
++    try:
++        result = resolve_base(task, profile, explicit=overrides, **options)
++    except (ValueError, KeyError, TypeError) as error:
++        raise LoopSchemaError(f'profile_spec: {error}') from error
++    if result['unresolved']:
++        raise LoopSchemaError('profile has unresolved fields: '+str(result['unresolved']))
++    m = result['values']['model']
++    if m['time_input'] and m['hidden'] % 2:
++        raise LoopSchemaError('Time_Input requires even hidden for the native time embedding')
++    if task == 'airfrans' and (m['space_dim'], m['fun_dim'], m['out_dim']) != (7, 0, 4):
++        raise LoopSchemaError('AirfRANS native interface requires space_dim=7, fun_dim=0, out_dim=4')
++    if task == 'car':
++        if m['space_dim'] + m['fun_dim'] != 7 or m['out_dim'] != 4:
++            raise LoopSchemaError('ShapeNet native interface requires space_dim+fun_dim=7, out_dim=4')
++        if m['unified_pos'] and m['fun_dim']:
++            raise LoopSchemaError('ShapeNet unified position replaces x and requires fun_dim=0')
++    return result
++
++
++def _topology(options):
++    preset = options.get('topology_preset')
++    if type(preset) is not str or preset not in (*PRESETS, 'custom'):
++        raise LoopSchemaError('topology_preset: explicitly select a named preset or custom')
++    supplied = set(options) & set(TOPOLOGY_FIELDS)
++    if preset == 'custom':
++        if supplied != set(TOPOLOGY_FIELDS):
++            raise LoopSchemaError('custom topology requires all four P/C/R/S fields')
++        values = [options[k] for k in TOPOLOGY_FIELDS]
++    else:
++        if supplied:
++            raise LoopSchemaError('preset and explicit custom P/C/R/S fields are mutually exclusive')
++        values = PRESETS[preset]
++    for i, (k, v) in enumerate(zip(TOPOLOGY_FIELDS, values)):
++        integer(v, k, 0 if i == 0 else 1)
++    return dict(zip(TOPOLOGY_FIELDS, values))
++
++
++def _attnres(mode, C, R, hidden):
++    rb, lb = mode == 'rb_attnres', mode == 'lb_attnres_1_over_r'
++    receivers = 2*C*R+1 if rb else R if lb else 0
++    return dict(enabled=rb or lb, domain='aligned_points_B_N_hidden', eps=1e-6,
++        query_initialization=0.0, norm_scale_initialization=1.0,
++        norm='last_axis_RMS_keepdim_scale_only', source_softmax=True,
++        value='raw', value_projection=False, bias=False, sqrt_hidden_scaling=False,
++        source_count_scaling=False, output_1_over_r=False, depth_multihead=False,
++        receiver_scope='logical_execution_position', receiver_count=receivers,
++        router_parameter_count=2*hidden*receivers,
++        source_visits=(2*C)*R*(R+3)//2+1 if rb else R*(R+3)//2 if lb else 0,
++        singleton_receiver='identity_zero_effective_router_gradient' if rb else 'not_registered',
++        zero_query_norm_gradient='zero_expected', formula_version=FORMULA_VERSION)
++
++
++def _model_spec(profile, loop):
++    m = profile['values']['model']
++    fields = dict(space_dim='space_dim', n_hidden='hidden', n_head='heads',
++        dropout='dropout', act='activation', mlp_ratio='ffn_ratio', fun_dim='fun_dim',
++        out_dim='out_dim', ref='ref', unified_pos='unified_pos')
++    kw = {k: m[v] for k, v in fields.items()}
++    kw.update({k: loop[k] for k in TOPOLOGY_FIELDS})
++    kw.update(residual_mode=loop['residual_mode'], linearno_rank=loop['resolved_rank'])
++    task = profile['task']
++    if task == 'airfrans':
++        kw['linear'] = True
++    else:
++        kw.update(Time_Input=m['time_input'], H=m['H'] if m['H'] is not None else 85,
++                  W=m['W'] if m['W'] is not None else 85)
++        if task == 'car':
++            kw['isregular'] = False
++        else:
++            kw['linearno_variant'] = m['linearno_variant']
++    return dict(class_path=CLASS_PATHS.get(task, CLASS_PATHS['standard']), constructor_kwargs=kw)
++
++
++def fair_seeds(config):
++    """Pure hashes, no RNG calls. Mode omitted so paired runs share initialization."""
++    p, s = config['profile_spec'], config['loop_spec']
++    seed = p['values']['runtime']['seed']
++    def derive(label, payload):
++        raw = (label + ':' + digest(payload)).encode()
++        return int.from_bytes(hashlib.sha256(raw).digest()[:8], 'big') % (2**63)
++    backbone = dict(task=p['task'], profile=p['profile'], seed=seed,
++                    topology={k: s[k] for k in TOPOLOGY_FIELDS}, model=p['values']['model'],
++                    actual_M=s['resolved_rank'])
++    data = dict(task=p['task'], profile=p['profile'], seed=seed)
++    return dict(protocol='paired-backbone-loader-v1', public_backbone_seed=seed,
++        backbone_pair_id=digest(backbone), router_seed=derive('point-router', backbone),
++        dataloader_generators={split: derive('loader-'+split, data) for split in ('train', 'test')},
++        rule='initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated',
++        topology_pairs_are_parameter_matched=False)
++
++
++def resolve_config(task, profile=DEFAULT_PROFILE, *, options=None, profile_overrides=None):
++    """Typed train contract. Topology/mode required; M multiplier defaults to two.
++
++    This returns JSON only. Future class_path strings are not imported. Original
++    profile_spec is retained byte-for-byte; actual topology/rank live in loop_spec.
++    """
++    if type(task) is not str or task not in TASKS or type(profile) is not str or profile not in PROFILES:
++        raise LoopSchemaError('unknown task/profile')
++    options = deepcopy({} if options is None else options)
++    json_value(options, 'options')
++    if type(options) is not dict or set(options) - OPTIONS:
++        raise LoopSchemaError('options: unknown fields or not an object')
++    topology = _topology(options)
++    mode = options.get('residual_mode')
++    if type(mode) is not str or mode not in RESIDUAL_MODES:
++        raise LoopSchemaError('residual_mode: explicitly select one of the three modes')
++    overrides = deepcopy({} if profile_overrides is None else profile_overrides)
++    base = _profile(task, profile, overrides)
++    m = base['values']['model']
++    M = m['linearno_rank']
++    if 'linearno_rank' in options and 'rank_multiplier' in options:
++        raise LoopSchemaError('explicit actual linearno_rank and rank_multiplier are mutually exclusive')
++    if 'linearno_rank' in options:
++        rank = integer(options['linearno_rank'], 'linearno_rank', 1)
++        multiplier, policy = None, 'explicit_actual'
++    else:
++        multiplier = integer(options.get('rank_multiplier', 2), 'rank_multiplier', 1)
++        if multiplier not in (1, 2):
++            raise LoopSchemaError('rank_multiplier: only 1 or 2')
++        rank, policy = M*multiplier, 'profile_multiplier'
++    actual_model = {**m, 'linearno_rank': rank}
++    try:
++        validate_model(task, actual_model)
++    except ValueError as error:
++        raise LoopSchemaError(str(error)) from error
++    P, C, R, S = (topology[k] for k in TOPOLOGY_FIELDS)
++    loop = dict(schema_version=SCHEMA_VERSION, config_version=CONFIG_VERSION,
++        formula_version=FORMULA_VERSION, task=task, profile=profile,
++        topology_preset=options['topology_preset'], **topology,
++        unique_depth=P+C+S, executed_depth=P+C*R+S, residual_mode=mode,
++        base_rank=M, rank_multiplier=multiplier, resolved_rank=rank, rank_policy=policy,
++        hidden=m['hidden'], heads=m['heads'], head_dim=m['hidden']//m['heads'],
++        variant=m['linearno_variant'], point_domain_attnres=True, feature_timestep_encoding=False,
++        operator_contract=derived_model(task, actual_model), sharing=deepcopy(SHARING),
++        residual_contract=dict(prefix_suffix='native_unscaled', identity='unscaled',
++            core_branch_scale='none_no_additive_residual' if mode=='rb_attnres' else '1/loop_repeats',
++            sources={'sr_1_over_r':'none', 'rb_attnres':'anchor_completed_raw_round_sums_and_current_raw_partial',
++                     'lb_attnres_1_over_r':'anchor_and_actual_Y_minus_H'}[mode],
++            receiver_before_original_layernorm=True, head_calls=1),
++        attnres=_attnres(mode, C, R, m['hidden']))
++    sources = {k: 'derived' for k in loop}
++    sources.update({k: 'cli_explicit' if k in options else 'preset' for k in TOPOLOGY_FIELDS})
++    sources.update(topology_preset='cli_explicit', residual_mode='cli_explicit',
++        base_rank='profile', rank_multiplier='not_applicable' if policy=='explicit_actual' else
++        ('cli_explicit' if 'rank_multiplier' in options else 'family_default'),
++        resolved_rank='cli_explicit' if policy=='explicit_actual' else 'derived',
++        hidden=base['field_sources']['model.hidden'], heads=base['field_sources']['model.heads'],
++        variant=base['field_sources']['model.linearno_variant'],
++        point_domain_attnres='frozen_contract', feature_timestep_encoding='frozen_contract')
++    result = dict(family=FAMILY, architecture_extension=ARCHITECTURE_EXTENSION,
++        config_version=CONFIG_VERSION, request=dict(task=task, profile=profile, options=options,
++        profile_overrides=overrides), loop_spec=loop, model_spec=_model_spec(base, loop),
++        profile_spec=base, field_sources=dict(loop_spec=sources, profile_spec=deepcopy(base['field_sources'])))
++    result['fair_comparison'] = fair_seeds(result)
++    return seal(result, 'config_hash')
++
++
++def validate_config(config):
++    json_value(config)
++    exact(config, {'family', 'architecture_extension', 'config_version', 'request', 'loop_spec',
++                  'model_spec', 'profile_spec', 'field_sources', 'fair_comparison', 'config_hash'}, 'config')
++    exact(config['request'], {'task', 'profile', 'options', 'profile_overrides'}, 'request')
++    r = config['request']
++    expected = resolve_config(r['task'], r['profile'], options=r['options'], profile_overrides=r['profile_overrides'])
++    require_equal(expected, config, 'config')
++    return deepcopy(config)
++
++
++def run_directory_id(config):
++    c = validate_config(config); s = c['loop_spec']; seed = c['profile_spec']['values']['runtime']['seed']
++    P, C, R, S = (s[k] for k in TOPOLOGY_FIELDS)
++    return (f"{s['task']}__{FAMILY}__{s['profile']}__P{P}-C{C}-R{R}-S{S}__"
++            f"{s['residual_mode']}__M{s['resolved_rank']}__seed{seed}__cfg{c['config_hash'][:12]}")
+--- /dev/null
++++ linearno_loop/contracts.py
+@@ -0,0 +1,127 @@
++"""Frozen LL1 names and strict JSON helpers; standard library only."""
++from copy import deepcopy
++import hashlib
++import json
++import math
++
++FAMILY = 'linearno_loop'
++ARCHITECTURE_EXTENSION = 'loop_linearno_v1'
++SCHEMA_VERSION = CONFIG_VERSION = 1
++FORMULA_VERSION = 'point-loop-residual-v1'
++TOPOLOGY_FIELDS = ('prefix_blocks', 'recurrent_core_blocks', 'loop_repeats', 'suffix_blocks')
++PRESETS = {'p1_c3_r2_s1': (1, 3, 2, 1), 'p2_c2_r2_s2': (2, 2, 2, 2)}
++RESIDUAL_MODES = ('sr_1_over_r', 'rb_attnres', 'lb_attnres_1_over_r')
++CLASS_PATHS = {
++    'standard': 'cdlno.linearno_loop.standard.LoopedStandardModel',
++    'airfrans': 'cdlno.linearno_loop.airfrans.LoopedAirfRANSModel',
++    'car': 'cdlno.linearno_loop.shapenet.LoopedShapeNetModel',
++}
++# Descriptors for FUTURE explicit constructors, not importable placeholder models.
++CLI_CONTRACT = {
++    '--linearno-loop': {'field': 'linearno_loop', 'wire_value': '0|1', 'typed_value': 'bool'},
++    '--linearno-loop-topology': {'field': 'topology_preset', 'wire_value': 'preset|custom'},
++    '--linearno-loop-prefix-blocks': {'field': 'prefix_blocks', 'wire_value': 'int>=0'},
++    '--linearno-loop-core-blocks': {'field': 'recurrent_core_blocks', 'wire_value': 'int>=1'},
++    '--linearno-loop-repeats': {'field': 'loop_repeats', 'wire_value': 'int>=1'},
++    '--linearno-loop-suffix-blocks': {'field': 'suffix_blocks', 'wire_value': 'int>=1'},
++    '--linearno-loop-residual-mode': {'field': 'residual_mode', 'wire_value': '|'.join(RESIDUAL_MODES)},
++    '--linearno-loop-rank-multiplier': {'field': 'rank_multiplier', 'wire_value': '1|2'},
++    '--linearno-rank': {'field': 'linearno_rank', 'wire_value': 'actual M int>=1'},
++}
++HISTORY_FLAGS = ('linearno_latent_attnres', 'linearno_history_k_conditioning',
++                 'linearno_attnres_history_dropout_p')
++OPTIONS = {'topology_preset', 'residual_mode', *TOPOLOGY_FIELDS, 'rank_multiplier', 'linearno_rank'}
++SHARING = dict(core='same_physical_module_each_round', core_includes=['operator', 'mlp', 'ln_1', 'ln_2'],
++               prefix_core_suffix='disjoint_physical_modules', core_registration='once',
++               recompute_qkv_context_each_visit=True, output_head='last_suffix_only_once',
++               routers='independent_per_logical_receiver', history='forward_local_raw_points',
++               detach=False, cross_forward=False, cross_physical_time=False, cross_member=False)
++
++
++class LoopSchemaError(ValueError):
++    """Invalid loop contract; raised before any model/weight loading."""
++
++
++def integer(value, name, minimum=0):
++    if type(value) is not int or value < minimum:
++        raise LoopSchemaError(f'{name}: expected integer >= {minimum}, got {value!r}')
++    return value
++
++
++def exact(value, keys, name):
++    if type(value) is not dict or any(type(k) is not str for k in value):
++        raise LoopSchemaError(f'{name}: expected JSON object with string keys')
++    missing, extra = set(keys) - value.keys(), value.keys() - set(keys)
++    if missing or extra:
++        raise LoopSchemaError(f'{name}: missing={sorted(missing)}, unknown={sorted(extra)}')
++
++
++def json_value(value, path='root'):
++    if value is None or type(value) in (str, bool, int):
++        return
++    if type(value) is float and math.isfinite(value):
++        return
++    if type(value) is list:
++        for i, v in enumerate(value):
++            json_value(v, f'{path}[{i}]')
++        return
++    if type(value) is dict and all(type(k) is str for k in value):
++        for k, v in value.items():
++            json_value(v, f'{path}.{k}')
++        return
++    raise LoopSchemaError(f'{path}: expected finite JSON value, got {type(value).__name__}')
++
++
++def canonical_json(value):
++    json_value(value)
++    return json.dumps(value, sort_keys=True, separators=(',', ':'), allow_nan=False)
++
++
++def digest(value):
++    return hashlib.sha256(canonical_json(value).encode()).hexdigest()
++
++
++def differences(expected, actual, path='root'):
++    """Field-level diagnostics; bool is never numerically equal to int."""
++    if type(expected) is not type(actual):
++        return [f'{path}: expected {expected!r}, got {actual!r} (type mismatch)']
++    if isinstance(expected, dict):
++        result = []
++        for k in sorted(expected.keys() | actual.keys()):
++            if k not in expected or k not in actual:
++                result.append(f'{path}.{k}: missing or unknown field')
++            else:
++                result.extend(differences(expected[k], actual[k], f'{path}.{k}'))
++        return result
++    if isinstance(expected, list):
++        if len(expected) != len(actual):
++            return [f'{path}: list length mismatch']
++        return [d for i, (a, b) in enumerate(zip(expected, actual))
++                for d in differences(a, b, f'{path}[{i}]')]
++    return [] if expected == actual else [f'{path}: expected {expected!r}, got {actual!r}']
++
++
++def require_equal(expected, actual, path):
++    errors = differences(expected, actual, path)
++    if errors:
++        raise LoopSchemaError('\n'.join(errors))
++
++
++def seal(value, field):
++    result = deepcopy(value)
++    result[field] = digest({k: v for k, v in result.items() if k != field})
++    return result
++
++
++def read_json(path):
++    def pairs(items):
++        result = {}
++        for k, v in items:
++            if k in result:
++                raise LoopSchemaError(f'duplicate JSON field: {k}')
++            result[k] = v
++        return result
++    with open(path, encoding='utf-8') as stream:
++        result = json.load(stream, object_pairs_hook=pairs)
++    json_value(result)
++    return result
+--- /dev/null
++++ linearno_loop/matrix.py
+@@ -0,0 +1,50 @@
++"""Configuration-only study declaration; preview argv is not runnable in LL1."""
++from .config import resolve_config, run_directory_id
++from .contracts import PRESETS, RESIDUAL_MODES, TOPOLOGY_FIELDS, CLI_CONTRACT
++from cdlno.linearno.profiles import TASKS
++
++PAIRED_SEEDS = (0, 1, 2)  # Local predeclared seeds, not the original authors' seeds.
++
++
++def preview(config):
++    s = config['loop_spec']; seed = config['profile_spec']['values']['runtime']['seed']
++    options = config['request']['options']
++    args = ['bash', f"tran_evaluate/linearno_loop/{s['task']}.sh", 'train',
++            '--linearno-loop','1','--linearno-loop-topology',s['topology_preset'],
++            '--linearno-loop-residual-mode',s['residual_mode'],
++            '--linearno-profile',s['profile'],'--seed',str(seed)]
++    for flag, spec in CLI_CONTRACT.items():
++        field = spec['field']
++        if field in options and field in (*TOPOLOGY_FIELDS, 'rank_multiplier', 'linearno_rank'):
++            args.extend([flag,str(options[field])])
++    if s['rank_policy']=='profile_multiplier' and 'rank_multiplier' not in options:
++        args.extend(['--linearno-loop-rank-multiplier',str(s['rank_multiplier'])])
++    args.extend(['--gpu','0','--experiment-dir','output/'+run_directory_id(config)+'__RUN_ID'])
++    return dict(status='PLANNED_NOT_RUNNABLE_LL1',argv=args)
++
++
++def configuration_matrix():
++    rows = []
++    for group, multiplier in (('main',2),('rank_x1_control',1)):
++        for task in TASKS:
++            for topology in PRESETS:
++                for mode in RESIDUAL_MODES:
++                    for seed in PAIRED_SEEDS:
++                        c=resolve_config(task, options=dict(topology_preset=topology,residual_mode=mode,
++                            rank_multiplier=multiplier),profile_overrides={'runtime.seed':seed})
++                        rows.append(dict(group=group,config=c,preview=preview(c),
++                            future_acceptance=dict(construction='NOT RUN',forward='NOT RUN',backward='NOT RUN',
++                                strict_roundtrip='NOT RUN',native_resume_eval='NOT RUN')))
++    custom=[]
++    for task in TASKS:
++        for mode in RESIDUAL_MODES:
++            c=resolve_config(task, options=dict(topology_preset='custom',prefix_blocks=0,
++                recurrent_core_blocks=2,loop_repeats=3,suffix_blocks=1,residual_mode=mode))
++            custom.append(dict(config=c,preview=preview(c),status='CONFIG_ONLY'))
++    return dict(schema_version=1,paired_seeds=list(PAIRED_SEEDS),author_seeds=False,
++        profile='paper_table8_on_release_model',main_count=144,rank_x1_count=144,
++        custom_count=len(custom),runs=rows,custom_controls=custom,
++        no_real_data=True,no_model_construction=True,no_launcher_integration=True,
++        additional_required_controls=['pure_8_blocks_base_M','pure_8_blocks_2M'],
++        aggregation='report each paired local seed and mean/std; final checkpoint; never select by test',
++        budget='same task/profile training and evaluation; not FLOP-matched')
+--- /dev/null
++++ linearno_loop/schema.py
+@@ -0,0 +1,177 @@
++"""Metadata-first contract and compatibility checks. No tensor/model loader.
++
++LL1 class paths are planned explicit constructors, not implemented models.
++At LL3–LL7 the actual loader must verify the real callable signature, then use
++strict=True and validate state/optimizer/RNG against actual backend objects.
++"""
++from copy import deepcopy
++import inspect
++from pathlib import Path, PurePosixPath
++
++from .contracts import (FAMILY, ARCHITECTURE_EXTENSION, SCHEMA_VERSION, CONFIG_VERSION,
++    HISTORY_FLAGS, LoopSchemaError, exact, integer, json_value,
++    require_equal, canonical_json, seal, read_json)
++from .config import validate_config
++from .state import hash_string, text, validate_resume, validate_normalizers
++
++SECTIONS = ('loop_spec','model_spec','profile_spec','data_spec','objective_spec','evaluation_spec',
++            'provenance_spec','normalizer_spec','resume_state','ensemble_manifest')
++LOAD_POLICY = dict(metadata_first=True, strict=True, constructor_validation='full_explicit_signature',
++                   legacy_fallback=False, baseline_as_resume=False, missing_random_weights=False)
++PROVENANCE_FIELDS = ('target_sha','base_commit','dirty','transolver_sha','linearno_sha',
++    'paper_version','paper_sha256','attnres_sha','kimi_k3_sha','residual_scaling_version',
++    'source_sha256','normalized_patch_sha256','code_version','config_schema_version',
++    'metadata_schema_version','command','environment')
++REFERENCE_PINS = {
++    'transolver_sha':'75e0f67643806a81cd1d3f6adc88dd8c02416fe7',
++    'linearno_sha':'3f2b80df13c17a09e250f2ebe4d4ecdfd4acf269',
++    'attnres_sha':'85e22310fe5ee860b4a023de312d791de8a5a5e6',
++    'kimi_k3_sha':'3cb39dfd32e51c3328e2e4b4af21341247d06c43',
++    'paper_sha256':'637e2953c0e223df7ffe2be92dd3825fccf55232cd73e2c955935a3944a470fd',
++}
++
++
++def validate_constructor(model_spec, constructor):
++    """Inspect a supplied future real class, never import/construct it here."""
++    if model_spec['class_path'] != constructor.__module__+'.'+constructor.__qualname__:
++        raise LoopSchemaError('model_spec.class_path: real constructor mismatch')
++    signature = inspect.signature(constructor)
++    if any(p.kind in (p.VAR_KEYWORD,p.VAR_POSITIONAL) for p in signature.parameters.values()):
++        raise LoopSchemaError('constructor must expose explicit fields, not *args/**kwargs')
++    fields = {k for k,p in signature.parameters.items() if p.kind in (p.POSITIONAL_OR_KEYWORD,p.KEYWORD_ONLY)}
++    require_equal(sorted(fields), sorted(model_spec['constructor_kwargs']), 'constructor_kwargs.fields')
++    try:
++        signature.bind(**model_spec['constructor_kwargs'])
++    except TypeError as error:
++        raise LoopSchemaError(str(error)) from error
++
++
++def validate_metadata(metadata, *, constructor=None):
++    json_value(metadata)
++    if type(metadata) is not dict or metadata.get('family') != FAMILY:
++        raise LoopSchemaError('family: loop loader only; legacy/pure/history use their own unchanged loaders')
++    keys = {'family','architecture_extension','schema_version','config_version','config_hash',
++            'resolved_config','load_policy','metadata_hash',*SECTIONS}
++    exact(metadata, keys, 'metadata')
++    c = validate_config(metadata['resolved_config'])
++    for name, expected in (('architecture_extension',ARCHITECTURE_EXTENSION), ('schema_version',SCHEMA_VERSION),
++        ('config_version',CONFIG_VERSION), ('config_hash',c['config_hash']), ('load_policy',LOAD_POLICY)):
++        require_equal(expected, metadata[name], name)
++    for name in ('loop_spec','model_spec','profile_spec'):
++        require_equal(c[name], metadata[name], name)
++    if constructor is not None:
++        validate_constructor(metadata['model_spec'], constructor)
++    for name in ('objective','evaluation'):
++        require_equal(c['profile_spec']['values'][name], metadata[name+'_spec'], name+'_spec')
++    data = metadata['data_spec']
++    exact(data, {'protocol','split','checksums','sampling','scope','runtime'}, 'data_spec')
++    require_equal(c['profile_spec']['values']['data'], data['protocol'], 'data_spec.protocol')
++    if data['scope'] not in ('synthetic','real'):
++        raise LoopSchemaError('data_spec.scope must label synthetic or real')
++    text(data['split'], 'data_spec.split'); text(data['sampling'], 'data_spec.sampling')
++    if type(data['checksums']) is not dict or not data['checksums'] or type(data['runtime']) is not dict:
++        raise LoopSchemaError('data_spec: actual named checksums/runtime mapping required')
++    for name, checksum in data['checksums'].items():
++        text(name, 'data checksum name'); hash_string(checksum, 'data checksum')
++    prov = metadata['provenance_spec']; exact(prov, PROVENANCE_FIELDS, 'provenance_spec')
++    for key in ('target_sha','base_commit','transolver_sha','linearno_sha','attnres_sha','kimi_k3_sha'):
++        hash_string(prov[key], 'provenance.'+key, 40)
++    for key in ('paper_sha256','source_sha256','normalized_patch_sha256'):
++        hash_string(prov[key], 'provenance.'+key)
++    for key, expected in REFERENCE_PINS.items():
++        require_equal(expected, prov[key], 'provenance.'+key)
++    if type(prov['dirty']) is not bool:
++        raise LoopSchemaError('provenance.dirty: bool required')
++    for key, expected in (('paper_version','2511.06294v3'),('residual_scaling_version','2606.18524v1'),
++                          ('config_schema_version',CONFIG_VERSION),('metadata_schema_version',SCHEMA_VERSION)):
++        require_equal(expected, prov[key], 'provenance.'+key)
++    text(prov['code_version'], 'provenance.code_version')
++    if type(prov['command']) is not list or not prov['command'] or type(prov['environment']) is not dict or not prov['environment']:
++        raise LoopSchemaError('provenance: command/environment required')
++    for arg in prov['command']:
++        if type(arg) is not str:
++            raise LoopSchemaError('provenance.command: string argv required')
++    validate_normalizers(metadata['normalizer_spec'], data['checksums'])
++    validate_resume(metadata['resume_state'])
++    members = metadata['ensemble_manifest']
++    if type(members) is not list:
++        raise LoopSchemaError('ensemble_manifest: ordered list required')
++    ids = set()
++    for index, member in enumerate(members):
++        exact(member, {'member_id','order','path','sha256','format'}, 'ensemble member')
++        text(member['member_id'], 'member_id'); integer(member['order'], 'member order')
++        if member['member_id'] in ids or member['order'] != index:
++            raise LoopSchemaError('ensemble id/order conflict')
++        ids.add(member['member_id']); text(member['path'], 'ensemble path')
++        path = PurePosixPath(member['path'])
++        if path.is_absolute() or '..' in path.parts or not path.name or '\\' in member['path']:
++            raise LoopSchemaError('ensemble path must be relative descendant')
++        if member['format'] != 'state_dict':
++            raise LoopSchemaError('loop ensemble requires state_dict, no whole-object loading')
++        hash_string(member['sha256'], 'ensemble sha256')
++    require_equal(seal(metadata,'metadata_hash')['metadata_hash'], metadata['metadata_hash'], 'metadata_hash')
++    return deepcopy(metadata)
++
++
++def make_metadata(config, **sections):
++    c = validate_config(config)
++    external = set(SECTIONS) - {'loop_spec','model_spec','profile_spec','objective_spec','evaluation_spec'}
++    exact(sections, external, 'metadata sections')
++    result = dict(family=FAMILY, architecture_extension=ARCHITECTURE_EXTENSION,
++        schema_version=SCHEMA_VERSION, config_version=CONFIG_VERSION, config_hash=c['config_hash'],
++        resolved_config=c, load_policy=deepcopy(LOAD_POLICY), **deepcopy(sections))
++    for name in ('loop_spec','model_spec','profile_spec'):
++        result[name] = deepcopy(c[name])
++    for name in ('objective','evaluation'):
++        result[name+'_spec'] = deepcopy(c['profile_spec']['values'][name])
++    return validate_metadata(seal(result, 'metadata_hash'))
++
++
++def read_metadata(path):
++    return validate_metadata(read_json(path))
++
++
++def write_metadata(path, metadata):
++    checked = validate_metadata(metadata)
++    # Creation only: no training sidecar overwrite, no mkdir, no tensor loading.
++    with Path(path).open('x', encoding='utf-8') as stream:
++        stream.write(canonical_json(checked)+'\n')
++
++
++def restore_config(metadata, *, explicit=None, runtime=None, strict=True):
++    """Plan eval/resume from SAVED metadata. Supplied fields assert, never override.
++
++    Runtime device/output path changes are separately reported. This function has
++    no torch.load/model/factory callback and performs no filesystem mutation.
++    """
++    if strict is not True:
++        raise LoopSchemaError('strict must be True')
++    m = validate_metadata(metadata); c = m['resolved_config']; s = c['loop_spec']
++    explicit = {} if explicit is None else explicit
++    runtime = {} if runtime is None else runtime
++    json_value(explicit, 'explicit'); json_value(runtime, 'runtime')
++    if type(explicit) is not dict or type(runtime) is not dict:
++        raise LoopSchemaError('explicit/runtime require objects')
++    if set(explicit) & set(HISTORY_FLAGS):
++        raise LoopSchemaError('loop metadata cannot mix any history flags')
++    if 'linearno_rank' in explicit and 'rank_multiplier' in explicit:
++        raise LoopSchemaError('explicit actual rank/multiplier conflict')
++    expected = {**s, 'family':FAMILY, 'architecture_extension':ARCHITECTURE_EXTENSION,
++                'linearno_loop':True, 'linearno_rank':s['resolved_rank'], 'model_spec':c['model_spec'],
++                'seed':c['profile_spec']['values']['runtime']['seed']}
++    if set(explicit) - expected.keys():
++        raise LoopSchemaError('unknown explicit checkpoint fields: '+str(sorted(set(explicit)-expected.keys())))
++    errors = []
++    from .contracts import differences
++    for k,v in explicit.items():
++        errors.extend(differences(expected[k], v, 'explicit.'+k))
++    if errors:
++        raise LoopSchemaError('\n'.join(errors))
++    if set(runtime)-{'device','experiment_dir'}:
++        raise LoopSchemaError('only device/experiment_dir are runtime changes; protocol changes require a new run')
++    for k,v in runtime.items():
++        text(v, 'runtime.'+k)
++    saved_runtime = c['profile_spec']['values']['runtime']
++    changes = {k:dict(saved=saved_runtime.get(k),requested=v) for k,v in runtime.items()
++               if k not in saved_runtime or saved_runtime[k] != v}
++    return dict(config=deepcopy(c), runtime_changes=changes, load_policy=deepcopy(LOAD_POLICY))
+--- /dev/null
++++ linearno_loop/state.py
+@@ -0,0 +1,165 @@
++"""Inspect existing numeric/tagged JSON encodings without NumPy/torch/pickle.
++
++No tensors or RNG generators are restored here. Runtime backend RNG acceptance
++and optimizer/model shape checks remain mandatory at the future load boundary.
++"""
++import base64
++from dataclasses import dataclass
++import math
++import re
++
++from .contracts import LoopSchemaError, exact, integer, json_value, digest
++
++TORCH_BYTES = dict(bool=1, uint8=1, int8=1, int16=2, int32=4, int64=8,
++                   float16=2, bfloat16=2, float32=4, float64=8, complex64=8, complex128=16)
++
++
++def hash_string(value, name, length=64):
++    if type(value) is not str or not re.fullmatch('[0-9a-f]{'+str(length)+'}', value):
++        raise LoopSchemaError(f'{name}: expected {length}-digit lowercase hash')
++
++
++def text(value, name):
++    if type(value) is not str or not value:
++        raise LoopSchemaError(f'{name}: nonempty string required')
++
++
++def numeric(spec, path):
++    exact(spec, {'backend', 'dtype', 'shape', 'encoding', 'data', 'sha256'}, path)
++    if spec['encoding'] != 'base64' or spec['sha256'] != digest({k:v for k,v in spec.items() if k!='sha256'}):
++        raise LoopSchemaError(f'{path}: numeric checksum/encoding mismatch')
++    if type(spec['shape']) is not list:
++        raise LoopSchemaError(f'{path}.shape: expected list')
++    for d in spec['shape']:
++        integer(d, path+'.shape dimension')
++    if spec['backend'] == 'torch':
++        size = TORCH_BYTES.get(spec['dtype']) if type(spec['dtype']) is str else None
++    elif spec['backend'] == 'numpy':
++        match = re.fullmatch(r'[<>=|]([biufc])(1|2|4|8|16)', spec['dtype']) if type(spec['dtype']) is str else None
++        size = int(match[2]) if match else None
++        if match and size not in {'b':(1,), 'i':(1,2,4,8), 'u':(1,2,4,8), 'f':(2,4,8,16), 'c':(8,16)}[match[1]]:
++            size = None
++    else:
++        size = None
++    if size is None:
++        raise LoopSchemaError(f'{path}.dtype/backend: unsupported numeric encoding')
++    try:
++        raw = base64.b64decode(spec['data'], validate=True)
++    except (ValueError, TypeError) as error:
++        raise LoopSchemaError(f'{path}.data: invalid base64') from error
++    if len(raw) != math.prod(spec['shape'])*size:
++        raise LoopSchemaError(f'{path}: byte count does not match shape/dtype')
++    return NumericDescriptor(spec)
++
++
++@dataclass(frozen=True)
++class NumericDescriptor:
++    spec: dict
++
++
++def inspect_state(node, path='state'):
++    """Return Python containers with opaque numeric descriptors, never tensors."""
++    exact(node, {'type', 'value'}, path)
++    kind, value = node['type'], node['value']
++    if kind == 'numeric':
++        return numeric(value, path+'.value')
++    if kind == 'scalar':
++        if value is not None and type(value) not in (str, bool, int, float):
++            raise LoopSchemaError(path+': invalid scalar')
++        json_value(value, path)
++        return value
++    if kind in ('tuple', 'list'):
++        if type(value) is not list:
++            raise LoopSchemaError(path+': expected sequence')
++        items = [inspect_state(v, f'{path}[{i}]') for i,v in enumerate(value)]
++        return tuple(items) if kind == 'tuple' else items
++    if kind == 'dict':
++        if type(value) is not list:
++            raise LoopSchemaError(path+': expected mapping pairs')
++        result = {}
++        for i, pair in enumerate(value):
++            if type(pair) is not list or len(pair) != 2:
++                raise LoopSchemaError(path+': expected key/value pair')
++            key, item = (inspect_state(v, f'{path}[{i}][{j}]') for j,v in enumerate(pair))
++            if type(key) not in (str, int) or key in result:
++                raise LoopSchemaError(path+': invalid or duplicate state key')
++            result[key] = item
++        return result
++    raise LoopSchemaError(path+': unknown tagged state type')
++
++
++def rng_bytes(value, path):
++    if not isinstance(value, NumericDescriptor):
++        raise LoopSchemaError(path+': requires encoded uint8 RNG vector')
++    s = value.spec
++    if s['backend'] != 'torch' or s['dtype'] != 'uint8' or len(s['shape']) != 1 or s['shape'][0] < 1:
++        raise LoopSchemaError(path+': requires nonempty torch uint8 RNG vector')
++
++
++def validate_resume(state):
++    exact(state, {'checkpoint_role','selection_split','selection_metric','epoch','global_step',
++                  'optimizer','scheduler','rng','dataloader_generators','sampler_state'}, 'resume_state')
++    if state['checkpoint_role'] not in ('epoch', 'final', 'best_validation'):
++        raise LoopSchemaError('resume_state.checkpoint_role: unknown role')
++    if state['checkpoint_role'] == 'best_validation':
++        if state['selection_split'] != 'validation':
++            raise LoopSchemaError('selection_split: best checkpoint requires validation, never test')
++        text(state['selection_metric'], 'selection_metric')
++    elif state['selection_split'] is not None or state['selection_metric'] is not None:
++        raise LoopSchemaError('final/epoch has no checkpoint selection fields')
++    integer(state['epoch'], 'epoch'); integer(state['global_step'], 'global_step')
++    opt = inspect_state(state['optimizer'], 'optimizer')
++    exact(opt, {'state','param_groups'}, 'optimizer')
++    if type(opt['state']) is not dict or type(opt['param_groups']) is not list:
++        raise LoopSchemaError('optimizer: state mapping and parameter groups required')
++    sched = inspect_state(state['scheduler'], 'scheduler')
++    if type(sched) is not dict or not sched:
++        raise LoopSchemaError('scheduler: nonempty state dictionary required')
++    rng = inspect_state(state['rng'], 'rng')
++    exact(rng, {'python','numpy','torch_cpu','torch_cuda'}, 'rng')
++    # Validate Python state on an isolated object; global RNG never advances.
++    import random
++    try:
++        random.Random(0).setstate(rng['python'])
++    except (ValueError, TypeError, OverflowError) as error:
++        raise LoopSchemaError('rng.python: invalid state') from error
++    n = rng['numpy']
++    if (type(n) is not tuple or len(n) != 5 or n[0] != 'MT19937' or
++        not isinstance(n[1], NumericDescriptor) or n[1].spec['backend'] != 'numpy' or
++        n[1].spec['dtype'] not in ('<u4','>u4','=u4') or n[1].spec['shape'] != [624] or
++        type(n[2]) is not int or not 0 <= n[2] <= 624 or type(n[3]) is not int or n[3] not in (0,1) or
++        type(n[4]) not in (int,float) or not math.isfinite(n[4])):
++        raise LoopSchemaError('rng.numpy: expected complete MT19937 state')
++    rng_bytes(rng['torch_cpu'], 'rng.torch_cpu')
++    if type(rng['torch_cuda']) is not list:
++        raise LoopSchemaError('rng.torch_cuda: expected device-ordered list (empty on CPU)')
++    for i,v in enumerate(rng['torch_cuda']):
++        rng_bytes(v, f'rng.torch_cuda[{i}]')
++    generators = inspect_state(state['dataloader_generators'], 'dataloader_generators')
++    sampler = inspect_state(state['sampler_state'], 'sampler_state')
++    if type(generators) is not dict or type(sampler) is not dict:
++        raise LoopSchemaError('explicit generator/sampler dictionaries required')
++    for name, g in generators.items():
++        text(name, 'generator name'); exact(g, {'device','state'}, 'generator')
++        if type(g['device']) is not str or not re.fullmatch(r'cpu|cuda:\d+', g['device']):
++            raise LoopSchemaError('generator device invalid')
++        rng_bytes(g['state'], 'generator.state')
++
++
++def validate_normalizers(spec, checksums):
++    exact(spec, {'policy','records'}, 'normalizer_spec')
++    if spec['policy'] not in ('none','saved_train_fit') or type(spec['records']) is not dict:
++        raise LoopSchemaError('normalizer policy/records invalid')
++    if bool(spec['records']) != (spec['policy'] == 'saved_train_fit'):
++        raise LoopSchemaError('normalizer policy disagrees with states')
++    for name, record in spec['records'].items():
++        text(name, 'normalizer name')
++        exact(record, {'algorithm','fit_split','data_checksum','states'}, 'normalizer record')
++        text(record['algorithm'], 'normalizer.algorithm'); text(record['fit_split'], 'normalizer.fit_split')
++        hash_string(record['data_checksum'], 'normalizer.data_checksum')
++        if record['data_checksum'] not in checksums.values():
++            raise LoopSchemaError('normalizer data checksum absent from data_spec')
++        if type(record['states']) is not dict or not record['states']:
++            raise LoopSchemaError('normalizer requires named numeric states')
++        for key, value in record['states'].items():
++            text(key, 'normalizer state name'); numeric(value, f'normalizer.{name}.{key}')
+--- /dev/null
++++ tests/loop_linearno/__init__.py
+@@ -0,0 +1 @@
++"""Loop contract tests, separate from the frozen original test suite."""
+--- /dev/null
++++ tests/loop_linearno/support.py
+@@ -0,0 +1,60 @@
++"""Synthetic metadata fixture: real encodings, no model/data/optimizer creation."""
++import hashlib
++from pathlib import Path
++import random
++import subprocess
++
++from linearno_loop.config import resolve_config
++from linearno_loop.contracts import digest, seal
++from linearno_loop.schema import make_metadata
++
++ROOT = Path(__file__).resolve().parents[2]
++
++
++def config(task='darcy', **options):
++    return resolve_config(task, options={'topology_preset':'p1_c3_r2_s1',
++        'residual_mode':'rb_attnres', **options})
++
++
++def metadata(c=None):
++    # Only fixture generation imports tensor libraries; validator/import tests do not.
++    import numpy as np
++    import torch
++    from cdlno.linearno.schema import pack_state, numerical_state
++    c = config() if c is None else c
++    checksum=hashlib.sha256(b'LL1 metadata-only synthetic input, no dataset').hexdigest()
++    head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
++    sources={str(p.relative_to(ROOT)):p.read_text().replace('\r\n','\n')
++             for p in sorted((ROOT/'linearno_loop').glob('*.py'))}
++    source_hash=digest({k:hashlib.sha256(v.encode()).hexdigest() for k,v in sources.items()})
++    # All package files are additions against the LL1 start manifest. This is a
++    # path-sorted LF-normalized patch encoding, without host paths/timestamps.
++    patch_hash=digest({'format':'path-before-after-lf-v1',
++        'files':{k:{'before':None,'after':v} for k,v in sources.items()}})
++    prov=dict(target_sha=head,base_commit=head,dirty=True,
++        transolver_sha='75e0f67643806a81cd1d3f6adc88dd8c02416fe7',
++        linearno_sha='3f2b80df13c17a09e250f2ebe4d4ecdfd4acf269',
++        paper_version='2511.06294v3',paper_sha256='637e2953c0e223df7ffe2be92dd3825fccf55232cd73e2c955935a3944a470fd',
++        attnres_sha='85e22310fe5ee860b4a023de312d791de8a5a5e6',
++        kimi_k3_sha='3cb39dfd32e51c3328e2e4b4af21341247d06c43',residual_scaling_version='2606.18524v1',
++        source_sha256=source_hash, normalized_patch_sha256=patch_hash,
++        code_version='LL1-contract-only',config_schema_version=1,metadata_schema_version=1,
++        command=['python','-B','-m','unittest','discover','-s','tests/loop_linearno'],
++        environment={'scope':'synthetic metadata only','python_backend':'fixture generation; no model'})
++    rng=dict(python=random.Random(3).getstate(),numpy=np.random.RandomState(3).get_state(),
++        torch_cpu=torch.Generator().manual_seed(3).get_state(),torch_cuda=[])
++    return make_metadata(c,
++        data_spec=dict(protocol=c['profile_spec']['values']['data'],scope='synthetic',
++            split='synthetic train/test, no real data',sampling='fixed fixture',
++            checksums={'synthetic':checksum},runtime={}),provenance_spec=prov,
++        normalizer_spec=dict(policy='saved_train_fit',records={'input':dict(algorithm='fixture mean/std',
++            fit_split='train',data_checksum=checksum,states={'mean':numerical_state(torch.tensor([1.,2.])),
++                'std':numerical_state(np.array([3.,4.],dtype='>f8'))})}),
++        resume_state=dict(checkpoint_role='epoch',selection_split=None,selection_metric=None,epoch=0,global_step=0,
++            optimizer=pack_state({'state':{},'param_groups':[]}),scheduler=pack_state({'last_epoch':0}),
++            rng=pack_state(rng),dataloader_generators=pack_state({'train':{'device':'cpu','state':rng['torch_cpu']}}),
++            sampler_state=pack_state({'scope':'synthetic fixture'})),ensemble_manifest=[])
++
++
++def rehash(value):
++    return seal(value,'metadata_hash' if 'metadata_hash' in value else 'config_hash')
+--- /dev/null
++++ tests/loop_linearno/test_artifacts.py
+@@ -0,0 +1,28 @@
++import json
++import unittest
++
++from linearno_loop.contracts import CLI_CONTRACT, CLASS_PATHS
++from linearno_loop.matrix import configuration_matrix
++from linearno_loop.schema import read_metadata, restore_config
++from loop_linearno.support import ROOT
++
++
++class ArtifactTests(unittest.TestCase):
++    def test_saved_configuration_matrix_is_reproducible(self):
++        path=ROOT/'docs/loop_linearno_audit/ll1/configuration-matrix.json'
++        self.assertEqual(json.loads(path.read_text()),configuration_matrix())
++
++    def test_contract_catalog_and_metadata_fixture_are_not_models(self):
++        directory=ROOT/'docs/loop_linearno_audit/ll1'
++        catalog=json.loads((directory/'contract-catalog.json').read_text())
++        self.assertEqual(catalog['cli'],CLI_CONTRACT)
++        self.assertEqual(catalog['class_paths'],CLASS_PATHS)
++        self.assertEqual(catalog['class_status'],'PLANNED_NOT_IMPLEMENTED_NO_PLACEHOLDERS')
++        m=read_metadata(directory/'synthetic-metadata.json')
++        self.assertEqual(m['data_spec']['scope'],'synthetic')
++        self.assertTrue(restore_config(m)['load_policy']['strict'])
++        self.assertFalse((ROOT/'cdlno/linearno_loop').exists())
++        self.assertFalse((ROOT/'tran_evaluate/linearno_loop').exists())
++
++
++if __name__=='__main__':unittest.main()
+--- /dev/null
++++ tests/loop_linearno/test_config.py
+@@ -0,0 +1,137 @@
++import copy
++import json
++from pathlib import Path
++import unittest
++
++from cdlno.linearno.profiles import CATALOG, TASKS, PROFILES
++from linearno_loop.config import resolve_config, validate_config, run_directory_id, route_intent
++from linearno_loop.contracts import LoopSchemaError, PRESETS, RESIDUAL_MODES, TOPOLOGY_FIELDS, seal
++from linearno_loop.matrix import configuration_matrix
++
++
++def options(**changes):
++    return {'topology_preset':'p1_c3_r2_s1','residual_mode':'sr_1_over_r',**changes}
++
++
++class ConfigTests(unittest.TestCase):
++    def test_all_current_task_profiles_and_immutable_baseline(self):
++        before=copy.deepcopy(CATALOG)
++        ll0=json.loads((Path(__file__).resolve().parents[2]/'docs/loop_linearno_audit/ll0/resolved-profiles.json').read_text())
++        for row in ll0:
++            c=resolve_config(row['task'],row['profile'],options=options())
++            self.assertEqual(c['profile_spec'],row['current'])
++            s=c['loop_spec'];self.assertEqual(s['base_rank'],row['proposed_loop']['base_rank'])
++            self.assertEqual(s['resolved_rank'],2*s['base_rank'])
++            self.assertEqual(validate_config(json.loads(json.dumps(c))),c)
++        self.assertEqual(CATALOG,before)
++
++    def test_preset_derived_counts_and_parameter_formula(self):
++        for preset, (P,C,R,S) in PRESETS.items():
++            for mode in RESIDUAL_MODES:
++                c=resolve_config('darcy',options={'topology_preset':preset,'residual_mode':mode});s=c['loop_spec']
++                self.assertEqual(s['unique_depth'],5 if C==3 else 6);self.assertEqual(s['executed_depth'],8)
++                count={'sr_1_over_r':0,'rb_attnres':2*C*R+1,'lb_attnres_1_over_r':R}[mode]
++                visits={'sr_1_over_r':0,'rb_attnres':31 if C==3 else 21,'lb_attnres_1_over_r':5}[mode]
++                self.assertEqual(s['attnres']['receiver_count'],count)
++                self.assertEqual(s['attnres']['router_parameter_count'],2*128*count)
++                self.assertEqual(s['attnres']['source_visits'],visits)
++                self.assertTrue(s['point_domain_attnres']);self.assertFalse(s['feature_timestep_encoding'])
++                self.assertNotIn('n_layers',c['model_spec']['constructor_kwargs'])
++
++    def test_custom_edges_and_strict_integer_validation(self):
++        custom=dict(topology_preset='custom',residual_mode='sr_1_over_r',prefix_blocks=0,
++                    recurrent_core_blocks=1,loop_repeats=1,suffix_blocks=1)
++        self.assertEqual(resolve_config('elasticity',options=custom)['loop_spec']['executed_depth'],2)
++        for field in TOPOLOGY_FIELDS:
++            for invalid in (True,False,1.,'2',None,-1,float('nan'),float('inf')):
++                with self.subTest(field=field,value=invalid),self.assertRaises(LoopSchemaError):
++                    resolve_config('darcy',options={**custom,field:invalid})
++            if field!='prefix_blocks':
++                with self.assertRaises(LoopSchemaError):resolve_config('darcy',options={**custom,field:0})
++            with self.assertRaises(LoopSchemaError):resolve_config('darcy',options={k:v for k,v in custom.items() if k!=field})
++            with self.assertRaises(LoopSchemaError):resolve_config('darcy',options={**options(),field:1})
++
++    def test_missing_and_unknown_choices_fail_closed(self):
++        for bad in ({},None,[],dict(topology_preset='custom'),dict(residual_mode='rb_attnres'),
++                    {**options(),'surprise':1},{**options(),'unique_depth':5},
++                    {**options(),'residual_mode':'sr_unscaled'},{**options(),'topology_preset':'other'},
++                    {**options(),'topology_preset':True}):
++            with self.subTest(bad=bad),self.assertRaises(LoopSchemaError):resolve_config('darcy',options=bad)
++        for key in ('model.layers','model.linearno_rank','model.qk_dim'):
++            with self.assertRaises(LoopSchemaError):resolve_config('darcy',options=options(),profile_overrides={key:8})
++
++    def test_rank_actual_multiplier_and_car_divisibility(self):
++        for task in TASKS:
++            c=resolve_config(task,options=options(rank_multiplier=1));s=c['loop_spec']
++            self.assertEqual(s['resolved_rank'],s['base_rank'])
++            for value in (True,0,3,'2',2.,None):
++                with self.subTest(task=task,value=value),self.assertRaises(LoopSchemaError):
++                    resolve_config(task,options=options(rank_multiplier=value))
++        c=resolve_config('darcy',options=options(linearno_rank=47));s=c['loop_spec']
++        self.assertEqual((s['rank_policy'],s['resolved_rank'],s['rank_multiplier']),('explicit_actual',47,None))
++        self.assertEqual(c['profile_spec']['values']['model']['linearno_rank'],64)
++        for actual in (0,True,'64',64.,None):
++            with self.assertRaises(LoopSchemaError):resolve_config('car',options=options(linearno_rank=actual))
++        with self.assertRaises(LoopSchemaError):resolve_config('car',options=options(linearno_rank=48))
++        self.assertEqual(resolve_config('car',options=options(linearno_rank=96))['loop_spec']['operator_contract']['rank_mapping']['original_value'],3)
++        with self.assertRaises(LoopSchemaError):resolve_config('car',options=options(linearno_rank=64,rank_multiplier=2))
++        with self.assertRaises(LoopSchemaError):resolve_config('darcy',options=options(),profile_overrides={'model.hidden':127})
++
++    def test_source_labels_mutability_and_resealed_tampering(self):
++        c=resolve_config('darcy',options=options(),profile_overrides={'model.hidden':64})
++        self.assertEqual(c['field_sources']['loop_spec']['hidden'],'cli_explicit')
++        self.assertEqual(c['field_sources']['loop_spec']['rank_multiplier'],'family_default')
++        self.assertEqual(c['field_sources']['loop_spec']['prefix_blocks'],'preset')
++        for k,v in [('executed_depth',9),('schema_version',True),('head_dim',9),('resolved_rank',64),
++                    ('hidden','64'),('point_domain_attnres',1),('feature_timestep_encoding',True)]:
++            bad=copy.deepcopy(c);bad['loop_spec'][k]=v
++            with self.subTest(k=k),self.assertRaisesRegex(LoopSchemaError,k):validate_config(seal(bad,'config_hash'))
++        bad=copy.deepcopy(c);bad['model_spec']['constructor_kwargs']['profile']='official_release'
++        with self.assertRaisesRegex(LoopSchemaError,'profile'):validate_config(seal(bad,'config_hash'))
++        bad=copy.deepcopy(c);bad['field_sources']['loop_spec']['hidden']='profile'
++        with self.assertRaisesRegex(LoopSchemaError,'field_sources'):validate_config(seal(bad,'config_hash'))
++        validate_config(c)['loop_spec']['sharing']['core']='changed'
++        self.assertEqual(c['loop_spec']['sharing']['core'],'same_physical_module_each_round')
++
++    def test_native_constructor_constraints_and_frozen_protocols(self):
++        cases=[('plasticity',{'model.hidden':15,'model.heads':3}),
++               ('airfrans',{'model.space_dim':3}),('airfrans',{'model.out_dim':1}),
++               ('car',{'model.fun_dim':3}),('car',{'model.unified_pos':True}),
++               ('darcy',{'objective.type':'other'}),('darcy',{'evaluation.type':'other'}),
++               ('darcy',{'data.split':'test'}),('darcy',{'model.heads':True}),
++               ('darcy',{'model.hidden':'128'}),('darcy',{'model.dropout':float('nan')})]
++        for task,overrides in cases:
++            with self.subTest(task=task,overrides=overrides),self.assertRaises(LoopSchemaError):
++                resolve_config(task,options=options(),profile_overrides=overrides)
++
++    def test_routing_is_not_installed_and_false_history_still_conflicts(self):
++        for family in ('linearno','linearno_history','transolver','cdlno'):
++            self.assertIsNone(route_intent(family,{}))
++            self.assertIsNone(route_intent(family,{'linearno_rank':64}))
++        for name,value in [('linearno_latent_attnres',False),('linearno_history_k_conditioning',0),
++                           ('linearno_attnres_history_dropout_p',None)]:
++            with self.assertRaises(LoopSchemaError):route_intent('linearno',{'linearno_loop':True,name:value})
++        for family in ('transolver','cdlno','linearno_history'):
++            with self.assertRaises(LoopSchemaError):route_intent(family,{'linearno_loop':True})
++        for value in (0,1,'1',None):
++            with self.assertRaises(LoopSchemaError):route_intent('linearno',{'linearno_loop':value})
++        self.assertIsNone(route_intent('linearno',{'linearno_loop':False}))
++        self.assertEqual(route_intent('linearno',{'linearno_loop':True}), 'linearno_loop')
++        with self.assertRaises(LoopSchemaError):route_intent('linearno',{'topology_preset':'custom'})
++
++    def test_formal_matrix_pairing_and_unique_run_identifiers(self):
++        m=configuration_matrix();self.assertEqual(len(m['runs']),288);self.assertEqual(len(m['custom_controls']),24)
++        ids=set();pairs={}
++        for row in m['runs']:
++            c=row['config'];s=c['loop_spec'];seed=c['profile_spec']['values']['runtime']['seed']
++            self.assertEqual(validate_config(c),c);ids.add(run_directory_id(c))
++            key=(row['group'],s['task'],s['topology_preset'],seed)
++            if key in pairs:self.assertEqual(pairs[key],c['fair_comparison'])
++            else:pairs[key]=c['fair_comparison']
++            self.assertEqual(row['future_acceptance']['forward'],'NOT RUN')
++            self.assertEqual(row['preview']['status'],'PLANNED_NOT_RUNNABLE_LL1')
++        self.assertEqual(len(ids),288)
++        self.assertEqual(m['paired_seeds'],[0,1,2])
++
++
++if __name__=='__main__':unittest.main()
+--- /dev/null
++++ tests/loop_linearno/test_isolation.py
+@@ -0,0 +1,79 @@
++import hashlib
++import json
++import os
++from pathlib import Path
++import random
++import subprocess
++import sys
++import tempfile
++import unittest
++
++from loop_linearno.support import ROOT, metadata
++
++
++class IsolationTests(unittest.TestCase):
++    def test_fresh_process_all_schema_paths_forbid_tensor_model_task_imports(self):
++        # Serialize real backend states outside the isolated process; the consumer
++        # must inspect them with only the standard library and existing pure profiles.
++        m=metadata()
++        code=r'''
++import importlib.abc, json, random, sys
++blocked=('torch','numpy','timm','einops','torch_geometric','model','models',
++         'cdlno.linearno.schema','cdlno.linearno_loop','cdlno.linearno.attention',
++         'cdlno.linearno.airfrans','cdlno.linearno.shapenet')
++class Guard(importlib.abc.MetaPathFinder):
++    def find_spec(self,fullname,path=None,target=None):
++        if any(fullname==x or fullname.startswith(x+'.') for x in blocked) or fullname.startswith('exp_'):
++            raise AssertionError('forbidden import '+fullname)
++sys.meta_path.insert(0,Guard())
++before=random.getstate()
++from linearno_loop.schema import read_metadata,restore_config
++from linearno_loop.config import route_intent
++from linearno_loop.matrix import configuration_matrix
++saved=read_metadata(sys.argv[1]); recovered=restore_config(saved)
++assert recovered['config']==saved['resolved_config']
++assert len(configuration_matrix()['runs'])==288
++assert route_intent('linearno',{}) is None
++assert random.getstate()==before
++assert not any(n==x or n.startswith(x+'.') for x in blocked for n in sys.modules)
++print('stdlib-only metadata/config/matrix; no model import; Python RNG unchanged')
++'''
++        with tempfile.TemporaryDirectory() as directory:
++            path=Path(directory)/'metadata.json';path.write_text(json.dumps(m))
++            env={**os.environ,'PYTHONPATH':str(ROOT),'PYTHONDONTWRITEBYTECODE':'1','CUDA_VISIBLE_DEVICES':''}
++            result=subprocess.run([sys.executable,'-B','-c',code,str(path)],cwd=directory,
++                                  env=env,text=True,capture_output=True)
++        self.assertEqual(result.returncode,0,result.stdout+result.stderr)
++
++    def test_resolution_inspection_and_preview_leave_all_global_rng_unchanged(self):
++        import numpy as np
++        import torch
++        from cdlno.linearno.schema import pack_state
++        from linearno_loop.schema import validate_metadata,restore_config
++        from linearno_loop.matrix import configuration_matrix
++        def states():
++            return pack_state({'python':random.getstate(),'numpy':np.random.get_state(),
++                               'torch_cpu':torch.get_rng_state()})
++        before=states();m=metadata()
++        validate_metadata(m);restore_config(m);configuration_matrix()
++        self.assertEqual(before,states())
++
++    def test_all_preexisting_source_bytes_and_classifications_unchanged(self):
++        initial=json.loads((ROOT/'docs/loop_linearno_audit/ll1/start-manifest.json').read_text())
++        categories={}
++        for label,args in [('tracked',[]),('untracked',['--others','--exclude-standard']),
++                           ('ignored',['--others','--ignored','--exclude-standard'])]:
++            raw=subprocess.check_output(['git','ls-files','-z',*args],cwd=ROOT)
++            categories.update({os.fsdecode(p):label for p in raw.split(b'\0') if p})
++        allowed={'docs/LOOP_LINEARNO_IMPLEMENTATION_STATUS.md'}
++        for row in initial['files']:
++            if row['path'] in allowed:continue
++            with self.subTest(path=row['path']):
++                path=ROOT/row['path']
++                self.assertTrue(path.is_file())
++                self.assertEqual(path.stat().st_size,row['size'])
++                self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),row['sha256'])
++                self.assertEqual(categories[row['path']],row['classification'])
++
++
++if __name__=='__main__':unittest.main()
+--- /dev/null
++++ tests/loop_linearno/test_schema.py
+@@ -0,0 +1,165 @@
++import base64
++import copy
++import json
++from pathlib import Path
++import tempfile
++import unittest
++
++from linearno_loop.contracts import LoopSchemaError, RESIDUAL_MODES, canonical_json, seal
++from linearno_loop.schema import (
++    validate_metadata, restore_config, read_metadata, write_metadata, validate_constructor,
++)
++from linearno_loop.state import numeric, inspect_state
++from loop_linearno.support import config, metadata, rehash
++
++
++class MetadataTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        cls.saved = metadata()
++
++    def rejects(self, obj, message=None):
++        with self.assertRaisesRegex(LoopSchemaError, message or '.'):
++            validate_metadata(rehash(obj))
++
++    def test_three_wrapper_contracts_three_modes_roundtrip_without_model(self):
++        for task in ('darcy','airfrans','car'):
++            for mode in RESIDUAL_MODES:
++                m=metadata(config(task,residual_mode=mode))
++                restored=validate_metadata(json.loads(canonical_json(m)))
++                self.assertEqual(restored,m)
++                self.assertEqual(restore_config(m)['config'],m['resolved_config'])
++                self.assertEqual(m['model_spec']['constructor_kwargs']['linearno_rank'],
++                                 m['loop_spec']['resolved_rank'])
++                self.assertNotIn('n_layers',m['model_spec']['constructor_kwargs'])
++                self.assertTrue(m['load_policy']['strict'])
++
++    def test_closed_metadata_required_fields_and_legacy_rejection(self):
++        for key in self.saved:
++            m=copy.deepcopy(self.saved);del m[key]
++            # A missing seal is rejected as well, without synthesizing one.
++            with self.subTest(key=key), self.assertRaises(LoopSchemaError): validate_metadata(m)
++        m=copy.deepcopy(self.saved);m['unexpected']=1;self.rejects(m,'unknown')
++        for family in ('linearno','linearno_history','transolver',None):
++            m=copy.deepcopy(self.saved);m['family']=family;self.rejects(m,'family')
++        m=copy.deepcopy(self.saved);m['schema_version']=True;self.rejects(m,'schema_version')
++        m=copy.deepcopy(self.saved);m['load_policy']['strict']=False;self.rejects(m,'strict')
++
++    def test_rehashed_structure_protocol_and_provenance_corruption(self):
++        for name,value in (('variant','plain'),('resolved_rank',64),('head_dim',32),
++                ('loop_repeats',3),('residual_mode','sr_1_over_r'),('schema_version',2)):
++            m=copy.deepcopy(self.saved);m['loop_spec'][name]=value
++            with self.subTest(name=name):self.rejects(m,name)
++        for section,field,value in (
++            ('model_spec','class_path','other.Model'),
++            ('objective_spec','unexpected','loss'),('evaluation_spec','unexpected','test'),
++            ('data_spec','scope','unknown'),('provenance_spec','dirty',1),
++            ('provenance_spec','linearno_sha','0'*40),('provenance_spec','source_sha256','bad'),
++            ('provenance_spec','command',[]),('provenance_spec','environment',{})):
++            m=copy.deepcopy(self.saved);m[section][field]=value
++            with self.subTest(section=section,field=field):self.rejects(m)
++        m=copy.deepcopy(self.saved);m['model_spec']['constructor_kwargs']['executed_depth']=8
++        self.rejects(m,'executed_depth')
++        m=copy.deepcopy(self.saved);m['data_spec']['protocol']['invented']=True
++        self.rejects(m,'protocol')
++
++    def test_restore_assertions_accumulate_and_runtime_does_not_override(self):
++        before=canonical_json(self.saved)
++        result=restore_config(self.saved, explicit={'linearno_loop':True,'linearno_rank':128,
++            'prefix_blocks':1,'head_dim':16,'variant':'conv_temp','family':'linearno_loop'},
++            runtime={'device':'cuda:1','experiment_dir':'remote/output/run'})
++        self.assertEqual(result['config'],self.saved['resolved_config'])
++        self.assertEqual(set(result['runtime_changes']),{'device','experiment_dir'})
++        with self.assertRaises(LoopSchemaError) as raised:
++            restore_config(self.saved,explicit={'residual_mode':'sr_1_over_r','linearno_rank':64,'loop_repeats':3})
++        for key in ('residual_mode','linearno_rank','loop_repeats'):
++            self.assertIn('explicit.'+key,str(raised.exception))
++        for invalid in (False,0,1,None,'true'):
++            with self.assertRaises(LoopSchemaError):restore_config(self.saved,strict=invalid)
++        for explicit in ({'rank_multiplier':2,'linearno_rank':128},{'unknown':1},
++            {'linearno_latent_attnres':False},{'linearno_history_k_conditioning':False},
++            {'linearno_attnres_history_dropout_p':None},{'linearno_loop':1}):
++            with self.assertRaises(LoopSchemaError):restore_config(self.saved,explicit=explicit)
++        with self.assertRaises(LoopSchemaError):restore_config(self.saved,runtime={'epochs':1})
++        self.assertEqual(before,canonical_json(self.saved))
++
++    def test_normalizer_numeric_bytes_shapes_dtype_hash_and_fit_evidence(self):
++        from cdlno.linearno.schema import numerical_state
++        import torch
++        import numpy as np
++        for tensor in (torch.tensor([1.5],dtype=torch.bfloat16),np.array([1.,2.],dtype='>f8'),
++                       torch.tensor(4,dtype=torch.int64),np.array([],dtype=np.float32)):
++            spec=numerical_state(tensor)
++            self.assertEqual(numeric(spec,'fixture').spec,spec)
++        for field,value in (('dtype','object'),('shape',[True]),('shape',[999]),
++                            ('data','not-base64'),('backend','pickle')):
++            m=copy.deepcopy(self.saved)
++            s=m['normalizer_spec']['records']['input']['states']['mean'];s[field]=value
++            m['normalizer_spec']['records']['input']['states']['mean']=seal(s,'sha256')
++            with self.subTest(field=field):self.rejects(m)
++        m=copy.deepcopy(self.saved)
++        m['normalizer_spec']['records']['input']['states']['mean']['data']=base64.b64encode(b'changed').decode()
++        self.rejects(m,'checksum')
++        for key,value in (('fit_split',''),('data_checksum','0'*64),('states',{})):
++            m=copy.deepcopy(self.saved);m['normalizer_spec']['records']['input'][key]=value;self.rejects(m)
++        m=copy.deepcopy(self.saved);m['normalizer_spec']={'policy':'none','records':{}}
++        self.assertEqual(validate_metadata(rehash(m))['normalizer_spec']['policy'],'none')
++
++    def test_resume_state_required_rng_generator_scheduler_and_selection(self):
++        from cdlno.linearno.schema import pack_state, unpack_state
++        for key in self.saved['resume_state']:
++            m=copy.deepcopy(self.saved);del m['resume_state'][key];self.rejects(m,key)
++        for key,value in (('epoch',True),('global_step',-1),('optimizer',pack_state({})),
++                          ('scheduler',pack_state({})),('sampler_state',pack_state(None)),
++                          ('dataloader_generators',pack_state({'train':{'device':'cpu','state':None}}))):
++            m=copy.deepcopy(self.saved);m['resume_state'][key]=value;self.rejects(m)
++        for field in ('python','numpy','torch_cpu','torch_cuda'):
++            m=copy.deepcopy(self.saved);rng=unpack_state(m['resume_state']['rng']);rng[field]=None
++            m['resume_state']['rng']=pack_state(rng);self.rejects(m,'rng')
++        m=copy.deepcopy(self.saved);r=m['resume_state']
++        r.update(checkpoint_role='best_validation',selection_split='test',selection_metric='loss')
++        self.rejects(m,'selection_split')
++        r['selection_split']='validation';validate_metadata(rehash(m))
++        r.update(checkpoint_role='final');self.rejects(m,'selection')
++
++    def test_state_encoding_rejects_duplicate_keys_and_unknown_types(self):
++        from cdlno.linearno.schema import pack_state
++        node=pack_state({'a':1});node['value'].append(node['value'][0])
++        with self.assertRaisesRegex(LoopSchemaError,'duplicate'):inspect_state(node)
++        for node in ({'type':'pickle','value':'x'},{'type':'scalar','value':[]},
++                     {'type':'numeric','value':{}},{'type':'tuple','value':None}):
++            with self.assertRaises(LoopSchemaError):inspect_state(node)
++
++    def test_ensemble_member_order_hash_safe_paths_and_state_dict_only(self):
++        m=copy.deepcopy(self.saved)
++        member=dict(member_id='member_000',order=0,path='member_000/weights.pt',sha256='1'*64,format='state_dict')
++        m['ensemble_manifest']=[member];validate_metadata(rehash(m))
++        for key,value in (('order',True),('order',1),('sha256','no'),('format','whole_object'),
++                          ('path','../weights.pt'),('path','/tmp/weights.pt'),('path','a\\b'),('path','.')):
++            bad=copy.deepcopy(m);bad['ensemble_manifest'][0][key]=value;self.rejects(bad)
++        m['ensemble_manifest'].append({**member,'order':1});self.rejects(m,'id/order')
++
++    def test_disk_roundtrip_is_create_only_and_bad_json_fails(self):
++        with tempfile.TemporaryDirectory() as directory:
++            path=Path(directory)/'metadata.json'
++            write_metadata(path,self.saved);before=path.read_bytes()
++            self.assertEqual(read_metadata(path),self.saved)
++            with self.assertRaises(FileExistsError):write_metadata(path,self.saved)
++            self.assertEqual(before,path.read_bytes())
++            with self.assertRaises(FileNotFoundError):write_metadata(Path(directory)/'missing/meta.json',self.saved)
++            for raw in ('{"family":1,"family":2}','{"x":NaN}'):
++                path.write_text(raw)
++                with self.assertRaises(LoopSchemaError):read_metadata(path)
++
++    def test_callable_contract_inspection_does_not_execute_callable(self):
++        # This is a sentinel function for inspect.signature, never a factory/model.
++        def signature_only(*, prefix_blocks, suffix_blocks):
++            raise AssertionError('schema must never invoke a constructor')
++        spec={'class_path':signature_only.__module__+'.'+signature_only.__qualname__,
++              'constructor_kwargs':{'prefix_blocks':1,'suffix_blocks':1}}
++        validate_constructor(spec,signature_only)
++        spec['constructor_kwargs']['unknown']=1
++        with self.assertRaisesRegex(LoopSchemaError,'fields'):validate_constructor(spec,signature_only)
++
++
++if __name__=='__main__':unittest.main()

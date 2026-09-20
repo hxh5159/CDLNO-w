@@ -1,0 +1,145 @@
+diff --git a/PDE-Solving-StandardBenchmark/cdlno_entry.py b/PDE-Solving-StandardBenchmark/cdlno_entry.py
+index b7ef7bf..3f42891 100644
+--- a/PDE-Solving-StandardBenchmark/cdlno_entry.py
++++ b/PDE-Solving-StandardBenchmark/cdlno_entry.py
+@@ -34,6 +34,10 @@ def parse_args(parser, task, argv=None):
+     selector = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
+     selector.add_argument('--model')
+     selected, _ = selector.parse_known_args(tokens)
++    from cdlno.linearno_loop.standard_entry import intercept as intercept_loop
++    loop_args = intercept_loop(parser, task, tokens, selected.model)
++    if loop_args is not None:
++        return loop_args
+     if selected.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):
+         from cdlno.linearno_history.standard_entry import intercept as intercept_history
+         history_args = intercept_history(parser, task, tokens, selected.model)
+diff --git a/PDE-Solving-StandardBenchmark/linearno_entry.py b/PDE-Solving-StandardBenchmark/linearno_entry.py
+index 840182b..75409de 100644
+--- a/PDE-Solving-StandardBenchmark/linearno_entry.py
++++ b/PDE-Solving-StandardBenchmark/linearno_entry.py
+@@ -7,5 +7,8 @@ from cdlno.linearno.standard_entry import (
+ _PureStandardRun = StandardRun
+ 
+ def StandardRun(args, model):
++    if getattr(args, 'linearno_family', None) == 'linearno_loop':
++        from cdlno.linearno_loop.standard_entry import LoopStandardRun
++        return LoopStandardRun(args, model)
+     from cdlno.linearno_history.standard_entry import select_run
+     return select_run(args, model, _PureStandardRun)
+diff --git a/PDE-Solving-StandardBenchmark/model_dict.py b/PDE-Solving-StandardBenchmark/model_dict.py
+index db63120..8578c84 100644
+--- a/PDE-Solving-StandardBenchmark/model_dict.py
++++ b/PDE-Solving-StandardBenchmark/model_dict.py
+@@ -2,6 +2,9 @@ from model import Transolver_Irregular_Mesh, Transolver_Structured_Mesh_2D, Tran
+ 
+ 
+ def get_model(args):
++    if hasattr(args, '_linearno_loop_config'):
++        from cdlno.linearno_loop.standard_entry import model_module
++        return model_module(args)
+     if hasattr(args, '_linearno_history_config'):
+         from cdlno.linearno_history.standard_entry import model_module
+         return model_module(args)
+diff --git a/cdlno/experiment.py b/cdlno/experiment.py
+index af7ad3d..9334c08 100644
+--- a/cdlno/experiment.py
++++ b/cdlno/experiment.py
+@@ -119,9 +119,9 @@ class Experiment:
+                         ('cdlno_run_dir' if hasattr(args, 'cdlno_run_dir') else 'run_dir'))
+         if getattr(args, 'msar_family', None) == 'msar_lno':
+             self.family, self.run_key = 'msar_lno', 'msar_run_dir'
+-        if getattr(args, 'linearno_family', None) in ('linearno', 'linearno_history'):
++        if getattr(args, 'linearno_family', None) in ('linearno', 'linearno_history', 'linearno_loop'):
+             self.family, self.run_key = args.linearno_family, 'linearno_run_dir'
+-        self.resuming = self.family in ('linearno', 'linearno_history') and getattr(args, 'resume', False)
++        self.resuming = self.family in ('linearno', 'linearno_history', 'linearno_loop') and getattr(args, 'resume', False)
+         requested = getattr(args, self.run_key)
+         self.directory = Path(requested).resolve() if requested is not None else default_directory(task)
+         if evaluation or self.resuming:
+@@ -147,13 +147,15 @@ class Experiment:
+                            hparams=_json(hparams), parameter_count_status='pending_model_construction',
+                            parameters=None, architecture=None, environment=self._environment(),
+                            code=self._code(), command=sys.argv, cwd=str(Path.cwd()))
+-        if self.family in ('linearno', 'linearno_history'):
++        if self.family in ('linearno', 'linearno_history', 'linearno_loop'):
+             self.result['seed'] = args.seed
+             self.config['resolved_arguments'] = _json({k: v for k, v in vars(args).items()
+                                                        if not k.startswith('_linearno')})
+             self.config['linearno_profile'] = _json(args._linearno_config)
++            if self.family == 'linearno_loop':
++                self.config['loop_config'] = _json(args._linearno_loop_config)
+         if evaluation:
+-            if self.family in ('linearno', 'linearno_history'):
++            if self.family in ('linearno', 'linearno_history', 'linearno_loop'):
+                 self.result['resolved_arguments'] = self.config['resolved_arguments']
+             else:
+                 self.result['resolved_arguments'] = _json(vars(args))
+@@ -224,7 +226,7 @@ class Experiment:
+         params = dict(total=sum(p.numel() for p in model.parameters()),
+                       trainable=sum(p.numel() for p in model.parameters() if p.requires_grad))
+         parameter = next(model.parameters())
+-        if self.family in ('linearno', 'linearno_history'):
++        if self.family in ('linearno', 'linearno_history', 'linearno_loop'):
+             actual = dict(parameters=params, architecture=self.args._linearno_model_spec,
+                           wrapper_architecture=dict(task=self.task),
+                           device=str(parameter.device), dtype=str(parameter.dtype))
+@@ -291,7 +293,7 @@ class Experiment:
+         if not hasattr(self, '_field_visualizers'):
+             self._field_visualizers = {}
+         if member not in self._field_visualizers:
+-            name = {'kcdno':'KCDNO', 'lrsa_matched':'LRSA matched', 'CDLNO':'CDLNO', 'msar_lno':'MSAR-LNO', 'linearno':'LinearNO', 'linearno_history':'LinearNO history'}[self.family]
++            name = {'kcdno':'KCDNO', 'lrsa_matched':'LRSA matched', 'CDLNO':'CDLNO', 'msar_lno':'MSAR-LNO', 'linearno':'LinearNO', 'linearno_history':'LinearNO history', 'linearno_loop':'Looped LinearNO'}[self.family]
+             self._field_visualizers[member] = PeriodicFields(self.directory, self.task, name,
+                                                            seed=getattr(self.args, 'seed', None), member=member)
+         event = self._field_visualizers[member].after_epoch(model, completed_epoch, total_epochs, **task_inputs)
+diff --git a/cdlno/linearno_history/checkpoint.py b/cdlno/linearno_history/checkpoint.py
+index 1616537..fa23960 100644
+--- a/cdlno/linearno_history/checkpoint.py
++++ b/cdlno/linearno_history/checkpoint.py
+@@ -33,7 +33,9 @@ def source_hash():
+     paths = sorted((root/'cdlno/linearno_history').glob('*.py'))
+     paths += sorted((root/'linearno_history').glob('*.py'))
+     paths += [root/'PDE-Solving-StandardBenchmark/model/LinearNO_History.py']
+-    return digest({str(p.relative_to(root)): legacy.sha256(p) for p in paths})
++    from cdlno.linearno_loop.provenance import legacy_source
++    import hashlib
++    return digest({str(p.relative_to(root)): hashlib.sha256(legacy_source(str(p.relative_to(root)),p.read_text()).encode()).hexdigest() for p in paths})
+ 
+ 
+ def rehash(metadata):
+diff --git a/cdlno/linearno_history/provenance.py b/cdlno/linearno_history/provenance.py
+index 7482e47..7a922e9 100644
+--- a/cdlno/linearno_history/provenance.py
++++ b/cdlno/linearno_history/provenance.py
+@@ -14,6 +14,8 @@ ROUTING_REPLACEMENTS = {'PDE-Solving-StandardBenchmark/cdlno_entry.py': [{'befor
+ 
+ 
+ def baseline_source(relative, text):
++    from cdlno.linearno_loop.provenance import legacy_source
++    text = legacy_source(relative, text)
+     for change in reversed(ROUTING_REPLACEMENTS.get(relative, ())):
+         if text.count(change['after']) != change['count']:
+             raise ValueError('unrecognized history routing source; cannot preserve legacy fingerprint: '+relative)
+@@ -23,7 +25,8 @@ def baseline_source(relative, text):
+ 
+ def research_provenance(base):
+     root=Path(__file__).resolve().parents[2]
+-    actual={p:hashlib.sha256((root/p).read_bytes()).hexdigest() for p in ROUTING_REPLACEMENTS}
++    from cdlno.linearno_loop.provenance import legacy_source
++    actual={p:hashlib.sha256(legacy_source(p,(root/p).read_text()).encode()).hexdigest() for p in ROUTING_REPLACEMENTS}
+     result=dict(base)
+     result['source_sha256']=digest(dict(baseline=base['source_sha256'],history=source_hash(),routing=actual))
+     result['normalized_patch_sha256']=digest(dict(baseline=base['normalized_patch_sha256'],routing=actual))
+diff --git a/tests/history_entry_projection.py b/tests/history_entry_projection.py
+index 2cdf6e7..0c704ad 100644
+--- a/tests/history_entry_projection.py
++++ b/tests/history_entry_projection.py
+@@ -4,6 +4,8 @@ import copy
+ 
+ 
+ def strip_history(tree):
++    from loop_entry_projection import strip_loop
++    tree = strip_loop(tree)
+     class Strip(ast.NodeTransformer):
+         def visit_Call(self,node):
+             node=self.generic_visit(node)

@@ -13,6 +13,8 @@ TESTS |= {"args.cfd_model == 'LinearNO'", "selected.cfd_model == 'LinearNO'", "l
 
 
 def strip_linearno(tree):
+    from linearno_air_projection import strip_air
+    tree = strip_air(tree)
     from history_entry_projection import strip_history
     tree = strip_history(tree)
     class Strip(ast.NodeTransformer):

@@ -1,0 +1,542 @@
+{
+  "repo": "/home/hwz/CDLNO",
+  "captured_utc": "2026-09-19T17:37:05.405993+00:00",
+  "head": "5b991226c5354af3332b2f7306b370aef0950c79",
+  "tree": "a661e0a53d367e09dfe9b5afaabcab29ee8aec63",
+  "branch": "main",
+  "remote": "origin\thttps://github.com/hxh5159/CDLNO-w.git (fetch)\norigin\thttps://github.com/hxh5159/CDLNO-w.git (push)",
+  "baseline_existing": 2210,
+  "baseline_counts": {
+    "tracked": 1549,
+    "untracked": 193,
+    "ignored": 468
+  },
+  "unchanged": 2206,
+  "changed": [
+    {
+      "path": "cdlno/linearno_loop/construction.py",
+      "before": {
+        "path": "cdlno/linearno_loop/construction.py",
+        "classification": "untracked",
+        "size": 3811,
+        "sha256": "280bf6d40d5b5ea64fc8124517ed132662f671c74d4bba40b12402277b6ba966"
+      },
+      "after": {
+        "path": "cdlno/linearno_loop/construction.py",
+        "classification": "untracked",
+        "size": 3793,
+        "sha256": "dd7e64b552c2f3c536403e41688a036edf2b13b13dc26df94cb46efc3e3b0cd8"
+      }
+    },
+    {
+      "path": "cdlno/linearno_loop/core.py",
+      "before": {
+        "path": "cdlno/linearno_loop/core.py",
+        "classification": "untracked",
+        "size": 6914,
+        "sha256": "644967f097fc24e98187514668c733e751c135d4a893933b7e27a9d4b9f50402"
+      },
+      "after": {
+        "path": "cdlno/linearno_loop/core.py",
+        "classification": "untracked",
+        "size": 8698,
+        "sha256": "161d391383d2942a8f3a5d22e9947f9666f16b8531ab20d9acd8df6566833af8"
+      }
+    },
+    {
+      "path": "docs/LOOP_LINEARNO_IMPLEMENTATION_STATUS.md",
+      "before": {
+        "path": "docs/LOOP_LINEARNO_IMPLEMENTATION_STATUS.md",
+        "classification": "untracked",
+        "size": 12411,
+        "sha256": "0428205dc9d6cb30a35380c4f1dad06878cccd064c3c29e4121d518b686ecce0"
+      },
+      "after": {
+        "path": "docs/LOOP_LINEARNO_IMPLEMENTATION_STATUS.md",
+        "classification": "untracked",
+        "size": 14630,
+        "sha256": "d8cb82be2cbf638a41927549adf7cab03581683732abe16d673e52d439605969"
+      }
+    },
+    {
+      "path": "tests/loop_linearno/test_sr_core.py",
+      "before": {
+        "path": "tests/loop_linearno/test_sr_core.py",
+        "classification": "untracked",
+        "size": 20495,
+        "sha256": "64d49baf4867923f34b4f0ea5b099e54aefca089e2b61b8afd86f0077133581e"
+      },
+      "after": {
+        "path": "tests/loop_linearno/test_sr_core.py",
+        "classification": "untracked",
+        "size": 20427,
+        "sha256": "1a9051da1a2e42557d73de9bce8c6d556868ffba2d5b4098a772a73ddc740fe9"
+      }
+    }
+  ],
+  "unexpected_changes": [],
+  "unexpected_new": [],
+  "unexpected_ignored": [],
+  "allowed_ignored": "docs/loop_linearno_audit/ll5/*.log; no new cache/run directory",
+  "new_files": [
+    {
+      "path": "docs/LOOP_LINEARNO_CORE_REPORT.md",
+      "classification": "untracked",
+      "size": 17141,
+      "sha256": "3a3ed65767c526d7932e55d4d765ea646daf685bfeec6969f3059b61e6186fb1"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/accounting.json",
+      "classification": "untracked",
+      "size": 34733,
+      "sha256": "e988448a473ea37b6439dcb646f75b89f6c6123bbc7a063e80a067da4c9b4070"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/attnres-report.json",
+      "classification": "untracked",
+      "size": 14113,
+      "sha256": "2d6211e88c2f742f0339ba9334bc2b80d1e7c78188a0f52b031a7f30d97e278b"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/before/cdlno/linearno_loop/construction.py",
+      "classification": "untracked",
+      "size": 3811,
+      "sha256": "280bf6d40d5b5ea64fc8124517ed132662f671c74d4bba40b12402277b6ba966"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/before/cdlno/linearno_loop/core.py",
+      "classification": "untracked",
+      "size": 6914,
+      "sha256": "644967f097fc24e98187514668c733e751c135d4a893933b7e27a9d4b9f50402"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/before/docs/LOOP_LINEARNO_IMPLEMENTATION_STATUS.md",
+      "classification": "untracked",
+      "size": 12411,
+      "sha256": "0428205dc9d6cb30a35380c4f1dad06878cccd064c3c29e4121d518b686ecce0"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/before/tests/loop_linearno/test_sr_core.py",
+      "classification": "untracked",
+      "size": 20495,
+      "sha256": "64d49baf4867923f34b4f0ea5b099e54aefca089e2b61b8afd86f0077133581e"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/body-report.json",
+      "classification": "untracked",
+      "size": 407022,
+      "sha256": "dea7e58cec7f347d9b2b32fda6e48483f26bf2228cedefa6f36e2b000ba3e6ce"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/delivery-review.json",
+      "classification": "untracked",
+      "size": 3218,
+      "sha256": "65e4c412c34d6081f6e6536e919ccd0b2ffc6c389ca53d16e0707ad1e1e3d1ee"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/environment.json",
+      "classification": "untracked",
+      "size": 407,
+      "sha256": "10dbfe94b689c01f4a02978d3282712659da99f27f7ad1af25772e45d52dc190"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/finalize_evidence.py",
+      "classification": "untracked",
+      "size": 10054,
+      "sha256": "6d214f797c28ad432691bdf7ca49d0b4b0ea150a7c2dcfe71a6403eb26b78757"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/lb-first-report.json",
+      "classification": "untracked",
+      "size": 1905497,
+      "sha256": "7b06aefc159f49f9181f19d381dae6c92eaea3817a7cf28e1ec657227c60d75b"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/lb-report.json",
+      "classification": "untracked",
+      "size": 1969066,
+      "sha256": "f562dd96b32724b3742c4286e2329895f43db927960bab9e527cad5241008047"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/lb-roundoff.json",
+      "classification": "untracked",
+      "size": 3146,
+      "sha256": "a98971c11b9e294f43ad284ad7627f37fc1a46470d667d826465a12eb866ac64"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno_l2_parity_report.json",
+      "classification": "untracked",
+      "size": 215007,
+      "sha256": "f410cd9865d56a63b6d08bbec8df80e77c27b5d8c9a6419c8e2185dfef734c9e"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno_l3_parity_report.json",
+      "classification": "untracked",
+      "size": 583796,
+      "sha256": "a648d0fa2f662e3c9cca4f0eb4bd73270f958a170eb85b1dbc7cb28a384e5d41"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno_l3_structure_report.json",
+      "classification": "untracked",
+      "size": 28760,
+      "sha256": "183abdc19bdc41954dfc807f1e30a8034bc108c50290958814e8c347f5058199"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno_l4_integration_report.json",
+      "classification": "untracked",
+      "size": 14572,
+      "sha256": "e413f5f3b3df46b54a59bf912a14bdf500e5ae4c28b7c4b40c8da9dde4abc23e"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno_l5_report.json",
+      "classification": "untracked",
+      "size": 44709,
+      "sha256": "ab52c5b2077d5cfd61d3259c530872465ed843ef3517e378a1967510c684102b"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno_l6_model_report.json",
+      "classification": "untracked",
+      "size": 184153,
+      "sha256": "54db3ddc42ba507e8ef470c552ae830137760b6d6f45f38fd149c18058161b56"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno_l7_model_report.json",
+      "classification": "untracked",
+      "size": 299545,
+      "sha256": "2ed07ee2666691cfe3067c0997cb3c5956804a8a81a5b427addd9a08d164e82d"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno_r2_report.json",
+      "classification": "untracked",
+      "size": 1583221,
+      "sha256": "f102b0ab8d6b84c3a2c1244e7340dc7f983fce38567feb5073ced475ef31267a"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno_r3_report.json",
+      "classification": "untracked",
+      "size": 39338,
+      "sha256": "da5dbca868c6585218ba10fd5d5e72b8676e8b8c14e575918fbec1159112c697"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno_r4_report.json",
+      "classification": "untracked",
+      "size": 20768,
+      "sha256": "8866042e580dcfdc64dd8df1efbb837bb3a87d9c012ccfae6dfc25c281e3e0d7"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno_r5_report.json",
+      "classification": "untracked",
+      "size": 31677,
+      "sha256": "7618c8f49077de0a3419bfbf9c3d9e12eb218b447bdb4da4f48e54ee03ed7264"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/modes-report.json",
+      "classification": "untracked",
+      "size": 38578,
+      "sha256": "619588a15eaf9fa06761b54531a3405585e7d35e26386617f6294b565d2420b7"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/numeric-summary.json",
+      "classification": "untracked",
+      "size": 2859,
+      "sha256": "e06818c4e8a1de68f7d0d5b1a027c024e78ab6c36d8b3b5eef75dc771db91bb8"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/prior-stage-recheck.json",
+      "classification": "untracked",
+      "size": 39,
+      "sha256": "a9af224cd184fbeb5e827b6b9ab3803f1934100803c00d000655dac1a030eba5"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/rb-report.json",
+      "classification": "untracked",
+      "size": 2701872,
+      "sha256": "041e23d30d0eeb71a3808aa1ae4350eaf18a8e711a7729b8d4d2b4dc58ba02c1"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/regression-progress.jsonl",
+      "classification": "untracked",
+      "size": 6227,
+      "sha256": "31ab516bc4023dd90c0bfa7f0a6ea4af064c3579821900468563331b35e25aa6"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/regression-results.json",
+      "classification": "untracked",
+      "size": 18779,
+      "sha256": "41f09a492c095e67eb4714a044c9e2cf8c50a2a13e9d9059a663549b32c623a7"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/regression-summary.json",
+      "classification": "untracked",
+      "size": 2097,
+      "sha256": "607fafb8b2ca3866210851f13cd3d6cb484fa04e03fce6280b2f1eedb6cbe0d1"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/reproduce_roundoff.py",
+      "classification": "untracked",
+      "size": 1617,
+      "sha256": "42555cc4b177365739513b06d884fc339244571980a5d4970db2bb7f07a2b91c"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/run_existing_regressions.py",
+      "classification": "untracked",
+      "size": 2680,
+      "sha256": "9383e3fade83ba11da3d311ce487bde4f32cc11136e4b84c26b483d06c0dc46e"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/source.diff",
+      "classification": "untracked",
+      "size": 55942,
+      "sha256": "a27b1773e4f256a20e9f9dd657a2e9111ac1eff492cbea0db73bde19b9300ffe"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/sr-parity.json",
+      "classification": "untracked",
+      "size": 5083106,
+      "sha256": "089bcffc06405e6dc27206a6b8c9dd21d82d7e6448814e529a9ea2ae5f975953"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/start-manifest.json",
+      "classification": "untracked",
+      "size": 473176,
+      "sha256": "e336ee1e1b915d7a19217a8553d59bff6ebfc75e782e4972ea29eb4975793e24"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/start-staged.diff",
+      "classification": "untracked",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/start-status.txt",
+      "classification": "untracked",
+      "size": 10222,
+      "sha256": "a444feed8312059a22ac61f1e2b9dd1e2594a0e7b8a822b07091e811bbf2f85c"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/start-tracked.diff",
+      "classification": "untracked",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/test-environment.json",
+      "classification": "untracked",
+      "size": 1670,
+      "sha256": "4c9b5dc507cb4c7db3b62ba5e3a355ecb771b920567e01e637e51eada349d52c"
+    },
+    {
+      "path": "tests/loop_linearno/lb_oracle.py",
+      "classification": "untracked",
+      "size": 1733,
+      "sha256": "401d256ff9bb79143b7b825b7785c21cd306b48e656d39ddad3da60f1c4ce287"
+    },
+    {
+      "path": "tests/loop_linearno/lb_support.py",
+      "classification": "untracked",
+      "size": 2412,
+      "sha256": "3d7485da34f0a4b0851b29430cdd4a7fbf24ad448c426a0ee36e580352efd9b8"
+    },
+    {
+      "path": "tests/loop_linearno/test_lb_core.py",
+      "classification": "untracked",
+      "size": 13033,
+      "sha256": "3f8d14e584d35b43d3f2eb10e7fde714220b565ac3c39db834ceae1c48a1eb43"
+    },
+    {
+      "path": "tests/loop_linearno/test_modes.py",
+      "classification": "untracked",
+      "size": 12852,
+      "sha256": "3a41d212aa78158b435396ee9121edd1e08a8093525f9e28385f563399a531d3"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/lb-first-tests.log",
+      "classification": "ignored",
+      "size": 3273,
+      "sha256": "da8ef9db5709aabd3a985469b0e4f2b46748f7a9963d5ab0e526878e4df09270"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/lb-tests.log",
+      "classification": "ignored",
+      "size": 956,
+      "sha256": "1d1f503f1771ff21335fd4ff38b4548293b8813eb569ef6d2723932bec708021"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno.test_air_entry.log",
+      "classification": "ignored",
+      "size": 647,
+      "sha256": "d41e0a38f61e8135aa49c995e6add143997db732049d60aafbb90221ebceaa14"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno.test_air_objective_decision.log",
+      "classification": "ignored",
+      "size": 946,
+      "sha256": "89d88c0acf7217c5dafb83c4cc44bed496f3785d18b6d4d1d97f48b644dcb134"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno.test_airfrans_model.log",
+      "classification": "ignored",
+      "size": 1486,
+      "sha256": "2da2491cb82baf0e3d80a297fdcf846b3b61de5a9c4f0b7ef2b02db6c839a3c5"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno.test_attention_parity.log",
+      "classification": "ignored",
+      "size": 1054,
+      "sha256": "e245a6103552559da747d194ed21efa77d11379f986a5e689040998c92117278"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno.test_attention_structure.log",
+      "classification": "ignored",
+      "size": 1849,
+      "sha256": "e693b988152ed072c4f24f47a616c3e547001130c94e82679d3922d9c2e13dcc"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno.test_car_entry.log",
+      "classification": "ignored",
+      "size": 774,
+      "sha256": "075b06f0b01609860b687334e2d86c7a440c11bbfd522571826fae771a06a31b"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno.test_car_metrics.log",
+      "classification": "ignored",
+      "size": 870,
+      "sha256": "9404f7728bd21fe947cf5d727d0472491951bb70a9c5083636a78604f9d1a7f9"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno.test_car_objective_decision.log",
+      "classification": "ignored",
+      "size": 614,
+      "sha256": "d82f7c152e1086e69e68a95546689773985aebeb88a4039639f8a2900ff43f9e"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno.test_converter.log",
+      "classification": "ignored",
+      "size": 467,
+      "sha256": "27f1e10e86c0736d040db78a2d0088c422e33fcc230e4f23bac9fe8c757219d7"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno.test_history_core.log",
+      "classification": "ignored",
+      "size": 2318,
+      "sha256": "1b9ecc23135394efda428b62d1516258948b83fd8caaa11f2473ae97205c391e"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno.test_history_integration.log",
+      "classification": "ignored",
+      "size": 2283,
+      "sha256": "63bb902cc2843e2d0dede483f539159adadfeb756262d94c9612a0adaa85e7e6"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno.test_history_k.log",
+      "classification": "ignored",
+      "size": 2310,
+      "sha256": "e06ed7ed69ac93c647dfed8988c0581f586f5cf1f92cbe452f1e79d904d30906"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno.test_history_schema.log",
+      "classification": "ignored",
+      "size": 1800,
+      "sha256": "c224ad5750d6a64fc32842831fb02071ce616eed156e42383d6b009930f10494"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno.test_latent_attnres.log",
+      "classification": "ignored",
+      "size": 2426,
+      "sha256": "7e6ff07f616b9cb0746d1b8a2d811382da88d9eac09020c0c55ab3a829cab815"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno.test_legacy.log",
+      "classification": "ignored",
+      "size": 4593,
+      "sha256": "7431accea85a2e65d91818aa8b643c9c8a6fa280b233644bf6b1ef8db3a6a866"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno.test_profiles.log",
+      "classification": "ignored",
+      "size": 1102,
+      "sha256": "80d2e2589921bdb6ca04d8945807bfbe899f5301f6840a2af9c5539342d6f7f7"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno.test_rng.log",
+      "classification": "ignored",
+      "size": 332,
+      "sha256": "667c85f13cda8cdecc3bcb8bcab4bd415e0dc4db3dee2f6e1875c88c37edb049"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno.test_schema.log",
+      "classification": "ignored",
+      "size": 941,
+      "sha256": "f4e7dfa6e38a518d5bea7d14b81c47e17e5398bccf5e88d32fbc093cd3b2bbc8"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno.test_shapenet_model.log",
+      "classification": "ignored",
+      "size": 1294,
+      "sha256": "62e173e62f0142830d86b11083f5c58068a54cf1f2504f151e24b45527603625"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno.test_standard_model.log",
+      "classification": "ignored",
+      "size": 1326,
+      "sha256": "97df29d23ee98da594b81a6caaed28d3568af43f540234a53da52da3ea479117"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno.test_standard_structure.log",
+      "classification": "ignored",
+      "size": 1171,
+      "sha256": "66b7acb0fd951432d8326243dab414c3113f76c4f3b916b95cd3a822af6754e7"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno.test_static_integration.log",
+      "classification": "ignored",
+      "size": 35152,
+      "sha256": "1190eeda339d024d9cbab8b819d68fc6fa8eaea4bcbbcaaa5fe751178d71c615"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/linearno.test_temporal_integration.log",
+      "classification": "ignored",
+      "size": 15894,
+      "sha256": "f7a449820aaa4194b42f89c612af38d7c1a1cfa1b242e83d71bf5761fd4e39e1"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/loop-tests.log",
+      "classification": "ignored",
+      "size": 11556,
+      "sha256": "fc4205747f4dfc2d6d682c1f22339929739a548e97b81d590efd2465540a8320"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/modes-tests.log",
+      "classification": "ignored",
+      "size": 786,
+      "sha256": "ad87b586d87df2db81b45c8ea560ac2b9c405bc9edaf128f3c19bdefbb98d901"
+    },
+    {
+      "path": "docs/loop_linearno_audit/ll5/monitor.log",
+      "classification": "ignored",
+      "size": 1592,
+      "sha256": "acb905e6e69c28fad134afe5238b6f0f66fcc3e80be4e0dc8baa50834417a8be"
+    }
+  ],
+  "self_generated_unhashed": [
+    "docs/loop_linearno_audit/ll5/end-freeze.json",
+    "docs/loop_linearno_audit/ll5/end-status.txt"
+  ],
+  "checks": {
+    "diff_check": {
+      "exit_code": 0,
+      "output": ""
+    },
+    "unstaged": {
+      "exit_code": 0,
+      "output": ""
+    },
+    "staged": {
+      "exit_code": 0,
+      "output": ""
+    },
+    "tracked_diff_unchanged": true,
+    "staged_diff_unchanged": true
+  },
+  "pass": true
+}

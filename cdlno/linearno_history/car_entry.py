@@ -244,7 +244,10 @@ class CarRun:
             self.complete_epoch(epoch+1,model,metrics)
         # Preserve industrial local whole-object naming; metadata/state pairs are
         # authoritative for new-family eval/resume, never external pickle fallback.
-        torch.save(model,Path(path)/f'model_{hparams["nb_epochs"]}.pth')
+        if hasattr(self, 'export_final'):
+            self.export_final(model)
+        else:
+            torch.save(model,Path(path)/f'model_{hparams["nb_epochs"]}.pth')
         return model
 
 def run_cli(args):

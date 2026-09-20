@@ -1,0 +1,18 @@
+[
+  {
+    "module": "linearno.test_history_k",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "-c",
+      "import json,sys,unittest\nr=unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromName(sys.argv[1]))\nprint('LL9_RESULT_JSON='+json.dumps(dict(tests=r.testsRun,failures=[(str(t),msg) for t,msg in r.failures],errors=[(str(t),msg) for t,msg in r.errors],skipped=[(str(t),why) for t,why in r.skipped])))\nsys.exit(not r.wasSuccessful())\n",
+      "linearno.test_history_k"
+    ],
+    "exit_code": 0,
+    "seconds": 32.185859654000524,
+    "tests": 13,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  }
+]

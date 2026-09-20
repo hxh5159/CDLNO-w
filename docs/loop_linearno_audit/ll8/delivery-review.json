@@ -1,0 +1,44 @@
+{
+  "stage": "LL8",
+  "status": "PASS",
+  "tests": {
+    "full_loop_methods": 88,
+    "pass_": 86,
+    "skip": 2,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 54.95,
+    "final_targeted_methods": 6,
+    "final_targeted_pass": 6,
+    "final_targeted_seconds": 5.429,
+    "shell_previews": 184,
+    "negative_cases": 384,
+    "paired_models": 144,
+    "recorded_native_runs": 24,
+    "document_bash_blocks": 8,
+    "shell_syntax": [
+      "tran_evaluate/linearno_loop/airfoil.sh",
+      "tran_evaluate/linearno_loop/airfrans.sh",
+      "tran_evaluate/linearno_loop/car.sh",
+      "tran_evaluate/linearno_loop/darcy.sh",
+      "tran_evaluate/linearno_loop/elasticity.sh",
+      "tran_evaluate/linearno_loop/ns.sh",
+      "tran_evaluate/linearno_loop/pipe.sh",
+      "tran_evaluate/linearno_loop/plasticity.sh"
+    ]
+  },
+  "reviewed": {
+    "launch": "original launcher argv, actual parser, explicit bridge to native entry; Car uses LL7 loop contract",
+    "fairness": "same backbone hashes and data order across modes; RNG-neutral observations, native scientific steps exact versus LL7",
+    "records": "actual initial models/counts, first-forward hook schedule, immutable existing manifests, independent Air members",
+    "compatibility": "all production/schema/model/path/old launcher files byte-equal; all legacy/loop source fingerprints equal",
+    "user_flow": "portable remote paths, GPU mask mapping, quoted spaces, errors propagated, evaluation only after success"
+  },
+  "not_run": [
+    "real datasets/training/VTK metrics",
+    "GPU/remote Python3.10 torch2.11 cu128",
+    "formal144-run matrix",
+    "full-width industrial training",
+    "LL9+"
+  ]
+}

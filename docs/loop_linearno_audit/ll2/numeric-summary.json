@@ -1,0 +1,48 @@
+{
+  "attnres": {
+    "cpu/torch.float64": {
+      "cases": 3,
+      "max_abs": 2.6645352591003757e-15,
+      "max_mean_abs": 1.0436096431476472e-15,
+      "max_relative": 5.681955128351492e-14,
+      "max_mean_relative": 8.146998358784713e-16
+    },
+    "cpu/torch.float32": {
+      "cases": 3,
+      "max_abs": 2.86102294921875e-06,
+      "max_mean_abs": 1.3828277587890625e-06,
+      "max_relative": 4.215374407212974e-05,
+      "max_mean_relative": 7.541249696418535e-07
+    },
+    "cuda/torch.float32": {
+      "cases": 3,
+      "max_abs": 9.5367431640625e-07,
+      "max_mean_abs": 4.76837158203125e-07,
+      "max_relative": 5.274400696220892e-05,
+      "max_mean_relative": 8.557300551708309e-07
+    }
+  },
+  "body": {
+    "cuda/torch.float32": {
+      "cases": 12,
+      "max_abs": 0.0,
+      "max_mean_abs": 0.0,
+      "max_relative": 0.0,
+      "max_mean_relative": 0.0
+    },
+    "cpu/torch.float64": {
+      "cases": 24,
+      "max_abs": 0.0,
+      "max_mean_abs": 0.0,
+      "max_relative": 0.0,
+      "max_mean_relative": 0.0
+    },
+    "cpu/torch.float32": {
+      "cases": 24,
+      "max_abs": 0.0,
+      "max_mean_abs": 0.0,
+      "max_relative": 0.0,
+      "max_mean_relative": 0.0
+    }
+  }
+}

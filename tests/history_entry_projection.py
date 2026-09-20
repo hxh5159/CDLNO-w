@@ -4,6 +4,8 @@ import copy
 
 
 def strip_history(tree):
+    from loop_entry_projection import strip_loop
+    tree = strip_loop(tree)
     class Strip(ast.NodeTransformer):
         def visit_Call(self,node):
             node=self.generic_visit(node)

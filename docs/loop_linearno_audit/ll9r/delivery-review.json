@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "checks": [
+    "RB-only dtype assembly; shared primitive, SR/LB bodies, baseline models frozen",
+    "192 precision captures: 172 existing exact, 20 repaired, 128 SR/LB exact",
+    "144 CUDA cases pass without AMP fallback; 96 counts unchanged",
+    "legacy lazy imports, mutation-sensitive source/AST guards, 689 final regression results verified",
+    "24 native synthetic closures and 9 immutable old-archive replays complete",
+    "HEAD/tree/staged unchanged; all original files accounted for; Python 3.10 grammar and diff check pass"
+  ],
+  "not_run": [
+    "real data/training/convergence/accuracy/paper results",
+    "remote Torch2.11/cu128",
+    "full-width GPU training",
+    "compile/distributed",
+    "LL10"
+  ]
+}

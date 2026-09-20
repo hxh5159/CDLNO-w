@@ -1,0 +1,1133 @@
+--- /dev/null
++++ cdlno/linearno_loop/checkpoint.py
+@@ -0,0 +1,145 @@
++"""Loop-only epoch pairs. Native atomic/manifest/RNG protocol, distinct schema.
++
++The transaction follows cdlno.linearno.checkpoint; metadata never falls back to
++pure/history. Tensor payloads are read only after JSON/config/manifest checks.
++"""
++import json
++from pathlib import Path
++import torch
++from cdlno.training_state import _atomic, _same, _model_state_check
++from cdlno.linearno.checkpoint import sha256, strict_load, resume_state, restore_random_state
++from linearno_loop.schema import read_metadata, validate_metadata, validate_constructor
++from linearno_loop.contracts import require_equal, seal
++
++FORMAT = 'linearno-loop-epoch-pair-v1'
++IMMUTABLE = ('family','architecture_extension','schema_version','config_version','config_hash',
++             'resolved_config','load_policy','loop_spec','model_spec','profile_spec','data_spec',
++             'objective_spec','evaluation_spec','provenance_spec','normalizer_spec','ensemble_manifest')
++
++
++def immutable_equal(initial, metadata):
++    for key in IMMUTABLE:require_equal(initial[key],metadata[key],'immutable.'+key)
++
++
++def validate_model(model, metadata):
++    validate_metadata(metadata,constructor=type(model))
++    if getattr(model,'config_hash',None)!=metadata['config_hash']:
++        raise ValueError('model resolved config differs from checkpoint')
++    model.loop.validate_structure()
++    from .construction import build_from_config
++    template=build_from_config(metadata['resolved_config']).to(dtype=next(model.parameters()).dtype)
++    _model_state_check(model.state_dict(),template)
++    for key in ('prefix_blocks','recurrent_core_blocks','loop_repeats','suffix_blocks','residual_mode'):
++        require_equal(metadata['loop_spec'][key],getattr(model.loop,key),'model.loop.'+key)
++
++
++def validate_optimizer_state(saved,optimizer):
++    if set(saved)!={'state','param_groups'} or len(saved['param_groups'])!=len(optimizer.param_groups):
++        raise ValueError('resume optimizer parameter groups mismatch')
++    ids=[]
++    for group,current in zip(saved['param_groups'],optimizer.param_groups):
++        if len(group['params'])!=len(current['params']):raise ValueError('resume optimizer group size mismatch')
++        for index,p in zip(group['params'],current['params']):
++            if type(index) is not int or index in ids:raise ValueError('resume optimizer duplicate/invalid parameter id')
++            ids.append(index)
++            state=saved['state'].get(index,{})
++            if state and set(state)!={'step','exp_avg','exp_avg_sq',*(['max_exp_avg_sq'] if group['amsgrad'] else [])}:
++                raise ValueError('resume optimizer moment keys mismatch')
++            for name,value in state.items():
++                if not isinstance(value,torch.Tensor) or not torch.isfinite(value).all():raise ValueError('nonfinite/invalid optimizer state')
++                if name=='step':
++                    if value.ndim!=0 or value.item()<0:raise ValueError('optimizer step must be nonnegative scalar')
++                elif value.shape!=p.shape or value.dtype!=p.dtype:raise ValueError('resume optimizer moment shape/dtype mismatch')
++    if set(saved['state'])-set(ids):raise ValueError('resume optimizer contains unknown parameter ids')
++
++
++def inspect_checkpoint(directory, selector, *, expected=None):
++    directory = Path(directory).resolve()
++    if selector in ('latest', 'final'):
++        pointer = json.loads((directory/'checkpoints'/f'{selector}.json').read_text())
++        name = pointer['manifest']
++        if Path(name).name != name or sha256(directory/'checkpoints'/name) != pointer['sha256']:
++            raise ValueError('checkpoint pointer checksum/path mismatch')
++    else:
++        import re
++        if not re.fullmatch(r'epoch_[0-9]{4,}', selector or ''):
++            raise ValueError('--checkpoint requires final, latest or epoch_XXXX')
++        name = selector + '.json'
++    manifest_path = directory/'checkpoints'/name
++    manifest = json.loads(manifest_path.read_text())
++    if manifest.get('format') != FORMAT:
++        raise ValueError('checkpoint family/format mismatch')
++    for key, subdir, suffix in (('checkpoint', 'checkpoints', '.pt'), ('weights', 'weights', '.pt'),
++                                ('metadata', 'checkpoints', '.metadata.json')):
++        path = (directory/manifest[key]['path']).resolve()
++        if path.parent != directory/subdir or path.name != manifest_path.stem + suffix:
++            raise ValueError('checkpoint pair path mismatch')
++        if sha256(path) != manifest[key]['sha256']:
++            raise ValueError(f'checkpoint {key} checksum mismatch')
++    metadata = read_metadata(directory/manifest['metadata']['path'])
++    if expected is not None:
++        require_equal(expected, metadata['resolved_config'], 'checkpoint.resolved_config')
++    immutable_equal(read_metadata(directory/'architecture.json'), metadata)
++    if metadata['resume_state']['epoch'] != manifest['epoch']:
++        raise ValueError('metadata/manifest epoch mismatch')
++    if selector == 'final' and metadata['resume_state']['checkpoint_role'] != 'final':
++        raise ValueError('final evaluation requires final checkpoint')
++    return metadata, manifest_path
++
++
++def read_pair(manifest_path, *, expected=None):
++    manifest_path = Path(manifest_path)
++    directory = manifest_path.parent.parent
++    metadata, _ = inspect_checkpoint(directory, manifest_path.stem, expected=expected)
++    manifest = json.loads(manifest_path.read_text())
++    saved = torch.load(directory/manifest['checkpoint']['path'], map_location='cpu', weights_only=True)
++    weights = torch.load(directory/manifest['weights']['path'], map_location='cpu', weights_only=True)
++    if not isinstance(saved, dict) or set(saved) != {'metadata', 'model'} or saved['metadata'] != metadata:
++        raise ValueError('checkpoint metadata/payload mismatch')
++    if not _same(saved['model'], weights):
++        raise ValueError('checkpoint and independent weights differ')
++    return metadata, weights
++
++
++def save_pair(directory, model, metadata):
++    directory = Path(directory)
++    validate_model(model, metadata)
++    epoch = metadata['resume_state']['epoch']
++    if epoch < 1:
++        raise ValueError('only completed epochs can be committed')
++    ckdir, wdir = directory/'checkpoints', directory/'weights'
++    ckdir.mkdir(exist_ok=True); wdir.mkdir(exist_ok=True)
++    name = f'epoch_{epoch:04d}'
++    manifest_path = ckdir/(name+'.json')
++    state = {k: v.detach().cpu().clone() for k,v in model.state_dict().items()}
++    if manifest_path.exists():
++        old_metadata, old_state = read_pair(manifest_path, expected=metadata['resolved_config'])
++        if old_metadata != metadata or not _same(state, old_state):
++            raise ValueError('refusing to overwrite a committed epoch')
++        return manifest_path
++    # A per-run exclusive write lock fails closed on concurrent writers.
++    import fcntl
++    with (directory/'.checkpoint.lock').open('a') as lock:
++        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
++        if manifest_path.exists():
++            raise ValueError('epoch was concurrently committed')
++        committed = [int(p.stem.split('_')[1]) for p in ckdir.glob('epoch_*.json')
++                     if '.metadata.' not in p.name]
++        if committed and epoch <= max(committed):
++            raise ValueError('refusing to roll back committed checkpoint progress')
++        paths = dict(checkpoint=ckdir/(name+'.pt'), weights=wdir/(name+'.pt'), metadata=ckdir/(name+'.metadata.json'))
++        for path in paths.values():
++            if path.exists():
++                raise ValueError(f'uncommitted file exists; preserve it for inspection: {path}')
++        _atomic(paths['checkpoint'], dict(model=state, metadata=metadata))
++        _atomic(paths['weights'], state)
++        _atomic(paths['metadata'], metadata, json_file=True)
++        record = dict(format=FORMAT, epoch=epoch,
++                      **{k: dict(path=str(p.relative_to(directory)), sha256=sha256(p)) for k,p in paths.items()})
++        _atomic(manifest_path, record, json_file=True)
++        pointer = dict(manifest=manifest_path.name, sha256=sha256(manifest_path))
++        _atomic(ckdir/'latest.json', pointer, json_file=True)
++        if metadata['resume_state']['checkpoint_role'] == 'final':
++            _atomic(ckdir/'final.json', pointer, json_file=True)
++        _atomic(directory/'model.pt', state)  # hxh convenience weights; verified pair is authoritative
++    return manifest_path
+--- /dev/null
++++ cdlno/linearno_loop/provenance.py
+@@ -0,0 +1,41 @@
++"""Exact LL6 routing projection preserves ALL old resume source bytes.
++
++Loop provenance always hashes real sources including the routing/projection.
++Only these exact additions are stripped for old pure/history fingerprints;
++missing or changed snippets fail closed. No saved hash is bypassed.
++"""
++import ast
++import hashlib
++from pathlib import Path
++import subprocess
++from cdlno.linearno.profiles import digest
++from linearno_loop.schema import REFERENCE_PINS
++
++REPLACEMENTS = {'PDE-Solving-StandardBenchmark/cdlno_entry.py': [{'before': '    selected, _ = selector.parse_known_args(tokens)\n', 'after': '    selected, _ = selector.parse_known_args(tokens)\n    from cdlno.linearno_loop.standard_entry import intercept as intercept_loop\n    loop_args = intercept_loop(parser, task, tokens, selected.model)\n    if loop_args is not None:\n        return loop_args\n', 'count': 1}], 'PDE-Solving-StandardBenchmark/model_dict.py': [{'before': 'def get_model(args):\n', 'after': "def get_model(args):\n    if hasattr(args, '_linearno_loop_config'):\n        from cdlno.linearno_loop.standard_entry import model_module\n        return model_module(args)\n", 'count': 1}], 'PDE-Solving-StandardBenchmark/linearno_entry.py': [{'before': 'def StandardRun(args, model):\n', 'after': "def StandardRun(args, model):\n    if getattr(args, 'linearno_family', None) == 'linearno_loop':\n        from cdlno.linearno_loop.standard_entry import LoopStandardRun\n        return LoopStandardRun(args, model)\n", 'count': 1}], 'cdlno/experiment.py': [{'before': "('linearno', 'linearno_history')", 'after': "('linearno', 'linearno_history', 'linearno_loop')", 'count': 5}, {'before': "'linearno_history':'LinearNO history'}[self.family]", 'after': "'linearno_history':'LinearNO history', 'linearno_loop':'Looped LinearNO'}[self.family]", 'count': 1}, {'before': "            self.config['linearno_profile'] = _json(args._linearno_config)\n", 'after': "            self.config['linearno_profile'] = _json(args._linearno_config)\n            if self.family == 'linearno_loop':\n                self.config['loop_config'] = _json(args._linearno_loop_config)\n", 'count': 1}], 'cdlno/linearno_history/provenance.py': [{'before': 'def baseline_source(relative, text):\n', 'after': 'def baseline_source(relative, text):\n    from cdlno.linearno_loop.provenance import legacy_source\n    text = legacy_source(relative, text)\n', 'count': 1}, {'before': '    actual={p:hashlib.sha256((root/p).read_bytes()).hexdigest() for p in ROUTING_REPLACEMENTS}', 'after': '    from cdlno.linearno_loop.provenance import legacy_source\n    actual={p:hashlib.sha256(legacy_source(p,(root/p).read_text()).encode()).hexdigest() for p in ROUTING_REPLACEMENTS}', 'count': 1}], 'cdlno/linearno_history/checkpoint.py': [{'before': '    return digest({str(p.relative_to(root)): legacy.sha256(p) for p in paths})', 'after': '    from cdlno.linearno_loop.provenance import legacy_source\n    import hashlib\n    return digest({str(p.relative_to(root)): hashlib.sha256(legacy_source(str(p.relative_to(root)),p.read_text()).encode()).hexdigest() for p in paths})', 'count': 1}]}
++
++
++def legacy_source(relative,text):
++    for change in reversed(REPLACEMENTS.get(relative,())):
++        if text.count(change['after'])!=change['count']:
++            raise ValueError('unrecognized loop routing source: '+relative)
++        text=text.replace(change['after'],change['before'])
++    return text
++
++
++def provenance():
++    from cdlno.linearno.standard_entry import provenance as base_provenance
++    base=base_provenance();root=Path(__file__).resolve().parents[2]
++    paths={*(root/'cdlno/linearno_loop').glob('*.py'),*(root/'linearno_loop').glob('*.py'),
++           *(root/'cdlno/linearno').glob('*.py'),*(root/name for name in REPLACEMENTS)}
++    paths.add(root/'cdlno/linearno_history/fair_run.py')
++    sources={str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(paths)}
++    normalized={}
++    for p in sorted(paths):
++        name=str(p.relative_to(root))
++        try:old=subprocess.check_output(['git','show','HEAD:'+name],cwd=root,stderr=subprocess.DEVNULL).decode()
++        except subprocess.CalledProcessError:old=None
++        normalized[name]=dict(before=ast.dump(ast.parse(old)) if old else None,after=ast.dump(ast.parse(p.read_text())))
++    base.update(**REFERENCE_PINS,residual_scaling_version='2606.18524v1',code_version='loop-linearno-LL6-v1',
++        config_schema_version=1,metadata_schema_version=1,source_sha256=digest(dict(base=base['source_sha256'],sources=sources)),
++        normalized_patch_sha256=digest(normalized))
++    return base
+--- /dev/null
++++ cdlno/linearno_loop/standard_entry.py
+@@ -0,0 +1,265 @@
++"""Six Standard entries: loop construction/archives only, native task loops untouched."""
++import argparse
++import copy
++import json
++import os
++from pathlib import Path
++import re
++from types import SimpleNamespace
++from uuid import uuid4
++
++from cdlno.linearno.standard_entry import (
++    ROOT, KEYS, TASKS, ARG_FIELDS, StandardRun as PureStandardRun,
++    model_kwargs, normalizer, verify_data, start, finish,
++)
++from cdlno.linearno.profiles import DEFAULT_PROFILE, PROFILES
++from cdlno.linearno.schema import normalizer_record, unpack_state
++from linearno_loop.config import resolve_config, run_directory_id
++from linearno_loop.contracts import CLI_CONTRACT, HISTORY_FLAGS, OPTIONS, PRESETS, RESIDUAL_MODES, TOPOLOGY_FIELDS
++from linearno_loop.schema import read_metadata, restore_config, make_metadata, write_metadata
++
++
++def _loop_parser():
++    parser=argparse.ArgumentParser(add_help=False,allow_abbrev=False)
++    for flag,spec in CLI_CONTRACT.items():
++        if flag=='--linearno-rank':continue
++        kw=dict(dest=spec['field'],default=argparse.SUPPRESS)
++        if spec['field']=='linearno_loop':kw['choices']=('0','1')
++        elif spec['field']=='topology_preset':kw['choices']=(*PRESETS,'custom')
++        elif spec['field']=='residual_mode':kw['choices']=RESIDUAL_MODES
++        else:kw['type']=int
++        parser.add_argument(flag,**kw)
++    return parser
++
++
++def intercept(parser,task,tokens,selected_model):
++    """Only explicit loop train or saved loop eval/resume selects this adapter."""
++    probe=argparse.ArgumentParser(add_help=False,allow_abbrev=False)
++    probe.add_argument('--eval',type=int,default=0);probe.add_argument('--resume',action='store_true')
++    probe.add_argument('--experiment-dir','--linearno-run-dir',dest='directory',type=Path)
++    intent,_=probe.parse_known_args(tokens)
++    flags,remaining=_loop_parser().parse_known_args(tokens);explicit=vars(flags)
++    path=intent.directory/'architecture.json' if intent.directory else None
++    try:
++        saved_loop=False
++        if (intent.eval or intent.resume) and path is not None and path.is_file():
++            from linearno_loop.contracts import read_json
++            saved_loop=read_json(path).get('family')=='linearno_loop'
++        if not explicit and not saved_loop:return None
++        history={'--'+k for k in HISTORY_FLAGS}|{'--'+k.replace('_','-') for k in HISTORY_FLAGS}
++        if any(t.split('=')[0] in history or t.split('=')[0]=='--linearno-fair-run' for t in tokens):
++            raise ValueError('loop cannot mix history/A/K/fair-run flags, including explicit disabled values')
++        expected=KEYS[1] if task=='elasticity' else KEYS[0]
++        if selected_model is not None and selected_model!=expected:
++            raise ValueError(f'{task} loop requires --model {expected}')
++        if selected_model is None:
++            if not saved_loop:raise ValueError(f'new loop training requires --model {expected}')
++            remaining=['--model',expected,*remaining]
++        if explicit.get('linearno_loop')=='0':
++            if saved_loop or set(explicit)!={'linearno_loop'}:
++                raise ValueError('disabled loop conflicts with loop configuration/checkpoint')
++            from cdlno.linearno.standard_entry import parse_args
++            return parse_args(parser,task,remaining)
++        if 'linearno_loop' in explicit:explicit['linearno_loop']=True
++        if not (intent.eval or intent.resume) and explicit.get('linearno_loop') is not True:
++            raise ValueError('new loop train requires --linearno-loop 1')
++        return parse_loop_args(parser,task,remaining,explicit)
++    except (ValueError,OSError,KeyError,TypeError) as error:parser.error(str(error))
++
++
++def parse_loop_args(parser,task,tokens,loop_explicit):
++    if task not in TASKS:parser.error('LL6 integrates only six Standard tasks')
++    parser.add_argument('--linearno-profile',choices=PROFILES,default=argparse.SUPPRESS)
++    parser.add_argument('--linearno-variant',choices=('plain','temp','conv','conv_temp'),default=argparse.SUPPRESS)
++    parser.add_argument('--linearno-rank',type=int,default=argparse.SUPPRESS)
++    parser.add_argument('--experiment-dir','--linearno-run-dir',dest='linearno_run_dir',type=Path)
++    parser.add_argument('--resume',action='store_true')
++    parser.add_argument('--checkpoint',default=None)
++    args=parser.parse_args(tokens)
++    probe=copy.deepcopy(parser);probe._defaults.clear()
++    for a in probe._actions:a.default=argparse.SUPPRESS
++    explicit=vars(probe.parse_args(tokens))
++    try:
++        if args.eval not in (0,1) or args.eval and args.resume:raise ValueError('choose train, resume or eval')
++        if args.checkpoint and not (args.eval or args.resume):raise ValueError('--checkpoint requires eval/resume')
++        if {'n_layers','slice_num'} & explicit.keys():raise ValueError('loop topology/rank require PCRS and --linearno-rank; no --n-layers/--slice_num')
++        for name,value in dict(downsample=1 if task=='ns' else 5,downsamplex=1,downsampley=1).items():
++            if hasattr(args,name) and getattr(args,name)!=value:raise ValueError(f'loop task grid requires {name}={value}')
++        options={k:v for k,v in loop_explicit.items() if k in OPTIONS}
++        if 'linearno_rank' in explicit:options['linearno_rank']=explicit['linearno_rank']
++        if 'linearno_rank' in options and 'rank_multiplier' in options:raise ValueError('explicit actual rank/multiplier conflict')
++        if options.get('topology_preset') in PRESETS and set(options)&set(TOPOLOGY_FIELDS):
++            raise ValueError('preset and custom P/C/R/S fields are mutually exclusive')
++        overrides={path:explicit[name] for name,path in ARG_FIELDS.items()
++                   if name in explicit and name not in ('n_layers','linearno_rank')}
++        if 'model.unified_pos' in overrides:
++            if overrides['model.unified_pos'] not in (0,1):raise ValueError('unified_pos must be 0 or 1')
++            overrides['model.unified_pos']=bool(overrides['model.unified_pos'])
++        if args.eval or args.resume:
++            from .checkpoint import inspect_checkpoint, immutable_equal
++            if args.linearno_run_dir is None:raise ValueError('loop eval/resume requires explicit --experiment-dir')
++            initial=read_metadata(args.linearno_run_dir/'architecture.json')
++            asserted=dict(options,task=task)
++            if 'linearno_loop' in loop_explicit:asserted['linearno_loop']=loop_explicit['linearno_loop']
++            if 'linearno_profile' in explicit:asserted['profile']=explicit['linearno_profile']
++            config=restore_config(initial,explicit=asserted)['config']
++            for path,value in overrides.items():
++                section,field=path.split('.')
++                if config['profile_spec']['values'][section][field]!=value:
++                    raise ValueError(f'explicit {path} conflicts with checkpoint')
++            metadata,checkpoint=inspect_checkpoint(args.linearno_run_dir,args.checkpoint or ('latest' if args.resume else 'final'),expected=config)
++            immutable_equal(initial,metadata)
++            if args.resume and metadata['resume_state']['epoch']>=config['profile_spec']['values']['training']['epochs']:
++                raise ValueError('run has completed its resolved epochs')
++            args._linearno_metadata=metadata;args._linearno_checkpoint=checkpoint
++        else:
++            config=resolve_config(task,getattr(args,'linearno_profile',DEFAULT_PROFILE),options=options,profile_overrides=overrides)
++        base=config['profile_spec'];s=config['loop_spec']
++        if task=='darcy' and base['profile']=='official_release' and base['values']['training']['epochs']!=500:
++            raise ValueError('Darcy official_release fixes scheduler epochs=500; non-500 training rejected')
++        args.linearno_family='linearno_loop';args.linearno_task=task
++        args._linearno_loop_config=config;args._linearno_config=base
++        args._linearno_model_spec=config['model_spec'];args._linearno_normalizers={}
++        for name,path in ARG_FIELDS.items():
++            section,field=path.split('.');setattr(args,name,base['values'][section][field])
++        args.n_layers=s['unique_depth'];args.linearno_rank=s['resolved_rank'];args.linearno_profile=base['profile']
++        identifier=run_directory_id(config)
++        args.save_name=args.save_name or identifier
++        if not re.fullmatch(r'[A-Za-z0-9_.-]+',args.save_name) or args.save_name in ('.','..'):
++            raise ValueError('save_name must be a filename stem')
++        if args.linearno_run_dir is None:
++            from cdlno.experiment import timestamp
++            args.linearno_run_dir=Path(os.environ.get('CDLNO_RUNS_ROOT',ROOT/'output'))/task/'linearno_loop'/(identifier+'__'+timestamp()+'_'+uuid4().hex[:8])
++        if identifier not in args.linearno_run_dir.name:raise ValueError('loop run directory must contain '+identifier)
++        args.linearno_run_dir=args.linearno_run_dir.resolve()
++        if not (args.eval or args.resume) and args.linearno_run_dir.exists():raise ValueError('new loop run directory already exists')
++        return args
++    except (ValueError,OSError,KeyError,TypeError) as error:parser.error(str(error))
++
++
++def model_module(args):
++    config=args._linearno_loop_config
++    def construct(**kwargs):
++        if kwargs!=config['model_spec']['constructor_kwargs']:raise ValueError('loop factory kwargs mismatch')
++        from .construction import build_from_config
++        return build_from_config(config)
++    return SimpleNamespace(Model=construct)
++
++
++def prepare_loaders(args,train_loader,test_loader):
++    import torch
++    from cdlno.linearno_history.fair_run import GeneratorCollate
++    seeds=args._linearno_loop_config['fair_comparison']['dataloader_generators']
++    for name,loader in (('train',train_loader),('test',test_loader)):
++        if loader.generator is not None:raise ValueError('loop owns the explicit DataLoader generator')
++        generator=torch.Generator().manual_seed(seeds[name])
++        loader.generator=generator
++        if isinstance(loader.sampler,torch.utils.data.RandomSampler):loader.sampler.generator=generator
++        if args.linearno_task=='plasticity':
++            if loader.num_workers!=0:raise ValueError('loop Plasticity resume requires native num_workers=0')
++            loader.collate_fn=GeneratorCollate(loader.collate_fn,generator)
++
++
++class LoopStandardRun(PureStandardRun):
++    """Native observer interface; loop-only metadata and strict continuation."""
++    # prepare/load/save below reuse the existing storage/RNG encodings.
++    def prepare(self, optimizer, scheduler, train_loader, test_loader):
++        prepare_loaders(self.args,train_loader,test_loader)
++        from cdlno.linearno.checkpoint import resume_state, strict_load, restore_random_state
++        from .checkpoint import read_pair, inspect_checkpoint
++        from cdlno.training_state import _optimizer_signature
++        self.optimizer, self.scheduler = optimizer, scheduler
++        self.steps = len(train_loader)
++        self.updates_per_batch = 20 if self.args.linearno_task == 'plasticity' else 1
++        self.optimizer_steps = self.steps * self.updates_per_batch
++        self.generators = {name: loader.generator for name,loader in (('train',train_loader),('test',test_loader)) if loader.generator is not None}
++        self.sampler = {name: dict(type=type(loader.sampler).__name__, epoch_boundary=True,
++                                  replacement=getattr(loader.sampler,'replacement',False))
++                        for name,loader in (('train',train_loader),('test',test_loader))}
++        args = self.args; cfg = args._linearno_config
++        self.scheduler_plan = dict(type=type(scheduler).__name__, epochs=args.epochs,
++            steps_per_epoch=self.steps if type(scheduler).__name__=='OneCycleLR' else 1,
++            total_steps=getattr(scheduler,'total_steps',args.epochs), state_at_construction=scheduler.state_dict())
++        records = {name: normalizer_record(dict(mean=obj.mean,std=obj.std), fit_split='train only',
++            data_checksum=next(iter(args._linearno_data['checksums'].values())),
++            algorithm='UnitTransformer: mean(dim=(0,1)); std(dim=(0,1))+1e-8') for name,obj in args._linearno_normalizers.items()}
++        normalizers = dict(policy='saved_train_fit' if records else 'none',records=records)
++        data = dict(args._linearno_data, ntrain=len(train_loader.dataset), ntest=len(test_loader.dataset),
++                    scheduler=self.scheduler_plan, train_batch_size=train_loader.batch_size,
++                    test_batch_size=test_loader.batch_size, optimizer_signature=_optimizer_signature(self.model,optimizer))
++        data = json.loads(json.dumps(data))  # canonical JSON tuples/lists before immutable comparisons
++        if args.linearno_task in ('ns', 'plasticity'):
++            data['temporal_progress'] = dict(optimizer_updates_per_batch=self.updates_per_batch,
++                scheduler_updates_per_batch=1, forwards_per_train_batch=20 if args.linearno_task == 'plasticity' else 10,
++                time_permutation='per-sample torch.randperm20' if args.linearno_task == 'plasticity' else None,
++                global_step_unit='optimizer updates')
++        data = dict(protocol=cfg['values']['data'],split=data['split'],sampling=data['sampling'],
++            checksums=data['checksums'],scope='synthetic' if str(data['scope']).lower().startswith('synthetic') else 'real',
++            runtime={k:v for k,v in data.items() if k not in ('split','sampling','checksums','scope')})
++        from .provenance import provenance
++        from . import checkpoint as loop_checkpoint
++        prov = provenance()
++        if args.eval or args.resume:
++            saved, path = inspect_checkpoint(self.directory,args._linearno_checkpoint.stem,expected=args._linearno_loop_config)
++            _, weights = read_pair(path,expected=args._linearno_loop_config)
++            for key,actual in (('data_spec',data),('normalizer_spec',normalizers)):
++                if saved[key] != actual:
++                    raise ValueError(f'{key} differs from saved run')
++            if args.resume:
++                if saved['provenance_spec']['source_sha256'] != prov['source_sha256']:
++                    raise ValueError('resume source code differs from saved run')
++                epoch = saved['resume_state']['epoch']
++                # Reject rollback even if a newer pair committed before latest was published.
++                committed = [p for p in (self.directory/'checkpoints').glob('epoch_*.json') if '.metadata.' not in p.name]
++                if epoch != max(int(p.stem.split('_')[1]) for p in committed):
++                    raise ValueError('resume requires the newest committed epoch in this run')
++                state = saved['resume_state']
++                expected_steps = epoch*self.scheduler_plan['steps_per_epoch']
++                if state['global_step'] != epoch*self.optimizer_steps or unpack_state(state['scheduler'])['last_epoch'] != expected_steps:
++                    raise ValueError('resume optimizer/scheduler progress mismatch')
++                if unpack_state(state['sampler_state']) != self.sampler:
++                    raise ValueError('sampler state mismatch')
++                optim_state = unpack_state(state['optimizer'])
++                scheduler_state = unpack_state(state['scheduler'])
++                if scheduler_state.get('_step_count') != expected_steps+1:
++                    raise ValueError('resume scheduler step counter mismatch')
++                loop_checkpoint.validate_optimizer_state(optim_state,optimizer)
++                for group, current in zip(optim_state['param_groups'],optimizer.param_groups):
++                    if len(group['params']) != len(current['params']):
++                        raise ValueError('resume optimizer group shape mismatch')
++                    for index,p in zip(group['params'],current['params']):
++                        for name,value in optim_state['state'].get(index,{}).items():
++                            if name in ('exp_avg','exp_avg_sq','max_exp_avg_sq') and (value.shape!=p.shape or value.dtype!=p.dtype):
++                                raise ValueError('resume optimizer moment shape/dtype mismatch')
++                strict_load(self.model,weights)
++                optimizer.load_state_dict(optim_state)
++                scheduler.load_state_dict(scheduler_state)
++                self.start_epoch = self.completed_epoch = epoch
++                restore_random_state(state,self.generators)  # restore LAST, after construction/loading
++            self.metadata = saved
++        else:
++            self.metadata = make_metadata(args._linearno_loop_config,data_spec=data,
++                provenance_spec=prov,normalizer_spec=normalizers,
++                resume_state=resume_state(optimizer,scheduler,0,self.optimizer_steps,args.epochs,self.generators,self.sampler),
++                ensemble_manifest=[])
++            write_metadata(self.directory/'architecture.json',self.metadata)
++        self.recorder.update_protocol(dict(linearno_data=data, scheduler_resolved=self.scheduler_plan))
++        if hasattr(args,'_linearno_metadata'):
++            del args._linearno_metadata  # do not dump optimizer/RNG base64 via the legacy print(args)
++
++
++    def load(self, model):
++        from .checkpoint import read_pair, strict_load
++        _,weights=read_pair(self.args._linearno_checkpoint,expected=self.args._linearno_loop_config)
++        strict_load(model,weights)
++
++    def save(self, model):
++        from .checkpoint import resume_state,save_pair
++        from linearno_loop.contracts import seal
++        if self.args.eval:raise ValueError('evaluation cannot save training weights')
++        if self.scheduler.last_epoch != self.completed_epoch*self.scheduler_plan['steps_per_epoch']:
++            raise ValueError('actual scheduler cadence differs from metadata')
++        metadata=copy.deepcopy(self.metadata)
++        metadata['resume_state']=resume_state(self.optimizer,self.scheduler,self.completed_epoch,
++            self.optimizer_steps,self.args.epochs,self.generators,self.sampler)
++        return save_pair(self.directory,model,seal(metadata,'metadata_hash'))
+--- /dev/null
++++ docs/LOOP_LINEARNO_LL6_COMMANDS.md
+@@ -0,0 +1,98 @@
++# LL6 六个 Standard 任务远端命令
++
++这些命令用于后续用户自行运行；LL6 只验证命令解析与 CPU 合成闭环，**未运行真实 loader、500 epoch 或远端 GPU**。本阶段复用现有 `tran_evaluate/linearno/` 的透传脚本，未新增 launcher。只有显式 `--linearno-loop 1` 才开启新 family；eval/resume 从指定运行的 metadata 恢复。
++
++在远端当前 checkout 执行一次以下设置和函数定义。它使用纯 schema 生成准确目录名，训练成功后才评估同一目录；每次调用生成独立时间戳，避免覆盖。不要预先创建最终 `run` 目录。
++
++```bash
++cd /inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/transolver/LinearNO-monitor
++export CDLNO_REPO_ROOT="$PWD" CDLNO_RUNS_ROOT="$PWD/output"
++source ./path.sh
++
++loop_train_eval() (
++    set -euo pipefail
++    task="${1:?task}"; gpu="${2:?gpu}"
++    seed="${LOOP_SEED:-0}"
++    profile="${LOOP_PROFILE:-paper_table8_on_release_model}"
++    topology="${LOOP_TOPOLOGY:-p1_c3_r2_s1}"
++    mode="${LOOP_MODE:-lb_attnres_1_over_r}"
++    multiplier="${LOOP_RANK_MULTIPLIER:-2}"
++    cd "$CDLNO_REPO_ROOT"
++    id="$("$CDLNO_PYTHON" -B - "$task" "$profile" "$topology" "$mode" "$multiplier" "$seed" <<'PY'
++import sys
++from linearno_loop.config import resolve_config, run_directory_id
++task, profile, topology, mode, multiplier, seed = sys.argv[1:]
++config = resolve_config(task, profile,
++    options=dict(topology_preset=topology, residual_mode=mode, rank_multiplier=int(multiplier)),
++    profile_overrides={'runtime.seed': int(seed)})
++print(run_directory_id(config))
++PY
++    )"
++    run="$CDLNO_RUNS_ROOT/$task/linearno_loop/${id}__$(date -u +%Y%m%dT%H%M%S%NZ)"
++    printf 'Run: %s\n' "$run"
++    bash "tran_evaluate/linearno/${task}_train.sh" \
++        --gpu "$gpu" --seed "$seed" --experiment-dir "$run" \
++        --linearno-profile "$profile" --linearno-loop 1 \
++        --linearno-loop-topology "$topology" \
++        --linearno-loop-residual-mode "$mode" \
++        --linearno-loop-rank-multiplier "$multiplier" \
++    && bash "tran_evaluate/linearno/${task}_eval.sh" \
++        --gpu "$gpu" --experiment-dir "$run"
++)
++```
++
++各任务分别训练后评估（默认 seed0/P1/LB/M×2，GPU 为示例）：
++
++```bash
++loop_train_eval airfoil 0
++```
++
++```bash
++loop_train_eval darcy 1
++```
++
++```bash
++loop_train_eval elasticity 0
++```
++
++```bash
++loop_train_eval pipe 1
++```
++
++```bash
++loop_train_eval ns 0
++```
++
++```bash
++loop_train_eval plasticity 1
++```
++
++同一函数覆盖另一 topology、三个互斥 residual、rank×1 控制与另一 profile。例如以下各自都是新的 Darcy 运行：
++
++```bash
++LOOP_TOPOLOGY=p2_c2_r2_s2 LOOP_MODE=sr_1_over_r LOOP_SEED=1 loop_train_eval darcy 1
++LOOP_TOPOLOGY=p1_c3_r2_s1 LOOP_MODE=rb_attnres loop_train_eval darcy 1
++LOOP_RANK_MULTIPLIER=1 loop_train_eval darcy 1
++LOOP_PROFILE=official_release loop_train_eval darcy 1
++```
++
++两个 profile 仍使用原始任务协议。Darcy `official_release` 必须保持 500 epochs，显式非 500 拒绝。不要附加旧 `--n-layers`、`--slice_num` 或 A/K flags；实际 M 可以用 `--linearno-rank` 控制，但不能与 multiplier 同时传。若自定义更多训练字段，需要同步修改纯 schema 的 `profile_overrides` 以匹配目录 hash，或省略 `--experiment-dir` 让 parser 自动生成并打印准确路径。
++
++恢复或重新评估已存在运行时，复制训练输出中的完整路径；**不要重新计算一个新时间戳，也不要传猜测的 topology/mode**：
++
++```bash
++# 把下面的路径替换成先前打印的真实运行目录；训练尚未完成才可 resume。
++RUN_DIR='/absolute/path/to/the/existing/darcy__linearno_loop__...'
++bash tran_evaluate/linearno/darcy_train.sh --gpu 1 --resume --experiment-dir "$RUN_DIR" \
++&& bash tran_evaluate/linearno/darcy_eval.sh --gpu 1 --experiment-dir "$RUN_DIR"
++```
++
++独立 eval：
++
++```bash
++bash tran_evaluate/linearno/darcy_eval.sh --gpu 1 --experiment-dir "$RUN_DIR"
++```
++
++输出沿用已有记录器：`architecture.json` 保存独立 loop schema；`config.json` 同时包含原 profile 与 `loop_config`；`checkpoints/epoch_*.{pt,json,metadata.json}` 与 `weights/epoch_*.pt` 成对提交，`latest.json`/`final.json` 指向已提交 manifest；另有 `model.pt` 便捷权重。训练日志、epoch JSONL、结果、`visualizations/member_000/epoch_*/` 与每次独立的 `evaluations/<id>/` 保留原格式。eval 不覆盖训练 sidecar、不重新拟合 normalizer。恢复使用已提交 epoch，不能从仅含 `model.pt` 的副本恢复 optimizer/RNG。
++
++Loop 的逻辑执行层相似度 monitor 接线属于后续 LL9；这些命令没有声称已支持该功能。AirfRANS/Car 不在 LL6 生产接线范围。
+--- /dev/null
++++ docs/LOOP_LINEARNO_LL6_STANDARD.md
+@@ -0,0 +1,101 @@
++# LL6 — 六 Standard 任务接线与原生合成闭环
++
++唯一阶段状态：**PASS**。仅 Airfoil、Darcy、Elasticity、Pipe、NS、Plasticity 接入 `linearno_loop`；LL7–LL10 未执行。真实数据、500 epoch、GPU、远端验收均 **NOT RUN**。
++
++## A. 范围与真实调用链
++
++仓库 `/home/hwz/CDLNO`，`main`，HEAD `5b991226c5354af3332b2f7306b370aef0950c79`，tree `a661e0a53d367e09dfe9b5afaabcab29ee8aec63`，remote `https://github.com/hxh5159/CDLNO-w.git`。保留起点全部 tracked/untracked/ignored 文件；没有 reset/clean/stash/checkout/rebase/commit/push。起点 [2285 文件清单](loop_linearno_audit/ll6/start-manifest.json)、[status](loop_linearno_audit/ll6/start-status.txt)、原 diff 和修改前源码均已保存。
++
++实际链：原 `tran_evaluate/linearno/<task>_{train,eval}.sh` → `_static.sh` → 对应 `exp_*.py` 原 parser → `cdlno_entry.parse_args` 的新显式 loop guard → `cdlno.linearno_loop.standard_entry` → 原 `model_dict.get_model` 的 loop guard → LL3–LL5 `build_from_config` → `cdlno.linearno_loop.standard.Model` → 原 exp 的完整训练/评估主干 → `linearno_entry.StandardRun` 的 loop dispatcher → `LoopStandardRun` / 独立 loop checkpoint。
++
++| task | 原 exp / 有效 factory key | 原 variant | base M → 默认实际 M | 网格/接口 |
++|---|---|---|---|---|
++| Airfoil | exp_airfoil / LinearNO_Structured_Mesh_2D | conv_temp | 64 → 128 | 221×51，fx=None |
++| Darcy | exp_darcy / LinearNO_Structured_Mesh_2D | conv_temp | 64 → 128 | 85×85，fx1，unified off |
++| Elasticity | exp_elas / LinearNO_Irregular_Mesh | temp | 64 → 128 | 972点，fx=None |
++| Pipe | exp_pipe / LinearNO_Structured_Mesh_2D | conv_temp | 64 → 128 | 129×129，原点序 |
++| NS | exp_ns / LinearNO_Structured_Mesh_2D | plain | 32 → 64 | 64×64，输入10帧，输出1帧 |
++| Plasticity | exp_plas / LinearNO_Structured_Mesh_2D | conv | 64 → 128 | 101×31，T[B,1]，输出4通道 |
++
++表为 `paper_table8_on_release_model` / `official_release`；旧 profile 保持原值，包括 NS d256/ratio2/ref10。Loop actual M 与 U/E 单独保存在 loop_spec，不能把原 profile 的 layers8/base M 误读为实际模型构造参数。P1 存5套/执行8次，P2 存6套/执行8次；直接构造 U 个物理 block，无先构造8层再丢弃。模型仍是 `Model(x,fx,T=None)`。
++
++## B. 文件与关键增量
++
++新增三个生产适配模块：
++
++- `cdlno/linearno_loop/standard_entry.py`：显式参数来源、metadata恢复、factory构造、独立目录、原 Run 接口、loader generator 和续训状态适配。
++- `cdlno/linearno_loop/checkpoint.py`：独立 loop 格式的 JSON先读、strict pair/manifest、optimizer校验与原子提交。
++- `cdlno/linearno_loop/provenance.py`：loop真实源码hash，以及旧 pure/history 的逐字节精确路由投影。
++
++已有生产代码只改六文件：三个 Standard 公共路由、`cdlno/experiment.py` 的 family/记录字段识别、两个 history provenance/checkpoint 的来源指纹兼容点。后两者仅调整源码 hash 输入，未改变模型、权重加载、checkpoint 格式或 RNG。新增片段必须精确匹配才能剥离；未知变更失败，绝非忽略源码不一致。
++
++新增 `tests/loop_linearno/test_standard_entry.py`、`native_worker.py`、`tests/loop_entry_projection.py`；增量更新旧 AST projection helper 和 loop isolation 测试。隔离测试仍检查原始 hash，只剥离已授权的新 guard；不豁免整个路由文件。文档/执行证据在本报告、[远端命令](LOOP_LINEARNO_LL6_COMMANDS.md) 和 [ll6](loop_linearno_audit/ll6/)。
++
++**六个 exp 文件、原模型、loop core/wrapper/AttnRes/body、纯 schema/profile、industrial入口、launcher、monitor、依赖全部未改。** 详见 [增量 diff](loop_linearno_audit/ll6/source.diff)、[最终冻结](loop_linearno_audit/ll6/end-freeze.json)。
++
++## C. 配置、数学边界与 checkpoint
++
++新 train 必须显式 `--linearno-loop 1`、topology 和 residual，并使用有效的原 LinearNO factory key。eval/resume 必须给准确 run 路径，先检查 `architecture.json` 的 family，再从完整 loop config 恢复模型；省略 `--model` 也可恢复正确 key。省略所有 loop 字段的旧命令仍走旧分支。
++
++公共字段采用 `argparse.SUPPRESS` 来源追踪。拒绝 preset/custom混用、actual rank/multiplier混用、未知模式、旧 `--n-layers`/`--slice_num`、loop与任何A/K/history-dropout/fair-run flags混用（含显式false）、错误model/task/结构/profile。显式 eval/resume 值仅作一致性断言，冲突在构造和 `torch.load` 前拒绝。Darcy official_release 非500epochs明确拒绝，避免原固定500的 OneCycle 和训练循环错步。
++
++原科学计算保持：Darcy decode/边界置零/0.1导数项/zero-padding/dx=1/85；四静态任务 sample-wise flatten/no-epsilon rL2；NS训练10步真值回填→一次backward/update，评估10步预测回填；Plasticity每batch20个独立时间查询/更新→一次scheduler。现有 Plasticity 实际由 collate 每样本 `torch.randperm(20)`，没有替换成历史文字所述的 NumPy 排列。NumPy状态仍完整保存恢复。卷积原点序、位置替换/拼接、normalizer、数据split、loss、optimizer、scheduler和可视化都通过原 exp 执行。
++
++共享 core 每次 visit 重算 Q/K/V/C/O；每次模型 forward 新建局部历史。NS每个滚动时间调用和Plasticity每个时间查询均验证router来源数重新从首receiver开始。没有跨时间缓存或复用输出头。
++
++Checkpoint family=`linearno_loop`、extension=`loop_linearno_v1`、class=`cdlno.linearno_loop.standard.Model`、pair format=`linearno-loop-epoch-pair-v1`，完整 loop_spec/构造kwargs/profile/data/objective/evaluation/provenance/normalizer/resume各自记录。pair内full archive与独立state_dict和metadata先写入，再提交带SHA-256的epoch manifest，最后更新latest/final；共享core权重仅一份。纯权重便利文件 `model.pt` 不代替完整恢复档案。
++
++读档先验证schema、config、sidecar不变字段、路径和文件hash，再 `weights_only=True`，逐键/shape/dtype/finite检查并 `strict=True`。Resume另核验optimizer命名参数组/数量/ID/矩moment shape/dtype、scheduler构造和实际步数、拓扑/router键、sampler/generator。RNG在构造、权重、optimizer、scheduler全部恢复后最后恢复。旧epoch回滚、同epoch改权重覆盖、跨mode恢复、已有目录新train都拒绝；独立锁避免并发提交。
++
++沿用 LL1 paired seeds：三mode公共backbone初始化一致，DataLoader独立generator；Plasticity仅用已有 `GeneratorCollate` 将原collate的Torch排列纳入该generator，不引入旧A/K模块。eval/resume通过保存的命名normalizer数值恢复，禁止重新fit；train sidecar不重写。
++
++## D. 实际验证与数值证据
++
++环境：本地 Python3.13.9、torch2.13+cu130、PyG2.3.1；所有本轮执行显式 `CUDA_VISIBLE_DEVICES=''`、CPU单线程、Agg、禁pyc。这不是远端Python3.10/torch2.11+cu128验收。
++
++1. **完整 loop suite：78方法，76pass、2CUDA skip、0failure/error，121.052s。** 新4方法覆盖108真实parser profile配置、custom/rank1、非法字段/错配、真实小档案strict/optimizer损坏/防覆盖、旧parser/factory/RNG及原来源hash。LL2–LL5七份数学/参数/MAC报告与LL5完全相等，未放宽容差。
++2. **六任务×两preset×三mode：36/36原生合成闭环，144个新进程。** 每例连续3epoch，对照1epoch中断→新进程续训2epoch→再新进程eval。最终权重、完整optimizer/scheduler/Python/NumPy/Torch/generator状态、batch序列和预测hash完全一致（max_abs=0）。所有checkpoint strict。真实空间N，d8/h2/M4、B2、4train/2test、attention dropout0.1；不是全宽或真实数据训练。
++3. NS每例连续训练60forward/6backward/6optimizer/6scheduler；Plasticity每例120forward/120backward/120optimizer/6scheduler。真值/预测回填、每次forward router来源计数/8次attention/单head、时间序列和无跨调用状态都在真实main AST中检查。[逐例全部结果](loop_linearno_audit/ll6/native-matrix.json)、[汇总](loop_linearno_audit/ll6/native-summary.json)。
++4. **修改前真实 pure/history 档案**重放：在生产修改前生成连续/中断基线，改后新进程恢复/评估，两个family的final权重/optimizer/scheduler/RNG/批次/预测均精确相同。保留外部原始档案 `/home/hwz/CDLNO-artifacts/loop-ll6-before-tzkiikht`，不以改后自生成fixture冒充兼容。[重放](loop_linearno_audit/ll6/pre-checkpoint-replay.json)。
++5. 旧LL0的153方法仍为 **147pass、2历史失败方法（4断言）、4CUDA skip、0error**；24模块结果及历史失败文本与已批准LL0完全一致。历史失败来自README/path.sh/旧复现矩阵冻结断言，未改golden使其通过；不能声称全仓测试全绿。history59/59、monitor10/10通过。[回归汇总](loop_linearno_audit/ll6/regression-summary.json)。
++6. **72训练命令预览 +36已有run评估预览**，进一步把launcher打印的实际argv送入真实parser，通过全部配置比较；无数据读取/任务import。[命令证据](loop_linearno_audit/ll6/command-previews.json)。
++
++原训练记录器实际生成最终field PNG/PDF/NPZ、日志/指标及独立eval记录。测试沿用已批准的AST worker：只替换真实loader为合成张量、CUDA搬运为CPU，并关闭独立eval的showcase绘图片段；没有替换train/eval科学主干。训练最终field绘图实际执行，独立eval showcase图不在本轮验收范围。
++
++初次验证记录保留：pilot数值/续训成功，但测试错误地只在 `training_artifacts` 查找图片，后改为包含实际 `visualizations`；第一轮suite旧LL1 isolation产生1方法/7子断言失败，改为精确剥离新路由后校验旧字节，最终78方法通过。二者都是测试范围/路径修正，没有据此更改科学代码或数值容差。日志 `native-pilot.log`、`loop-first-tests.log` 保留。
++
++可重跑命令（仓库根，均为合成测试）：
++
++```bash
++export PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$PWD/tests:$PWD" CUDA_VISIBLE_DEVICES=''
++export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 MPLBACKEND=Agg
++python -B docs/loop_linearno_audit/ll6/run_native_matrix.py
++python -B docs/loop_linearno_audit/ll6/run_existing_regressions.py
++python -B docs/loop_linearno_audit/ll6/check_commands.py
++```
++
++完整loop suite将report变量分别指向本阶段证据目录后运行（避免写旧报告）：
++
++```bash
++LOOP_LL2_ATTNRES_REPORT=docs/loop_linearno_audit/ll6/attnres-report.json \
++LOOP_LL2_BODY_REPORT=docs/loop_linearno_audit/ll6/body-report.json \
++LOOP_LL3_PARITY_REPORT=docs/loop_linearno_audit/ll6/sr-parity.json \
++LOOP_LL3_ACCOUNTING_REPORT=docs/loop_linearno_audit/ll6/accounting.json \
++LOOP_LL4_REPORT=docs/loop_linearno_audit/ll6/rb-report.json \
++LOOP_LL5_REPORT=docs/loop_linearno_audit/ll6/lb-report.json \
++LOOP_LL5_MODES_REPORT=docs/loop_linearno_audit/ll6/modes-report.json \
++python -B -m unittest discover -s tests/loop_linearno -p 'test_*.py' -v
++python -B docs/loop_linearno_audit/ll6/finalize_evidence.py
++```
++
++## E. 冻结与交付自审
++
++起点2285文件：仅六生产路由/provenance、两个测试helper/isolation和本研究STATUS九文件发生授权变化，其余2276内容/分类一致。新ignored仅本阶段日志，合成运行/权重放仓库外，不提交模型二进制。HEAD/tree/branch未变、staged diff未变，`git diff --check`通过。六exp完整字节相等，比去除guard后的AST检查更强；六公共生产修改文件精确投影到修改前全部字节。[投影](loop_linearno_audit/ll6/routing-projection.json)、[freeze](loop_linearno_audit/ll6/end-freeze.json)。
++
++五项优先自审均已闭环：旧路由不变且新flags fail-fast；actual M/U/PCRS仅取loop真值；真实时间循环调用/步数不变；metadata先读与strict完整恢复；可视化/输出路径及真实数据边界说明准确。[机器可读审查](loop_linearno_audit/ll6/delivery-review.json)。没有新增待用户裁定的架构冲突。
++
++## F. 未运行与限制
++
++真实loader、500epoch、远端GPU、AMP/compile、全宽任务训练、精度/收敛/SOTA/epoch性能、独立eval showcase图均NOT RUN。合成证据不代表这些项目通过。Loop的AirfRANS/Car生产接线属于LL7；专门loop launcher和逻辑visit monitor属于后续阶段，本轮不实施。现有构造模块的早期“synthetic-only”说明是LL3历史描述，LL6只通过独立adapter调用同一已验证构造函数，未改其数学。
++
++本 LL6 阶段结束，未执行下一阶段。
+--- /dev/null
++++ tests/loop_entry_projection.py
+@@ -0,0 +1,34 @@
++"""Remove only LL6 dispatcher guards for older complete-entry AST assertions.
++
++Production resume projection is independently byte-checked against pre-LL6
++snapshots; this helper preserves the preexisting history/pure AST test layers.
++"""
++import ast
++import copy
++
++
++def strip_loop(tree):
++    class Strip(ast.NodeTransformer):
++        def visit_ImportFrom(self,node):
++            if node.module=='cdlno.linearno_loop.standard_entry' and [(a.name,a.asname) for a in node.names]==[('intercept','intercept_loop')]:return None
++            return node
++        def visit_Assign(self,node):
++            if ast.unparse(node.targets[0])=='loop_args':
++                assert ast.unparse(node.value)=='intercept_loop(parser, task, tokens, selected.model)'
++                return None
++            return self.generic_visit(node)
++        def visit_If(self,node):
++            if ast.unparse(node.test) in ('loop_args is not None',"hasattr(args, '_linearno_loop_config')",
++                    "getattr(args, 'linearno_family', None) == 'linearno_loop'","self.family == 'linearno_loop'"):
++                assert not node.orelse
++                return None
++            return self.generic_visit(node)
++        def visit_Tuple(self,node):
++            if ast.unparse(node)=="('linearno', 'linearno_history', 'linearno_loop')":
++                node.elts=node.elts[:2]
++            return self.generic_visit(node)
++        def visit_Dict(self,node):
++            pairs=[(k,v) for k,v in zip(node.keys,node.values) if not (isinstance(k,ast.Constant) and k.value=='linearno_loop')]
++            node.keys=[k for k,v in pairs];node.values=[v for k,v in pairs]
++            return self.generic_visit(node)
++    return ast.fix_missing_locations(Strip().visit(copy.deepcopy(tree)))
+--- /dev/null
++++ tests/loop_linearno/native_worker.py
+@@ -0,0 +1,87 @@
++"""LL6 real entry ASTs, full spatial shapes, CPU synthetic tensors only.
++
++Reuse accepted L4/L5 workers verbatim for native losses/time loops/observer;
++substitute only loop CLI flags and the real public Run dispatcher. No real
++loader or replacement train/eval loop. Each invocation is a fresh process.
++"""
++import argparse
++import hashlib
++import json
++from pathlib import Path
++import sys
++
++ROOT=Path(__file__).resolve().parents[2]
++sys.path[:0]=[str(ROOT/'tests'),str(ROOT)]
++from linearno_loop.config import resolve_config,run_directory_id
++
++
++def fixture_config(task,preset,mode):
++    return resolve_config(task,options=dict(topology_preset=preset,residual_mode=mode,linearno_rank=4),
++        profile_overrides={'training.epochs':3,'model.hidden':8,'model.heads':2,'training.batch_size':2,
++                           'runtime.seed':17,'model.dropout':.1})
++
++
++def run(task,action,directory,report,preset,mode):
++    from linearno import temporal_worker,static_worker
++    worker=temporal_worker if task in ('ns','plasticity') else static_worker
++    from linearno_entry import StandardRun as dispatch_run
++    from cdlno.linearno_loop.standard_entry import LoopStandardRun
++    from cdlno.linearno_loop.attnres import PointDepthAttnRes
++    from linearno_loop.contracts import PRESETS
++    original_parse=worker.parse_args
++    worker.StandardRun=LoopStandardRun
++    def parse(parser,task,tokens):
++        tokens=list(tokens)
++        if action in ('train','interrupt'):
++            i=tokens.index('--n-layers');del tokens[i:i+2]
++            tokens += ['--linearno-loop','1','--linearno-loop-topology',preset,
++                       '--linearno-loop-residual-mode',mode,'--dropout','.1']
++        # Eval/resume deliberately omit --model: metadata must recover family
++        # and the correct existing structured/irregular key before dispatch.
++        elif '--model' in tokens:
++            i=tokens.index('--model');del tokens[i:i+2]
++        return original_parse(parser,task,tokens)
++    worker.parse_args=parse
++    native=worker.native_main;init=LoopStandardRun.__init__;checks=[]
++    P,C,R,S=PRESETS[preset]
++    expected_sources=([1 if r==0 and j==0 else r+1+(j>0) for r in range(R) for j in range(2*C)]+[R+1]
++                      if mode=='rb_attnres' else list(range(2,R+2)) if mode=='lb_attnres_1_over_r' else [])
++    def capture_init(self,*a,**kw):
++        init(self,*a,**kw)
++        active={}
++        def begin(*args):active.update(sources=[],attn=0,head=0)
++        def router(mod,args):active['sources'].append(len(args[0]))
++        def attention(*args):active['attn']+=1
++        def head(*args):active['head']+=1
++        def end(*args):
++            assert active['sources']==expected_sources,(active,expected_sources)
++            assert active['attn']==P+C*R+S and active['head']==1
++            checks.append(dict(sources=active['sources'],attention=active['attn'],head=active['head']))
++        self.model.register_forward_pre_hook(begin)
++        for mod in self.model.modules():
++            if isinstance(mod,PointDepthAttnRes):mod.register_forward_pre_hook(router)
++        for group in (self.model.loop.prefix,self.model.loop.core,self.model.loop.suffix):
++            for b in group:b.block.Attn.register_forward_hook(attention)
++        self.model.loop.suffix[-1].block.mlp2.register_forward_hook(head)
++        self.model.register_forward_hook(end)
++    LoopStandardRun.__init__=capture_init
++    def native_main(task,values,scope):
++        scope['LinearNORun']=dispatch_run
++        return native(task,values,scope)
++    worker.native_main=native_main
++    worker.run(task,action,directory,report)
++    rows=json.loads(report.read_text());rows.update(preset=preset,mode=mode,
++        public_dispatch_used=True,metadata_recovers_model=action in ('resume','eval'),
++        forward_local_checks=len(checks),expected_source_counts=expected_sources,
++        each_forward_recomputed_attention=P+C*R+S)
++    if action!='interrupt':
++        artifact_files=[p for base in ('training_artifacts','visualizations','evaluations') for p in (directory/base).rglob('*') if p.is_file()]
++        rows['recorded_artifacts']=[dict(path=str(p.relative_to(directory)),size=p.stat().st_size,
++            sha256=hashlib.sha256(p.read_bytes()).hexdigest()) for p in artifact_files]
++    report.write_text(json.dumps(rows,indent=2)+'\n')
++
++
++if __name__=='__main__':
++    p=argparse.ArgumentParser();p.add_argument('task');p.add_argument('action');p.add_argument('directory',type=Path)
++    p.add_argument('report',type=Path);p.add_argument('preset');p.add_argument('mode');a=p.parse_args()
++    run(a.task,a.action,a.directory,a.report,a.preset,a.mode)
+--- /dev/null
++++ tests/loop_linearno/test_standard_entry.py
+@@ -0,0 +1,152 @@
++"""LL6 public routing, metadata-before-load, strict continuation and isolation."""
++import ast
++import copy
++import importlib
++import json
++from pathlib import Path
++import tempfile
++import unittest
++from unittest.mock import patch
++
++import torch
++from cdlno.linearno_loop.standard_entry import LoopStandardRun
++from cdlno.linearno_loop import checkpoint
++from cdlno.linearno_loop.provenance import REPLACEMENTS,legacy_source
++from cdlno.linearno.standard_entry import start,finish
++from cdlno.linearno.schema import pack_state,unpack_state
++from linearno_loop.config import run_directory_id,resolve_config
++from linearno_loop.contracts import PRESETS,RESIDUAL_MODES,digest
++from loop_linearno.native_worker import fixture_config
++from linearno.static_worker import ROOT,PROJECT,parser_for
++from linearno.temporal_worker import parser_for as temporal_parser
++from cdlno_entry import parse_args
++from model_dict import get_model
++from linearno_entry import StandardRun,model_kwargs
++
++TASKS=('airfoil','darcy','elasticity','pipe','ns','plasticity')
++
++
++def parse(task,tokens):
++    return parse_args((temporal_parser if task in ('ns','plasticity') else parser_for)(task),task,list(map(str,tokens)))
++
++
++def flags(task,preset='p1_c3_r2_s1',mode='lb_attnres_1_over_r'):
++    return ['--model','LinearNO_Irregular_Mesh' if task=='elasticity' else 'LinearNO_Structured_Mesh_2D',
++        '--linearno-loop','1','--linearno-loop-topology',preset,'--linearno-loop-residual-mode',mode]
++
++
++class EntryTests(unittest.TestCase):
++    def test_six_task_profiles_and_modes_resolve_without_legacy_defaults(self):
++        for task in TASKS:
++            for preset in PRESETS:
++                for mode in RESIDUAL_MODES:
++                    for profile in ('paper_table8_on_release_model','official_release','transolver_matched'):
++                        a=parse(task,flags(task,preset,mode)+['--linearno-profile',profile])
++                        c=resolve_config(task,profile,options=dict(topology_preset=preset,residual_mode=mode))
++                        self.assertEqual(a._linearno_loop_config,c)
++                        self.assertEqual(a.linearno_rank,2*a._linearno_config['values']['model']['linearno_rank'])
++                        self.assertEqual(model_kwargs(a),c['model_spec']['constructor_kwargs'])
++                        self.assertIn(run_directory_id(c),a.linearno_run_dir.name)
++        a=parse('ns',flags('ns'));self.assertEqual((a.ref,a.mlp_ratio,a.n_hidden),(10,2,256))
++        custom=flags('darcy','custom')+['--linearno-loop-prefix-blocks',0,'--linearno-loop-core-blocks',2,
++            '--linearno-loop-repeats',3,'--linearno-loop-suffix-blocks',1,'--linearno-loop-rank-multiplier',1]
++        a=parse('darcy',custom);self.assertEqual((a.n_layers,a.linearno_rank),(3,64))
++
++    def test_illegal_flags_fail_before_model_load_rng_or_directory(self):
++        base=flags('darcy')
++        cases=[base+['--linearno_latent_attnres',0],base+['--linearno-history-k-conditioning',0],
++            base+['--linearno_attnres_history_dropout_p',0],base+['--linearno-fair-run',1],
++            base+['--linearno-rank',64,'--linearno-loop-rank-multiplier',1],
++            base+['--linearno-loop-prefix-blocks',1],base+['--n-layers',8],base+['--slice_num',64],
++            base+['--linearno-loop-repeats',0],base+['--linearno-loop-rank-multiplier',3],
++            base+['--linearno-loop-rank-multiplier','NaN'],base+['--linearno-loop','0'],
++            base+['--linearno-loop-residual-mode','unknown'],base+['--model','Transolver_Structured_Mesh_2D'],
++            base+['--linearno-profile','official_release','--epochs',3],
++            base[:2]+['--linearno-loop',1],base[:2]+base[4:],base+['--resume'],
++            base+['--linearno-loop-topology','custom','--linearno-loop-core-blocks',1]]
++        from cdlno.linearno_loop import construction
++        for tokens in cases:
++            rng=torch.get_rng_state().clone()
++            with self.subTest(tokens=tokens),patch('torch.load',side_effect=AssertionError('early weight read')),patch.object(
++                    construction,'build_from_config',side_effect=AssertionError('early model')):
++                with self.assertRaises(SystemExit):parse('darcy',tokens)
++            self.assertTrue(torch.equal(rng,torch.get_rng_state()))
++
++    def test_legacy_parser_factory_no_fields_rng_and_exact_source_projection(self):
++        from cdlno.linearno_loop.standard_entry import intercept
++        for task in TASKS:
++            commands=[[],['--model','Transolver_Irregular_Mesh'],['--model','CDLNO'],
++                ['--model','LinearNO_Irregular_Mesh' if task=='elasticity' else 'LinearNO_Structured_Mesh_2D'],
++                ['--model','LinearNO_Irregular_Mesh' if task=='elasticity' else 'LinearNO_Structured_Mesh_2D',
++                 '--linearno_latent_attnres',1,'--linearno_history_k_conditioning',0]]
++            for tokens in commands:
++                rng=torch.get_rng_state().clone();a=parse(task,tokens);after=torch.get_rng_state().clone()
++                torch.set_rng_state(rng)
++                with patch('cdlno.linearno_loop.standard_entry.intercept',return_value=None):b=parse(task,tokens)
++                # Timestamp/uuid run names are intentionally fresh on each parse.
++                va={k:v for k,v in vars(a).items() if k not in ('linearno_run_dir',)}
++                vb={k:v for k,v in vars(b).items() if k not in ('linearno_run_dir',)}
++                self.assertEqual(va,vb);self.assertTrue(torch.equal(after,torch.get_rng_state()))
++                self.assertFalse(hasattr(a,'_linearno_loop_config'))
++                if tokens:
++                    if hasattr(a,'_linearno_history_config'):
++                        self.assertEqual(get_model(a).Model.__module__,'cdlno.linearno_history.standard_entry')
++                    else:self.assertIs(get_model(a),get_model(b))
++        out=ROOT/'docs/loop_linearno_audit/ll6'
++        for name in REPLACEMENTS:
++            self.assertEqual(legacy_source(name,(ROOT/name).read_text()),(out/'before'/name).read_text())
++        old=json.loads((out/'pre-edit.json').read_text())
++        from cdlno.linearno.standard_entry import provenance as pure
++        from cdlno.linearno_history.standard_entry import provenance as history
++        from cdlno.linearno_history.checkpoint import source_hash
++        for name,fn in [('pure',pure),('history',history)]:
++            for key in ('source_sha256','normalized_patch_sha256'):self.assertEqual(fn()[key],old[name][key])
++        self.assertEqual(source_hash(),old['history_source'])
++
++    def test_real_pair_negative_shapes_mode_conflicts_and_no_overwrite(self):
++        with tempfile.TemporaryDirectory() as temp:
++            cfg=fixture_config('airfoil','p1_c3_r2_s1','lb_attnres_1_over_r');directory=Path(temp)/run_directory_id(cfg)
++            tokens=flags('airfoil')+['--experiment-dir',directory,'--epochs',3,'--n-hidden',8,'--n-heads',2,
++                '--linearno-rank',4,'--batch-size',2,'--seed',17,'--dropout',.1]
++            a=parse('airfoil',tokens);a._linearno_data=dict(split=cfg['profile_spec']['values']['data']['split'],
++                sampling=cfg['profile_spec']['values']['data']['sampling'],checksums={'SYNTHETIC':digest('test fixture')},scope='SYNTHETIC')
++            start(a,'airfoil')
++            try:
++                m=get_model(a).Model(**model_kwargs(a));run=StandardRun(a,m);self.assertIsInstance(run,LoopStandardRun)
++                x=torch.randn(4,221*51,2);train=torch.utils.data.DataLoader(torch.utils.data.TensorDataset(x),batch_size=2,shuffle=True)
++                test=torch.utils.data.DataLoader(torch.utils.data.TensorDataset(x[:2]),batch_size=2)
++                opt=torch.optim.AdamW(m.parameters(),lr=a.lr,weight_decay=a.weight_decay)
++                sch=torch.optim.lr_scheduler.OneCycleLR(opt,max_lr=a.lr,epochs=3,steps_per_epoch=2)
++                run.prepare(opt,sch,train,test)
++                for (batch,) in train:
++                    opt.zero_grad();m(batch,None).square().mean().backward();opt.step();sch.step()
++                run.complete_epoch(1);path=run.save(m)
++            finally:finish(a)
++            metadata,weights=checkpoint.read_pair(path,expected=cfg)
++            self.assertEqual(metadata['family'],'linearno_loop')
++            self.assertFalse(any('round2' in k for k in weights))
++            checkpoint.strict_load(m,weights)
++            with self.assertRaises(SystemExit):parse('airfoil',tokens)
++            for more in (['--linearno-loop-residual-mode','sr_1_over_r'],['--linearno-rank',8],
++                         ['--linearno-loop-topology','p2_c2_r2_s2'],['--n-heads',4],['--linearno_latent_attnres',0]):
++                with patch('torch.load',side_effect=AssertionError('early read')):
++                    with self.assertRaises(SystemExit):parse('airfoil',['--resume','--experiment-dir',directory,*more])
++            a2=parse('airfoil',['--resume','--experiment-dir',directory]);self.assertEqual(a2._linearno_loop_config,cfg)
++            bad=copy.deepcopy(weights);bad.pop(next(k for k in bad if k.startswith('loop.lb_')))
++            with self.assertRaises(ValueError):checkpoint.strict_load(m,bad)
++            state=unpack_state(metadata['resume_state']['optimizer'])
++            for kind in ('groups','shape','ids'):
++                wrong=copy.deepcopy(state)
++                if kind=='groups':wrong['param_groups'].append(copy.deepcopy(wrong['param_groups'][0]))
++                if kind=='shape':next(iter(wrong['state'].values()))['exp_avg']=torch.zeros(1)
++                if kind=='ids':wrong['param_groups'][0]['params'][1]=wrong['param_groups'][0]['params'][0]
++                with self.assertRaises(ValueError):checkpoint.validate_optimizer_state(wrong,opt)
++            checkpoint.validate_optimizer_state(state,opt)
++            initial=(directory/'architecture.json').read_bytes()
++            self.assertEqual(run.save(m),path)
++            with torch.no_grad():next(m.parameters()).add_(1)
++            with self.assertRaises(ValueError):run.save(m)
++            self.assertEqual((directory/'architecture.json').read_bytes(),initial)
++
++
++if __name__=='__main__':unittest.main()
+--- before-LL6/PDE-Solving-StandardBenchmark/cdlno_entry.py
++++ PDE-Solving-StandardBenchmark/cdlno_entry.py
+@@ -34,6 +34,10 @@
+     selector = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
+     selector.add_argument('--model')
+     selected, _ = selector.parse_known_args(tokens)
++    from cdlno.linearno_loop.standard_entry import intercept as intercept_loop
++    loop_args = intercept_loop(parser, task, tokens, selected.model)
++    if loop_args is not None:
++        return loop_args
+     if selected.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):
+         from cdlno.linearno_history.standard_entry import intercept as intercept_history
+         history_args = intercept_history(parser, task, tokens, selected.model)
+--- before-LL6/PDE-Solving-StandardBenchmark/linearno_entry.py
++++ PDE-Solving-StandardBenchmark/linearno_entry.py
+@@ -7,5 +7,8 @@
+ _PureStandardRun = StandardRun
+ 
+ def StandardRun(args, model):
++    if getattr(args, 'linearno_family', None) == 'linearno_loop':
++        from cdlno.linearno_loop.standard_entry import LoopStandardRun
++        return LoopStandardRun(args, model)
+     from cdlno.linearno_history.standard_entry import select_run
+     return select_run(args, model, _PureStandardRun)
+--- before-LL6/PDE-Solving-StandardBenchmark/model_dict.py
++++ PDE-Solving-StandardBenchmark/model_dict.py
+@@ -2,6 +2,9 @@
+ 
+ 
+ def get_model(args):
++    if hasattr(args, '_linearno_loop_config'):
++        from cdlno.linearno_loop.standard_entry import model_module
++        return model_module(args)
+     if hasattr(args, '_linearno_history_config'):
+         from cdlno.linearno_history.standard_entry import model_module
+         return model_module(args)
+--- before-LL6/cdlno/experiment.py
++++ cdlno/experiment.py
+@@ -119,9 +119,9 @@
+                         ('cdlno_run_dir' if hasattr(args, 'cdlno_run_dir') else 'run_dir'))
+         if getattr(args, 'msar_family', None) == 'msar_lno':
+             self.family, self.run_key = 'msar_lno', 'msar_run_dir'
+-        if getattr(args, 'linearno_family', None) in ('linearno', 'linearno_history'):
++        if getattr(args, 'linearno_family', None) in ('linearno', 'linearno_history', 'linearno_loop'):
+             self.family, self.run_key = args.linearno_family, 'linearno_run_dir'
+-        self.resuming = self.family in ('linearno', 'linearno_history') and getattr(args, 'resume', False)
++        self.resuming = self.family in ('linearno', 'linearno_history', 'linearno_loop') and getattr(args, 'resume', False)
+         requested = getattr(args, self.run_key)
+         self.directory = Path(requested).resolve() if requested is not None else default_directory(task)
+         if evaluation or self.resuming:
+@@ -147,13 +147,15 @@
+                            hparams=_json(hparams), parameter_count_status='pending_model_construction',
+                            parameters=None, architecture=None, environment=self._environment(),
+                            code=self._code(), command=sys.argv, cwd=str(Path.cwd()))
+-        if self.family in ('linearno', 'linearno_history'):
++        if self.family in ('linearno', 'linearno_history', 'linearno_loop'):
+             self.result['seed'] = args.seed
+             self.config['resolved_arguments'] = _json({k: v for k, v in vars(args).items()
+                                                        if not k.startswith('_linearno')})
+             self.config['linearno_profile'] = _json(args._linearno_config)
++            if self.family == 'linearno_loop':
++                self.config['loop_config'] = _json(args._linearno_loop_config)
+         if evaluation:
+-            if self.family in ('linearno', 'linearno_history'):
++            if self.family in ('linearno', 'linearno_history', 'linearno_loop'):
+                 self.result['resolved_arguments'] = self.config['resolved_arguments']
+             else:
+                 self.result['resolved_arguments'] = _json(vars(args))
+@@ -224,7 +226,7 @@
+         params = dict(total=sum(p.numel() for p in model.parameters()),
+                       trainable=sum(p.numel() for p in model.parameters() if p.requires_grad))
+         parameter = next(model.parameters())
+-        if self.family in ('linearno', 'linearno_history'):
++        if self.family in ('linearno', 'linearno_history', 'linearno_loop'):
+             actual = dict(parameters=params, architecture=self.args._linearno_model_spec,
+                           wrapper_architecture=dict(task=self.task),
+                           device=str(parameter.device), dtype=str(parameter.dtype))
+@@ -291,7 +293,7 @@
+         if not hasattr(self, '_field_visualizers'):
+             self._field_visualizers = {}
+         if member not in self._field_visualizers:
+-            name = {'kcdno':'KCDNO', 'lrsa_matched':'LRSA matched', 'CDLNO':'CDLNO', 'msar_lno':'MSAR-LNO', 'linearno':'LinearNO', 'linearno_history':'LinearNO history'}[self.family]
++            name = {'kcdno':'KCDNO', 'lrsa_matched':'LRSA matched', 'CDLNO':'CDLNO', 'msar_lno':'MSAR-LNO', 'linearno':'LinearNO', 'linearno_history':'LinearNO history', 'linearno_loop':'Looped LinearNO'}[self.family]
+             self._field_visualizers[member] = PeriodicFields(self.directory, self.task, name,
+                                                            seed=getattr(self.args, 'seed', None), member=member)
+         event = self._field_visualizers[member].after_epoch(model, completed_epoch, total_epochs, **task_inputs)
+--- before-LL6/cdlno/linearno_history/checkpoint.py
++++ cdlno/linearno_history/checkpoint.py
+@@ -33,7 +33,9 @@
+     paths = sorted((root/'cdlno/linearno_history').glob('*.py'))
+     paths += sorted((root/'linearno_history').glob('*.py'))
+     paths += [root/'PDE-Solving-StandardBenchmark/model/LinearNO_History.py']
+-    return digest({str(p.relative_to(root)): legacy.sha256(p) for p in paths})
++    from cdlno.linearno_loop.provenance import legacy_source
++    import hashlib
++    return digest({str(p.relative_to(root)): hashlib.sha256(legacy_source(str(p.relative_to(root)),p.read_text()).encode()).hexdigest() for p in paths})
+ 
+ 
+ def rehash(metadata):
+--- before-LL6/cdlno/linearno_history/provenance.py
++++ cdlno/linearno_history/provenance.py
+@@ -14,6 +14,8 @@
+ 
+ 
+ def baseline_source(relative, text):
++    from cdlno.linearno_loop.provenance import legacy_source
++    text = legacy_source(relative, text)
+     for change in reversed(ROUTING_REPLACEMENTS.get(relative, ())):
+         if text.count(change['after']) != change['count']:
+             raise ValueError('unrecognized history routing source; cannot preserve legacy fingerprint: '+relative)
+@@ -23,7 +25,8 @@
+ 
+ def research_provenance(base):
+     root=Path(__file__).resolve().parents[2]
+-    actual={p:hashlib.sha256((root/p).read_bytes()).hexdigest() for p in ROUTING_REPLACEMENTS}
++    from cdlno.linearno_loop.provenance import legacy_source
++    actual={p:hashlib.sha256(legacy_source(p,(root/p).read_text()).encode()).hexdigest() for p in ROUTING_REPLACEMENTS}
+     result=dict(base)
+     result['source_sha256']=digest(dict(baseline=base['source_sha256'],history=source_hash(),routing=actual))
+     result['normalized_patch_sha256']=digest(dict(baseline=base['normalized_patch_sha256'],routing=actual))
+--- before-LL6/docs/LOOP_LINEARNO_IMPLEMENTATION_STATUS.md
++++ docs/LOOP_LINEARNO_IMPLEMENTATION_STATUS.md
+@@ -1,4 +1,19 @@
+ # Looped LinearNO 实施状态
++
++## LL6 — 2026-09-20
++
++**唯一状态：PASS（六 Standard 任务生产路由及原生合成闭环完成）。LL7–LL10 未执行。**
++
++- 范围：Airfoil/Darcy/Elasticity/Pipe/NS/Plasticity；显式 loop train，或 metadata family 的 eval/resume，才走独立 adapter。六个 exp 完整文件不变；三残差 core、原科学协议、industrial入口、launcher、monitor冻结。[LL6报告](LOOP_LINEARNO_LL6_STANDARD.md)、[远端命令](LOOP_LINEARNO_LL6_COMMANDS.md)。
++- 配置/恢复：保留旧 profile，loop actual M 默认逐任务base×2；PCRS直接构造U个物理block。新train必选topology/mode；eval/resume先JSON恢复family/构造参数。loop/A/K、preset/custom、actual rank/multiplier等冲突fail-fast。独立loop schema/class/strict pair+manifest，校验optimizer组/shape/router/topology，RNG最后恢复，禁止目录覆盖和跨mode恢复；normalizer不重新fit。
++- 验证：完整loop **78方法：76pass、2CUDA skip、0failure/error，121.052s**；六任务×两preset×三mode **36/36** 原生合成train→checkpoint→新进程resume/eval闭环（144进程），权重/optimizer/scheduler/RNG/generator/batch/prediction全0差。真实N、d8/h2/M4/B2、4train/2test、3epoch，非真实数据或全宽训练。NS每batch10forward/1update；Plasticity20forward/20update/1scheduler，每次forward的局部状态重建通过。
++- 兼容：修改前真实pure/history档案在新代码新进程续训/评估逐位一致；旧153方法保持147pass、2历史失败方法/4断言、4skip、0error，与批准LL0完全相同，无新增失败。LL2–LL5七份数值/参数/MAC报告全等。六公共生产文件精确投影到原字节，六exp直接byte-equal；起点2285文件仅9项授权改动，其余2276不变。
++- 输出/命令：复用原recorders/field PNG/PDF/NPZ和独立eval记录；108 profile解析、72train+36eval launcher真实argv核验通过。独立eval showcase绘图未验收。首轮pilot路径断言、旧isolation新guard断言失败及修正均保留，不修改科学代码或容差。[证据](loop_linearno_audit/ll6/)。
++- NOT RUN：真实loader/500epoch/精度/远端/GPU/AMP/compile、全宽原生训练、industrial loop生产接线、loop逻辑visit monitor。无新增待裁定设计冲突。
++
++**本 LL6 阶段结束，未执行下一阶段。**
++
++以下为已审查 LL5–LL0 历史记录，其未执行表述对应当时状态。
+ 
+ ## LL5 — 2026-09-20
+ 
+--- before-LL6/tests/history_entry_projection.py
++++ tests/history_entry_projection.py
+@@ -4,6 +4,8 @@
+ 
+ 
+ def strip_history(tree):
++    from loop_entry_projection import strip_loop
++    tree = strip_loop(tree)
+     class Strip(ast.NodeTransformer):
+         def visit_Call(self,node):
+             node=self.generic_visit(node)
+--- before-LL6/tests/loop_linearno/test_isolation.py
++++ tests/loop_linearno/test_isolation.py
+@@ -58,7 +58,8 @@
+         validate_metadata(m);restore_config(m);configuration_matrix()
+         self.assertEqual(before,states())
+ 
+-    def test_all_preexisting_source_bytes_and_classifications_unchanged(self):
++    def test_preexisting_bytes_after_exact_LL6_routing_projection_and_classifications(self):
++        from cdlno.linearno_loop.provenance import legacy_source
+         initial=json.loads((ROOT/'docs/loop_linearno_audit/ll1/start-manifest.json').read_text())
+         categories={}
+         for label,args in [('tracked',[]),('untracked',['--others','--exclude-standard']),
+@@ -71,8 +72,18 @@
+             with self.subTest(path=row['path']):
+                 path=ROOT/row['path']
+                 self.assertTrue(path.is_file())
+-                self.assertEqual(path.stat().st_size,row['size'])
+-                self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),row['sha256'])
++                raw=path.read_bytes()
++                if row['path']=='tests/history_entry_projection.py':
++                    addition=b'    from loop_entry_projection import strip_loop\n    tree = strip_loop(tree)\n'
++                    self.assertEqual(raw.count(addition),1)
++                    raw=raw.replace(addition,b'')
++                else:
++                    # Strip only reviewed exact insertions, not whole files or
++                    # arbitrary AST regions. Every original byte stays checked.
++                    from cdlno.linearno_loop.provenance import REPLACEMENTS
++                    if row['path'] in REPLACEMENTS:raw=legacy_source(row['path'],raw.decode()).encode()
++                self.assertEqual(len(raw),row['size'])
++                self.assertEqual(hashlib.sha256(raw).hexdigest(),row['sha256'])
+                 self.assertEqual(categories[row['path']],row['classification'])
+ 
+ 

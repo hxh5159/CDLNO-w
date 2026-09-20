@@ -1,0 +1,1223 @@
+{
+  "artifact_root": "/home/hwz/CDLNO-artifacts/loop-ll9r-standard-our4bivo",
+  "completed": 2,
+  "expected": 36,
+  "rows": [
+    {
+      "task": "airfoil",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll9r-standard-our4bivo/airfoil/p1_c3_r2_s1/sr_1_over_r",
+      "seconds": 32.126,
+      "exact_weights": true,
+      "exact_optimizer_scheduler_rng": true,
+      "exact_batches": true,
+      "exact_eval": true,
+      "metadata_first": true,
+      "sidecar_immutable": true,
+      "normalizer_no_refit": true,
+      "real_spatial_shape": true,
+      "synthetic_samples": "4train/2test",
+      "epochs": 3,
+      "hidden": 8,
+      "heads": 2,
+      "actual_M": 4,
+      "reports": {
+        "train": {
+          "task": "airfoil",
+          "action": "train",
+          "shape": [
+            1,
+            11271,
+            1
+          ],
+          "prediction_hash": "35c37e6ade033231b6fde257d484867725792389a2af7f7566148e60dfb0454a",
+          "batches": [
+            "50ff10f14c72e4d0f3c2db5591436f70c9927fab1780cfed175e240e7051d461",
+            "0ff819341ab5400db93cdac2a9e059e84a0cdba03fd66da32d77146b94f1caa3",
+            "1f1a4feaedefd2d557fb64367c44e466705fbf90b34c2be397a3737746a21f76",
+            "e565b5441234e307d0baac81f239b64733520e6f934effb3317ca99d914dff81",
+            "08d516c7502e7887712831f423f38e5e7ac98d4374dfe0f1e81f5677e975c339",
+            "429a67605dd9750fef8aa467e87acb73483c4c38f1a20f1452f71edb25b27bf3"
+          ],
+          "normalizer_refit": null,
+          "immutable_metadata": true,
+          "completed_epoch": 3,
+          "source": "real main AST",
+          "reductions": "mean sample-wise flattened ratios per batch; no epsilon",
+          "preset": "p1_c3_r2_s1",
+          "mode": "sr_1_over_r",
+          "public_dispatch_used": true,
+          "metadata_recovers_model": false,
+          "forward_local_checks": 15,
+          "expected_source_counts": [],
+          "each_forward_recomputed_attention": 8,
+          "recorded_artifacts": [
+            {
+              "path": "visualizations/member_000/events.jsonl",
+              "size": 77,
+              "sha256": "cd81098fa08ff85339d07b8ba1cc2d4c32648315f2bebb373ba3df2bccee1d17"
+            },
+            {
+              "path": "visualizations/member_000/scales/case_001_field.json",
+              "size": 276,
+              "sha256": "618af08b9b7eeb4e4acefde5172fa547ed94f5f3448cd90019a075e350e03c52"
+            },
+            {
+              "path": "visualizations/member_000/scales/case_000_field.json",
+              "size": 275,
+              "sha256": "baeb23847e08ea3d1dd19b4e31e4ce7530ebc4f9697515aa7098db953d819789"
+            },
+            {
+              "path": "visualizations/member_000/scales/case_001_near_airfoil.json",
+              "size": 277,
+              "sha256": "4ca665f6dfc89f6ee2c40e25e6a9970b9adaa9950236ade85269658b91143bac"
+            },
+            {
+              "path": "visualizations/member_000/scales/case_000_near_airfoil.json",
+              "size": 276,
+              "sha256": "980bfff9e1ddbc76d66c91afb7c51749edccbd813d62f9d127b9ff4f04b9031e"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/metadata.json",
+              "size": 1866,
+              "sha256": "cde4c905f77696d103b9961b6792fbfc2b50d5353c32a265615c83e55ea03eda"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/caption.tex",
+              "size": 581,
+              "sha256": "754a7aec9b98c54762b240d0b64bb29320ae44eb75fe752850a2582f51c299d8"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/fields.npz",
+              "size": 205897,
+              "sha256": "26dc1d5ec5993866408a89d88d602ce35bf25ca8e05e1d44192bc2c9eeaa19cc"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/fields.png",
+              "size": 538718,
+              "sha256": "6ca54134a4e8206a6c79f42f2ae2bf07dd88136a64ea49bc7f0b3b3a822c5942"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/fields.pdf",
+              "size": 214184,
+              "sha256": "4584f0f26a3149de3bacf449bb43bcacdba016658f010447d7d282cc5fa321f3"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/caption.txt",
+              "size": 571,
+              "sha256": "a39efcb755a3f7b7f52a3b7129292859688cffceded2d967f9eb8da5650fb551"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/metadata.json",
+              "size": 1868,
+              "sha256": "0c1d6352f7382a53a53cac4a4359639a98fd72c1ec98725244621a1536fca6c1"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/caption.tex",
+              "size": 485,
+              "sha256": "6e77afb58606e4a9ea91dfd95389d0af8b135e35677f248ec10000cf19ed408d"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/fields.npz",
+              "size": 205868,
+              "sha256": "01d429d840de63511bb6a77f244af0d4c960fcb947f5ea10f08cb1f16ec6dec6"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/fields.png",
+              "size": 448621,
+              "sha256": "90a190cf7d12f351944ce07fcd559ac88dfee6d285b0fb9eed8a017d45e16a2c"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/fields.pdf",
+              "size": 279139,
+              "sha256": "ecf526c3382da1ae526bd3b3a5fb3ac3fc7831a8d7f315cd0c759f2a58b0f6e3"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/caption.txt",
+              "size": 475,
+              "sha256": "16250bf8ec4722a6cac9de1b429f276249c436a90facccc738f91c15e8e3368c"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/metadata.json",
+              "size": 1867,
+              "sha256": "92b19b11b14a5a86f10399053a54c7d83a54bdf3ae8c64bb239b2195d2400355"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/caption.tex",
+              "size": 581,
+              "sha256": "03304abd93a58feb7acf1fb56899000129cd145d14538114ae1d6e80c857ede2"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/fields.npz",
+              "size": 211423,
+              "sha256": "cfd751c015a92fd7d627f0de9ecacf4b1e5f5836c2ba48ac296a83b4b4e47907"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/fields.png",
+              "size": 537317,
+              "sha256": "849c0582e121bd5cfa0b176c1d912efa954902fe8e7de69f3847955388ea4e25"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/fields.pdf",
+              "size": 215985,
+              "sha256": "4f656ee7b9e7ee37d03a0efc3c2d82956c0d37579857576b57574511fb59e86d"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/caption.txt",
+              "size": 571,
+              "sha256": "aab7c6f9be59384c5ebddde7ca1ffb6d0e2f679339fc0cde80089328e3b277af"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/metadata.json",
+              "size": 1868,
+              "sha256": "b96b59a245420a99cab003590f16e1eae0cc7bf977c41083cd11e0c88d15d4b5"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/caption.tex",
+              "size": 485,
+              "sha256": "f312a4dd542708cea3a1b6d4c06b341d60808c18e47d84018e813af473893c03"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/fields.npz",
+              "size": 211394,
+              "sha256": "b939ca598cdfcdce483f9000b1935790547cb62cbba9e93a2c71f01c67d1170c"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/fields.png",
+              "size": 453258,
+              "sha256": "609f6b824213a4e92ea2b635e6c0dbde34c73fcb81ae897a57baa9bd098f78f4"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/fields.pdf",
+              "size": 283117,
+              "sha256": "cb432acfd7ec8c706647c3e7bf278dedd79cadee0cbbce8474eb4788416d5600"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/caption.txt",
+              "size": 475,
+              "sha256": "cc2dbd206b5291ce9594210077582bea1b3380c6c35c32986bc008e95fa02a27"
+            }
+          ]
+        },
+        "interrupt": {
+          "task": "airfoil",
+          "action": "interrupt",
+          "shape": [
+            1,
+            11271,
+            1
+          ],
+          "prediction_hash": "8184e31ec521769b56c5e3932d35b25ef02fe9fbeede89ce516b024ec3c1708b",
+          "batches": [
+            "50ff10f14c72e4d0f3c2db5591436f70c9927fab1780cfed175e240e7051d461",
+            "0ff819341ab5400db93cdac2a9e059e84a0cdba03fd66da32d77146b94f1caa3"
+          ],
+          "normalizer_refit": null,
+          "immutable_metadata": true,
+          "completed_epoch": 1,
+          "source": "real main AST",
+          "reductions": "mean sample-wise flattened ratios per batch; no epsilon",
+          "preset": "p1_c3_r2_s1",
+          "mode": "sr_1_over_r",
+          "public_dispatch_used": true,
+          "metadata_recovers_model": false,
+          "forward_local_checks": 5,
+          "expected_source_counts": [],
+          "each_forward_recomputed_attention": 8
+        },
+        "resume": {
+          "task": "airfoil",
+          "action": "resume",
+          "shape": [
+            1,
+            11271,
+            1
+          ],
+          "prediction_hash": "35c37e6ade033231b6fde257d484867725792389a2af7f7566148e60dfb0454a",
+          "batches": [
+            "1f1a4feaedefd2d557fb64367c44e466705fbf90b34c2be397a3737746a21f76",
+            "e565b5441234e307d0baac81f239b64733520e6f934effb3317ca99d914dff81",
+            "08d516c7502e7887712831f423f38e5e7ac98d4374dfe0f1e81f5677e975c339",
+            "429a67605dd9750fef8aa467e87acb73483c4c38f1a20f1452f71edb25b27bf3"
+          ],
+          "normalizer_refit": false,
+          "immutable_metadata": true,
+          "completed_epoch": 3,
+          "source": "real main AST",
+          "reductions": "mean sample-wise flattened ratios per batch; no epsilon",
+          "preset": "p1_c3_r2_s1",
+          "mode": "sr_1_over_r",
+          "public_dispatch_used": true,
+          "metadata_recovers_model": true,
+          "forward_local_checks": 11,
+          "expected_source_counts": [],
+          "each_forward_recomputed_attention": 8,
+          "recorded_artifacts": [
+            {
+              "path": "visualizations/member_000/events.jsonl",
+              "size": 77,
+              "sha256": "cd81098fa08ff85339d07b8ba1cc2d4c32648315f2bebb373ba3df2bccee1d17"
+            },
+            {
+              "path": "visualizations/member_000/scales/case_001_field.json",
+              "size": 276,
+              "sha256": "618af08b9b7eeb4e4acefde5172fa547ed94f5f3448cd90019a075e350e03c52"
+            },
+            {
+              "path": "visualizations/member_000/scales/case_000_field.json",
+              "size": 275,
+              "sha256": "baeb23847e08ea3d1dd19b4e31e4ce7530ebc4f9697515aa7098db953d819789"
+            },
+            {
+              "path": "visualizations/member_000/scales/case_001_near_airfoil.json",
+              "size": 277,
+              "sha256": "4ca665f6dfc89f6ee2c40e25e6a9970b9adaa9950236ade85269658b91143bac"
+            },
+            {
+              "path": "visualizations/member_000/scales/case_000_near_airfoil.json",
+              "size": 276,
+              "sha256": "980bfff9e1ddbc76d66c91afb7c51749edccbd813d62f9d127b9ff4f04b9031e"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/metadata.json",
+              "size": 1866,
+              "sha256": "cde4c905f77696d103b9961b6792fbfc2b50d5353c32a265615c83e55ea03eda"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/caption.tex",
+              "size": 581,
+              "sha256": "754a7aec9b98c54762b240d0b64bb29320ae44eb75fe752850a2582f51c299d8"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/fields.npz",
+              "size": 205897,
+              "sha256": "26dc1d5ec5993866408a89d88d602ce35bf25ca8e05e1d44192bc2c9eeaa19cc"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/fields.png",
+              "size": 538718,
+              "sha256": "6ca54134a4e8206a6c79f42f2ae2bf07dd88136a64ea49bc7f0b3b3a822c5942"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/fields.pdf",
+              "size": 214184,
+              "sha256": "b143ac203728c9399ccec6f8985b69817b60f35415a908d19ba6aaf0d79b4b75"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/caption.txt",
+              "size": 571,
+              "sha256": "a39efcb755a3f7b7f52a3b7129292859688cffceded2d967f9eb8da5650fb551"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/metadata.json",
+              "size": 1868,
+              "sha256": "0c1d6352f7382a53a53cac4a4359639a98fd72c1ec98725244621a1536fca6c1"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/caption.tex",
+              "size": 485,
+              "sha256": "6e77afb58606e4a9ea91dfd95389d0af8b135e35677f248ec10000cf19ed408d"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/fields.npz",
+              "size": 205868,
+              "sha256": "01d429d840de63511bb6a77f244af0d4c960fcb947f5ea10f08cb1f16ec6dec6"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/fields.png",
+              "size": 448621,
+              "sha256": "90a190cf7d12f351944ce07fcd559ac88dfee6d285b0fb9eed8a017d45e16a2c"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/fields.pdf",
+              "size": 279139,
+              "sha256": "ea34e0f9448be2acff7cd3fe5b82493c4ead414c4f543f8ec33aecce289ad840"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/caption.txt",
+              "size": 475,
+              "sha256": "16250bf8ec4722a6cac9de1b429f276249c436a90facccc738f91c15e8e3368c"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/metadata.json",
+              "size": 1867,
+              "sha256": "92b19b11b14a5a86f10399053a54c7d83a54bdf3ae8c64bb239b2195d2400355"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/caption.tex",
+              "size": 581,
+              "sha256": "03304abd93a58feb7acf1fb56899000129cd145d14538114ae1d6e80c857ede2"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/fields.npz",
+              "size": 211423,
+              "sha256": "cfd751c015a92fd7d627f0de9ecacf4b1e5f5836c2ba48ac296a83b4b4e47907"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/fields.png",
+              "size": 537317,
+              "sha256": "849c0582e121bd5cfa0b176c1d912efa954902fe8e7de69f3847955388ea4e25"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/fields.pdf",
+              "size": 215985,
+              "sha256": "26d7109b15cfb3192ff5021b1a8f647214f01ac0ddab50ae35fab0d2e077e4f5"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/caption.txt",
+              "size": 571,
+              "sha256": "aab7c6f9be59384c5ebddde7ca1ffb6d0e2f679339fc0cde80089328e3b277af"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/metadata.json",
+              "size": 1868,
+              "sha256": "b96b59a245420a99cab003590f16e1eae0cc7bf977c41083cd11e0c88d15d4b5"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/caption.tex",
+              "size": 485,
+              "sha256": "f312a4dd542708cea3a1b6d4c06b341d60808c18e47d84018e813af473893c03"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/fields.npz",
+              "size": 211394,
+              "sha256": "b939ca598cdfcdce483f9000b1935790547cb62cbba9e93a2c71f01c67d1170c"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/fields.png",
+              "size": 453258,
+              "sha256": "609f6b824213a4e92ea2b635e6c0dbde34c73fcb81ae897a57baa9bd098f78f4"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/fields.pdf",
+              "size": 283117,
+              "sha256": "097572f331b78e78de8afd91720c006b7985708d9a0d5b537166af7262b96eaf"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/caption.txt",
+              "size": 475,
+              "sha256": "cc2dbd206b5291ce9594210077582bea1b3380c6c35c32986bc008e95fa02a27"
+            }
+          ]
+        },
+        "eval": {
+          "task": "airfoil",
+          "action": "eval",
+          "shape": [
+            1,
+            11271,
+            1
+          ],
+          "prediction_hash": "35c37e6ade033231b6fde257d484867725792389a2af7f7566148e60dfb0454a",
+          "batches": [],
+          "normalizer_refit": false,
+          "immutable_metadata": true,
+          "completed_epoch": 0,
+          "source": "real main AST",
+          "reductions": "mean sample-wise flattened ratios per batch; no epsilon",
+          "preset": "p1_c3_r2_s1",
+          "mode": "sr_1_over_r",
+          "public_dispatch_used": true,
+          "metadata_recovers_model": true,
+          "forward_local_checks": 3,
+          "expected_source_counts": [],
+          "each_forward_recomputed_attention": 8,
+          "recorded_artifacts": [
+            {
+              "path": "visualizations/member_000/events.jsonl",
+              "size": 77,
+              "sha256": "cd81098fa08ff85339d07b8ba1cc2d4c32648315f2bebb373ba3df2bccee1d17"
+            },
+            {
+              "path": "visualizations/member_000/scales/case_001_field.json",
+              "size": 276,
+              "sha256": "618af08b9b7eeb4e4acefde5172fa547ed94f5f3448cd90019a075e350e03c52"
+            },
+            {
+              "path": "visualizations/member_000/scales/case_000_field.json",
+              "size": 275,
+              "sha256": "baeb23847e08ea3d1dd19b4e31e4ce7530ebc4f9697515aa7098db953d819789"
+            },
+            {
+              "path": "visualizations/member_000/scales/case_001_near_airfoil.json",
+              "size": 277,
+              "sha256": "4ca665f6dfc89f6ee2c40e25e6a9970b9adaa9950236ade85269658b91143bac"
+            },
+            {
+              "path": "visualizations/member_000/scales/case_000_near_airfoil.json",
+              "size": 276,
+              "sha256": "980bfff9e1ddbc76d66c91afb7c51749edccbd813d62f9d127b9ff4f04b9031e"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/metadata.json",
+              "size": 1866,
+              "sha256": "cde4c905f77696d103b9961b6792fbfc2b50d5353c32a265615c83e55ea03eda"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/caption.tex",
+              "size": 581,
+              "sha256": "754a7aec9b98c54762b240d0b64bb29320ae44eb75fe752850a2582f51c299d8"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/fields.npz",
+              "size": 205897,
+              "sha256": "26dc1d5ec5993866408a89d88d602ce35bf25ca8e05e1d44192bc2c9eeaa19cc"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/fields.png",
+              "size": 538718,
+              "sha256": "6ca54134a4e8206a6c79f42f2ae2bf07dd88136a64ea49bc7f0b3b3a822c5942"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/fields.pdf",
+              "size": 214184,
+              "sha256": "b143ac203728c9399ccec6f8985b69817b60f35415a908d19ba6aaf0d79b4b75"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/caption.txt",
+              "size": 571,
+              "sha256": "a39efcb755a3f7b7f52a3b7129292859688cffceded2d967f9eb8da5650fb551"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/metadata.json",
+              "size": 1868,
+              "sha256": "0c1d6352f7382a53a53cac4a4359639a98fd72c1ec98725244621a1536fca6c1"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/caption.tex",
+              "size": 485,
+              "sha256": "6e77afb58606e4a9ea91dfd95389d0af8b135e35677f248ec10000cf19ed408d"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/fields.npz",
+              "size": 205868,
+              "sha256": "01d429d840de63511bb6a77f244af0d4c960fcb947f5ea10f08cb1f16ec6dec6"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/fields.png",
+              "size": 448621,
+              "sha256": "90a190cf7d12f351944ce07fcd559ac88dfee6d285b0fb9eed8a017d45e16a2c"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/fields.pdf",
+              "size": 279139,
+              "sha256": "ea34e0f9448be2acff7cd3fe5b82493c4ead414c4f543f8ec33aecce289ad840"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/caption.txt",
+              "size": 475,
+              "sha256": "16250bf8ec4722a6cac9de1b429f276249c436a90facccc738f91c15e8e3368c"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/metadata.json",
+              "size": 1867,
+              "sha256": "92b19b11b14a5a86f10399053a54c7d83a54bdf3ae8c64bb239b2195d2400355"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/caption.tex",
+              "size": 581,
+              "sha256": "03304abd93a58feb7acf1fb56899000129cd145d14538114ae1d6e80c857ede2"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/fields.npz",
+              "size": 211423,
+              "sha256": "cfd751c015a92fd7d627f0de9ecacf4b1e5f5836c2ba48ac296a83b4b4e47907"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/fields.png",
+              "size": 537317,
+              "sha256": "849c0582e121bd5cfa0b176c1d912efa954902fe8e7de69f3847955388ea4e25"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/fields.pdf",
+              "size": 215985,
+              "sha256": "26d7109b15cfb3192ff5021b1a8f647214f01ac0ddab50ae35fab0d2e077e4f5"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/caption.txt",
+              "size": 571,
+              "sha256": "aab7c6f9be59384c5ebddde7ca1ffb6d0e2f679339fc0cde80089328e3b277af"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/metadata.json",
+              "size": 1868,
+              "sha256": "b96b59a245420a99cab003590f16e1eae0cc7bf977c41083cd11e0c88d15d4b5"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/caption.tex",
+              "size": 485,
+              "sha256": "f312a4dd542708cea3a1b6d4c06b341d60808c18e47d84018e813af473893c03"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/fields.npz",
+              "size": 211394,
+              "sha256": "b939ca598cdfcdce483f9000b1935790547cb62cbba9e93a2c71f01c67d1170c"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/fields.png",
+              "size": 453258,
+              "sha256": "609f6b824213a4e92ea2b635e6c0dbde34c73fcb81ae897a57baa9bd098f78f4"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/fields.pdf",
+              "size": 283117,
+              "sha256": "097572f331b78e78de8afd91720c006b7985708d9a0d5b537166af7262b96eaf"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/caption.txt",
+              "size": 475,
+              "sha256": "cc2dbd206b5291ce9594210077582bea1b3380c6c35c32986bc008e95fa02a27"
+            },
+            {
+              "path": "evaluations/20260920T050827990494Z/eval.log",
+              "size": 250900,
+              "sha256": "119b082b1a3283690e29c2b4c445bb49f735c999931e076482968a65a447bcec"
+            },
+            {
+              "path": "evaluations/20260920T050827990494Z/results.json",
+              "size": 3515,
+              "sha256": "ffa29c529a3f42c771616a4dc90bdb03cd46d72de563bdf1095c7e87763c080b"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "task": "airfoil",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll9r-standard-our4bivo/airfoil/p1_c3_r2_s1/rb_attnres",
+      "seconds": 33.6,
+      "exact_weights": true,
+      "exact_optimizer_scheduler_rng": true,
+      "exact_batches": true,
+      "exact_eval": true,
+      "metadata_first": true,
+      "sidecar_immutable": true,
+      "normalizer_no_refit": true,
+      "real_spatial_shape": true,
+      "synthetic_samples": "4train/2test",
+      "epochs": 3,
+      "hidden": 8,
+      "heads": 2,
+      "actual_M": 4,
+      "reports": {
+        "train": {
+          "task": "airfoil",
+          "action": "train",
+          "shape": [
+            1,
+            11271,
+            1
+          ],
+          "prediction_hash": "aa35dcaf8dc0bf8bb1e469761be3ac650611a676856f5091bfb354a232903c56",
+          "batches": [
+            "50ff10f14c72e4d0f3c2db5591436f70c9927fab1780cfed175e240e7051d461",
+            "0ff819341ab5400db93cdac2a9e059e84a0cdba03fd66da32d77146b94f1caa3",
+            "1f1a4feaedefd2d557fb64367c44e466705fbf90b34c2be397a3737746a21f76",
+            "e565b5441234e307d0baac81f239b64733520e6f934effb3317ca99d914dff81",
+            "08d516c7502e7887712831f423f38e5e7ac98d4374dfe0f1e81f5677e975c339",
+            "429a67605dd9750fef8aa467e87acb73483c4c38f1a20f1452f71edb25b27bf3"
+          ],
+          "normalizer_refit": null,
+          "immutable_metadata": true,
+          "completed_epoch": 3,
+          "source": "real main AST",
+          "reductions": "mean sample-wise flattened ratios per batch; no epsilon",
+          "preset": "p1_c3_r2_s1",
+          "mode": "rb_attnres",
+          "public_dispatch_used": true,
+          "metadata_recovers_model": false,
+          "forward_local_checks": 15,
+          "expected_source_counts": [
+            1,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "each_forward_recomputed_attention": 8,
+          "recorded_artifacts": [
+            {
+              "path": "visualizations/member_000/events.jsonl",
+              "size": 77,
+              "sha256": "cd81098fa08ff85339d07b8ba1cc2d4c32648315f2bebb373ba3df2bccee1d17"
+            },
+            {
+              "path": "visualizations/member_000/scales/case_001_field.json",
+              "size": 276,
+              "sha256": "618af08b9b7eeb4e4acefde5172fa547ed94f5f3448cd90019a075e350e03c52"
+            },
+            {
+              "path": "visualizations/member_000/scales/case_000_field.json",
+              "size": 275,
+              "sha256": "baeb23847e08ea3d1dd19b4e31e4ce7530ebc4f9697515aa7098db953d819789"
+            },
+            {
+              "path": "visualizations/member_000/scales/case_001_near_airfoil.json",
+              "size": 277,
+              "sha256": "4ca665f6dfc89f6ee2c40e25e6a9970b9adaa9950236ade85269658b91143bac"
+            },
+            {
+              "path": "visualizations/member_000/scales/case_000_near_airfoil.json",
+              "size": 276,
+              "sha256": "980bfff9e1ddbc76d66c91afb7c51749edccbd813d62f9d127b9ff4f04b9031e"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/metadata.json",
+              "size": 1865,
+              "sha256": "4149b500241f62fcb15843ccd5640dffbce8dbd5cbc74c6d0b8f9be1e4d3dfb6"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/caption.tex",
+              "size": 581,
+              "sha256": "754a7aec9b98c54762b240d0b64bb29320ae44eb75fe752850a2582f51c299d8"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/fields.npz",
+              "size": 201348,
+              "sha256": "c837c61f55a992a29c5186d23613655e05eaa02160e19022759e079a6e680e5c"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/fields.png",
+              "size": 538718,
+              "sha256": "6ca54134a4e8206a6c79f42f2ae2bf07dd88136a64ea49bc7f0b3b3a822c5942"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/fields.pdf",
+              "size": 214184,
+              "sha256": "0265c21fe5df0a9cb1abb554745e7b28ce1e0f472931e6ba36ba0fdb8ff03592"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/caption.txt",
+              "size": 571,
+              "sha256": "a39efcb755a3f7b7f52a3b7129292859688cffceded2d967f9eb8da5650fb551"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/metadata.json",
+              "size": 1866,
+              "sha256": "47e05320ffe598f2356f8a2af03b510619f6aa1c3409d02da00f3873d729f0fc"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/caption.tex",
+              "size": 485,
+              "sha256": "6e77afb58606e4a9ea91dfd95389d0af8b135e35677f248ec10000cf19ed408d"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/fields.npz",
+              "size": 201319,
+              "sha256": "1d293b7c1937ad7104837fe42adb34d21eedf9db3cc6cc4efe52004de7961e21"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/fields.png",
+              "size": 448621,
+              "sha256": "90a190cf7d12f351944ce07fcd559ac88dfee6d285b0fb9eed8a017d45e16a2c"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/fields.pdf",
+              "size": 279139,
+              "sha256": "ecf526c3382da1ae526bd3b3a5fb3ac3fc7831a8d7f315cd0c759f2a58b0f6e3"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/caption.txt",
+              "size": 475,
+              "sha256": "16250bf8ec4722a6cac9de1b429f276249c436a90facccc738f91c15e8e3368c"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/metadata.json",
+              "size": 1867,
+              "sha256": "77d4a48e3e199915390c564548e759bf52a0958cdc40f0d3e09b2e285583d6b8"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/caption.tex",
+              "size": 581,
+              "sha256": "03304abd93a58feb7acf1fb56899000129cd145d14538114ae1d6e80c857ede2"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/fields.npz",
+              "size": 206744,
+              "sha256": "7f0d368a84526ed8fb9369463c927693d802162b81e504540e0da59550fda2bb"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/fields.png",
+              "size": 537317,
+              "sha256": "849c0582e121bd5cfa0b176c1d912efa954902fe8e7de69f3847955388ea4e25"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/fields.pdf",
+              "size": 215985,
+              "sha256": "218074685d68e30e9f80deacbb4d30e69d3402b2cab74bca596c3108ccbeb233"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/caption.txt",
+              "size": 571,
+              "sha256": "aab7c6f9be59384c5ebddde7ca1ffb6d0e2f679339fc0cde80089328e3b277af"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/metadata.json",
+              "size": 1868,
+              "sha256": "cb2d3b3cd811e92891ffb3529781387c40a475f104f080ef6fcbd966cbf92072"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/caption.tex",
+              "size": 485,
+              "sha256": "f312a4dd542708cea3a1b6d4c06b341d60808c18e47d84018e813af473893c03"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/fields.npz",
+              "size": 206715,
+              "sha256": "7ce7ecb8e11be028f513fa77647725b6dedd55cecd7e5be217f77467478dd0a1"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/fields.png",
+              "size": 453258,
+              "sha256": "609f6b824213a4e92ea2b635e6c0dbde34c73fcb81ae897a57baa9bd098f78f4"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/fields.pdf",
+              "size": 283117,
+              "sha256": "cb432acfd7ec8c706647c3e7bf278dedd79cadee0cbbce8474eb4788416d5600"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/caption.txt",
+              "size": 475,
+              "sha256": "cc2dbd206b5291ce9594210077582bea1b3380c6c35c32986bc008e95fa02a27"
+            }
+          ]
+        },
+        "interrupt": {
+          "task": "airfoil",
+          "action": "interrupt",
+          "shape": [
+            1,
+            11271,
+            1
+          ],
+          "prediction_hash": "ab351c2b2b69385f4c4afea0d0acd13995674306dce4bf842a177e8a6bacb98b",
+          "batches": [
+            "50ff10f14c72e4d0f3c2db5591436f70c9927fab1780cfed175e240e7051d461",
+            "0ff819341ab5400db93cdac2a9e059e84a0cdba03fd66da32d77146b94f1caa3"
+          ],
+          "normalizer_refit": null,
+          "immutable_metadata": true,
+          "completed_epoch": 1,
+          "source": "real main AST",
+          "reductions": "mean sample-wise flattened ratios per batch; no epsilon",
+          "preset": "p1_c3_r2_s1",
+          "mode": "rb_attnres",
+          "public_dispatch_used": true,
+          "metadata_recovers_model": false,
+          "forward_local_checks": 5,
+          "expected_source_counts": [
+            1,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "each_forward_recomputed_attention": 8
+        },
+        "resume": {
+          "task": "airfoil",
+          "action": "resume",
+          "shape": [
+            1,
+            11271,
+            1
+          ],
+          "prediction_hash": "aa35dcaf8dc0bf8bb1e469761be3ac650611a676856f5091bfb354a232903c56",
+          "batches": [
+            "1f1a4feaedefd2d557fb64367c44e466705fbf90b34c2be397a3737746a21f76",
+            "e565b5441234e307d0baac81f239b64733520e6f934effb3317ca99d914dff81",
+            "08d516c7502e7887712831f423f38e5e7ac98d4374dfe0f1e81f5677e975c339",
+            "429a67605dd9750fef8aa467e87acb73483c4c38f1a20f1452f71edb25b27bf3"
+          ],
+          "normalizer_refit": false,
+          "immutable_metadata": true,
+          "completed_epoch": 3,
+          "source": "real main AST",
+          "reductions": "mean sample-wise flattened ratios per batch; no epsilon",
+          "preset": "p1_c3_r2_s1",
+          "mode": "rb_attnres",
+          "public_dispatch_used": true,
+          "metadata_recovers_model": true,
+          "forward_local_checks": 11,
+          "expected_source_counts": [
+            1,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "each_forward_recomputed_attention": 8,
+          "recorded_artifacts": [
+            {
+              "path": "visualizations/member_000/events.jsonl",
+              "size": 77,
+              "sha256": "cd81098fa08ff85339d07b8ba1cc2d4c32648315f2bebb373ba3df2bccee1d17"
+            },
+            {
+              "path": "visualizations/member_000/scales/case_001_field.json",
+              "size": 276,
+              "sha256": "618af08b9b7eeb4e4acefde5172fa547ed94f5f3448cd90019a075e350e03c52"
+            },
+            {
+              "path": "visualizations/member_000/scales/case_000_field.json",
+              "size": 275,
+              "sha256": "baeb23847e08ea3d1dd19b4e31e4ce7530ebc4f9697515aa7098db953d819789"
+            },
+            {
+              "path": "visualizations/member_000/scales/case_001_near_airfoil.json",
+              "size": 277,
+              "sha256": "4ca665f6dfc89f6ee2c40e25e6a9970b9adaa9950236ade85269658b91143bac"
+            },
+            {
+              "path": "visualizations/member_000/scales/case_000_near_airfoil.json",
+              "size": 276,
+              "sha256": "980bfff9e1ddbc76d66c91afb7c51749edccbd813d62f9d127b9ff4f04b9031e"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/metadata.json",
+              "size": 1865,
+              "sha256": "4149b500241f62fcb15843ccd5640dffbce8dbd5cbc74c6d0b8f9be1e4d3dfb6"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/caption.tex",
+              "size": 581,
+              "sha256": "754a7aec9b98c54762b240d0b64bb29320ae44eb75fe752850a2582f51c299d8"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/fields.npz",
+              "size": 201348,
+              "sha256": "c837c61f55a992a29c5186d23613655e05eaa02160e19022759e079a6e680e5c"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/fields.png",
+              "size": 538718,
+              "sha256": "6ca54134a4e8206a6c79f42f2ae2bf07dd88136a64ea49bc7f0b3b3a822c5942"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/fields.pdf",
+              "size": 214184,
+              "sha256": "d93e7c6bf8561285d6a93b97b0c35da3ffead686dda0a997b21caf988a39d526"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/caption.txt",
+              "size": 571,
+              "sha256": "a39efcb755a3f7b7f52a3b7129292859688cffceded2d967f9eb8da5650fb551"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/metadata.json",
+              "size": 1866,
+              "sha256": "47e05320ffe598f2356f8a2af03b510619f6aa1c3409d02da00f3873d729f0fc"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/caption.tex",
+              "size": 485,
+              "sha256": "6e77afb58606e4a9ea91dfd95389d0af8b135e35677f248ec10000cf19ed408d"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/fields.npz",
+              "size": 201319,
+              "sha256": "1d293b7c1937ad7104837fe42adb34d21eedf9db3cc6cc4efe52004de7961e21"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/fields.png",
+              "size": 448621,
+              "sha256": "90a190cf7d12f351944ce07fcd559ac88dfee6d285b0fb9eed8a017d45e16a2c"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/fields.pdf",
+              "size": 279139,
+              "sha256": "1e895489ad24645183f6f444be3804784252c072dcf69c8a71fcffd62e8585a8"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/caption.txt",
+              "size": 475,
+              "sha256": "16250bf8ec4722a6cac9de1b429f276249c436a90facccc738f91c15e8e3368c"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/metadata.json",
+              "size": 1867,
+              "sha256": "77d4a48e3e199915390c564548e759bf52a0958cdc40f0d3e09b2e285583d6b8"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/caption.tex",
+              "size": 581,
+              "sha256": "03304abd93a58feb7acf1fb56899000129cd145d14538114ae1d6e80c857ede2"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/fields.npz",
+              "size": 206744,
+              "sha256": "7f0d368a84526ed8fb9369463c927693d802162b81e504540e0da59550fda2bb"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/fields.png",
+              "size": 537317,
+              "sha256": "849c0582e121bd5cfa0b176c1d912efa954902fe8e7de69f3847955388ea4e25"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/fields.pdf",
+              "size": 215985,
+              "sha256": "d68110bbf95380659699260cddffb5d2efaa7a2decb30f8f1588af172049a5c8"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/caption.txt",
+              "size": 571,
+              "sha256": "aab7c6f9be59384c5ebddde7ca1ffb6d0e2f679339fc0cde80089328e3b277af"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/metadata.json",
+              "size": 1868,
+              "sha256": "cb2d3b3cd811e92891ffb3529781387c40a475f104f080ef6fcbd966cbf92072"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/caption.tex",
+              "size": 485,
+              "sha256": "f312a4dd542708cea3a1b6d4c06b341d60808c18e47d84018e813af473893c03"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/fields.npz",
+              "size": 206715,
+              "sha256": "7ce7ecb8e11be028f513fa77647725b6dedd55cecd7e5be217f77467478dd0a1"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/fields.png",
+              "size": 453258,
+              "sha256": "609f6b824213a4e92ea2b635e6c0dbde34c73fcb81ae897a57baa9bd098f78f4"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/fields.pdf",
+              "size": 283117,
+              "sha256": "d8ec4aa22c70ac5f403638d140eee772f019e913dd56800a1536dd4f7348cccc"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/caption.txt",
+              "size": 475,
+              "sha256": "cc2dbd206b5291ce9594210077582bea1b3380c6c35c32986bc008e95fa02a27"
+            }
+          ]
+        },
+        "eval": {
+          "task": "airfoil",
+          "action": "eval",
+          "shape": [
+            1,
+            11271,
+            1
+          ],
+          "prediction_hash": "aa35dcaf8dc0bf8bb1e469761be3ac650611a676856f5091bfb354a232903c56",
+          "batches": [],
+          "normalizer_refit": false,
+          "immutable_metadata": true,
+          "completed_epoch": 0,
+          "source": "real main AST",
+          "reductions": "mean sample-wise flattened ratios per batch; no epsilon",
+          "preset": "p1_c3_r2_s1",
+          "mode": "rb_attnres",
+          "public_dispatch_used": true,
+          "metadata_recovers_model": true,
+          "forward_local_checks": 3,
+          "expected_source_counts": [
+            1,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "each_forward_recomputed_attention": 8,
+          "recorded_artifacts": [
+            {
+              "path": "visualizations/member_000/events.jsonl",
+              "size": 77,
+              "sha256": "cd81098fa08ff85339d07b8ba1cc2d4c32648315f2bebb373ba3df2bccee1d17"
+            },
+            {
+              "path": "visualizations/member_000/scales/case_001_field.json",
+              "size": 276,
+              "sha256": "618af08b9b7eeb4e4acefde5172fa547ed94f5f3448cd90019a075e350e03c52"
+            },
+            {
+              "path": "visualizations/member_000/scales/case_000_field.json",
+              "size": 275,
+              "sha256": "baeb23847e08ea3d1dd19b4e31e4ce7530ebc4f9697515aa7098db953d819789"
+            },
+            {
+              "path": "visualizations/member_000/scales/case_001_near_airfoil.json",
+              "size": 277,
+              "sha256": "4ca665f6dfc89f6ee2c40e25e6a9970b9adaa9950236ade85269658b91143bac"
+            },
+            {
+              "path": "visualizations/member_000/scales/case_000_near_airfoil.json",
+              "size": 276,
+              "sha256": "980bfff9e1ddbc76d66c91afb7c51749edccbd813d62f9d127b9ff4f04b9031e"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/metadata.json",
+              "size": 1865,
+              "sha256": "4149b500241f62fcb15843ccd5640dffbce8dbd5cbc74c6d0b8f9be1e4d3dfb6"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/caption.tex",
+              "size": 581,
+              "sha256": "754a7aec9b98c54762b240d0b64bb29320ae44eb75fe752850a2582f51c299d8"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/fields.npz",
+              "size": 201348,
+              "sha256": "c837c61f55a992a29c5186d23613655e05eaa02160e19022759e079a6e680e5c"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/fields.png",
+              "size": 538718,
+              "sha256": "6ca54134a4e8206a6c79f42f2ae2bf07dd88136a64ea49bc7f0b3b3a822c5942"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/fields.pdf",
+              "size": 214184,
+              "sha256": "d93e7c6bf8561285d6a93b97b0c35da3ffead686dda0a997b21caf988a39d526"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/near_airfoil/caption.txt",
+              "size": 571,
+              "sha256": "a39efcb755a3f7b7f52a3b7129292859688cffceded2d967f9eb8da5650fb551"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/metadata.json",
+              "size": 1866,
+              "sha256": "47e05320ffe598f2356f8a2af03b510619f6aa1c3409d02da00f3873d729f0fc"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/caption.tex",
+              "size": 485,
+              "sha256": "6e77afb58606e4a9ea91dfd95389d0af8b135e35677f248ec10000cf19ed408d"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/fields.npz",
+              "size": 201319,
+              "sha256": "1d293b7c1937ad7104837fe42adb34d21eedf9db3cc6cc4efe52004de7961e21"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/fields.png",
+              "size": 448621,
+              "sha256": "90a190cf7d12f351944ce07fcd559ac88dfee6d285b0fb9eed8a017d45e16a2c"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/fields.pdf",
+              "size": 279139,
+              "sha256": "1e895489ad24645183f6f444be3804784252c072dcf69c8a71fcffd62e8585a8"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_000/field/caption.txt",
+              "size": 475,
+              "sha256": "16250bf8ec4722a6cac9de1b429f276249c436a90facccc738f91c15e8e3368c"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/metadata.json",
+              "size": 1867,
+              "sha256": "77d4a48e3e199915390c564548e759bf52a0958cdc40f0d3e09b2e285583d6b8"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/caption.tex",
+              "size": 581,
+              "sha256": "03304abd93a58feb7acf1fb56899000129cd145d14538114ae1d6e80c857ede2"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/fields.npz",
+              "size": 206744,
+              "sha256": "7f0d368a84526ed8fb9369463c927693d802162b81e504540e0da59550fda2bb"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/fields.png",
+              "size": 537317,
+              "sha256": "849c0582e121bd5cfa0b176c1d912efa954902fe8e7de69f3847955388ea4e25"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/fields.pdf",
+              "size": 215985,
+              "sha256": "d68110bbf95380659699260cddffb5d2efaa7a2decb30f8f1588af172049a5c8"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/near_airfoil/caption.txt",
+              "size": 571,
+              "sha256": "aab7c6f9be59384c5ebddde7ca1ffb6d0e2f679339fc0cde80089328e3b277af"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/metadata.json",
+              "size": 1868,
+              "sha256": "cb2d3b3cd811e92891ffb3529781387c40a475f104f080ef6fcbd966cbf92072"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/caption.tex",
+              "size": 485,
+              "sha256": "f312a4dd542708cea3a1b6d4c06b341d60808c18e47d84018e813af473893c03"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/fields.npz",
+              "size": 206715,
+              "sha256": "7ce7ecb8e11be028f513fa77647725b6dedd55cecd7e5be217f77467478dd0a1"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/fields.png",
+              "size": 453258,
+              "sha256": "609f6b824213a4e92ea2b635e6c0dbde34c73fcb81ae897a57baa9bd098f78f4"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/fields.pdf",
+              "size": 283117,
+              "sha256": "d8ec4aa22c70ac5f403638d140eee772f019e913dd56800a1536dd4f7348cccc"
+            },
+            {
+              "path": "visualizations/member_000/epoch_0003/case_001/field/caption.txt",
+              "size": 475,
+              "sha256": "cc2dbd206b5291ce9594210077582bea1b3380c6c35c32986bc008e95fa02a27"
+            },
+            {
+              "path": "evaluations/20260920T050829319308Z/eval.log",
+              "size": 274162,
+              "sha256": "bd3b420f11d21246cf026235318003338596da9b903ec47df942a10606cd6138"
+            },
+            {
+              "path": "evaluations/20260920T050829319308Z/results.json",
+              "size": 3507,
+              "sha256": "34a3cd7e05d157ddc5b8db9ea783e2b5ef7e19f29646b637b616eb00a063a8b6"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

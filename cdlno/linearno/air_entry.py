@@ -585,6 +585,9 @@ def _load_dataset(data_dir, args, *, train=True, coef_norm=None):
 
 
 def run_cli(args):
+    if getattr(args, 'linearno_family', None) == 'linearno_loop':
+        from cdlno.linearno_loop.air_entry import run_cli as loop_run_cli
+        return loop_run_cli(args)
     if getattr(args, '_linearno_history_adapter', False):
         from cdlno.linearno_history.air_entry import run_cli as history_run_cli
         return history_run_cli(args)

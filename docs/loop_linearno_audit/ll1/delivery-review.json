@@ -1,0 +1,45 @@
+{
+  "scope": "LL1",
+  "status": "PASS",
+  "reviewed": {
+    "old_behavior": "source/classification freeze + 33 unchanged legacy test methods",
+    "sole_architecture_truth": "request reconstruction; PCRS/depth/rank conflict and tamper tests",
+    "point_AR_not_old_history": "contract/count assertions and any A/K field presence rejection",
+    "metadata_first": "strict flag, source/shape hashes, field diagnostics; no torch load/construct",
+    "claim_limits": "312 config-only previews; real/model/backend restoration not run"
+  },
+  "python310_ast_and_compile_pass": [
+    "docs/loop_linearno_audit/ll1/build_contract_artifacts.py",
+    "docs/loop_linearno_audit/ll1/finalize_evidence.py",
+    "linearno_loop/__init__.py",
+    "linearno_loop/config.py",
+    "linearno_loop/contracts.py",
+    "linearno_loop/matrix.py",
+    "linearno_loop/schema.py",
+    "linearno_loop/state.py",
+    "tests/loop_linearno/__init__.py",
+    "tests/loop_linearno/support.py",
+    "tests/loop_linearno/test_artifacts.py",
+    "tests/loop_linearno/test_config.py",
+    "tests/loop_linearno/test_isolation.py",
+    "tests/loop_linearno/test_schema.py"
+  ],
+  "tests": {
+    "new": {
+      "count": 24,
+      "pass_count": 24,
+      "seconds": 3.49,
+      "log": "schema-tests.log"
+    },
+    "legacy": {
+      "count": 33,
+      "pass_count": 33,
+      "seconds": 23.008,
+      "log": "legacy-regression.log"
+    }
+  },
+  "no_real_data": true,
+  "no_loop_model": true,
+  "no_production_routing": true,
+  "old_LL0_historical_failures": "2 methods / 4 old documentation freeze assertions; unchanged, not rerun here"
+}

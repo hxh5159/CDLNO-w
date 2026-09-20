@@ -39,7 +39,26 @@ def parse_args(parser, *, evaluation=False, argv=None):
     tokens = sys.argv[1:] if argv is None else argv
     selector = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     selector.add_argument('--cfd_model')
+    # Routing-only probe: never changes the legacy parser's actions/defaults.
+    selector.add_argument('--experiment-dir', '--linearno-run-dir', '--run_dir', dest='_loop_directory', type=Path)
+    selector.add_argument('--eval', dest='_loop_eval', type=int, default=0)
+    selector.add_argument('--resume', dest='_loop_resume', action='store_true')
     selected, _ = selector.parse_known_args(tokens)
+    loop_selected = any(t.split('=')[0].startswith('--linearno-loop') for t in tokens)
+    if (evaluation or selected._loop_eval or selected._loop_resume) and selected._loop_directory is not None:
+        sidecar = selected._loop_directory / 'architecture.json'
+        if sidecar.is_file():
+            loop_selected = loop_selected or json.loads(sidecar.read_text()).get('family') == 'linearno_loop'
+    if loop_selected:
+        try:
+            from cdlno.linearno_loop.industrial_entry import intercept as intercept_loop
+        except ModuleNotFoundError as error:
+            if error.name == 'cdlno' or error.name.startswith('cdlno.linearno_loop'):
+                parser.error('linearno_loop selected but its shared cdlno loop package is unavailable')
+            raise
+        loop_args = intercept_loop(parser, tokens, task='car', evaluation=evaluation, selected_model=selected.cfd_model)
+        if loop_args is not None:
+            return loop_args
     if selected.cfd_model == 'LinearNO':
         from cdlno.linearno.car_entry import parse_args as parse_linearno_args
         return parse_linearno_args(parser, tokens, evaluation=evaluation)

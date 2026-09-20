@@ -1,0 +1,25 @@
+{
+  "name": "old_archives",
+  "argv": [
+    "/home/hwz/anaconda3/bin/python",
+    "-B",
+    "-c",
+    "import importlib.util, pathlib, sys\np=pathlib.Path(sys.argv[1]);spec=importlib.util.spec_from_file_location('_ll10_existing_check',p)\nm=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)\nm.OUT=pathlib.Path(sys.argv[2]);m.main()\n",
+    "/home/hwz/CDLNO/docs/loop_linearno_audit/ll9r/replay_old_archives.py",
+    "/home/hwz/CDLNO/docs/loop_linearno_audit/ll10"
+  ],
+  "cwd": "/home/hwz/CDLNO",
+  "environment": {
+    "PYTHONPATH": "/home/hwz/CDLNO/tests:/home/hwz/CDLNO",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "CUDA_VISIBLE_DEVICES": "",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MPLBACKEND": "Agg"
+  },
+  "exit_code": 0,
+  "seconds": 98.889,
+  "log": "old_archives.log",
+  "status": "PASS"
+}

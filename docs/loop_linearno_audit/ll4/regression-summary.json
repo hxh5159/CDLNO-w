@@ -1,0 +1,50 @@
+{
+  "pure": {
+    "methods": 84,
+    "passed": 78,
+    "failed_methods": 2,
+    "failed_assertions": 4,
+    "skipped": 4,
+    "errors": 0
+  },
+  "history": {
+    "methods": 59,
+    "passed": 59,
+    "failed_methods": 0,
+    "failed_assertions": 0,
+    "skipped": 0,
+    "errors": 0
+  },
+  "monitor": {
+    "methods": 10,
+    "passed": 10,
+    "failed_methods": 0,
+    "failed_assertions": 0,
+    "skipped": 0,
+    "errors": 0
+  },
+  "total": {
+    "methods": 153,
+    "passed": 147,
+    "failed_methods": 2,
+    "failed_assertions": 4,
+    "skipped": 4,
+    "errors": 0
+  },
+  "status": "LL4 rerun matches approved LL0 outcomes; no new failure",
+  "same_as_LL0": true,
+  "historical_assertions": {
+    "linearno.test_legacy": [
+      "FAIL: test_all_preexisting_files_and_absent_frozen_directories (linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) (path='README.md')",
+      "AssertionError: 'fc58f271728f884d446aa89b623a6634867166ae383072bcc17e42596e333afb' != 'd7124bcc753bd90bce6f8e9475bbdc4eb46c5439a3017156e0dd342681fa8863'",
+      "FAIL: test_all_preexisting_files_and_absent_frozen_directories (linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) (path='path.sh')",
+      "AssertionError: '4c45fe6fee19cd511487c934b8aea20186b91844ccfedee9111be7007945281b' != '153163c1535a74dc4802e59590b2ec9815b0d166dc5d534d66fc6b38f596a87c'",
+      "FAIL: test_all_preexisting_files_and_absent_frozen_directories (linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories) (path='docs/LINEARNO_REPRODUCTION_MATRIX.md')",
+      "AssertionError: False is not true"
+    ],
+    "linearno.test_static_integration": [
+      "FAIL: test_all_new_launcher_actions_profiles_and_old_scripts_static (linearno.test_static_integration.StaticIntegration.test_all_new_launcher_actions_profiles_and_old_scripts_static)",
+      "AssertionError: '4c45fe6fee19cd511487c934b8aea20186b91844ccfedee9111be7007945281b' != '153163c1535a74dc4802e59590b2ec9815b0d166dc5d534d66fc6b38f596a87c'"
+    ]
+  }
+}

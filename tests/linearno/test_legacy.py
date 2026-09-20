@@ -86,10 +86,9 @@ class LegacyRegression(unittest.TestCase):
                 continue
             with self.subTest(path=row['path']):
                 if row['path']=='docs/LINEARNO_REPRODUCTION_MATRIX.md':
-                    old=(Path(baseline['snapshot'])/'source'/row['path']).read_text()
-                    now=(ROOT/row['path']).read_text()
-                    self.assertTrue(now.startswith(old.split('\n\n',1)[0]+'\n\n'))
-                    self.assertTrue(now.endswith(old.split('\n\n',1)[1]))
+                    from frozen_revisions import expected_hash
+                    self.assertEqual(hashlib.sha256((ROOT/row['path']).read_bytes()).hexdigest(),
+                                     expected_hash(row['path'],row['sha256']))
                     continue
                 if row['path'] in integrated:
                     before=(Path(baseline['snapshot'])/'source'/row['path']).read_text()
@@ -121,7 +120,10 @@ class LegacyRegression(unittest.TestCase):
                             '                self.assertEqual(ast.dump(strip_recording(tree)), ast.dump(ast.parse(before)), name)')
                     self.assertEqual((ROOT/row['path']).read_text(),expected)
                     continue
-                self.assertEqual(hashlib.sha256((ROOT/row['path']).read_bytes()).hexdigest(), row['sha256'])
+                from frozen_revisions import expected_hash
+                from ll9r_test_source_projection import project_test_source
+                raw=project_test_source(row['path'],(ROOT/row['path']).read_bytes())
+                self.assertEqual(hashlib.sha256(raw).hexdigest(), expected_hash(row['path'],row['sha256']))
         for path in ('LINEARNO','train_and_evaluate','CODEX/train_and_evaluate','evaluate'):
             self.assertFalse((ROOT/path).exists(), path)
 

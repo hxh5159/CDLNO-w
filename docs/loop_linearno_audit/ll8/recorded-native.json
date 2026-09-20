@@ -1,0 +1,3562 @@
+{
+  "expected": 24,
+  "completed": 24,
+  "artifact_root": "/home/hwz/CDLNO-artifacts/loop-ll8-native-a_f_07vq",
+  "rows": [
+    {
+      "task": "airfoil",
+      "mode": "sr_1_over_r",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll8-native-a_f_07vq/airfoil/sr_1_over_r/airfoil__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__sr_1_over_r__M4__seed17__cfg6b4770adb454",
+      "exact_LL7": [
+        "prediction_hash",
+        "batches",
+        "strict_final_weights",
+        "optimizer_scheduler_rng"
+      ],
+      "manifest": {
+        "config_hash": "6b4770adb454b7c4c90ab24d9e6a58b3829d8355deddb1c40df52ccdbb4edfbc",
+        "executed_depth": 8,
+        "expected_call_schedule": [
+          "loop.prefix.0.operator",
+          "loop.prefix.0.mlp",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.suffix.0.operator",
+          "loop.suffix.0.mlp",
+          "loop.suffix.0.final_norm",
+          "loop.suffix.0.head"
+        ],
+        "fair_comparison": {
+          "backbone_pair_id": "630f426c3ecf52017125f2918e62b30bd69f001bc36a80ea4915f67175d35834",
+          "dataloader_generators": {
+            "test": 4982234148451249193,
+            "train": 2835977521533606132
+          },
+          "protocol": "paired-backbone-loader-v1",
+          "public_backbone_seed": 17,
+          "router_seed": 9209248150544285397,
+          "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+          "topology_pairs_are_parameter_matched": false
+        },
+        "family": "linearno_loop",
+        "launcher_sources": {
+          "entry.py": "097d7a7128b360c7e8c8e6a7691ab81a3b4767912d8e3da48711525d4a3ee41e",
+          "launch.py": "4288327ae8364276b6bf4c3aac2b19fa1d8c4b98d30587e08fb2cc24214cc2c4",
+          "recording.py": "ff2dceb5a3acb920bd2809564d589ad6a6cd1965be3d717096d52c877a15ed1d"
+        },
+        "members": {
+          "member_000": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 4997,
+            "dataloader_generator_seeds": {
+              "test": 4982234148451249193,
+              "train": 2835977521533606132
+            },
+            "initial_state_sha256": "65783e8ef84700ec97c499d011346309a9c6144f278402365e964bf6ca5a1afe",
+            "initialization_seed": 17,
+            "observation": "first_forward_verified",
+            "parameters": 4997,
+            "public_backbone_initial_sha256": "65783e8ef84700ec97c499d011346309a9c6144f278402365e964bf6ca5a1afe",
+            "python_numpy_torch_seed": 17,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 0
+          }
+        },
+        "profile": "paper_table8_on_release_model",
+        "residual_mode": "sr_1_over_r",
+        "resolved_rank": 4,
+        "schema_version": 1,
+        "selection_policy": "predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection",
+        "task": "airfoil",
+        "topology": "p1_c3_r2_s1",
+        "unique_depth": 5
+      },
+      "batches": [
+        "50ff10f14c72e4d0f3c2db5591436f70c9927fab1780cfed175e240e7051d461",
+        "0ff819341ab5400db93cdac2a9e059e84a0cdba03fd66da32d77146b94f1caa3",
+        "1f1a4feaedefd2d557fb64367c44e466705fbf90b34c2be397a3737746a21f76",
+        "e565b5441234e307d0baac81f239b64733520e6f934effb3317ca99d914dff81",
+        "08d516c7502e7887712831f423f38e5e7ac98d4374dfe0f1e81f5677e975c339",
+        "429a67605dd9750fef8aa467e87acb73483c4c38f1a20f1452f71edb25b27bf3"
+      ]
+    },
+    {
+      "task": "airfoil",
+      "mode": "rb_attnres",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll8-native-a_f_07vq/airfoil/rb_attnres/airfoil__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__rb_attnres__M4__seed17__cfgae66131ee2b0",
+      "exact_LL7": [
+        "prediction_hash",
+        "batches",
+        "strict_final_weights",
+        "optimizer_scheduler_rng"
+      ],
+      "manifest": {
+        "config_hash": "ae66131ee2b0187800c0ea92e8ba260dd7cc448897f41aaa0076599634a9804e",
+        "executed_depth": 8,
+        "expected_call_schedule": [
+          "loop.prefix.0.operator",
+          "loop.prefix.0.mlp",
+          "loop.rb_receivers.0.0",
+          "loop.core.0.operator",
+          "loop.rb_receivers.0.1",
+          "loop.core.0.mlp",
+          "loop.rb_receivers.0.2",
+          "loop.core.1.operator",
+          "loop.rb_receivers.0.3",
+          "loop.core.1.mlp",
+          "loop.rb_receivers.0.4",
+          "loop.core.2.operator",
+          "loop.rb_receivers.0.5",
+          "loop.core.2.mlp",
+          "loop.rb_receivers.1.0",
+          "loop.core.0.operator",
+          "loop.rb_receivers.1.1",
+          "loop.core.0.mlp",
+          "loop.rb_receivers.1.2",
+          "loop.core.1.operator",
+          "loop.rb_receivers.1.3",
+          "loop.core.1.mlp",
+          "loop.rb_receivers.1.4",
+          "loop.core.2.operator",
+          "loop.rb_receivers.1.5",
+          "loop.core.2.mlp",
+          "loop.rb_output",
+          "loop.suffix.0.operator",
+          "loop.suffix.0.mlp",
+          "loop.suffix.0.final_norm",
+          "loop.suffix.0.head"
+        ],
+        "fair_comparison": {
+          "backbone_pair_id": "630f426c3ecf52017125f2918e62b30bd69f001bc36a80ea4915f67175d35834",
+          "dataloader_generators": {
+            "test": 4982234148451249193,
+            "train": 2835977521533606132
+          },
+          "protocol": "paired-backbone-loader-v1",
+          "public_backbone_seed": 17,
+          "router_seed": 9209248150544285397,
+          "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+          "topology_pairs_are_parameter_matched": false
+        },
+        "family": "linearno_loop",
+        "launcher_sources": {
+          "entry.py": "097d7a7128b360c7e8c8e6a7691ab81a3b4767912d8e3da48711525d4a3ee41e",
+          "launch.py": "4288327ae8364276b6bf4c3aac2b19fa1d8c4b98d30587e08fb2cc24214cc2c4",
+          "recording.py": "ff2dceb5a3acb920bd2809564d589ad6a6cd1965be3d717096d52c877a15ed1d"
+        },
+        "members": {
+          "member_000": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.rb_receivers.0.0",
+              "loop.core.0.operator",
+              "loop.rb_receivers.0.1",
+              "loop.core.0.mlp",
+              "loop.rb_receivers.0.2",
+              "loop.core.1.operator",
+              "loop.rb_receivers.0.3",
+              "loop.core.1.mlp",
+              "loop.rb_receivers.0.4",
+              "loop.core.2.operator",
+              "loop.rb_receivers.0.5",
+              "loop.core.2.mlp",
+              "loop.rb_receivers.1.0",
+              "loop.core.0.operator",
+              "loop.rb_receivers.1.1",
+              "loop.core.0.mlp",
+              "loop.rb_receivers.1.2",
+              "loop.core.1.operator",
+              "loop.rb_receivers.1.3",
+              "loop.core.1.mlp",
+              "loop.rb_receivers.1.4",
+              "loop.core.2.operator",
+              "loop.rb_receivers.1.5",
+              "loop.core.2.mlp",
+              "loop.rb_output",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 4997,
+            "dataloader_generator_seeds": {
+              "test": 4982234148451249193,
+              "train": 2835977521533606132
+            },
+            "initial_state_sha256": "d34e51515da951f688446bad1ba7035bac64e3296073fcca32b2e958c7409292",
+            "initialization_seed": 17,
+            "observation": "first_forward_verified",
+            "parameters": 5205,
+            "public_backbone_initial_sha256": "65783e8ef84700ec97c499d011346309a9c6144f278402365e964bf6ca5a1afe",
+            "python_numpy_torch_seed": 17,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 208
+          }
+        },
+        "profile": "paper_table8_on_release_model",
+        "residual_mode": "rb_attnres",
+        "resolved_rank": 4,
+        "schema_version": 1,
+        "selection_policy": "predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection",
+        "task": "airfoil",
+        "topology": "p1_c3_r2_s1",
+        "unique_depth": 5
+      },
+      "batches": [
+        "50ff10f14c72e4d0f3c2db5591436f70c9927fab1780cfed175e240e7051d461",
+        "0ff819341ab5400db93cdac2a9e059e84a0cdba03fd66da32d77146b94f1caa3",
+        "1f1a4feaedefd2d557fb64367c44e466705fbf90b34c2be397a3737746a21f76",
+        "e565b5441234e307d0baac81f239b64733520e6f934effb3317ca99d914dff81",
+        "08d516c7502e7887712831f423f38e5e7ac98d4374dfe0f1e81f5677e975c339",
+        "429a67605dd9750fef8aa467e87acb73483c4c38f1a20f1452f71edb25b27bf3"
+      ]
+    },
+    {
+      "task": "darcy",
+      "mode": "sr_1_over_r",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll8-native-a_f_07vq/darcy/sr_1_over_r/darcy__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__sr_1_over_r__M4__seed17__cfg8a9900fb3e5b",
+      "exact_LL7": [
+        "prediction_hash",
+        "batches",
+        "strict_final_weights",
+        "optimizer_scheduler_rng"
+      ],
+      "manifest": {
+        "config_hash": "8a9900fb3e5b437a9075e9bce75229980524788941f674b59b20e81da46cb046",
+        "executed_depth": 8,
+        "expected_call_schedule": [
+          "loop.prefix.0.operator",
+          "loop.prefix.0.mlp",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.suffix.0.operator",
+          "loop.suffix.0.mlp",
+          "loop.suffix.0.final_norm",
+          "loop.suffix.0.head"
+        ],
+        "fair_comparison": {
+          "backbone_pair_id": "c81f9ce781a9d0a7f579705543d05ee268eb70b54e6854a63e1ab26d7a4a70c9",
+          "dataloader_generators": {
+            "test": 699123656361715738,
+            "train": 2215959866406570654
+          },
+          "protocol": "paired-backbone-loader-v1",
+          "public_backbone_seed": 17,
+          "router_seed": 8103046668528640208,
+          "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+          "topology_pairs_are_parameter_matched": false
+        },
+        "family": "linearno_loop",
+        "launcher_sources": {
+          "entry.py": "097d7a7128b360c7e8c8e6a7691ab81a3b4767912d8e3da48711525d4a3ee41e",
+          "launch.py": "4288327ae8364276b6bf4c3aac2b19fa1d8c4b98d30587e08fb2cc24214cc2c4",
+          "recording.py": "ff2dceb5a3acb920bd2809564d589ad6a6cd1965be3d717096d52c877a15ed1d"
+        },
+        "members": {
+          "member_000": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 5013,
+            "dataloader_generator_seeds": {
+              "test": 699123656361715738,
+              "train": 2215959866406570654
+            },
+            "initial_state_sha256": "8f6931103d29f71f0a7712c23cdf9905bf3a8db09291a2d8c0e41db26613577a",
+            "initialization_seed": 17,
+            "observation": "first_forward_verified",
+            "parameters": 5013,
+            "public_backbone_initial_sha256": "8f6931103d29f71f0a7712c23cdf9905bf3a8db09291a2d8c0e41db26613577a",
+            "python_numpy_torch_seed": 17,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 0
+          }
+        },
+        "profile": "paper_table8_on_release_model",
+        "residual_mode": "sr_1_over_r",
+        "resolved_rank": 4,
+        "schema_version": 1,
+        "selection_policy": "predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection",
+        "task": "darcy",
+        "topology": "p1_c3_r2_s1",
+        "unique_depth": 5
+      },
+      "batches": [
+        "95758adff6def655c134863d8a5bd0f7717d8416ddc35bab71a460a4c5ad1772",
+        "5872fe189890217eafaf190ee29dd0e04419800ec3ce3b828e4622a47b3c7bac",
+        "1fb7371d45ef7f5159f6e6a8b5a0c2a2e38e67db4fda8df29479cfd5d5bef4d3",
+        "b3d6e2420ab7736e87942682316a9aca3c9915460ffba30f20511e84dd7ff16e",
+        "9a9d99c983bf9f1b2ef32047cd58f37b1cc18c452a366295d0536719c9bcbdc0",
+        "4006ea1d272793aeca93916273f068d7dd54d5a963af1c6273529e2b82f160a0"
+      ]
+    },
+    {
+      "task": "airfoil",
+      "mode": "lb_attnres_1_over_r",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll8-native-a_f_07vq/airfoil/lb_attnres_1_over_r/airfoil__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__lb_attnres_1_over_r__M4__seed17__cfgb9bd22431fce",
+      "exact_LL7": [
+        "prediction_hash",
+        "batches",
+        "strict_final_weights",
+        "optimizer_scheduler_rng"
+      ],
+      "manifest": {
+        "config_hash": "b9bd22431fcecc94912ce2a7f26af998435fc70d490e8086c72bff9504c0d03d",
+        "executed_depth": 8,
+        "expected_call_schedule": [
+          "loop.prefix.0.operator",
+          "loop.prefix.0.mlp",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.lb_boundaries.0",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.lb_output",
+          "loop.suffix.0.operator",
+          "loop.suffix.0.mlp",
+          "loop.suffix.0.final_norm",
+          "loop.suffix.0.head"
+        ],
+        "fair_comparison": {
+          "backbone_pair_id": "630f426c3ecf52017125f2918e62b30bd69f001bc36a80ea4915f67175d35834",
+          "dataloader_generators": {
+            "test": 4982234148451249193,
+            "train": 2835977521533606132
+          },
+          "protocol": "paired-backbone-loader-v1",
+          "public_backbone_seed": 17,
+          "router_seed": 9209248150544285397,
+          "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+          "topology_pairs_are_parameter_matched": false
+        },
+        "family": "linearno_loop",
+        "launcher_sources": {
+          "entry.py": "097d7a7128b360c7e8c8e6a7691ab81a3b4767912d8e3da48711525d4a3ee41e",
+          "launch.py": "4288327ae8364276b6bf4c3aac2b19fa1d8c4b98d30587e08fb2cc24214cc2c4",
+          "recording.py": "ff2dceb5a3acb920bd2809564d589ad6a6cd1965be3d717096d52c877a15ed1d"
+        },
+        "members": {
+          "member_000": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.lb_boundaries.0",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.lb_output",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 4997,
+            "dataloader_generator_seeds": {
+              "test": 4982234148451249193,
+              "train": 2835977521533606132
+            },
+            "initial_state_sha256": "dd84a6fb9f9a8c4eac862245c121487131a19e8547d4cf1a93690d4e40f112bd",
+            "initialization_seed": 17,
+            "observation": "first_forward_verified",
+            "parameters": 5029,
+            "public_backbone_initial_sha256": "65783e8ef84700ec97c499d011346309a9c6144f278402365e964bf6ca5a1afe",
+            "python_numpy_torch_seed": 17,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 32
+          }
+        },
+        "profile": "paper_table8_on_release_model",
+        "residual_mode": "lb_attnres_1_over_r",
+        "resolved_rank": 4,
+        "schema_version": 1,
+        "selection_policy": "predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection",
+        "task": "airfoil",
+        "topology": "p1_c3_r2_s1",
+        "unique_depth": 5
+      },
+      "batches": [
+        "50ff10f14c72e4d0f3c2db5591436f70c9927fab1780cfed175e240e7051d461",
+        "0ff819341ab5400db93cdac2a9e059e84a0cdba03fd66da32d77146b94f1caa3",
+        "1f1a4feaedefd2d557fb64367c44e466705fbf90b34c2be397a3737746a21f76",
+        "e565b5441234e307d0baac81f239b64733520e6f934effb3317ca99d914dff81",
+        "08d516c7502e7887712831f423f38e5e7ac98d4374dfe0f1e81f5677e975c339",
+        "429a67605dd9750fef8aa467e87acb73483c4c38f1a20f1452f71edb25b27bf3"
+      ]
+    },
+    {
+      "task": "darcy",
+      "mode": "rb_attnres",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll8-native-a_f_07vq/darcy/rb_attnres/darcy__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__rb_attnres__M4__seed17__cfg165f0fa017a4",
+      "exact_LL7": [
+        "prediction_hash",
+        "batches",
+        "strict_final_weights",
+        "optimizer_scheduler_rng"
+      ],
+      "manifest": {
+        "config_hash": "165f0fa017a4a770cf5c92e148232baf6f9d03ab4dd0fa1799b75680903c41bf",
+        "executed_depth": 8,
+        "expected_call_schedule": [
+          "loop.prefix.0.operator",
+          "loop.prefix.0.mlp",
+          "loop.rb_receivers.0.0",
+          "loop.core.0.operator",
+          "loop.rb_receivers.0.1",
+          "loop.core.0.mlp",
+          "loop.rb_receivers.0.2",
+          "loop.core.1.operator",
+          "loop.rb_receivers.0.3",
+          "loop.core.1.mlp",
+          "loop.rb_receivers.0.4",
+          "loop.core.2.operator",
+          "loop.rb_receivers.0.5",
+          "loop.core.2.mlp",
+          "loop.rb_receivers.1.0",
+          "loop.core.0.operator",
+          "loop.rb_receivers.1.1",
+          "loop.core.0.mlp",
+          "loop.rb_receivers.1.2",
+          "loop.core.1.operator",
+          "loop.rb_receivers.1.3",
+          "loop.core.1.mlp",
+          "loop.rb_receivers.1.4",
+          "loop.core.2.operator",
+          "loop.rb_receivers.1.5",
+          "loop.core.2.mlp",
+          "loop.rb_output",
+          "loop.suffix.0.operator",
+          "loop.suffix.0.mlp",
+          "loop.suffix.0.final_norm",
+          "loop.suffix.0.head"
+        ],
+        "fair_comparison": {
+          "backbone_pair_id": "c81f9ce781a9d0a7f579705543d05ee268eb70b54e6854a63e1ab26d7a4a70c9",
+          "dataloader_generators": {
+            "test": 699123656361715738,
+            "train": 2215959866406570654
+          },
+          "protocol": "paired-backbone-loader-v1",
+          "public_backbone_seed": 17,
+          "router_seed": 8103046668528640208,
+          "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+          "topology_pairs_are_parameter_matched": false
+        },
+        "family": "linearno_loop",
+        "launcher_sources": {
+          "entry.py": "097d7a7128b360c7e8c8e6a7691ab81a3b4767912d8e3da48711525d4a3ee41e",
+          "launch.py": "4288327ae8364276b6bf4c3aac2b19fa1d8c4b98d30587e08fb2cc24214cc2c4",
+          "recording.py": "ff2dceb5a3acb920bd2809564d589ad6a6cd1965be3d717096d52c877a15ed1d"
+        },
+        "members": {
+          "member_000": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.rb_receivers.0.0",
+              "loop.core.0.operator",
+              "loop.rb_receivers.0.1",
+              "loop.core.0.mlp",
+              "loop.rb_receivers.0.2",
+              "loop.core.1.operator",
+              "loop.rb_receivers.0.3",
+              "loop.core.1.mlp",
+              "loop.rb_receivers.0.4",
+              "loop.core.2.operator",
+              "loop.rb_receivers.0.5",
+              "loop.core.2.mlp",
+              "loop.rb_receivers.1.0",
+              "loop.core.0.operator",
+              "loop.rb_receivers.1.1",
+              "loop.core.0.mlp",
+              "loop.rb_receivers.1.2",
+              "loop.core.1.operator",
+              "loop.rb_receivers.1.3",
+              "loop.core.1.mlp",
+              "loop.rb_receivers.1.4",
+              "loop.core.2.operator",
+              "loop.rb_receivers.1.5",
+              "loop.core.2.mlp",
+              "loop.rb_output",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 5013,
+            "dataloader_generator_seeds": {
+              "test": 699123656361715738,
+              "train": 2215959866406570654
+            },
+            "initial_state_sha256": "cc9c67d0cef36b7583555b0bd24f0d979947399f4ae7be59a639807f2ab85828",
+            "initialization_seed": 17,
+            "observation": "first_forward_verified",
+            "parameters": 5221,
+            "public_backbone_initial_sha256": "8f6931103d29f71f0a7712c23cdf9905bf3a8db09291a2d8c0e41db26613577a",
+            "python_numpy_torch_seed": 17,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 208
+          }
+        },
+        "profile": "paper_table8_on_release_model",
+        "residual_mode": "rb_attnres",
+        "resolved_rank": 4,
+        "schema_version": 1,
+        "selection_policy": "predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection",
+        "task": "darcy",
+        "topology": "p1_c3_r2_s1",
+        "unique_depth": 5
+      },
+      "batches": [
+        "95758adff6def655c134863d8a5bd0f7717d8416ddc35bab71a460a4c5ad1772",
+        "5872fe189890217eafaf190ee29dd0e04419800ec3ce3b828e4622a47b3c7bac",
+        "1fb7371d45ef7f5159f6e6a8b5a0c2a2e38e67db4fda8df29479cfd5d5bef4d3",
+        "b3d6e2420ab7736e87942682316a9aca3c9915460ffba30f20511e84dd7ff16e",
+        "9a9d99c983bf9f1b2ef32047cd58f37b1cc18c452a366295d0536719c9bcbdc0",
+        "4006ea1d272793aeca93916273f068d7dd54d5a963af1c6273529e2b82f160a0"
+      ]
+    },
+    {
+      "task": "darcy",
+      "mode": "lb_attnres_1_over_r",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll8-native-a_f_07vq/darcy/lb_attnres_1_over_r/darcy__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__lb_attnres_1_over_r__M4__seed17__cfg5ba78e95bbfb",
+      "exact_LL7": [
+        "prediction_hash",
+        "batches",
+        "strict_final_weights",
+        "optimizer_scheduler_rng"
+      ],
+      "manifest": {
+        "config_hash": "5ba78e95bbfb972bac33219140b4067b80ee595ac0275669b0334fef6611f830",
+        "executed_depth": 8,
+        "expected_call_schedule": [
+          "loop.prefix.0.operator",
+          "loop.prefix.0.mlp",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.lb_boundaries.0",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.lb_output",
+          "loop.suffix.0.operator",
+          "loop.suffix.0.mlp",
+          "loop.suffix.0.final_norm",
+          "loop.suffix.0.head"
+        ],
+        "fair_comparison": {
+          "backbone_pair_id": "c81f9ce781a9d0a7f579705543d05ee268eb70b54e6854a63e1ab26d7a4a70c9",
+          "dataloader_generators": {
+            "test": 699123656361715738,
+            "train": 2215959866406570654
+          },
+          "protocol": "paired-backbone-loader-v1",
+          "public_backbone_seed": 17,
+          "router_seed": 8103046668528640208,
+          "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+          "topology_pairs_are_parameter_matched": false
+        },
+        "family": "linearno_loop",
+        "launcher_sources": {
+          "entry.py": "097d7a7128b360c7e8c8e6a7691ab81a3b4767912d8e3da48711525d4a3ee41e",
+          "launch.py": "4288327ae8364276b6bf4c3aac2b19fa1d8c4b98d30587e08fb2cc24214cc2c4",
+          "recording.py": "ff2dceb5a3acb920bd2809564d589ad6a6cd1965be3d717096d52c877a15ed1d"
+        },
+        "members": {
+          "member_000": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.lb_boundaries.0",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.lb_output",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 5013,
+            "dataloader_generator_seeds": {
+              "test": 699123656361715738,
+              "train": 2215959866406570654
+            },
+            "initial_state_sha256": "06fb3aad7ca5a7b5e6ab3e92976cb40694cf5bce2bb7f85c6e3cbdf58dc2c8f2",
+            "initialization_seed": 17,
+            "observation": "first_forward_verified",
+            "parameters": 5045,
+            "public_backbone_initial_sha256": "8f6931103d29f71f0a7712c23cdf9905bf3a8db09291a2d8c0e41db26613577a",
+            "python_numpy_torch_seed": 17,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 32
+          }
+        },
+        "profile": "paper_table8_on_release_model",
+        "residual_mode": "lb_attnres_1_over_r",
+        "resolved_rank": 4,
+        "schema_version": 1,
+        "selection_policy": "predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection",
+        "task": "darcy",
+        "topology": "p1_c3_r2_s1",
+        "unique_depth": 5
+      },
+      "batches": [
+        "95758adff6def655c134863d8a5bd0f7717d8416ddc35bab71a460a4c5ad1772",
+        "5872fe189890217eafaf190ee29dd0e04419800ec3ce3b828e4622a47b3c7bac",
+        "1fb7371d45ef7f5159f6e6a8b5a0c2a2e38e67db4fda8df29479cfd5d5bef4d3",
+        "b3d6e2420ab7736e87942682316a9aca3c9915460ffba30f20511e84dd7ff16e",
+        "9a9d99c983bf9f1b2ef32047cd58f37b1cc18c452a366295d0536719c9bcbdc0",
+        "4006ea1d272793aeca93916273f068d7dd54d5a963af1c6273529e2b82f160a0"
+      ]
+    },
+    {
+      "task": "elasticity",
+      "mode": "sr_1_over_r",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll8-native-a_f_07vq/elasticity/sr_1_over_r/elasticity__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__sr_1_over_r__M4__seed17__cfga3335aea50cf",
+      "exact_LL7": [
+        "prediction_hash",
+        "batches",
+        "strict_final_weights",
+        "optimizer_scheduler_rng"
+      ],
+      "manifest": {
+        "config_hash": "a3335aea50cf14abe708ab2b476f9054eb5eda37c1406851ec8b0526251f8852",
+        "executed_depth": 8,
+        "expected_call_schedule": [
+          "loop.prefix.0.operator",
+          "loop.prefix.0.mlp",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.suffix.0.operator",
+          "loop.suffix.0.mlp",
+          "loop.suffix.0.final_norm",
+          "loop.suffix.0.head"
+        ],
+        "fair_comparison": {
+          "backbone_pair_id": "40112cc2ba4fa4313f6747bc321bbffeddd18287d50607c15e16ec989a48a340",
+          "dataloader_generators": {
+            "test": 2394857548725666469,
+            "train": 1250502629685374985
+          },
+          "protocol": "paired-backbone-loader-v1",
+          "public_backbone_seed": 17,
+          "router_seed": 4963236933767527258,
+          "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+          "topology_pairs_are_parameter_matched": false
+        },
+        "family": "linearno_loop",
+        "launcher_sources": {
+          "entry.py": "097d7a7128b360c7e8c8e6a7691ab81a3b4767912d8e3da48711525d4a3ee41e",
+          "launch.py": "4288327ae8364276b6bf4c3aac2b19fa1d8c4b98d30587e08fb2cc24214cc2c4",
+          "recording.py": "ff2dceb5a3acb920bd2809564d589ad6a6cd1965be3d717096d52c877a15ed1d"
+        },
+        "members": {
+          "member_000": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 2077,
+            "dataloader_generator_seeds": {
+              "test": 2394857548725666469,
+              "train": 1250502629685374985
+            },
+            "initial_state_sha256": "c9205c38d628c7a33d163275f68b4c40d373b45383cddf3479c8ced950714a16",
+            "initialization_seed": 17,
+            "observation": "first_forward_verified",
+            "parameters": 2077,
+            "public_backbone_initial_sha256": "c9205c38d628c7a33d163275f68b4c40d373b45383cddf3479c8ced950714a16",
+            "python_numpy_torch_seed": 17,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 0
+          }
+        },
+        "profile": "paper_table8_on_release_model",
+        "residual_mode": "sr_1_over_r",
+        "resolved_rank": 4,
+        "schema_version": 1,
+        "selection_policy": "predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection",
+        "task": "elasticity",
+        "topology": "p1_c3_r2_s1",
+        "unique_depth": 5
+      },
+      "batches": [
+        "014c11c152719fb1e614713f685cd9d14f6e21ae4c073e309907ee6e4f69707a",
+        "665a6f023fb0b75cccea552815eb45e14871aabaccb81b80ab769cf807c03b43",
+        "2ba7222515aec9ebe49e4135bcfda28381b24e7d06858a54fd0d1624b6e59809",
+        "53f2f09595be40002c954c82394fb17796c9cdb7459a6de4816ced203d39fb60",
+        "f9e49a212f474298dbef1911b0be2c05015fcd7e88675207e841c003c8efeff5",
+        "85b41781e178708ad4093c7ab5daa2b92ce3475ecd3033f333293ec07e15e3d7"
+      ]
+    },
+    {
+      "task": "elasticity",
+      "mode": "rb_attnres",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll8-native-a_f_07vq/elasticity/rb_attnres/elasticity__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__rb_attnres__M4__seed17__cfgdfcc2b610799",
+      "exact_LL7": [
+        "prediction_hash",
+        "batches",
+        "strict_final_weights",
+        "optimizer_scheduler_rng"
+      ],
+      "manifest": {
+        "config_hash": "dfcc2b610799f737b36389953333462b8d7b4d14e2d1955b8cd524750e1a07ac",
+        "executed_depth": 8,
+        "expected_call_schedule": [
+          "loop.prefix.0.operator",
+          "loop.prefix.0.mlp",
+          "loop.rb_receivers.0.0",
+          "loop.core.0.operator",
+          "loop.rb_receivers.0.1",
+          "loop.core.0.mlp",
+          "loop.rb_receivers.0.2",
+          "loop.core.1.operator",
+          "loop.rb_receivers.0.3",
+          "loop.core.1.mlp",
+          "loop.rb_receivers.0.4",
+          "loop.core.2.operator",
+          "loop.rb_receivers.0.5",
+          "loop.core.2.mlp",
+          "loop.rb_receivers.1.0",
+          "loop.core.0.operator",
+          "loop.rb_receivers.1.1",
+          "loop.core.0.mlp",
+          "loop.rb_receivers.1.2",
+          "loop.core.1.operator",
+          "loop.rb_receivers.1.3",
+          "loop.core.1.mlp",
+          "loop.rb_receivers.1.4",
+          "loop.core.2.operator",
+          "loop.rb_receivers.1.5",
+          "loop.core.2.mlp",
+          "loop.rb_output",
+          "loop.suffix.0.operator",
+          "loop.suffix.0.mlp",
+          "loop.suffix.0.final_norm",
+          "loop.suffix.0.head"
+        ],
+        "fair_comparison": {
+          "backbone_pair_id": "40112cc2ba4fa4313f6747bc321bbffeddd18287d50607c15e16ec989a48a340",
+          "dataloader_generators": {
+            "test": 2394857548725666469,
+            "train": 1250502629685374985
+          },
+          "protocol": "paired-backbone-loader-v1",
+          "public_backbone_seed": 17,
+          "router_seed": 4963236933767527258,
+          "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+          "topology_pairs_are_parameter_matched": false
+        },
+        "family": "linearno_loop",
+        "launcher_sources": {
+          "entry.py": "097d7a7128b360c7e8c8e6a7691ab81a3b4767912d8e3da48711525d4a3ee41e",
+          "launch.py": "4288327ae8364276b6bf4c3aac2b19fa1d8c4b98d30587e08fb2cc24214cc2c4",
+          "recording.py": "ff2dceb5a3acb920bd2809564d589ad6a6cd1965be3d717096d52c877a15ed1d"
+        },
+        "members": {
+          "member_000": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.rb_receivers.0.0",
+              "loop.core.0.operator",
+              "loop.rb_receivers.0.1",
+              "loop.core.0.mlp",
+              "loop.rb_receivers.0.2",
+              "loop.core.1.operator",
+              "loop.rb_receivers.0.3",
+              "loop.core.1.mlp",
+              "loop.rb_receivers.0.4",
+              "loop.core.2.operator",
+              "loop.rb_receivers.0.5",
+              "loop.core.2.mlp",
+              "loop.rb_receivers.1.0",
+              "loop.core.0.operator",
+              "loop.rb_receivers.1.1",
+              "loop.core.0.mlp",
+              "loop.rb_receivers.1.2",
+              "loop.core.1.operator",
+              "loop.rb_receivers.1.3",
+              "loop.core.1.mlp",
+              "loop.rb_receivers.1.4",
+              "loop.core.2.operator",
+              "loop.rb_receivers.1.5",
+              "loop.core.2.mlp",
+              "loop.rb_output",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 2077,
+            "dataloader_generator_seeds": {
+              "test": 2394857548725666469,
+              "train": 1250502629685374985
+            },
+            "initial_state_sha256": "7984f86e5f456d247404d3dbe402876e99d4472eea4c094551c95a5884174bee",
+            "initialization_seed": 17,
+            "observation": "first_forward_verified",
+            "parameters": 2285,
+            "public_backbone_initial_sha256": "c9205c38d628c7a33d163275f68b4c40d373b45383cddf3479c8ced950714a16",
+            "python_numpy_torch_seed": 17,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 208
+          }
+        },
+        "profile": "paper_table8_on_release_model",
+        "residual_mode": "rb_attnres",
+        "resolved_rank": 4,
+        "schema_version": 1,
+        "selection_policy": "predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection",
+        "task": "elasticity",
+        "topology": "p1_c3_r2_s1",
+        "unique_depth": 5
+      },
+      "batches": [
+        "014c11c152719fb1e614713f685cd9d14f6e21ae4c073e309907ee6e4f69707a",
+        "665a6f023fb0b75cccea552815eb45e14871aabaccb81b80ab769cf807c03b43",
+        "2ba7222515aec9ebe49e4135bcfda28381b24e7d06858a54fd0d1624b6e59809",
+        "53f2f09595be40002c954c82394fb17796c9cdb7459a6de4816ced203d39fb60",
+        "f9e49a212f474298dbef1911b0be2c05015fcd7e88675207e841c003c8efeff5",
+        "85b41781e178708ad4093c7ab5daa2b92ce3475ecd3033f333293ec07e15e3d7"
+      ]
+    },
+    {
+      "task": "elasticity",
+      "mode": "lb_attnres_1_over_r",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll8-native-a_f_07vq/elasticity/lb_attnres_1_over_r/elasticity__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__lb_attnres_1_over_r__M4__seed17__cfg8e1357515b4a",
+      "exact_LL7": [
+        "prediction_hash",
+        "batches",
+        "strict_final_weights",
+        "optimizer_scheduler_rng"
+      ],
+      "manifest": {
+        "config_hash": "8e1357515b4a1bb1761f1a951991d75a7aba8d244b88768d0b0e87bf8ceadbac",
+        "executed_depth": 8,
+        "expected_call_schedule": [
+          "loop.prefix.0.operator",
+          "loop.prefix.0.mlp",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.lb_boundaries.0",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.lb_output",
+          "loop.suffix.0.operator",
+          "loop.suffix.0.mlp",
+          "loop.suffix.0.final_norm",
+          "loop.suffix.0.head"
+        ],
+        "fair_comparison": {
+          "backbone_pair_id": "40112cc2ba4fa4313f6747bc321bbffeddd18287d50607c15e16ec989a48a340",
+          "dataloader_generators": {
+            "test": 2394857548725666469,
+            "train": 1250502629685374985
+          },
+          "protocol": "paired-backbone-loader-v1",
+          "public_backbone_seed": 17,
+          "router_seed": 4963236933767527258,
+          "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+          "topology_pairs_are_parameter_matched": false
+        },
+        "family": "linearno_loop",
+        "launcher_sources": {
+          "entry.py": "097d7a7128b360c7e8c8e6a7691ab81a3b4767912d8e3da48711525d4a3ee41e",
+          "launch.py": "4288327ae8364276b6bf4c3aac2b19fa1d8c4b98d30587e08fb2cc24214cc2c4",
+          "recording.py": "ff2dceb5a3acb920bd2809564d589ad6a6cd1965be3d717096d52c877a15ed1d"
+        },
+        "members": {
+          "member_000": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.lb_boundaries.0",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.lb_output",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 2077,
+            "dataloader_generator_seeds": {
+              "test": 2394857548725666469,
+              "train": 1250502629685374985
+            },
+            "initial_state_sha256": "588ef906f062a6f2a0f739c8f02008c369f52674f23dd655a01fef0f86e5e69d",
+            "initialization_seed": 17,
+            "observation": "first_forward_verified",
+            "parameters": 2109,
+            "public_backbone_initial_sha256": "c9205c38d628c7a33d163275f68b4c40d373b45383cddf3479c8ced950714a16",
+            "python_numpy_torch_seed": 17,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 32
+          }
+        },
+        "profile": "paper_table8_on_release_model",
+        "residual_mode": "lb_attnres_1_over_r",
+        "resolved_rank": 4,
+        "schema_version": 1,
+        "selection_policy": "predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection",
+        "task": "elasticity",
+        "topology": "p1_c3_r2_s1",
+        "unique_depth": 5
+      },
+      "batches": [
+        "014c11c152719fb1e614713f685cd9d14f6e21ae4c073e309907ee6e4f69707a",
+        "665a6f023fb0b75cccea552815eb45e14871aabaccb81b80ab769cf807c03b43",
+        "2ba7222515aec9ebe49e4135bcfda28381b24e7d06858a54fd0d1624b6e59809",
+        "53f2f09595be40002c954c82394fb17796c9cdb7459a6de4816ced203d39fb60",
+        "f9e49a212f474298dbef1911b0be2c05015fcd7e88675207e841c003c8efeff5",
+        "85b41781e178708ad4093c7ab5daa2b92ce3475ecd3033f333293ec07e15e3d7"
+      ]
+    },
+    {
+      "task": "pipe",
+      "mode": "sr_1_over_r",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll8-native-a_f_07vq/pipe/sr_1_over_r/pipe__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__sr_1_over_r__M4__seed17__cfg727417219aa8",
+      "exact_LL7": [
+        "prediction_hash",
+        "batches",
+        "strict_final_weights",
+        "optimizer_scheduler_rng"
+      ],
+      "manifest": {
+        "config_hash": "727417219aa86f2046483b34cc8a8b0e0db5dba9ad9273439e1d64b9055039c2",
+        "executed_depth": 8,
+        "expected_call_schedule": [
+          "loop.prefix.0.operator",
+          "loop.prefix.0.mlp",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.suffix.0.operator",
+          "loop.suffix.0.mlp",
+          "loop.suffix.0.final_norm",
+          "loop.suffix.0.head"
+        ],
+        "fair_comparison": {
+          "backbone_pair_id": "3d8081f47187a550c809b5478bbf6356826ffe7d027fad02b8eebdd204a887b7",
+          "dataloader_generators": {
+            "test": 8440242093664993834,
+            "train": 1241571722881945647
+          },
+          "protocol": "paired-backbone-loader-v1",
+          "public_backbone_seed": 17,
+          "router_seed": 5356394243102222849,
+          "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+          "topology_pairs_are_parameter_matched": false
+        },
+        "family": "linearno_loop",
+        "launcher_sources": {
+          "entry.py": "097d7a7128b360c7e8c8e6a7691ab81a3b4767912d8e3da48711525d4a3ee41e",
+          "launch.py": "4288327ae8364276b6bf4c3aac2b19fa1d8c4b98d30587e08fb2cc24214cc2c4",
+          "recording.py": "ff2dceb5a3acb920bd2809564d589ad6a6cd1965be3d717096d52c877a15ed1d"
+        },
+        "members": {
+          "member_000": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 4997,
+            "dataloader_generator_seeds": {
+              "test": 8440242093664993834,
+              "train": 1241571722881945647
+            },
+            "initial_state_sha256": "65783e8ef84700ec97c499d011346309a9c6144f278402365e964bf6ca5a1afe",
+            "initialization_seed": 17,
+            "observation": "first_forward_verified",
+            "parameters": 4997,
+            "public_backbone_initial_sha256": "65783e8ef84700ec97c499d011346309a9c6144f278402365e964bf6ca5a1afe",
+            "python_numpy_torch_seed": 17,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 0
+          }
+        },
+        "profile": "paper_table8_on_release_model",
+        "residual_mode": "sr_1_over_r",
+        "resolved_rank": 4,
+        "schema_version": 1,
+        "selection_policy": "predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection",
+        "task": "pipe",
+        "topology": "p1_c3_r2_s1",
+        "unique_depth": 5
+      },
+      "batches": [
+        "2087f50d17e841c6eb47b07a9fcf6017770d8455efcc3625a6b0b1f39587a3d4",
+        "c47b01a0326d1b5f55f213d2d33c9c836c2080bc49d692133ca80c65fc07a61a",
+        "2087f50d17e841c6eb47b07a9fcf6017770d8455efcc3625a6b0b1f39587a3d4",
+        "880259b7094b01b3546ef1b032b65c5ce5509b0cd90044cb9986574b7b66f402",
+        "880259b7094b01b3546ef1b032b65c5ce5509b0cd90044cb9986574b7b66f402",
+        "2087f50d17e841c6eb47b07a9fcf6017770d8455efcc3625a6b0b1f39587a3d4"
+      ]
+    },
+    {
+      "task": "pipe",
+      "mode": "rb_attnres",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll8-native-a_f_07vq/pipe/rb_attnres/pipe__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__rb_attnres__M4__seed17__cfg0512dc20177b",
+      "exact_LL7": [
+        "prediction_hash",
+        "batches",
+        "strict_final_weights",
+        "optimizer_scheduler_rng"
+      ],
+      "manifest": {
+        "config_hash": "0512dc20177b04d9f59873a4364ec24fe428032ef9655847be955b9510bb652b",
+        "executed_depth": 8,
+        "expected_call_schedule": [
+          "loop.prefix.0.operator",
+          "loop.prefix.0.mlp",
+          "loop.rb_receivers.0.0",
+          "loop.core.0.operator",
+          "loop.rb_receivers.0.1",
+          "loop.core.0.mlp",
+          "loop.rb_receivers.0.2",
+          "loop.core.1.operator",
+          "loop.rb_receivers.0.3",
+          "loop.core.1.mlp",
+          "loop.rb_receivers.0.4",
+          "loop.core.2.operator",
+          "loop.rb_receivers.0.5",
+          "loop.core.2.mlp",
+          "loop.rb_receivers.1.0",
+          "loop.core.0.operator",
+          "loop.rb_receivers.1.1",
+          "loop.core.0.mlp",
+          "loop.rb_receivers.1.2",
+          "loop.core.1.operator",
+          "loop.rb_receivers.1.3",
+          "loop.core.1.mlp",
+          "loop.rb_receivers.1.4",
+          "loop.core.2.operator",
+          "loop.rb_receivers.1.5",
+          "loop.core.2.mlp",
+          "loop.rb_output",
+          "loop.suffix.0.operator",
+          "loop.suffix.0.mlp",
+          "loop.suffix.0.final_norm",
+          "loop.suffix.0.head"
+        ],
+        "fair_comparison": {
+          "backbone_pair_id": "3d8081f47187a550c809b5478bbf6356826ffe7d027fad02b8eebdd204a887b7",
+          "dataloader_generators": {
+            "test": 8440242093664993834,
+            "train": 1241571722881945647
+          },
+          "protocol": "paired-backbone-loader-v1",
+          "public_backbone_seed": 17,
+          "router_seed": 5356394243102222849,
+          "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+          "topology_pairs_are_parameter_matched": false
+        },
+        "family": "linearno_loop",
+        "launcher_sources": {
+          "entry.py": "097d7a7128b360c7e8c8e6a7691ab81a3b4767912d8e3da48711525d4a3ee41e",
+          "launch.py": "4288327ae8364276b6bf4c3aac2b19fa1d8c4b98d30587e08fb2cc24214cc2c4",
+          "recording.py": "ff2dceb5a3acb920bd2809564d589ad6a6cd1965be3d717096d52c877a15ed1d"
+        },
+        "members": {
+          "member_000": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.rb_receivers.0.0",
+              "loop.core.0.operator",
+              "loop.rb_receivers.0.1",
+              "loop.core.0.mlp",
+              "loop.rb_receivers.0.2",
+              "loop.core.1.operator",
+              "loop.rb_receivers.0.3",
+              "loop.core.1.mlp",
+              "loop.rb_receivers.0.4",
+              "loop.core.2.operator",
+              "loop.rb_receivers.0.5",
+              "loop.core.2.mlp",
+              "loop.rb_receivers.1.0",
+              "loop.core.0.operator",
+              "loop.rb_receivers.1.1",
+              "loop.core.0.mlp",
+              "loop.rb_receivers.1.2",
+              "loop.core.1.operator",
+              "loop.rb_receivers.1.3",
+              "loop.core.1.mlp",
+              "loop.rb_receivers.1.4",
+              "loop.core.2.operator",
+              "loop.rb_receivers.1.5",
+              "loop.core.2.mlp",
+              "loop.rb_output",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 4997,
+            "dataloader_generator_seeds": {
+              "test": 8440242093664993834,
+              "train": 1241571722881945647
+            },
+            "initial_state_sha256": "d34e51515da951f688446bad1ba7035bac64e3296073fcca32b2e958c7409292",
+            "initialization_seed": 17,
+            "observation": "first_forward_verified",
+            "parameters": 5205,
+            "public_backbone_initial_sha256": "65783e8ef84700ec97c499d011346309a9c6144f278402365e964bf6ca5a1afe",
+            "python_numpy_torch_seed": 17,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 208
+          }
+        },
+        "profile": "paper_table8_on_release_model",
+        "residual_mode": "rb_attnres",
+        "resolved_rank": 4,
+        "schema_version": 1,
+        "selection_policy": "predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection",
+        "task": "pipe",
+        "topology": "p1_c3_r2_s1",
+        "unique_depth": 5
+      },
+      "batches": [
+        "2087f50d17e841c6eb47b07a9fcf6017770d8455efcc3625a6b0b1f39587a3d4",
+        "c47b01a0326d1b5f55f213d2d33c9c836c2080bc49d692133ca80c65fc07a61a",
+        "2087f50d17e841c6eb47b07a9fcf6017770d8455efcc3625a6b0b1f39587a3d4",
+        "880259b7094b01b3546ef1b032b65c5ce5509b0cd90044cb9986574b7b66f402",
+        "880259b7094b01b3546ef1b032b65c5ce5509b0cd90044cb9986574b7b66f402",
+        "2087f50d17e841c6eb47b07a9fcf6017770d8455efcc3625a6b0b1f39587a3d4"
+      ]
+    },
+    {
+      "task": "pipe",
+      "mode": "lb_attnres_1_over_r",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll8-native-a_f_07vq/pipe/lb_attnres_1_over_r/pipe__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__lb_attnres_1_over_r__M4__seed17__cfg42e94ed0755b",
+      "exact_LL7": [
+        "prediction_hash",
+        "batches",
+        "strict_final_weights",
+        "optimizer_scheduler_rng"
+      ],
+      "manifest": {
+        "config_hash": "42e94ed0755bad8d984b6e7f32ef44e103d62730cee55d9efbd8bbedb4130c9d",
+        "executed_depth": 8,
+        "expected_call_schedule": [
+          "loop.prefix.0.operator",
+          "loop.prefix.0.mlp",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.lb_boundaries.0",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.lb_output",
+          "loop.suffix.0.operator",
+          "loop.suffix.0.mlp",
+          "loop.suffix.0.final_norm",
+          "loop.suffix.0.head"
+        ],
+        "fair_comparison": {
+          "backbone_pair_id": "3d8081f47187a550c809b5478bbf6356826ffe7d027fad02b8eebdd204a887b7",
+          "dataloader_generators": {
+            "test": 8440242093664993834,
+            "train": 1241571722881945647
+          },
+          "protocol": "paired-backbone-loader-v1",
+          "public_backbone_seed": 17,
+          "router_seed": 5356394243102222849,
+          "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+          "topology_pairs_are_parameter_matched": false
+        },
+        "family": "linearno_loop",
+        "launcher_sources": {
+          "entry.py": "097d7a7128b360c7e8c8e6a7691ab81a3b4767912d8e3da48711525d4a3ee41e",
+          "launch.py": "4288327ae8364276b6bf4c3aac2b19fa1d8c4b98d30587e08fb2cc24214cc2c4",
+          "recording.py": "ff2dceb5a3acb920bd2809564d589ad6a6cd1965be3d717096d52c877a15ed1d"
+        },
+        "members": {
+          "member_000": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.lb_boundaries.0",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.lb_output",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 4997,
+            "dataloader_generator_seeds": {
+              "test": 8440242093664993834,
+              "train": 1241571722881945647
+            },
+            "initial_state_sha256": "dd84a6fb9f9a8c4eac862245c121487131a19e8547d4cf1a93690d4e40f112bd",
+            "initialization_seed": 17,
+            "observation": "first_forward_verified",
+            "parameters": 5029,
+            "public_backbone_initial_sha256": "65783e8ef84700ec97c499d011346309a9c6144f278402365e964bf6ca5a1afe",
+            "python_numpy_torch_seed": 17,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 32
+          }
+        },
+        "profile": "paper_table8_on_release_model",
+        "residual_mode": "lb_attnres_1_over_r",
+        "resolved_rank": 4,
+        "schema_version": 1,
+        "selection_policy": "predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection",
+        "task": "pipe",
+        "topology": "p1_c3_r2_s1",
+        "unique_depth": 5
+      },
+      "batches": [
+        "2087f50d17e841c6eb47b07a9fcf6017770d8455efcc3625a6b0b1f39587a3d4",
+        "c47b01a0326d1b5f55f213d2d33c9c836c2080bc49d692133ca80c65fc07a61a",
+        "2087f50d17e841c6eb47b07a9fcf6017770d8455efcc3625a6b0b1f39587a3d4",
+        "880259b7094b01b3546ef1b032b65c5ce5509b0cd90044cb9986574b7b66f402",
+        "880259b7094b01b3546ef1b032b65c5ce5509b0cd90044cb9986574b7b66f402",
+        "2087f50d17e841c6eb47b07a9fcf6017770d8455efcc3625a6b0b1f39587a3d4"
+      ]
+    },
+    {
+      "task": "ns",
+      "mode": "sr_1_over_r",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll8-native-a_f_07vq/ns/sr_1_over_r/ns__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__sr_1_over_r__M4__seed17__cfg4082a2be1b59",
+      "exact_LL7": [
+        "prediction_hash",
+        "batches",
+        "time_queries",
+        "numpy_next",
+        "strict_final_weights",
+        "optimizer_scheduler_rng"
+      ],
+      "manifest": {
+        "config_hash": "4082a2be1b597b788e7ce63279be66b334e255a1194f3a162ff3554ae301877a",
+        "executed_depth": 8,
+        "expected_call_schedule": [
+          "loop.prefix.0.operator",
+          "loop.prefix.0.mlp",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.suffix.0.operator",
+          "loop.suffix.0.mlp",
+          "loop.suffix.0.final_norm",
+          "loop.suffix.0.head"
+        ],
+        "fair_comparison": {
+          "backbone_pair_id": "85878604ead1a834cd12dbfaeb7e135ae711794683470ae5ddd27c007969cd1d",
+          "dataloader_generators": {
+            "test": 8591104077081025447,
+            "train": 1698980873514339675
+          },
+          "protocol": "paired-backbone-loader-v1",
+          "public_backbone_seed": 17,
+          "router_seed": 5379639979712002284,
+          "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+          "topology_pairs_are_parameter_matched": false
+        },
+        "family": "linearno_loop",
+        "launcher_sources": {
+          "entry.py": "097d7a7128b360c7e8c8e6a7691ab81a3b4767912d8e3da48711525d4a3ee41e",
+          "launch.py": "4288327ae8364276b6bf4c3aac2b19fa1d8c4b98d30587e08fb2cc24214cc2c4",
+          "recording.py": "ff2dceb5a3acb920bd2809564d589ad6a6cd1965be3d717096d52c877a15ed1d"
+        },
+        "members": {
+          "member_000": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 4465,
+            "dataloader_generator_seeds": {
+              "test": 8591104077081025447,
+              "train": 1698980873514339675
+            },
+            "initial_state_sha256": "7627c7f273f138849fe18bd97bc5c61fdb90c10db77162c1bf2384e8b0eccb96",
+            "initialization_seed": 17,
+            "observation": "first_forward_verified",
+            "parameters": 4465,
+            "public_backbone_initial_sha256": "7627c7f273f138849fe18bd97bc5c61fdb90c10db77162c1bf2384e8b0eccb96",
+            "python_numpy_torch_seed": 17,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 0
+          }
+        },
+        "profile": "paper_table8_on_release_model",
+        "residual_mode": "sr_1_over_r",
+        "resolved_rank": 4,
+        "schema_version": 1,
+        "selection_policy": "predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection",
+        "task": "ns",
+        "topology": "p1_c3_r2_s1",
+        "unique_depth": 5
+      },
+      "batches": [
+        "76e01dcc36dd970b5b7656858ab13f7cfbafe9e35f0a140e6bdfc3c4c7b1d6ae",
+        "d1091c8d9aa5797696bd53a98fea17299f222d698e2f3c4fe7cfcc12a1b9c00e",
+        "e52e061cd9ed16bf23b452d678e87a0f56499701cb11e6a1b126d7921a6b8fe6",
+        "98c052181a3dd7c10da00dc7fc30486b25bf64c0423d9764a93c6021b9bf6451",
+        "907aee7f51ba793311c0be48b708b3cc0a65d13fa4e9fff9b6c548eb22018c31",
+        "044741fe39706246e0a2594e2f781e55d5a1447062504b0fa788c25fcfdbc011"
+      ]
+    },
+    {
+      "task": "ns",
+      "mode": "rb_attnres",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll8-native-a_f_07vq/ns/rb_attnres/ns__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__rb_attnres__M4__seed17__cfgeb0ef5f0dcf2",
+      "exact_LL7": [
+        "prediction_hash",
+        "batches",
+        "time_queries",
+        "numpy_next",
+        "strict_final_weights",
+        "optimizer_scheduler_rng"
+      ],
+      "manifest": {
+        "config_hash": "eb0ef5f0dcf2f0bbc374ebe1b20432feb0c1f985748ecf4d1436b5cc75bc048b",
+        "executed_depth": 8,
+        "expected_call_schedule": [
+          "loop.prefix.0.operator",
+          "loop.prefix.0.mlp",
+          "loop.rb_receivers.0.0",
+          "loop.core.0.operator",
+          "loop.rb_receivers.0.1",
+          "loop.core.0.mlp",
+          "loop.rb_receivers.0.2",
+          "loop.core.1.operator",
+          "loop.rb_receivers.0.3",
+          "loop.core.1.mlp",
+          "loop.rb_receivers.0.4",
+          "loop.core.2.operator",
+          "loop.rb_receivers.0.5",
+          "loop.core.2.mlp",
+          "loop.rb_receivers.1.0",
+          "loop.core.0.operator",
+          "loop.rb_receivers.1.1",
+          "loop.core.0.mlp",
+          "loop.rb_receivers.1.2",
+          "loop.core.1.operator",
+          "loop.rb_receivers.1.3",
+          "loop.core.1.mlp",
+          "loop.rb_receivers.1.4",
+          "loop.core.2.operator",
+          "loop.rb_receivers.1.5",
+          "loop.core.2.mlp",
+          "loop.rb_output",
+          "loop.suffix.0.operator",
+          "loop.suffix.0.mlp",
+          "loop.suffix.0.final_norm",
+          "loop.suffix.0.head"
+        ],
+        "fair_comparison": {
+          "backbone_pair_id": "85878604ead1a834cd12dbfaeb7e135ae711794683470ae5ddd27c007969cd1d",
+          "dataloader_generators": {
+            "test": 8591104077081025447,
+            "train": 1698980873514339675
+          },
+          "protocol": "paired-backbone-loader-v1",
+          "public_backbone_seed": 17,
+          "router_seed": 5379639979712002284,
+          "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+          "topology_pairs_are_parameter_matched": false
+        },
+        "family": "linearno_loop",
+        "launcher_sources": {
+          "entry.py": "097d7a7128b360c7e8c8e6a7691ab81a3b4767912d8e3da48711525d4a3ee41e",
+          "launch.py": "4288327ae8364276b6bf4c3aac2b19fa1d8c4b98d30587e08fb2cc24214cc2c4",
+          "recording.py": "ff2dceb5a3acb920bd2809564d589ad6a6cd1965be3d717096d52c877a15ed1d"
+        },
+        "members": {
+          "member_000": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.rb_receivers.0.0",
+              "loop.core.0.operator",
+              "loop.rb_receivers.0.1",
+              "loop.core.0.mlp",
+              "loop.rb_receivers.0.2",
+              "loop.core.1.operator",
+              "loop.rb_receivers.0.3",
+              "loop.core.1.mlp",
+              "loop.rb_receivers.0.4",
+              "loop.core.2.operator",
+              "loop.rb_receivers.0.5",
+              "loop.core.2.mlp",
+              "loop.rb_receivers.1.0",
+              "loop.core.0.operator",
+              "loop.rb_receivers.1.1",
+              "loop.core.0.mlp",
+              "loop.rb_receivers.1.2",
+              "loop.core.1.operator",
+              "loop.rb_receivers.1.3",
+              "loop.core.1.mlp",
+              "loop.rb_receivers.1.4",
+              "loop.core.2.operator",
+              "loop.rb_receivers.1.5",
+              "loop.core.2.mlp",
+              "loop.rb_output",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 4465,
+            "dataloader_generator_seeds": {
+              "test": 8591104077081025447,
+              "train": 1698980873514339675
+            },
+            "initial_state_sha256": "97ac1fd91d94ee10b903df24008e68aa2ea7616705473e02c13ccefd7efb8e89",
+            "initialization_seed": 17,
+            "observation": "first_forward_verified",
+            "parameters": 4673,
+            "public_backbone_initial_sha256": "7627c7f273f138849fe18bd97bc5c61fdb90c10db77162c1bf2384e8b0eccb96",
+            "python_numpy_torch_seed": 17,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 208
+          }
+        },
+        "profile": "paper_table8_on_release_model",
+        "residual_mode": "rb_attnres",
+        "resolved_rank": 4,
+        "schema_version": 1,
+        "selection_policy": "predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection",
+        "task": "ns",
+        "topology": "p1_c3_r2_s1",
+        "unique_depth": 5
+      },
+      "batches": [
+        "76e01dcc36dd970b5b7656858ab13f7cfbafe9e35f0a140e6bdfc3c4c7b1d6ae",
+        "d1091c8d9aa5797696bd53a98fea17299f222d698e2f3c4fe7cfcc12a1b9c00e",
+        "e52e061cd9ed16bf23b452d678e87a0f56499701cb11e6a1b126d7921a6b8fe6",
+        "98c052181a3dd7c10da00dc7fc30486b25bf64c0423d9764a93c6021b9bf6451",
+        "907aee7f51ba793311c0be48b708b3cc0a65d13fa4e9fff9b6c548eb22018c31",
+        "044741fe39706246e0a2594e2f781e55d5a1447062504b0fa788c25fcfdbc011"
+      ]
+    },
+    {
+      "task": "ns",
+      "mode": "lb_attnres_1_over_r",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll8-native-a_f_07vq/ns/lb_attnres_1_over_r/ns__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__lb_attnres_1_over_r__M4__seed17__cfg7bb21b894c27",
+      "exact_LL7": [
+        "prediction_hash",
+        "batches",
+        "time_queries",
+        "numpy_next",
+        "strict_final_weights",
+        "optimizer_scheduler_rng"
+      ],
+      "manifest": {
+        "config_hash": "7bb21b894c276f5ac28958f32d9aa5837359742109e0349563b6356ae2763e3c",
+        "executed_depth": 8,
+        "expected_call_schedule": [
+          "loop.prefix.0.operator",
+          "loop.prefix.0.mlp",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.lb_boundaries.0",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.lb_output",
+          "loop.suffix.0.operator",
+          "loop.suffix.0.mlp",
+          "loop.suffix.0.final_norm",
+          "loop.suffix.0.head"
+        ],
+        "fair_comparison": {
+          "backbone_pair_id": "85878604ead1a834cd12dbfaeb7e135ae711794683470ae5ddd27c007969cd1d",
+          "dataloader_generators": {
+            "test": 8591104077081025447,
+            "train": 1698980873514339675
+          },
+          "protocol": "paired-backbone-loader-v1",
+          "public_backbone_seed": 17,
+          "router_seed": 5379639979712002284,
+          "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+          "topology_pairs_are_parameter_matched": false
+        },
+        "family": "linearno_loop",
+        "launcher_sources": {
+          "entry.py": "097d7a7128b360c7e8c8e6a7691ab81a3b4767912d8e3da48711525d4a3ee41e",
+          "launch.py": "4288327ae8364276b6bf4c3aac2b19fa1d8c4b98d30587e08fb2cc24214cc2c4",
+          "recording.py": "ff2dceb5a3acb920bd2809564d589ad6a6cd1965be3d717096d52c877a15ed1d"
+        },
+        "members": {
+          "member_000": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.lb_boundaries.0",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.lb_output",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 4465,
+            "dataloader_generator_seeds": {
+              "test": 8591104077081025447,
+              "train": 1698980873514339675
+            },
+            "initial_state_sha256": "f4a3c13dca90636e0784a83d932f1d0d5902cd95fb1a9b654f1f69eb4f32d366",
+            "initialization_seed": 17,
+            "observation": "first_forward_verified",
+            "parameters": 4497,
+            "public_backbone_initial_sha256": "7627c7f273f138849fe18bd97bc5c61fdb90c10db77162c1bf2384e8b0eccb96",
+            "python_numpy_torch_seed": 17,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 32
+          }
+        },
+        "profile": "paper_table8_on_release_model",
+        "residual_mode": "lb_attnres_1_over_r",
+        "resolved_rank": 4,
+        "schema_version": 1,
+        "selection_policy": "predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection",
+        "task": "ns",
+        "topology": "p1_c3_r2_s1",
+        "unique_depth": 5
+      },
+      "batches": [
+        "76e01dcc36dd970b5b7656858ab13f7cfbafe9e35f0a140e6bdfc3c4c7b1d6ae",
+        "d1091c8d9aa5797696bd53a98fea17299f222d698e2f3c4fe7cfcc12a1b9c00e",
+        "e52e061cd9ed16bf23b452d678e87a0f56499701cb11e6a1b126d7921a6b8fe6",
+        "98c052181a3dd7c10da00dc7fc30486b25bf64c0423d9764a93c6021b9bf6451",
+        "907aee7f51ba793311c0be48b708b3cc0a65d13fa4e9fff9b6c548eb22018c31",
+        "044741fe39706246e0a2594e2f781e55d5a1447062504b0fa788c25fcfdbc011"
+      ]
+    },
+    {
+      "task": "plasticity",
+      "mode": "sr_1_over_r",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll8-native-a_f_07vq/plasticity/sr_1_over_r/plasticity__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__sr_1_over_r__M4__seed17__cfg152fad6a4324",
+      "exact_LL7": [
+        "prediction_hash",
+        "batches",
+        "time_queries",
+        "numpy_next",
+        "strict_final_weights",
+        "optimizer_scheduler_rng"
+      ],
+      "manifest": {
+        "config_hash": "152fad6a4324ef0fb4990d7ff85945807ca0ba0eabb0ee4eae0bd484b0435250",
+        "executed_depth": 8,
+        "expected_call_schedule": [
+          "loop.prefix.0.operator",
+          "loop.prefix.0.mlp",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.suffix.0.operator",
+          "loop.suffix.0.mlp",
+          "loop.suffix.0.final_norm",
+          "loop.suffix.0.head"
+        ],
+        "fair_comparison": {
+          "backbone_pair_id": "af5607418447264cd57f0b4b3ee8325a11f250b5cb1bf1df6da13b5dcf250946",
+          "dataloader_generators": {
+            "test": 8374479494272053039,
+            "train": 4859314015136723380
+          },
+          "protocol": "paired-backbone-loader-v1",
+          "public_backbone_seed": 17,
+          "router_seed": 678076610544098917,
+          "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+          "topology_pairs_are_parameter_matched": false
+        },
+        "family": "linearno_loop",
+        "launcher_sources": {
+          "entry.py": "097d7a7128b360c7e8c8e6a7691ab81a3b4767912d8e3da48711525d4a3ee41e",
+          "launch.py": "4288327ae8364276b6bf4c3aac2b19fa1d8c4b98d30587e08fb2cc24214cc2c4",
+          "recording.py": "ff2dceb5a3acb920bd2809564d589ad6a6cd1965be3d717096d52c877a15ed1d"
+        },
+        "members": {
+          "member_000": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 5164,
+            "dataloader_generator_seeds": {
+              "test": 8374479494272053039,
+              "train": 4859314015136723380
+            },
+            "initial_state_sha256": "cf2909143f5263c85339c6baa98549c021bea9537dd49892f2c73f49b8423cbd",
+            "initialization_seed": 17,
+            "observation": "first_forward_verified",
+            "parameters": 5164,
+            "public_backbone_initial_sha256": "cf2909143f5263c85339c6baa98549c021bea9537dd49892f2c73f49b8423cbd",
+            "python_numpy_torch_seed": 17,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 0
+          }
+        },
+        "profile": "paper_table8_on_release_model",
+        "residual_mode": "sr_1_over_r",
+        "resolved_rank": 4,
+        "schema_version": 1,
+        "selection_policy": "predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection",
+        "task": "plasticity",
+        "topology": "p1_c3_r2_s1",
+        "unique_depth": 5
+      },
+      "batches": [
+        "5c5c5f401cadb7379f98ce473a27b63191265e07c3c94635cced681572714aba",
+        "2758fa53f39433b062548b09d00bc4a29712b2e3063964fc5eeac11464888186",
+        "95df8832c0c465662bf8f222d299adda6947acd382141a692cabea4c15aeff7b",
+        "1e78823dcd2ef4806c96e4ec3f305aef0ea3438dfee644a0dbf925f8cd62d4a5",
+        "524844c5c3804e20ccd6e4e483a2ea941921d703be1196bda4f10c86a03adca7",
+        "fdeac2924351639ea60032ae3146399098736e7e831c7ade204900dead8ae704"
+      ]
+    },
+    {
+      "task": "plasticity",
+      "mode": "rb_attnres",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll8-native-a_f_07vq/plasticity/rb_attnres/plasticity__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__rb_attnres__M4__seed17__cfg70550b3d5ae0",
+      "exact_LL7": [
+        "prediction_hash",
+        "batches",
+        "time_queries",
+        "numpy_next",
+        "strict_final_weights",
+        "optimizer_scheduler_rng"
+      ],
+      "manifest": {
+        "config_hash": "70550b3d5ae062b57be8b19ef59e90c11576d42d4a42f4e5cf80f3e3232c2cfe",
+        "executed_depth": 8,
+        "expected_call_schedule": [
+          "loop.prefix.0.operator",
+          "loop.prefix.0.mlp",
+          "loop.rb_receivers.0.0",
+          "loop.core.0.operator",
+          "loop.rb_receivers.0.1",
+          "loop.core.0.mlp",
+          "loop.rb_receivers.0.2",
+          "loop.core.1.operator",
+          "loop.rb_receivers.0.3",
+          "loop.core.1.mlp",
+          "loop.rb_receivers.0.4",
+          "loop.core.2.operator",
+          "loop.rb_receivers.0.5",
+          "loop.core.2.mlp",
+          "loop.rb_receivers.1.0",
+          "loop.core.0.operator",
+          "loop.rb_receivers.1.1",
+          "loop.core.0.mlp",
+          "loop.rb_receivers.1.2",
+          "loop.core.1.operator",
+          "loop.rb_receivers.1.3",
+          "loop.core.1.mlp",
+          "loop.rb_receivers.1.4",
+          "loop.core.2.operator",
+          "loop.rb_receivers.1.5",
+          "loop.core.2.mlp",
+          "loop.rb_output",
+          "loop.suffix.0.operator",
+          "loop.suffix.0.mlp",
+          "loop.suffix.0.final_norm",
+          "loop.suffix.0.head"
+        ],
+        "fair_comparison": {
+          "backbone_pair_id": "af5607418447264cd57f0b4b3ee8325a11f250b5cb1bf1df6da13b5dcf250946",
+          "dataloader_generators": {
+            "test": 8374479494272053039,
+            "train": 4859314015136723380
+          },
+          "protocol": "paired-backbone-loader-v1",
+          "public_backbone_seed": 17,
+          "router_seed": 678076610544098917,
+          "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+          "topology_pairs_are_parameter_matched": false
+        },
+        "family": "linearno_loop",
+        "launcher_sources": {
+          "entry.py": "097d7a7128b360c7e8c8e6a7691ab81a3b4767912d8e3da48711525d4a3ee41e",
+          "launch.py": "4288327ae8364276b6bf4c3aac2b19fa1d8c4b98d30587e08fb2cc24214cc2c4",
+          "recording.py": "ff2dceb5a3acb920bd2809564d589ad6a6cd1965be3d717096d52c877a15ed1d"
+        },
+        "members": {
+          "member_000": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.rb_receivers.0.0",
+              "loop.core.0.operator",
+              "loop.rb_receivers.0.1",
+              "loop.core.0.mlp",
+              "loop.rb_receivers.0.2",
+              "loop.core.1.operator",
+              "loop.rb_receivers.0.3",
+              "loop.core.1.mlp",
+              "loop.rb_receivers.0.4",
+              "loop.core.2.operator",
+              "loop.rb_receivers.0.5",
+              "loop.core.2.mlp",
+              "loop.rb_receivers.1.0",
+              "loop.core.0.operator",
+              "loop.rb_receivers.1.1",
+              "loop.core.0.mlp",
+              "loop.rb_receivers.1.2",
+              "loop.core.1.operator",
+              "loop.rb_receivers.1.3",
+              "loop.core.1.mlp",
+              "loop.rb_receivers.1.4",
+              "loop.core.2.operator",
+              "loop.rb_receivers.1.5",
+              "loop.core.2.mlp",
+              "loop.rb_output",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 5164,
+            "dataloader_generator_seeds": {
+              "test": 8374479494272053039,
+              "train": 4859314015136723380
+            },
+            "initial_state_sha256": "fdd730f2a916076d7e80abeed14edb2a4d994428088e58be3496f6cf688aac35",
+            "initialization_seed": 17,
+            "observation": "first_forward_verified",
+            "parameters": 5372,
+            "public_backbone_initial_sha256": "cf2909143f5263c85339c6baa98549c021bea9537dd49892f2c73f49b8423cbd",
+            "python_numpy_torch_seed": 17,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 208
+          }
+        },
+        "profile": "paper_table8_on_release_model",
+        "residual_mode": "rb_attnres",
+        "resolved_rank": 4,
+        "schema_version": 1,
+        "selection_policy": "predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection",
+        "task": "plasticity",
+        "topology": "p1_c3_r2_s1",
+        "unique_depth": 5
+      },
+      "batches": [
+        "5c5c5f401cadb7379f98ce473a27b63191265e07c3c94635cced681572714aba",
+        "2758fa53f39433b062548b09d00bc4a29712b2e3063964fc5eeac11464888186",
+        "95df8832c0c465662bf8f222d299adda6947acd382141a692cabea4c15aeff7b",
+        "1e78823dcd2ef4806c96e4ec3f305aef0ea3438dfee644a0dbf925f8cd62d4a5",
+        "524844c5c3804e20ccd6e4e483a2ea941921d703be1196bda4f10c86a03adca7",
+        "fdeac2924351639ea60032ae3146399098736e7e831c7ade204900dead8ae704"
+      ]
+    },
+    {
+      "task": "plasticity",
+      "mode": "lb_attnres_1_over_r",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll8-native-a_f_07vq/plasticity/lb_attnres_1_over_r/plasticity__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__lb_attnres_1_over_r__M4__seed17__cfgf76a95f8c1ac",
+      "exact_LL7": [
+        "prediction_hash",
+        "batches",
+        "time_queries",
+        "numpy_next",
+        "strict_final_weights",
+        "optimizer_scheduler_rng"
+      ],
+      "manifest": {
+        "config_hash": "f76a95f8c1ac33ad68e86e930438a7e84e4af0802641bc89ebd1bcae0fa31c42",
+        "executed_depth": 8,
+        "expected_call_schedule": [
+          "loop.prefix.0.operator",
+          "loop.prefix.0.mlp",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.lb_boundaries.0",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.lb_output",
+          "loop.suffix.0.operator",
+          "loop.suffix.0.mlp",
+          "loop.suffix.0.final_norm",
+          "loop.suffix.0.head"
+        ],
+        "fair_comparison": {
+          "backbone_pair_id": "af5607418447264cd57f0b4b3ee8325a11f250b5cb1bf1df6da13b5dcf250946",
+          "dataloader_generators": {
+            "test": 8374479494272053039,
+            "train": 4859314015136723380
+          },
+          "protocol": "paired-backbone-loader-v1",
+          "public_backbone_seed": 17,
+          "router_seed": 678076610544098917,
+          "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+          "topology_pairs_are_parameter_matched": false
+        },
+        "family": "linearno_loop",
+        "launcher_sources": {
+          "entry.py": "097d7a7128b360c7e8c8e6a7691ab81a3b4767912d8e3da48711525d4a3ee41e",
+          "launch.py": "4288327ae8364276b6bf4c3aac2b19fa1d8c4b98d30587e08fb2cc24214cc2c4",
+          "recording.py": "ff2dceb5a3acb920bd2809564d589ad6a6cd1965be3d717096d52c877a15ed1d"
+        },
+        "members": {
+          "member_000": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.lb_boundaries.0",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.lb_output",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 5164,
+            "dataloader_generator_seeds": {
+              "test": 8374479494272053039,
+              "train": 4859314015136723380
+            },
+            "initial_state_sha256": "158a11424aac3457e4677625f0278b02dba4b2d25667d3a609ab1db80db84220",
+            "initialization_seed": 17,
+            "observation": "first_forward_verified",
+            "parameters": 5196,
+            "public_backbone_initial_sha256": "cf2909143f5263c85339c6baa98549c021bea9537dd49892f2c73f49b8423cbd",
+            "python_numpy_torch_seed": 17,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 32
+          }
+        },
+        "profile": "paper_table8_on_release_model",
+        "residual_mode": "lb_attnres_1_over_r",
+        "resolved_rank": 4,
+        "schema_version": 1,
+        "selection_policy": "predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection",
+        "task": "plasticity",
+        "topology": "p1_c3_r2_s1",
+        "unique_depth": 5
+      },
+      "batches": [
+        "5c5c5f401cadb7379f98ce473a27b63191265e07c3c94635cced681572714aba",
+        "2758fa53f39433b062548b09d00bc4a29712b2e3063964fc5eeac11464888186",
+        "95df8832c0c465662bf8f222d299adda6947acd382141a692cabea4c15aeff7b",
+        "1e78823dcd2ef4806c96e4ec3f305aef0ea3438dfee644a0dbf925f8cd62d4a5",
+        "524844c5c3804e20ccd6e4e483a2ea941921d703be1196bda4f10c86a03adca7",
+        "fdeac2924351639ea60032ae3146399098736e7e831c7ade204900dead8ae704"
+      ]
+    },
+    {
+      "task": "airfrans",
+      "mode": "sr_1_over_r",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll8-native-a_f_07vq/airfrans/sr_1_over_r/airfrans__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__sr_1_over_r__M4__seed901__cfgb62858b9d5ef",
+      "exact_LL7": [
+        "state_hash",
+        "resume_hash",
+        "prediction",
+        "batches"
+      ],
+      "manifest": {
+        "config_hash": "b62858b9d5effefc2626292212f2a8c49ab8af1754676a9f03e5c5e40d590fe6",
+        "executed_depth": 8,
+        "expected_call_schedule": [
+          "loop.prefix.0.operator",
+          "loop.prefix.0.mlp",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.suffix.0.operator",
+          "loop.suffix.0.mlp",
+          "loop.suffix.0.final_norm",
+          "loop.suffix.0.head"
+        ],
+        "fair_comparison": {
+          "backbone_pair_id": "504c255a708fb60e57ff9dd1feb30e53fde62ea379f9aeeb6ed6da6cdcb7a7e0",
+          "dataloader_generators": {
+            "test": 992306871780870882,
+            "train": 3186614126182325395
+          },
+          "protocol": "paired-backbone-loader-v1",
+          "public_backbone_seed": 901,
+          "router_seed": 2684617266285266071,
+          "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+          "topology_pairs_are_parameter_matched": false
+        },
+        "family": "linearno_loop",
+        "launcher_sources": {
+          "entry.py": "097d7a7128b360c7e8c8e6a7691ab81a3b4767912d8e3da48711525d4a3ee41e",
+          "launch.py": "4288327ae8364276b6bf4c3aac2b19fa1d8c4b98d30587e08fb2cc24214cc2c4",
+          "recording.py": "ff2dceb5a3acb920bd2809564d589ad6a6cd1965be3d717096d52c877a15ed1d"
+        },
+        "members": {
+          "member_000": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 3878,
+            "dataloader_generator_seeds": {
+              "test": 992306871780870882,
+              "train": 3186614126182325395
+            },
+            "initial_state_sha256": "950ae0c9ca3e823db189892ba9f11b383ef340a0a65adff64602640c72931e9d",
+            "initialization_seed": 901,
+            "observation": "first_forward_verified",
+            "parameters": 3878,
+            "public_backbone_initial_sha256": "950ae0c9ca3e823db189892ba9f11b383ef340a0a65adff64602640c72931e9d",
+            "python_numpy_torch_seed": 901,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 0
+          },
+          "member_001": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 3878,
+            "dataloader_generator_seeds": {
+              "test": 992306871780870882,
+              "train": 3186614126182325395
+            },
+            "initial_state_sha256": "1ad5125f882f528daeeeb56d8ef6e5b2cc38294648e5d9f668c005be9f340e04",
+            "initialization_seed": 390416693996883703,
+            "observation": "first_forward_verified",
+            "parameters": 3878,
+            "public_backbone_initial_sha256": "1ad5125f882f528daeeeb56d8ef6e5b2cc38294648e5d9f668c005be9f340e04",
+            "python_numpy_torch_seed": 901,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 0
+          }
+        },
+        "profile": "paper_table8_on_release_model",
+        "residual_mode": "sr_1_over_r",
+        "resolved_rank": 4,
+        "schema_version": 1,
+        "selection_policy": "predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection",
+        "task": "airfrans",
+        "topology": "p1_c3_r2_s1",
+        "unique_depth": 5
+      },
+      "batches": [
+        [
+          0,
+          "f528ce2e27aa3abf6db64c0a3675e9fd803c03d5da28c17899ffdeb746b8ac86"
+        ],
+        [
+          0,
+          "28e81e246a1f87e2c0c7a20c2835fcd2eb156e432add0737788370f813309aea"
+        ],
+        [
+          0,
+          "26a49f71fae32b3f7abc0528996d733c9f00938c33489c4564f83caf3fcddd81"
+        ],
+        [
+          0,
+          "34443e8b588f9ef7b25954d91fd0bbe9aaa864971f34fc2aedd691996a27badb"
+        ],
+        [
+          0,
+          "5c9ec52ea7e07a7e59037ea873c05450b2a59b94caba7171e39676b5743c57cb"
+        ],
+        [
+          0,
+          "ea4facbcd36dbda29ef289ba3e3276f314c8c208222c7aa008e498f56882aaa7"
+        ],
+        [
+          0,
+          "bc585cebac9b8ed61e3eefd326e3ffeb0994a317988d718e487d9db1ac6b6256"
+        ],
+        [
+          0,
+          "f604be3c24883c6e0e8a9dd261965f735919bf4ad5d85244c05048868911f5ce"
+        ],
+        [
+          0,
+          "3eb168ecb41b73ce055d3dea23aa4a08cdcec1783fdf2efc35b3359a5fbb9447"
+        ],
+        [
+          0,
+          "b51913d005b272189c6ba4e12c700207bac13353cb734182bf0f5c315ba9960a"
+        ],
+        [
+          0,
+          "630bd7db8a339058d977c37fb3a251207d73f43fdb4ceac548582ea312646bdb"
+        ],
+        [
+          0,
+          "885ac28d66fa5166abe566a4f5978933ac3ae243636ba902847c62991f81e08b"
+        ],
+        [
+          0,
+          "7d15e2b41c9296900117faa64ec3ab40f5827e72501ca3c6b839e50dbdf8f563"
+        ],
+        [
+          0,
+          "2a81beaf0e492d4fa9b76c0e83475caf35db658a7bdfea0fee3b66cd01efbe37"
+        ],
+        [
+          0,
+          "292a7b1552fe2375cee95b7ec4ecfa346be738a4b88ae760f276c1aabac841ef"
+        ],
+        [
+          0,
+          "4d9479732304a2d0f609cab5ee5b512ab5ca38cdce648bbdabb0353a50cff31b"
+        ],
+        [
+          0,
+          "579c536b921731bd3fb4733e335d2521b9402c4d7e03bbd0a7875581d65d0e0c"
+        ],
+        [
+          0,
+          "d8b5e557a8d180e0d74c6868fb6dd3efea9d1258207fb61f50f80e7e8b9bfa87"
+        ],
+        [
+          0,
+          "406b0a8c2f08b5035b8585812b4ba336f1d01dd4697528303dc8ac06f0ea5f38"
+        ],
+        [
+          0,
+          "ac841ae07f5128f3b9e71da44fd5a30ed4b08e08806987dfbda29afd9dc44b7f"
+        ],
+        [
+          0,
+          "f96de3b864e57583c1e196f0ca12f118555de0eb421e97bd5750b2c184756845"
+        ],
+        [
+          0,
+          "16057ba94e791ce53545f46c6461009fd9cee51f476f6cf5c331ffccb812dd7f"
+        ],
+        [
+          0,
+          "b08f81842ddd92ad7f4d5f18c79398bb00d0bc4841593a2e59cd32554f1c9583"
+        ],
+        [
+          0,
+          "7a30934f27bea88ddee362b6614a2a2b6d3fc1154c1c91b8f0bbb5460d478e8c"
+        ],
+        [
+          0,
+          "df943c43c2c76065f1e825c78d4bacfb70fcbd5e92d36fb75baabed399d27270"
+        ],
+        [
+          0,
+          "98b3c25ecf16821e2a56917abcf0f528a248525599a797248eeb55cdc93068b4"
+        ],
+        [
+          0,
+          "754a3595a177178571a6d342696c3a19616a6d9fbc6e3a56caa4b9799619ddc9"
+        ],
+        [
+          1,
+          "7dce4d371485df51a6f919b75d132503d259160218e35d0a5f89185df608bc9c"
+        ],
+        [
+          1,
+          "dcad5221862ba9533c1608845fd3f88031b7d678ac17ce5012b995b1ef74f3f3"
+        ],
+        [
+          1,
+          "20f894a118c967d87281ba817f2ee8eeb871011537b452e9c50eebc9c00d01f0"
+        ],
+        [
+          1,
+          "679f6f165fb55d96e51ea13b6180a13274c60b8d980ef9c4d9a0ba038071395f"
+        ],
+        [
+          1,
+          "bbd8e3107098d740d7bcfce3572ee9d5d0af7bc554e8eb06867c02e91286a4d3"
+        ],
+        [
+          1,
+          "bcf11b6d9ba1792c7afcb090e4ed156f0632f85f1918d2d5dcc6c1463020adc3"
+        ],
+        [
+          1,
+          "2af01f039974c279fc4050a35cc39aa1229483684f7d12e2ea8877e71e25bc9c"
+        ],
+        [
+          1,
+          "f0b02be012d7d24ae288f7078c13c93f88e092117071c04c202a411b725d8e49"
+        ],
+        [
+          1,
+          "c5825dd209ada1c8f7e964be4be43570d18f7aec6a3dcc955e762e0032352d49"
+        ],
+        [
+          1,
+          "0558975379ec59c589540e86f0201834d2cbcd871445a8322088828786dbec8e"
+        ],
+        [
+          1,
+          "cd50f00de1dbdab62d1770b4c6711a3a626ff918cc6b4fa38cd7b5185e0eb646"
+        ],
+        [
+          1,
+          "5246625493494b556c10b90a290c43ad70f902f431e10ee1c14ac7d191f80938"
+        ],
+        [
+          1,
+          "232d45f2dd89b393ca7178d0a2d6332dfff9b3e7855d02838ff6fef884baf386"
+        ],
+        [
+          1,
+          "0f168faa6a7678c6b7d78d8542610031c528ae4618ff389cfc48acda2672c254"
+        ],
+        [
+          1,
+          "886ff827e426c4ac086834ab3084165af1a74bcd1f49d4916d84afd8f30bb23d"
+        ],
+        [
+          1,
+          "e5de1391d793efc67774f8bde87699315fd92e625b4ae9ff69ff6b01b652aead"
+        ],
+        [
+          1,
+          "48dbec3bf410948ec0be1e19a6782651c41efdab24de6ff642e555a73f0a1570"
+        ],
+        [
+          1,
+          "8d68c1852a60be4d767923acda81e8a860b5abadceac2c2ee7a10c2cb5b8d86f"
+        ],
+        [
+          1,
+          "712635987465f6eddcf119ec3417d1d32f8b3f844cd2a9d31d28ed4a8f7c25dc"
+        ],
+        [
+          1,
+          "343bcab601071e7a1339be3231cd1d216dd986c5c381762161da873536a029c8"
+        ],
+        [
+          1,
+          "2fa23c44b8a3fc23c82988806983bcd5f6ada507d03a921bdf43a8182d8967c2"
+        ],
+        [
+          1,
+          "887dda4f0e3fbb5f6d9a92acba77193287f7ecf35d79a987605b7775cfb95b35"
+        ],
+        [
+          1,
+          "ee0c2c7a8b1a2321417389165721c46f417792d7a920c4b5ccc0dbbe3c872bc7"
+        ],
+        [
+          1,
+          "7ede2257d05aa0cb3bf1e7c65b20e59ae82ef5e838d64f75efda64e4f88928e7"
+        ],
+        [
+          1,
+          "6b7c49df7a4864907271f64db0cc47aa114f2417389ff2c31e7b84a956f35c4f"
+        ],
+        [
+          1,
+          "848b25722fb18ff647f98b13187c7616c321be455a84562db29dbb00a6091032"
+        ],
+        [
+          1,
+          "0262e4146be064a9fac8d639e1e9a2f4e9eb8417fb5790b2eb28b0a31e552413"
+        ]
+      ]
+    },
+    {
+      "task": "airfrans",
+      "mode": "rb_attnres",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll8-native-a_f_07vq/airfrans/rb_attnres/airfrans__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__rb_attnres__M4__seed901__cfg21d2a7e00f94",
+      "exact_LL7": [
+        "state_hash",
+        "resume_hash",
+        "prediction",
+        "batches"
+      ],
+      "manifest": {
+        "config_hash": "21d2a7e00f94ab353f5537416b069837dfcc65a4aea94346022888078934c834",
+        "executed_depth": 8,
+        "expected_call_schedule": [
+          "loop.prefix.0.operator",
+          "loop.prefix.0.mlp",
+          "loop.rb_receivers.0.0",
+          "loop.core.0.operator",
+          "loop.rb_receivers.0.1",
+          "loop.core.0.mlp",
+          "loop.rb_receivers.0.2",
+          "loop.core.1.operator",
+          "loop.rb_receivers.0.3",
+          "loop.core.1.mlp",
+          "loop.rb_receivers.0.4",
+          "loop.core.2.operator",
+          "loop.rb_receivers.0.5",
+          "loop.core.2.mlp",
+          "loop.rb_receivers.1.0",
+          "loop.core.0.operator",
+          "loop.rb_receivers.1.1",
+          "loop.core.0.mlp",
+          "loop.rb_receivers.1.2",
+          "loop.core.1.operator",
+          "loop.rb_receivers.1.3",
+          "loop.core.1.mlp",
+          "loop.rb_receivers.1.4",
+          "loop.core.2.operator",
+          "loop.rb_receivers.1.5",
+          "loop.core.2.mlp",
+          "loop.rb_output",
+          "loop.suffix.0.operator",
+          "loop.suffix.0.mlp",
+          "loop.suffix.0.final_norm",
+          "loop.suffix.0.head"
+        ],
+        "fair_comparison": {
+          "backbone_pair_id": "504c255a708fb60e57ff9dd1feb30e53fde62ea379f9aeeb6ed6da6cdcb7a7e0",
+          "dataloader_generators": {
+            "test": 992306871780870882,
+            "train": 3186614126182325395
+          },
+          "protocol": "paired-backbone-loader-v1",
+          "public_backbone_seed": 901,
+          "router_seed": 2684617266285266071,
+          "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+          "topology_pairs_are_parameter_matched": false
+        },
+        "family": "linearno_loop",
+        "launcher_sources": {
+          "entry.py": "097d7a7128b360c7e8c8e6a7691ab81a3b4767912d8e3da48711525d4a3ee41e",
+          "launch.py": "4288327ae8364276b6bf4c3aac2b19fa1d8c4b98d30587e08fb2cc24214cc2c4",
+          "recording.py": "ff2dceb5a3acb920bd2809564d589ad6a6cd1965be3d717096d52c877a15ed1d"
+        },
+        "members": {
+          "member_000": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.rb_receivers.0.0",
+              "loop.core.0.operator",
+              "loop.rb_receivers.0.1",
+              "loop.core.0.mlp",
+              "loop.rb_receivers.0.2",
+              "loop.core.1.operator",
+              "loop.rb_receivers.0.3",
+              "loop.core.1.mlp",
+              "loop.rb_receivers.0.4",
+              "loop.core.2.operator",
+              "loop.rb_receivers.0.5",
+              "loop.core.2.mlp",
+              "loop.rb_receivers.1.0",
+              "loop.core.0.operator",
+              "loop.rb_receivers.1.1",
+              "loop.core.0.mlp",
+              "loop.rb_receivers.1.2",
+              "loop.core.1.operator",
+              "loop.rb_receivers.1.3",
+              "loop.core.1.mlp",
+              "loop.rb_receivers.1.4",
+              "loop.core.2.operator",
+              "loop.rb_receivers.1.5",
+              "loop.core.2.mlp",
+              "loop.rb_output",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 3878,
+            "dataloader_generator_seeds": {
+              "test": 992306871780870882,
+              "train": 3186614126182325395
+            },
+            "initial_state_sha256": "4ab09553f5d36ca608350591c2bbac16dcb66203ae357a2a400ce984ec755057",
+            "initialization_seed": 901,
+            "observation": "first_forward_verified",
+            "parameters": 4086,
+            "public_backbone_initial_sha256": "950ae0c9ca3e823db189892ba9f11b383ef340a0a65adff64602640c72931e9d",
+            "python_numpy_torch_seed": 901,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 208
+          },
+          "member_001": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.rb_receivers.0.0",
+              "loop.core.0.operator",
+              "loop.rb_receivers.0.1",
+              "loop.core.0.mlp",
+              "loop.rb_receivers.0.2",
+              "loop.core.1.operator",
+              "loop.rb_receivers.0.3",
+              "loop.core.1.mlp",
+              "loop.rb_receivers.0.4",
+              "loop.core.2.operator",
+              "loop.rb_receivers.0.5",
+              "loop.core.2.mlp",
+              "loop.rb_receivers.1.0",
+              "loop.core.0.operator",
+              "loop.rb_receivers.1.1",
+              "loop.core.0.mlp",
+              "loop.rb_receivers.1.2",
+              "loop.core.1.operator",
+              "loop.rb_receivers.1.3",
+              "loop.core.1.mlp",
+              "loop.rb_receivers.1.4",
+              "loop.core.2.operator",
+              "loop.rb_receivers.1.5",
+              "loop.core.2.mlp",
+              "loop.rb_output",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 3878,
+            "dataloader_generator_seeds": {
+              "test": 992306871780870882,
+              "train": 3186614126182325395
+            },
+            "initial_state_sha256": "965b6a4486cdc468dcbcfc7430efea164391d947f2746959f925c570eaad9409",
+            "initialization_seed": 390416693996883703,
+            "observation": "first_forward_verified",
+            "parameters": 4086,
+            "public_backbone_initial_sha256": "1ad5125f882f528daeeeb56d8ef6e5b2cc38294648e5d9f668c005be9f340e04",
+            "python_numpy_torch_seed": 901,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 208
+          }
+        },
+        "profile": "paper_table8_on_release_model",
+        "residual_mode": "rb_attnres",
+        "resolved_rank": 4,
+        "schema_version": 1,
+        "selection_policy": "predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection",
+        "task": "airfrans",
+        "topology": "p1_c3_r2_s1",
+        "unique_depth": 5
+      },
+      "batches": [
+        [
+          0,
+          "f528ce2e27aa3abf6db64c0a3675e9fd803c03d5da28c17899ffdeb746b8ac86"
+        ],
+        [
+          0,
+          "28e81e246a1f87e2c0c7a20c2835fcd2eb156e432add0737788370f813309aea"
+        ],
+        [
+          0,
+          "26a49f71fae32b3f7abc0528996d733c9f00938c33489c4564f83caf3fcddd81"
+        ],
+        [
+          0,
+          "34443e8b588f9ef7b25954d91fd0bbe9aaa864971f34fc2aedd691996a27badb"
+        ],
+        [
+          0,
+          "5c9ec52ea7e07a7e59037ea873c05450b2a59b94caba7171e39676b5743c57cb"
+        ],
+        [
+          0,
+          "ea4facbcd36dbda29ef289ba3e3276f314c8c208222c7aa008e498f56882aaa7"
+        ],
+        [
+          0,
+          "bc585cebac9b8ed61e3eefd326e3ffeb0994a317988d718e487d9db1ac6b6256"
+        ],
+        [
+          0,
+          "f604be3c24883c6e0e8a9dd261965f735919bf4ad5d85244c05048868911f5ce"
+        ],
+        [
+          0,
+          "3eb168ecb41b73ce055d3dea23aa4a08cdcec1783fdf2efc35b3359a5fbb9447"
+        ],
+        [
+          0,
+          "b51913d005b272189c6ba4e12c700207bac13353cb734182bf0f5c315ba9960a"
+        ],
+        [
+          0,
+          "630bd7db8a339058d977c37fb3a251207d73f43fdb4ceac548582ea312646bdb"
+        ],
+        [
+          0,
+          "885ac28d66fa5166abe566a4f5978933ac3ae243636ba902847c62991f81e08b"
+        ],
+        [
+          0,
+          "7d15e2b41c9296900117faa64ec3ab40f5827e72501ca3c6b839e50dbdf8f563"
+        ],
+        [
+          0,
+          "2a81beaf0e492d4fa9b76c0e83475caf35db658a7bdfea0fee3b66cd01efbe37"
+        ],
+        [
+          0,
+          "292a7b1552fe2375cee95b7ec4ecfa346be738a4b88ae760f276c1aabac841ef"
+        ],
+        [
+          0,
+          "4d9479732304a2d0f609cab5ee5b512ab5ca38cdce648bbdabb0353a50cff31b"
+        ],
+        [
+          0,
+          "579c536b921731bd3fb4733e335d2521b9402c4d7e03bbd0a7875581d65d0e0c"
+        ],
+        [
+          0,
+          "d8b5e557a8d180e0d74c6868fb6dd3efea9d1258207fb61f50f80e7e8b9bfa87"
+        ],
+        [
+          0,
+          "406b0a8c2f08b5035b8585812b4ba336f1d01dd4697528303dc8ac06f0ea5f38"
+        ],
+        [
+          0,
+          "ac841ae07f5128f3b9e71da44fd5a30ed4b08e08806987dfbda29afd9dc44b7f"
+        ],
+        [
+          0,
+          "f96de3b864e57583c1e196f0ca12f118555de0eb421e97bd5750b2c184756845"
+        ],
+        [
+          0,
+          "16057ba94e791ce53545f46c6461009fd9cee51f476f6cf5c331ffccb812dd7f"
+        ],
+        [
+          0,
+          "b08f81842ddd92ad7f4d5f18c79398bb00d0bc4841593a2e59cd32554f1c9583"
+        ],
+        [
+          0,
+          "7a30934f27bea88ddee362b6614a2a2b6d3fc1154c1c91b8f0bbb5460d478e8c"
+        ],
+        [
+          0,
+          "df943c43c2c76065f1e825c78d4bacfb70fcbd5e92d36fb75baabed399d27270"
+        ],
+        [
+          0,
+          "98b3c25ecf16821e2a56917abcf0f528a248525599a797248eeb55cdc93068b4"
+        ],
+        [
+          0,
+          "754a3595a177178571a6d342696c3a19616a6d9fbc6e3a56caa4b9799619ddc9"
+        ],
+        [
+          1,
+          "7dce4d371485df51a6f919b75d132503d259160218e35d0a5f89185df608bc9c"
+        ],
+        [
+          1,
+          "dcad5221862ba9533c1608845fd3f88031b7d678ac17ce5012b995b1ef74f3f3"
+        ],
+        [
+          1,
+          "20f894a118c967d87281ba817f2ee8eeb871011537b452e9c50eebc9c00d01f0"
+        ],
+        [
+          1,
+          "679f6f165fb55d96e51ea13b6180a13274c60b8d980ef9c4d9a0ba038071395f"
+        ],
+        [
+          1,
+          "bbd8e3107098d740d7bcfce3572ee9d5d0af7bc554e8eb06867c02e91286a4d3"
+        ],
+        [
+          1,
+          "bcf11b6d9ba1792c7afcb090e4ed156f0632f85f1918d2d5dcc6c1463020adc3"
+        ],
+        [
+          1,
+          "2af01f039974c279fc4050a35cc39aa1229483684f7d12e2ea8877e71e25bc9c"
+        ],
+        [
+          1,
+          "f0b02be012d7d24ae288f7078c13c93f88e092117071c04c202a411b725d8e49"
+        ],
+        [
+          1,
+          "c5825dd209ada1c8f7e964be4be43570d18f7aec6a3dcc955e762e0032352d49"
+        ],
+        [
+          1,
+          "0558975379ec59c589540e86f0201834d2cbcd871445a8322088828786dbec8e"
+        ],
+        [
+          1,
+          "cd50f00de1dbdab62d1770b4c6711a3a626ff918cc6b4fa38cd7b5185e0eb646"
+        ],
+        [
+          1,
+          "5246625493494b556c10b90a290c43ad70f902f431e10ee1c14ac7d191f80938"
+        ],
+        [
+          1,
+          "232d45f2dd89b393ca7178d0a2d6332dfff9b3e7855d02838ff6fef884baf386"
+        ],
+        [
+          1,
+          "0f168faa6a7678c6b7d78d8542610031c528ae4618ff389cfc48acda2672c254"
+        ],
+        [
+          1,
+          "886ff827e426c4ac086834ab3084165af1a74bcd1f49d4916d84afd8f30bb23d"
+        ],
+        [
+          1,
+          "e5de1391d793efc67774f8bde87699315fd92e625b4ae9ff69ff6b01b652aead"
+        ],
+        [
+          1,
+          "48dbec3bf410948ec0be1e19a6782651c41efdab24de6ff642e555a73f0a1570"
+        ],
+        [
+          1,
+          "8d68c1852a60be4d767923acda81e8a860b5abadceac2c2ee7a10c2cb5b8d86f"
+        ],
+        [
+          1,
+          "712635987465f6eddcf119ec3417d1d32f8b3f844cd2a9d31d28ed4a8f7c25dc"
+        ],
+        [
+          1,
+          "343bcab601071e7a1339be3231cd1d216dd986c5c381762161da873536a029c8"
+        ],
+        [
+          1,
+          "2fa23c44b8a3fc23c82988806983bcd5f6ada507d03a921bdf43a8182d8967c2"
+        ],
+        [
+          1,
+          "887dda4f0e3fbb5f6d9a92acba77193287f7ecf35d79a987605b7775cfb95b35"
+        ],
+        [
+          1,
+          "ee0c2c7a8b1a2321417389165721c46f417792d7a920c4b5ccc0dbbe3c872bc7"
+        ],
+        [
+          1,
+          "7ede2257d05aa0cb3bf1e7c65b20e59ae82ef5e838d64f75efda64e4f88928e7"
+        ],
+        [
+          1,
+          "6b7c49df7a4864907271f64db0cc47aa114f2417389ff2c31e7b84a956f35c4f"
+        ],
+        [
+          1,
+          "848b25722fb18ff647f98b13187c7616c321be455a84562db29dbb00a6091032"
+        ],
+        [
+          1,
+          "0262e4146be064a9fac8d639e1e9a2f4e9eb8417fb5790b2eb28b0a31e552413"
+        ]
+      ]
+    },
+    {
+      "task": "airfrans",
+      "mode": "lb_attnres_1_over_r",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll8-native-a_f_07vq/airfrans/lb_attnres_1_over_r/airfrans__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__lb_attnres_1_over_r__M4__seed901__cfg3cc602a96b85",
+      "exact_LL7": [
+        "state_hash",
+        "resume_hash",
+        "prediction",
+        "batches"
+      ],
+      "manifest": {
+        "config_hash": "3cc602a96b85252aef10d881edb91b532c6fbd5aae6eeb40380c66d90d046353",
+        "executed_depth": 8,
+        "expected_call_schedule": [
+          "loop.prefix.0.operator",
+          "loop.prefix.0.mlp",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.lb_boundaries.0",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.lb_output",
+          "loop.suffix.0.operator",
+          "loop.suffix.0.mlp",
+          "loop.suffix.0.final_norm",
+          "loop.suffix.0.head"
+        ],
+        "fair_comparison": {
+          "backbone_pair_id": "504c255a708fb60e57ff9dd1feb30e53fde62ea379f9aeeb6ed6da6cdcb7a7e0",
+          "dataloader_generators": {
+            "test": 992306871780870882,
+            "train": 3186614126182325395
+          },
+          "protocol": "paired-backbone-loader-v1",
+          "public_backbone_seed": 901,
+          "router_seed": 2684617266285266071,
+          "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+          "topology_pairs_are_parameter_matched": false
+        },
+        "family": "linearno_loop",
+        "launcher_sources": {
+          "entry.py": "097d7a7128b360c7e8c8e6a7691ab81a3b4767912d8e3da48711525d4a3ee41e",
+          "launch.py": "4288327ae8364276b6bf4c3aac2b19fa1d8c4b98d30587e08fb2cc24214cc2c4",
+          "recording.py": "ff2dceb5a3acb920bd2809564d589ad6a6cd1965be3d717096d52c877a15ed1d"
+        },
+        "members": {
+          "member_000": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.lb_boundaries.0",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.lb_output",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 3878,
+            "dataloader_generator_seeds": {
+              "test": 992306871780870882,
+              "train": 3186614126182325395
+            },
+            "initial_state_sha256": "eb66c9edef19f5a7753901f787a305e1bbd41b4a9566a16202eb227f88cf3f4f",
+            "initialization_seed": 901,
+            "observation": "first_forward_verified",
+            "parameters": 3910,
+            "public_backbone_initial_sha256": "950ae0c9ca3e823db189892ba9f11b383ef340a0a65adff64602640c72931e9d",
+            "python_numpy_torch_seed": 901,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 32
+          },
+          "member_001": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.lb_boundaries.0",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.lb_output",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 3878,
+            "dataloader_generator_seeds": {
+              "test": 992306871780870882,
+              "train": 3186614126182325395
+            },
+            "initial_state_sha256": "cbba01f9c6ca5de5579bea2505d26d93a68b5d3d2ba396377e7f46f891732c1c",
+            "initialization_seed": 390416693996883703,
+            "observation": "first_forward_verified",
+            "parameters": 3910,
+            "public_backbone_initial_sha256": "1ad5125f882f528daeeeb56d8ef6e5b2cc38294648e5d9f668c005be9f340e04",
+            "python_numpy_torch_seed": 901,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 32
+          }
+        },
+        "profile": "paper_table8_on_release_model",
+        "residual_mode": "lb_attnres_1_over_r",
+        "resolved_rank": 4,
+        "schema_version": 1,
+        "selection_policy": "predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection",
+        "task": "airfrans",
+        "topology": "p1_c3_r2_s1",
+        "unique_depth": 5
+      },
+      "batches": [
+        [
+          0,
+          "f528ce2e27aa3abf6db64c0a3675e9fd803c03d5da28c17899ffdeb746b8ac86"
+        ],
+        [
+          0,
+          "28e81e246a1f87e2c0c7a20c2835fcd2eb156e432add0737788370f813309aea"
+        ],
+        [
+          0,
+          "26a49f71fae32b3f7abc0528996d733c9f00938c33489c4564f83caf3fcddd81"
+        ],
+        [
+          0,
+          "34443e8b588f9ef7b25954d91fd0bbe9aaa864971f34fc2aedd691996a27badb"
+        ],
+        [
+          0,
+          "5c9ec52ea7e07a7e59037ea873c05450b2a59b94caba7171e39676b5743c57cb"
+        ],
+        [
+          0,
+          "ea4facbcd36dbda29ef289ba3e3276f314c8c208222c7aa008e498f56882aaa7"
+        ],
+        [
+          0,
+          "bc585cebac9b8ed61e3eefd326e3ffeb0994a317988d718e487d9db1ac6b6256"
+        ],
+        [
+          0,
+          "f604be3c24883c6e0e8a9dd261965f735919bf4ad5d85244c05048868911f5ce"
+        ],
+        [
+          0,
+          "3eb168ecb41b73ce055d3dea23aa4a08cdcec1783fdf2efc35b3359a5fbb9447"
+        ],
+        [
+          0,
+          "b51913d005b272189c6ba4e12c700207bac13353cb734182bf0f5c315ba9960a"
+        ],
+        [
+          0,
+          "630bd7db8a339058d977c37fb3a251207d73f43fdb4ceac548582ea312646bdb"
+        ],
+        [
+          0,
+          "885ac28d66fa5166abe566a4f5978933ac3ae243636ba902847c62991f81e08b"
+        ],
+        [
+          0,
+          "7d15e2b41c9296900117faa64ec3ab40f5827e72501ca3c6b839e50dbdf8f563"
+        ],
+        [
+          0,
+          "2a81beaf0e492d4fa9b76c0e83475caf35db658a7bdfea0fee3b66cd01efbe37"
+        ],
+        [
+          0,
+          "292a7b1552fe2375cee95b7ec4ecfa346be738a4b88ae760f276c1aabac841ef"
+        ],
+        [
+          0,
+          "4d9479732304a2d0f609cab5ee5b512ab5ca38cdce648bbdabb0353a50cff31b"
+        ],
+        [
+          0,
+          "579c536b921731bd3fb4733e335d2521b9402c4d7e03bbd0a7875581d65d0e0c"
+        ],
+        [
+          0,
+          "d8b5e557a8d180e0d74c6868fb6dd3efea9d1258207fb61f50f80e7e8b9bfa87"
+        ],
+        [
+          0,
+          "406b0a8c2f08b5035b8585812b4ba336f1d01dd4697528303dc8ac06f0ea5f38"
+        ],
+        [
+          0,
+          "ac841ae07f5128f3b9e71da44fd5a30ed4b08e08806987dfbda29afd9dc44b7f"
+        ],
+        [
+          0,
+          "f96de3b864e57583c1e196f0ca12f118555de0eb421e97bd5750b2c184756845"
+        ],
+        [
+          0,
+          "16057ba94e791ce53545f46c6461009fd9cee51f476f6cf5c331ffccb812dd7f"
+        ],
+        [
+          0,
+          "b08f81842ddd92ad7f4d5f18c79398bb00d0bc4841593a2e59cd32554f1c9583"
+        ],
+        [
+          0,
+          "7a30934f27bea88ddee362b6614a2a2b6d3fc1154c1c91b8f0bbb5460d478e8c"
+        ],
+        [
+          0,
+          "df943c43c2c76065f1e825c78d4bacfb70fcbd5e92d36fb75baabed399d27270"
+        ],
+        [
+          0,
+          "98b3c25ecf16821e2a56917abcf0f528a248525599a797248eeb55cdc93068b4"
+        ],
+        [
+          0,
+          "754a3595a177178571a6d342696c3a19616a6d9fbc6e3a56caa4b9799619ddc9"
+        ],
+        [
+          1,
+          "7dce4d371485df51a6f919b75d132503d259160218e35d0a5f89185df608bc9c"
+        ],
+        [
+          1,
+          "dcad5221862ba9533c1608845fd3f88031b7d678ac17ce5012b995b1ef74f3f3"
+        ],
+        [
+          1,
+          "20f894a118c967d87281ba817f2ee8eeb871011537b452e9c50eebc9c00d01f0"
+        ],
+        [
+          1,
+          "679f6f165fb55d96e51ea13b6180a13274c60b8d980ef9c4d9a0ba038071395f"
+        ],
+        [
+          1,
+          "bbd8e3107098d740d7bcfce3572ee9d5d0af7bc554e8eb06867c02e91286a4d3"
+        ],
+        [
+          1,
+          "bcf11b6d9ba1792c7afcb090e4ed156f0632f85f1918d2d5dcc6c1463020adc3"
+        ],
+        [
+          1,
+          "2af01f039974c279fc4050a35cc39aa1229483684f7d12e2ea8877e71e25bc9c"
+        ],
+        [
+          1,
+          "f0b02be012d7d24ae288f7078c13c93f88e092117071c04c202a411b725d8e49"
+        ],
+        [
+          1,
+          "c5825dd209ada1c8f7e964be4be43570d18f7aec6a3dcc955e762e0032352d49"
+        ],
+        [
+          1,
+          "0558975379ec59c589540e86f0201834d2cbcd871445a8322088828786dbec8e"
+        ],
+        [
+          1,
+          "cd50f00de1dbdab62d1770b4c6711a3a626ff918cc6b4fa38cd7b5185e0eb646"
+        ],
+        [
+          1,
+          "5246625493494b556c10b90a290c43ad70f902f431e10ee1c14ac7d191f80938"
+        ],
+        [
+          1,
+          "232d45f2dd89b393ca7178d0a2d6332dfff9b3e7855d02838ff6fef884baf386"
+        ],
+        [
+          1,
+          "0f168faa6a7678c6b7d78d8542610031c528ae4618ff389cfc48acda2672c254"
+        ],
+        [
+          1,
+          "886ff827e426c4ac086834ab3084165af1a74bcd1f49d4916d84afd8f30bb23d"
+        ],
+        [
+          1,
+          "e5de1391d793efc67774f8bde87699315fd92e625b4ae9ff69ff6b01b652aead"
+        ],
+        [
+          1,
+          "48dbec3bf410948ec0be1e19a6782651c41efdab24de6ff642e555a73f0a1570"
+        ],
+        [
+          1,
+          "8d68c1852a60be4d767923acda81e8a860b5abadceac2c2ee7a10c2cb5b8d86f"
+        ],
+        [
+          1,
+          "712635987465f6eddcf119ec3417d1d32f8b3f844cd2a9d31d28ed4a8f7c25dc"
+        ],
+        [
+          1,
+          "343bcab601071e7a1339be3231cd1d216dd986c5c381762161da873536a029c8"
+        ],
+        [
+          1,
+          "2fa23c44b8a3fc23c82988806983bcd5f6ada507d03a921bdf43a8182d8967c2"
+        ],
+        [
+          1,
+          "887dda4f0e3fbb5f6d9a92acba77193287f7ecf35d79a987605b7775cfb95b35"
+        ],
+        [
+          1,
+          "ee0c2c7a8b1a2321417389165721c46f417792d7a920c4b5ccc0dbbe3c872bc7"
+        ],
+        [
+          1,
+          "7ede2257d05aa0cb3bf1e7c65b20e59ae82ef5e838d64f75efda64e4f88928e7"
+        ],
+        [
+          1,
+          "6b7c49df7a4864907271f64db0cc47aa114f2417389ff2c31e7b84a956f35c4f"
+        ],
+        [
+          1,
+          "848b25722fb18ff647f98b13187c7616c321be455a84562db29dbb00a6091032"
+        ],
+        [
+          1,
+          "0262e4146be064a9fac8d639e1e9a2f4e9eb8417fb5790b2eb28b0a31e552413"
+        ]
+      ]
+    },
+    {
+      "task": "car",
+      "mode": "sr_1_over_r",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll8-native-a_f_07vq/car/sr_1_over_r/car__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__sr_1_over_r__M4__seed19__cfg76d840c95426",
+      "exact_LL7": [
+        "state_hash",
+        "resume_hash",
+        "prediction",
+        "batches"
+      ],
+      "manifest": {
+        "config_hash": "76d840c9542688c3d1ced86225181b9c87cd0f45c3f26232c904ef6f8b6edf67",
+        "executed_depth": 8,
+        "expected_call_schedule": [
+          "loop.prefix.0.operator",
+          "loop.prefix.0.mlp",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.suffix.0.operator",
+          "loop.suffix.0.mlp",
+          "loop.suffix.0.final_norm",
+          "loop.suffix.0.head"
+        ],
+        "fair_comparison": {
+          "backbone_pair_id": "f79ac38043d3b8aac97e8204b74e627cdecd90ed33e3d3e8faea3fded4ac8043",
+          "dataloader_generators": {
+            "test": 793656069945431597,
+            "train": 6167414646405809459
+          },
+          "protocol": "paired-backbone-loader-v1",
+          "public_backbone_seed": 19,
+          "router_seed": 544798322246300597,
+          "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+          "topology_pairs_are_parameter_matched": false
+        },
+        "family": "linearno_loop",
+        "launcher_sources": {
+          "entry.py": "097d7a7128b360c7e8c8e6a7691ab81a3b4767912d8e3da48711525d4a3ee41e",
+          "launch.py": "4288327ae8364276b6bf4c3aac2b19fa1d8c4b98d30587e08fb2cc24214cc2c4",
+          "recording.py": "ff2dceb5a3acb920bd2809564d589ad6a6cd1965be3d717096d52c877a15ed1d"
+        },
+        "members": {
+          "member_000": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 3224,
+            "dataloader_generator_seeds": {
+              "test": 793656069945431597,
+              "train": 6167414646405809459
+            },
+            "initial_state_sha256": "3e3292644ea40ed2698fd111741dd37b2b04ba5eea4f042b7dc9a852557083c7",
+            "initialization_seed": 19,
+            "observation": "first_forward_verified",
+            "parameters": 3224,
+            "public_backbone_initial_sha256": "3e3292644ea40ed2698fd111741dd37b2b04ba5eea4f042b7dc9a852557083c7",
+            "python_numpy_torch_seed": 19,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 0
+          }
+        },
+        "profile": "paper_table8_on_release_model",
+        "residual_mode": "sr_1_over_r",
+        "resolved_rank": 4,
+        "schema_version": 1,
+        "selection_policy": "predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection",
+        "task": "car",
+        "topology": "p1_c3_r2_s1",
+        "unique_depth": 5
+      },
+      "batches": [
+        "f3999bdb39e95b922034940231b0eaf67e7c4352f37255e1bbd8dcaf98b95557",
+        "750983882aea6aad68df452b9dbbd103fb15e74e2f6abb625f1c782975bd956a",
+        "e843bf7b1b19c37fa3f240f352867bbc406946f352f89bf21f70889f937f4bd3",
+        "750983882aea6aad68df452b9dbbd103fb15e74e2f6abb625f1c782975bd956a",
+        "e843bf7b1b19c37fa3f240f352867bbc406946f352f89bf21f70889f937f4bd3",
+        "5ac4d28ae6ca0984462471275ba068ed5e18e801ea875837cb843a0216a1d5de",
+        "e843bf7b1b19c37fa3f240f352867bbc406946f352f89bf21f70889f937f4bd3",
+        "750983882aea6aad68df452b9dbbd103fb15e74e2f6abb625f1c782975bd956a",
+        "541139b75b5435deca7f3cde7f5bd69da4c15ab2147cdcb316a94b53e2926817"
+      ]
+    },
+    {
+      "task": "car",
+      "mode": "rb_attnres",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll8-native-a_f_07vq/car/rb_attnres/car__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__rb_attnres__M4__seed19__cfg23f202dc8f18",
+      "exact_LL7": [
+        "state_hash",
+        "resume_hash",
+        "prediction",
+        "batches"
+      ],
+      "manifest": {
+        "config_hash": "23f202dc8f186ff26a3904bbbc4f71572d6a526efd9abd29073d4e1ed4bbe69f",
+        "executed_depth": 8,
+        "expected_call_schedule": [
+          "loop.prefix.0.operator",
+          "loop.prefix.0.mlp",
+          "loop.rb_receivers.0.0",
+          "loop.core.0.operator",
+          "loop.rb_receivers.0.1",
+          "loop.core.0.mlp",
+          "loop.rb_receivers.0.2",
+          "loop.core.1.operator",
+          "loop.rb_receivers.0.3",
+          "loop.core.1.mlp",
+          "loop.rb_receivers.0.4",
+          "loop.core.2.operator",
+          "loop.rb_receivers.0.5",
+          "loop.core.2.mlp",
+          "loop.rb_receivers.1.0",
+          "loop.core.0.operator",
+          "loop.rb_receivers.1.1",
+          "loop.core.0.mlp",
+          "loop.rb_receivers.1.2",
+          "loop.core.1.operator",
+          "loop.rb_receivers.1.3",
+          "loop.core.1.mlp",
+          "loop.rb_receivers.1.4",
+          "loop.core.2.operator",
+          "loop.rb_receivers.1.5",
+          "loop.core.2.mlp",
+          "loop.rb_output",
+          "loop.suffix.0.operator",
+          "loop.suffix.0.mlp",
+          "loop.suffix.0.final_norm",
+          "loop.suffix.0.head"
+        ],
+        "fair_comparison": {
+          "backbone_pair_id": "f79ac38043d3b8aac97e8204b74e627cdecd90ed33e3d3e8faea3fded4ac8043",
+          "dataloader_generators": {
+            "test": 793656069945431597,
+            "train": 6167414646405809459
+          },
+          "protocol": "paired-backbone-loader-v1",
+          "public_backbone_seed": 19,
+          "router_seed": 544798322246300597,
+          "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+          "topology_pairs_are_parameter_matched": false
+        },
+        "family": "linearno_loop",
+        "launcher_sources": {
+          "entry.py": "097d7a7128b360c7e8c8e6a7691ab81a3b4767912d8e3da48711525d4a3ee41e",
+          "launch.py": "4288327ae8364276b6bf4c3aac2b19fa1d8c4b98d30587e08fb2cc24214cc2c4",
+          "recording.py": "ff2dceb5a3acb920bd2809564d589ad6a6cd1965be3d717096d52c877a15ed1d"
+        },
+        "members": {
+          "member_000": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.rb_receivers.0.0",
+              "loop.core.0.operator",
+              "loop.rb_receivers.0.1",
+              "loop.core.0.mlp",
+              "loop.rb_receivers.0.2",
+              "loop.core.1.operator",
+              "loop.rb_receivers.0.3",
+              "loop.core.1.mlp",
+              "loop.rb_receivers.0.4",
+              "loop.core.2.operator",
+              "loop.rb_receivers.0.5",
+              "loop.core.2.mlp",
+              "loop.rb_receivers.1.0",
+              "loop.core.0.operator",
+              "loop.rb_receivers.1.1",
+              "loop.core.0.mlp",
+              "loop.rb_receivers.1.2",
+              "loop.core.1.operator",
+              "loop.rb_receivers.1.3",
+              "loop.core.1.mlp",
+              "loop.rb_receivers.1.4",
+              "loop.core.2.operator",
+              "loop.rb_receivers.1.5",
+              "loop.core.2.mlp",
+              "loop.rb_output",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 3224,
+            "dataloader_generator_seeds": {
+              "test": 793656069945431597,
+              "train": 6167414646405809459
+            },
+            "initial_state_sha256": "87b53d1e89247407b16ea3fd1de76217e6fb33ec7bea04c6a5d206add8ca0529",
+            "initialization_seed": 19,
+            "observation": "first_forward_verified",
+            "parameters": 3432,
+            "public_backbone_initial_sha256": "3e3292644ea40ed2698fd111741dd37b2b04ba5eea4f042b7dc9a852557083c7",
+            "python_numpy_torch_seed": 19,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 208
+          }
+        },
+        "profile": "paper_table8_on_release_model",
+        "residual_mode": "rb_attnres",
+        "resolved_rank": 4,
+        "schema_version": 1,
+        "selection_policy": "predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection",
+        "task": "car",
+        "topology": "p1_c3_r2_s1",
+        "unique_depth": 5
+      },
+      "batches": [
+        "f3999bdb39e95b922034940231b0eaf67e7c4352f37255e1bbd8dcaf98b95557",
+        "750983882aea6aad68df452b9dbbd103fb15e74e2f6abb625f1c782975bd956a",
+        "e843bf7b1b19c37fa3f240f352867bbc406946f352f89bf21f70889f937f4bd3",
+        "750983882aea6aad68df452b9dbbd103fb15e74e2f6abb625f1c782975bd956a",
+        "e843bf7b1b19c37fa3f240f352867bbc406946f352f89bf21f70889f937f4bd3",
+        "5ac4d28ae6ca0984462471275ba068ed5e18e801ea875837cb843a0216a1d5de",
+        "e843bf7b1b19c37fa3f240f352867bbc406946f352f89bf21f70889f937f4bd3",
+        "750983882aea6aad68df452b9dbbd103fb15e74e2f6abb625f1c782975bd956a",
+        "541139b75b5435deca7f3cde7f5bd69da4c15ab2147cdcb316a94b53e2926817"
+      ]
+    },
+    {
+      "task": "car",
+      "mode": "lb_attnres_1_over_r",
+      "artifact": "/home/hwz/CDLNO-artifacts/loop-ll8-native-a_f_07vq/car/lb_attnres_1_over_r/car__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__lb_attnres_1_over_r__M4__seed19__cfg26545aa1dc53",
+      "exact_LL7": [
+        "state_hash",
+        "resume_hash",
+        "prediction",
+        "batches"
+      ],
+      "manifest": {
+        "config_hash": "26545aa1dc53c67f2eafc50377815688b69a765dec497e376ef78aa9c80a9e51",
+        "executed_depth": 8,
+        "expected_call_schedule": [
+          "loop.prefix.0.operator",
+          "loop.prefix.0.mlp",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.lb_boundaries.0",
+          "loop.core.0.operator",
+          "loop.core.0.mlp",
+          "loop.core.1.operator",
+          "loop.core.1.mlp",
+          "loop.core.2.operator",
+          "loop.core.2.mlp",
+          "loop.lb_output",
+          "loop.suffix.0.operator",
+          "loop.suffix.0.mlp",
+          "loop.suffix.0.final_norm",
+          "loop.suffix.0.head"
+        ],
+        "fair_comparison": {
+          "backbone_pair_id": "f79ac38043d3b8aac97e8204b74e627cdecd90ed33e3d3e8faea3fded4ac8043",
+          "dataloader_generators": {
+            "test": 793656069945431597,
+            "train": 6167414646405809459
+          },
+          "protocol": "paired-backbone-loader-v1",
+          "public_backbone_seed": 19,
+          "router_seed": 544798322246300597,
+          "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+          "topology_pairs_are_parameter_matched": false
+        },
+        "family": "linearno_loop",
+        "launcher_sources": {
+          "entry.py": "097d7a7128b360c7e8c8e6a7691ab81a3b4767912d8e3da48711525d4a3ee41e",
+          "launch.py": "4288327ae8364276b6bf4c3aac2b19fa1d8c4b98d30587e08fb2cc24214cc2c4",
+          "recording.py": "ff2dceb5a3acb920bd2809564d589ad6a6cd1965be3d717096d52c877a15ed1d"
+        },
+        "members": {
+          "member_000": {
+            "actual_call_schedule": [
+              "loop.prefix.0.operator",
+              "loop.prefix.0.mlp",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.lb_boundaries.0",
+              "loop.core.0.operator",
+              "loop.core.0.mlp",
+              "loop.core.1.operator",
+              "loop.core.1.mlp",
+              "loop.core.2.operator",
+              "loop.core.2.mlp",
+              "loop.lb_output",
+              "loop.suffix.0.operator",
+              "loop.suffix.0.mlp",
+              "loop.suffix.0.final_norm",
+              "loop.suffix.0.head"
+            ],
+            "backbone_parameters": 3224,
+            "dataloader_generator_seeds": {
+              "test": 793656069945431597,
+              "train": 6167414646405809459
+            },
+            "initial_state_sha256": "644725b8aa120beb2de2cea050175656a5095cead2bc1d16418a6524284d15fe",
+            "initialization_seed": 19,
+            "observation": "first_forward_verified",
+            "parameters": 3256,
+            "public_backbone_initial_sha256": "3e3292644ea40ed2698fd111741dd37b2b04ba5eea4f042b7dc9a852557083c7",
+            "python_numpy_torch_seed": 19,
+            "router_initialization": "query=zeros; norm=ones; consumes no RNG",
+            "router_parameters": 32
+          }
+        },
+        "profile": "paper_table8_on_release_model",
+        "residual_mode": "lb_attnres_1_over_r",
+        "resolved_rank": 4,
+        "schema_version": 1,
+        "selection_policy": "predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection",
+        "task": "car",
+        "topology": "p1_c3_r2_s1",
+        "unique_depth": 5
+      },
+      "batches": [
+        "f3999bdb39e95b922034940231b0eaf67e7c4352f37255e1bbd8dcaf98b95557",
+        "750983882aea6aad68df452b9dbbd103fb15e74e2f6abb625f1c782975bd956a",
+        "e843bf7b1b19c37fa3f240f352867bbc406946f352f89bf21f70889f937f4bd3",
+        "750983882aea6aad68df452b9dbbd103fb15e74e2f6abb625f1c782975bd956a",
+        "e843bf7b1b19c37fa3f240f352867bbc406946f352f89bf21f70889f937f4bd3",
+        "5ac4d28ae6ca0984462471275ba068ed5e18e801ea875837cb843a0216a1d5de",
+        "e843bf7b1b19c37fa3f240f352867bbc406946f352f89bf21f70889f937f4bd3",
+        "750983882aea6aad68df452b9dbbd103fb15e74e2f6abb625f1c782975bd956a",
+        "541139b75b5435deca7f3cde7f5bd69da4c15ab2147cdcb316a94b53e2926817"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "task": "darcy",
+  "action": "train",
+  "shape": [
+    1,
+    7225,
+    1
+  ],
+  "prediction_hash": "ccedbdf9d88688e45eb76132e8ea94a9948da9fc635b76e968cd90d40062dde9",
+  "batches": [
+    "95758adff6def655c134863d8a5bd0f7717d8416ddc35bab71a460a4c5ad1772",
+    "5872fe189890217eafaf190ee29dd0e04419800ec3ce3b828e4622a47b3c7bac",
+    "1fb7371d45ef7f5159f6e6a8b5a0c2a2e38e67db4fda8df29479cfd5d5bef4d3",
+    "b3d6e2420ab7736e87942682316a9aca3c9915460ffba30f20511e84dd7ff16e",
+    "9a9d99c983bf9f1b2ef32047cd58f37b1cc18c452a366295d0536719c9bcbdc0",
+    "4006ea1d272793aeca93916273f068d7dd54d5a963af1c6273529e2b82f160a0"
+  ],
+  "normalizer_refit": null,
+  "immutable_metadata": true,
+  "completed_epoch": 3,
+  "source": "real main AST",
+  "reductions": "mean sample-wise flattened ratios per batch; no epsilon",
+  "preset": "p1_c3_r2_s1",
+  "mode": "lb_attnres_1_over_r",
+  "public_dispatch_used": true,
+  "metadata_recovers_model": false,
+  "forward_local_checks": 15,
+  "expected_source_counts": [
+    2,
+    3
+  ],
+  "each_forward_recomputed_attention": 8,
+  "recorded_artifacts": []
+}

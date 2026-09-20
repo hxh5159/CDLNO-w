@@ -1,0 +1,883 @@
+--- /dev/null
++++ tools/linearno_loop_diagnostics.py
+@@ -0,0 +1,121 @@
++"""Optional, external loop observations. No production model or old monitor edits.
++
++Use ``with LoopDiagnostics(model, enabled=True) as observation`` explicitly.
++Default disabled attaches no hooks, allocates no tensors and performs no CPU
++synchronization. Enabled mode intentionally synchronizes for JSON summaries;
++do NOT include it in performance measurements. Only detached observation
++copies survive a sublayer, all are cleared on successful/exceptional forward.
++No Q/K tensor, point history, or autograd graph is saved in returned records.
++"""
++import math
++import torch
++
++
++def stats(value):
++    v=value.detach().float()
++    return dict(norm=float(v.norm()),rms=float(v.square().mean().sqrt()),
++                nan=int(torch.isnan(v).sum()),inf=int(torch.isinf(v).sum()))
++
++
++class LoopDiagnostics:
++    def __init__(self,model,*,enabled=False):
++        if type(enabled) is not bool:raise TypeError('enabled must be bool')
++        self.model=model;self.enabled=enabled;self.records=[];self.handles=[];self._reset()
++    def _reset(self):
++        self.pending={};self.previous_update=None;self.partial=None;self.visits=0;self.current=None
++    def __enter__(self):
++        if not self.enabled:return self
++        if self.handles:raise RuntimeError('diagnostic context cannot be entered twice')
++        if getattr(self.model,'family',None)!='linearno_loop':raise ValueError('requires linearno_loop model')
++        loop=self.model.loop
++        def start(m,a):
++            self._reset();self.current=dict(index=len(self.records),residual_mode=loop.residual_mode,
++                visits=[],routers=[],routing=[],round_deltas=[],completed=False)
++        def finish(m,a,y):
++            if self.current is not None:
++                self.current['completed']=y is not None
++                if y is not None:self.current['output']=stats(y)
++                self.records.append(self.current)
++            self._reset()
++        self.handles.extend([self.model.register_forward_pre_hook(start),self.model.register_forward_hook(finish,always_call=True)])
++        for index,physical in enumerate(loop.core):
++            b=physical.block
++            def entry(m,a,i=index):
++                r=self.visits//loop.recurrent_core_blocks
++                if i==0:self.partial=None
++                self.pending=dict(round=r,physical_core_index=i,entry=a[0].detach(),branch_outputs=[])
++            def raw(m,a,y,branch):
++                if not self.pending:return
++                self.pending['branch_outputs'].append(y.detach())
++                if branch=='MLP':
++                    item=self.pending;first,second=item['branch_outputs']
++                    if loop.residual_mode=='rb_attnres':
++                        update=first+second
++                        self.partial=update if self.partial is None else self.partial+update
++                        exit_state=self.partial
++                        semantics='RB raw partial increment=u_operator+u_MLP; exit is round partial, not h+u'
++                    else:
++                        update=(first+second)/loop.loop_repeats
++                        # ln_2 input is the actual state after operator residual.
++                        exit_state=item['mlp_input']+second/loop.loop_repeats
++                        semantics='SR/LB actual exit-entry; scaled branches'
++                        update=exit_state-item['entry']
++                    prev=self.previous_update
++                    cosine=None if prev is None else float(torch.nn.functional.cosine_similarity(prev.flatten(),update.flatten(),dim=0))
++                    row={k:item[k] for k in ('round','physical_core_index')}
++                    row.update(logical_visit=self.visits,entry=stats(item['entry']),exit=stats(exit_state),
++                        update=stats(update),adjacent_update_cosine=cosine,update_semantics=semantics,
++                        operator_raw=stats(first),mlp_raw=stats(second))
++                    self.current['visits'].append(row);self.previous_update=update;self.visits+=1;self.pending={}
++            def mlp_entry(m,a):self.pending['mlp_input']=a[0].detach()
++            self.handles.extend([b.ln_1.register_forward_pre_hook(entry),
++                b.Attn.register_forward_hook(lambda m,a,y:raw(m,a,y,'operator')),
++                b.ln_2.register_forward_pre_hook(mlp_entry),
++                b.mlp.register_forward_hook(lambda m,a,y:raw(m,a,y,'MLP'))])
++            for qk,projection in (('Q',b.Attn.to_q),('K',b.Attn.to_k)):
++                def route(m,a,y,kind=qk,attention=b.Attn,i=index):
++                    if self.current is None:return
++                    logits=y.detach()
++                    with torch.no_grad():
++                        if attention.variant in ('temp','conv_temp'):
++                            logits=logits/getattr(attention,'temperature_'+kind.lower()).detach().clamp(.01,1.)
++                        elif attention.variant=='shapenet':
++                            logits=logits/getattr(attention,'tempreature_'+kind.lower()).detach().clamp(.1,2.)
++                        axis=-1 if kind=='Q' else -2;p=logits.float().softmax(axis)
++                        entropy=-(p*p.clamp_min(torch.finfo(p.dtype).tiny).log()).sum(axis)
++                        row=dict(round=self.visits//loop.recurrent_core_blocks,physical_core_index=i,sublayer='operator',
++                            kind=kind,axis=axis,shape=list(p.shape),mean_entropy=float(entropy.mean()),
++                            max_sum_error=float((p.sum(axis)-1).abs().max()),**stats(p))
++                    self.current['routing'].append(row)
++                self.handles.append(projection.register_forward_hook(route))
++        from cdlno.linearno_loop.attnres import PointDepthAttnRes
++        for name,receiver in loop.named_modules():
++            if not isinstance(receiver,PointDepthAttnRes):continue
++            def router(m,a,y,name=name):
++                sources=a[0]
++                with torch.no_grad():
++                    weights=m.source_weights(tuple(x.detach() for x in sources)).float()
++                    e=-(weights*weights.clamp_min(torch.finfo(weights.dtype).tiny).log()).sum(0)
++                    row=dict(receiver=name,sources=len(sources),source_weight_mean=weights.mean((1,2)).tolist(),
++                        source_weight_min=weights.amin((1,2)).tolist(),source_weight_max=weights.amax((1,2)).tolist(),
++                        mean_entropy=float(e.mean()),source_states=[stats(x) for x in sources],output=stats(y))
++                    if name.startswith('rb_receivers.'):
++                        _,r,s=name.split('.');row.update(round=int(r),physical_core_index=int(s)//2,sublayer='operator' if int(s)%2==0 else 'MLP')
++                    else:row.update(round=len(sources)-2,physical_core_index=None,sublayer='output' if 'output' in name else 'boundary')
++                    self.current['routers'].append(row)
++                    if name=='lb_output':self.current['round_deltas']=[stats(x) for x in sources[1:]]
++            self.handles.append(receiver.register_forward_hook(router))
++        return self
++    def gradients(self):
++        """Call explicitly after backward; no parameter hook or gradient mutation."""
++        if not self.enabled:return None
++        result=[]
++        for index,block in enumerate(self.model.loop.core):
++            grads=[p.grad.detach().float() for p in block.parameters() if p.grad is not None]
++            result.append(dict(physical_core_index=index,gradient_norm=math.sqrt(sum(float(g.square().sum()) for g in grads)),
++                nan=sum(int(torch.isnan(g).sum()) for g in grads),inf=sum(int(torch.isinf(g).sum()) for g in grads),
++                missing_gradients=[n for n,p in block.named_parameters() if p.grad is None]))
++        return result
++    def __exit__(self,*exc):
++        for handle in self.handles:handle.remove()
++        self.handles=[];self._reset()
+--- /dev/null
++++ tools/linearno_loop_performance.py
+@@ -0,0 +1,241 @@
++#!/usr/bin/env python3
++"""Bounded synthetic LL9 audit. Never load task data, checkpoints or benchmark CLI.
++
++Stages counts/matrix/cpu/cuda are independent. --diagnostics explicitly enables
++external observations only for matrix; timing always has all hooks OFF.
++"""
++import argparse
++import hashlib
++import json
++import math
++import os
++from pathlib import Path
++import platform
++import statistics
++import sys
++import tempfile
++import time
++import traceback
++
++ROOT=Path(__file__).resolve().parents[1]
++if str(ROOT) not in sys.path:sys.path.insert(0,str(ROOT))
++import torch
++from cdlno.linearno_loop.construction import build_from_config
++from linearno_loop.config import validate_config
++from tools.linearno_loop_support import TASKS,PRESETS,MODES,configuration,inputs,point_count
++from tools.linearno_loop_accounting import analytic,measured_parameters,audit
++from tools.linearno_loop_diagnostics import LoopDiagnostics
++
++
++def write(path,value):
++    path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)
++    path.write_text(json.dumps(value,indent=2,allow_nan=False)+'\n')
++
++
++def environment():
++    cpu=next((line.split(':',1)[1].strip() for line in Path('/proc/cpuinfo').read_text().splitlines() if line.startswith('model name')),platform.processor())
++    return dict(python=platform.python_version(),torch=str(torch.__version__),cuda_build=torch.version.cuda,
++        platform=platform.platform(),cpu=cpu,cpu_affinity=sorted(os.sched_getaffinity(0)),
++        threads=torch.get_num_threads(),interop_threads=torch.get_num_interop_threads(),
++        seed=17,input_seed=902,compile=False,tf32_matmul=torch.backends.cuda.matmul.allow_tf32,
++        tf32_cudnn=torch.backends.cudnn.allow_tf32,cudnn_benchmark=torch.backends.cudnn.benchmark,
++        cuda_visible_devices=os.environ.get('CUDA_VISIBLE_DEVICES','<unset>'))
++
++
++def common_hash(model):
++    digest=hashlib.sha256()
++    for name,value in model.state_dict().items():
++        if name.startswith(('loop.rb_','loop.lb_')):continue
++        digest.update(name.encode());digest.update(str(tuple(value.shape)).encode());digest.update(value.detach().cpu().contiguous().numpy().tobytes())
++    return digest.hexdigest()
++
++
++def count_matrix(output):
++    rows=[]
++    for task in TASKS:
++        for preset in PRESETS:
++            for multiplier in (1,2):
++                hashes=[]
++                for mode in MODES:
++                    c=configuration(task,preset,mode,multiplier=multiplier);m=build_from_config(c)
++                    expected=analytic(c);actual=measured_parameters(m)
++                    assert actual==expected['parameter_parts'],(task,preset,mode,actual,expected)
++                    hashes.append(common_hash(m))
++                    rows.append(dict(task=task,preset=preset,mode=mode,rank_multiplier=multiplier,
++                        config=c,analytic=expected,measured_parameter_parts=actual,backbone_sha256=hashes[-1]))
++                    del m
++                assert len(set(hashes))==1
++    write(output,dict(environment=environment(),scope='96 full-profile constructors, canonical N, B1 analytical MACs; no full-width forward',rows=rows))
++    print('counts: 96 full-profile parameter decompositions exact',flush=True)
++
++
++def call_hooks(model):
++    calls=[];head=[];handles=[]
++    for group in ('prefix','core','suffix'):
++        for index,physical in enumerate(getattr(model.loop,group)):
++            for branch,module in (('operator',physical.block.Attn),('MLP',physical.block.mlp)):
++                handles.append(module.register_forward_hook(lambda m,a,y,g=group,i=index,b=branch:calls.append([g,i,b])))
++    handles.append(model.loop.suffix[-1].block.mlp2.register_forward_hook(lambda *args:head.append(1)))
++    return calls,head,handles
++
++
++def expected_calls(model):
++    loop=model.loop
++    schedule=[('prefix',i) for i in range(loop.prefix_blocks)]
++    schedule += [('core',i) for r in range(loop.loop_repeats) for i in range(loop.recurrent_core_blocks)]
++    schedule += [('suffix',i) for i in range(loop.suffix_blocks)]
++    return [[g,i,b] for g,i in schedule for b in ('operator','MLP')]
++
++
++def synthetic_matrix(output,diagnostics=False):
++    rows=[]
++    with tempfile.TemporaryDirectory(prefix='loop-ll9-state-') as tmp:
++        for task in TASKS:
++            for preset in PRESETS:
++                for mode in MODES:
++                    c=configuration(task,preset,mode,small=True,canonical=True);m=build_from_config(c)
++                    args=inputs(c,canonical=True);B=1 if task in ('airfrans','car') else 2;N=point_count(c)
++                    expected=analytic(c,B=B,N=N);actual=audit(m,args,B=B,N=N)
++                    assert actual['matrix_macs']==expected['executed_matrix_macs']
++                    assert actual['router_contraction_mac_equivalents']==expected['router_contraction_mac_equivalents']
++                    assert not actual['forbidden_attention']
++                    params=list(m.named_parameters(remove_duplicate=False));assert len(params)==len({id(p) for _,p in params})
++                    assert not any('round' in k for k in m.state_dict())
++                    calls,head,handles=call_hooks(m);opt=torch.optim.AdamW(m.parameters(),lr=.001)
++                    with LoopDiagnostics(m,enabled=diagnostics) as observation:
++                        out=m(*args);loss=(out-.31).square().mean();loss.backward()
++                        assert torch.isfinite(out).all()
++                        assert all(torch.isfinite(p.grad).all() for p in m.parameters() if p.grad is not None)
++                        gradients=observation.gradients()
++                    for handle in handles:handle.remove()
++                    assert calls==expected_calls(m);assert head==[1]
++                    opt.step();m.eval()
++                    with torch.no_grad():y=m(*args);y2=m(*args)
++                    torch.testing.assert_close(y,y2,atol=0,rtol=0)
++                    # Metadata read/validation precedes constructing/restoring a NEW object.
++                    # Standalone synthetic state fixture, not a production resume archive.
++                    path=Path(tmp);write(path/'config.json',c)
++                    torch.save(m.state_dict(),path/'weights.pt');torch.save(opt.state_dict(),path/'optimizer.pt')
++                    restored_config=validate_config(json.loads((path/'config.json').read_text()))
++                    restored=build_from_config(restored_config).eval()
++                    restored.load_state_dict(torch.load(path/'weights.pt',weights_only=True),strict=True)
++                    restored_opt=torch.optim.AdamW(restored.parameters(),lr=.001)
++                    from cdlno.linearno_loop.checkpoint import validate_optimizer_state
++                    state=torch.load(path/'optimizer.pt',weights_only=True);validate_optimizer_state(state,restored_opt);restored_opt.load_state_dict(state)
++                    with torch.no_grad():prediction=restored(*args)
++                    torch.testing.assert_close(prediction,y,atol=0,rtol=0)
++                    row=dict(task=task,preset=preset,mode=mode,config=c,B=B,N=N,
++                        parameter_parts=actual.pop('parameter_parts'),costs=actual,call_schedule=calls,head_calls=len(head),
++                        loss=float(loss.detach()),output_shape=list(y.shape),strict_reload_max_abs=float((prediction-y).abs().max()),
++                        repeat_forward_max_abs=float((y-y2).abs().max()),optimizer_restored=True,
++                        unique_parameter_objects=True,no_round_specific_weights=True,
++                        diagnostics=observation.records if diagnostics else None,shared_gradients=gradients)
++                    rows.append(row);write(output,dict(environment=environment(),scope='canonical spatial N with synthetic values; hidden8/heads2/M8, ref3; B2 Standard, single industrial graph; synthetic MSE',rows=rows))
++                    print('matrix:',task,preset,mode,'PASS',flush=True)
++                    del m,restored,opt,restored_opt,out,loss,y,y2,args
++    return rows
++
++
++def summary(samples):
++    return dict(median_ms=statistics.median(samples),p90_ms=sorted(samples)[math.ceil(.9*len(samples))-1],samples_ms=samples)
++
++
++def cpu_measure(output,warmup=3,steps=12):
++    rows=[];env=environment();env['system_load_start']=os.getloadavg()
++    for task in TASKS:
++        for preset in PRESETS:
++            for mode in MODES:
++                c=configuration(task,preset,mode,small=True,canonical=True);m=build_from_config(c);args=inputs(c,canonical=True)
++                assert all(not x._forward_hooks and not x._forward_pre_hooks for x in m.modules())
++                m.eval();forward=[]
++                with torch.no_grad():
++                    for _ in range(warmup):m(*args)
++                    for _ in range(steps):
++                        start=time.perf_counter_ns();m(*args);forward.append((time.perf_counter_ns()-start)/1e6)
++                m.train();optimizer=torch.optim.AdamW(m.parameters(),lr=.001);train=[]
++                def step():
++                    optimizer.zero_grad(set_to_none=True);out=m(*args);loss=(out-.31).square().mean();loss.backward();optimizer.step()
++                for _ in range(warmup):step()
++                for _ in range(steps):
++                    start=time.perf_counter_ns();step();train.append((time.perf_counter_ns()-start)/1e6)
++                rows.append(dict(task=task,preset=preset,mode=mode,config=c,N=point_count(c),B=1 if task in ('airfrans','car') else 2,
++                    forward=summary(forward),forward_backward_adamw=summary(train)))
++                write(output,dict(environment=env,system_load_at_write=os.getloadavg(),warmup=warmup,measured=steps,
++                    scope='CPU FP32 canonical spatial N; d8/h2/M8/ref3 synthetic fixture, not formal-width timing or epoch performance',
++                    timing='perf_counter_ns; synchronous CPU; one intra/inter-op thread; no hooks/diagnostics/profiler; warmed AdamW',rows=rows))
++                print('cpu:',task,preset,mode,'PASS',flush=True)
++    return rows
++
++
++def cuda_smoke(output):
++    env=environment()
++    if not torch.cuda.is_available():
++        write(output,dict(environment=env,status='NOT RUN: CUDA unavailable',rows=[]));return True
++    env.update(device=torch.cuda.get_device_name(0),capability=torch.cuda.get_device_capability(0))
++    rows=[]
++    # Small N and small width only. Each task, mode and preset is exercised.
++    precisions=[('FP32',None),('AMP_FP16',torch.float16)]
++    if torch.cuda.is_bf16_supported():precisions.append(('AMP_BF16',torch.bfloat16))
++    for task in TASKS:
++        for preset in PRESETS:
++            for mode in MODES:
++                for label,dtype in precisions:
++                    c=configuration(task,preset,mode,small=True);m=build_from_config(c).cuda();args=inputs(c,device='cuda')
++                    opt=torch.optim.AdamW(m.parameters(),lr=.001)
++                    scaler=torch.amp.GradScaler('cuda',enabled=dtype==torch.float16,init_scale=256)
++                    def step(*,check=True):
++                        opt.zero_grad(set_to_none=True)
++                        with torch.autocast('cuda',dtype=dtype,enabled=dtype is not None):
++                            out=m(*args);loss=(out.float()-.31).square().mean()
++                        scaler.scale(loss).backward();scaler.unscale_(opt)
++                        if check:
++                            assert torch.isfinite(out).all() and torch.isfinite(loss)
++                            assert all(torch.isfinite(p.grad).all() for p in m.parameters() if p.grad is not None)
++                            before={name:p.detach().clone() for name,p in m.named_parameters() if p.grad is not None}
++                        scaler.step(opt);scaler.update()
++                        if check:
++                            assert any(not torch.equal(before[name],p.detach()) for name,p in m.named_parameters() if name in before),'optimizer step was skipped'
++                        return float(loss.detach())
++                    row=dict(task=task,preset=preset,mode=mode,precision=label,N=point_count(c,False),hidden=8,M=8)
++                    try:
++                        step();torch.cuda.synchronize();opt.zero_grad(set_to_none=True)
++                        torch.cuda.empty_cache();torch.cuda.reset_peak_memory_stats()
++                        baseline=torch.cuda.memory_allocated();loss=step(check=False);torch.cuda.synchronize()
++                        peak_allocated=torch.cuda.max_memory_allocated();peak_reserved=torch.cuda.max_memory_reserved()
++                        # Validate AFTER capturing peaks; clone/isfinite buffers are not measurement work.
++                        assert math.isfinite(loss)
++                        assert all(torch.isfinite(p.grad).all() for p in m.parameters() if p.grad is not None)
++                        assert all(float(state['step'])==2 for state in opt.state.values()),'measured optimizer step skipped'
++                        row.update(status='PASS',finite_forward_gradients=True,optimizer_updated=True,loss=loss,
++                            baseline_allocated_bytes=baseline,peak_allocated_bytes=peak_allocated,
++                            peak_reserved_bytes=peak_reserved,
++                            incremental_peak_allocated_bytes=peak_allocated-baseline,scaler=float(scaler.get_scale()))
++                    except (RuntimeError,TypeError,ValueError,AssertionError) as error:
++                        row.update(status='FAIL',error_type=type(error).__name__,error=str(error),traceback=traceback.format_exc())
++                        # An incompatible precision is reported, never silently retried as FP32.
++                    rows.append(row)
++                    del m,args,opt,scaler;torch.cuda.empty_cache()
++                    write(output,dict(environment=env,status='PARTIAL' if any(r['status']=='FAIL' for r in rows) else 'PASS',
++                        scope='small synthetic FP32/AMP smoke only; no GPU timing or full-width/real training',
++                        peak_protocol='warm up one AdamW step; synchronize, zero_grad, empty_cache, reset_peak_memory_stats; one step with diagnostic/check buffers OFF; synchronize; capture peaks BEFORE finite/state checks; process allocator bytes include model/optimizer/input',rows=rows))
++                print('cuda:',task,preset,mode,[(r['precision'],r['status']) for r in rows[-len(precisions):]],flush=True)
++
++    return not any(row['status']=='FAIL' for row in rows)
++
++def main():
++    p=argparse.ArgumentParser(description=__doc__)
++    p.add_argument('stage',choices=('counts','matrix','cpu','cuda'));p.add_argument('--output',required=True)
++    p.add_argument('--diagnostics',action='store_true');p.add_argument('--warmup',type=int,default=3);p.add_argument('--steps',type=int,default=12)
++    a=p.parse_args()
++    if a.warmup<1 or a.steps<2:p.error('warmup>=1 and steps>=2 required')
++    if a.diagnostics and a.stage!='matrix':p.error('--diagnostics only with matrix; timing/smoke observation OFF')
++    if Path(a.output).exists():p.error('output already exists; choose a fresh path to preserve evidence')
++    torch.set_num_threads(1);torch.set_num_interop_threads(1)
++    torch.backends.cuda.matmul.allow_tf32=False;torch.backends.cudnn.allow_tf32=False;torch.backends.cudnn.benchmark=False
++    torch.manual_seed(17)
++    if a.stage=='counts':count_matrix(a.output)
++    elif a.stage=='matrix':synthetic_matrix(a.output,a.diagnostics)
++    elif a.stage=='cpu':cpu_measure(a.output,a.warmup,a.steps)
++    elif not cuda_smoke(a.output):raise SystemExit(1)
++
++if __name__=='__main__':main()
+--- /dev/null
++++ tools/linearno_loop_accounting.py
+@@ -0,0 +1,149 @@
++"""Independent closed-form counts plus actual module/ATen accounting for LL9.
++
++Dense MAC: one multiplication with accumulation; matrix FLOPs = 2*MAC.
++Scalar, bias, residual, norm, activation, positional distance/sinusoid and
++softmax work is explicitly NOT included in matrix FLOPs. Router contraction
++MAC equivalents are separate, since the implementation uses mul+sum, not mm.
++"""
++from collections import Counter
++from contextlib import contextmanager
++import math
++import torch
++from torch.utils._python_dispatch import TorchDispatchMode
++from torch.utils._pytree import tree_flatten
++
++from .linearno_loop_support import point_count
++
++
++def router_sources(spec):
++    c,r=spec['recurrent_core_blocks'],spec['loop_repeats']
++    mode=spec['residual_mode']
++    if mode=='sr_1_over_r':return []
++    if mode=='lb_attnres_1_over_r':return list(range(2,r+2))
++    return [s for j in range(r) for s in [j+1]+[j+2]*(2*c-1)]+[r+1]
++
++
++def analytic(config,*,B=1,N=None):
++    """Only integer algebra from schema; no model construction/module introspection."""
++    s=config['loop_spec'];m=config['profile_spec']['values']['model'];task=s['task']
++    d,h,M,f=m['hidden'],m['heads'],s['resolved_rank'],m['ffn_ratio'];dh=d//h
++    P,C,R,S=(s[k] for k in ('prefix_blocks','recurrent_core_blocks','loop_repeats','suffix_blocks'))
++    N=point_count(config) if N is None else N
++    if type(B) is not int or type(N) is not int or min(B,N)<1:raise ValueError('B,N must be positive integers')
++    if task in ('airfrans','car') and B!=1:raise ValueError('industrial wrapper is single graph: B=1')
++    conv=m['linearno_variant'] in ('conv','conv_temp');kernel=9 if conv else 1
++    outputs=2 if conv or task=='car' else 1
++    tau=2*h if m['linearno_variant'] in ('temp','conv_temp','shapenet') else h if task=='airfrans' else 0
++    # Shared-across-head Q/K/V weights, in contrast to executed per-head MACs.
++    attention=kernel*d*d+d+2*dh*M+dh*dh+outputs*(d*d+d)+tau
++    ffn=2*f*d*d+(f+1)*d
++    body=attention+4*d+ffn
++    head=2*d+d*m['out_dim']+m['out_dim']
++    pos=m['ref']**2 if m['unified_pos'] else m['space_dim']
++    if task=='airfrans' and m['unified_pos']:pos+=m['space_dim']
++    channels=pos+m['fun_dim']
++    stem=2*d*channels+2*d+2*d*d+d+d
++    if m['time_input']:stem+=2*(d*d+d)
++    receiver_count=len(router_sources(s));router=2*d*receiver_count
++    parts=dict(stem=stem,prefix=P*body,shared_core=C*body,suffix_body=S*body,head=head,router=router)
++    matrices=dict(input_projection=B*N*kernel*d*d,Q_projection=B*N*d*M,K_projection=B*N*d*M,
++                  V_projection=B*N*d*dh,K_transpose_V=B*N*d*M,QC=B*N*d*M,
++                  output_projection=B*N*outputs*d*d,FFN=B*N*2*f*d*d)
++    body_mac=sum(matrices.values());stem_mac=B*N*(2*d*channels+2*d*d+(2*d*d if m['time_input'] else 0))
++    head_mac=B*N*d*m['out_dim']
++    sources=router_sources(s);active=sum(k for k in sources if k>1)
++    return dict(B=B,N=N,hidden=d,heads=h,head_dim=dh,M=M,variant=m['linearno_variant'],
++        unique_depth=P+C+S,executed_depth=P+C*R+S,parameter_parts=parts,parameters=sum(parts.values()),
++        dead_temperature_parameters=(P+C+S)*h if task=='airfrans' else 0,
++        body_matrix_macs=matrices,stem_matrix_macs=stem_mac,head_matrix_macs=head_mac,
++        unique_block_once_matrix_macs=stem_mac+(P+C+S)*body_mac+head_mac,
++        executed_matrix_macs=stem_mac+(P+C*R+S)*body_mac+head_mac,
++        executed_matrix_flops=2*(stem_mac+(P+C*R+S)*body_mac+head_mac),
++        router_receivers=receiver_count,router_sources=sources,
++        router_contraction_mac_equivalents=2*B*N*d*active,
++        router_rms_square_elements=B*N*d*active,
++        matrix_flops_are_total_flops=False)
++
++
++def measured_parameters(model):
++    parts=Counter({k:0 for k in ('stem','prefix','shared_core','suffix_body','head','router')})
++    for name,p in model.named_parameters():
++        if name.startswith(('loop.rb_','loop.lb_')):part='router'
++        elif '.ln_3.' in name or '.mlp2.' in name:part='head'
++        elif name.startswith('loop.prefix.'):part='prefix'
++        elif name.startswith('loop.core.'):part='shared_core'
++        elif name.startswith('loop.suffix.'):part='suffix_body'
++        else:part='stem'
++        parts[part]+=p.numel()
++    return dict(parts)
++
++
++class Ledger(TorchDispatchMode):
++    def __init__(self,scope,attentions,B,N):
++        super().__init__();self.scope=scope;self.attentions=attentions;self.B=B;self.N=N
++        self.macs=Counter();self.inventory={};self.contractions=[];self.softmax=[];self.violations=[]
++        self.attention_bmm=Counter();self.router_contractions=0;self.peak_tensor_elements=0
++    def __torch_dispatch__(self,func,types,args=(),kwargs=None):
++        out=func(*args,**(kwargs or {}));name=str(func)
++        ts=[t for t in tree_flatten(out)[0] if isinstance(t,torch.Tensor)]
++        loc=self.scope[-1] if self.scope else '<wrapper>'
++        entry=self.inventory.setdefault(loc+'::'+name,dict(calls=0,output_elements=0))
++        entry['calls']+=1;entry['output_elements']+=sum(t.numel() for t in ts)
++        self.peak_tensor_elements=max(self.peak_tensor_elements,max((t.numel() for t in ts),default=0))
++        if name in ('aten.mm.default','aten.bmm.default','aten.addmm.default'):
++            lhs,rhs=args[1:3] if name=='aten.addmm.default' else args[:2]
++            self.macs[loc]+=out.numel()*lhs.shape[-1]
++            if name=='aten.bmm.default':
++                a=self.attentions.get(loc);kind='UNEXPECTED'
++                if a is not None:
++                    bh=self.B*a.heads;n=self.N;m=a.rank;d=a.dim_head
++                    ktv=((bh,m,n),(bh,n,d));qc=((bh,n,m),(bh,m,d))
++                    expected=ktv if self.attention_bmm[loc]%2==0 else qc
++                    if (tuple(lhs.shape),tuple(rhs.shape))==expected:kind='K^T V' if self.attention_bmm[loc]%2==0 else 'QC'
++                    self.attention_bmm[loc]+=1
++                row=dict(module=loc,kind=kind,lhs=list(lhs.shape),rhs=list(rhs.shape),output=list(out.shape))
++                self.contractions.append(row)
++                if kind=='UNEXPECTED':self.violations.append(row)
++        elif name=='aten.convolution.default':self.macs[loc]+=out.numel()*math.prod(args[1].shape[1:])
++        if 'softmax' in name:
++            row=dict(module=loc,shape=list(out.shape),axis=args[1]);self.softmax.append(row)
++            if loc in self.attentions:
++                a=self.attentions[loc]
++                if tuple(out.shape)!=(self.B,a.heads,self.N,a.rank) or args[1] not in (-1,-2,2,3):self.violations.append(row)
++            elif not loc.startswith(('loop.rb_','loop.lb_')):self.violations.append(row)
++        # Two contractions: normalized-key/query dot over H, raw-source mix over S.
++        if name=='aten.sum.dim_IntList' and loc.startswith(('loop.rb_','loop.lb_')):
++            self.router_contractions+=args[0].numel()
++        return out
++
++
++@contextmanager
++def scoped_modules(model):
++    scope=[];handles=[]
++    for name,module in model.named_modules():
++        def enter(m,a,tag=name or '<model>'):scope.append(tag)
++        def leave(m,a,y):scope.pop()
++        handles.extend([module.register_forward_pre_hook(enter),module.register_forward_hook(leave,always_call=True)])
++    try:yield scope
++    finally:
++        for handle in handles:handle.remove()
++
++
++def audit(model,args,*,B,N):
++    """Explicit opt-in forward profiler; no backward/timing hooks survive exit."""
++    from cdlno.linearno.attention import LinearNOAttention
++    attentions={n:m for n,m in model.named_modules() if isinstance(m,LinearNOAttention)}
++    training={module:module.training for module in model.modules()};model.eval()
++    try:
++        with scoped_modules(model) as scope,torch.no_grad():
++            ledger=Ledger(scope,attentions,B,N)
++            with ledger:model(*args)
++    finally:
++        for module,state in training.items():module.training=state
++    return dict(parameter_parts=measured_parameters(model),matrix_macs=sum(ledger.macs.values()),
++        matrix_flops=2*sum(ledger.macs.values()),matrix_macs_by_module=dict(ledger.macs),
++        router_contraction_mac_equivalents=ledger.router_contractions,
++        scalar_and_tensor_operator_inventory=ledger.inventory,contractions=ledger.contractions,
++        softmax=ledger.softmax,forbidden_attention=ledger.violations,
++        largest_observed_tensor_elements=ledger.peak_tensor_elements,
++        peak_memory_note='largest single forward tensor, NOT allocator peak/live activation memory')
+--- /dev/null
++++ tools/linearno_loop_support.py
+@@ -0,0 +1,40 @@
++"""Data-free LL9 configurations and inputs, independent of benchmark entrypoints."""
++import torch
++from linearno_loop.config import resolve_config
++
++TASKS=('airfoil','darcy','elasticity','pipe','ns','plasticity','airfrans','car')
++PRESETS=('p1_c3_r2_s1','p2_c2_r2_s2')
++MODES=('sr_1_over_r','rb_attnres','lb_attnres_1_over_r')
++
++
++def configuration(task,preset,mode,*,multiplier=2,small=False,canonical=False,seed=17):
++    overrides={'runtime.seed':seed}
++    options=dict(topology_preset=preset,residual_mode=mode,rank_multiplier=multiplier)
++    if small:
++        overrides.update({'model.hidden':8,'model.heads':2,'model.ref':3})
++        options.pop('rank_multiplier');options['linearno_rank']=4*multiplier
++        if not canonical and task not in ('airfrans','car'):
++            overrides.update({'model.H':5,'model.W':7})
++    return resolve_config(task,options=options,profile_overrides=overrides)
++
++
++def point_count(config,canonical=True):
++    m=config['profile_spec']['values']['model'];task=config['loop_spec']['task']
++    if task in ('airfrans','car'):return {'airfrans':32000,'car':32186}[task] if canonical else 37
++    if task=='elasticity' and canonical:return 972
++    return m['H']*m['W']
++
++
++def inputs(config,*,canonical=False,batch=2,device='cpu',dtype=torch.float32):
++    m=config['profile_spec']['values']['model'];task=config['loop_spec']['task']
++    n=point_count(config,canonical);g=torch.Generator().manual_seed(902)
++    def rand(*shape):return torch.randn(*shape,generator=g,dtype=dtype).to(device)
++    if task in ('airfrans','car'):
++        from torch_geometric.data import Data
++        data=Data(x=rand(n,7),pos=rand(n,2),batch=torch.zeros(n,dtype=torch.long,device=device),
++                  ptr=torch.tensor([0,n],device=device))
++        return (data,) if task=='airfrans' else ((data,None),)
++    x=rand(batch,n,m['space_dim'])
++    fx=rand(batch,n,m['fun_dim']) if m['fun_dim'] else None
++    t=torch.linspace(.1,.8,batch,dtype=dtype,device=device).reshape(batch,1) if m['time_input'] else None
++    return x,fx,t
+--- /dev/null
++++ tests/loop_linearno/test_performance_tools.py
+@@ -0,0 +1,108 @@
++"""LL9 independent accounting and observational isolation checks."""
++import copy
++import json
++import unittest
++from unittest.mock import patch
++import torch
++from cdlno.linearno_loop.construction import build_from_config
++from tools.linearno_loop_support import TASKS,PRESETS,MODES,configuration,inputs,point_count
++from tools.linearno_loop_accounting import analytic,audit,measured_parameters
++from tools.linearno_loop_diagnostics import LoopDiagnostics
++
++
++class PerformanceToolsTests(unittest.TestCase):
++    def test_independent_formula_against_actual_aten_all_tasks_modes_presets(self):
++        for task in TASKS:
++            for preset in PRESETS:
++                for mode in MODES:
++                    with self.subTest(task=task,preset=preset,mode=mode):
++                        c=configuration(task,preset,mode,small=True,multiplier=1)
++                        m=build_from_config(c);a=inputs(c);B=1 if task in ('airfrans','car') else 2;N=point_count(c,False)
++                        e=analytic(c,B=B,N=N);v=audit(m,a,B=B,N=N)
++                        self.assertEqual(e['parameter_parts'],measured_parameters(m))
++                        self.assertEqual(e['executed_matrix_macs'],v['matrix_macs'])
++                        self.assertEqual(e['router_contraction_mac_equivalents'],v['router_contraction_mac_equivalents'])
++                        self.assertFalse(v['forbidden_attention'])
++                        # M=dh=4 is a legitimate square context, never latent self-attention.
++                        self.assertTrue(any(x['kind']=='K^T V' and x['output'][-2:]==[4,4] for x in v['contractions']))
++                        self.assertEqual(len(v['contractions']),2*e['executed_depth'])
++                        self.assertTrue(all(not s._forward_hooks and not s._forward_pre_hooks for s in m.modules()))
++
++    def test_profiler_rejects_real_quadratic_attention(self):
++        c=configuration('elasticity',PRESETS[0],MODES[0],small=True);m=build_from_config(c)
++        target=m.loop.core[0].block.Attn;original=target.forward
++        def bad(x):return original(x)+torch.bmm(torch.bmm(x,x.transpose(1,2)),x)*0
++        with patch.object(target,'forward',bad):v=audit(m,inputs(c),B=2,N=35)
++        self.assertTrue(v['forbidden_attention'])
++        self.assertTrue(any(r.get('output',[])[-2:]==[35,35] for r in v['forbidden_attention']))
++
++    def test_disabled_diagnostics_no_hooks_tensor_sync_or_rng(self):
++        c=configuration('darcy',PRESETS[0],MODES[1],small=True);m=build_from_config(c)
++        before=torch.get_rng_state().clone()
++        with patch('tools.linearno_loop_diagnostics.stats',side_effect=AssertionError('disabled synchronized')):
++            with LoopDiagnostics(m) as diag:
++                self.assertTrue(all(not x._forward_hooks and not x._forward_pre_hooks for x in m.modules()))
++                m(*inputs(c));self.assertIsNone(diag.gradients())
++            self.assertEqual(diag.records,[])
++        self.assertTrue(torch.equal(before,torch.get_rng_state()))
++
++    def test_enabled_diagnostics_exact_forward_gradients_rng_and_sources(self):
++        for mode in MODES:
++            c=configuration('plasticity',PRESETS[0],mode,small=True);a=inputs(c)
++            m=build_from_config(c);other=copy.deepcopy(m);before=torch.get_rng_state().clone()
++            expected=m(*a);expected.square().mean().backward();rng=torch.get_rng_state().clone()
++            torch.set_rng_state(before)
++            with LoopDiagnostics(other,enabled=True) as d:
++                actual=other(*a);actual.square().mean().backward();grad=d.gradients()
++            torch.testing.assert_close(actual,expected,atol=0,rtol=0)
++            self.assertTrue(torch.equal(rng,torch.get_rng_state()))
++            for (name,p),(n,q) in zip(m.named_parameters(),other.named_parameters()):
++                self.assertEqual(name,n)
++                if p.grad is None:self.assertIsNone(q.grad)
++                else:torch.testing.assert_close(p.grad,q.grad,atol=0,rtol=0)
++            record=d.records[0];self.assertEqual(len(record['visits']),6);self.assertEqual(len(record['routing']),12)
++            self.assertEqual([r['sources'] for r in record['routers']],analytic(c)['router_sources'])
++            self.assertEqual(len(grad),3);self.assertTrue(all(r['nan']==r['inf']==0 for r in grad))
++            self.assertEqual([(r['round'],r['physical_core_index']) for r in record['visits']],[(r,i) for r in range(2) for i in range(3)])
++            json.dumps(record,allow_nan=False) # no tensors/graphs retained
++            self.assertFalse(d.pending);self.assertIsNone(d.previous_update);self.assertIsNone(d.partial)
++            self.assertTrue(all(not x._forward_hooks and not x._forward_pre_hooks for x in other.modules()))
++
++    def test_exception_and_changed_batch_no_retained_forward_state(self):
++        c=configuration('elasticity',PRESETS[1],MODES[1],small=True);m=build_from_config(c).eval()
++        a=inputs(c)
++        with LoopDiagnostics(m,enabled=True) as d:
++            with patch.object(m.loop.core[1].block.Attn,'forward',side_effect=RuntimeError('injected')):
++                with self.assertRaisesRegex(RuntimeError,'injected'):m(*a)
++            self.assertFalse(d.records[-1]['completed']);self.assertFalse(d.pending);self.assertIsNone(d.partial)
++            expected=m(*a);smaller=(a[0][:1,:11],None,None)
++            m(*smaller);actual=m(*a)
++            torch.testing.assert_close(actual,expected,atol=0,rtol=0)
++            self.assertEqual([len(r['visits']) for r in d.records[1:]],[4,4,4])
++            for r in d.records[1:]:self.assertEqual(r['visits'][0]['logical_visit'],0)
++
++    def test_cuda_failure_exit_code_and_diagnostic_timing_guard(self):
++        import tempfile
++        from pathlib import Path
++        from tools.linearno_loop_performance import main
++        with tempfile.TemporaryDirectory() as directory:
++            with patch('sys.argv',['performance','cuda','--output',str(Path(directory)/'result.json')]), \
++                 patch('torch.set_num_threads'),patch('torch.set_num_interop_threads'), \
++                 patch('tools.linearno_loop_performance.cuda_smoke',return_value=False):
++                with self.assertRaises(SystemExit) as caught:main()
++                self.assertEqual(caught.exception.code,1)
++            with patch('sys.argv',['performance','cpu','--diagnostics','--output',str(Path(directory)/'result.json')]):
++                with self.assertRaises(SystemExit) as caught:main()
++                self.assertEqual(caught.exception.code,2)
++
++    def test_custom_rank_controls_and_mode_router_costs(self):
++        from linearno_loop.config import resolve_config
++        for mode in MODES:
++            c=resolve_config('car',options=dict(topology_preset='custom',prefix_blocks=0,recurrent_core_blocks=2,loop_repeats=3,suffix_blocks=1,residual_mode=mode,rank_multiplier=1))
++            m=build_from_config(c);cost=analytic(c)
++            self.assertEqual(cost['parameter_parts'],measured_parameters(m))
++            self.assertEqual((cost['unique_depth'],cost['executed_depth']),(3,7))
++            count=0 if mode==MODES[0] else 13 if mode==MODES[1] else 3
++            self.assertEqual(cost['parameter_parts']['router'],2*cost['hidden']*count)
++
++if __name__=='__main__':unittest.main()
+--- /dev/null
++++ docs/LOOP_LINEARNO_PERFORMANCE.md
+@@ -0,0 +1,175 @@
++# LL9 — Looped LinearNO 无数据综合验证与成本工具
++
++本阶段只增加 `tools/linearno_loop_{support,accounting,diagnostics,performance}.py`、独立测试和本报告/证据。模型、schema、八任务训练/评估入口、launcher、旧 monitor 和历史测试保持原样。所有数据均为内存合成数据，未执行真实 loader、真实 epoch、远端实验或 SOTA 比较。
++
++## 当前结论与精度边界
++
++CPU FP32 的 48 个 task×preset×mode 组合，在标准空间点数、缩小宽度的条件下通过前向、反向、AdamW 一步、全新对象严格 state/optimizer 重载、连续前向、调用顺序及输出头次数检查。96 个正式宽度配置的实际参数分项与独立解析式完全一致。正式宽度只构造和统计；不能把它们的解析 MAC 与小宽度延迟混成同一模型的结果。
++
++新增 CUDA 验收发现**已有 RB 模型的部分 AMP 路径不兼容**：Airfoil、Elasticity、Pipe、AirfRANS、Car 的 FP32 placeholder 将 anchor 提升为 FP32，autocast raw branch 为 FP16/BF16，`PointDepthAttnRes._validate` 拒绝混合 dtype 的 sources。两个 preset × 两种 AMP，共20项失败；其余124项通过，包括全部48个CUDA FP32、38个FP16和38个BF16。这些失败不是OOM，也没有回退成FP32再声称AMP通过。源码与LL9起点相同；见 [定位](loop_linearno_audit/ll9/cuda-failure-review.json)。LL9未擅自修改已冻结的模型精度语义。另有完整旧套件触发的ignored `.pyc` 冻结断言失败（下文说明）。本阶段最终状态据此为 **PARTIAL**，不能声称整个精度矩阵全绿。
++
++## A/B. 交付、命令与输出
++
++从当前checkout根执行，路径随checkout工作，适用于远端 `LinearNO-monitor`；以下命令只产生合成审计，不启动数据集训练。`--output` 必须是新文件，以免覆盖既有证据。
++
++```bash
++python -B tools/linearno_loop_performance.py counts --output output/ll9/counts.json
++CUDA_VISIBLE_DEVICES='' python -B tools/linearno_loop_performance.py matrix \
++  --diagnostics --output output/ll9/matrix.json
++CUDA_VISIBLE_DEVICES='' python -B tools/linearno_loop_performance.py cpu \
++  --warmup 3 --steps 12 --output output/ll9/cpu.json
++CUDA_VISIBLE_DEVICES=0 python -B tools/linearno_loop_performance.py cuda \
++  --output output/ll9/cuda.json
++PYTHONPATH=tests:. CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 \
++  OPENBLAS_NUM_THREADS=1 python -B -m unittest loop_linearno.test_performance_tools -v
++```
++
++CUDA命令会完成所有精度组合，把失败逐项写入JSON，并以非零状态退出；没有CUDA则明确写NOT RUN。`counts` 给每任务×2preset×3mode×rank1/2完整resolved config及分项；`matrix`保存实际算子、调用顺序、48组重载误差和可选诊断；`cpu`保留每次原始计时而非只给均值；`cuda`记录精度、finite结果和allocator显存。旧训练CLI和结果目录没有新默认行为。
++
++工具实现映射：
++
++| 文件/符号 | 职责 |
++|---|---|
++| `tools/linearno_loop_support.py` | 原profile派生配置、确定性的合成输入；不import训练入口 |
++| `tools/linearno_loop_accounting.py::analytic` | 独立整数解析式；不构造/读取模型 |
++| `measured_parameters / audit / Ledger` | 实际named_parameters分区，ATen矩阵/卷积/收缩计数及source softmax轴 |
++| `tools/linearno_loop_diagnostics.py::LoopDiagnostics` | 显式context/hook；默认关闭；不保存计算图、不改旧monitor |
++| `tools/linearno_loop_performance.py` | 96计数、48合成矩阵、CPU计时、CUDA smoke及显存CLI |
++| `tests/loop_linearno/test_performance_tools.py` | 解析对实际运算、真假平方张量、诊断输出/梯度/RNG隔离、异常清理、custom、工具失败传播 |
++
++## C. 解析式与计算量口径
++
++记隐藏宽度为 d，heads=h，head_dim=d/h，rank=M，FFN ratio=f，卷积系数 k=9(conv/conv_temp)否则1，output线性层数 o=2(conv/conv_temp/Car)否则1。这里 d 避免与空间网格 H 混淆。
++
++单个不含最终head的物理block参数：
++
++- 输入投影 `k*d²+d`；跨head共享Q/K/V `2*(d/h)*M+(d/h)²`；output投影 `o*(d²+d)`。
++- 温度参数：Standard temp/conv_temp及Car为2h，Air保留h个dead temperature，其余0。
++- 两个LayerNorm共4d；FFN `2*f*d²+(f+1)*d`。
++- 唯一末层head `2d+d*out_dim+out_dim`。
++- stem包括preprocess、placeholder和可选time_fc，按各任务位置语义计算输入通道；time_fc实际对重复到N点的时间embedding执行，MAC按B*N计。
++
++总物理参数 = stem + P×body + C×body + S×body + head + router。报告分别保存 `stem/prefix/shared_core/suffix_body/head/router`；`suffix_body+head` 即suffix/head分项。Air的dead temperature计入存储参数，但不声称有计算或梯度。
++
++- RB receiver数 `2CR+1`，参数 `2d(2CR+1)`。
++- LB receiver数 `R`，参数 `2dR`。
++- SR没有router。P1/C3/R2/S1有5个独立block，P2/C2/R2/S2有6个；两者均执行8次。不能称两preset参数相同。
++
++一次block visit的矩阵MAC：
++
++`B*N*[k*d² + o*d² + 2*f*d² + d*(d/h) + 4*d*M]`。
++
++末项四份分别来自 Q projection、K projection、KᵀV、QC；每份均 `B*N*d*M`。共享小Q/K/V权重并不减少每次visit、每个head的实际计算。总执行MAC为 `stem_MAC+(P+CR+S)*body_MAC+head_MAC`；另列每物理block只访问一次的参考数，不将其冒充forward成本。
++
++Dense matrix FLOPs约定 `2×MAC`，**不是完整FLOPs**：不含bias、residual、RMSNorm/LayerNorm、softmax、GELU/SiLU、温度clamp/divide、位置距离、sin/cos、layout/storage。逐ATen算子调用与输出元素数单独留档，不能简单把元素数当全部标量FLOPs。
++
++router并没有额外mm，但并非零计算：对每个S>1来源receiver，score点积与raw value加权和合计 `2*B*N*d*S` 个收缩MAC等价值；S=1的恒等receiver在生产中跳过。RMS square/mul、scale/query逐元素乘、rsqrt、source softmax等另外记录。实际reduction形状计数与解析式对照。M翻倍会同时增加Q/K投影与KᵀV/QC，**不属于compute-matched控制**，更不能把独立参数减少写成FLOPs或真实epoch速度降低。
++
++| Task | base→M×2 | SR参数 P1 / P2 (M×2) | RB新增 P1 / P2 | LB新增 | B1 M×1→M×2矩阵GMAC |
++|---|---:|---:|---:|---:|---:|
++| airfoil | 64→128 | 1,126,737 / 1,345,249 | 3,328 / 2,304 | 512 | 22.7209→25.6755 |
++| darcy | 64→128 | 1,126,993 / 1,345,505 | 3,328 / 2,304 | 512 | 14.5665→16.4605 |
++| elasticity | 64→128 | 388,817 / 459,745 | 3,328 / 2,304 | 512 | 0.8128→1.0676 |
++| pipe | 64→128 | 1,126,737 / 1,345,249 | 3,328 / 2,304 | 512 | 33.5461→37.9085 |
++| ns | 32→64 | 2,192,385 / 2,593,025 | 6,656 / 4,608 | 1,024 | 14.9957→16.0694 |
++| plasticity | 64→128 | 1,160,324 / 1,378,820 | 3,328 / 2,304 | 512 | 6.4163→7.2371 |
++| airfrans | 32→64 | 2,173,228 / 2,573,876 | 6,656 / 4,608 | 1,024 | 116.5394→124.9280 |
++| car | 32→64 | 2,469,460 / 2,935,908 | 6,656 / 4,608 | 1,024 | 133.0368→141.4742 |
++
++上表GMAC不含router收缩与标量运算；两个preset执行深度都为8，同rank的dense MAC相同。工业统计为单个成员，不是Air ensemble总成本。96行逐分区完整数据见 [counts.json](loop_linearno_audit/ll9/counts.json)。
++
++## D. 实测协议
++
++正式参数/MAC：八任务论文profile、seed17、两preset、三mode、rank×1/2，B1，canonical N。ShapeNet/Air单图，Car N32186、Air N32000；Standard使用原网格，Elasticity N972。未运行正式宽度的完整任务训练。
++
++48组综合矩阵和CPU延迟：canonical N，Standard B2、工业B1，**d8/h2/M8/ref3**，输入seed902，模型seed17；使用任务原forward合同和时间输入，但一步loss是明确的合成MSE，不冒充Darcy导数loss、NS十步或Plasticity二十查询的完整训练代价。原任务科学协议闭环单独引用/重跑LL6/LL7。
++
++CPU：单intra/inter-op线程，FP32，`perf_counter_ns`同步计时；3次warmup、12次测量；median与nearest-rank p90；forward为eval/no_grad，训练计时包括zero_grad、forward、合成MSE、backward和AdamW.step，优化器状态已在warmup初始化。diagnostic、hook和profiler在计时期间全部关闭。测量不代表真实epoch，跨任务也不代表同参数或同工作量。
++
++CUDA：本机RTX5090 Laptop，torch2.13+cu130；small N35(Standard)/37(工业)，d8/h2/M8；FP32、autocast FP16+GradScaler、autocast BF16。warmup一步后`synchronize→zero_grad→empty_cache→reset_peak_memory_stats`，再一步和synchronize。报告进程allocator的baseline、peak allocated/reserved与增量，不是nvidia-smi全设备显存、不含其他进程，也不是正式训练峰值。只做synthetic smoke，不测GPU速度或推断AMP精度。初次工具误将第一个参数（某些任务不用的placeholder）不更新当成optimizer跳步；已修正为检查实际有梯度的参数更新，保留初次日志。真正mixed-dtype失败在独立repro中仍存在。
++
++### 实际读数（本机合成工作量）
++
++CPU：Intel Core Ultra 9 290HX Plus，WSL2，affinity=CPU0，torch intra/inter-op=1；启动时系统loadavg=[5.47509765625, 10.40234375, 9.65380859375]。同期仍有旧history回归进程，本机并非独占性能实验室；保留原始样本和写入时load，不以此给真实任务加速结论。下表Darcy为B2/N7225/d8/h2/M8/ref3：
++
++| preset | mode | forward median / p90 ms | forward+backward+AdamW median / p90 ms |
++|---|---|---:|---:|
++| p1_c3_r2_s1 | sr_1_over_r | 48.680 / 53.870 | 129.969 / 136.080 |
++| p1_c3_r2_s1 | rb_attnres | 78.192 / 84.027 | 216.011 / 231.702 |
++| p1_c3_r2_s1 | lb_attnres_1_over_r | 53.492 / 61.520 | 153.380 / 168.635 |
++| p2_c2_r2_s2 | sr_1_over_r | 53.746 / 58.305 | 144.614 / 152.347 |
++| p2_c2_r2_s2 | rb_attnres | 71.219 / 77.153 | 194.168 / 204.752 |
++| p2_c2_r2_s2 | lb_attnres_1_over_r | 62.166 / 78.510 | 201.126 / 220.921 |
++
++48组完整计时及576个forward/576个step原始样本见 [cpu.json](loop_linearno_audit/ll9/cpu.json)。这些step不含data loading、任务loss/rollout、scheduler、记录/绘图或checkpoint；不能乘batch数推导真实epoch。
++
++另外实际构造原纯LinearNO八层作参数对照，得到NS 3,377,921、Plasticity 1,799,428等已核验值。96个loop配置为原各任务八层baseline参数的63.23%–78.95%；这是存储参数比较，缺少训练精度证据。详见 [96项对照](loop_linearno_audit/ll9/baseline-comparisons.json)。默认M×2的dense MAC已经高于对应pure8/baseM，router再另加；未命名为compute-matched。
++
++成功CUDA小fixture的绝对peak allocated范围为64.328–64.890 MiB，包含进程中保留的CUDA工作区。逐行baseline/reserved/增量见 [cuda-final-v2.json](loop_linearno_audit/ll9/cuda-final-v2.json)；失败20项没有捏造显存/成功指标。
++
++## E. 可选诊断与结构验证
++
++默认 `LoopDiagnostics(model)` 不挂hook、不分配观测张量、不做CPU同步；只有显式 `enabled=True` 或工具 `matrix --diagnostics` 开启。正常生产forward、训练launchers、旧monitor没有任何新增默认逻辑。启用后的JSON为统计摘要，不保存完整Q/K或完整每点source权重，不保留计算图。
++
++记录logical round、physical core index、operator/MLP、source权重mean/min/max/entropy、source/state/Delta范数、Q沿M与K沿N的归一和误差/熵、每个共享core visit入口/出口RMS、update norm、相邻update cosine、raw branch范数、共享参数grad norm和NaN/Inf。
++
++SR/LB的visit update来自实际点状态exit−entry；RB没有普通block residual，故明确记录两个raw branch之和作为raw partial增量，exit为当前轮partial，入口为operator router输出，不能把这三个量套成SR residual。LB轮级Delta直接读output receiver收到的实际Y−H来源。RB凸混合**不自动继承**1/R residual的稳定性结论；没有根据诊断加入任何gate、缩放或裁剪。
++
++观测保留的临时detached张量仅属于外部context，在每次forward完成/异常时清空；模型不注册缓存或新参数。启用/关闭诊断的forward、参数梯度和RNG逐位相同；连续调用、B/N变化和异常后的下一次forward均单独验证。
++
++矩阵收缩按语义/操作数而不是只看方形尺寸分类：每visit仅 `[Bh,M,N]×[Bh,N,d_h]` 与 `[Bh,N,M]×[Bh,M,d_h]`；合法M=d_h的context明确通过，故不误判M×M self-attention。专门注入N×N点attention的负面fixture确实被拒绝。全部48组合每个core调用R次，branch调用顺序精确，head仅一次，state无round复制键，参数对象不重复注册。
++
++## F. 完整结果、历史失败与冻结
++
++旧 `test_kcdno_delivery` 的 `python -I` 子进程没有 `-B`，且忽略环境 `PYTHONDONTWRITEBYTECODE`，刷新了既有 `cdlno_entry.cpython-313.pyc`；由12580变为12736字节，引发原loop isolation的ignored-cache冻结断言。对应 `.py` 源码与LL9起点字节相同，新cache的code object与该源码直接compile结果相等。这是本轮新触发的缓存产物断言，不能冒充历史失败，也没有改golden、删除或伪造旧cache让它变绿。见 [缓存定位](loop_linearno_audit/ll9/bytecode-freeze-review.json)。
++
++最终汇总由 `docs/loop_linearno_audit/ll9/summary.json` 和 `end-freeze.json` 给出，包含每项历史失败/skip及来源，不能把“无本阶段新增旧回归失败”简写成“全仓全绿”。保留运行最初的错误日志，独立复核环境性超时，不放宽测试容差或改旧golden。
++
++LL6/LL7完整原生闭环证据仍有效，本阶段重跑六Standard×preset B×三mode，以及Air/Car×preset A×三mode：原parser→原科学训练片段→pair→新进程resume/eval。Air两独立成员包含成员内/成员间两种中断，Car使用非零fold；合成PyG与surface/drag接口不等于真实VTK指标。其余preset完整闭环见已批准LL6/LL7 36+12组；LL9两preset48组合的工具矩阵使用synthetic state/optimizer重载，明确不把它称为新的生产resume协议。
++
++### 最终逐项结果
++
++| 范围 | 结果与证据 |
++|---|---|
++| 正式参数配置 | 96/96分项解析值=实测值；8个真实pure8构造对照；同task/topology/rank的三mode主干hash一致 |
++| canonical N、小宽度 | 48/48前向/反向/AdamW/strict state及optimizer重载，误差0；调用顺序与单head验证通过 |
++| 原生生产合成闭环重跑 | Standard18+工业6=24/24；105新进程；权重/optimizer/scheduler/RNG/预测逐位相同；[Standard](loop_linearno_audit/ll9/native-matrix.json)、[工业](loop_linearno_audit/ll9/industrial-matrix.json) |
++| 新工具测试 | 7/7，7.495s；[日志](loop_linearno_audit/ll9/new-tools-final.log)；后续显存计量修正由完整144 GPU组合重新验证 |
++| 完整既有CPU套件 | 80模块、689方法：643通过、10失败方法/15断言、36skip、最终0error；[全结果](loop_linearno_audit/ll9/regression-final.json) |
++| 首次环境性超时 | history K新进程60s超时原文保留；整模块原样复跑13/13、25.458s，旧阈值未改；[复核](loop_linearno_audit/ll9/history-k-recheck.log) |
++| CPU计时 | 48/48，warmup3/测量12，forward与完整合成step均有median/p90及原始样本 |
++| CUDA最终矩阵 | 144项，124通过/20失败；FP32 48/48，FP16与BF16各38/48；失败仅上述五任务RB的AMP |
++| 数值兼容 | loop八份报告与LL8逐字段全等；pure/history九份完成报告与LL7全等（R4使用超时后的完整重跑）；[loop](loop_linearno_audit/ll9/loop-numeric-report-comparison.json)、[pure/history](loop_linearno_audit/ll9/prior-numeric-report-comparison.json) |
++| 源码/序列化 | 七套pure/history/loop provenance全等LL8；原tracked diff、HEAD/tree/staged未变；[指纹](loop_linearno_audit/ll9/preserved-provenance.json)、[冻结](loop_linearno_audit/ll9/end-freeze.json) |
++
++旧失败来源详见 [分类及源码hash](loop_linearno_audit/ll9/regression-failure-review.json)。其中9个方法为LL9起点就存在的源码状态/旧断言问题，**部分是这次扩大套件后首次记录**，不能冒称LL8已全面确认：
++
++- pure旧README/path.sh/REPRODUCTION_MATRIX hash与旧golden不符（2方法、4断言）。
++- history static/industrial旧normalized patch包含旧git-before基准，R8与当前HEAD不同（2方法、2断言；LL7已有准确定位）。
++- CDLNO/KCDNO/MSAR/visualization旧AST projection未剥离后来的LinearNO入口与resume语句（4方法、7断言）。
++- `test_kcdno_delivery` 模拟没有共享`cdlno`包时，当前Standard入口的loop import触发`ModuleNotFoundError`（1方法、1断言）。这是独立项目脱离共享包运行的既有兼容问题，不是数学差异；本阶段未修。
++- 另1方法/1断言是本轮ignored `.pyc` 刷新引起的冻结问题，明确单列为新增产物失败。
++
++36个skip：33项因这次完整旧套件显式`CUDA_VISIBLE_DEVICES=''`运行，3项因本机缺torch_cluster；不把CPU套件的CUDA skip解释为本机无GPU。loop自身GPU另由144项检查覆盖，旧模型GPU完整套件未在LL9重新跑。旧测试、golden、源码、容差和skip规则均未更改。
++
++实际主要命令与环境：
++
++```bash
++python -B docs/loop_linearno_audit/ll9/run_regressions.py
++LL9_STANDARD_PRESETS=p2_c2_r2_s2 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
++  CUDA_VISIBLE_DEVICES='' python -B docs/loop_linearno_audit/ll9/run_native_matrix.py
++LL9_PRESETS=p1_c3_r2_s1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
++  CUDA_VISIBLE_DEVICES='' python -B docs/loop_linearno_audit/ll9/run_industrial.py
++OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 CUDA_VISIBLE_DEVICES='' \
++  taskset -c 0 python -B tools/linearno_loop_performance.py cpu \
++  --warmup 3 --steps 12 --output docs/loop_linearno_audit/ll9/cpu.json
++python -B docs/loop_linearno_audit/ll9/recheck_timeout.py
++```
++
++上面是实际已执行命令记录；原路径已有证据，不应原样覆盖。对新的计时使用前文fresh output路径。参数/48矩阵/GPU命令见前文，实际产物位于本报告的LL9证据目录。未更改依赖、未commit/push。
++
++交付前五项自审：独立公式与实际算子对照；共享/调用/平方张量语义；默认关闭及启用诊断的数值/RNG隔离；metadata与原生resume精确性；完整失败归因与性能边界。证据见 [审查记录](loop_linearno_audit/ll9/priority-self-review.json)。仅保留真实未解决项：RB AMP来源dtype合同、ignored-cache断言、上述既有独立入口/历史冻结问题。没有凭“参数少”推出训练效果或真实epoch更快。
++
++NOT RUN：真实数据、真实训练或准确率、SOTA、真实epoch效率、远端Python3.10/torch2.11/cu128、正式全宽任务GPU训练、compile/distributed。LL10未执行。待后续明确处理的是RB的混合dtype合同；本阶段既不偷偷cast，也不关闭该检查绕过问题。
++
++本 LL9 阶段结束，未执行下一阶段。
+--- /dev/null
++++ memory/2026-09-20-loop-linearno-ll9.md
+@@ -0,0 +1,5 @@
++# Looped LinearNO LL9
++
++仅LL9，PARTIAL，未执行LL10。见 docs/LOOP_LINEARNO_PERFORMANCE.md 和 docs/LOOP_LINEARNO_IMPLEMENTATION_STATUS.md。
++新增独立tools计数/计时/诊断与测试；生产模型、入口、schema、旧monitor和测试未改。96参数配置、48完整空间小宽度综合/CPU计时、24原生闭环(105新进程)通过。CUDA144项124pass/20RB AMP mixed-source-dtype fail（Airfoil/Elasticity/Pipe/Air/Car，两preset/两低精度）。不得称全部AMP支持；未以cast掩盖冻结的dtype合同。
++旧689方法643pass/10失败方法/36skip/0error（historyK首次超时复跑13全过）。9方法既有源码/golden问题，另1是旧 -I 子进程更新ignored pyc引起的新冻结断言，.py未变。旧golden/cache没有被改写来强行通过。新7测试过，七套provenance保留，loop数值8报告exactLL8。没有真实数据/训练/epoch/SOTA/远端验收。必须先如实审查剩余问题，不自动进入下一阶段。
+--- docs/LOOP_LINEARNO_IMPLEMENTATION_STATUS.md (LL8)
++++ docs/LOOP_LINEARNO_IMPLEMENTATION_STATUS.md
+@@ -1,3 +1,20 @@
++# LL9 — 2026-09-20
++
++**唯一状态：PARTIAL（工具、CPU综合验证及原生闭环完成；存在明确未通过项）。LL10未执行。**
++
++- 本阶段仅新增4个独立 `tools/linearno_loop_*.py`、7项新测试、报告/证据/独立记忆与本STATUS；模型、生产schema/入口/launcher、旧monitor、旧测试/容差/golden不改。[完整报告](LOOP_LINEARNO_PERFORMANCE.md)、[汇总](loop_linearno_audit/ll9/summary.json)。
++- 96个正式配置（8任务×2preset×3mode×rank1/2）参数分区解析/实测完全一致；RB=2H(2CR+1)、LB=2HR。8个真实pure8对照、48个canonical空间N/d8/h2/M8前反向/AdamW/strict state+optimizer重载/精确调用/单head均通过。MAC分unique/executed和KTV/QC，router收缩单列；M×2不是compute-matched。
++- CPU48组单线程/CPU0、warmup3/12测量完成median/p90；非独占宿主，记录系统load及原始样本。GPU144小合成：FP32 48/48，AMP FP16/BF16各38/48，共124通过/20失败。Airfoil/Elasticity/Pipe/Air/Car的RB anchor FP32与raw partial低精度冲突，原AttnRes dtype检查报错；代码与起点完全相同，未偷偷cast或退回FP32。[定位](loop_linearno_audit/ll9/cuda-failure-review.json)。因此不能PASS。
++- 原生重跑Standard presetB×三mode18组，工业presetA×三mode6组，105新进程全部exact；Air两成员两种中断、Car fold3、NS10步及Plasticity20查询保持。LL6/LL7其余preset完整证据保留，未混称synthetic为真实VTK指标。
++- 完整既有CPU回归80模块/689方法：643通过、10失败方法/15断言、36skip、复核后0error。9方法是既有源码/历史断言（部分本次扩大覆盖首次记录）；另1方法是旧 `python -I` 测试刷新ignored pyc导致的新缓存冻结断言，源码不变、cache code=当前源码compile；未改旧golden/缓存。33项CUDA因CPU运行主动skip，3项缺torch_cluster。首次history K超时整模块复跑13/13通过，日志保留。[失败分类](loop_linearno_audit/ll9/regression-failure-review.json)。新增工具7/7通过。
++- 诊断仅显式Python context或synthetic工具 `--diagnostics`，默认不挂hook；记录round/index/source/entropy/state/update/cosine/QK/grad/NaNInf，退出清空detached观察副本。启用/关闭forward/grad/RNG完全一致。RB raw-partial更新与SR/LB实际exit-entry区别明确，不宣称凸混合继承1/R稳定性；不改变旧monitor或任务CLI。
++- 冻结：七份pure/history/loop provenance和八份旧loop数值报告完全等于LL8；pure/history完成报告等于LL7。原tracked diff/HEAD/tree/staged保持；除本STATUS与运行产生的ignored pyc，原文件内容保持。[冻结](loop_linearno_audit/ll9/end-freeze.json)。本阶段不修源码之外的旧阶段问题，状态不伪报全绿。
++- NOT RUN：真实loader/训练/精度/SOTA/epoch效率、远端Python3.10 torch2.11 cu128、正式全宽GPU训练、compile/distributed、LL10。剩余问题及5项自审详见报告。
++
++**本 LL9 阶段结束，未执行下一阶段。**
++
++以下为已审查LL8–LL0历史记录。
++
+ # Looped LinearNO 实施状态
+ 
+ ## LL8 — 2026-09-20

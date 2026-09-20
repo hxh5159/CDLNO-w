@@ -14,6 +14,8 @@ ROUTING_REPLACEMENTS = {'PDE-Solving-StandardBenchmark/cdlno_entry.py': [{'befor
 
 
 def baseline_source(relative, text):
+    from cdlno.linearno_loop.provenance import legacy_source
+    text = legacy_source(relative, text)
     for change in reversed(ROUTING_REPLACEMENTS.get(relative, ())):
         if text.count(change['after']) != change['count']:
             raise ValueError('unrecognized history routing source; cannot preserve legacy fingerprint: '+relative)
@@ -23,7 +25,8 @@ def baseline_source(relative, text):
 
 def research_provenance(base):
     root=Path(__file__).resolve().parents[2]
-    actual={p:hashlib.sha256((root/p).read_bytes()).hexdigest() for p in ROUTING_REPLACEMENTS}
+    from cdlno.linearno_loop.provenance import legacy_source
+    actual={p:hashlib.sha256(legacy_source(p,(root/p).read_text()).encode()).hexdigest() for p in ROUTING_REPLACEMENTS}
     result=dict(base)
     result['source_sha256']=digest(dict(baseline=base['source_sha256'],history=source_hash(),routing=actual))
     result['normalized_patch_sha256']=digest(dict(baseline=base['normalized_patch_sha256'],routing=actual))

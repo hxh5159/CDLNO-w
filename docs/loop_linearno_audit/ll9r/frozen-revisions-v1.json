@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "rows": [
+    {
+      "path": "README.md",
+      "old_sha256": "d7124bcc753bd90bce6f8e9475bbdc4eb46c5439a3017156e0dd342681fa8863",
+      "new_sha256": "fc58f271728f884d446aa89b623a6634867166ae383072bcc17e42596e333afb",
+      "commit": "eebbb3fb95933ea7e545f5527cc5fdde3104aaef",
+      "source": "L10 delivery: pure LinearNO documentation; docs/LINEARNO_IMPLEMENTATION_REPORT.md; user authorized L6-L10 completion",
+      "diff": "--- L1/README.md\n+++ reviewed/README.md\n@@ -129,6 +129,19 @@\n \n 矩阵成本采用1 MAC=1乘加、2 FLOPs/MAC；额外norm/softmax/depth/临时stack与历史/点特征存储单列，SDPA不会按0计。实测报告forward及合成MSE/AdamW步的median/p90、GPU同步、峰值allocated显存、初始化optimizer state和精度/backend/warmup。所有模型用相同AMP/TF32/compile条件。详细口径、原始数据和限制见 [工具说明](docs/CDLNO_PERFORMANCE_TOOLS.md) 与 [阶段9报告](docs/CDLNO_PHASE9_PERFORMANCE.md)。模型计时不能换算真实epoch；已有结果也不构成普遍加速保证。\n \n+## 纯 LinearNO（linearno）\n+\n+仓库现在包含独立的纯 LinearNO family `linearno`，实现论文 v3 与固定官方 LinearNO 源码的因式注意力 `Q=softmax_M(XWq)`、`K=softmax_N(XWk)`、`Y=Q(K^T V)`。Standard 六任务使用 `plain/temp/conv/conv_temp` 四种官方变体；AirfRANS 使用 7 维输入拼接 64 维 reference-distance；ShapeNet-Car 使用实际 `M=key_ratio*head_dim` 和官方 `tempreature_q/k` 键。旧 Transolver、CDLNO、KCDNO、MSAR-LNO 和既有任务协议保持独立。\n+\n+LinearNO 的可执行配置是 `paper_table8_on_release_model`、`official_release` 和 `transolver_matched`。AirfRANS 默认训练为标准化四通道 `volume MSE + surface MSE`，Car 默认训练为全点三速度 normalized MSE 加 `0.5*surface pressure MSE`，这是用户确认的官方代码合同；论文中的 physical rL2、drag 和 Spearman 作为独立评价字段保存。完整配置、八任务命令、checkpoint 转换、测试结果和未验证边界见 [最终实施报告](docs/LINEARNO_IMPLEMENTATION_REPORT.md)、[复现矩阵](docs/LINEARNO_REPRODUCTION_MATRIX.md) 和 [LinearNO launcher说明](tran_evaluate/linearno/README.md)。本地无数据验收可运行：\n+\n+```bash\n+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. python -B -m pytest -q -p no:cacheprovider tests/linearno\n+bash -n tran_evaluate/linearno/*.sh\n+```\n+\n+真实数据训练、论文完整 epoch、收敛/精度、目标远端 Torch2.11/CUDA12.8 尚未在本仓库执行；LinearNO 不会改变旧模型默认选择或旧 checkpoint 读取规则。\n+\n ## 独立 MSAR-LNO（msar_lno）\n \n MSAR-LNO使用四级latent encoder–decoder：4次learned-query Down、6个encoder和6个decoder的FFN–SA–FFN block、4次以对应encoder特征为query的Up、3处两来源AttnRes（零初始化时等于E+U），最后逐点LN/head。没有卷积、CDPA/kernel history或最终E0跳连。原Transolver、CDLNO及前段消融、KCDNO all/off和matched LRSA继续保留。\n"
+    },
+    {
+      "path": "path.sh",
+      "old_sha256": "153163c1535a74dc4802e59590b2ec9815b0d166dc5d534d66fc6b38f596a87c",
+      "new_sha256": "4c45fe6fee19cd511487c934b8aea20186b91844ccfedee9111be7007945281b",
+      "commit": "e1c8552799dd9a7b939ddba1dfabe20e88dfa41a",
+      "source": "Explicit user remote checkout rename to LinearNO-monitor; comments only",
+      "diff": "--- L1/path.sh\n+++ reviewed/path.sh\n@@ -1,7 +1,12 @@\n #!/usr/bin/env bash\n # Source this file; it only sets paths. No install, mkdir, symlink or training.\n-# Remote checkout: /inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/transolver/CDLNO-w\n+# Remote checkout: /inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/transolver/LinearNO-monitor\n # Locating this file keeps the checkout portable (including local --dry-run).\n+# The CDLNO_* variable names are shared launcher interfaces, not folder names.\n+# After changing checkouts in an existing shell, explicitly bind this checkout:\n+#   export CDLNO_REPO_ROOT=\"$PWD\" CDLNO_RUNS_ROOT=\"$PWD/output\"\n+#   source ./path.sh\n+# User-supplied path overrides remain supported; data stays at the same root.\n export CDLNO_REPO_ROOT=\"${CDLNO_REPO_ROOT:-$(cd -- \"$(dirname -- \"${BASH_SOURCE[0]}\")\" && pwd)}\"\n export CDLNO_DATA_ROOT=\"${CDLNO_DATA_ROOT:-/inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/data}\"\n export CDLNO_FNO_ROOT=\"${CDLNO_FNO_ROOT:-${CDLNO_DATA_ROOT}/fno}\"\n"
+    },
+    {
+      "path": "docs/LINEARNO_REPRODUCTION_MATRIX.md",
+      "old_sha256": "fa195ca21c31941b78cded355d5a9b674ba2d86e7ceb42a89aa934d4896f77c6",
+      "new_sha256": "d2b12535f3284dccb08a033b49f1a7dd6d2ff8c23396981ef5f91757ebee06e7",
+      "commit": "eebbb3fb95933ea7e545f5527cc5fdde3104aaef",
+      "source": "L10 reviewed implementation status header; historical L0 scientific ledger retained",
+      "diff": "--- L1/docs/LINEARNO_REPRODUCTION_MATRIX.md\n+++ reviewed/docs/LINEARNO_REPRODUCTION_MATRIX.md\n@@ -1,4 +1,12 @@\n-# LinearNO L0 复现矩阵：论文 → 固定发布源码 → 目标参数/协议\n+# LinearNO 复现矩阵：论文 → 固定发布源码 → 目标参数/协议\n+\n+## L10 当前实现状态\n+\n+实现 family 为 `linearno`，固定来源为 `thuml/Transolver@75e0f67643806a81cd1d3f6adc88dd8c02416fe7`、`HiPRL/LinearNO@3f2b80df13c17a09e250f2ebe4d4ecdfd4acf269`、论文 `2511.06294v3`。L0–L10 当前均为 PASS（资源门控的真实数据/完整训练/远端环境另标 NOT RUN）。\n+\n+AirfRANS resolved training objective：`airfrans_transolver_mse_v1`，标准化四通道 volume MSE + 1×surface MSE。ShapeNet-Car resolved training objective：`car_transolver_mse_v1`，全点三速度 normalized MSE + 0.5×surface pressure MSE。两项来源均为用户确认的官方代码合同；论文 physical rL2、drag、Spearman 仍在 evaluation_spec 中单独登记，不能互称。\n+\n+L10 抽查 `28 passed`，全 `tests/linearno` `84 passed`；L9 综合 `118 passed`。完整结论、命令和未验证边界见 [LINEARNO_IMPLEMENTATION_REPORT](LINEARNO_IMPLEMENTATION_REPORT.md)。以下 L0 内容保留为来源审计和冲突台账，不代表当前模型尚未实现。\n \n 日期2026-09-17。此文件是**只读审计和后续实现合同建议**，没有实现任何profile、CLI或模型。来源/冻结/已执行检查见 [REFERENCE_AUDIT](LINEARNO_REFERENCE_AUDIT.md)。机器可读 [profile-inventory](linearno_audit/l0/profile-inventory.json) 包含8任务×3profile独立记录、实际官方构造参数、训练/data/objective/evaluation字段、来源和UNRESOLVED项；不是被生产代码读取的配置文件。\n \n"
+    }
+  ]
+}

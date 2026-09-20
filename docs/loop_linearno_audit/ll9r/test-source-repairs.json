@@ -1,0 +1,56 @@
+{
+  "tests/linearno/test_legacy.py": [
+    {
+      "before": "                if row['path']=='docs/LINEARNO_REPRODUCTION_MATRIX.md':\n                    old=(Path(baseline['snapshot'])/'source'/row['path']).read_text()\n                    now=(ROOT/row['path']).read_text()\n                    self.assertTrue(now.startswith(old.split('\\n\\n',1)[0]+'\\n\\n'))\n                    self.assertTrue(now.endswith(old.split('\\n\\n',1)[1]))\n                    continue\n",
+      "after": "                if row['path']=='docs/LINEARNO_REPRODUCTION_MATRIX.md':\n                    from frozen_revisions import expected_hash\n                    self.assertEqual(hashlib.sha256((ROOT/row['path']).read_bytes()).hexdigest(),\n                                     expected_hash(row['path'],row['sha256']))\n                    continue\n",
+      "count": 1
+    },
+    {
+      "before": "                    continue\n                self.assertEqual(hashlib.sha256((ROOT/row['path']).read_bytes()).hexdigest(), row['sha256'])\n        for path in ('LINEARNO','train_and_evaluate','CODEX/train_and_evaluate','evaluate'):\n",
+      "after": "                    continue\n                from frozen_revisions import expected_hash\n                from ll9r_test_source_projection import project_test_source\n                raw=project_test_source(row['path'],(ROOT/row['path']).read_bytes())\n                self.assertEqual(hashlib.sha256(raw).hexdigest(), expected_hash(row['path'],row['sha256']))\n        for path in ('LINEARNO','train_and_evaluate','CODEX/train_and_evaluate','evaluate'):\n",
+      "count": 1
+    }
+  ],
+  "tests/linearno/test_static_integration.py": [
+    {
+      "before": "            path=ROOT/row['path']\n            self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),row['sha256'])\n            subprocess.run(['bash','-n',str(path)],check=True,capture_output=True)\n",
+      "after": "            path=ROOT/row['path']\n            from frozen_revisions import expected_hash\n            self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),expected_hash(row['path'],row['sha256']))\n            subprocess.run(['bash','-n',str(path)],check=True,capture_output=True)\n",
+      "count": 1
+    }
+  ],
+  "tests/linearno/test_history_static.py": [
+    {
+      "before": "        old=json.loads((ROOT/'docs/linearno_history_audit/r6/baseline-provenance.json').read_text())\n        for key in ('source_sha256','normalized_patch_sha256'):self.assertEqual(provenance()[key],old[key])\n\n",
+      "after": "        old=json.loads((ROOT/'docs/linearno_history_audit/r6/baseline-provenance.json').read_text())\n        from historical_git_base import historical_git_base\n        with historical_git_base(old['base_commit']):\n            current = provenance()\n        for key in ('source_sha256','normalized_patch_sha256'):self.assertEqual(current[key],old[key])\n\n",
+      "count": 1
+    }
+  ],
+  "tests/linearno/test_history_industrial.py": [
+    {
+      "before": "        for task,fn in [('standard',provenance),('airfrans',_provenance),('car',task_provenance)]:\n            now=fn()\n            for key in ('source_sha256','normalized_patch_sha256'):self.assertEqual(now[key],old[task][key])\n",
+      "after": "        for task,fn in [('standard',provenance),('airfrans',_provenance),('car',task_provenance)]:\n            from historical_git_base import historical_git_base\n            with historical_git_base(old[task]['base_commit']):\n                now=fn()\n            for key in ('source_sha256','normalized_patch_sha256'):self.assertEqual(now[key],old[task][key])\n",
+      "count": 1
+    }
+  ],
+  "tests/linearno_entry_projection.py": [
+    {
+      "before": "def strip_linearno(tree):\n    from history_entry_projection import strip_history\n",
+      "after": "def strip_linearno(tree):\n    from linearno_air_projection import strip_air\n    tree = strip_air(tree)\n    from history_entry_projection import strip_history\n",
+      "count": 1
+    }
+  ],
+  "tests/test_kcdno_delivery.py": [
+    {
+      "before": "        for kind,project in (('standard','PDE-Solving-StandardBenchmark'),('car','Car-Design-ShapeNetCar'),('air','Airfoil-Design-AirfRANS')):\n            r=subprocess.run([sys.executable,'-I','-c',code,str(ROOT/project),kind],cwd=ROOT/project,capture_output=True,text=True,timeout=30)\n            self.assertEqual(r.returncode,0,r.stdout+r.stderr)\n",
+      "after": "        for kind,project in (('standard','PDE-Solving-StandardBenchmark'),('car','Car-Design-ShapeNetCar'),('air','Airfoil-Design-AirfRANS')):\n            r=subprocess.run([sys.executable,'-I','-B','-c',code,str(ROOT/project),kind],cwd=ROOT/project,capture_output=True,text=True,timeout=30)\n            self.assertEqual(r.returncode,0,r.stdout+r.stderr)\n",
+      "count": 1
+    }
+  ],
+  "tests/loop_entry_projection.py": [
+    {
+      "before": "def strip_loop(tree):\n    class Strip(ast.NodeTransformer):\n",
+      "after": "def strip_loop(tree):\n    from ll9r_projection import strip_repair\n    tree = strip_repair(tree)\n    class Strip(ast.NodeTransformer):\n",
+      "count": 1
+    }
+  ]
+}

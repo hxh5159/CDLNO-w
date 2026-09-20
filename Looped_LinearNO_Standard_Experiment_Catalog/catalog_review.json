@@ -1,0 +1,75 @@
+{
+  "status": "PASS",
+  "records_verified": 1476,
+  "architecture_configurations": 492,
+  "unique_output_paths": 1476,
+  "schema_validations": {
+    "pure": 180,
+    "loop": 1188,
+    "transolver_from_native_parser": 108
+  },
+  "paired_mode_groups_verified": 396,
+  "depth_matrix_verified": true,
+  "seed_matrix_verified": true,
+  "all_record_hashes_verified": true,
+  "json_csv_agreement": true,
+  "transolver_CPU_reference_comparison": [
+    {
+      "task": "darcy",
+      "position_checks": [
+        {
+          "batch": 1,
+          "shape": [
+            1,
+            85,
+            85,
+            64
+          ],
+          "max_abs_error": 0.0
+        },
+        {
+          "batch": 2,
+          "shape": [
+            2,
+            85,
+            85,
+            64
+          ],
+          "max_abs_error": 0.0
+        }
+      ],
+      "full_initial_state_identical": true,
+      "source_cuda_calls_removed": 2,
+      "learned_modules_modified": false
+    },
+    {
+      "task": "ns",
+      "position_checks": [
+        {
+          "batch": 1,
+          "shape": [
+            1,
+            64,
+            64,
+            64
+          ],
+          "max_abs_error": 0.0
+        },
+        {
+          "batch": 2,
+          "shape": [
+            2,
+            64,
+            64,
+            64
+          ],
+          "max_abs_error": 0.0
+        }
+      ],
+      "full_initial_state_identical": true,
+      "source_cuda_calls_removed": 2,
+      "learned_modules_modified": false
+    }
+  ],
+  "scope": "configuration, construction-derived counts and CPU initialization only; no dataset/forward/training/GPU"
+}

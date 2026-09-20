@@ -1,0 +1,744 @@
+--- /dev/null
++++ docs/LOOP_LINEARNO_RB_ATTNRES.md
+@@ -0,0 +1,137 @@
++# Looped LinearNO LL4：点域 Block AttnRes
++
++**唯一状态：PASS。仅完成 LL4，未执行 LL5–LL10。**
++
++## A. 本阶段范围与来源
++
++仓库 `/home/hwz/CDLNO`，remote `https://github.com/hxh5159/CDLNO-w.git`，branch `main`，HEAD `5b991226c5354af3332b2f7306b370aef0950c79`，tree `a661e0a53d367e09dfe9b5afaabcab29ee8aec63`。2026-09-20，用户明确批准 LL3 后只授权本 LL4。
++
++核对根 AGENTS、LL0–LL3 报告/状态及当前源码。重新阅读冻结规格 §4.2、LL4 提示词、Attention Residuals v1 PDF 第3–5页 Eq.2–6/Figure2，及固定官方 README 的 Block AttnRes 伪代码。论文 PDF SHA-256 `444673994328f7be8aee9d96fb240596b6f254f06ebaa53a2673413a244198c9`；官方材料 commit `85e22310fe5ee860b4a023de312d791de8a5a5e6`。[本轮来源复核](loop_linearno_audit/ll4/source-recheck.json) 与 LL0 台账 hash 相同。环境没有 `pdftotext`，改用已安装 `fitz` 直接读取 PDF；未安装依赖、未重新下载来源。
++
++本阶段在同一通用主干增加 `rb_attnres`。一次 core pass 对应一个 AttnRes block，内部有 2C 个 residual sublayer；这是论文 Block AttnRes 在对齐点域 `[B,N,H]` 上的适配。prefix/suffix、LinearNO 的 Q/K/V/温度/卷积/输出投影、native FFN/LN/head 都沿用 LL3 和纯模型。没有引入旧 A/K、latent history 或 LB。
++
++固定官方材料是公式来源；本项目的 LinearNO 点域适配和 PCRS 拓扑不是官方发布的 LinearNO 实验。论文 Figure2 的“在边界转换 completed/partial 列表”和本实现“前轮末尾入 completed、次轮从空 partial 开始”传递同一组张量；以 Eq.6 的来源定义和本项目冻结规格逐项验证。
++
++## B. 实际文件与最小接入
++
++| 文件 | 实际修改 |
++|---|---|
++| `cdlno/linearno_loop/core.py` | 允许 SR/RB 两个已实现 mode；只在 RB 注册 receiver；新增 forward-local `_rb_forward`，补结构独立性检查；原 SR 数学分支不变 |
++| `cdlno/linearno_loop/construction.py` | 合成 config 构造允许 RB，LB 继续在构造前拒绝；更新公共初始化字典的说明 |
++| `tests/loop_linearno/test_sr_core.py` | 仅把“未实现 mode 拒绝”的断言范围收窄至仍未实现的 LB；SR 数值、初始化、计数及 strict 测试不改 |
++| `tests/loop_linearno/rb_oracle.py` | 先于生产 RB 改动写入的独立全 core 公式 |
++| `tests/loop_linearno/rb_support.py` | 测试专用 live hook/权重 trace、非零 query fixture，无生产诊断缓存 |
++| `tests/loop_linearno/test_rb_core.py` | 9 项专项测试，含 36 个数学 oracle 案例和 24 个训练 AdamW 案例 |
++| 本报告、研究 STATUS、`docs/loop_linearno_audit/ll4/` | 命令、数值、原文件备份、来源、diff、冻结和自审 |
++
++没有修改三套 wrapper 文件、LL2 PointDepthAttnRes/body、顶层无 torch schema，或任何旧模型/八任务入口/factory/训练/eval/checkpoint/launcher/monitor。内部调用链仍为：
++
++```text
++LL1 config -> validate_config -> require_implemented -> validate_constructor
++  -> 原 LoopedStandard/AirfRANS/ShapeNet 合成 wrapper
++  -> 原 stem / 原输入位置时间处理
++  -> prefix native -> shared core 的 RB 子层调度 -> suffix native -> 唯一 head
++```
++
++仅 RB 新增 state 键：`loop.rb_receivers.<round>.<sublayer>.query/norm_scale` 与 `loop.rb_output.query/norm_scale`。core 算子仍位于 `loop.core.<physical_index>.block.*`，没有按 round 复制算子。SR 没有任何 router 参数。router 是全零 query/全一 scale，构造不消耗 RNG；原 wrapper 的一次 whole-tree apply 只识别 Linear/LN/Conv，不会覆盖这两类自有 Parameter。16 组同 seed 的八任务×两 preset 构造证明公共主干逐键值及构造后 RNG 完全一致。
++
++## C. 公式与调度
++
++prefix 输出为 anchor (a=b_0\)。第 r 轮开始 `partial=None`，完成轮列表为 `[b0,...,b(r-1)]`。第 j 子层输入来源为：
++
++\[
++V_{r,j}=\begin{cases}[b_0,\ldots,b_{r-1}],&j=1\\
++[b_0,\ldots,b_{r-1},p_{r,j-1}],&j>1.\end{cases}
++\]
++
++每个 `(r,j)` 独立 receiver 使用 LL2 的 eps1e-6、单 pseudo-query、RMS key、source softmax 和 raw value：
++
++\[
++h_{r,j}=\mathrm{AR}_{r,j}(V_{r,j}),\quad
++u_{r,2k-1}=\mathrm{Attn}_k(\mathrm{LN}_{1,k}(h_{r,2k-1})),\quad
++u_{r,2k}=\mathrm{MLP}_k(\mathrm{LN}_{2,k}(h_{r,2k})).
++\]
++
++`partial` 只累加这些 raw u，(b_r=\sum_{j=1}^{2C}u_{r,j}\)。轮末入库一次，随后清空下一轮 partial。最终 `rb_output((b0,...,bR))` 才进入 suffix。**没有 h+u、anchor+partial、1/R、来源数补偿、depth/value 投影。**
++
++completed/partial/h/raw 都是一次 `_rb_forward` 内的局部变量，传 receiver 时使用 tuple 快照，既不改变此前 source 列表，也不 detach。没有 forward tensor 属性、buffer、跨 batch/time/member 的缓存。注册在 self 上的只有固定 receiver 参数和既存物理 blocks。
++
++| 拓扑 | receiver 数 | router 参数 | 每个 receiver 的来源数（`|`分轮/最终） |
++|---|---:|---:|---|
++| P1/C3/R2/S1 | 13 | 26H（fixture H8 实测208） | `1,2,2,2,2,2 | 2,3,3,3,3,3 | 3` |
++| P2/C2/R2/S2 | 9 | 18H（fixture H8 实测144） | `1,2,2,2 | 2,3,3,3 | 3` |
++| custom P0/C2/R3/S1 | 13 | 26H（fixture H8 实测208） | `1,2,2,2 | 2,3,3,3 | 3,4,4,4 | 4` |
++
++H 表示 hidden width，不是 head 数/网格高。receiver 的 query/norm 在 round、sublayer、output 之间均独立，原 attention/MLP 在 round 之间共享。SR 的参数/MAC报告与 LL3 完全相同；本轮只实测新增 router 参数，不声称 RB 与 SR FLOPs 相同、内存更少或训练更快。
++
++## D. 验证、数值与实际命令
++
++本轮 CPU 合成，Python3.13.9、torch2.13.0+cu130、PyG2.3.1；完整版本见 [environment](loop_linearno_audit/ll4/environment.json)。未执行真实数据、GPU、远端或任务训练。
++
++最终命令（仓库根目录）：
++
++```bash
++PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 CUDA_VISIBLE_DEVICES='' \
++OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 \
++LOOP_LL2_ATTNRES_REPORT=docs/loop_linearno_audit/ll4/attnres-report.json \
++LOOP_LL2_BODY_REPORT=docs/loop_linearno_audit/ll4/body-report.json \
++LOOP_LL3_PARITY_REPORT=docs/loop_linearno_audit/ll4/sr-parity.json \
++LOOP_LL3_ACCOUNTING_REPORT=docs/loop_linearno_audit/ll4/accounting.json \
++LOOP_LL4_REPORT=docs/loop_linearno_audit/ll4/rb-report.json \
++python -B -m unittest discover -s tests/loop_linearno -p 'test_*.py' -v \
++> docs/loop_linearno_audit/ll4/loop-tests.log 2>&1
++
++PYTHONDONTWRITEBYTECODE=1 python -B docs/loop_linearno_audit/ll4/run_existing_regressions.py \
++> docs/loop_linearno_audit/ll4/regression-progress.jsonl 2>&1
++
++PYTHONDONTWRITEBYTECODE=1 python -B docs/loop_linearno_audit/ll4/finalize_evidence.py
++```
++
++**最终 loop suite：64 方法，62 pass，0 failure/error，2 CUDA skip，44.342s。** 9 项 LL4 新测试全通过；两 skip 是本轮 CPU 环境下原 LL2 CUDA 检查，不把历史 LL2 GPU 结果当作本轮 GPU 验收。首次 7 项专项也通过，保留 [首轮日志](loop_linearno_audit/ll4/rb-first-tests.log)。最终 [测试日志](loop_linearno_audit/ll4/loop-tests.log)、[逐张量报告](loop_linearno_audit/ll4/rb-report.json)、[数值摘要](loop_linearno_audit/ll4/numeric-summary.json)。
++
++| 检查 | 覆盖和实际结果 |
++|---|---|
++| 完整数学 oracle | 六 variant × 三拓扑 × FP64/FP32，36 案例；独立 LN/erf GELU、独立 LinearNO 因子公式和独立 source AR，不调用生产 forward |
++| 中间量 | 每个 source、实际 source weights、h、raw u、每步 partial、每个 b_r、最终 route 和完整输出逐项比较；LN 实际收到的对象就是相应 h |
++| 梯度 | 输入与所有活动算子/router 参数逐项对照；非零 query 下每个活动 router 梯度 finite/nonzero；首 singleton query/norm 无有效梯度，Air dead temperature 单独记录 |
++| raw 累加反例 | C1/R1/零 query，手算 operator=2x、MLP=3x、suffix identity，结果为3.75x而非普通 residual 的12x；证明无 anchor/identity 注入和来源数补偿 |
++| 训练更新 | 24 组 native 算子独立展开、FP64/FP32，原 attention dropout=.2；forward、输入/参数梯度、AdamW权重/state、RNG逐位全等。此 dropout 是原 attention dropout，不是 history dropout |
++| 来源和执行时机 | 三拓扑来源序列完全匹配；第一 receiver 返回 anchor 原对象；query0 为均匀平均，非零 query 权重逐点不同；router→对应LN→raw顺序精确；Q/K/V 每轮重算；最终LN/head各一次 |
++| 共享与反传 | 16组SR/RB实际公共初值/RNG逐位相等；第二轮 isolated raw branch VJP 回到第一轮 b1、输入、共享to_v参数，均finite/nonzero；无future/current raw source |
++| 无N×N/M×M attention | TorchDispatch实际bmm仅KTV/QC；N11/M4/dh4 fixture明确区分合法4×4 context与slot self-attention；core native/full-block.forward设为必抛错仍通过，证明未隐含普通 residual |
++| 隔离 | B>1单样本对照、非conv点置换、异常发生在已有history后再调用、更换B/N、旧输入autograd无路径、重复forward一致；NS/Plasticity/Air/Car调用与新对象对照，第一source列表每次只含anchor |
++| strict | Standard/Air/Car三套config先读、三次临时cwd全新进程、weights_only=True/strict=True，输出逐位相同；SR/RB state互载拒绝；router别名/非法mode结构拒绝 |
++
++独立数学 oracle 的一步更新采用 SGD，沿用 LL3 对独立 FP32 reduction 舍入与 AdamW 分母敏感性的分开验证方法；AdamW 由同数值算子、独立控制流对照验证。没有改变生产 optimizer，也没有放宽 LL2/LL3 容差。
++
++| 独立数学对照 | 案例数 | atol / rtol | 最大 abs | 各张量mean abs最大值 | 最大 relative / mean relative |
++|---|---:|---|---:|---:|---:|
++| FP64 | 18 | 1e-12 / 1e-10 | 8.88178e-16 | 2.49583e-16 | 4.09564e-10 / 4.84628e-11 |
++| FP32 | 18 | 1e-6 / 1e-5 | 9.45525e-7 | 4.18833e-7 | 1.65630 / 0.211761 |
++| native 独立展开 AdamW | 24 | 0 / 0 | 0 | 0 | 0 / 0 |
++
++每个dtype有5210项逐张量误差记录。relative 使用 `abs(error)/max(abs(reference),1e-12)`；最大 relative 来自 near-zero `plain/P2/rb_receivers.0.1.query` 梯度，该张量 max abs 仅6.84452e-12。FP32最大绝对误差来自 `conv_temp/P2/core.0.mlp.linear_post.bias` 梯度，仍在既定 atol+rtol 内；没有把 relative 的大比值隐去。
++
++## E. SR 与旧模型兼容证据
++
++SR 的完整 [数值报告](loop_linearno_audit/ll4/sr-parity.json) 和 [参数/MAC报告](loop_linearno_audit/ll4/accounting.json) 与已验收 LL3 JSON 全等，不仅是测试总数相同。SR 无新增 parameter/buffer；公共 backbone 构造、初始化、placeholder RNG 不因 RB receiver 的存在而改变。既有 LL3 冻结数值、容差、原始失败诊断全部保留。
++
++重跑 LL0 原 24 模块、153 方法：147 pass、2 个已审查历史失败方法（4 条文档冻结断言）、4 CUDA skip、0 error。逐模块结果、失败ID与实际断言文本均与 LL0 一致，无新增失败，没有改旧 golden。旧失败涉及 README/path.sh/纯 LinearNO 复现矩阵历史内容，不能据此宣称全仓测试全绿。[回归对照](loop_linearno_audit/ll4/regression-summary.json)。
++
++起点 [manifest](loop_linearno_audit/ll4/start-manifest.json) 保存2142个 tracked/untracked/ignored 文件分类、size、SHA-256，含全部旧模型与历史用户修改。最终 [freeze](loop_linearno_audit/ll4/end-freeze.json)：仅上列4个已有研究文件改变，其他 **2138个文件保持内容与分类不变**，无意外新增/删除/ignored变化。HEAD/tree、tracked/staged diff 不变；未reset/clean/stash/checkout/commit/push。新ignored仅本阶段证据 `.log`，不生成缓存/运行目录。完整增量见 [source.diff](loop_linearno_audit/ll4/source.diff)。
++
++首次冻结脚本沿用 LL3 时漏改了证据目录的 lowercase 前缀，将本阶段 `ll4/` 产物误报为意外新增；原有文件检查当时已无意外改变。[初次结果](loop_linearno_audit/ll4/initial-freeze.json) 保留。已将本阶段允许证据路径精确改为 `ll4/` 并重跑，不扩大生产文件变更范围、不修改起点manifest或旧冻结规则。
++
++## F. 自审、未运行项与状态理由
++
++五项交付前自审已经逐源码/公式/证据核对：
++
++1. **来源时序**：无初始零partial作为额外source；轮首只读completed，每个后续子层加且仅加当前raw partial，最终读取全部completed。
++2. **数学边界**：core不存在普通 residual、1/R 或额外来源数缩放；prefix/suffix仍native；query0的RB不声称等于SR。
++3. **两种共享**：算子跨轮共享，router按逻辑位置独立；参数数目/别名负例、初值/RNG及分支梯度证据齐全。
++4. **状态生命周期**：生产路径无trace/history属性；hooks仅在测试，保留活图；异常、变batch/点数、连续物理时间/成员调用不串history。真实任务循环未运行。
++5. **回归和声明**：SR两个JSON精确相等、旧153回归与原历史结果一致、2142文件全冻结；没有用测试通过替代论文精度/真实训练/远端验收。
++
++没有新待裁定架构冲突，LL4所有非资源门控要求完成，唯一状态 **PASS**。NOT RUN/未实现：LB、生产parser/factory/launcher/monitor与统一输出接线、loop完整optimizer/RNG resume archive、真实数据/训练、GPU/AMP/compile、远端Python3.10/torch2.11 cu128、完整性能/显存和精度。strict测试仅是合成state_dict新进程往返，不称生产train/resume/eval闭环。
++
++**本 LL4 阶段结束，未执行下一阶段。**
+--- /dev/null
++++ tests/loop_linearno/rb_oracle.py
+@@ -0,0 +1,53 @@
++"""LL4 independent equations: point-source routing plus complete PCRS core.
++
++No production loop/body/receiver/block forward is called. Raw branches use
++explicit LN/erf GELU and the already independent LinearNO factor equations.
++"""
++import torch
++
++from linearno.attention_reference import reference as attention_reference
++from loop_linearno.point_attnres_oracle import point_attnres
++
++
++def rb_reference(x,state,*,P,C,R,S,variant,heads,H,W):
++    trace=[];visits=[]
++
++    def norm(z,key):
++        centered=z-z.mean(-1,keepdim=True)
++        return centered/(centered.square().mean(-1,keepdim=True)+1e-5).sqrt()*state[key+'.weight']+state[key+'.bias']
++
++    def linear(z,key):return z@state[key+'.weight'].T+state[key+'.bias']
++
++    def raw(z,key,kind):
++        if kind=='operator':
++            a={k[len(key+'.Attn.'):]:v for k,v in state.items() if k.startswith(key+'.Attn.')}
++            return attention_reference(norm(z,key+'.ln_1'),a,heads=heads,variant=variant,H=H,W=W)[0]
++        v=linear(norm(z,key+'.ln_2'),key+'.mlp.linear_pre.0')
++        return linear(.5*v*(1+torch.erf(v/(2**.5))),key+'.mlp.linear_post')
++
++    def native(z,group,i):
++        key=f'{group}.{i}.block';z=z+raw(z,key,'operator');z=z+raw(z,key,'mlp')
++        visits.append(z)
++        return z
++
++    for i in range(P):x=native(x,'prefix',i)
++    anchor=x;completed=[anchor]
++    for r in range(R):
++        terms=[]
++        for j in range(2*C):
++            # Build the raw partial independently from the terms accumulated
++            # so far. No receiver output/anchor is a term.
++            sources=list(completed)
++            if terms:sources.append(sum(terms[1:],terms[0]))
++            key=f'rb_receivers.{r}.{j}'
++            h,alpha=point_attnres(sources,state[key+'.query'],state[key+'.norm_scale'])
++            u=raw(h,f'core.{j//2}.block','operator' if j%2==0 else 'mlp')
++            terms.append(u);partial=sum(terms[1:],terms[0])
++            trace.append(dict(sources=tuple(sources),weights=alpha,h=h,u=u,partial=partial,round=r,sublayer=j))
++        completed.append(partial)
++    x,weights=point_attnres(completed,state['rb_output.query'],state['rb_output.norm_scale'])
++    final_route=dict(sources=tuple(completed),weights=weights,h=x)
++    for i in range(S):x=native(x,'suffix',i)
++    key=f'suffix.{S-1}.block'
++    output=linear(norm(x,key+'.ln_3'),key+'.mlp2');visits[-1]=output
++    return output,dict(anchor=anchor,steps=trace,completed=tuple(completed),final_route=final_route,visits=visits)
+--- /dev/null
++++ tests/loop_linearno/rb_support.py
+@@ -0,0 +1,67 @@
++"""LL4 test-only configs, live hooks and routing traces; no runtime observer."""
++from contextlib import ExitStack
++from unittest.mock import patch
++
++import torch
++
++from linearno_loop.config import resolve_config
++from loop_linearno.sr_support import config
++
++
++def rb_config(task='darcy',preset='p1_c3_r2_s1',**kw):
++    c=config(task,preset,**kw);r=c['request']
++    return resolve_config(task,options={**r['options'],'residual_mode':'rb_attnres'},profile_overrides=r['profile_overrides'])
++
++
++def excite_routers(core):
++    gen=torch.Generator().manual_seed(440)
++    with torch.no_grad():
++        for name,p in core.named_parameters():
++            if name.startswith(('rb_receivers.','rb_output.')):
++                p.copy_(torch.randn(p.shape,generator=gen,dtype=p.dtype)*.2+(1 if name.endswith('norm_scale') else 0))
++
++
++class Trace:
++    """Capture the actual weights and live sources with removable test hooks."""
++    def __init__(self,core):
++        self.core=core;self.routes=[];self.raw=[];self.norm_inputs=[];self.events=[];self.qkv=[]
++        self.head=[];self.handles=[];self.stack=ExitStack()
++
++    def __enter__(self):
++        for name,router in [(f'{r}.{j}',v) for r,row in enumerate(self.core.rb_receivers) for j,v in enumerate(row)]+[('out',self.core.rb_output)]:
++            actual=router._weights_and_values
++            def weights(sources,actual=actual):
++                result=actual(sources);self.routes[-1]['weights']=result[0].permute(1,2,0)
++                return result
++            self.stack.enter_context(patch.object(router,'_weights_and_values',side_effect=weights))
++            def before(m,args,name=name):
++                self.events.append('route.'+name)
++                self.routes.append(dict(name=name,sources=args[0]))
++            def after(m,args,out):
++                row=self.routes[-1];row['h']=out
++                if len(args[0])==1:row['weights']=torch.ones((*out.shape[:2],1),device=out.device,dtype=out.dtype)
++            self.handles.extend((router.register_forward_pre_hook(before),router.register_forward_hook(after)))
++        for i,physical in enumerate(self.core.core):
++            b=physical.block
++            for kind,norm,branch in [('operator',b.ln_1,b.Attn),('mlp',b.ln_2,b.mlp)]:
++                def before(m,args,i=i,kind=kind):
++                    self.events.append(f'{i}.{kind}.ln');self.norm_inputs.append(args[0])
++                def after(m,args,out,i=i,kind=kind):
++                    self.events.append(f'{i}.{kind}.raw');self.raw.append(out)
++                self.handles.extend((norm.register_forward_pre_hook(before),branch.register_forward_hook(after)))
++            for factor in ('to_q','to_k','to_v'):
++                def project(m,args,out,i=i,factor=factor):self.qkv.append((i,factor,out))
++                self.handles.append(getattr(b.Attn,factor).register_forward_hook(project))
++        for name in ('ln_3','mlp2'):
++            self.handles.append(getattr(self.core.suffix[-1].block,name).register_forward_hook(
++                lambda m,a,y,name=name:self.head.append(name)))
++        return self
++
++    def __exit__(self,*exc):
++        for handle in self.handles:handle.remove()
++        self.stack.close()
++
++    def partial_after(self,index):
++        r,j=divmod(index,2*self.core.recurrent_core_blocks)
++        if j+1<2*self.core.recurrent_core_blocks:return self.routes[index+1]['sources'][-1]
++        return self.routes[index+1]['sources'][r+1]
+--- /dev/null
++++ tests/loop_linearno/test_rb_core.py
+@@ -0,0 +1,295 @@
++import copy
++import importlib
++import json
++import os
++from pathlib import Path
++import subprocess
++import sys
++import tempfile
++import unittest
++from unittest.mock import patch
++
++import torch
++from torch.utils._python_dispatch import TorchDispatchMode
++
++from cdlno.linearno_loop.construction import build_from_config
++from linearno_loop.config import resolve_config
++from loop_linearno.rb_oracle import rb_reference
++from loop_linearno.rb_support import rb_config,excite_routers,Trace
++from loop_linearno.sr_support import config,inputs,TOPOLOGIES
++from loop_linearno.test_point_attnres import errors
++
++
++class RBTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):cls.rows=[];cls.structure=[];cls.optimizer_rows=[]
++
++    @classmethod
++    def tearDownClass(cls):
++        if path:=os.environ.get('LOOP_LL4_REPORT'):
++            Path(path).write_text(json.dumps(dict(rows=cls.rows,structure=cls.structure,optimizer_rows=cls.optimizer_rows),indent=2)+'\n')
++
++    def test_train_dropout_adamw_against_native_unroll(self):
++        for variant in ('plain','temp','conv','conv_temp','airfrans','shapenet'):
++            task='airfrans' if variant=='airfrans' else 'car' if variant=='shapenet' else 'darcy'
++            for preset in TOPOLOGIES[:2]:
++                for dtype in (torch.float64,torch.float32):
++                    with self.subTest(variant=variant,preset=preset,dtype=dtype):
++                        c=rb_config(task,preset,variant=variant if task=='darcy' else None);r=c['request']
++                        c=resolve_config(task,options=r['options'],profile_overrides={**r['profile_overrides'],'model.dropout':.2})
++                        core=build_from_config(c).loop.to(dtype);excite_routers(core);ref=copy.deepcopy(core)
++                        gen=torch.Generator().manual_seed(193)
++                        x=torch.randn(2,15,8,generator=gen,dtype=dtype,requires_grad=True)
++                        rx=x.detach().clone().requires_grad_()
++                        start=torch.get_rng_state().clone();out=core(x);end=torch.get_rng_state().clone()
++                        torch.set_rng_state(start);z=rx
++                        for b in ref.prefix:z=b.block(z)
++                        completed=[z]
++                        for r in range(ref.loop_repeats):
++                            partial=None
++                            for j in range(2*ref.recurrent_core_blocks):
++                                z=ref.rb_receivers[r][j](tuple(completed) if partial is None else (*completed,partial))
++                                b=ref.core[j//2].block
++                                u=b.Attn(b.ln_1(z)) if j%2==0 else b.mlp(b.ln_2(z))
++                                partial=u if partial is None else partial+u
++                            completed.append(partial)
++                        z=ref.rb_output(completed)
++                        for b in ref.suffix:z=b.block(z)
++                        self.assertTrue(torch.equal(end,torch.get_rng_state()))
++                        torch.testing.assert_close(out,z,atol=0,rtol=0)
++                        target=torch.randn(out.shape,generator=gen,dtype=dtype)
++                        (out-target).square().mean().backward();(z-target).square().mean().backward()
++                        torch.testing.assert_close(x.grad,rx.grad,atol=0,rtol=0)
++                        rp=dict(ref.named_parameters())
++                        for name,p in core.named_parameters():
++                            if p.grad is None:self.assertIsNone(rp[name].grad)
++                            else:torch.testing.assert_close(p.grad,rp[name].grad,atol=0,rtol=0)
++                        opt=torch.optim.AdamW(core.parameters(),lr=.001);ropt=torch.optim.AdamW(ref.parameters(),lr=.001)
++                        opt.step();ropt.step()
++                        for name,p in core.named_parameters():
++                            torch.testing.assert_close(p,rp[name],atol=0,rtol=0)
++                            for k,v in opt.state[p].items():torch.testing.assert_close(v,ropt.state[rp[name]][k],atol=0,rtol=0)
++                        self.optimizer_rows.append(dict(variant=variant,preset=preset,dtype=str(dtype),dropout=.2,
++                            atol=0,rtol=0,forward_gradient_weight_adamw_state_max_error=0,exact_rng=True))
++
++    def test_independent_full_oracle_sources_weights_raw_partials_gradients(self):
++        for variant in ('plain','temp','conv','conv_temp','airfrans','shapenet'):
++            task='airfrans' if variant=='airfrans' else 'car' if variant=='shapenet' else 'darcy'
++            for preset in TOPOLOGIES:
++                for dtype in (torch.float64,torch.float32):
++                    with self.subTest(variant=variant,preset=preset,dtype=dtype):
++                        core=build_from_config(rb_config(task,preset,variant=variant if task=='darcy' else None)).loop.to(dtype)
++                        excite_routers(core);gen=torch.Generator().manual_seed(143)
++                        x=torch.randn(2,15,8,generator=gen,dtype=dtype,requires_grad=True)
++                        rx=x.detach().clone().requires_grad_()
++                        state={k:v.detach().clone().requires_grad_() for k,v in core.named_parameters()}
++                        with Trace(core) as trace:out=core(x)
++                        reference,rt=rb_reference(rx,state,P=core.prefix_blocks,C=core.recurrent_core_blocks,R=core.loop_repeats,
++                            S=core.suffix_blocks,variant=variant,heads=2,H=3,W=5)
++                        atol,rtol=(1e-12,1e-10) if dtype==torch.float64 else (1e-6,1e-5)
++                        row=dict(variant=variant,topology=preset,dtype=str(dtype),atol=atol,rtol=rtol,errors={},unused=[])
++                        self.rows.append(row)
++                        def check(a,b,name):
++                            row['errors'][name]=errors(a,b)
++                            torch.testing.assert_close(a,b,atol=atol,rtol=rtol,msg=name)
++                            self.assertTrue(torch.isfinite(a).all())
++                        for j,expected in enumerate(rt['steps']):
++                            actual=trace.routes[j];self.assertEqual(len(actual['sources']),len(expected['sources']))
++                            for k,(a,b) in enumerate(zip(actual['sources'],expected['sources'])):check(a,b,f'step{j}.source{k}')
++                            check(actual['weights'],expected['weights'],f'step{j}.weights')
++                            check(actual['h'],expected['h'],f'step{j}.h')
++                            self.assertIs(actual['h'],trace.norm_inputs[j])
++                            check(trace.raw[j],expected['u'],f'step{j}.raw')
++                            check(trace.partial_after(j),expected['partial'],f'step{j}.partial')
++                        for k,(a,b) in enumerate(zip(trace.routes[-1]['sources'],rt['completed'])):check(a,b,f'completed{k}')
++                        check(trace.routes[-1]['h'],rt['final_route']['h'],'core_final')
++                        check(trace.routes[-1]['weights'],rt['final_route']['weights'],'output_weights')
++                        check(out,reference,'final')
++                        target=torch.randn(out.shape,generator=gen,dtype=dtype)
++                        loss=(out-target).square().mean();ref_loss=(reference-target).square().mean()
++                        check(loss,ref_loss,'loss');loss.backward();ref_loss.backward();check(x.grad,rx.grad,'input_gradient')
++                        for name,p in core.named_parameters():
++                            q=state[name]
++                            if name.startswith('rb_receivers.0.0.'):
++                                self.assertIsNone(p.grad)
++                                self.assertTrue(q.grad is None or torch.equal(q.grad,torch.zeros_like(q)))
++                                row['unused'].append(name)
++                            elif name.endswith('Attn.temperature'):
++                                self.assertEqual(variant,'airfrans');self.assertIsNone(p.grad);self.assertIsNone(q.grad);row['unused'].append(name)
++                            else:
++                                check(p.grad,q.grad,'gradient.'+name)
++                                if name.startswith(('rb_receivers.','rb_output.')):self.assertGreater(p.grad.abs().sum().item(),0)
++                        # Linear update sensitivity keeps independent FP32
++                        # reduction roundoff separate from AdamW eps effects.
++                        torch.optim.SGD(core.parameters(),lr=.001).step();torch.optim.SGD(state.values(),lr=.001).step()
++                        for name,p in core.named_parameters():check(p,state[name],'step.'+name)
++
++    def test_receiver_inventory_source_schedule_raw_only_and_call_order(self):
++        schedules={'p1_c3_r2_s1':[1,2,2,2,2,2,2,3,3,3,3,3,3],
++                   'p2_c2_r2_s2':[1,2,2,2,2,3,3,3,3],
++                   'custom':[1,2,2,2,2,3,3,3,3,4,4,4,4]}
++        for preset,expected in schedules.items():
++            core=build_from_config(rb_config(preset=preset)).loop.double()
++            receivers=[*(v for row in core.rb_receivers for v in row),core.rb_output]
++            self.assertEqual(len(receivers),2*core.recurrent_core_blocks*core.loop_repeats+1)
++            params=[p for m in receivers for p in m.parameters()]
++            self.assertEqual(sum(p.numel() for p in params),2*8*len(receivers))
++            self.assertEqual(len(params),len({id(p) for p in params}))
++            for m in receivers:
++                self.assertEqual(set(m.state_dict()),{'query','norm_scale'})
++                self.assertTrue(torch.equal(m.query,torch.zeros_like(m.query)))
++                self.assertTrue(torch.equal(m.norm_scale,torch.ones_like(m.norm_scale)))
++            with Trace(core) as t:core(torch.randn(2,15,8,dtype=torch.float64))
++            self.assertEqual([len(r['sources']) for r in t.routes],expected)
++            self.assertIs(t.routes[0]['h'],t.routes[0]['sources'][0])
++            for row in t.routes:
++                for value in row['sources']:self.assertEqual(value.shape,(2,15,8))
++                torch.testing.assert_close(row['weights'],torch.full_like(row['weights'],1/len(row['sources'])),atol=0,rtol=0)
++                torch.testing.assert_close(row['h'],torch.stack(row['sources']).mean(0),atol=1e-12,rtol=1e-10)
++            J=2*core.recurrent_core_blocks
++            for r in range(core.loop_repeats):
++                acc=None
++                for j in range(J):
++                    raw=t.raw[r*J+j];acc=raw if acc is None else acc+raw
++                    torch.testing.assert_close(t.partial_after(r*J+j),acc,atol=0,rtol=0)
++                self.assertIs(t.routes[(r+1)*J]['sources'][r+1],t.partial_after(r*J+J-1))
++            events=[]
++            for r in range(core.loop_repeats):
++                for j in range(J):events.extend([f'route.{r}.{j}',f'{j//2}.{"operator" if j%2==0 else "mlp"}.ln',f'{j//2}.{"operator" if j%2==0 else "mlp"}.raw'])
++            events.append('route.out');self.assertEqual(t.events,events);self.assertEqual(t.head,['ln_3','mlp2'])
++            for i in range(core.recurrent_core_blocks):
++                for factor in ('to_q','to_k','to_v'):
++                    vals=[v for k,f,v in t.qkv if (k,f)==(i,factor)]
++                    self.assertEqual(len(vals),core.loop_repeats);self.assertFalse(torch.equal(vals[0],vals[1]))
++            self.structure.append(dict(preset=preset,sources=expected,receivers=len(receivers),router_parameters=sum(p.numel() for p in params)))
++
++    def test_common_backbone_initialization_values_rng_and_unique_router_state(self):
++        for task in ('airfoil','darcy','elasticity','pipe','ns','plasticity','airfrans','car'):
++            for preset in TOPOLOGIES[:2]:
++                c=rb_config(task,preset);path,name=c['model_spec']['class_path'].rsplit('.',1)
++                cls=getattr(importlib.import_module(path),name);kw=c['model_spec']['constructor_kwargs']
++                torch.manual_seed(82);sr=cls(**{**kw,'residual_mode':'sr_1_over_r'});rng=torch.get_rng_state().clone()
++                torch.manual_seed(82);rb=cls(**kw)
++                self.assertTrue(torch.equal(rng,torch.get_rng_state()))
++                common={k:v for k,v in rb.state_dict().items() if '.rb_' not in k}
++                self.assertEqual(set(common),set(sr.state_dict()))
++                for k,v in common.items():torch.testing.assert_close(v,sr.state_dict()[k],atol=0,rtol=0)
++                self.assertEqual(sum(p.numel() for p in rb.parameters())-sum(p.numel() for p in sr.parameters()),
++                                 2*8*(2*rb.loop.recurrent_core_blocks*rb.loop.loop_repeats+1))
++                self.assertFalse(any('round' in key for key in common))
++                self.assertEqual(len(list(rb.parameters())),len({id(p) for p in rb.parameters()}))
++
++    def test_branch_vjp_point_dependent_weights_and_no_future_source(self):
++        core=build_from_config(rb_config('elasticity')).loop.double();excite_routers(core)
++        x=torch.randn(2,11,8,dtype=torch.float64,requires_grad=True)
++        with Trace(core) as t:core(x)
++        self.assertGreater((t.routes[-1]['weights'][:,0]-t.routes[-1]['weights'][:,1]).abs().max().item(),1e-8)
++        J=2*core.recurrent_core_blocks
++        old=t.routes[J]['sources'][1]
++        grads=torch.autograd.grad(t.raw[J].square().sum(),(old,x,core.core[0].block.Attn.to_v.weight),retain_graph=True)
++        for g in grads:self.assertTrue(torch.isfinite(g).all());self.assertGreater(g.abs().sum().item(),0)
++        for i,row in enumerate(t.routes[:-1]):
++            r,j=divmod(i,J)
++            self.assertEqual(len(row['sources']),r+1+(j>0))
++            for value in row['sources']:
++                self.assertTrue(value.requires_grad)
++                self.assertFalse(any(value is future for future in t.raw[i:]))
++
++    def test_no_point_or_slot_self_attention_and_no_native_core_forward(self):
++        core=build_from_config(rb_config('elasticity')).loop
++        class Shapes(TorchDispatchMode):
++            def __init__(self):self.mats=[]
++            def __torch_dispatch__(self,func,types,args=(),kwargs=None):
++                result=func(*args,**(kwargs or {}))
++                if str(func)=='aten.bmm.default':self.mats.append((tuple(args[0].shape),tuple(args[1].shape),tuple(result.shape)))
++                return result
++        with Shapes() as shapes:
++            from contextlib import ExitStack
++            with ExitStack() as stack:
++                for b in core.core:
++                    stack.enter_context(patch.object(b,'forward',side_effect=AssertionError('core ordinary residual called')))
++                    stack.enter_context(patch.object(b.block,'forward',side_effect=AssertionError('core full block called')))
++                core(torch.randn(2,11,8))
++        # Legal KTV is [M,d_h], here M=d_h=4: distinguish using operands!
++        self.assertEqual(len(shapes.mats),2*core.executed_depth)
++        for a,b,y in shapes.mats:
++            self.assertIn((a[-2:],b[-2:]),[((4,11),(11,4)),((11,4),(4,4))])
++            self.assertNotEqual(y[-2:],(11,11))
++
++    def test_history_is_forward_local_exception_batch_point_permutation_and_time(self):
++        c=rb_config('elasticity');m=build_from_config(c).double();excite_routers(m.loop)
++        x=torch.randn(2,11,2,dtype=torch.float64,requires_grad=True);known={n:set(vars(v)) for n,v in m.named_modules()}
++        with Trace(m.loop) as t:first=m(x,None)
++        perm=torch.tensor([4,2,1,8,5,0,3,10,6,9,7])
++        torch.testing.assert_close(m(x[:,perm],None),first[:,perm],atol=1e-12,rtol=1e-10)
++        for i in range(2):torch.testing.assert_close(m(x[i:i+1],None),first[i:i+1],atol=1e-12,rtol=1e-10)
++        def fail(*a):raise RuntimeError('injected after populated history')
++        h=m.loop.rb_receivers[1][1].register_forward_pre_hook(fail)
++        with self.assertRaisesRegex(RuntimeError,'populated'):m(x,None)
++        h.remove();fresh=torch.randn(1,7,2,dtype=torch.float64,requires_grad=True)
++        with Trace(m.loop) as later:out=m(fresh,None)
++        self.assertEqual(later.routes[0]['sources'][0].shape,(1,7,8))
++        self.assertEqual(len(later.routes[0]['sources']),1)
++        self.assertIsNone(torch.autograd.grad(out.sum(),x,allow_unused=True)[0])
++        torch.testing.assert_close(m(x,None),first,atol=0,rtol=0)
++        for n,v in m.named_modules():
++            self.assertEqual(set(vars(v)),known[n]);self.assertFalse(any(isinstance(a,torch.Tensor) for a in vars(v).values()))
++        for task in ('ns','plasticity','airfrans','car'):
++            c=rb_config(task);a=build_from_config(c);b=build_from_config(c);args=inputs(c)
++            a(*args)
++            with Trace(a.loop) as t:y=a(*args)
++            self.assertEqual(len(t.routes[0]['sources']),1)
++            torch.testing.assert_close(y,b(*args),atol=0,rtol=0)
++            if task=='plasticity':self.assertFalse(torch.equal(y,a(args[0],args[1],args[2]+1)))
++
++    def test_strict_reload_three_wrappers_and_illegal_structure(self):
++        for task in ('darcy','airfrans','car'):
++            c=rb_config(task);m=build_from_config(c).eval();excite_routers(m.loop)
++            expected=m(*inputs(c)).detach()
++            with tempfile.TemporaryDirectory() as directory:
++                p=Path(directory);(p/'config.json').write_text(json.dumps(c));torch.save(m.state_dict(),p/'weights.pt')
++                code='''import json,sys,torch
++from pathlib import Path
++from cdlno.linearno_loop.construction import build_from_config
++from loop_linearno.sr_support import inputs
++p=Path(sys.argv[1]);c=json.loads((p/'config.json').read_text());m=build_from_config(c).eval()
++m.load_state_dict(torch.load(p/'weights.pt',weights_only=True),strict=True)
++torch.save(m(*inputs(c)).detach(),p/'result.pt')
++'''
++                root=Path(__file__).resolve().parents[2]
++                proc=subprocess.run([sys.executable,'-B','-c',code,directory],cwd=directory,capture_output=True,text=True,
++                    env={**os.environ,'PYTHONPATH':str(root/'tests')+':'+str(root),'PYTHONDONTWRITEBYTECODE':'1'})
++                self.assertEqual(proc.returncode,0,proc.stderr)
++                torch.testing.assert_close(torch.load(p/'result.pt',weights_only=True),expected,atol=0,rtol=0)
++            sr=build_from_config(config(task))
++            with self.assertRaises(RuntimeError):sr.load_state_dict(m.state_dict(),strict=True)
++            with self.assertRaises(RuntimeError):m.load_state_dict(sr.state_dict(),strict=True)
++        core=build_from_config(rb_config()).loop
++        core.rb_receivers[1][0]=core.rb_receivers[0][0]
++        with self.assertRaisesRegex(ValueError,'independent'):core(torch.zeros(2,15,8))
++        core=build_from_config(rb_config()).loop;core.residual_mode='sr_1_over_r'
++        with self.assertRaisesRegex(ValueError,'SR must not'):core(torch.zeros(2,15,8))
++
++    def test_single_round_single_block_raw_hand_calculation(self):
++        # R1 does NOT turn RB into an ordinary residual. With zero queries,
++        # b1=2a+3*((a+2a)/2)=6.5a, final=(a+b1)/2=3.75a.
++        from torch import nn
++        from cdlno.linearno_loop.core import LinearNOLoopCore
++        from loop_linearno.test_block_body import make_block
++        class Multiply(nn.Module):
++            def __init__(self,k):
++                super().__init__();self.k=k;self.dim=8;self.heads=2;self.dim_head=4;self.rank=4;self.variant='plain'
++            def forward(self,x):return self.k*x
++        def factory(*,last_layer):
++            b=make_block('plain',last_layer);b.ln_1=nn.Identity();b.ln_2=nn.Identity()
++            b.Attn=Multiply(0 if last_layer else 2);b.mlp=Multiply(0 if last_layer else 3)
++            if last_layer:b.ln_3=nn.Identity();b.mlp2=nn.Identity()
++            return b
++        core=LinearNOLoopCore(prefix_blocks=0,recurrent_core_blocks=1,loop_repeats=1,suffix_blocks=1,
++                              residual_mode='rb_attnres',block_factory=factory)
++        x=torch.arange(16,dtype=torch.float32).reshape(1,2,8)
++        torch.testing.assert_close(core(x),3.75*x,atol=0,rtol=0)
++        self.assertEqual(sum(p.numel() for p in core.parameters()),6*8)
++
++
++if __name__=='__main__':unittest.main()
+--- LL3/cdlno/linearno_loop/construction.py
++++ cdlno/linearno_loop/construction.py
+@@ -7,11 +7,11 @@
+ from linearno_loop.config import validate_config
+ from linearno_loop.contracts import integer
+ from linearno_loop.schema import validate_constructor
+-from .core import require_sr, topology
++from .core import require_implemented, topology
+ 
+ 
+ def validate_arguments(kind,kw):
+-    require_sr(kw['residual_mode'])
++    require_implemented(kw['residual_mode'])
+     U,_=topology(kw['prefix_blocks'],kw['recurrent_core_blocks'],kw['loop_repeats'],kw['suffix_blocks'])
+     variant=kw.get('linearno_variant',{'airfrans':'airfrans','car':'shapenet'}.get(kind))
+     m=dict(hidden=kw['n_hidden'],heads=kw['n_head'],layers=U,linearno_rank=kw['linearno_rank'],
+@@ -45,11 +45,11 @@
+ def build_from_config(config):
+     """Validate before import/allocation, initialize under the recorded CPU seed.
+ 
+-    Intended for LL3 synthetic verification only. No parser, filesystem output,
++    Intended for synthetic verification only. No parser, filesystem output,
+     task data, weight loading or legacy dispatch. Unsupported modes fail first.
+     """
+     checked=validate_config(config)
+-    require_sr(checked['loop_spec']['residual_mode'])
++    require_implemented(checked['loop_spec']['residual_mode'])
+     seed=checked['profile_spec']['values']['runtime']['seed']
+     if seed>=2**64:raise ValueError('initialization seed must fit the Torch uint64 range')
+     spec=checked['model_spec'];path,name=spec['class_path'].rsplit('.',1)
+@@ -68,9 +68,8 @@
+ def common_initial_state(config):
+     """Produce only common backbone weights for all three declared modes.
+ 
+-    This is NOT an RB/LB model or factory: it returns a detached state_dict and
+-    never an executable unsupported model. Future routers must be added after
+-    this common initialization using their independent recorded seed.
++    This returns a detached backbone state_dict, never a residual-mode model.
++    RB's zero/one receiver initialization consumes no RNG; LB remains absent.
+     """
+     from linearno_loop.config import resolve_config
+     c=validate_config(config);r=c['request']
+--- LL3/cdlno/linearno_loop/core.py
++++ cdlno/linearno_loop/core.py
+@@ -1,8 +1,9 @@
+-"""Shared physical LinearNO blocks with the frozen SR 1/R execution rule."""
++"""Shared physical LinearNO blocks with SR 1/R and point-domain Block AttnRes."""
+ from torch import nn
+ 
+ from linearno_loop.contracts import integer
+ from .body import LinearNOBlockBody
++from .attnres import PointDepthAttnRes
+ 
+ 
+ def topology(P,C,R,S):
+@@ -12,9 +13,9 @@
+     return P+C+S,P+C*R+S
+ 
+ 
+-def require_sr(mode):
+-    if mode != 'sr_1_over_r' or type(mode) is not str:
+-        raise ValueError('LL3 implements sr_1_over_r only; RB/LB are not implemented')
++def require_implemented(mode):
++    if type(mode) is not str or mode not in ('sr_1_over_r','rb_attnres'):
++        raise ValueError('only sr_1_over_r and rb_attnres are implemented; LB is not implemented')
+ 
+ 
+ class PhysicalBlock(nn.Module):
+@@ -44,7 +45,7 @@
+     def __init__(self,*,prefix_blocks,recurrent_core_blocks,loop_repeats,suffix_blocks,
+                  residual_mode,block_factory):
+         super().__init__()
+-        require_sr(residual_mode)
++        require_implemented(residual_mode)
+         P,C,R,S=prefix_blocks,recurrent_core_blocks,loop_repeats,suffix_blocks
+         topology(P,C,R,S)
+         self.prefix_blocks=P;self.recurrent_core_blocks=C;self.loop_repeats=R;self.suffix_blocks=S
+@@ -52,6 +53,13 @@
+         self.prefix=nn.ModuleList([PhysicalBlock(block_factory(last_layer=False)) for _ in range(P)])
+         self.core=nn.ModuleList([PhysicalBlock(block_factory(last_layer=False)) for _ in range(C)])
+         self.suffix=nn.ModuleList([PhysicalBlock(block_factory(last_layer=i==S-1)) for i in range(S)])
++        if residual_mode=='rb_attnres':
++            hidden=self.core[0].block.Attn.dim
++            # Zeros/ones consume no RNG; native whole-tree initialization does
++            # not touch these parameters. Backbone/placeholder draws stay SR's.
++            self.rb_receivers=nn.ModuleList([
++                nn.ModuleList([PointDepthAttnRes(hidden) for _ in range(2*C)]) for _ in range(R)])
++            self.rb_output=PointDepthAttnRes(hidden)
+         self.validate_structure()
+ 
+     @property
+@@ -62,7 +70,7 @@
+ 
+     def validate_structure(self):
+         """Scalar/tree checks only, including malicious reused factory modules."""
+-        require_sr(self.residual_mode)
++        require_implemented(self.residual_mode)
+         topology(self.prefix_blocks,self.recurrent_core_blocks,self.loop_repeats,self.suffix_blocks)
+         for group,count in ((self.prefix,self.prefix_blocks),(self.core,self.recurrent_core_blocks),(self.suffix,self.suffix_blocks)):
+             if len(group)!=count:raise ValueError('physical block count disagrees with topology')
+@@ -80,11 +88,44 @@
+             for parameter in raw.parameters():
+                 if id(parameter) in seen:raise ValueError('physical prefix/core/suffix blocks must be distinct')
+                 seen.add(id(parameter))
++        if self.residual_mode=='rb_attnres':
++            if (not hasattr(self,'rb_receivers') or len(self.rb_receivers)!=self.loop_repeats or
++                    any(len(row)!=2*self.recurrent_core_blocks for row in self.rb_receivers) or
++                    not hasattr(self,'rb_output')):
++                raise ValueError('RB requires 2*C*R sublayer receivers and one output receiver')
++            for receiver in [*(v for row in self.rb_receivers for v in row),self.rb_output]:
++                if not isinstance(receiver,PointDepthAttnRes) or receiver.hidden!=signature[0]:
++                    raise ValueError('RB receivers must act on the point hidden dimension')
++                for parameter in receiver.parameters():
++                    if id(parameter) in seen:raise ValueError('RB receivers must be independent by round/sublayer/output')
++                    seen.add(id(parameter))
++        elif hasattr(self,'rb_receivers') or hasattr(self,'rb_output'):
++            raise ValueError('SR must not register RB receiver parameters')
++
++    def _rb_forward(self,anchor):
++        # Authoritative sources are completed *point* raw sums and anchor.
++        # All lists/tensors are forward-local; tuple snapshots prevent mutation
++        # of previously passed source lists. No ordinary residual or 1/R here.
++        completed=[anchor]
++        for receivers in self.rb_receivers:
++            partial=None
++            for index,physical in enumerate(self.core):
++                body=LinearNOBlockBody(physical.block)
++                for offset,branch in enumerate((body.operator,body.mlp)):
++                    sources=tuple(completed) if partial is None else (*completed,partial)
++                    h=receivers[2*index+offset](sources)
++                    raw=branch(h)
++                    partial=raw if partial is None else partial+raw
++            completed.append(partial)
++        return self.rb_output(tuple(completed))
+ 
+     def forward(self,x):
+         self.validate_structure()
+         for block in self.prefix:x=block(x)
+-        for _ in range(self.loop_repeats):
+-            for block in self.core:x=block(x,scale=1/self.loop_repeats)
++        if self.residual_mode=='sr_1_over_r':
++            for _ in range(self.loop_repeats):
++                for block in self.core:x=block(x,scale=1/self.loop_repeats)
++        else:
++            x=self._rb_forward(x)
+         for index,block in enumerate(self.suffix):x=block(x,finalize=index==self.suffix_blocks-1)
+         return x
+--- LL3/docs/LOOP_LINEARNO_IMPLEMENTATION_STATUS.md
++++ docs/LOOP_LINEARNO_IMPLEMENTATION_STATUS.md
+@@ -1,4 +1,19 @@
+ # Looped LinearNO 实施状态
++
++## LL4 — 2026-09-20
++
++**唯一状态：PASS（同一 loop 主干的点域 rb_attnres 完成）。LL5–LL10 未执行。**
++
++- A 范围：核对 Attention Residuals v1 Eq2–6/Figure2及冻结规格；先写独立全core oracle，再扩展core/construction；不改三套wrapper、LL2原语/纯schema或八任务生产代码。[报告/公式映射](LOOP_LINEARNO_RB_ATTNRES.md)。
++- B 数学：每轮2C个raw sublayer，入口anchor=b0；轮首无partial，后续source为completed+当前raw partial。partial仅加raw u，轮末成为b_r；独立output receiver读b0…bR后进suffix。无普通residual、1/R、来源数缩放、latent历史或跨forward缓存。
++- C 参数：按round/sublayer/output独立router，共2CR+1；两preset13/9个、26H/18H参数。core算子仍跨round共享；16组八任务×两preset的SR/RB公共主干值及构造后RNG逐位相等，SR不注册router。
++- D 验证：**64方法：62 pass、2 CUDA skip、0 failure/error，44.342s**；LL4新增9方法全通过。36完整公式对照逐sources/weights/h/raw/partial/b_r/final/梯度，FP64/FP32最大abs8.88e-16/9.46e-7，容差不变；24原子算子独立展开AdamW/dropout的权重/state/RNG全0差。singleton无router梯度为预期，其他活动router非零query下finite/nonzero；fresh-process strict/异常隔离通过。[日志](loop_linearno_audit/ll4/loop-tests.log)、[数值](loop_linearno_audit/ll4/rb-report.json)。
++- E 回归：SR数值与参数/MAC JSON和LL3完全相同；旧LL0的153方法仍147 pass、2历史失败方法/4断言、4 CUDA skip、0error，失败文本精确一致。起点2142文件仅4个授权研究文件修改，其余2138内容/分类不变。[冻结](loop_linearno_audit/ll4/end-freeze.json)、[回归](loop_linearno_audit/ll4/regression-summary.json)、[diff](loop_linearno_audit/ll4/source.diff)。
++- F 边界：只CPU合成，未跑真实数据/GPU/远端/任务训练；LB、生产接线、输出/monitor、完整resume archive均未实施。五项自审通过，无新增需裁定冲突。本轮strict只是合成state_dict往返，不冒充生产闭环。
++
++**本 LL4 阶段结束，未执行下一阶段。**
++
++以下为已审查 LL3–LL0 历史记录，其未执行表述对应当时状态。
+ 
+ ## LL3 — 2026-09-20
+ 
+--- LL3/tests/loop_linearno/test_sr_core.py
++++ tests/loop_linearno/test_sr_core.py
+@@ -190,7 +190,7 @@
+             for mode in RESIDUAL_MODES:
+                 request=resolve_config(task,options={**r['options'],'residual_mode':mode},profile_overrides=r['profile_overrides'])
+                 states.append(common_initial_state(request))
+-                if mode!='sr_1_over_r':
++                if mode=='lb_attnres_1_over_r':
+                     with self.assertRaisesRegex(ValueError,'not implemented'):build_from_config(request)
+             self.assertTrue(torch.equal(before,torch.get_rng_state()))
+             for state in states[1:]:

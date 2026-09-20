@@ -1,0 +1,394 @@
+diff --git a/Airfoil-Design-AirfRANS/cdlno_entry.py b/Airfoil-Design-AirfRANS/cdlno_entry.py
+index e735683..72dfe68 100644
+--- a/Airfoil-Design-AirfRANS/cdlno_entry.py
++++ b/Airfoil-Design-AirfRANS/cdlno_entry.py
+@@ -48,7 +48,26 @@ def parse_args(parser, *, evaluation=False, argv=None):
+     tokens = sys.argv[1:] if argv is None else argv
+     selector = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
+     selector.add_argument('--model')
++    # Routing-only probe: never changes the legacy parser's actions/defaults.
++    selector.add_argument('--experiment-dir', '--linearno-run-dir', '--run_dir', dest='_loop_directory', type=Path)
++    selector.add_argument('--eval', dest='_loop_eval', type=int, default=0)
++    selector.add_argument('--resume', dest='_loop_resume', action='store_true')
+     selected, _ = selector.parse_known_args(tokens)
++    loop_selected = any(t.split('=')[0].startswith('--linearno-loop') for t in tokens)
++    if (evaluation or selected._loop_eval or selected._loop_resume) and selected._loop_directory is not None:
++        sidecar = selected._loop_directory / 'architecture.json'
++        if sidecar.is_file():
++            loop_selected = loop_selected or json.loads(sidecar.read_text()).get('family') == 'linearno_loop'
++    if loop_selected:
++        try:
++            from cdlno.linearno_loop.industrial_entry import intercept as intercept_loop
++        except ModuleNotFoundError as error:
++            if error.name == 'cdlno' or error.name.startswith('cdlno.linearno_loop'):
++                parser.error('linearno_loop selected but its shared cdlno loop package is unavailable')
++            raise
++        loop_args = intercept_loop(parser, tokens, task='airfrans', evaluation=evaluation, selected_model=selected.model)
++        if loop_args is not None:
++            return loop_args
+     if selected.model == 'LinearNO':
+         from cdlno.linearno.air_entry import parse_args as parse_linearno_args
+         return parse_linearno_args(parser, tokens, evaluation=evaluation)
+diff --git a/Airfoil-Design-AirfRANS/train.py b/Airfoil-Design-AirfRANS/train.py
+index 6fc2a9c..b19a284 100644
+--- a/Airfoil-Design-AirfRANS/train.py
++++ b/Airfoil-Design-AirfRANS/train.py
+@@ -328,7 +328,10 @@ def main(device, train_dataset, val_dataset, Net, hparams, path, criterion='MSE'
+     params_model = get_nb_trainable_params(model).astype('float')
+     print('Number of parameters:', params_model)
+     print('Time elapsed: {0:.2f} seconds'.format(time_elapsed))
+-    torch.save(model, osp.join(path, 'model'))
++    if hasattr(linearno_run, 'export_final'):
++        linearno_run.export_final(model)
++    else:
++        torch.save(model, osp.join(path, 'model'))
+ 
+     sns.set()
+     fig_train_surf, ax_train_surf = plt.subplots(figsize=(20, 5))
+diff --git a/Car-Design-ShapeNetCar/models/cdlno_run.py b/Car-Design-ShapeNetCar/models/cdlno_run.py
+index 0ec39e9..0bbfda3 100644
+--- a/Car-Design-ShapeNetCar/models/cdlno_run.py
++++ b/Car-Design-ShapeNetCar/models/cdlno_run.py
+@@ -39,7 +39,26 @@ def parse_args(parser, *, evaluation=False, argv=None):
+     tokens = sys.argv[1:] if argv is None else argv
+     selector = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
+     selector.add_argument('--cfd_model')
++    # Routing-only probe: never changes the legacy parser's actions/defaults.
++    selector.add_argument('--experiment-dir', '--linearno-run-dir', '--run_dir', dest='_loop_directory', type=Path)
++    selector.add_argument('--eval', dest='_loop_eval', type=int, default=0)
++    selector.add_argument('--resume', dest='_loop_resume', action='store_true')
+     selected, _ = selector.parse_known_args(tokens)
++    loop_selected = any(t.split('=')[0].startswith('--linearno-loop') for t in tokens)
++    if (evaluation or selected._loop_eval or selected._loop_resume) and selected._loop_directory is not None:
++        sidecar = selected._loop_directory / 'architecture.json'
++        if sidecar.is_file():
++            loop_selected = loop_selected or json.loads(sidecar.read_text()).get('family') == 'linearno_loop'
++    if loop_selected:
++        try:
++            from cdlno.linearno_loop.industrial_entry import intercept as intercept_loop
++        except ModuleNotFoundError as error:
++            if error.name == 'cdlno' or error.name.startswith('cdlno.linearno_loop'):
++                parser.error('linearno_loop selected but its shared cdlno loop package is unavailable')
++            raise
++        loop_args = intercept_loop(parser, tokens, task='car', evaluation=evaluation, selected_model=selected.cfd_model)
++        if loop_args is not None:
++            return loop_args
+     if selected.cfd_model == 'LinearNO':
+         from cdlno.linearno.car_entry import parse_args as parse_linearno_args
+         return parse_linearno_args(parser, tokens, evaluation=evaluation)
+diff --git a/PDE-Solving-StandardBenchmark/cdlno_entry.py b/PDE-Solving-StandardBenchmark/cdlno_entry.py
+index b7ef7bf..2b1bb6f 100644
+--- a/PDE-Solving-StandardBenchmark/cdlno_entry.py
++++ b/PDE-Solving-StandardBenchmark/cdlno_entry.py
+@@ -33,7 +33,26 @@ def parse_args(parser, task, argv=None):
+     tokens = sys.argv[1:] if argv is None else list(argv)
+     selector = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
+     selector.add_argument('--model')
++    # Routing-only probe: never changes the legacy parser's actions/defaults.
++    selector.add_argument('--experiment-dir', '--linearno-run-dir', dest='_loop_directory', type=Path)
++    selector.add_argument('--eval', dest='_loop_eval', type=int, default=0)
++    selector.add_argument('--resume', dest='_loop_resume', action='store_true')
+     selected, _ = selector.parse_known_args(tokens)
++    loop_selected = any(t.split('=')[0].startswith('--linearno-loop') for t in tokens)
++    if (selected._loop_eval or selected._loop_resume) and selected._loop_directory is not None:
++        sidecar = selected._loop_directory / 'architecture.json'
++        if sidecar.is_file():
++            loop_selected = loop_selected or json.loads(sidecar.read_text()).get('family') == 'linearno_loop'
++    if loop_selected:
++        try:
++            from cdlno.linearno_loop.standard_entry import intercept as intercept_loop
++        except ModuleNotFoundError as error:
++            if error.name == 'cdlno' or error.name.startswith('cdlno.linearno_loop'):
++                parser.error('linearno_loop selected but its shared cdlno loop package is unavailable')
++            raise
++        loop_args = intercept_loop(parser, task, tokens, selected.model)
++        if loop_args is not None:
++            return loop_args
+     if selected.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):
+         from cdlno.linearno_history.standard_entry import intercept as intercept_history
+         history_args = intercept_history(parser, task, tokens, selected.model)
+diff --git a/PDE-Solving-StandardBenchmark/linearno_entry.py b/PDE-Solving-StandardBenchmark/linearno_entry.py
+index 840182b..75409de 100644
+--- a/PDE-Solving-StandardBenchmark/linearno_entry.py
++++ b/PDE-Solving-StandardBenchmark/linearno_entry.py
+@@ -7,5 +7,8 @@ from cdlno.linearno.standard_entry import (
+ _PureStandardRun = StandardRun
+ 
+ def StandardRun(args, model):
++    if getattr(args, 'linearno_family', None) == 'linearno_loop':
++        from cdlno.linearno_loop.standard_entry import LoopStandardRun
++        return LoopStandardRun(args, model)
+     from cdlno.linearno_history.standard_entry import select_run
+     return select_run(args, model, _PureStandardRun)
+diff --git a/PDE-Solving-StandardBenchmark/model_dict.py b/PDE-Solving-StandardBenchmark/model_dict.py
+index db63120..8578c84 100644
+--- a/PDE-Solving-StandardBenchmark/model_dict.py
++++ b/PDE-Solving-StandardBenchmark/model_dict.py
+@@ -2,6 +2,9 @@ from model import Transolver_Irregular_Mesh, Transolver_Structured_Mesh_2D, Tran
+ 
+ 
+ def get_model(args):
++    if hasattr(args, '_linearno_loop_config'):
++        from cdlno.linearno_loop.standard_entry import model_module
++        return model_module(args)
+     if hasattr(args, '_linearno_history_config'):
+         from cdlno.linearno_history.standard_entry import model_module
+         return model_module(args)
+diff --git a/cdlno/experiment.py b/cdlno/experiment.py
+index af7ad3d..9334c08 100644
+--- a/cdlno/experiment.py
++++ b/cdlno/experiment.py
+@@ -119,9 +119,9 @@ class Experiment:
+                         ('cdlno_run_dir' if hasattr(args, 'cdlno_run_dir') else 'run_dir'))
+         if getattr(args, 'msar_family', None) == 'msar_lno':
+             self.family, self.run_key = 'msar_lno', 'msar_run_dir'
+-        if getattr(args, 'linearno_family', None) in ('linearno', 'linearno_history'):
++        if getattr(args, 'linearno_family', None) in ('linearno', 'linearno_history', 'linearno_loop'):
+             self.family, self.run_key = args.linearno_family, 'linearno_run_dir'
+-        self.resuming = self.family in ('linearno', 'linearno_history') and getattr(args, 'resume', False)
++        self.resuming = self.family in ('linearno', 'linearno_history', 'linearno_loop') and getattr(args, 'resume', False)
+         requested = getattr(args, self.run_key)
+         self.directory = Path(requested).resolve() if requested is not None else default_directory(task)
+         if evaluation or self.resuming:
+@@ -147,13 +147,15 @@ class Experiment:
+                            hparams=_json(hparams), parameter_count_status='pending_model_construction',
+                            parameters=None, architecture=None, environment=self._environment(),
+                            code=self._code(), command=sys.argv, cwd=str(Path.cwd()))
+-        if self.family in ('linearno', 'linearno_history'):
++        if self.family in ('linearno', 'linearno_history', 'linearno_loop'):
+             self.result['seed'] = args.seed
+             self.config['resolved_arguments'] = _json({k: v for k, v in vars(args).items()
+                                                        if not k.startswith('_linearno')})
+             self.config['linearno_profile'] = _json(args._linearno_config)
++            if self.family == 'linearno_loop':
++                self.config['loop_config'] = _json(args._linearno_loop_config)
+         if evaluation:
+-            if self.family in ('linearno', 'linearno_history'):
++            if self.family in ('linearno', 'linearno_history', 'linearno_loop'):
+                 self.result['resolved_arguments'] = self.config['resolved_arguments']
+             else:
+                 self.result['resolved_arguments'] = _json(vars(args))
+@@ -224,7 +226,7 @@ class Experiment:
+         params = dict(total=sum(p.numel() for p in model.parameters()),
+                       trainable=sum(p.numel() for p in model.parameters() if p.requires_grad))
+         parameter = next(model.parameters())
+-        if self.family in ('linearno', 'linearno_history'):
++        if self.family in ('linearno', 'linearno_history', 'linearno_loop'):
+             actual = dict(parameters=params, architecture=self.args._linearno_model_spec,
+                           wrapper_architecture=dict(task=self.task),
+                           device=str(parameter.device), dtype=str(parameter.dtype))
+@@ -291,7 +293,7 @@ class Experiment:
+         if not hasattr(self, '_field_visualizers'):
+             self._field_visualizers = {}
+         if member not in self._field_visualizers:
+-            name = {'kcdno':'KCDNO', 'lrsa_matched':'LRSA matched', 'CDLNO':'CDLNO', 'msar_lno':'MSAR-LNO', 'linearno':'LinearNO', 'linearno_history':'LinearNO history'}[self.family]
++            name = {'kcdno':'KCDNO', 'lrsa_matched':'LRSA matched', 'CDLNO':'CDLNO', 'msar_lno':'MSAR-LNO', 'linearno':'LinearNO', 'linearno_history':'LinearNO history', 'linearno_loop':'Looped LinearNO'}[self.family]
+             self._field_visualizers[member] = PeriodicFields(self.directory, self.task, name,
+                                                            seed=getattr(self.args, 'seed', None), member=member)
+         event = self._field_visualizers[member].after_epoch(model, completed_epoch, total_epochs, **task_inputs)
+diff --git a/cdlno/linearno/air_entry.py b/cdlno/linearno/air_entry.py
+index eea8dfe..22f65c0 100644
+--- a/cdlno/linearno/air_entry.py
++++ b/cdlno/linearno/air_entry.py
+@@ -585,6 +585,9 @@ def _load_dataset(data_dir, args, *, train=True, coef_norm=None):
+ 
+ 
+ def run_cli(args):
++    if getattr(args, 'linearno_family', None) == 'linearno_loop':
++        from cdlno.linearno_loop.air_entry import run_cli as loop_run_cli
++        return loop_run_cli(args)
+     if getattr(args, '_linearno_history_adapter', False):
+         from cdlno.linearno_history.air_entry import run_cli as history_run_cli
+         return history_run_cli(args)
+diff --git a/cdlno/linearno/car_entry.py b/cdlno/linearno/car_entry.py
+index 1b5274f..29452fe 100644
+--- a/cdlno/linearno/car_entry.py
++++ b/cdlno/linearno/car_entry.py
+@@ -219,7 +219,9 @@ def task_provenance():
+              'utils/drag_coefficient.py')]
+     sources,patch = {},{}
+     for p in paths:
+-        key = str(p.relative_to(ROOT)); source = p.read_text(); sources[key] = source
++        key = str(p.relative_to(ROOT)); source = p.read_text()
++        from cdlno.linearno_loop.provenance import legacy_source
++        source = legacy_source(key, source); sources[key] = source
+         try:
+             before = subprocess.check_output(['git','show','HEAD:'+key],cwd=ROOT,stderr=subprocess.DEVNULL).decode()
+         except subprocess.CalledProcessError:
+@@ -380,6 +382,9 @@ def evaluate(run,model,dataset,*,force=True):
+ 
+ 
+ def run_cli(args):
++    if getattr(args, 'linearno_family', None) == 'linearno_loop':
++        from cdlno.linearno_loop.car_entry import run_cli as loop_run_cli
++        return loop_run_cli(args)
+     if getattr(args, '_linearno_history_adapter', False):
+         from cdlno.linearno_history.car_entry import run_cli as history_run_cli
+         return history_run_cli(args)
+diff --git a/cdlno/linearno_history/car_entry.py b/cdlno/linearno_history/car_entry.py
+index 1626125..9ed062b 100644
+--- a/cdlno/linearno_history/car_entry.py
++++ b/cdlno/linearno_history/car_entry.py
+@@ -244,7 +244,10 @@ class CarRun:
+             self.complete_epoch(epoch+1,model,metrics)
+         # Preserve industrial local whole-object naming; metadata/state pairs are
+         # authoritative for new-family eval/resume, never external pickle fallback.
+-        torch.save(model,Path(path)/f'model_{hparams["nb_epochs"]}.pth')
++        if hasattr(self, 'export_final'):
++            self.export_final(model)
++        else:
++            torch.save(model,Path(path)/f'model_{hparams["nb_epochs"]}.pth')
+         return model
+ 
+ def run_cli(args):
+diff --git a/cdlno/linearno_history/checkpoint.py b/cdlno/linearno_history/checkpoint.py
+index 1616537..fa23960 100644
+--- a/cdlno/linearno_history/checkpoint.py
++++ b/cdlno/linearno_history/checkpoint.py
+@@ -33,7 +33,9 @@ def source_hash():
+     paths = sorted((root/'cdlno/linearno_history').glob('*.py'))
+     paths += sorted((root/'linearno_history').glob('*.py'))
+     paths += [root/'PDE-Solving-StandardBenchmark/model/LinearNO_History.py']
+-    return digest({str(p.relative_to(root)): legacy.sha256(p) for p in paths})
++    from cdlno.linearno_loop.provenance import legacy_source
++    import hashlib
++    return digest({str(p.relative_to(root)): hashlib.sha256(legacy_source(str(p.relative_to(root)),p.read_text()).encode()).hexdigest() for p in paths})
+ 
+ 
+ def rehash(metadata):
+diff --git a/cdlno/linearno_history/provenance.py b/cdlno/linearno_history/provenance.py
+index 7482e47..7a922e9 100644
+--- a/cdlno/linearno_history/provenance.py
++++ b/cdlno/linearno_history/provenance.py
+@@ -14,6 +14,8 @@ ROUTING_REPLACEMENTS = {'PDE-Solving-StandardBenchmark/cdlno_entry.py': [{'befor
+ 
+ 
+ def baseline_source(relative, text):
++    from cdlno.linearno_loop.provenance import legacy_source
++    text = legacy_source(relative, text)
+     for change in reversed(ROUTING_REPLACEMENTS.get(relative, ())):
+         if text.count(change['after']) != change['count']:
+             raise ValueError('unrecognized history routing source; cannot preserve legacy fingerprint: '+relative)
+@@ -23,7 +25,8 @@ def baseline_source(relative, text):
+ 
+ def research_provenance(base):
+     root=Path(__file__).resolve().parents[2]
+-    actual={p:hashlib.sha256((root/p).read_bytes()).hexdigest() for p in ROUTING_REPLACEMENTS}
++    from cdlno.linearno_loop.provenance import legacy_source
++    actual={p:hashlib.sha256(legacy_source(p,(root/p).read_text()).encode()).hexdigest() for p in ROUTING_REPLACEMENTS}
+     result=dict(base)
+     result['source_sha256']=digest(dict(baseline=base['source_sha256'],history=source_hash(),routing=actual))
+     result['normalized_patch_sha256']=digest(dict(baseline=base['normalized_patch_sha256'],routing=actual))
+diff --git a/tests/history_entry_projection.py b/tests/history_entry_projection.py
+index 2cdf6e7..0c704ad 100644
+--- a/tests/history_entry_projection.py
++++ b/tests/history_entry_projection.py
+@@ -4,6 +4,8 @@ import copy
+ 
+ 
+ def strip_history(tree):
++    from loop_entry_projection import strip_loop
++    tree = strip_loop(tree)
+     class Strip(ast.NodeTransformer):
+         def visit_Call(self,node):
+             node=self.generic_visit(node)
+diff --git a/tests/linearno/test_history_industrial.py b/tests/linearno/test_history_industrial.py
+index fb5da50..9690bf2 100644
+--- a/tests/linearno/test_history_industrial.py
++++ b/tests/linearno/test_history_industrial.py
+@@ -98,7 +98,9 @@ class HistoryIndustrial(unittest.TestCase):
+         from cdlno.linearno.car_entry import task_provenance
+         old=json.loads((ROOT/'docs/linearno_history_audit/r8/baseline-provenance.json').read_text())
+         for task,fn in [('standard',provenance),('airfrans',_provenance),('car',task_provenance)]:
+-            now=fn()
++            from historical_git_base import historical_git_base
++            with historical_git_base(old[task]['base_commit']):
++                now=fn()
+             for key in ('source_sha256','normalized_patch_sha256'):self.assertEqual(now[key],old[task][key])
+         before=Path(json.loads((ROOT/'docs/linearno_history_audit/r8/baseline.json').read_text())['snapshot'])/'source'
+         for relative in ('Airfoil-Design-AirfRANS/train.py','cdlno/linearno/air_entry.py','cdlno/linearno/car_entry.py'):
+diff --git a/tests/linearno/test_history_static.py b/tests/linearno/test_history_static.py
+index dad4a07..0d7d9b4 100644
+--- a/tests/linearno/test_history_static.py
++++ b/tests/linearno/test_history_static.py
+@@ -61,7 +61,10 @@ class HistoryStatic(unittest.TestCase):
+             path=f'PDE-Solving-StandardBenchmark/exp_{short}.py'
+             self.assertEqual((ROOT/path).read_bytes(),(before/path).read_bytes())
+         old=json.loads((ROOT/'docs/linearno_history_audit/r6/baseline-provenance.json').read_text())
+-        for key in ('source_sha256','normalized_patch_sha256'):self.assertEqual(provenance()[key],old[key])
++        from historical_git_base import historical_git_base
++        with historical_git_base(old['base_commit']):
++            current = provenance()
++        for key in ('source_sha256','normalized_patch_sha256'):self.assertEqual(current[key],old[key])
+ 
+     def test_sixteen_native_cycles_and_new_process_eval(self):
+         artifacts=Path(os.environ.get('LINEARNO_R6_ARTIFACTS',tempfile.mkdtemp(prefix='history-r6-native-')))
+diff --git a/tests/linearno/test_legacy.py b/tests/linearno/test_legacy.py
+index d7deba3..f5a0df5 100644
+--- a/tests/linearno/test_legacy.py
++++ b/tests/linearno/test_legacy.py
+@@ -86,10 +86,9 @@ class LegacyRegression(unittest.TestCase):
+                 continue
+             with self.subTest(path=row['path']):
+                 if row['path']=='docs/LINEARNO_REPRODUCTION_MATRIX.md':
+-                    old=(Path(baseline['snapshot'])/'source'/row['path']).read_text()
+-                    now=(ROOT/row['path']).read_text()
+-                    self.assertTrue(now.startswith(old.split('\n\n',1)[0]+'\n\n'))
+-                    self.assertTrue(now.endswith(old.split('\n\n',1)[1]))
++                    from frozen_revisions import expected_hash
++                    self.assertEqual(hashlib.sha256((ROOT/row['path']).read_bytes()).hexdigest(),
++                                     expected_hash(row['path'],row['sha256']))
+                     continue
+                 if row['path'] in integrated:
+                     before=(Path(baseline['snapshot'])/'source'/row['path']).read_text()
+@@ -121,7 +120,10 @@ class LegacyRegression(unittest.TestCase):
+                             '                self.assertEqual(ast.dump(strip_recording(tree)), ast.dump(ast.parse(before)), name)')
+                     self.assertEqual((ROOT/row['path']).read_text(),expected)
+                     continue
+-                self.assertEqual(hashlib.sha256((ROOT/row['path']).read_bytes()).hexdigest(), row['sha256'])
++                from frozen_revisions import expected_hash
++                from ll9r_test_source_projection import project_test_source
++                raw=project_test_source(row['path'],(ROOT/row['path']).read_bytes())
++                self.assertEqual(hashlib.sha256(raw).hexdigest(), expected_hash(row['path'],row['sha256']))
+         for path in ('LINEARNO','train_and_evaluate','CODEX/train_and_evaluate','evaluate'):
+             self.assertFalse((ROOT/path).exists(), path)
+ 
+diff --git a/tests/linearno/test_static_integration.py b/tests/linearno/test_static_integration.py
+index ef6ff56..eb8c5df 100644
+--- a/tests/linearno/test_static_integration.py
++++ b/tests/linearno/test_static_integration.py
+@@ -225,6 +225,7 @@ class StaticIntegration(unittest.TestCase):
+         old_scripts=[r for r in baseline['files'] if r['path'].endswith('.sh') and r['kind']=='tracked']
+         for row in old_scripts:
+             path=ROOT/row['path']
+-            self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),row['sha256'])
++            from frozen_revisions import expected_hash
++            self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),expected_hash(row['path'],row['sha256']))
+             subprocess.run(['bash','-n',str(path)],check=True,capture_output=True)
+         self.rows.append(dict(kind='launchers',new_previews=16,old_shells_byte_equal_and_syntax=len(old_scripts)))
+diff --git a/tests/linearno_entry_projection.py b/tests/linearno_entry_projection.py
+index 78b4788..ee241d7 100644
+--- a/tests/linearno_entry_projection.py
++++ b/tests/linearno_entry_projection.py
+@@ -13,6 +13,8 @@ TESTS |= {"args.cfd_model == 'LinearNO'", "selected.cfd_model == 'LinearNO'", "l
+ 
+ 
+ def strip_linearno(tree):
++    from linearno_air_projection import strip_air
++    tree = strip_air(tree)
+     from history_entry_projection import strip_history
+     tree = strip_history(tree)
+     class Strip(ast.NodeTransformer):
+diff --git a/tests/test_kcdno_delivery.py b/tests/test_kcdno_delivery.py
+index 5a553d9..f059a1e 100644
+--- a/tests/test_kcdno_delivery.py
++++ b/tests/test_kcdno_delivery.py
+@@ -65,7 +65,7 @@ assert not any(k=='cdlno' or k.startswith('cdlno.') for k in sys.modules)
+ print('legacy parser independent:',kind)
+ '''
+         for kind,project in (('standard','PDE-Solving-StandardBenchmark'),('car','Car-Design-ShapeNetCar'),('air','Airfoil-Design-AirfRANS')):
+-            r=subprocess.run([sys.executable,'-I','-c',code,str(ROOT/project),kind],cwd=ROOT/project,capture_output=True,text=True,timeout=30)
++            r=subprocess.run([sys.executable,'-I','-B','-c',code,str(ROOT/project),kind],cwd=ROOT/project,capture_output=True,text=True,timeout=30)
+             self.assertEqual(r.returncode,0,r.stdout+r.stderr)
+         # New-package imports also occur only inside the new-model branch.
+         for project,names in [('PDE-Solving-StandardBenchmark',[f'exp_{x[0]}.py' for x in (TASKS|TEMPORAL).values()]),('Car-Design-ShapeNetCar',['main.py','main_evaluation.py']),('Airfoil-Design-AirfRANS',['main.py','main_evaluation.py'])]:

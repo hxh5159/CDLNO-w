@@ -1,0 +1,126 @@
+[
+  {
+    "task": "air",
+    "family": "pure",
+    "action": "train",
+    "directory": "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/air-pure-train/pure",
+    "report": "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/air-pure-train.json",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "/home/hwz/CDLNO/tests/linearno/air_entry_worker.py",
+      "train",
+      "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/air-pure-train/pure",
+      "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/air-pure-train.json"
+    ]
+  },
+  {
+    "task": "air",
+    "family": "pure",
+    "action": "interrupt",
+    "directory": "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/air-pure-interrupt/pure",
+    "report": "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/air-pure-interrupt.json",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "/home/hwz/CDLNO/tests/linearno/air_entry_worker.py",
+      "interrupt",
+      "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/air-pure-interrupt/pure",
+      "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/air-pure-interrupt.json"
+    ]
+  },
+  {
+    "task": "air",
+    "family": "history",
+    "action": "train",
+    "directory": "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/air-history-train/airfrans__paper_table8_on_release_model__L4__A1K0__seed901",
+    "report": "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/air-history-train.json",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "/home/hwz/CDLNO/tests/linearno/history_air_worker.py",
+      "train",
+      "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/air-history-train/airfrans__paper_table8_on_release_model__L4__A1K0__seed901",
+      "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/air-history-train.json",
+      "A1K0"
+    ]
+  },
+  {
+    "task": "air",
+    "family": "history",
+    "action": "interrupt",
+    "directory": "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/air-history-interrupt/airfrans__paper_table8_on_release_model__L4__A1K0__seed901",
+    "report": "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/air-history-interrupt.json",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "/home/hwz/CDLNO/tests/linearno/history_air_worker.py",
+      "interrupt",
+      "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/air-history-interrupt/airfrans__paper_table8_on_release_model__L4__A1K0__seed901",
+      "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/air-history-interrupt.json",
+      "A1K0"
+    ]
+  },
+  {
+    "task": "car",
+    "family": "pure",
+    "action": "train",
+    "directory": "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/car-pure-train/pure",
+    "report": "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/car-pure-train.json",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "/home/hwz/CDLNO/tests/linearno/car_entry_worker.py",
+      "train",
+      "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/car-pure-train/pure",
+      "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/car-pure-train.json"
+    ]
+  },
+  {
+    "task": "car",
+    "family": "pure",
+    "action": "interrupt",
+    "directory": "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/car-pure-interrupt/pure",
+    "report": "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/car-pure-interrupt.json",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "/home/hwz/CDLNO/tests/linearno/car_entry_worker.py",
+      "interrupt",
+      "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/car-pure-interrupt/pure",
+      "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/car-pure-interrupt.json"
+    ]
+  },
+  {
+    "task": "car",
+    "family": "history",
+    "action": "train",
+    "directory": "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/car-history-train/car__paper_table8_on_release_model__L4__A1K0__seed19",
+    "report": "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/car-history-train.json",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "/home/hwz/CDLNO/tests/linearno/history_car_worker.py",
+      "train",
+      "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/car-history-train/car__paper_table8_on_release_model__L4__A1K0__seed19",
+      "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/car-history-train.json",
+      "A1K0"
+    ]
+  },
+  {
+    "task": "car",
+    "family": "history",
+    "action": "interrupt",
+    "directory": "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/car-history-interrupt/car__paper_table8_on_release_model__L4__A1K0__seed19",
+    "report": "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/car-history-interrupt.json",
+    "command": [
+      "/home/hwz/anaconda3/bin/python",
+      "-B",
+      "/home/hwz/CDLNO/tests/linearno/history_car_worker.py",
+      "interrupt",
+      "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/car-history-interrupt/car__paper_table8_on_release_model__L4__A1K0__seed19",
+      "/home/hwz/CDLNO-artifacts/loop-ll7-before-rfukh5pn/car-history-interrupt.json",
+      "A1K0"
+    ]
+  }
+]

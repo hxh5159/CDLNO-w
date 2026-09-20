@@ -1,0 +1,806 @@
+--- /dev/null
++++ docs/LOOP_LINEARNO_CORE_REPORT.md
+@@ -0,0 +1,184 @@
++# Looped LinearNO LL5：三种残差模式
++
++**唯一状态：PASS。LL5 完成；未接生产任务，未执行 LL6–LL10。**
++
++## A. 范围、来源与结论
++
++当前 checkout `/home/hwz/CDLNO`，remote `https://github.com/hxh5159/CDLNO-w.git`，branch `main`，HEAD `5b991226c5354af3332b2f7306b370aef0950c79`，HEAD tree `a661e0a53d367e09dfe9b5afaabcab29ee8aec63`。日期 2026-09-20。本轮从用户已审查通过的 LL4 增量实现 LB，不重建旧基线。
++
++读取根 AGENTS、LL0–LL4 报告/状态、现有 schema/三套 wrapper/core/LL2 body 与 AttnRes 原语/测试；核对 [冻结规格 §4.3 与 LL5](../PLAN_Looped_LinearNO/Looped_LinearNO_Codex_Staged_Prompts_CDLNO-w.md) 及用户本轮九项要求。前一阶段文件 hash 复核见 [prior-stage-recheck.json](loop_linearno_audit/ll5/prior-stage-recheck.json)，没有 LL4 交付后的差异。未重新下载论文或来源。
++
++设计优先级为本轮用户要求与冻结规格。历史讨论中曾建议通过累加 raw branches 获得 Delta；本轮明确要求实际 `Y−H`，实现和 oracle 均以此为准。点域 AR 原语来自 LL2；LB 的 anchor/轮增量来源和共享 LinearNO core 组合是本项目适配，不是 LinearNO/Kimi 官方发布的完整模型。未引入旧 A/K。
++
++三个正式 mode 已统一使用既有 `RESIDUAL_MODES` 枚举：`sr_1_over_r`、`rb_attnres`、`lb_attnres_1_over_r`。未知 mode、bool、组合字符串与额外开关拒绝；LL1 schema/version/含义无需迁移。三套稳定类路径保持：
++
++- `cdlno.linearno_loop.standard.LoopedStandardModel`
++- `cdlno.linearno_loop.airfrans.LoopedAirfRANSModel`
++- `cdlno.linearno_loop.shapenet.LoopedShapeNetModel`
++
++## B. 文件与差异
++
++| 文件 | 本轮改动 |
++|---|---|
++| `cdlno/linearno_loop/core.py` | 允许完整三枚举；LB 专属 boundary/output receiver；forward-local `_lb_forward`；router 数量、独立性、模式互斥检查 |
++| `cdlno/linearno_loop/construction.py` | 仅更新公共初值函数文档，注明 RB/LB receiver 不消耗 RNG；实际 config 构造复用 core validator |
++| `tests/loop_linearno/test_sr_core.py` | 把旧“LB 尚未实现”断言改为三 mode 可构造；旧 SR 数值/共享/计数/strict 断言不变 |
++| `tests/loop_linearno/lb_oracle.py` | 在 LB 生产编辑前建立独立完整 PCRS 方程：LN、erf GELU、LinearNO 因子公式、轮内 residual、实际 Delta、point AR、suffix/head |
++| `tests/loop_linearno/lb_support.py` | 仅测试使用的 live hooks、来源/权重/事件记录、非零 router fixture |
++| `tests/loop_linearno/test_lb_core.py` | 6 方法：36 数学案例、逐轮/梯度/SGD、24 训练 dropout/AdamW、R1、来源时机、实际相减、局部历史 |
++| `tests/loop_linearno/test_modes.py` | 4 方法：48 全 profile 构造、48 小 wrapper 更新、9 新进程 strict reload、模式负面矩阵、6 个计算量实测 |
++| 本报告、`LOOP_LINEARNO_IMPLEMENTATION_STATUS.md`、`loop_linearno_audit/ll5/` | 阶段记录、原文件备份、命令与日志、错误定位、数值、diff、完整冻结、自审 |
++
++[source.diff](loop_linearno_audit/ll5/source.diff) 包含相对本阶段开始快照的真实 diff，包括此前尚未 tracked 的 core 文件。三套 wrapper、LL2 原语、纯 schema、旧模型、八任务 parser/factory/train/eval/checkpoint/launcher/monitor 均未改。
++
++调用链仍只用于内部合成验证：`LL1 resolve/validate_config → build_from_config → 稳定 wrapper → 原 stem/position/time → prefix → 共享 core 的单一 mode → suffix → 唯一末层 head`。本轮没有生产 CLI 或新的任务训练路径。
++
++## C. 数学、状态与三模式合同
++
++令 hidden width 为 H（不是 head 数或网格高），prefix 输出为 `a`，`H1=a`。LB 第 r 轮的每个物理 core block 都执行：
++
++\[
++x' = x + \frac{1}{R}\operatorname{Attn}(\operatorname{LN}_1(x)),\qquad
++x''=x'+\frac{1}{R}\operatorname{MLP}(\operatorname{LN}_2(x')).
++\]
++
++一轮后保存真实入口、出口关系：
++
++\[
++Y_r=\Phi_{1/R}(H_r),\qquad \Delta_r=Y_r-H_r.
++\]
++
++若有下一轮，`H(r+1)=lb_boundaries[r−1]((a,Delta1,...,Deltar))`；最终 `z=lb_output((a,Delta1,...,DeltaR))` 才进入 suffix。每个 receiver 沿用 LL2 的 query=0、norm_scale=1、eps1e-6、source softmax、raw value。**没有轮内 AR、Delta 再缩放、来源数补偿或 anchor 额外残差。**
++
++`entry=x`、`x`、`deltas`、`sources` 仅在 `_lb_forward` 内存在。历史值不 detach、不放 buffer/self，不跨 forward；测试 hook 用于记录 H/Y，正常 forward 不保存额外日志或计算图。Delta 由实际两个点状态相减，测试还拦截 `Tensor.__sub__` 验证传入/返回对象身份，避免数学上类似的 raw-sum 实现绕过要求。
++
++R2、零 query 时严格是来源平均：
++
++\[
++H_2=(a+\Delta_1)/2,\qquad z=(a+\Delta_1+\Delta_2)/3.
++\]
++
++精确可表示的标量 fixture：`a=3`、operator=2x、MLP=2x、R2，得到 `Y1=12, Delta1=9, H2=6, Y2=24, Delta2=18, z=10`，两条等式逐位通过。一般浮点输入下乘 reciprocal 与求和后除法存在舍入差，按 FP64 容差验证，不更改 LL2 运算顺序。
++
++R1 的语义仍包含 output AR，不退化为 SR：operator=2x、MLP=3x、anchor=1 时 `Y=12, Delta=11, z=(1+11)/2=6`；只注册一个 output receiver，无 boundary。正式 preset 仍为 R2。
++
++| mode | 轮内 | 来源与路由时机 | receiver 数 | 新参数 |
++|---|---|---|---:|---:|
++| SR | 每条 branch 乘 1/R | 无 router | 0 | 0 |
++| RB | raw branch；无 1/R | 每个 sublayer 前读 anchor/completed/raw partial，末尾 output | 2CR+1 | 2H(2CR+1) |
++| LB | 每条 branch 乘 1/R | 仅轮间/output 读 anchor 与实际 Delta | R | 2HR |
++
++LB 新键只有 `loop.lb_boundaries.<i>.query/norm_scale` 与 `loop.lb_output.query/norm_scale`。RB 只含原 `loop.rb_*`，SR 二者都没有。core 算子仍为 `loop.core.<physical_index>.block.*`，跨轮复用同一对象。receiver 按边界/output 独立，参数共享规则不混淆。构造仍只创建 U=P+C+S 个物理 block，最后 suffix 是唯一 head；无二次 apply、无删除多余 blocks、无新随机初始化消耗。
++
++序列化复用 LL1：读取 metadata → 校验/恢复 config → 构造 → `torch.load(weights_only=True)` → `load_state_dict(strict=True)`。显式 mode 冲突在 import/读权重前报错；三 mode 错误 state 互载也分别 strict 拒绝。这里验证的是合成 schema + state_dict 存取，**不是已接入八任务的完整 optimizer/RNG resume**；测试 metadata 中的 resume/data/protocol 块仍明确为合成 fixture。
++
++## D. 测试与数值证据
++
++环境：CPU，Python3.13.9、torch distribution2.13.0、NumPy2.2.6、PyG2.3.1、timm1.0.28、einops0.8.2；完整信息见 [environment](loop_linearno_audit/ll5/environment.json)。所有测试设 `CUDA_VISIBLE_DEVICES=''`，不导入读取真实数据的 exp 入口。
++
++最终 **74 方法：72 pass、2 CUDA skip、0 failure/error，33.399s**。10 项 LL5 新方法全部通过。见 [完整日志](loop_linearno_audit/ll5/loop-tests.log)、[LB 逐张量](loop_linearno_audit/ll5/lb-report.json)、[模式/参数/MAC](loop_linearno_audit/ll5/modes-report.json)、[自审](loop_linearno_audit/ll5/delivery-review.json)。
++
++| 检查 | 实际覆盖/结果 |
++|---|---|
++| 独立全 core oracle | 六 attention variant × P1/P2/customP0C2R3S1 × FP64/FP32，共36案例；独立 oracle 不调用生产 forward |
++| 逐张量 | H/Y/Delta、所有 source、权重、route、physical visit、最终输出、loss、输入和每参数梯度、SGD一步全部比较；Air dead temperature 保持无梯度 |
++| 梯度/历史 | 非零 query 下所有 LB router 参数 finite/nonzero；隔离最终 route 对旧 Delta 和输入做 VJP；历史不断图；异常后、更换B/N后无旧输入依赖/缓存 |
++| 时机/缩放 | hook 事件精确为每轮C次physical block再一次router；来源始终原anchor+实际Delta；R1、R2、R3及精确手算反例通过 |
++| AdamW | 24案例：六任务变体×两preset×两dtype；手写 native 算子展开，原 attention dropout=.2；输出/梯度/权重/optimizer state/RNG逐位相同；未引入 history dropout |
++| 公共初始化 | 八任务×两preset×三mode，48次实际 full-profile 构造，公共 state键/shape/value、参数共享和构造后RNG逐位一致 |
++| 三mode一步/strict | 八任务×两preset×三mode，48个小shape wrapper，forward→合成平方loss→backward→AdamW→新对象strict reload→eval逐位相同 |
++| 新进程 | Standard/Darcy、AirfRANS、Car × 三mode，9个 metadata 先读的 strict 重载，从临时cwd的新解释器输出逐位相同 |
++| 负面 | mode未知/非字符串/非法多开关、不相符metadata、strict=False、六种错误跨模式state加载、receiver别名和非当前mode的router注入都拒绝 |
++
++独立 oracle 的一步更新使用 SGD；AdamW 用独立控制流但相同 native 算子做逐位对照，沿用 LL3/LL4 对 AdamW 小梯度分母敏感性的验证方式，没有更改生产训练 optimizer。
++
++| LB 数值项 | FP64 最大 abs | FP32 最大 abs |
++|---|---:|---:|
++| 所有对照张量 | 5.3290705e-15 | 7.3909760e-6 |
++| 最终输出 | 4.1633363e-17 | 2.9802322e-8 |
++| 梯度 | 1.0659876e-15 | 6.3562766e-7 |
++| 传播后的 source weights | 3.5527137e-15 | 3.5762787e-6 |
++| 各张量 mean abs 的最大值 | 3.6435969e-16 | 2.1860251e-7 |
++
++FP64 使用 `atol=1e-12,rtol=1e-10`；FP32 输出/状态/梯度/更新使用 `1e-6,1e-5`。**只有独立全 core 传播后的 FP32 LB source weights 使用单列的 `1e-5,1e-4`**；实际相同输入来源的独立 AR 对照仍用原 LL2 容差。全部张量 max/mean abs、max/mean relative 见 JSON，relative 分母 floor1e-12。所有张量汇总的最大 relative 为 FP64 9.49e-9、FP32 6.19635（近零梯度）；这是诚实记录的比例误差，不能把它当整体输出相对误差，验收使用逐元素 `atol+rtol*abs(reference)`。
++
++首轮 6 方法中有2个数值断言失败，原日志和报告保留为 [lb-first-tests.log](loop_linearno_audit/ll5/lb-first-tests.log)、[lb-first-report.json](loop_linearno_audit/ll5/lb-first-report.json)：
++
++1. 精确均值 fixture 使用 /3 与逐项乘1/3，在 FP64 相差4.44e-16；正式浮点均值按既定 FP64 容差检验，另选可精确表示的手算例逐位证明两条 R2 等式。没有修改原语。
++2. conv/customR3 的独立 FP32 oracle 在第二轮 source weights 相差3.57628e-6。真实 Delta 最大仅约0.002918，`Y−H` 的绝对差2.98e-8/5.96e-8经 RMS（eps1e-6，局部放大可达约1000）传播到权重。把**同一实际 source**交给独立 AR oracle，权重差降为2.98e-8；FP64 对应权重差9.99e-16。最终输出该例差1.86e-8。记录见 [lb-roundoff.json](loop_linearno_audit/ll5/lb-roundoff.json) 和可复算脚本；只为这类传播权重建立上述明确预算，未改模型公式或 LL2/SR/RB 容差。
++
++## E. 参数与实际计算量
++
++以下为真实 full-profile 构造的 `sum(p.numel())`，profile为默认 paper_table8_on_release_model，rank multiplier2。H128适用于Airfoil/Darcy/Elasticity/Pipe/Plasticity；H256适用于NS/AirfRANS/Car。
++
++| preset | U / 执行depth | mode | receiver | H128新增参数 | H256新增参数 |
++|---|---|---|---:|---:|---:|
++| P1C3R2S1 | 5 / 8 | SR | 0 | 0 | 0 |
++| P1C3R2S1 | 5 / 8 | RB | 13 | 3,328 | 6,656 |
++| P1C3R2S1 | 5 / 8 | LB | 2 | 512 | 1,024 |
++| P2C2R2S2 | 6 / 8 | SR | 0 | 0 | 0 |
++| P2C2R2S2 | 6 / 8 | RB | 9 | 2,304 | 4,608 |
++| P2C2R2S2 | 6 / 8 | LB | 2 | 512 | 1,024 |
++
++| 任务 | H / actual M | P1 SR / RB / LB总参数 | P2 SR / RB / LB总参数 |
++|---|---|---|---|
++| Airfoil | 128 / 128 | 1,126,737 / 1,130,065 / 1,127,249 | 1,345,249 / 1,347,553 / 1,345,761 |
++| Darcy | 128 / 128 | 1,126,993 / 1,130,321 / 1,127,505 | 1,345,505 / 1,347,809 / 1,346,017 |
++| Elasticity | 128 / 128 | 388,817 / 392,145 / 389,329 | 459,745 / 462,049 / 460,257 |
++| Pipe | 128 / 128 | 1,126,737 / 1,130,065 / 1,127,249 | 1,345,249 / 1,347,553 / 1,345,761 |
++| NS | 256 / 64 | 2,192,385 / 2,199,041 / 2,193,409 | 2,593,025 / 2,597,633 / 2,594,049 |
++| Plasticity | 128 / 128 | 1,160,324 / 1,163,652 / 1,160,836 | 1,378,820 / 1,381,124 / 1,379,332 |
++| AirfRANS | 256 / 64 | 2,173,228 / 2,179,884 / 2,174,252 | 2,573,876 / 2,578,484 / 2,574,900 |
++| Car | 256 / 64 | 2,469,460 / 2,476,116 / 2,470,484 | 2,935,908 / 2,940,516 / 2,936,932 |
++
++计算量使用实际小型 Darcy wrapper：`B2,N15,H8,heads2,M4,grid3×5`，两preset、三mode，共6次forward。Linear/Conv hooks 和 TorchDispatch 的实际 KTV/QC bmm 计主干 MAC；receiver 内沿 channel/source 的两次 multiply-sum 记录真实输入shape/轴/调用次数，计 contraction MAC。singleton直接返回anchor，没有虚报AR开销。
++
++| preset | mode | 主干MAC | 额外router contraction MAC | 两类MAC合计 |
++|---|---|---:|---:|---:|
++| P1 | SR | 243,600 | 0 | 243,600 |
++| P1 | RB | 243,600 | 14,400 | 258,000 |
++| P1 | LB | 243,600 | 2,400 | 246,000 |
++| P2 | SR | 243,600 | 0 | 243,600 |
++| P2 | RB | 243,600 | 9,600 | 253,200 |
++| P2 | LB | 243,600 | 2,400 | 246,000 |
++
++这些不是完整 FLOPs 或延迟。LB 实测来源数 `[2,3]`，两次score收缩+两次value收缩，等于 `2BNH(2+3)=2400` MAC；与理论 `BNH*R*(R+3)`一致。额外真实 `Y−H` 是2次各240元素相减，合计480标量减法，不计为MAC。
++
++RMS/softmax/逐元素工作单列于 `router_operator_inventory`：LB实测2次square（1200元素）、2次mean（150输出）、2次eps add/rsqrt（各150输出）、8次mul（4800输出，其中包含收缩用乘法，不能再全量重复加计）、4次sum（630输出）、2次softmax（150输出）、2次stack。完整报告列出RB对应实测；不能把 `2×MAC` 当含这些工作的总 FLOPs。只计一次前向，没有测运行时间、内存峰值、反向完整FLOPs或真实N的epoch速度。共享物理参数5/6套都执行8次，不能由参数下降推断训练变快。
++
++## F. 命令、冻结、未运行与自审
++
++实际最终命令（仓库根目录）：
++
++```bash
++PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 CUDA_VISIBLE_DEVICES='' \
++OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 \
++LOOP_LL2_ATTNRES_REPORT=docs/loop_linearno_audit/ll5/attnres-report.json \
++LOOP_LL2_BODY_REPORT=docs/loop_linearno_audit/ll5/body-report.json \
++LOOP_LL3_PARITY_REPORT=docs/loop_linearno_audit/ll5/sr-parity.json \
++LOOP_LL3_ACCOUNTING_REPORT=docs/loop_linearno_audit/ll5/accounting.json \
++LOOP_LL4_REPORT=docs/loop_linearno_audit/ll5/rb-report.json \
++LOOP_LL5_REPORT=docs/loop_linearno_audit/ll5/lb-report.json \
++LOOP_LL5_MODES_REPORT=docs/loop_linearno_audit/ll5/modes-report.json \
++python -B -m unittest discover -s tests/loop_linearno -p 'test_*.py' -v \
++> docs/loop_linearno_audit/ll5/loop-tests.log 2>&1
++
++PYTHONDONTWRITEBYTECODE=1 python -B docs/loop_linearno_audit/ll5/run_existing_regressions.py \
++> docs/loop_linearno_audit/ll5/regression-progress.jsonl 2>&1
++
++PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 CUDA_VISIBLE_DEVICES='' \
++OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 \
++python -B docs/loop_linearno_audit/ll5/reproduce_roundoff.py
++
++PYTHONDONTWRITEBYTECODE=1 python -B docs/loop_linearno_audit/ll5/finalize_evidence.py
++```
++
++旧 LL0 回归重跑24模块/153方法：**147pass、2个历史失败方法（4条断言）、4CUDA skip、0error**。历史失败仍仅 README/path.sh/旧REPRODUCTION_MATRIX静态冻结期望；逐方法结果及完整失败摘要与已审查 LL0一致，不改旧测试来掩盖。pure/legacy组78pass、history59pass、monitor10pass；本轮没有新增失败。[对照结果](loop_linearno_audit/ll5/regression-summary.json)。LL3 SR数值与accounting、LL4 RB数值JSON和本轮结果完整相等。
++
++本轮开始清单2210文件（tracked1549、untracked193、ignored468），全部分类/大小/SHA256复算。既存仅允许上述 core、construction、SR测试、研究STATUS四文件变化，另2206文件内容与分类不变；包括三任务工程、旧生产数学/入口/配置/checkpoint/脚本、LINEARNO/monitor、LL2原语与LL1 schema。新增文件限本轮测试、报告和LL5审计目录；新增ignored仅该目录日志，无新缓存/运行目录。tracked/staged diff和HEAD保持本轮开始状态。见 [start-manifest](loop_linearno_audit/ll5/start-manifest.json)、[最终freeze](loop_linearno_audit/ll5/end-freeze.json)。
++
++交付前自审五项均已检查并有测试/证据：①实际Delta与两条branch的1/R；②仅boundary/output的来源与均值，无补偿；③receiver独立、单枚举互斥及公平公共初值；④metadata先读、48次对象重载/9次新进程与跨mode拒绝；⑤SR/RB数值不变、旧回归无新增失败、全部tracked/untracked/ignored冻结。
++
++未运行：GPU/AMP/compile、远端Python3.10环境、真实数据/完整训练/准确率、完整生产resume、生产parser/factory/launcher/monitor接线、LL6及后续。没有待决数学冲突；实际Delta相减对低精度小增量可能更敏感，未来GPU/AMP验收必须单独量化，本轮未用raw累加替换。上述CPU合成通过不宣称模型性能提升。
++
++本 LL5 阶段结束，未执行下一阶段。
+--- /dev/null
++++ tests/loop_linearno/lb_oracle.py
+@@ -0,0 +1,41 @@
++"""Independent LL5 full-core equations; no production loop/block forward."""
++import torch
++from linearno.attention_reference import reference as attention_reference
++from loop_linearno.point_attnres_oracle import point_attnres
++
++
++def lb_reference(x,state,*,P,C,R,S,variant,heads,H,W):
++    rounds=[];visits=[]
++
++    def norm(z,key):
++        z=z-z.mean(-1,keepdim=True)
++        return z/(z.square().mean(-1,keepdim=True)+1e-5).sqrt()*state[key+'.weight']+state[key+'.bias']
++
++    def linear(z,key):return z@state[key+'.weight'].T+state[key+'.bias']
++
++    def visit(z,group,i,scale):
++        key=f'{group}.{i}.block'
++        a={k[len(key+'.Attn.'):]:v for k,v in state.items() if k.startswith(key+'.Attn.')}
++        op=attention_reference(norm(z,key+'.ln_1'),a,heads=heads,H=H,W=W,variant=variant)[0]
++        z=z+scale*op
++        v=linear(norm(z,key+'.ln_2'),key+'.mlp.linear_pre.0')
++        v=.5*v*(1+torch.erf(v/(2**.5)))
++        z=z+scale*linear(v,key+'.mlp.linear_post')
++        visits.append(z)
++        return z
++
++    for i in range(P):x=visit(x,'prefix',i,1)
++    anchor=x;deltas=[]
++    for r in range(R):
++        entry=x
++        for i in range(C):x=visit(x,'core',i,1/R)
++        end=x;delta=end-entry;deltas.append(delta)
++        key=f'lb_boundaries.{r}' if r<R-1 else 'lb_output'
++        sources=(anchor,*deltas)
++        x,weights=point_attnres(sources,state[key+'.query'],state[key+'.norm_scale'])
++        rounds.append(dict(entry=entry,end=end,delta=delta,sources=sources,weights=weights,routed=x))
++    final=x
++    for i in range(S):x=visit(x,'suffix',i,1)
++    key=f'suffix.{S-1}.block'
++    output=linear(norm(x,key+'.ln_3'),key+'.mlp2');visits[-1]=output
++    return output,dict(anchor=anchor,rounds=rounds,final=final,visits=visits)
+--- /dev/null
++++ tests/loop_linearno/lb_support.py
+@@ -0,0 +1,50 @@
++"""LL5 test-only live tracing; never installed into production forward."""
++from contextlib import ExitStack
++from unittest.mock import patch
++import torch
++from linearno_loop.config import resolve_config
++from loop_linearno.sr_support import config
++
++
++def mode_config(task='darcy',preset='p1_c3_r2_s1',mode='lb_attnres_1_over_r',**kwargs):
++    c=config(task,preset,**kwargs);r=c['request']
++    return resolve_config(task,options={**r['options'],'residual_mode':mode},profile_overrides=r['profile_overrides'])
++
++
++def excite(core):
++    g=torch.Generator().manual_seed(741)
++    with torch.no_grad():
++        for n,p in core.named_parameters():
++            if n.startswith(('lb_','rb_')):
++                p.copy_(torch.randn(p.shape,generator=g,dtype=p.dtype)*.2+(1 if n.endswith('norm_scale') else 0))
++
++
++class LBTrace:
++    def __init__(self,core):
++        self.core=core;self.entries=[];self.ends=[];self.routes=[];self.visits=[];self.events=[]
++        self.handles=[];self.stack=ExitStack()
++
++    def __enter__(self):
++        for group in ('prefix','core','suffix'):
++            for i,block in enumerate(getattr(self.core,group)):
++                def before(m,args,group=group,i=i):
++                    self.events.append(f'{group}.{i}')
++                    if group=='core' and i==0:self.entries.append(args[0])
++                def after(m,args,out,group=group,i=i):
++                    self.visits.append(out)
++                    if group=='core' and i==len(self.core.core)-1:self.ends.append(out)
++                self.handles.extend((block.register_forward_pre_hook(before),block.register_forward_hook(after)))
++        for i,router in enumerate([*self.core.lb_boundaries,self.core.lb_output]):
++            actual=router._weights_and_values
++            def weights(sources,actual=actual):
++                result=actual(sources);self.routes[-1]['weights']=result[0].permute(1,2,0);return result
++            self.stack.enter_context(patch.object(router,'_weights_and_values',side_effect=weights))
++            def before(m,args,i=i):
++                self.events.append('route.'+str(i));self.routes.append(dict(sources=args[0]))
++            def after(m,args,out):self.routes[-1]['routed']=out
++            self.handles.extend((router.register_forward_pre_hook(before),router.register_forward_hook(after)))
++        return self
++
++    def __exit__(self,*exc):
++        for h in self.handles:h.remove()
++        self.stack.close()
+--- /dev/null
++++ tests/loop_linearno/test_lb_core.py
+@@ -0,0 +1,192 @@
++import copy
++import json
++import os
++from pathlib import Path
++import unittest
++from unittest.mock import patch
++
++import torch
++from torch import nn
++
++from cdlno.linearno_loop.construction import build_from_config
++from cdlno.linearno_loop.core import LinearNOLoopCore
++from linearno_loop.config import resolve_config
++from loop_linearno.lb_oracle import lb_reference
++from loop_linearno.lb_support import mode_config,excite,LBTrace
++from loop_linearno.sr_support import TOPOLOGIES,inputs
++from loop_linearno.test_point_attnres import errors
++from loop_linearno.point_attnres_oracle import point_attnres
++
++
++class LBTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):cls.rows=[];cls.adamw=[]
++
++    @classmethod
++    def tearDownClass(cls):
++        if path:=os.environ.get('LOOP_LL5_REPORT'):
++            Path(path).write_text(json.dumps(dict(rows=cls.rows,adamw=cls.adamw),indent=2)+'\n')
++
++    def test_independent_full_core_oracle_all_variants_and_topologies(self):
++        for variant in ('plain','temp','conv','conv_temp','airfrans','shapenet'):
++            task='airfrans' if variant=='airfrans' else 'car' if variant=='shapenet' else 'darcy'
++            for preset in TOPOLOGIES:
++                for dtype in (torch.float64,torch.float32):
++                    with self.subTest(variant=variant,preset=preset,dtype=dtype):
++                        core=build_from_config(mode_config(task,preset,variant=variant if task=='darcy' else None)).loop.to(dtype)
++                        excite(core);g=torch.Generator().manual_seed(873)
++                        x=torch.randn(2,15,8,generator=g,dtype=dtype,requires_grad=True);rx=x.detach().clone().requires_grad_()
++                        state={k:v.detach().clone().requires_grad_() for k,v in core.named_parameters()}
++                        with LBTrace(core) as t:y=core(x)
++                        ref,rt=lb_reference(rx,state,P=core.prefix_blocks,C=core.recurrent_core_blocks,R=core.loop_repeats,
++                            S=core.suffix_blocks,variant=variant,heads=2,H=3,W=5)
++                        atol,rtol=(1e-12,1e-10) if dtype==torch.float64 else (1e-6,1e-5)
++                        row=dict(variant=variant,topology=preset,device='cpu',dtype=str(dtype),atol=atol,rtol=rtol,
++                            propagated_weight_tolerance=dict(atol=1e-5,rtol=1e-4) if dtype==torch.float32 else dict(atol=atol,rtol=rtol),
++                            errors={},unused=[])
++                        self.rows.append(row)
++                        def check(a,b,name):
++                            row['errors'][name]=errors(a,b)
++                            # Only propagated FP32 router weights get a separate
++                            # budget: Y-H loses significant digits then RMS has
++                            # derivative up to 1/sqrt(eps)=1000. Same-source AR
++                            # below retains the original primitive tolerance.
++                            wa,wr=(1e-5,1e-4) if dtype==torch.float32 and name.startswith('weights') else (atol,rtol)
++                            torch.testing.assert_close(a,b,atol=wa,rtol=wr,msg=name)
++                            self.assertTrue(torch.isfinite(a).all())
++                        for i,r in enumerate(rt['rounds']):
++                            check(t.entries[i],r['entry'],f'H{i+1}');check(t.ends[i],r['end'],f'Y{i+1}')
++                            check(t.routes[i]['sources'][-1],r['delta'],f'Delta{i+1}')
++                            torch.testing.assert_close(t.routes[i]['sources'][-1],t.ends[i]-t.entries[i],atol=0,rtol=0)
++                            check(t.routes[i]['weights'],r['weights'],f'weights{i+1}')
++                            router=core.lb_boundaries[i] if i<core.loop_repeats-1 else core.lb_output
++                            _,local_weights=point_attnres(t.routes[i]['sources'],router.query,router.norm_scale)
++                            check(t.routes[i]['weights'],local_weights,f'same_source_weights{i+1}')
++                            check(t.routes[i]['routed'],r['routed'],f'route{i+1}')
++                            for j,(a,b) in enumerate(zip(t.routes[i]['sources'],r['sources'])):check(a,b,f'route{i+1}.source{j}')
++                            if i+1<core.loop_repeats:self.assertIs(t.entries[i+1],t.routes[i]['routed'])
++                        for i,(a,b) in enumerate(zip(t.visits,rt['visits'])):check(a,b,f'visit{i}')
++                        check(y,ref,'final');target=torch.randn(y.shape,generator=g,dtype=dtype)
++                        loss=(y-target).square().mean();rloss=(ref-target).square().mean()
++                        check(loss,rloss,'loss');loss.backward();rloss.backward();check(x.grad,rx.grad,'input_gradient')
++                        for name,p in core.named_parameters():
++                            if name.endswith('Attn.temperature'):
++                                self.assertEqual(variant,'airfrans');self.assertIsNone(p.grad);self.assertIsNone(state[name].grad);row['unused'].append(name)
++                            else:
++                                check(p.grad,state[name].grad,'gradient.'+name)
++                                if name.startswith('lb_'):self.assertGreater(p.grad.abs().sum().item(),0)
++                        torch.optim.SGD(core.parameters(),lr=.001).step();torch.optim.SGD(state.values(),lr=.001).step()
++                        for name,p in core.named_parameters():check(p,state[name],'step.'+name)
++
++    def test_zero_query_exact_mean_and_router_timing(self):
++        for preset in TOPOLOGIES:
++            core=build_from_config(mode_config(preset=preset)).loop.double()
++            with LBTrace(core) as t:core(torch.randn(2,15,8,dtype=torch.float64))
++            self.assertEqual(len(t.routes),core.loop_repeats)
++            expected=[f'prefix.{i}' for i in range(core.prefix_blocks)]
++            for r in range(core.loop_repeats):
++                expected += [f'core.{i}' for i in range(core.recurrent_core_blocks)]+[f'route.{r}']
++                self.assertEqual(len(t.routes[r]['sources']),r+2)
++                self.assertIs(t.routes[r]['sources'][0],t.entries[0])
++                for j in range(r):self.assertIs(t.routes[r]['sources'][j+1],t.routes[j]['sources'][-1])
++                weights=t.routes[r]['weights'];torch.testing.assert_close(weights,torch.full_like(weights,1/(r+2)),atol=0,rtol=0)
++                # Mathematical mean; reciprocal-multiply and division may differ
++                # by roundoff, so use the established FP64 numerical bound.
++                torch.testing.assert_close(t.routes[r]['routed'],torch.stack(t.routes[r]['sources']).mean(0),atol=1e-12,rtol=1e-10)
++            expected += [f'suffix.{i}' for i in range(core.suffix_blocks)]
++            self.assertEqual(t.events,expected)
++        # Binary-exact scalar fixtures make both named R2 identities bitwise.
++        core=self.toy(R=2,k1=2,k2=2)
++        x=torch.full((1,2,8),3.,dtype=torch.float64)
++        with LBTrace(core) as t:y=core(x)
++        torch.testing.assert_close(t.entries[1],(x+t.routes[0]['sources'][1])/2,atol=0,rtol=0)
++        torch.testing.assert_close(y,(x+t.routes[1]['sources'][1]+t.routes[1]['sources'][2])/3,atol=0,rtol=0)
++        torch.testing.assert_close(y,torch.full_like(x,10),atol=0,rtol=0)
++
++    @staticmethod
++    def toy(R,k1,k2):
++        from loop_linearno.test_block_body import make_block
++        class Scale(nn.Module):
++            def __init__(self,k):
++                super().__init__();self.k=k;self.dim=8;self.heads=2;self.dim_head=4;self.rank=4;self.variant='plain'
++            def forward(self,x):return self.k*x
++        def factory(*,last_layer):
++            b=make_block('plain',last_layer);b.ln_1=nn.Identity();b.ln_2=nn.Identity()
++            b.Attn=Scale(0 if last_layer else k1);b.mlp=Scale(0 if last_layer else k2)
++            if last_layer:b.ln_3=nn.Identity();b.mlp2=nn.Identity()
++            return b
++        return LinearNOLoopCore(prefix_blocks=0,recurrent_core_blocks=1,loop_repeats=R,suffix_blocks=1,
++            residual_mode='lb_attnres_1_over_r',block_factory=factory).double()
++
++    def test_r1_is_output_receiver_only_and_not_sr(self):
++        core=self.toy(R=1,k1=2,k2=3);x=torch.ones(1,3,8,dtype=torch.float64)
++        with LBTrace(core) as t:y=core(x)
++        self.assertEqual(len(core.lb_boundaries),0);self.assertEqual(len(t.routes),1)
++        # Phi(a)=12a, Delta=11a, output=(a+11a)/2=6a, not12a.
++        torch.testing.assert_close(t.ends[0],12*x,atol=0,rtol=0)
++        torch.testing.assert_close(t.routes[0]['sources'][1],11*x,atol=0,rtol=0)
++        torch.testing.assert_close(y,6*x,atol=0,rtol=0)
++        self.assertEqual(sum(p.numel() for p in core.parameters()),16)
++
++    def test_delta_is_actual_subtraction_not_reconstructed_branch_sum(self):
++        core=build_from_config(mode_config('elasticity')).loop.double()
++        calls=[];original=torch.Tensor.__sub__
++        def subtract(a,b):
++            result=original(a,b);calls.append((a,b,result));return result
++        with patch.object(torch.Tensor,'__sub__',subtract),LBTrace(core) as t:
++            core(torch.randn(2,9,8,dtype=torch.float64))
++        for i,row in enumerate(t.routes):
++            self.assertTrue(any(a is t.ends[i] and b is t.entries[i] and value is row['sources'][-1] for a,b,value in calls))
++
++    def test_local_history_vjp_and_exception_recovery(self):
++        model=build_from_config(mode_config('elasticity')).double();excite(model.loop)
++        known={n:set(vars(m)) for n,m in model.named_modules()}
++        x=torch.randn(2,9,2,dtype=torch.float64,requires_grad=True)
++        with LBTrace(model.loop) as t:y=model(x,None)
++        grads=torch.autograd.grad(t.routes[-1]['routed'].square().sum(),(t.routes[0]['sources'][1],x),retain_graph=True)
++        for g in grads:self.assertTrue(torch.isfinite(g).all());self.assertGreater(g.abs().sum().item(),0)
++        def fail(*args):raise RuntimeError('after delta exists')
++        h=model.loop.lb_output.register_forward_pre_hook(fail)
++        with self.assertRaisesRegex(RuntimeError,'delta'):model(x,None)
++        h.remove();fresh=torch.randn(1,7,2,dtype=torch.float64,requires_grad=True)
++        with LBTrace(model.loop) as new:z=model(fresh,None)
++        self.assertEqual(new.routes[0]['sources'][0].shape,(1,7,8))
++        self.assertIsNone(torch.autograd.grad(z.sum(),x,allow_unused=True)[0])
++        torch.testing.assert_close(model(x,None),y,atol=0,rtol=0)
++        for n,m in model.named_modules():
++            self.assertEqual(set(vars(m)),known[n]);self.assertFalse(any(isinstance(v,torch.Tensor) for v in vars(m).values()))
++
++    def test_native_unroll_train_dropout_adamw(self):
++        for task in ('darcy','ns','plasticity','elasticity','airfrans','car'):
++            for preset in TOPOLOGIES[:2]:
++                for dtype in (torch.float64,torch.float32):
++                    c=mode_config(task,preset);r=c['request']
++                    c=resolve_config(task,options=r['options'],profile_overrides={**r['profile_overrides'],'model.dropout':.2})
++                    core=build_from_config(c).loop.to(dtype);excite(core);ref=copy.deepcopy(core)
++                    g=torch.Generator().manual_seed(222);x=torch.randn(2,15,8,generator=g,dtype=dtype,requires_grad=True)
++                    rx=x.detach().clone().requires_grad_();rng=torch.get_rng_state().clone();y=core(x);end=torch.get_rng_state().clone()
++                    torch.set_rng_state(rng);z=rx
++                    for b in ref.prefix:z=b.block(z)
++                    a=z;deltas=[]
++                    for r in range(ref.loop_repeats):
++                        entry=z
++                        for physical in ref.core:
++                            b=physical.block;z=z+(1/ref.loop_repeats)*b.Attn(b.ln_1(z));z=z+(1/ref.loop_repeats)*b.mlp(b.ln_2(z))
++                        deltas.append(z-entry)
++                        router=ref.lb_boundaries[r] if r<ref.loop_repeats-1 else ref.lb_output
++                        z=router((a,*deltas))
++                    for b in ref.suffix:z=b.block(z)
++                    torch.testing.assert_close(y,z,atol=0,rtol=0);self.assertTrue(torch.equal(end,torch.get_rng_state()))
++                    y.square().mean().backward();z.square().mean().backward();torch.testing.assert_close(x.grad,rx.grad,atol=0,rtol=0)
++                    rp=dict(ref.named_parameters());opt=torch.optim.AdamW(core.parameters(),lr=.001);ropt=torch.optim.AdamW(ref.parameters(),lr=.001)
++                    for n,p in core.named_parameters():
++                        if p.grad is None:self.assertIsNone(rp[n].grad)
++                        else:torch.testing.assert_close(p.grad,rp[n].grad,atol=0,rtol=0)
++                    opt.step();ropt.step()
++                    for n,p in core.named_parameters():
++                        torch.testing.assert_close(p,rp[n],atol=0,rtol=0)
++                        for key,value in opt.state[p].items():torch.testing.assert_close(value,ropt.state[rp[n]][key],atol=0,rtol=0)
++                    self.adamw.append(dict(task=task,preset=preset,dtype=str(dtype),dropout=.2,atol=0,rtol=0,max_error=0,exact_rng=True))
++
++
++if __name__=='__main__':unittest.main()
+--- /dev/null
++++ tests/loop_linearno/test_modes.py
+@@ -0,0 +1,197 @@
++import copy
++import hashlib
++import importlib
++import json
++import os
++from pathlib import Path
++import subprocess
++import sys
++import tempfile
++import unittest
++from unittest.mock import patch
++
++import torch
++from torch import nn
++from torch.utils._python_dispatch import TorchDispatchMode
++
++from cdlno.linearno_loop.attnres import PointDepthAttnRes
++from cdlno.linearno_loop.construction import build_from_config
++from linearno_loop.config import resolve_config
++from linearno_loop.contracts import RESIDUAL_MODES,seal,digest
++from linearno_loop.schema import read_metadata,restore_config,write_metadata
++from loop_linearno.lb_support import mode_config,excite
++from loop_linearno.sr_support import inputs,TOPOLOGIES
++from loop_linearno.support import metadata,ROOT
++
++TASKS=('airfoil','darcy','elasticity','pipe','ns','plasticity','airfrans','car')
++
++
++def routers(model):return [(n,m) for n,m in model.named_modules() if isinstance(m,PointDepthAttnRes)]
++
++
++class ModesTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):cls.counts=[];cls.costs=[];cls.roundtrips=[]
++
++    @classmethod
++    def tearDownClass(cls):
++        if path:=os.environ.get('LOOP_LL5_MODES_REPORT'):
++            Path(path).write_text(json.dumps(dict(counts=cls.counts,costs=cls.costs,roundtrips=cls.roundtrips),indent=2)+'\n')
++
++    def test_all_tasks_three_modes_common_weights_rng_and_real_parameter_counts(self):
++        for task in TASKS:
++            for preset in TOPOLOGIES[:2]:
++                baseline=None;before=None
++                for mode in RESIDUAL_MODES:
++                    # Actual full profile constructors, no full-N forward.
++                    c=resolve_config(task,options=dict(topology_preset=preset,residual_mode=mode))
++                    path,name=c['model_spec']['class_path'].rsplit('.',1);cls=getattr(importlib.import_module(path),name)
++                    torch.manual_seed(672);m=cls(**c['model_spec']['constructor_kwargs'])
++                    common={n:v for n,v in m.state_dict().items() if not n.startswith(('loop.rb_','loop.lb_'))}
++                    if baseline is None:baseline=common;before=torch.get_rng_state().clone()
++                    else:
++                        self.assertTrue(torch.equal(before,torch.get_rng_state()))
++                        self.assertEqual(set(common),set(baseline))
++                        for n,v in common.items():torch.testing.assert_close(v,baseline[n],atol=0,rtol=0)
++                    H=m.loop.core[0].block.Attn.dim;C=m.loop.recurrent_core_blocks;R=m.loop.loop_repeats
++                    expected=0 if mode=='sr_1_over_r' else 2*C*R+1 if mode=='rb_attnres' else R
++                    rs=routers(m);self.assertEqual(len(rs),expected)
++                    added=sum(p.numel() for _,r in rs for p in r.parameters());self.assertEqual(added,2*H*expected)
++                    all_params=list(m.named_parameters(remove_duplicate=False))
++                    self.assertEqual(len(all_params),len({id(p) for _,p in all_params}))
++                    for _,r in rs:
++                        torch.testing.assert_close(r.query,torch.zeros_like(r.query),atol=0,rtol=0)
++                        torch.testing.assert_close(r.norm_scale,torch.ones_like(r.norm_scale),atol=0,rtol=0)
++                    wrong='loop.lb_' if mode=='rb_attnres' else 'loop.rb_'
++                    self.assertFalse(any(n.startswith(wrong) for n in m.state_dict()))
++                    self.counts.append(dict(task=task,preset=preset,mode=mode,hidden=H,actual_rank=c['loop_spec']['resolved_rank'],
++                        receivers=len(rs),added_parameters=added,unique_parameters=sum(p.numel() for p in m.parameters()),
++                        executed_depth=m.loop.executed_depth,unique_depth=m.loop.unique_depth))
++
++    def test_three_modes_full_steps_metadata_and_fresh_process_strict(self):
++        archives=[]
++        with tempfile.TemporaryDirectory() as directory:
++            root=Path(directory)
++            for task in TASKS:
++                for mode in RESIDUAL_MODES:
++                    for preset in TOPOLOGIES[:2]:
++                        c=mode_config(task,preset,mode);m=build_from_config(c);excite(m.loop);args=inputs(c)
++                        opt=torch.optim.AdamW(m.parameters(),lr=.001)
++                        out=m(*args);out.square().mean().backward()
++                        for p in m.parameters():
++                            if p.grad is not None:self.assertTrue(torch.isfinite(p.grad).all())
++                        opt.step();m.eval();expected=m(*args).detach()
++                        restored=build_from_config(json.loads(json.dumps(c))).eval()
++                        restored.load_state_dict(m.state_dict(),strict=True)
++                        torch.testing.assert_close(restored(*args),expected,atol=0,rtol=0)
++                        self.roundtrips.append(dict(task=task,mode=mode,preset=preset,optimizer='AdamW',exact_reload=True))
++                        if task in ('darcy','airfrans','car') and preset==TOPOLOGIES[0]:
++                            p=root/(task+'_'+mode);p.mkdir()
++                            meta=metadata(c)
++                            # Real source fingerprints; protocol fixture stays
++                            # explicitly synthetic, not a production resume.
++                            sources={str(f.relative_to(ROOT)):hashlib.sha256(f.read_bytes()).hexdigest()
++                                for base in ('linearno_loop','cdlno/linearno_loop') for f in sorted((ROOT/base).glob('*.py'))}
++                            meta['provenance_spec'].update(code_version='LL5-synthetic-state-roundtrip',
++                                source_sha256=digest(sources),normalized_patch_sha256=digest({'scope':'LL5 fixture source set','sources':sources}))
++                            meta=seal(meta,'metadata_hash');write_metadata(p/'metadata.json',meta)
++                            torch.save(m.state_dict(),p/'weights.pt');torch.save(expected,p/'expected.pt');archives.append(str(p))
++            # Single entirely fresh interpreter reads all nine metadata files
++            # before each construction/load; no pickle model / strict fallback.
++            code='''import sys,torch
++from pathlib import Path
++from linearno_loop.schema import read_metadata,restore_config
++from cdlno.linearno_loop.construction import build_from_config
++from loop_linearno.sr_support import inputs
++for item in sys.argv[1:]:
++ p=Path(item);c=restore_config(read_metadata(p/'metadata.json'))['config']
++ m=build_from_config(c).eval();m.load_state_dict(torch.load(p/'weights.pt',weights_only=True),strict=True)
++ torch.testing.assert_close(m(*inputs(c)),torch.load(p/'expected.pt',weights_only=True),atol=0,rtol=0)
++print('9/9 metadata-first strict reloads exact')
++'''
++            proc=subprocess.run([sys.executable,'-B','-c',code,*archives],cwd=directory,capture_output=True,text=True,
++                env={**os.environ,'PYTHONPATH':str(ROOT/'tests')+':'+str(ROOT),'PYTHONDONTWRITEBYTECODE':'1'})
++            self.assertEqual(proc.returncode,0,proc.stderr);self.assertIn('9/9',proc.stdout)
++
++    def test_mode_conflicts_fail_before_load_and_do_not_add_other_routers(self):
++        states={};configs={}
++        for mode in RESIDUAL_MODES:
++            c=mode_config(mode=mode);m=build_from_config(c);states[mode]=m.state_dict();configs[mode]=c
++            meta=metadata(c)
++            for wrong in RESIDUAL_MODES:
++                if wrong==mode:continue
++                with patch('torch.load',side_effect=AssertionError('weights read early')),patch(
++                        'cdlno.linearno_loop.construction.importlib.import_module',side_effect=AssertionError('model imported early')):
++                    with self.assertRaisesRegex(ValueError,'residual_mode'):restore_config(meta,explicit={'residual_mode':wrong})
++            with self.assertRaisesRegex(ValueError,'strict'):restore_config(meta,strict=False)
++            for invalid in (True,False,None,0,[],{},'unknown','sr_1_over_r+rb_attnres'):
++                kw={**c['model_spec']['constructor_kwargs'],'residual_mode':invalid}
++                before=torch.get_rng_state().clone()
++                with self.assertRaises(ValueError):type(m)(**kw)
++                self.assertTrue(torch.equal(before,torch.get_rng_state()))
++            with self.assertRaises(TypeError):type(m)(**c['model_spec']['constructor_kwargs'],lb_enabled=True)
++        for mode in RESIDUAL_MODES:
++            m=build_from_config(configs[mode])
++            for wrong,state in states.items():
++                if mode!=wrong:
++                    with self.assertRaises(RuntimeError):m.load_state_dict(state,strict=True)
++        lb=build_from_config(configs['lb_attnres_1_over_r']).loop
++        lb.lb_output=lb.lb_boundaries[0]
++        with self.assertRaisesRegex(ValueError,'independent'):lb(torch.zeros(2,15,8))
++        lb=build_from_config(configs['lb_attnres_1_over_r']).loop
++        lb.rb_output=PointDepthAttnRes(8)
++        with self.assertRaisesRegex(ValueError,'RB receiver'):lb(torch.zeros(2,15,8))
++        rb=build_from_config(configs['rb_attnres']).loop;rb.lb_output=PointDepthAttnRes(8)
++        with self.assertRaisesRegex(ValueError,'only LB'):rb(torch.zeros(2,15,8))
++
++    def test_measured_extra_contractions_and_elementwise_work(self):
++        # Exact shapes observed at reduction kernels; don't report the absence
++        # of matmul inside AR as zero compute. Dense backbone MACs separately.
++        class Work(TorchDispatchMode):
++            def __init__(self):self.active=None;self.ops={};self.contractions=[];self.dense=0;self.point_subtractions=[]
++            def __torch_dispatch__(self,fn,types,args=(),kwargs=None):
++                result=fn(*args,**(kwargs or {}));name=str(fn)
++                if self.active is not None:
++                    row=self.ops.setdefault(name,dict(calls=0,output_elements=0));row['calls']+=1
++                    if isinstance(result,torch.Tensor):row['output_elements']+=result.numel()
++                    if name=='aten.sum.dim_IntList' and args[0].ndim==4:
++                        dims=tuple(args[1])
++                        if dims in ((-1,),(0,)):
++                            self.contractions.append(dict(receiver=self.active,shape=list(args[0].shape),axis=dims[0],macs=args[0].numel()))
++                elif name=='aten.bmm.default':self.dense+=args[0].shape[0]*args[0].shape[1]*args[0].shape[2]*args[1].shape[2]
++                elif name=='aten.sub.Tensor' and isinstance(result,torch.Tensor) and tuple(result.shape)==(2,15,8):
++                    self.point_subtractions.append(result.numel())
++                return result
++        for preset in TOPOLOGIES[:2]:
++            dense_base=None
++            for mode in RESIDUAL_MODES:
++                c=mode_config(preset=preset,mode=mode);m=build_from_config(c).eval();counter=Work();handles=[];sources=[]
++                def linear(mod,args,out):
++                    if isinstance(mod,nn.Linear):counter.dense+=out.numel()*mod.in_features
++                    else:counter.dense+=out.numel()*mod.in_channels//mod.groups*mod.kernel_size[0]*mod.kernel_size[1]
++                for mod in m.modules():
++                    if isinstance(mod,(nn.Linear,nn.Conv2d)):handles.append(mod.register_forward_hook(linear))
++                for name,mod in routers(m):
++                    def enter(mod,args,name=name):counter.active=name;sources.append(len(args[0]))
++                    def leave(*args):counter.active=None
++                    handles.extend((mod.register_forward_pre_hook(enter),mod.register_forward_hook(leave)))
++                try:
++                    with torch.no_grad(),counter:m(*inputs(c))
++                finally:
++                    for h in handles:h.remove()
++                measured=sum(row['macs'] for row in counter.contractions)
++                expected=2*2*15*8*sum(s for s in sources if s>1)
++                self.assertEqual(measured,expected)
++                if dense_base is None:dense_base=counter.dense
++                else:self.assertEqual(counter.dense,dense_base)
++                self.assertEqual(len(counter.contractions),2*sum(s>1 for s in sources))
++                self.assertEqual(counter.point_subtractions,[240,240] if mode=='lb_attnres_1_over_r' else [])
++                self.costs.append(dict(preset=preset,mode=mode,B=2,N=15,hidden=8,source_counts=sources,
++                    measured_dense_backbone_macs=counter.dense,measured_router_contraction_macs=measured,
++                    measured_total_matrix_and_contraction_macs=counter.dense+measured,
++                    receiver_reductions=counter.contractions,router_operator_inventory=counter.ops,
++                    actual_delta_subtraction_elements=counter.point_subtractions,
++                    note='Contraction MACs count input terms in actual score/value multiply-sums; RMS/softmax/elementwise separately listed, not included in 2*MAC FLOPs. No real timing.'))
++
++
++if __name__=='__main__':unittest.main()
+--- LL4/cdlno/linearno_loop/construction.py
++++ cdlno/linearno_loop/construction.py
+@@ -69,7 +69,7 @@
+     """Produce only common backbone weights for all three declared modes.
+ 
+     This returns a detached backbone state_dict, never a residual-mode model.
+-    RB's zero/one receiver initialization consumes no RNG; LB remains absent.
++    RB/LB zero/one receiver initialization consumes no RNG.
+     """
+     from linearno_loop.config import resolve_config
+     c=validate_config(config);r=c['request']
+--- LL4/cdlno/linearno_loop/core.py
++++ cdlno/linearno_loop/core.py
+@@ -1,7 +1,7 @@
+-"""Shared physical LinearNO blocks with SR 1/R and point-domain Block AttnRes."""
++"""Shared physical LinearNO blocks with three exclusive point residual modes."""
+ from torch import nn
+ 
+-from linearno_loop.contracts import integer
++from linearno_loop.contracts import integer, RESIDUAL_MODES
+ from .body import LinearNOBlockBody
+ from .attnres import PointDepthAttnRes
+ 
+@@ -14,8 +14,8 @@
+ 
+ 
+ def require_implemented(mode):
+-    if type(mode) is not str or mode not in ('sr_1_over_r','rb_attnres'):
+-        raise ValueError('only sr_1_over_r and rb_attnres are implemented; LB is not implemented')
++    if type(mode) is not str or mode not in RESIDUAL_MODES:
++        raise ValueError(f'residual_mode must be one of {RESIDUAL_MODES}')
+ 
+ 
+ class PhysicalBlock(nn.Module):
+@@ -60,6 +60,10 @@
+             self.rb_receivers=nn.ModuleList([
+                 nn.ModuleList([PointDepthAttnRes(hidden) for _ in range(2*C)]) for _ in range(R)])
+             self.rb_output=PointDepthAttnRes(hidden)
++        elif residual_mode=='lb_attnres_1_over_r':
++            hidden=self.core[0].block.Attn.dim
++            self.lb_boundaries=nn.ModuleList([PointDepthAttnRes(hidden) for _ in range(R-1)])
++            self.lb_output=PointDepthAttnRes(hidden)
+         self.validate_structure()
+ 
+     @property
+@@ -100,7 +104,19 @@
+                     if id(parameter) in seen:raise ValueError('RB receivers must be independent by round/sublayer/output')
+                     seen.add(id(parameter))
+         elif hasattr(self,'rb_receivers') or hasattr(self,'rb_output'):
+-            raise ValueError('SR must not register RB receiver parameters')
++            raise ValueError('SR must not register RB receiver parameters; neither may LB')
++        if self.residual_mode=='lb_attnres_1_over_r':
++            if (not hasattr(self,'lb_boundaries') or len(self.lb_boundaries)!=self.loop_repeats-1 or
++                    not hasattr(self,'lb_output')):
++                raise ValueError('LB requires R-1 boundary receivers and one output receiver')
++            for receiver in [*self.lb_boundaries,self.lb_output]:
++                if not isinstance(receiver,PointDepthAttnRes) or receiver.hidden!=signature[0]:
++                    raise ValueError('LB receivers must act on the point hidden dimension')
++                for parameter in receiver.parameters():
++                    if id(parameter) in seen:raise ValueError('LB boundary/output receivers must be independent')
++                    seen.add(id(parameter))
++        elif hasattr(self,'lb_boundaries') or hasattr(self,'lb_output'):
++            raise ValueError('only LB may register LB receiver parameters')
+ 
+     def _rb_forward(self,anchor):
+         # Authoritative sources are completed *point* raw sums and anchor.
+@@ -119,13 +135,28 @@
+             completed.append(partial)
+         return self.rb_output(tuple(completed))
+ 
++    def _lb_forward(self,anchor):
++        # Store true end-minus-entry updates, not a recomputed branch sum.
++        # Sources and the current round entry are live forward-local tensors.
++        deltas=[]
++        x=anchor
++        for r in range(self.loop_repeats):
++            entry=x
++            for block in self.core:x=block(x,scale=1/self.loop_repeats)
++            deltas.append(x-entry)
++            sources=(anchor,*deltas)
++            x=self.lb_boundaries[r](sources) if r<self.loop_repeats-1 else self.lb_output(sources)
++        return x
++
+     def forward(self,x):
+         self.validate_structure()
+         for block in self.prefix:x=block(x)
+         if self.residual_mode=='sr_1_over_r':
+             for _ in range(self.loop_repeats):
+                 for block in self.core:x=block(x,scale=1/self.loop_repeats)
++        elif self.residual_mode=='rb_attnres':
++            x=self._rb_forward(x)
+         else:
+-            x=self._rb_forward(x)
++            x=self._lb_forward(x)
+         for index,block in enumerate(self.suffix):x=block(x,finalize=index==self.suffix_blocks-1)
+         return x
+--- LL4/docs/LOOP_LINEARNO_IMPLEMENTATION_STATUS.md
++++ docs/LOOP_LINEARNO_IMPLEMENTATION_STATUS.md
+@@ -1,4 +1,16 @@
+ # Looped LinearNO 实施状态
++
++## LL5 — 2026-09-20
++
++**唯一状态：PASS（三种正式 loop core 残差全部完成）。LL6–LL10 未执行。**
++
++- 范围/公式：新增 `lb_attnres_1_over_r`，轮内两条branch各乘1/R，Delta从实际Y−H相减；仅R−1个boundary及1个output AR读取anchor+Delta。无二次缩放/来源数补偿，无跨forward缓存。[完整报告](LOOP_LINEARNO_CORE_REPORT.md)。
++- 单枚举：SR/RB/LB互斥；SR无router，RB/LB仅注册各自receiver键。八任务×两preset×三mode的48个实际profile构造，共同主干键/值/构造后RNG逐位一致；默认R2的LB新增2HR，即H128为512、H256为1024。
++- 验证：完整loop suite **74方法，72pass、2CUDA skip、0failure/error，33.399s**；36独立全core oracle、24 native训练dropout/AdamW逐位对照、48小wrapper合成更新/strict重载、9metadata先读的新进程重载全部通过。R1、R2精确手算、customR3、局部VJP、异常/B/N隔离、非法mode/错配/别名覆盖。
++- 数值：FP64最大abs5.33e-15；FP32最终输出最大2.98e-8、梯度6.36e-7。首轮两处舍入断言失败已保留并定位；仅传播后的FP32 LB source weights采用明确预算1e-5/1e-4，同source的独立AR仍用原容差。LL2/SR/RB容差与生产公式均未改。[误差复算](loop_linearno_audit/ll5/lb-roundoff.json)。
++- 实测：B2/N15/H8的两preset LB额外router contraction MAC均2400，加两次各240元素Delta减法；RMS/softmax等逐算子单列，不把MAC当完整FLOPs。48个实际profile总参数和六次计算量记录见[模式报告](loop_linearno_audit/ll5/modes-report.json)。
++- 回归/冻结：旧153方法为147pass/2历史失败方法/4skip/0error，失败详情与LL0一致，无新增失败；SR/accounting及RB数值报告与LL4全等。2210既存文件中仅core/construction/SR测试/本STATUS四文件变化，2206不变；tracked/untracked/ignored均复核，新增ignored仅LL5日志。[冻结](loop_linearno_audit/ll5/end-freeze.json)。
++- 未运行：GPU/AMP/远端/真实数据与训练/准确率/生产完整resume；没有修改八任务生产parser/factory/train/eval/checkpoint/launcher/monitor。当前schema与state_dict合成往返不是生产接线验收。没有进入LL6。
+ 
+ ## LL4 — 2026-09-20
+ 
+--- LL4/tests/loop_linearno/test_sr_core.py
++++ tests/loop_linearno/test_sr_core.py
+@@ -190,8 +190,7 @@
+             for mode in RESIDUAL_MODES:
+                 request=resolve_config(task,options={**r['options'],'residual_mode':mode},profile_overrides=r['profile_overrides'])
+                 states.append(common_initial_state(request))
+-                if mode=='lb_attnres_1_over_r':
+-                    with self.assertRaisesRegex(ValueError,'not implemented'):build_from_config(request)
++                self.assertEqual(build_from_config(request).loop.residual_mode,mode)
+             self.assertTrue(torch.equal(before,torch.get_rng_state()))
+             for state in states[1:]:
+                 self.assertEqual(set(state),set(states[0]))

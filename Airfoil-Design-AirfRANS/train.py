@@ -328,7 +328,10 @@ def main(device, train_dataset, val_dataset, Net, hparams, path, criterion='MSE'
     params_model = get_nb_trainable_params(model).astype('float')
     print('Number of parameters:', params_model)
     print('Time elapsed: {0:.2f} seconds'.format(time_elapsed))
-    torch.save(model, osp.join(path, 'model'))
+    if hasattr(linearno_run, 'export_final'):
+        linearno_run.export_final(model)
+    else:
+        torch.save(model, osp.join(path, 'model'))
 
     sns.set()
     fig_train_surf, ax_train_surf = plt.subplots(figsize=(20, 5))

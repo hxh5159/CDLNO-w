@@ -1,0 +1,96 @@
+{
+  "attnres": {
+    "independent mathematics/cpu/torch.float64": {
+      "cases": 3,
+      "max_abs": 2.6645352591003757e-15,
+      "max_mean_abs": 1.0436096431476472e-15,
+      "max_relative": 5.681955128351492e-14,
+      "max_mean_relative": 8.146998358784713e-16
+    },
+    "independent mathematics/cpu/torch.float32": {
+      "cases": 3,
+      "max_abs": 2.86102294921875e-06,
+      "max_mean_abs": 1.3828277587890625e-06,
+      "max_relative": 4.215374407212974e-05,
+      "max_mean_relative": 7.541249696418535e-07
+    }
+  },
+  "body": {
+    "native block/cpu/torch.float64": {
+      "cases": 24,
+      "max_abs": 0.0,
+      "max_mean_abs": 0.0,
+      "max_relative": 0.0,
+      "max_mean_relative": 0.0
+    },
+    "native block/cpu/torch.float32": {
+      "cases": 24,
+      "max_abs": 0.0,
+      "max_mean_abs": 0.0,
+      "max_relative": 0.0,
+      "max_mean_relative": 0.0
+    }
+  },
+  "sr": {
+    "independent mathematics/cpu/torch.float64": {
+      "cases": 18,
+      "max_abs": 8.578207588705311e-16,
+      "max_mean_abs": 2.220446049250313e-16,
+      "max_relative": 5.0835086406561186e-11,
+      "max_mean_relative": 1.6951868658077828e-12
+    },
+    "independent mathematics/cpu/torch.float32": {
+      "cases": 18,
+      "max_abs": 1.7881393432617188e-07,
+      "max_mean_abs": 1.1920928955078125e-07,
+      "max_relative": 0.00841266327208324,
+      "max_mean_relative": 0.0006324700508390665
+    },
+    "independent native-submodule unroll/cpu/torch.float64": {
+      "cases": 18,
+      "max_abs": 0.0,
+      "max_mean_abs": 0.0,
+      "max_relative": 0.0,
+      "max_mean_relative": 0.0
+    },
+    "independent native-submodule unroll/cpu/torch.float32": {
+      "cases": 18,
+      "max_abs": 0.0,
+      "max_mean_abs": 0.0,
+      "max_relative": 0.0,
+      "max_mean_relative": 0.0
+    }
+  },
+  "rb": {
+    "independent mathematics/cpu/torch.float64": {
+      "cases": 18,
+      "max_abs": 8.881784197001252e-16,
+      "max_mean_abs": 2.495833401061631e-16,
+      "max_relative": 4.09563538796139e-10,
+      "max_mean_relative": 4.846278766373889e-11
+    },
+    "independent mathematics/cpu/torch.float32": {
+      "cases": 18,
+      "max_abs": 9.455252438783646e-07,
+      "max_mean_abs": 4.1883322410285473e-07,
+      "max_relative": 1.6562993499067573,
+      "max_mean_relative": 0.21176108880983532
+    }
+  },
+  "lb": {
+    "independent mathematics/cpu/torch.float64": {
+      "cases": 18,
+      "max_abs": 5.329070518200751e-15,
+      "max_mean_abs": 3.6435969259090983e-16,
+      "max_relative": 9.49019433429941e-09,
+      "max_mean_relative": 1.2796024181314584e-09
+    },
+    "independent mathematics/cpu/torch.float32": {
+      "cases": 18,
+      "max_abs": 7.3909759521484375e-06,
+      "max_mean_abs": 2.1860250853933394e-07,
+      "max_relative": 6.196350452927094,
+      "max_mean_relative": 0.7845309790691548
+    }
+  }
+}

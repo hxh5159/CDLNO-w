@@ -1,0 +1,105 @@
+{
+  "failed_methods": 10,
+  "failed_assertions": 15,
+  "inherited_source_state_methods": 9,
+  "new_ignored_artifact_failure_methods": 1,
+  "origin_categories": {
+    "prior_document_or_patch_hash_mismatch": [
+      "linearno.test_legacy",
+      "linearno.test_static_integration",
+      "linearno.test_history_static",
+      "linearno.test_history_industrial"
+    ],
+    "prior_AST_projection_does_not_strip_later_LinearNO_integration": [
+      "test_experiment_records",
+      "test_kcdno_airfrans",
+      "test_msar_industrial",
+      "test_periodic_visualization"
+    ],
+    "prior_standalone_legacy_parser_dependency": [
+      "test_kcdno_delivery"
+    ],
+    "new_runtime_bytecode_freeze_assertion": [
+      "loop_linearno.test_isolation"
+    ]
+  },
+  "unchanged_source_evidence": {
+    "Airfoil-Design-AirfRANS/main.py": {
+      "start_sha256": "71d7c16894938865da26420496521c03db36e31a0d01fcf56187b95bb38da64c",
+      "current_sha256": "71d7c16894938865da26420496521c03db36e31a0d01fcf56187b95bb38da64c"
+    },
+    "Airfoil-Design-AirfRANS/main_evaluation.py": {
+      "start_sha256": "3e085ecc4a988d1aebe656dc3c9de166a3ecf193fc1aa1456ef4dc0b2c18f400",
+      "current_sha256": "3e085ecc4a988d1aebe656dc3c9de166a3ecf193fc1aa1456ef4dc0b2c18f400"
+    },
+    "Airfoil-Design-AirfRANS/train.py": {
+      "start_sha256": "d239304ee3937ad2baabbc1cb182a8191ae931ece849c01761d1ef46e7fae23e",
+      "current_sha256": "d239304ee3937ad2baabbc1cb182a8191ae931ece849c01761d1ef46e7fae23e"
+    },
+    "PDE-Solving-StandardBenchmark/cdlno_entry.py": {
+      "start_sha256": "7fedca7e4b5b6f7d149d9e7bb9813d635c0959162763f4c2cf206c7c49cec875",
+      "current_sha256": "7fedca7e4b5b6f7d149d9e7bb9813d635c0959162763f4c2cf206c7c49cec875"
+    },
+    "README.md": {
+      "start_sha256": "fc58f271728f884d446aa89b623a6634867166ae383072bcc17e42596e333afb",
+      "current_sha256": "fc58f271728f884d446aa89b623a6634867166ae383072bcc17e42596e333afb"
+    },
+    "docs/LINEARNO_REPRODUCTION_MATRIX.md": {
+      "start_sha256": "d2b12535f3284dccb08a033b49f1a7dd6d2ff8c23396981ef5f91757ebee06e7",
+      "current_sha256": "d2b12535f3284dccb08a033b49f1a7dd6d2ff8c23396981ef5f91757ebee06e7"
+    },
+    "path.sh": {
+      "start_sha256": "4c45fe6fee19cd511487c934b8aea20186b91844ccfedee9111be7007945281b",
+      "current_sha256": "4c45fe6fee19cd511487c934b8aea20186b91844ccfedee9111be7007945281b"
+    },
+    "tests/linearno/test_history_industrial.py": {
+      "start_sha256": "7897a5c1c8db5b7fae0c9065e4df020b299a5d6843201f896a5fc0527ee6696a",
+      "current_sha256": "7897a5c1c8db5b7fae0c9065e4df020b299a5d6843201f896a5fc0527ee6696a"
+    },
+    "tests/linearno/test_history_static.py": {
+      "start_sha256": "57f23e01c773636a8916a9340bc150a3a6668f174479a9a04fe4bed744cc02a4",
+      "current_sha256": "57f23e01c773636a8916a9340bc150a3a6668f174479a9a04fe4bed744cc02a4"
+    },
+    "tests/linearno/test_legacy.py": {
+      "start_sha256": "eb95f1188cfc5fe9f2afdc90f67c4d209e64b8bdc7ce838b8094336b2df5c3db",
+      "current_sha256": "eb95f1188cfc5fe9f2afdc90f67c4d209e64b8bdc7ce838b8094336b2df5c3db"
+    },
+    "tests/linearno/test_static_integration.py": {
+      "start_sha256": "43772d7a32d83ca5842833290af7f01809597cb8508ada00343de2c08046888e",
+      "current_sha256": "43772d7a32d83ca5842833290af7f01809597cb8508ada00343de2c08046888e"
+    },
+    "tests/loop_linearno/test_isolation.py": {
+      "start_sha256": "d1efce952f1b225f2daf1fd5fa0ee61c3c743af1ce97b909c72a69b1e69ae810",
+      "current_sha256": "d1efce952f1b225f2daf1fd5fa0ee61c3c743af1ce97b909c72a69b1e69ae810"
+    },
+    "tests/test_experiment_records.py": {
+      "start_sha256": "6a323772d2740ec379ddb247fdbd0f67d4cdfef50fe655559ea0a4b9018c4d6d",
+      "current_sha256": "6a323772d2740ec379ddb247fdbd0f67d4cdfef50fe655559ea0a4b9018c4d6d"
+    },
+    "tests/test_kcdno_airfrans.py": {
+      "start_sha256": "f26b838191e955800bf86f530800a224e7c1b4bbcd3eae610fad0d2fe5eb9104",
+      "current_sha256": "f26b838191e955800bf86f530800a224e7c1b4bbcd3eae610fad0d2fe5eb9104"
+    },
+    "tests/test_kcdno_delivery.py": {
+      "start_sha256": "3edd1ce1fa464d46e94ef0ad3ef4674c2a6e2eecdf7d9d2b0b3dca11bf60d679",
+      "current_sha256": "3edd1ce1fa464d46e94ef0ad3ef4674c2a6e2eecdf7d9d2b0b3dca11bf60d679"
+    },
+    "tests/test_msar_industrial.py": {
+      "start_sha256": "7b63d83c7d1ed58ba8f8234bda93d4b04511cb8efd448896a3738a80b6ff6607",
+      "current_sha256": "7b63d83c7d1ed58ba8f8234bda93d4b04511cb8efd448896a3738a80b6ff6607"
+    },
+    "tests/test_periodic_visualization.py": {
+      "start_sha256": "dbc5c8060d2b85b3325705eea3efe0978aa1d331d8023d116d591ae4df9f5db1",
+      "current_sha256": "dbc5c8060d2b85b3325705eea3efe0978aa1d331d8023d116d591ae4df9f5db1"
+    }
+  },
+  "caveat": "Broader prior-source failures are newly documented in LL9; not all were previously recorded in LL0/LL8 subsets. Do not claim full suite green.",
+  "reference_patch_base": "ll7/historical-fingerprint-review.json: R8 git-before d5abe014 vs current5b991226",
+  "recheck": "history K full13 methods passes in25.458s without code/timeout changes; original timeout retained",
+  "skips": {
+    "total": 36,
+    "intentional_CPU_suite_CUDA_skips": 33,
+    "missing_torch_cluster": 3
+  },
+  "new_GPU_acceptance_failures": "20 RB AMP dtype smoke failures, source unchanged from LL9 start"
+}

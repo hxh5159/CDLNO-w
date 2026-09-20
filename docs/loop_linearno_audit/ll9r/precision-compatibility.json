@@ -1,0 +1,7329 @@
+{
+  "total": 192,
+  "before_pass": 172,
+  "before_fail": 20,
+  "after_pass": 192,
+  "exact": 172,
+  "sr_lb_exact": 128,
+  "rb_exact": 44,
+  "repaired": 20,
+  "comparison": "dtype and torch.equal for initial weights, inputs, outputs, loss, input/parameter grads, optimizer step weights, CPU/CUDA RNG; deterministic backends, no tolerance relaxation",
+  "rows": [
+    {
+      "name": "cpu__airfoil__p1_c3_r2_s1__sr_1_over_r__FP32",
+      "device": "cpu",
+      "task": "airfoil",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__airfoil__p1_c3_r2_s1__rb_attnres__FP32",
+      "device": "cpu",
+      "task": "airfoil",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__airfoil__p1_c3_r2_s1__lb_attnres_1_over_r__FP32",
+      "device": "cpu",
+      "task": "airfoil",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__airfoil__p2_c2_r2_s2__sr_1_over_r__FP32",
+      "device": "cpu",
+      "task": "airfoil",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__airfoil__p2_c2_r2_s2__rb_attnres__FP32",
+      "device": "cpu",
+      "task": "airfoil",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__airfoil__p2_c2_r2_s2__lb_attnres_1_over_r__FP32",
+      "device": "cpu",
+      "task": "airfoil",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__darcy__p1_c3_r2_s1__sr_1_over_r__FP32",
+      "device": "cpu",
+      "task": "darcy",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__darcy__p1_c3_r2_s1__rb_attnres__FP32",
+      "device": "cpu",
+      "task": "darcy",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__darcy__p1_c3_r2_s1__lb_attnres_1_over_r__FP32",
+      "device": "cpu",
+      "task": "darcy",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__darcy__p2_c2_r2_s2__sr_1_over_r__FP32",
+      "device": "cpu",
+      "task": "darcy",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__darcy__p2_c2_r2_s2__rb_attnres__FP32",
+      "device": "cpu",
+      "task": "darcy",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__darcy__p2_c2_r2_s2__lb_attnres_1_over_r__FP32",
+      "device": "cpu",
+      "task": "darcy",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__elasticity__p1_c3_r2_s1__sr_1_over_r__FP32",
+      "device": "cpu",
+      "task": "elasticity",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__elasticity__p1_c3_r2_s1__rb_attnres__FP32",
+      "device": "cpu",
+      "task": "elasticity",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__elasticity__p1_c3_r2_s1__lb_attnres_1_over_r__FP32",
+      "device": "cpu",
+      "task": "elasticity",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__elasticity__p2_c2_r2_s2__sr_1_over_r__FP32",
+      "device": "cpu",
+      "task": "elasticity",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__elasticity__p2_c2_r2_s2__rb_attnres__FP32",
+      "device": "cpu",
+      "task": "elasticity",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__elasticity__p2_c2_r2_s2__lb_attnres_1_over_r__FP32",
+      "device": "cpu",
+      "task": "elasticity",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__pipe__p1_c3_r2_s1__sr_1_over_r__FP32",
+      "device": "cpu",
+      "task": "pipe",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__pipe__p1_c3_r2_s1__rb_attnres__FP32",
+      "device": "cpu",
+      "task": "pipe",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__pipe__p1_c3_r2_s1__lb_attnres_1_over_r__FP32",
+      "device": "cpu",
+      "task": "pipe",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__pipe__p2_c2_r2_s2__sr_1_over_r__FP32",
+      "device": "cpu",
+      "task": "pipe",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__pipe__p2_c2_r2_s2__rb_attnres__FP32",
+      "device": "cpu",
+      "task": "pipe",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__pipe__p2_c2_r2_s2__lb_attnres_1_over_r__FP32",
+      "device": "cpu",
+      "task": "pipe",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__ns__p1_c3_r2_s1__sr_1_over_r__FP32",
+      "device": "cpu",
+      "task": "ns",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__ns__p1_c3_r2_s1__rb_attnres__FP32",
+      "device": "cpu",
+      "task": "ns",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__ns__p1_c3_r2_s1__lb_attnres_1_over_r__FP32",
+      "device": "cpu",
+      "task": "ns",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__ns__p2_c2_r2_s2__sr_1_over_r__FP32",
+      "device": "cpu",
+      "task": "ns",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__ns__p2_c2_r2_s2__rb_attnres__FP32",
+      "device": "cpu",
+      "task": "ns",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__ns__p2_c2_r2_s2__lb_attnres_1_over_r__FP32",
+      "device": "cpu",
+      "task": "ns",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__plasticity__p1_c3_r2_s1__sr_1_over_r__FP32",
+      "device": "cpu",
+      "task": "plasticity",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__plasticity__p1_c3_r2_s1__rb_attnres__FP32",
+      "device": "cpu",
+      "task": "plasticity",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__plasticity__p1_c3_r2_s1__lb_attnres_1_over_r__FP32",
+      "device": "cpu",
+      "task": "plasticity",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__plasticity__p2_c2_r2_s2__sr_1_over_r__FP32",
+      "device": "cpu",
+      "task": "plasticity",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__plasticity__p2_c2_r2_s2__rb_attnres__FP32",
+      "device": "cpu",
+      "task": "plasticity",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__plasticity__p2_c2_r2_s2__lb_attnres_1_over_r__FP32",
+      "device": "cpu",
+      "task": "plasticity",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__airfrans__p1_c3_r2_s1__sr_1_over_r__FP32",
+      "device": "cpu",
+      "task": "airfrans",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__airfrans__p1_c3_r2_s1__rb_attnres__FP32",
+      "device": "cpu",
+      "task": "airfrans",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__airfrans__p1_c3_r2_s1__lb_attnres_1_over_r__FP32",
+      "device": "cpu",
+      "task": "airfrans",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__airfrans__p2_c2_r2_s2__sr_1_over_r__FP32",
+      "device": "cpu",
+      "task": "airfrans",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__airfrans__p2_c2_r2_s2__rb_attnres__FP32",
+      "device": "cpu",
+      "task": "airfrans",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__airfrans__p2_c2_r2_s2__lb_attnres_1_over_r__FP32",
+      "device": "cpu",
+      "task": "airfrans",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__car__p1_c3_r2_s1__sr_1_over_r__FP32",
+      "device": "cpu",
+      "task": "car",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__car__p1_c3_r2_s1__rb_attnres__FP32",
+      "device": "cpu",
+      "task": "car",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__car__p1_c3_r2_s1__lb_attnres_1_over_r__FP32",
+      "device": "cpu",
+      "task": "car",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__car__p2_c2_r2_s2__sr_1_over_r__FP32",
+      "device": "cpu",
+      "task": "car",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__car__p2_c2_r2_s2__rb_attnres__FP32",
+      "device": "cpu",
+      "task": "car",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cpu__car__p2_c2_r2_s2__lb_attnres_1_over_r__FP32",
+      "device": "cpu",
+      "task": "car",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfoil__p1_c3_r2_s1__sr_1_over_r__FP32",
+      "device": "cuda",
+      "task": "airfoil",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfoil__p1_c3_r2_s1__sr_1_over_r__FP16",
+      "device": "cuda",
+      "task": "airfoil",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfoil__p1_c3_r2_s1__sr_1_over_r__BF16",
+      "device": "cuda",
+      "task": "airfoil",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfoil__p1_c3_r2_s1__rb_attnres__FP32",
+      "device": "cuda",
+      "task": "airfoil",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfoil__p1_c3_r2_s1__rb_attnres__FP16",
+      "device": "cuda",
+      "task": "airfoil",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "FP16",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "pre_post_exact": false,
+      "previously_failed": true,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float16",
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "raw": [
+          "torch.float16"
+        ],
+        "partial": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfoil__p1_c3_r2_s1__rb_attnres__BF16",
+      "device": "cuda",
+      "task": "airfoil",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "BF16",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "pre_post_exact": false,
+      "previously_failed": true,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.bfloat16",
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "raw": [
+          "torch.bfloat16"
+        ],
+        "partial": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfoil__p1_c3_r2_s1__lb_attnres_1_over_r__FP32",
+      "device": "cuda",
+      "task": "airfoil",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfoil__p1_c3_r2_s1__lb_attnres_1_over_r__FP16",
+      "device": "cuda",
+      "task": "airfoil",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfoil__p1_c3_r2_s1__lb_attnres_1_over_r__BF16",
+      "device": "cuda",
+      "task": "airfoil",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfoil__p2_c2_r2_s2__sr_1_over_r__FP32",
+      "device": "cuda",
+      "task": "airfoil",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfoil__p2_c2_r2_s2__sr_1_over_r__FP16",
+      "device": "cuda",
+      "task": "airfoil",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfoil__p2_c2_r2_s2__sr_1_over_r__BF16",
+      "device": "cuda",
+      "task": "airfoil",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfoil__p2_c2_r2_s2__rb_attnres__FP32",
+      "device": "cuda",
+      "task": "airfoil",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfoil__p2_c2_r2_s2__rb_attnres__FP16",
+      "device": "cuda",
+      "task": "airfoil",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "FP16",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "pre_post_exact": false,
+      "previously_failed": true,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float16",
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "raw": [
+          "torch.float16"
+        ],
+        "partial": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfoil__p2_c2_r2_s2__rb_attnres__BF16",
+      "device": "cuda",
+      "task": "airfoil",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "BF16",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "pre_post_exact": false,
+      "previously_failed": true,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.bfloat16",
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "raw": [
+          "torch.bfloat16"
+        ],
+        "partial": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfoil__p2_c2_r2_s2__lb_attnres_1_over_r__FP32",
+      "device": "cuda",
+      "task": "airfoil",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfoil__p2_c2_r2_s2__lb_attnres_1_over_r__FP16",
+      "device": "cuda",
+      "task": "airfoil",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfoil__p2_c2_r2_s2__lb_attnres_1_over_r__BF16",
+      "device": "cuda",
+      "task": "airfoil",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__darcy__p1_c3_r2_s1__sr_1_over_r__FP32",
+      "device": "cuda",
+      "task": "darcy",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__darcy__p1_c3_r2_s1__sr_1_over_r__FP16",
+      "device": "cuda",
+      "task": "darcy",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float16"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__darcy__p1_c3_r2_s1__sr_1_over_r__BF16",
+      "device": "cuda",
+      "task": "darcy",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.bfloat16"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__darcy__p1_c3_r2_s1__rb_attnres__FP32",
+      "device": "cuda",
+      "task": "darcy",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__darcy__p1_c3_r2_s1__rb_attnres__FP16",
+      "device": "cuda",
+      "task": "darcy",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float16"
+        ],
+        "anchor": [
+          "torch.float16"
+        ],
+        "completed": [
+          "torch.float16"
+        ],
+        "receiver.sources": [
+          "torch.float16"
+        ],
+        "receiver.output": [
+          "torch.float16"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "raw": [
+          "torch.float16"
+        ],
+        "partial": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__darcy__p1_c3_r2_s1__rb_attnres__BF16",
+      "device": "cuda",
+      "task": "darcy",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.bfloat16"
+        ],
+        "anchor": [
+          "torch.bfloat16"
+        ],
+        "completed": [
+          "torch.bfloat16"
+        ],
+        "receiver.sources": [
+          "torch.bfloat16"
+        ],
+        "receiver.output": [
+          "torch.bfloat16"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "raw": [
+          "torch.bfloat16"
+        ],
+        "partial": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__darcy__p1_c3_r2_s1__lb_attnres_1_over_r__FP32",
+      "device": "cuda",
+      "task": "darcy",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__darcy__p1_c3_r2_s1__lb_attnres_1_over_r__FP16",
+      "device": "cuda",
+      "task": "darcy",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float16"
+        ],
+        "anchor": [
+          "torch.float16"
+        ],
+        "deltas": [
+          "torch.float16"
+        ],
+        "x": [
+          "torch.float16"
+        ],
+        "entry": [
+          "torch.float16"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "receiver.sources": [
+          "torch.float16"
+        ],
+        "receiver.output": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__darcy__p1_c3_r2_s1__lb_attnres_1_over_r__BF16",
+      "device": "cuda",
+      "task": "darcy",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.bfloat16"
+        ],
+        "anchor": [
+          "torch.bfloat16"
+        ],
+        "deltas": [
+          "torch.bfloat16"
+        ],
+        "x": [
+          "torch.bfloat16"
+        ],
+        "entry": [
+          "torch.bfloat16"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "receiver.sources": [
+          "torch.bfloat16"
+        ],
+        "receiver.output": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__darcy__p2_c2_r2_s2__sr_1_over_r__FP32",
+      "device": "cuda",
+      "task": "darcy",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__darcy__p2_c2_r2_s2__sr_1_over_r__FP16",
+      "device": "cuda",
+      "task": "darcy",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float16"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__darcy__p2_c2_r2_s2__sr_1_over_r__BF16",
+      "device": "cuda",
+      "task": "darcy",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.bfloat16"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__darcy__p2_c2_r2_s2__rb_attnres__FP32",
+      "device": "cuda",
+      "task": "darcy",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__darcy__p2_c2_r2_s2__rb_attnres__FP16",
+      "device": "cuda",
+      "task": "darcy",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float16"
+        ],
+        "anchor": [
+          "torch.float16"
+        ],
+        "completed": [
+          "torch.float16"
+        ],
+        "receiver.sources": [
+          "torch.float16"
+        ],
+        "receiver.output": [
+          "torch.float16"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "raw": [
+          "torch.float16"
+        ],
+        "partial": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__darcy__p2_c2_r2_s2__rb_attnres__BF16",
+      "device": "cuda",
+      "task": "darcy",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.bfloat16"
+        ],
+        "anchor": [
+          "torch.bfloat16"
+        ],
+        "completed": [
+          "torch.bfloat16"
+        ],
+        "receiver.sources": [
+          "torch.bfloat16"
+        ],
+        "receiver.output": [
+          "torch.bfloat16"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "raw": [
+          "torch.bfloat16"
+        ],
+        "partial": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__darcy__p2_c2_r2_s2__lb_attnres_1_over_r__FP32",
+      "device": "cuda",
+      "task": "darcy",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__darcy__p2_c2_r2_s2__lb_attnres_1_over_r__FP16",
+      "device": "cuda",
+      "task": "darcy",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float16"
+        ],
+        "anchor": [
+          "torch.float16"
+        ],
+        "deltas": [
+          "torch.float16"
+        ],
+        "x": [
+          "torch.float16"
+        ],
+        "entry": [
+          "torch.float16"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "receiver.sources": [
+          "torch.float16"
+        ],
+        "receiver.output": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__darcy__p2_c2_r2_s2__lb_attnres_1_over_r__BF16",
+      "device": "cuda",
+      "task": "darcy",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.bfloat16"
+        ],
+        "anchor": [
+          "torch.bfloat16"
+        ],
+        "deltas": [
+          "torch.bfloat16"
+        ],
+        "x": [
+          "torch.bfloat16"
+        ],
+        "entry": [
+          "torch.bfloat16"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "receiver.sources": [
+          "torch.bfloat16"
+        ],
+        "receiver.output": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__elasticity__p1_c3_r2_s1__sr_1_over_r__FP32",
+      "device": "cuda",
+      "task": "elasticity",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__elasticity__p1_c3_r2_s1__sr_1_over_r__FP16",
+      "device": "cuda",
+      "task": "elasticity",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__elasticity__p1_c3_r2_s1__sr_1_over_r__BF16",
+      "device": "cuda",
+      "task": "elasticity",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__elasticity__p1_c3_r2_s1__rb_attnres__FP32",
+      "device": "cuda",
+      "task": "elasticity",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__elasticity__p1_c3_r2_s1__rb_attnres__FP16",
+      "device": "cuda",
+      "task": "elasticity",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "FP16",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "pre_post_exact": false,
+      "previously_failed": true,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float16",
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "raw": [
+          "torch.float16"
+        ],
+        "partial": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__elasticity__p1_c3_r2_s1__rb_attnres__BF16",
+      "device": "cuda",
+      "task": "elasticity",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "BF16",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "pre_post_exact": false,
+      "previously_failed": true,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.bfloat16",
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "raw": [
+          "torch.bfloat16"
+        ],
+        "partial": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__elasticity__p1_c3_r2_s1__lb_attnres_1_over_r__FP32",
+      "device": "cuda",
+      "task": "elasticity",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__elasticity__p1_c3_r2_s1__lb_attnres_1_over_r__FP16",
+      "device": "cuda",
+      "task": "elasticity",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__elasticity__p1_c3_r2_s1__lb_attnres_1_over_r__BF16",
+      "device": "cuda",
+      "task": "elasticity",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__elasticity__p2_c2_r2_s2__sr_1_over_r__FP32",
+      "device": "cuda",
+      "task": "elasticity",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__elasticity__p2_c2_r2_s2__sr_1_over_r__FP16",
+      "device": "cuda",
+      "task": "elasticity",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__elasticity__p2_c2_r2_s2__sr_1_over_r__BF16",
+      "device": "cuda",
+      "task": "elasticity",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__elasticity__p2_c2_r2_s2__rb_attnres__FP32",
+      "device": "cuda",
+      "task": "elasticity",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__elasticity__p2_c2_r2_s2__rb_attnres__FP16",
+      "device": "cuda",
+      "task": "elasticity",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "FP16",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "pre_post_exact": false,
+      "previously_failed": true,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float16",
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "raw": [
+          "torch.float16"
+        ],
+        "partial": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__elasticity__p2_c2_r2_s2__rb_attnres__BF16",
+      "device": "cuda",
+      "task": "elasticity",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "BF16",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "pre_post_exact": false,
+      "previously_failed": true,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.bfloat16",
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "raw": [
+          "torch.bfloat16"
+        ],
+        "partial": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__elasticity__p2_c2_r2_s2__lb_attnres_1_over_r__FP32",
+      "device": "cuda",
+      "task": "elasticity",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__elasticity__p2_c2_r2_s2__lb_attnres_1_over_r__FP16",
+      "device": "cuda",
+      "task": "elasticity",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__elasticity__p2_c2_r2_s2__lb_attnres_1_over_r__BF16",
+      "device": "cuda",
+      "task": "elasticity",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__pipe__p1_c3_r2_s1__sr_1_over_r__FP32",
+      "device": "cuda",
+      "task": "pipe",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__pipe__p1_c3_r2_s1__sr_1_over_r__FP16",
+      "device": "cuda",
+      "task": "pipe",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__pipe__p1_c3_r2_s1__sr_1_over_r__BF16",
+      "device": "cuda",
+      "task": "pipe",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__pipe__p1_c3_r2_s1__rb_attnres__FP32",
+      "device": "cuda",
+      "task": "pipe",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__pipe__p1_c3_r2_s1__rb_attnres__FP16",
+      "device": "cuda",
+      "task": "pipe",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "FP16",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "pre_post_exact": false,
+      "previously_failed": true,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float16",
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "raw": [
+          "torch.float16"
+        ],
+        "partial": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__pipe__p1_c3_r2_s1__rb_attnres__BF16",
+      "device": "cuda",
+      "task": "pipe",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "BF16",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "pre_post_exact": false,
+      "previously_failed": true,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.bfloat16",
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "raw": [
+          "torch.bfloat16"
+        ],
+        "partial": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__pipe__p1_c3_r2_s1__lb_attnres_1_over_r__FP32",
+      "device": "cuda",
+      "task": "pipe",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__pipe__p1_c3_r2_s1__lb_attnres_1_over_r__FP16",
+      "device": "cuda",
+      "task": "pipe",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__pipe__p1_c3_r2_s1__lb_attnres_1_over_r__BF16",
+      "device": "cuda",
+      "task": "pipe",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__pipe__p2_c2_r2_s2__sr_1_over_r__FP32",
+      "device": "cuda",
+      "task": "pipe",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__pipe__p2_c2_r2_s2__sr_1_over_r__FP16",
+      "device": "cuda",
+      "task": "pipe",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__pipe__p2_c2_r2_s2__sr_1_over_r__BF16",
+      "device": "cuda",
+      "task": "pipe",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__pipe__p2_c2_r2_s2__rb_attnres__FP32",
+      "device": "cuda",
+      "task": "pipe",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__pipe__p2_c2_r2_s2__rb_attnres__FP16",
+      "device": "cuda",
+      "task": "pipe",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "FP16",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "pre_post_exact": false,
+      "previously_failed": true,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float16",
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "raw": [
+          "torch.float16"
+        ],
+        "partial": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__pipe__p2_c2_r2_s2__rb_attnres__BF16",
+      "device": "cuda",
+      "task": "pipe",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "BF16",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "pre_post_exact": false,
+      "previously_failed": true,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.bfloat16",
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "raw": [
+          "torch.bfloat16"
+        ],
+        "partial": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__pipe__p2_c2_r2_s2__lb_attnres_1_over_r__FP32",
+      "device": "cuda",
+      "task": "pipe",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__pipe__p2_c2_r2_s2__lb_attnres_1_over_r__FP16",
+      "device": "cuda",
+      "task": "pipe",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__pipe__p2_c2_r2_s2__lb_attnres_1_over_r__BF16",
+      "device": "cuda",
+      "task": "pipe",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__ns__p1_c3_r2_s1__sr_1_over_r__FP32",
+      "device": "cuda",
+      "task": "ns",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__ns__p1_c3_r2_s1__sr_1_over_r__FP16",
+      "device": "cuda",
+      "task": "ns",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float16"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__ns__p1_c3_r2_s1__sr_1_over_r__BF16",
+      "device": "cuda",
+      "task": "ns",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.bfloat16"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__ns__p1_c3_r2_s1__rb_attnres__FP32",
+      "device": "cuda",
+      "task": "ns",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__ns__p1_c3_r2_s1__rb_attnres__FP16",
+      "device": "cuda",
+      "task": "ns",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float16"
+        ],
+        "anchor": [
+          "torch.float16"
+        ],
+        "completed": [
+          "torch.float16"
+        ],
+        "receiver.sources": [
+          "torch.float16"
+        ],
+        "receiver.output": [
+          "torch.float16"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "raw": [
+          "torch.float16"
+        ],
+        "partial": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__ns__p1_c3_r2_s1__rb_attnres__BF16",
+      "device": "cuda",
+      "task": "ns",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.bfloat16"
+        ],
+        "anchor": [
+          "torch.bfloat16"
+        ],
+        "completed": [
+          "torch.bfloat16"
+        ],
+        "receiver.sources": [
+          "torch.bfloat16"
+        ],
+        "receiver.output": [
+          "torch.bfloat16"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "raw": [
+          "torch.bfloat16"
+        ],
+        "partial": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__ns__p1_c3_r2_s1__lb_attnres_1_over_r__FP32",
+      "device": "cuda",
+      "task": "ns",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__ns__p1_c3_r2_s1__lb_attnres_1_over_r__FP16",
+      "device": "cuda",
+      "task": "ns",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float16"
+        ],
+        "anchor": [
+          "torch.float16"
+        ],
+        "deltas": [
+          "torch.float16"
+        ],
+        "x": [
+          "torch.float16"
+        ],
+        "entry": [
+          "torch.float16"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "receiver.sources": [
+          "torch.float16"
+        ],
+        "receiver.output": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__ns__p1_c3_r2_s1__lb_attnres_1_over_r__BF16",
+      "device": "cuda",
+      "task": "ns",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.bfloat16"
+        ],
+        "anchor": [
+          "torch.bfloat16"
+        ],
+        "deltas": [
+          "torch.bfloat16"
+        ],
+        "x": [
+          "torch.bfloat16"
+        ],
+        "entry": [
+          "torch.bfloat16"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "receiver.sources": [
+          "torch.bfloat16"
+        ],
+        "receiver.output": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__ns__p2_c2_r2_s2__sr_1_over_r__FP32",
+      "device": "cuda",
+      "task": "ns",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__ns__p2_c2_r2_s2__sr_1_over_r__FP16",
+      "device": "cuda",
+      "task": "ns",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float16"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__ns__p2_c2_r2_s2__sr_1_over_r__BF16",
+      "device": "cuda",
+      "task": "ns",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.bfloat16"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__ns__p2_c2_r2_s2__rb_attnres__FP32",
+      "device": "cuda",
+      "task": "ns",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__ns__p2_c2_r2_s2__rb_attnres__FP16",
+      "device": "cuda",
+      "task": "ns",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float16"
+        ],
+        "anchor": [
+          "torch.float16"
+        ],
+        "completed": [
+          "torch.float16"
+        ],
+        "receiver.sources": [
+          "torch.float16"
+        ],
+        "receiver.output": [
+          "torch.float16"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "raw": [
+          "torch.float16"
+        ],
+        "partial": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__ns__p2_c2_r2_s2__rb_attnres__BF16",
+      "device": "cuda",
+      "task": "ns",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.bfloat16"
+        ],
+        "anchor": [
+          "torch.bfloat16"
+        ],
+        "completed": [
+          "torch.bfloat16"
+        ],
+        "receiver.sources": [
+          "torch.bfloat16"
+        ],
+        "receiver.output": [
+          "torch.bfloat16"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "raw": [
+          "torch.bfloat16"
+        ],
+        "partial": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__ns__p2_c2_r2_s2__lb_attnres_1_over_r__FP32",
+      "device": "cuda",
+      "task": "ns",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__ns__p2_c2_r2_s2__lb_attnres_1_over_r__FP16",
+      "device": "cuda",
+      "task": "ns",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float16"
+        ],
+        "anchor": [
+          "torch.float16"
+        ],
+        "deltas": [
+          "torch.float16"
+        ],
+        "x": [
+          "torch.float16"
+        ],
+        "entry": [
+          "torch.float16"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "receiver.sources": [
+          "torch.float16"
+        ],
+        "receiver.output": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__ns__p2_c2_r2_s2__lb_attnres_1_over_r__BF16",
+      "device": "cuda",
+      "task": "ns",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.bfloat16"
+        ],
+        "anchor": [
+          "torch.bfloat16"
+        ],
+        "deltas": [
+          "torch.bfloat16"
+        ],
+        "x": [
+          "torch.bfloat16"
+        ],
+        "entry": [
+          "torch.bfloat16"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "receiver.sources": [
+          "torch.bfloat16"
+        ],
+        "receiver.output": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__plasticity__p1_c3_r2_s1__sr_1_over_r__FP32",
+      "device": "cuda",
+      "task": "plasticity",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__plasticity__p1_c3_r2_s1__sr_1_over_r__FP16",
+      "device": "cuda",
+      "task": "plasticity",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float16"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__plasticity__p1_c3_r2_s1__sr_1_over_r__BF16",
+      "device": "cuda",
+      "task": "plasticity",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.bfloat16"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__plasticity__p1_c3_r2_s1__rb_attnres__FP32",
+      "device": "cuda",
+      "task": "plasticity",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__plasticity__p1_c3_r2_s1__rb_attnres__FP16",
+      "device": "cuda",
+      "task": "plasticity",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float16"
+        ],
+        "anchor": [
+          "torch.float16"
+        ],
+        "completed": [
+          "torch.float16"
+        ],
+        "receiver.sources": [
+          "torch.float16"
+        ],
+        "receiver.output": [
+          "torch.float16"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "raw": [
+          "torch.float16"
+        ],
+        "partial": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__plasticity__p1_c3_r2_s1__rb_attnres__BF16",
+      "device": "cuda",
+      "task": "plasticity",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.bfloat16"
+        ],
+        "anchor": [
+          "torch.bfloat16"
+        ],
+        "completed": [
+          "torch.bfloat16"
+        ],
+        "receiver.sources": [
+          "torch.bfloat16"
+        ],
+        "receiver.output": [
+          "torch.bfloat16"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "raw": [
+          "torch.bfloat16"
+        ],
+        "partial": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__plasticity__p1_c3_r2_s1__lb_attnres_1_over_r__FP32",
+      "device": "cuda",
+      "task": "plasticity",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__plasticity__p1_c3_r2_s1__lb_attnres_1_over_r__FP16",
+      "device": "cuda",
+      "task": "plasticity",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float16"
+        ],
+        "anchor": [
+          "torch.float16"
+        ],
+        "deltas": [
+          "torch.float16"
+        ],
+        "x": [
+          "torch.float16"
+        ],
+        "entry": [
+          "torch.float16"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "receiver.sources": [
+          "torch.float16"
+        ],
+        "receiver.output": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__plasticity__p1_c3_r2_s1__lb_attnres_1_over_r__BF16",
+      "device": "cuda",
+      "task": "plasticity",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.bfloat16"
+        ],
+        "anchor": [
+          "torch.bfloat16"
+        ],
+        "deltas": [
+          "torch.bfloat16"
+        ],
+        "x": [
+          "torch.bfloat16"
+        ],
+        "entry": [
+          "torch.bfloat16"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "receiver.sources": [
+          "torch.bfloat16"
+        ],
+        "receiver.output": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__plasticity__p2_c2_r2_s2__sr_1_over_r__FP32",
+      "device": "cuda",
+      "task": "plasticity",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__plasticity__p2_c2_r2_s2__sr_1_over_r__FP16",
+      "device": "cuda",
+      "task": "plasticity",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float16"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__plasticity__p2_c2_r2_s2__sr_1_over_r__BF16",
+      "device": "cuda",
+      "task": "plasticity",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.bfloat16"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__plasticity__p2_c2_r2_s2__rb_attnres__FP32",
+      "device": "cuda",
+      "task": "plasticity",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__plasticity__p2_c2_r2_s2__rb_attnres__FP16",
+      "device": "cuda",
+      "task": "plasticity",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float16"
+        ],
+        "anchor": [
+          "torch.float16"
+        ],
+        "completed": [
+          "torch.float16"
+        ],
+        "receiver.sources": [
+          "torch.float16"
+        ],
+        "receiver.output": [
+          "torch.float16"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "raw": [
+          "torch.float16"
+        ],
+        "partial": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__plasticity__p2_c2_r2_s2__rb_attnres__BF16",
+      "device": "cuda",
+      "task": "plasticity",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.bfloat16"
+        ],
+        "anchor": [
+          "torch.bfloat16"
+        ],
+        "completed": [
+          "torch.bfloat16"
+        ],
+        "receiver.sources": [
+          "torch.bfloat16"
+        ],
+        "receiver.output": [
+          "torch.bfloat16"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "raw": [
+          "torch.bfloat16"
+        ],
+        "partial": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__plasticity__p2_c2_r2_s2__lb_attnres_1_over_r__FP32",
+      "device": "cuda",
+      "task": "plasticity",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__plasticity__p2_c2_r2_s2__lb_attnres_1_over_r__FP16",
+      "device": "cuda",
+      "task": "plasticity",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float16"
+        ],
+        "anchor": [
+          "torch.float16"
+        ],
+        "deltas": [
+          "torch.float16"
+        ],
+        "x": [
+          "torch.float16"
+        ],
+        "entry": [
+          "torch.float16"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "receiver.sources": [
+          "torch.float16"
+        ],
+        "receiver.output": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__plasticity__p2_c2_r2_s2__lb_attnres_1_over_r__BF16",
+      "device": "cuda",
+      "task": "plasticity",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.bfloat16"
+        ],
+        "anchor": [
+          "torch.bfloat16"
+        ],
+        "deltas": [
+          "torch.bfloat16"
+        ],
+        "x": [
+          "torch.bfloat16"
+        ],
+        "entry": [
+          "torch.bfloat16"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "receiver.sources": [
+          "torch.bfloat16"
+        ],
+        "receiver.output": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfrans__p1_c3_r2_s1__sr_1_over_r__FP32",
+      "device": "cuda",
+      "task": "airfrans",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfrans__p1_c3_r2_s1__sr_1_over_r__FP16",
+      "device": "cuda",
+      "task": "airfrans",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfrans__p1_c3_r2_s1__sr_1_over_r__BF16",
+      "device": "cuda",
+      "task": "airfrans",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfrans__p1_c3_r2_s1__rb_attnres__FP32",
+      "device": "cuda",
+      "task": "airfrans",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfrans__p1_c3_r2_s1__rb_attnres__FP16",
+      "device": "cuda",
+      "task": "airfrans",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "FP16",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "pre_post_exact": false,
+      "previously_failed": true,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float16",
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "raw": [
+          "torch.float16"
+        ],
+        "partial": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfrans__p1_c3_r2_s1__rb_attnres__BF16",
+      "device": "cuda",
+      "task": "airfrans",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "BF16",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "pre_post_exact": false,
+      "previously_failed": true,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.bfloat16",
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "raw": [
+          "torch.bfloat16"
+        ],
+        "partial": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfrans__p1_c3_r2_s1__lb_attnres_1_over_r__FP32",
+      "device": "cuda",
+      "task": "airfrans",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfrans__p1_c3_r2_s1__lb_attnres_1_over_r__FP16",
+      "device": "cuda",
+      "task": "airfrans",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfrans__p1_c3_r2_s1__lb_attnres_1_over_r__BF16",
+      "device": "cuda",
+      "task": "airfrans",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfrans__p2_c2_r2_s2__sr_1_over_r__FP32",
+      "device": "cuda",
+      "task": "airfrans",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfrans__p2_c2_r2_s2__sr_1_over_r__FP16",
+      "device": "cuda",
+      "task": "airfrans",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfrans__p2_c2_r2_s2__sr_1_over_r__BF16",
+      "device": "cuda",
+      "task": "airfrans",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfrans__p2_c2_r2_s2__rb_attnres__FP32",
+      "device": "cuda",
+      "task": "airfrans",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfrans__p2_c2_r2_s2__rb_attnres__FP16",
+      "device": "cuda",
+      "task": "airfrans",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "FP16",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "pre_post_exact": false,
+      "previously_failed": true,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float16",
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "raw": [
+          "torch.float16"
+        ],
+        "partial": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfrans__p2_c2_r2_s2__rb_attnres__BF16",
+      "device": "cuda",
+      "task": "airfrans",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "BF16",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "pre_post_exact": false,
+      "previously_failed": true,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.bfloat16",
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "raw": [
+          "torch.bfloat16"
+        ],
+        "partial": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfrans__p2_c2_r2_s2__lb_attnres_1_over_r__FP32",
+      "device": "cuda",
+      "task": "airfrans",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfrans__p2_c2_r2_s2__lb_attnres_1_over_r__FP16",
+      "device": "cuda",
+      "task": "airfrans",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__airfrans__p2_c2_r2_s2__lb_attnres_1_over_r__BF16",
+      "device": "cuda",
+      "task": "airfrans",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__car__p1_c3_r2_s1__sr_1_over_r__FP32",
+      "device": "cuda",
+      "task": "car",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__car__p1_c3_r2_s1__sr_1_over_r__FP16",
+      "device": "cuda",
+      "task": "car",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__car__p1_c3_r2_s1__sr_1_over_r__BF16",
+      "device": "cuda",
+      "task": "car",
+      "preset": "p1_c3_r2_s1",
+      "mode": "sr_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__car__p1_c3_r2_s1__rb_attnres__FP32",
+      "device": "cuda",
+      "task": "car",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__car__p1_c3_r2_s1__rb_attnres__FP16",
+      "device": "cuda",
+      "task": "car",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "FP16",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "pre_post_exact": false,
+      "previously_failed": true,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float16",
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "raw": [
+          "torch.float16"
+        ],
+        "partial": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__car__p1_c3_r2_s1__rb_attnres__BF16",
+      "device": "cuda",
+      "task": "car",
+      "preset": "p1_c3_r2_s1",
+      "mode": "rb_attnres",
+      "precision": "BF16",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "pre_post_exact": false,
+      "previously_failed": true,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.bfloat16",
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "raw": [
+          "torch.bfloat16"
+        ],
+        "partial": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__car__p1_c3_r2_s1__lb_attnres_1_over_r__FP32",
+      "device": "cuda",
+      "task": "car",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__car__p1_c3_r2_s1__lb_attnres_1_over_r__FP16",
+      "device": "cuda",
+      "task": "car",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__car__p1_c3_r2_s1__lb_attnres_1_over_r__BF16",
+      "device": "cuda",
+      "task": "car",
+      "preset": "p1_c3_r2_s1",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__car__p2_c2_r2_s2__sr_1_over_r__FP32",
+      "device": "cuda",
+      "task": "car",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__car__p2_c2_r2_s2__sr_1_over_r__FP16",
+      "device": "cuda",
+      "task": "car",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__car__p2_c2_r2_s2__sr_1_over_r__BF16",
+      "device": "cuda",
+      "task": "car",
+      "preset": "p2_c2_r2_s2",
+      "mode": "sr_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__car__p2_c2_r2_s2__rb_attnres__FP32",
+      "device": "cuda",
+      "task": "car",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "raw": [
+          "torch.float32"
+        ],
+        "partial": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__car__p2_c2_r2_s2__rb_attnres__FP16",
+      "device": "cuda",
+      "task": "car",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "FP16",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "pre_post_exact": false,
+      "previously_failed": true,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.float16",
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "raw": [
+          "torch.float16"
+        ],
+        "partial": [
+          "torch.float16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__car__p2_c2_r2_s2__rb_attnres__BF16",
+      "device": "cuda",
+      "task": "car",
+      "preset": "p2_c2_r2_s2",
+      "mode": "rb_attnres",
+      "precision": "BF16",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "pre_post_exact": false,
+      "previously_failed": true,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "completed": [
+          "torch.bfloat16",
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "raw": [
+          "torch.bfloat16"
+        ],
+        "partial": [
+          "torch.bfloat16"
+        ]
+      }
+    },
+    {
+      "name": "cuda__car__p2_c2_r2_s2__lb_attnres_1_over_r__FP32",
+      "device": "cuda",
+      "task": "car",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP32",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float32"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float32"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__car__p2_c2_r2_s2__lb_attnres_1_over_r__FP16",
+      "device": "cuda",
+      "task": "car",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "FP16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.float16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.float16"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    },
+    {
+      "name": "cuda__car__p2_c2_r2_s2__lb_attnres_1_over_r__BF16",
+      "device": "cuda",
+      "task": "car",
+      "preset": "p2_c2_r2_s2",
+      "mode": "lb_attnres_1_over_r",
+      "precision": "BF16",
+      "before_status": "PASS",
+      "after_status": "PASS",
+      "pre_post_exact": true,
+      "previously_failed": false,
+      "dtypes": {
+        "placeholder": [
+          "torch.float32"
+        ],
+        "preprocess": [
+          "torch.bfloat16"
+        ],
+        "loop_input": [
+          "torch.float32"
+        ],
+        "anchor": [
+          "torch.float32"
+        ],
+        "deltas": [
+          "torch.float32"
+        ],
+        "x": [
+          "torch.float32"
+        ],
+        "entry": [
+          "torch.float32"
+        ],
+        "raw_branch": [
+          "torch.bfloat16"
+        ],
+        "receiver.sources": [
+          "torch.float32"
+        ],
+        "receiver.output": [
+          "torch.float32"
+        ]
+      }
+    }
+  ]
+}

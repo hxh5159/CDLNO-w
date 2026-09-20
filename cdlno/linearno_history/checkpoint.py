@@ -33,7 +33,9 @@ def source_hash():
     paths = sorted((root/'cdlno/linearno_history').glob('*.py'))
     paths += sorted((root/'linearno_history').glob('*.py'))
     paths += [root/'PDE-Solving-StandardBenchmark/model/LinearNO_History.py']
-    return digest({str(p.relative_to(root)): legacy.sha256(p) for p in paths})
+    from cdlno.linearno_loop.provenance import legacy_source
+    import hashlib
+    return digest({str(p.relative_to(root)): hashlib.sha256(legacy_source(str(p.relative_to(root)),p.read_text()).encode()).hexdigest() for p in paths})
 
 
 def rehash(metadata):

@@ -1,0 +1,67 @@
+{
+  "stage": "LL3",
+  "status": "PASS",
+  "reviewed": {
+    "topology": "Presets5/8 and6/8 + custom3/7; module/parameter identities repeat; head LN/project exactly once",
+    "formula": "Independent 36-case FP64/FP32 equations, all visits/loss/gradients; scalar hand check300x",
+    "numerical_issue": "Original FP32 oracle AdamW failure retained and reproduced by scalar first-step formula; no tolerance relaxation; FP32 independent SGD and FP64 AdamW pass; 36 native unroll AdamW/train-dropout comparisons exact",
+    "initialization": "18 native-U same-seed weight and RNG comparisons exact; no extra allocation/reapply; three-mode common-state equality without RB/LB execution",
+    "compatibility": "Original inherited task forwards; fresh-process strict weights_only state reload; old regression outcomes match LL0; full content/category freeze"
+  },
+  "tests": {
+    "loop_methods": 55,
+    "passed": 53,
+    "skipped": 2,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 20.902,
+    "new_LL3_methods": 14,
+    "math_oracle_cases": 36,
+    "native_adamw_cases": 36,
+    "profile_count_cases": 32,
+    "mac_hook_cases": 24,
+    "old_LL0": {
+      "methods": 153,
+      "passed": 147,
+      "failed_methods": 2,
+      "failed_assertions": 4,
+      "skipped": 4,
+      "errors": 0
+    }
+  },
+  "syntax_python310": [
+    "cdlno/linearno_loop/__init__.py",
+    "cdlno/linearno_loop/airfrans.py",
+    "cdlno/linearno_loop/attnres.py",
+    "cdlno/linearno_loop/body.py",
+    "cdlno/linearno_loop/construction.py",
+    "cdlno/linearno_loop/core.py",
+    "cdlno/linearno_loop/shapenet.py",
+    "cdlno/linearno_loop/standard.py",
+    "docs/loop_linearno_audit/ll3/finalize_evidence.py",
+    "docs/loop_linearno_audit/ll3/reproduce_adamw_roundoff.py",
+    "docs/loop_linearno_audit/ll3/run_existing_regressions.py",
+    "tests/loop_linearno/__init__.py",
+    "tests/loop_linearno/point_attnres_oracle.py",
+    "tests/loop_linearno/sr_oracle.py",
+    "tests/loop_linearno/sr_support.py",
+    "tests/loop_linearno/support.py",
+    "tests/loop_linearno/test_artifacts.py",
+    "tests/loop_linearno/test_block_body.py",
+    "tests/loop_linearno/test_config.py",
+    "tests/loop_linearno/test_isolation.py",
+    "tests/loop_linearno/test_point_attnres.py",
+    "tests/loop_linearno/test_schema.py",
+    "tests/loop_linearno/test_sr_accounting.py",
+    "tests/loop_linearno/test_sr_core.py"
+  ],
+  "not_run": [
+    "RB/LB executable residual modes",
+    "production task parser/factory/launcher/monitor integration",
+    "loop full checkpoint/resume archives",
+    "real data/training",
+    "GPU/AMP/compile",
+    "remote Python3.10 target",
+    "timing/accuracy"
+  ]
+}

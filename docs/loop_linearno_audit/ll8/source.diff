@@ -1,0 +1,868 @@
+--- before-LL8/docs/LOOP_LINEARNO_IMPLEMENTATION_STATUS.md
++++ docs/LOOP_LINEARNO_IMPLEMENTATION_STATUS.md
+@@ -1,4 +1,18 @@
+ # Looped LinearNO 实施状态
++
++## LL8 — 2026-09-20
++
++**唯一状态：PASS（八任务统一launcher、公平记录与命令矩阵完成）。LL9–LL10 未执行。**
++
++- 新增`tran_evaluate/linearno_loop/<task>.sh`统一train/resume/eval，复用path.sh、原launcher的argv和真实parser，独立启动桥进入原任务。`--dry-run`真实解析但不读数据、不反序列化权重（saved run仍核验文件hash）；`--print-run-dir`生成准确唯一RUN；`--then-eval`训练成功才评估同一RUN。新launcher固定loop family，不允许旧A/K混用。[完整远端命令/三个paired seeds循环/数据路径/输出](LOOP_LINEARNO_COMMANDS.md)。
++- 新增launcher专用观察层记录实际初始公共backbone hash、实测总/router参数、公平seed、unique/executed depth及首forward实际调用序列。A独立5块、B6块，不参数匹配；router零/一初始化不消耗随机数。manifest独立于旧checkpoint，resume/eval不覆盖旧记录；Air成员独立、generator按原状态连续推进。所有模型/core/schema/生产adapter/原launcher/path.sh/monitor字节未改。
++- 验证：完整loop **88方法86pass/2CUDA skip/0失败错误，54.950s**；最终定向 **6/6，5.429s**。**184预览**（48train+48eval+48resume+40扩展），**384非法/冲突检查**通过；带空格路径/GPU映射/错误传播/仅成功后eval通过。三seeds×八题×两preset×三mode共**144小模型**公共初值hash与DataLoader序列公平；**24原生CPU合成运行**加观察后对LL7无观察结果的权重/optimizer/scheduler/RNG/批次/输出全等，跨mode数据顺序和成员初值hash全等。[LL8报告](LOOP_LINEARNO_LL8_LAUNCHERS.md)、[交付审查](loop_linearno_audit/ll8/delivery-review.json)。
++- 冻结：2524既存文件中仅本STATUS及旧“launcher尚不存在”测试断言变化，其余2522保持content/hash/classification；既有pure/history/loop源码fingerprint全等，七份数值/参数/MAC报告全等，HEAD/tree/staged不变。[冻结](loop_linearno_audit/ll8/end-freeze.json)。初轮resume预览对已完成run的正确拒绝日志保留，后改用真实epoch1隔离副本，未放松生产保护。LL7历史旧回归失败保留，本轮不宣称重跑或消除。
++- NOT RUN：真实数据/VTK/训练/精度、正式144运行、全宽工业训练、远端/GPU/AMP/compile。未来命令已给，默认PREVIEW=1。loop相似度monitor和效率工具属LL9，未执行。没有新增待用户裁定的设计冲突。
++
++**本 LL8 阶段结束，未执行下一阶段。**
++
++以下为已审查 LL7–LL0 历史记录，其未执行表述对应当时状态。
+ 
+ ## LL7 — 2026-09-20
+ 
+--- before-LL8/tests/loop_linearno/test_artifacts.py
++++ tests/loop_linearno/test_artifacts.py
+@@ -24,7 +24,9 @@
+         # This saved LL1 fixture is metadata only; LL3 now supplies synthetic
+         # SR classes, without turning the historical fixture into trained data.
+         self.assertEqual(m['provenance_spec']['code_version'],'LL1-contract-only')
+-        self.assertFalse((ROOT/'tran_evaluate/linearno_loop').exists())
++        # LL8 adds actual launchers; the frozen LL1 metadata remains a fixture.
++        for task in ('airfoil','darcy','elasticity','pipe','ns','plasticity','airfrans','car'):
++            self.assertTrue((ROOT/f'tran_evaluate/linearno_loop/{task}.sh').is_file())
+ 
+ 
+ if __name__=='__main__':unittest.main()
+--- /dev/null
++++ docs/LOOP_LINEARNO_COMMANDS.md
+@@ -0,0 +1,166 @@
++# LL8：八任务 Looped LinearNO 命令与公平比较
++
++以下是真实训练的**未来运行命令**。LL8只运行CPU合成检查和dry-run，没有读取真实数据、执行远端/GPU训练或产生准确率结果。当前仅支持已批准的三种点域残差模式，不与旧latent A/K flags混用。
++
++## 远端准备与统一入口
++
++```bash
++cd /inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/transolver/LinearNO-monitor
++export CDLNO_REPO_ROOT="$PWD" CDLNO_RUNS_ROOT="$PWD/output"
++source ./path.sh
++# 使用远端已可工作的环境；此处不安装/升级任何依赖。
++```
++
++仓库目录如果另有改名，只改第一行cd，其余相对路径不变。请勿预先mkdir最终RUN目录。每题脚本统一为：
++
++```bash
++bash tran_evaluate/linearno_loop/<task>.sh train  [显式loop/topology/residual参数]
++bash tran_evaluate/linearno_loop/<task>.sh resume --gpu 0 --experiment-dir "$RUN"
++bash tran_evaluate/linearno_loop/<task>.sh eval   --gpu 0 --experiment-dir "$RUN"
++```
++
++task是`airfoil/darcy/elasticity/pipe/ns/plasticity/airfrans/car`。新train需要显式`--linearno-loop 1`、topology、residual；rank multiplier缺省2，允许1；不能和actual `--linearno-rank`同时给。旧`--n-layers`、`--slice_num`和A/K/fair-run参数不能传入。profile的原数据、目标、metric与训练节奏不变；Darcy official_release仍拒绝非500 epochs。
++
++- `--dry-run`：调用原launcher生成argv，再执行真实parser及metadata校验；不构造模型、不读取数据、不反序列化权重、不建运行目录。eval/resume会读取JSON并核验成对文件hash，因此必须有真实RUN；resume会拒绝已完成运行。
++- `--print-run-dir`：只输出本次解析出的准确RUN，可给变量赋值；配置变更后需重新生成。目录含task/profile/P-C-R-S/residual/M/seed/config hash/时间戳，路径允许空格。
++- `--plan-json`：输出可机器读取的命令与resolved config，不执行任务。
++- `--then-eval`：用于train或resume，前一命令成功才评估同一个RUN；失败退出码原样传递。eval只用刚保存的metadata，不复制训练结构默认值。
++
++### preset A：P1-C3-R2-S1
++
++Airfoil完整训练→评估示例（先生成准确RUN，再启动；不是字面路径`RUN`）：
++
++```bash
++FLAGS=(--linearno-loop 1
++  --linearno-loop-topology p1_c3_r2_s1
++  --linearno-loop-residual-mode sr_1_over_r
++  --linearno-loop-rank-multiplier 2
++  --linearno-profile paper_table8_on_release_model
++  --seed 17 --gpu 0)
++RUN="$(bash tran_evaluate/linearno_loop/airfoil.sh train "${FLAGS[@]}" --print-run-dir)"
++bash tran_evaluate/linearno_loop/airfoil.sh train "${FLAGS[@]}" \
++  --experiment-dir "$RUN" --then-eval
++```
++
++先预览可把最后一行加上`--dry-run`。不显式传RUN时，parser同样会自动生成唯一目录，控制台打印准确路径。
++
++### preset B：P2-C2-R2-S2
++
++```bash
++bash tran_evaluate/linearno_loop/darcy.sh train --then-eval \
++  --linearno-loop 1 --linearno-loop-topology p2_c2_r2_s2 \
++  --linearno-loop-residual-mode rb_attnres \
++  --linearno-loop-rank-multiplier 2 \
++  --linearno-profile paper_table8_on_release_model --seed 17 --gpu 1
++```
++
++### custom：P0-C2-R3-S1 与 M×1 控制
++
++```bash
++bash tran_evaluate/linearno_loop/elasticity.sh train --then-eval \
++  --linearno-loop 1 --linearno-loop-topology custom \
++  --linearno-loop-prefix-blocks 0 --linearno-loop-core-blocks 2 \
++  --linearno-loop-repeats 3 --linearno-loop-suffix-blocks 1 \
++  --linearno-loop-residual-mode lb_attnres_1_over_r \
++  --linearno-loop-rank-multiplier 1 \
++  --linearno-profile paper_table8_on_release_model --seed 17 --gpu 0
++```
++
++custom四字段必须齐全，不能与命名preset混填。若控制actual M，把multiplier整对参数移除后改成`--linearno-rank M`；Car的M必须是head_dim的正整数倍。
++
++### 续训与独立评估
++
++```bash
++RUN='/absolute/path/copied/from/the/training/output'
++# 仅对未完成的运行；成功后评估final。
++bash tran_evaluate/linearno_loop/airfoil.sh resume \
++  --gpu 0 --experiment-dir "$RUN" --then-eval
++# 对已有完整运行独立复评；每次生成新的evaluations子目录。
++bash tran_evaluate/linearno_loop/airfoil.sh eval --gpu 0 --experiment-dir "$RUN"
++```
++
++其余七任务仅替换脚本名。无需重复profile/seed/rank/PCRS/mode/fold/Air task或nmodel；若显式重复，只作一致性断言，冲突在模型构造与torch.load前拒绝。数据根使用path.sh；数据搬家时显式传相应路径，但样本checksum、normalizer等仍严格核对。不要只复制便捷`model.pt`：恢复需要architecture、成对checkpoint/weights及manifest；Air还需根目录与成员目录。
++
++## 八任务与数据路径
++
++| task脚本 | path.sh变量 | 入口参数与含义 | 默认base M → loop M×2 |
++|---|---|---|---|
++| airfoil.sh | CDLNO_AIRFOIL_ROOT | `--data_path`，`fno/airfoil/naca`，包含原NACA数组 | 64→128 |
++| darcy.sh | CDLNO_DARCY_ROOT | `--data_path`，原Darcy两个mat文件所在的fno目录 | 64→128 |
++| elasticity.sh | CDLNO_ELASTICITY_ROOT | `--data_path`，原Elasticity子目录所依附的fno根目录 | 64→128 |
++| pipe.sh | CDLNO_PIPE_ROOT | `--data_path`，`fno/pipe`数组目录，129×129 | 64→128 |
++| ns.sh | CDLNO_NS_ROOT | `--data_path`，fno根目录；入口追加`NavierStokes_V1e-5_N1200_T20/NavierStokes_V1e-5_N1200_T20.mat` | 32→64 |
++| plasticity.sh | CDLNO_PLASTICITY_FILE | `--data_path`，`plas_N987_T20.mat`文件本身 | 64→128 |
++| airfrans.sh | CDLNO_AIRFRANS_DATASET | `--my_path`，包含manifest/data的Dataset目录；原适配也接受其父目录，train/eval沿用同一配置路径 | 32→64 |
++| car.sh | CDLNO_CAR_RAW_ROOT / CDLNO_CAR_CACHE_ROOT | `--data_dir` 原param/fold几何目录；`--save_dir`预处理缓存目录，不是实验输出目录 | 32→64 |
++
++本表是paper_table8_on_release_model与official_release的基础rank；始终以所选profile解析值为准，不把倍增M硬编码成所有任务相同。工业目录在path.sh里是未在远端观测的候选，请按真实存放处覆盖环境变量。原`tran_evaluate/inspect_data.sh`可只读检查文件存在情况。Loop沿用已批准的Car sample路径/非零fold evaluator，不套用旧CDLNO特有的固定param0检查；这不代表真实VTK指标已验收。
++
++## GPU映射
++
++未设置CUDA_VISIBLE_DEVICES时，`--gpu 1`选择物理GPU1。调度器已设置掩码时，`--gpu`是掩码内索引，例如：
++
++```bash
++CUDA_VISIBLE_DEVICES=4,7 bash tran_evaluate/linearno_loop/darcy.sh train \
++  --linearno-loop 1 --linearno-loop-topology p1_c3_r2_s1 \
++  --linearno-loop-residual-mode sr_1_over_r --seed 0 --gpu 1 --dry-run
++```
++
++上述选择物理GPU7。Standard原入口会重写CUDA_VISIBLE_DEVICES，故桥接后传原`--gpu 7`；工业入口在单卡掩码下使用`--gpu 0`。控制台记录请求索引/继承掩码/最终掩码。Standard原parser只接受数字GPU ID，UUID掩码会明确拒绝；不要用此方式启动CPU Standard训练。显式空掩码用于本地无GPU的dry-run与合成验证，不是远端训练设置。
++
++## 三个paired seeds的完整未来矩阵
++
++以下Bash循环包含8任务×2拓扑×3残差×3 seeds，每次训练成功后再评估同一运行，共144组真实训练计划。**这是未来命令，LL8没有执行它。**先保持`PREVIEW=1`只做预览；确认数据/预算后由用户自行改为0。
++
++```bash
++(
++set -euo pipefail
++PREVIEW=1
++for seed in 0 1 2; do
++  for task in airfoil darcy elasticity pipe ns plasticity airfrans car; do
++    case "$task" in darcy|pipe|plasticity) gpu=1 ;; *) gpu=0 ;; esac
++    for topology in p1_c3_r2_s1 p2_c2_r2_s2; do
++      for mode in sr_1_over_r rb_attnres lb_attnres_1_over_r; do
++        flags=(--linearno-loop 1 --linearno-loop-topology "$topology"
++          --linearno-loop-residual-mode "$mode" --linearno-loop-rank-multiplier 2
++          --linearno-profile paper_table8_on_release_model --seed "$seed" --gpu "$gpu")
++        if [[ "$PREVIEW" == 1 ]]; then
++          bash "tran_evaluate/linearno_loop/${task}.sh" train "${flags[@]}" --then-eval --dry-run
++        else
++          run="$(bash "tran_evaluate/linearno_loop/${task}.sh" train "${flags[@]}" --print-run-dir)"
++          bash "tran_evaluate/linearno_loop/${task}.sh" train "${flags[@]}" \
++            --experiment-dir "$run" --then-eval
++        fi
++      done
++    done
++  done
++done
++)
++```
++
++原profile的训练epochs不改变。训练用原train split，保持原validation/test过程；最终比较固定这三个seed和预声明的final checkpoint，逐seed报告并聚合均值/离散程度，不能用test结果选“最好seed”或“最好checkpoint”。rank×1另开相同paired矩阵，修改multiplier即可；不可将它混入M×2结果。
++
++公平比较限定相同task/profile/topology/actual rank/seed的三残差：公共stem、物理block和head由相同seed生成相同键/值；receiver query=0、norm=1，不消耗初始化RNG；不要分别重设不同feature seed改变主干。DataLoader使用已批准schema的独立train/test generator，Plasticity时间collate使用原独立generator封装，Air/Car的Python采样状态沿用原恢复协议。每个Air成员独立初始化；成员编号相同的三残差应比较相同hash与数据序列，不能共享同一个core对象。manifest中的loader seed是整次运行的起始seed；Air沿原协议让generator状态跨成员连续推进，不在每个成员重置数据序列。
++
++两拓扑**不参数匹配**：A的unique_depth=5，B=6，均executed_depth=8。SR无router；A/B的RB分别13/9 receiver、26H/18H参数；两者LB均2 receiver、4H参数。总参数以实际模型统计为准，不能把独立参数减少当成FLOPs或epoch加速。
++
++## 输出与manifest
++
++```text
++output/<task>/linearno_loop/<task>__linearno_loop__<profile>__P?-C?-R?-S?__<mode>__M?__seed?__cfg<hash>__<timestamp>/
++  config.json / architecture.json / train.log / train_history.jsonl / train_results.json
++  loop_run_manifest.json
++  checkpoints/epoch_*.pt / epoch_*.metadata.json / epoch_*.json / latest.json / final.json
++  weights/epoch_*.pt
++  model.pt                         # Standard/Car便捷权重，非独立续训包
++  member_000/, member_001/, ...     # Air成员各自architecture/checkpoints/weights/model
++  ensemble.json / ensemble_state_dict.pth  # Air最终安全成员列表
++  visualizations/...              # 原任务记录器已有图/数组
++  evaluations/<unique_eval_id>/... / eval_results.json
++```
++
++具体任务仍保留原输出差异，例如Car另有`model_<epochs>.pth`。新manifest只由本目录的新launcher启用，记录config hash、公平seed、每成员初始公共backbone hash、完整初值hash、实测总/主干/router参数量、unique/executed depth、预期与**首次成功forward实际**operator/MLP/router/final LN/head调用序列。首forward前actual为null并标注pending，不能把计划写成已执行。观察不改模型/state_dict、optimizer或RNG，首次成功后移除全部观察hook；无张量历史缓存。
++
++manifest独立于既有checkpoint schema。resume/eval保持原训练manifest字节；Air续训开始尚未训练的新成员时才追加该成员初始记录。LL6/LL7或直接旧launcher生成的运行没有这个文件时，仍可严格恢复，但会明确提示“没有初始记录”，不会从已训练权重伪造初始hash。原先pure/history的输出位置、launcher、checkpoint与monitor均不改。逻辑visit相似度monitor属于LL9，不在本命令中宣称已接入。
++
++实施和验证证据见[LL8报告](LOOP_LINEARNO_LL8_LAUNCHERS.md)。
+--- /dev/null
++++ docs/LOOP_LINEARNO_LL8_LAUNCHERS.md
+@@ -0,0 +1,70 @@
++# LL8：统一launcher、公平记录与命令验收
++
++唯一阶段状态：**PASS**。本阶段没有执行真实数据/GPU训练，未进入LL9。
++
++## A. 实际范围与读取
++
++根目录`/home/hwz/CDLNO`，branch main，remote `https://github.com/hxh5159/CDLNO-w.git`，HEAD `5b991226c5354af3332b2f7306b370aef0950c79`、tree `a661e0a53d367e09dfe9b5afaabcab29ee8aec63`。当前事实是LL7已批准，AGENTS中的旧CDLNO阶段状态保持历史记录。读取根AGENTS及既有outputs使用/报告、LL6/7状态/报告/命令、分阶段提示词LL8、path.sh、原16个LinearNO launcher与_common、工业Car旧eval检查、八任务parser/路由及loop配置/构造/core/checkpoint/独立generator协议、相关回归与native workers。
++
++修改前[2524文件manifest](loop_linearno_audit/ll8/start-manifest.json)包括1549 tracked、387 untracked、588 ignored；400行原status及tracked/staged diff全部保存。没有reset/clean/stash/checkout/rebase/commit/push、依赖变更、真实数据或GPU调用。
++
++## B. 文件、插入点与兼容决定
++
++新增`tran_evaluate/linearno_loop/<task>.sh`共8个，统一train/resume/eval。它们source原_common/path.sh，调用新增`launch.py`。planner先调用当前纯LinearNO launcher的dry-run获得真实factory key/路径/argv，再只执行原入口AST中的parser构造与公共parse_args；不import exp/main数据脚本、不加载torch权重。有效配置才执行`entry.py`，它从原工作目录以原argv/runpy进入原任务入口。
++
++新增`recording.py`是明确由新launcher启用的观察层：包装loop专用实际构造入口，保存初值hash/实测参数，挂载一次前向的无张量调用计数hook；首成功forward后移除。没有改任何`cdlno/`生产文件、纯schema、任务入口、原launcher、checkpoint来源hash、模型数学或monitor。记录不加入旧state_dict或checkpoint，写独立`loop_run_manifest.json`。
++
++新启动桥不调用旧`check_car_eval.py`：该旧辅助脚本检查的是CDLNO whole-object/fold0/硬编码raw路径，对LL7已经验证的loop safe pair与非零fold不适用。新桥执行真实loop parser与saved metadata检查，再进入原main_evaluation的LinearNO分支，继续复用已批准的Car evaluator。旧helper字节不变。
++
++新增测试`test_launchers.py`和仅用于CPU合成的`launch_record_worker.py`；旧`test_artifacts.py`仅把LL1历史“新launcher目录不存在”断言更新为LL8八脚本存在，保留原LL1 fixture和schema/catalog断言。没有放宽数值容差或修改旧golden。另新增本报告、[完整命令](LOOP_LINEARNO_COMMANDS.md)、本阶段audit脚本/证据，更新研究STATUS。
++
++## C. 公平初始化、数据流和运行记录
++
++沿用LL1/LL3–LL7合同：相同task/topology/rank/profile/seed的三模式公共主干键/值一致，query0/norm1初始化不推进backbone RNG，construct在原fork_rng隔离范围执行。LL8测量真实已构造模型的初值，不新建随机模型来代替实际记录。
++
++运行manifest逐member保存：config hash、unique/executed depth、actual M、公平pair ID、public/member seed、独立train/test generator seed、公共初值SHA256、完整初值SHA256、实测总/主干/router参数量、launcher源码hash。初值hash明确按排序后的tensor键、dtype、shape与原字节计算；不包含router的公共hash用作三模式比较。
++
++实际调用序列由各物理block的Attn/MLP、各点域receiver、末suffix的LN/head hook记录。初始化只存expected，actual为null且标记pending，首成功forward才比较并保存actual；失败forward不产生“通过”记录，下一forward清空临时字符串列表。没有Q/K/C或计算图历史缓存。
++
++拓扑A独立5块、B独立6块，均执行8块；绝不称参数匹配。三mode只按同拓扑作paired比较；RB新增26H/18H，LB两preset均4H，SR0。manifest实际参数计数必须等于schema router count。数据协议沿用独立generator及完整恢复状态，Air每member模型/router独立，generator沿原协议连续推进而不重置；Python随机采样和Plasticity时间查询保持。
++
++`--then-eval`只在train/resume返回0后评估确切RUN；eval结构由metadata恢复，数据路径原样保留，记录与checkpoint均不按test最佳选择。三个seeds=0/1/2和final checkpoint应在实验前固定；完整未来循环包含8×2×3×3=144运行。两种profile的科学含义保持。
++
++## D. 实际验证与结果
++
++本机Python3.13.9、torch2.13/cu130、PyG2.3.1；CPU、单线程、CUDA_VISIBLE_DEVICES空，未改环境。Python3.10仅语法兼容核验，不能冒充远端torch2.11/cu128验收。
++
++- 完整loop suite **88方法，86pass、2CUDA skip、0failure/error，54.950s**；加入bridge委托检查后的最终定向suite **6/6，5.429s**，不是另一次全套重跑。LL2–LL7七份oracle/梯度/optimizer/参数/MAC数值报告与LL7逐项相同。
++- **184个真实shell/原launcher/公共parser预览**：正式8×2×3的48train，实际LL7小型档案的48eval、48resume，另8题×custom/rank×1/actual M/official_release/transolver_matched的40train。独立新run路径无碰撞，dry-run零目录创建、零权重加载。resume预览使用隔离复制的真实epoch1 pair，不谎称可继续已完成run。[矩阵](loop_linearno_audit/ll8/dry-run-matrix.json)。
++- 负例包括缺字段/错误enum/bool/NaN/rank冲突、A/K混用、PCRS边界、旧depth、hidden/head整除及saved profile/rank/seed等240项；额外saved hidden/heads/variant/每个PCRS字段/loopfalse/Aflag的144项，均在torch.load前拒绝。[补充冲突](loop_linearno_audit/ll8/additional-conflicts.json)。
++- **144小模型**：8题×2preset×3seeds×3mode，真实公共初值hash、DataLoader序列与generator状态跨三mode全等；逐模型forward/backward与actual call schedule检查通过。[公平报告](loop_linearno_audit/ll8/fair-report.json)。
++- **24原生CPU合成运行**：8题×preset A×3mode，原LL6/LL7 worker只加新记录器；真实Standard空间shape/小宽度，Air真实PyG双member，Car fold3，均调用原科学训练/metric/保存代码。与LL7无观察的同权重训练相比，最终权重、optimizer/scheduler/RNG、批次和输出逐位相等；跨三mode同任务公共初值hash与batch/采样序列相同。[证据](loop_linearno_audit/ll8/recorded-native.json)。这是3epoch内存合成验证，不是真实训练、全宽工业训练或VTK数值验收。
++- 三mode单步dropout/AdamW对照，开启记录与关闭记录的输出、全部state_dict、optimizer state、Torch RNG全0差；异常后下一forward可正常记录。native factory安装及独立Air成员通过；resume/eval不重写已有manifest。
++- 八shell bash -n、路径带空格、GPU掩码4,7→gpu1选择7、错误GPU、train失败17不启动eval、eval失败23向上传递、成功顺序train→eval通过。顺序测试用明确的执行stub和真实parser/checkpoint副本，不称为真实训练。bridge委托测试覆盖8题×3action原argv/工作目录，禁止执行真实数据entry。
++
++首轮dry-matrix发现测试选用的LL7 split运行已完成，真实parser报`run has completed its resolved epochs`；保留初次日志，改用真实epoch1隔离副本，未改变生产检查。旧LL7明确记录的3个历史回归失败方法未修订或伪称消失；本阶段不重跑11分钟旧history suite，其生产来源文件全部byte-equal，另重跑完整loop与24 native记录回归。
++
++主要命令（仓库根）：
++
++```bash
++export PYTHONPATH="$PWD/tests:$PWD" PYTHONDONTWRITEBYTECODE=1 CUDA_VISIBLE_DEVICES=''
++export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 MPLBACKEND=Agg
++python -B docs/loop_linearno_audit/ll8/dry_matrix.py
++python -B docs/loop_linearno_audit/ll8/additional_conflicts.py
++LOOP_LL8_FAIR_REPORT=docs/loop_linearno_audit/ll8/fair-report.json \
++  python -B -m unittest loop_linearno.test_launchers -v
++python -B docs/loop_linearno_audit/ll8/run_recorded_native.py
++python -B docs/loop_linearno_audit/ll8/finalize_evidence.py
++```
++
++完整套件的七个报告环境变量均指向ll8，原阶段证据不覆盖；完整实际命令保存在本阶段`test-command.txt`。
++
++## E. 冻结与优先自审
++
++复核五项：真实launcher/parser委托而非复制训练；三mode初始化/随机流公平；实际与预期schedule和参数计数区分；metadata-first/旧checkpoint及输出兼容；远端路径/GPU/失败顺序。生产代码、schema、全部旧launcher、path.sh、monitor及历史证据都不改；旧文件允许变动仅研究STATUS与上述一项过期测试断言。逐文件content/hash/classification、Git HEAD/tree/staged、Python3.10语法、文档Bash语法和diff检查见[最终冻结](loop_linearno_audit/ll8/end-freeze.json)。
++
++## F. 未运行与风险
++
++真实loader/VTK/drag/lift统计、真实训练/准确率/收敛、全宽工业任务训练、远端Python3.10/torch2.11+cu128、GPU/AMP/compile、正式144运行矩阵均NOT RUN。工业路径需远端按真实文件位置设置；本轮没下载数据。无性能或SOTA声明。专用loop相似度monitor/效率profiling仍属LL9，未实现。
++
++本 LL8 阶段结束，未执行下一阶段。
+--- /dev/null
++++ tests/loop_linearno/launch_record_worker.py
+@@ -0,0 +1,12 @@
++"""LL8 opt-in records on the unchanged LL6/7 native CPU synthetic workers."""
++import runpy
++import sys
++from pathlib import Path
++ROOT=Path(__file__).resolve().parents[2]
++sys.path[:0]=[str(ROOT),str(ROOT/'tests')]
++from tran_evaluate.linearno_loop.recording import install
++install()
++task,*arguments=sys.argv[1:]
++worker=ROOT/'tests/loop_linearno'/({'airfrans':'air_worker.py','car':'car_worker.py'}.get(task,'native_worker.py'))
++sys.argv=[str(worker),*(([task]+arguments) if task not in ('car','airfrans') else arguments)]
++runpy.run_path(str(worker),run_name='__main__')
+--- /dev/null
++++ tests/loop_linearno/test_launchers.py
+@@ -0,0 +1,200 @@
++"""LL8 real argv previews, paired initialization and RNG-neutral records."""
++import contextlib
++import copy
++import hashlib
++import io
++import json
++import os
++from pathlib import Path
++import subprocess
++import sys
++import tempfile
++from types import SimpleNamespace
++import unittest
++from unittest.mock import patch
++import torch
++from torch_geometric.data import Data
++
++from tran_evaluate.linearno_loop import launch,recording
++from linearno_loop.config import resolve_config
++from linearno_loop.contracts import PRESETS,RESIDUAL_MODES
++from cdlno.linearno_loop.construction import build_from_config
++
++ROOT=Path(__file__).resolve().parents[2]
++
++
++def small_config(task,preset,mode,seed):
++    overrides={'model.hidden':8,'model.heads':2,'runtime.seed':seed}
++    if task not in ('car','airfrans'):overrides.update({'model.H':3,'model.W':5})
++    if task=='airfrans':overrides['model.ref']=3
++    return resolve_config(task,options=dict(topology_preset=preset,residual_mode=mode,linearno_rank=4),profile_overrides=overrides)
++
++
++def example(task):
++    if task in ('car','airfrans'):
++        data=Data(x=torch.randn(15,7),pos=torch.randn(15,2 if task=='airfrans' else 3))
++        return (data,) if task=='airfrans' else ((data,torch.randn(3,3)),)
++    fx={'airfoil':None,'elasticity':None,'pipe':None,'darcy':1,'ns':10,'plasticity':1}[task]
++    return (torch.randn(2,15,2),None if fx is None else torch.randn(2,15,fx),
++            torch.randn(2,1) if task=='plasticity' else None)
++
++
++class LauncherTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):torch.set_num_threads(1)
++
++    def test_entry_bridge_delegates_native_argv_without_data_import(self):
++        from tran_evaluate.linearno_loop import entry
++        for task in launch.TASKS:
++            for action in ('train','resume','eval'):
++                filename=launch.ENTRIES.get(task) or ('main_evaluation.py' if action=='eval' else 'main.py')
++                with patch.object(sys,'argv',['entry.py',task,action,filename,'--experiment-dir','/tmp/run with spaces']),\
++                     patch.object(Path,'cwd',return_value=launch.project(task)),\
++                     patch.object(recording,'install') as install,patch.object(entry.runpy,'run_path') as run:
++                    previous=list(sys.path)
++                    try:entry.main()
++                    finally:sys.path[:]=previous
++                    install.assert_called_once_with();run.assert_called_once_with(filename,run_name='__main__')
++                    self.assertEqual(sys.argv,[filename,'--experiment-dir','/tmp/run with spaces'])
++        with patch.object(sys,'argv',['entry.py','darcy','train','wrong.py']),self.assertRaises(ValueError):entry.main()
++
++    def test_paired_three_seeds_all_tasks_backbone_and_generators(self):
++        rows=[]
++        with tempfile.TemporaryDirectory(prefix='loop-ll8-fair-') as tmp:
++            for task in launch.TASKS:
++                for preset in PRESETS:
++                    for seed in (0,1,2):
++                        common=None;generator_states=None;data_order=None
++                        for mode in RESIDUAL_MODES:
++                            cfg=small_config(task,preset,mode,seed);model=build_from_config(cfg)
++                            directory=Path(tmp)/task/preset/str(seed)/mode;directory.mkdir(parents=True)
++                            args=SimpleNamespace(_linearno_loop_config=cfg,linearno_run_dir=directory,
++                                seed=seed,linearno_task=task,eval=False,resume=False)
++                            before=torch.get_rng_state().clone();recording.observe(args,model)
++                            self.assertTrue(torch.equal(before,torch.get_rng_state()))
++                            manifest=json.loads((directory/recording.MANIFEST).read_text());member=manifest['members']['member_000']
++                            h=member['public_backbone_initial_sha256']
++                            generators={k:torch.Generator().manual_seed(v) for k,v in cfg['fair_comparison']['dataloader_generators'].items()}
++                            order=[batch.tolist() for batch in torch.utils.data.DataLoader(torch.arange(23),batch_size=4,
++                                shuffle=True,generator=generators['train'])]
++                            gen={k:g.get_state().tolist() for k,g in generators.items()}
++                            if common is not None:
++                                self.assertEqual(h,common);self.assertEqual(gen,generator_states);self.assertEqual(order,data_order)
++                            else:common=h;generator_states=gen;data_order=order
++                            model.eval();out=model(*example(task));out.square().mean().backward()
++                            observed=json.loads((directory/recording.MANIFEST).read_text())['members']['member_000']
++                            self.assertEqual(observed['actual_call_schedule'],manifest['expected_call_schedule'])
++                            self.assertEqual(observed['observation'],'first_forward_verified')
++                            self.assertFalse(any(mod._forward_hooks or mod._forward_pre_hooks for mod in model.modules()))
++                            rows.append(dict(task=task,preset=preset,mode=mode,seed=seed,backbone_hash=h,
++                                data_order=order,unique_depth=manifest['unique_depth'],executed_depth=manifest['executed_depth'],
++                                parameters=member['parameters'],router_parameters=member['router_parameters'],
++                                actual_schedule=observed['actual_call_schedule']))
++        if name:=os.environ.get('LOOP_LL8_FAIR_REPORT'):Path(name).write_text(json.dumps(rows,indent=2)+'\n')
++
++    def test_observation_preserves_train_dropout_weights_rng_and_errors(self):
++        with tempfile.TemporaryDirectory(prefix='loop-ll8-observer-') as tmp:
++            for mode in RESIDUAL_MODES:
++                cfg=small_config('darcy','p1_c3_r2_s1',mode,7)
++                cfg=resolve_config('darcy',options=cfg['request']['options'],
++                    profile_overrides={**cfg['request']['profile_overrides'],'model.dropout':.2})
++                raw=build_from_config(cfg);seen=copy.deepcopy(raw)
++                directory=Path(tmp)/mode;directory.mkdir()
++                args=SimpleNamespace(_linearno_loop_config=cfg,linearno_run_dir=directory,seed=7,eval=False,resume=False)
++                inputs=example('darcy');rng=torch.get_rng_state().clone()
++                def step(model):
++                    optimizer=torch.optim.AdamW(model.parameters(),lr=.001)
++                    output=model(*inputs);output.square().mean().backward();optimizer.step()
++                    return output,optimizer.state_dict(),torch.get_rng_state().clone()
++                plain,opt,after=step(raw)
++                torch.set_rng_state(rng);recording.observe(args,seen)
++                with self.assertRaises(ValueError):seen(torch.randn(2,14,2),torch.randn(2,14,1))
++                torch.set_rng_state(rng)
++                observed,opt2,after2=step(seen)
++                torch.testing.assert_close(plain,observed,atol=0,rtol=0)
++                self.assertTrue(torch.equal(after,after2))
++                for k,v in raw.state_dict().items():torch.testing.assert_close(v,seen.state_dict()[k],atol=0,rtol=0)
++                for k,values in opt['state'].items():
++                    for name,v in values.items():torch.testing.assert_close(v,opt2['state'][k][name],atol=0,rtol=0)
++                frozen=(directory/recording.MANIFEST).read_bytes();args.resume=True
++                recording.observe(args,build_from_config(cfg));self.assertEqual(frozen,(directory/recording.MANIFEST).read_bytes())
++
++    def test_native_factory_record_installation_and_independent_air_members(self):
++        from cdlno.linearno_loop import standard_entry,industrial_state
++        originals=(standard_entry.model_module,industrial_state.construct)
++        aliases={name:sys.modules[name].construct for name in ('cdlno.linearno_loop.air_entry','cdlno.linearno_loop.car_entry') if name in sys.modules}
++        with tempfile.TemporaryDirectory(prefix='loop-ll8-installed-') as tmp:
++            try:
++                recording.install()
++                for task in ('darcy','airfrans','car'):
++                    cfg=small_config(task,'p1_c3_r2_s1','rb_attnres',17)
++                    directory=Path(tmp)/task;directory.mkdir()
++                    args=SimpleNamespace(_linearno_loop_config=cfg,linearno_run_dir=directory,seed=17,linearno_task=task,eval=False,resume=False)
++                    if task=='darcy':m=standard_entry.model_module(args).Model(**cfg['model_spec']['constructor_kwargs'])
++                    else:m=industrial_state.construct(args)
++                    m(*example(task))
++                    if task=='airfrans':
++                        n=industrial_state.construct(args,1);n(*example(task))
++                        self.assertIsNot(m.loop,n.loop)
++                    saved=json.loads((directory/recording.MANIFEST).read_text())
++                    self.assertEqual(len(saved['members']),2 if task=='airfrans' else 1)
++                    self.assertTrue(all(r['actual_call_schedule'] for r in saved['members'].values()))
++            finally:
++                standard_entry.model_module,industrial_state.construct=originals
++                for name,fn in aliases.items():sys.modules[name].construct=fn
++
++    def test_gpu_mapping_shell_syntax_and_no_legacy_edits(self):
++        for path in (ROOT/'tran_evaluate/linearno_loop').glob('*.sh'):
++            self.assertEqual(subprocess.run(['bash','-n',str(path)]).returncode,0)
++        env=dict(os.environ);env.pop('CUDA_VISIBLE_DEVICES',None)
++        for task in ('airfoil','car','airfrans'):
++            tokens=['--linearno-loop','1','--linearno-loop-topology','p2_c2_r2_s2',
++                    '--linearno-loop-residual-mode','rb_attnres','--gpu','1']
++            value=launch.plan(task,'train',tokens,{**env,'CUDA_VISIBLE_DEVICES':'4,7'})
++            self.assertEqual(value['environment']['CUDA_VISIBLE_DEVICES'],'7')
++            self.assertEqual(value['argv'][value['argv'].index('--gpu')+1],'7' if task=='airfoil' else '0')
++            self.assertFalse(Path(value['run']).exists())
++        with self.assertRaises(ValueError):launch.gpu_environment(['--gpu','2'],{'CUDA_VISIBLE_DEVICES':'4,7'})
++        baseline=json.loads((ROOT/'docs/loop_linearno_audit/ll8/start-manifest.json').read_text())
++        for row in baseline['files']:
++            if row['path'].startswith(('cdlno/','linearno_loop/','tran_evaluate/linearno/','tran_evaluate/linearno_history/','monitor/')) or row['path']=='path.sh':
++                self.assertEqual(hashlib.sha256((ROOT/row['path']).read_bytes()).hexdigest(),row['sha256'],row['path'])
++
++    def test_shell_train_then_eval_spaces_and_failure_propagation(self):
++        matrix=json.loads((ROOT/'docs/loop_linearno_audit/ll7/native-matrix.json').read_text())
++        row=next(r for r in matrix['rows'] if r['task']=='darcy' and r['preset']=='p1_c3_r2_s1' and r['mode']=='sr_1_over_r')
++        source=next((Path(row['artifact'])/'split').iterdir())
++        config=json.loads((source/'architecture.json').read_text())['resolved_config']
++        from linearno_loop.config import run_directory_id
++        with tempfile.TemporaryDirectory(prefix='loop ll8 shell ') as tmp:
++            temp=Path(tmp);fake=temp/'fake python';log=temp/'calls.jsonl'
++            fake.write_text('#!'+sys.executable+'\n'+'''import json,os,sys,shutil
++from pathlib import Path
++args=sys.argv[1:]
++if any(a.endswith('/launch.py') for a in args):os.execv(os.environ['REAL_PYTHON'],[os.environ['REAL_PYTHON'],*args])
++i=next(i for i,a in enumerate(args) if a.endswith('/entry.py'))
++task,action,entry=args[i+1:i+4];tokens=args[i+4:]
++with open(os.environ['CALLS'],'a') as f:f.write(json.dumps(dict(action=action,argv=tokens,visible=os.environ.get('CUDA_VISIBLE_DEVICES')))+'\\n')
++code=int(os.environ.get('TRAIN_EXIT','0') if action=='train' else os.environ.get('EVAL_EXIT','0'))
++if action=='train' and code==0:
++ run=tokens[tokens.index('--experiment-dir')+1];shutil.copytree(os.environ['SOURCE_RUN'],run)
++sys.exit(code)
++''');fake.chmod(0o755)
++            flags=['--linearno-loop','1','--linearno-loop-topology','p1_c3_r2_s1',
++                   '--linearno-loop-residual-mode','sr_1_over_r','--linearno-rank','4',
++                   '--n-hidden','8','--n-heads','2','--epochs','3','--batch-size','2','--seed','17','--dropout','.1',
++                   '--data_path',str(temp/'data with spaces'),'--gpu','1','--then-eval']
++            for train_exit,eval_exit,expected_actions in ((17,0,['train']),(0,0,['train','eval']),(0,23,['train','eval'])):
++                target=temp/str(train_exit)/str(eval_exit)/run_directory_id(config)
++                env=dict(os.environ,CDLNO_PYTHON=str(fake),REAL_PYTHON=sys.executable,CALLS=str(log),SOURCE_RUN=str(source),
++                         TRAIN_EXIT=str(train_exit),EVAL_EXIT=str(eval_exit),CUDA_VISIBLE_DEVICES='4,7',PYTHONDONTWRITEBYTECODE='1')
++                before=len(log.read_text().splitlines()) if log.exists() else 0
++                p=subprocess.run(['bash',str(ROOT/'tran_evaluate/linearno_loop/darcy.sh'),'train',*flags,'--experiment-dir',str(target)],env=env,cwd=temp,capture_output=True,text=True)
++                self.assertEqual(p.returncode,train_exit or eval_exit,p.stdout+p.stderr)
++                calls=[json.loads(l) for l in log.read_text().splitlines()[before:]]
++                self.assertEqual([r['action'] for r in calls],expected_actions)
++                for r in calls:
++                    self.assertEqual(r['visible'],'7');self.assertIn(str(temp/'data with spaces'),r['argv']);self.assertIn(str(target),r['argv'])
++
++
++if __name__=='__main__':unittest.main()
+--- /dev/null
++++ tran_evaluate/linearno_loop/airfoil.sh
+@@ -0,0 +1,5 @@
++#!/usr/bin/env bash
++set -euo pipefail
++launcher="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++source "$launcher/../_common.sh"
++exec "$CDLNO_PYTHON" -B "$launcher/launch.py" airfoil "$@"
+--- /dev/null
++++ tran_evaluate/linearno_loop/airfrans.sh
+@@ -0,0 +1,5 @@
++#!/usr/bin/env bash
++set -euo pipefail
++launcher="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++source "$launcher/../_common.sh"
++exec "$CDLNO_PYTHON" -B "$launcher/launch.py" airfrans "$@"
+--- /dev/null
++++ tran_evaluate/linearno_loop/car.sh
+@@ -0,0 +1,5 @@
++#!/usr/bin/env bash
++set -euo pipefail
++launcher="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++source "$launcher/../_common.sh"
++exec "$CDLNO_PYTHON" -B "$launcher/launch.py" car "$@"
+--- /dev/null
++++ tran_evaluate/linearno_loop/darcy.sh
+@@ -0,0 +1,5 @@
++#!/usr/bin/env bash
++set -euo pipefail
++launcher="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++source "$launcher/../_common.sh"
++exec "$CDLNO_PYTHON" -B "$launcher/launch.py" darcy "$@"
+--- /dev/null
++++ tran_evaluate/linearno_loop/elasticity.sh
+@@ -0,0 +1,5 @@
++#!/usr/bin/env bash
++set -euo pipefail
++launcher="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++source "$launcher/../_common.sh"
++exec "$CDLNO_PYTHON" -B "$launcher/launch.py" elasticity "$@"
+--- /dev/null
++++ tran_evaluate/linearno_loop/entry.py
+@@ -0,0 +1,23 @@
++"""Explicit recording bridge into the unchanged native benchmark entry."""
++import runpy
++import sys
++from pathlib import Path
++
++ROOT=Path(__file__).resolve().parents[2]
++sys.path.insert(0,str(ROOT))
++from tran_evaluate.linearno_loop.launch import project,ENTRIES,TASKS
++
++
++def main():
++    task,action,entry,*tokens=sys.argv[1:]
++    expected=ENTRIES.get(task) or ('main_evaluation.py' if action=='eval' else 'main.py')
++    if task not in TASKS or action not in ('train','resume','eval') or entry!=expected or Path.cwd()!=project(task):
++        raise ValueError('invalid native loop entry target')
++    from tran_evaluate.linearno_loop.recording import install
++    install()
++    sys.path.insert(0,str(Path.cwd()))
++    sys.argv=[entry,*tokens]
++    runpy.run_path(entry,run_name='__main__')
++
++
++if __name__=='__main__':main()
+--- /dev/null
++++ tran_evaluate/linearno_loop/launch.py
+@@ -0,0 +1,150 @@
++"""Loop command planner: reuse native shell argv and real data-free parsers."""
++import argparse
++import ast
++import importlib.util
++import json
++import os
++from pathlib import Path
++import shlex
++import subprocess
++import sys
++
++ROOT=Path(__file__).resolve().parents[2]
++TASKS=('airfoil','darcy','elasticity','pipe','ns','plasticity','airfrans','car')
++ENTRIES=dict(airfoil='exp_airfoil.py',darcy='exp_darcy.py',elasticity='exp_elas.py',
++             pipe='exp_pipe.py',ns='exp_ns.py',plasticity='exp_plas.py')
++
++
++def project(task):
++    return ROOT/({'airfrans':'Airfoil-Design-AirfRANS','car':'Car-Design-ShapeNetCar'}.get(task,'PDE-Solving-StandardBenchmark'))
++
++
++def native_parse(task,action,entry,tokens):
++    """Execute only parser construction statements; never import a data entry."""
++    folder=project(task);nodes=[]
++    for node in ast.parse((folder/entry).read_text()).body:
++        if isinstance(node,ast.Assign) and ast.unparse(node.targets[0])=='parser':nodes.append(node)
++        elif isinstance(node,ast.Expr) and isinstance(node.value,ast.Call) and ast.unparse(node.value.func)=='parser.add_argument':nodes.append(node)
++    scope={'argparse':argparse}
++    exec(compile(ast.Module(body=nodes,type_ignores=[]),'<native parser only>','exec'),scope)
++    route=folder/('models/cdlno_run.py' if task=='car' else 'cdlno_entry.py')
++    spec=importlib.util.spec_from_file_location('_loop_launcher_'+task,route)
++    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
++    parser=scope['parser']
++    if task in ENTRIES:args=module.parse_args(parser,task,tokens)
++    else:args=module.parse_args(parser,evaluation=action=='eval',argv=tokens)
++    if getattr(args,'linearno_family',None)!='linearno_loop':raise ValueError('this launcher requires family=linearno_loop; old families use their own scripts')
++    return args
++
++
++def gpu_environment(tokens,environment):
++    probe=argparse.ArgumentParser(add_help=False,allow_abbrev=False)
++    probe.add_argument('--gpu',type=int,default=0)
++    args,remaining=probe.parse_known_args(tokens)
++    if args.gpu<0:raise ValueError('gpu must be a nonnegative index')
++    env=dict(environment);visible=env.get('CUDA_VISIBLE_DEVICES')
++    if visible not in (None,''):
++        devices=visible.split(',')
++        if any(not x.strip() for x in devices) or args.gpu>=len(devices):raise ValueError('--gpu is outside CUDA_VISIBLE_DEVICES')
++        selected=devices[args.gpu].strip()
++        if selected=='-1':raise ValueError('CUDA_VISIBLE_DEVICES=-1 disables GPUs')
++    elif visible=='':selected=''  # Explicit CPU-only environment remains CPU-only.
++    else:selected=str(args.gpu)
++    env['CUDA_VISIBLE_DEVICES']=selected
++    # Standard entries overwrite this variable with args.gpu. Pass the selected
++    # physical identifier there; industrial adapters use the masked logical 0.
++    return remaining,env,dict(requested_index=args.gpu,inherited_visible=visible,selected_visible=selected)
++
++
++def plan(task,action,tokens,environment=None):
++    if task not in TASKS or action not in ('train','resume','eval'):raise ValueError('expected TASK train|resume|eval')
++    if any(any(ord(c)<32 for c in token) for token in tokens):raise ValueError('control characters are not supported in launcher arguments')
++    banned={'--model','--cfd_model','--eval','--resume','--run_dir','--cdlno-run-dir'}
++    if any(t.split('=')[0] in banned for t in tokens):raise ValueError('family/action are fixed; use train|resume|eval and --experiment-dir')
++    remaining,env,gpu=gpu_environment(tokens,os.environ if environment is None else environment)
++    env['CDLNO_REPO_ROOT']=str(ROOT)
++    # No CUDA use during parser-only inspection.
++    action_file='eval' if action=='eval' else 'train'
++    extra=['--resume'] if action=='resume' else []
++    # Standard writes CUDA_VISIBLE_DEVICES=str(args.gpu) and uses .cuda();
++    # industrial entries use cuda:args.gpu under the selected mask.
++    selected=gpu['selected_visible']
++    if task in ENTRIES and selected and not selected.isdecimal():
++        raise ValueError('Standard native --gpu requires numeric CUDA device IDs')
++    native_gpu=selected if task in ENTRIES and selected else '0'
++    launch_tokens=[*remaining,'--gpu',native_gpu,*extra]
++    original=ROOT/f'tran_evaluate/linearno/{task}_{action_file}.sh'
++    preview=subprocess.run(['bash',str(original),'--dry-run',*launch_tokens],env=env,text=True,capture_output=True)
++    if preview.returncode:raise ValueError(preview.stderr or preview.stdout)
++    lines=preview.stdout.splitlines()
++    command=shlex.split(next(l[len('Command:'):].strip() for l in lines if l.startswith('Command:')))
++    cwd=Path(next(l[len('Working directory:'):].strip() for l in lines if l.startswith('Working directory:')))
++    entry=command[2];argv=command[3:]
++    if cwd!=project(task) or entry!=(ENTRIES.get(task) or ('main_evaluation.py' if action=='eval' else 'main.py')):
++        raise ValueError('unexpected native launcher target')
++    if action!='train' and not any(t.split('=')[0] in ('--experiment-dir','--linearno-run-dir') for t in argv):
++        raise ValueError('eval/resume requires the exact RUN; no latest guessing')
++    prior=os.environ.get('CUDA_VISIBLE_DEVICES')
++    os.environ['CUDA_VISIBLE_DEVICES']=''
++    try:args=native_parse(task,action,entry,argv)
++    finally:
++        if prior is None:os.environ.pop('CUDA_VISIBLE_DEVICES',None)
++        else:os.environ['CUDA_VISIBLE_DEVICES']=prior
++    run=str(args.linearno_run_dir)
++    if action=='train' and not any(t.split('=')[0] in ('--experiment-dir','--linearno-run-dir') for t in argv):
++        argv.extend(['--experiment-dir',run])
++    config=args._linearno_loop_config
++    return dict(task=task,action=action,cwd=str(cwd),entry=entry,argv=argv,run=run,
++        config=config,gpu=gpu,python=command[0],environment=env,
++        original_launcher=str(original),dry_run_scope='native parser and metadata only; no model/data/torch.load')
++
++
++def execute(value):
++    command=[value['python'],'-u','-B',str(Path(__file__).with_name('entry.py')),
++             value['task'],value['action'],value['entry'],*value['argv']]
++    print('Run: '+value['run'],flush=True)
++    print('GPU mapping: '+json.dumps(value['gpu']),flush=True)
++    print('Working directory: '+value['cwd'],flush=True)
++    print('Command: '+shlex.join(command),flush=True)
++    return subprocess.run(command,cwd=value['cwd'],env=value['environment']).returncode
++
++
++def main():
++    parser=argparse.ArgumentParser(description=__doc__,allow_abbrev=False)
++    parser.add_argument('task',choices=TASKS);parser.add_argument('action',choices=('train','resume','eval'))
++    parser.add_argument('--dry-run',action='store_true');parser.add_argument('--print-run-dir',action='store_true')
++    parser.add_argument('--plan-json',action='store_true');parser.add_argument('--then-eval',action='store_true')
++    args,tokens=parser.parse_known_args()
++    try:
++        if args.then_eval and args.action=='eval':raise ValueError('--then-eval is only for train/resume')
++        value=plan(args.task,args.action,tokens)
++        if args.print_run_dir:print(value['run']);return 0
++        if args.plan_json:
++            print(json.dumps({k:v for k,v in value.items() if k!='environment'}));return 0
++        if args.dry_run:
++            print('Run: '+value['run']);print('GPU mapping: '+json.dumps(value['gpu']))
++            print('Working directory: '+value['cwd'])
++            print('Native command: '+shlex.join([value['python'],'-u',value['entry'],*value['argv']]))
++            print('DRY RUN: real parser/metadata validated; no model, data, weights or directory created.')
++            if args.then_eval:print('Then eval same RUN only after successful training; future metadata validation is deferred.')
++            return 0
++        code=execute(value)
++        if code or not args.then_eval:return code
++        # The trained metadata supplies all architecture/profile/seed settings.
++        follow=['--experiment-dir',value['run'],'--gpu','0']
++        path_flags={'--data_path','--my_path','--data_dir','--save_dir','--device'}
++        i=0
++        while i<len(value['argv']):
++            token=value['argv'][i];flag=token.split('=')[0]
++            if flag in path_flags:
++                follow.append(token)
++                if '=' not in token:i+=1;follow.append(value['argv'][i])
++            i+=1
++        evaluation=plan(args.task,'eval',follow,value['environment'])
++        return execute(evaluation)
++    except (ValueError,OSError,StopIteration) as error:parser.error(str(error))
++
++
++if __name__=='__main__':
++    sys.path.insert(0,str(ROOT))
++    raise SystemExit(main())
+--- /dev/null
++++ tran_evaluate/linearno_loop/ns.sh
+@@ -0,0 +1,5 @@
++#!/usr/bin/env bash
++set -euo pipefail
++launcher="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++source "$launcher/../_common.sh"
++exec "$CDLNO_PYTHON" -B "$launcher/launch.py" ns "$@"
+--- /dev/null
++++ tran_evaluate/linearno_loop/pipe.sh
+@@ -0,0 +1,5 @@
++#!/usr/bin/env bash
++set -euo pipefail
++launcher="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++source "$launcher/../_common.sh"
++exec "$CDLNO_PYTHON" -B "$launcher/launch.py" pipe "$@"
+--- /dev/null
++++ tran_evaluate/linearno_loop/plasticity.sh
+@@ -0,0 +1,5 @@
++#!/usr/bin/env bash
++set -euo pipefail
++launcher="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++source "$launcher/../_common.sh"
++exec "$CDLNO_PYTHON" -B "$launcher/launch.py" plasticity "$@"
+--- /dev/null
++++ tran_evaluate/linearno_loop/recording.py
+@@ -0,0 +1,128 @@
++"""Launcher-only observation of actual initial models; no training operations."""
++import hashlib
++import json
++from pathlib import Path
++
++MANIFEST='loop_run_manifest.json'
++
++
++def schedule(spec):
++    P,C,R,S=(spec[k] for k in ('prefix_blocks','recurrent_core_blocks','loop_repeats','suffix_blocks'))
++    mode=spec['residual_mode'];events=[]
++    def body(group,index):
++        events.extend([f'loop.{group}.{index}.operator',f'loop.{group}.{index}.mlp'])
++    for i in range(P):body('prefix',i)
++    for r in range(R):
++        for c in range(C):
++            for j,branch in enumerate(('operator','mlp')):
++                if mode=='rb_attnres':events.append(f'loop.rb_receivers.{r}.{2*c+j}')
++                events.append(f'loop.core.{c}.{branch}')
++        if mode=='lb_attnres_1_over_r':
++            events.append(f'loop.lb_boundaries.{r}' if r<R-1 else 'loop.lb_output')
++    if mode=='rb_attnres':events.append('loop.rb_output')
++    for i in range(S):body('suffix',i)
++    events.extend([f'loop.suffix.{S-1}.final_norm',f'loop.suffix.{S-1}.head'])
++    return events
++
++
++def is_router(name):
++    return name.startswith(('loop.rb_receivers.','loop.rb_output.','loop.lb_boundaries.','loop.lb_output.'))
++
++
++def state_hash(state):
++    import torch
++    h=hashlib.sha256()
++    for name,tensor in sorted(state.items()):
++        x=tensor.detach().cpu().contiguous()
++        header=json.dumps([name,str(x.dtype),list(x.shape)],separators=(',',':')).encode()
++        h.update(len(header).to_bytes(8,'big'));h.update(header)
++        h.update(x.reshape(-1).view(torch.uint8).numpy().tobytes())
++    return h.hexdigest()
++
++
++def observe(args,model,member=0):
++    """Record before the first optimizer step; then capture one actual forward."""
++    import torch
++    from cdlno.training_state import _atomic
++    from cdlno.linearno_loop.attnres import PointDepthAttnRes
++    from cdlno.linearno_loop.industrial_state import member_seed
++    cfg=args._linearno_loop_config;spec=cfg['loop_spec'];path=Path(args.linearno_run_dir)/MANIFEST
++    base=dict(schema_version=1,family='linearno_loop',config_hash=cfg['config_hash'],task=spec['task'],
++        profile=spec['profile'],topology=spec['topology_preset'],residual_mode=spec['residual_mode'],
++        unique_depth=spec['unique_depth'],executed_depth=spec['executed_depth'],resolved_rank=spec['resolved_rank'],
++        expected_call_schedule=schedule(spec),fair_comparison=cfg['fair_comparison'],
++        selection_policy='predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection',
++        launcher_sources={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in Path(__file__).parent.glob('*.py')})
++    key=f'member_{member:03d}'
++    if path.exists():
++        saved=json.loads(path.read_text())
++        for field,value in base.items():
++            if field!='launcher_sources' and saved[field]!=value:raise ValueError('loop run manifest mismatch: '+field)
++        if key in saved['members']:
++            if not (args.eval or args.resume):raise ValueError('initial member record already exists')
++            return model
++    elif args.eval or args.resume:
++        # LL6/LL7 archives created without this launcher stay valid and immutable.
++        print('LL8 manifest absent in older/direct run; original initialization is not fabricated.',flush=True)
++        return model
++    else:saved={**base,'members':{}}
++    if args.eval:raise ValueError('incomplete ensemble initialization manifest')
++    if not path.parent.is_dir():raise ValueError('native recorder must reserve run before initialization recording')
++    parameters=dict(model.named_parameters());state=model.state_dict()
++    backbone={k:v for k,v in state.items() if not is_router(k)}
++    total=sum(p.numel() for p in parameters.values());routers=sum(p.numel() for k,p in parameters.items() if is_router(k))
++    if routers!=spec['attnres']['router_parameter_count']:raise ValueError('measured router count differs from schema')
++    row=dict(public_backbone_initial_sha256=state_hash(backbone),initial_state_sha256=state_hash(state),
++        initialization_seed=member_seed(args,member) if spec['task'] in ('car','airfrans') else args.seed,
++        dataloader_generator_seeds=cfg['fair_comparison']['dataloader_generators'],
++        python_numpy_torch_seed=args.seed,router_initialization='query=zeros; norm=ones; consumes no RNG',
++        parameters=total,backbone_parameters=total-routers,router_parameters=routers,
++        actual_call_schedule=None,observation='pending_first_successful_forward')
++    saved['members'][key]=row;_atomic(path,saved,json_file=True)
++    events=[];handles=[]
++    def begin(*unused):events.clear()
++    def event(name):
++        def record(*unused):events.append(name)
++        return record
++    def end(module,inputs,output):
++        if output is None:return  # Exception: next forward starts a clean list.
++        try:
++            if events!=base['expected_call_schedule']:raise ValueError('actual loop call schedule differs from topology')
++            current=json.loads(path.read_text())
++            current['members'][key].update(actual_call_schedule=list(events),observation='first_forward_verified')
++            _atomic(path,current,json_file=True)
++        finally:
++            for handle in handles:handle.remove()
++            handles.clear();events.clear()
++    handles.append(model.register_forward_pre_hook(begin))
++    for group in ('prefix','core','suffix'):
++        for i,physical in enumerate(getattr(model.loop,group)):
++            block=physical.block;prefix=f'loop.{group}.{i}'
++            handles.append(block.Attn.register_forward_pre_hook(event(prefix+'.operator')))
++            handles.append(block.mlp.register_forward_pre_hook(event(prefix+'.mlp')))
++            if block.last_layer:
++                handles.append(block.ln_3.register_forward_pre_hook(event(prefix+'.final_norm')))
++                handles.append(block.mlp2.register_forward_pre_hook(event(prefix+'.head')))
++    for name,module in model.named_modules():
++        if isinstance(module,PointDepthAttnRes):handles.append(module.register_forward_pre_hook(event(name)))
++    handles.append(model.register_forward_hook(end,always_call=True))
++    return model
++
++
++def install():
++    """Only new launchers install these observers; old invocation paths are inert."""
++    from types import SimpleNamespace
++    from cdlno.linearno_loop import standard_entry,industrial_state
++    original_module=standard_entry.model_module
++    original_construct=industrial_state.construct
++    def module(args):
++        original=original_module(args)
++        def construct(**kwargs):return observe(args,original.Model(**kwargs))
++        return SimpleNamespace(Model=construct)
++    def construct(args,member=0):return observe(args,original_construct(args,member),member)
++    standard_entry.model_module=module
++    industrial_state.construct=construct
++    # Handle already imported modules too (normal startup imports them later).
++    import sys
++    for name in ('cdlno.linearno_loop.air_entry','cdlno.linearno_loop.car_entry'):
++        if name in sys.modules:sys.modules[name].construct=construct

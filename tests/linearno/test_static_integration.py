@@ -225,6 +225,7 @@ class StaticIntegration(unittest.TestCase):
         old_scripts=[r for r in baseline['files'] if r['path'].endswith('.sh') and r['kind']=='tracked']
         for row in old_scripts:
             path=ROOT/row['path']
-            self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),row['sha256'])
+            from frozen_revisions import expected_hash
+            self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),expected_hash(row['path'],row['sha256']))
             subprocess.run(['bash','-n',str(path)],check=True,capture_output=True)
         self.rows.append(dict(kind='launchers',new_previews=16,old_shells_byte_equal_and_syntax=len(old_scripts)))

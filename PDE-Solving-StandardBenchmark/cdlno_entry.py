@@ -33,7 +33,26 @@ def parse_args(parser, task, argv=None):
     tokens = sys.argv[1:] if argv is None else list(argv)
     selector = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     selector.add_argument('--model')
+    # Routing-only probe: never changes the legacy parser's actions/defaults.
+    selector.add_argument('--experiment-dir', '--linearno-run-dir', dest='_loop_directory', type=Path)
+    selector.add_argument('--eval', dest='_loop_eval', type=int, default=0)
+    selector.add_argument('--resume', dest='_loop_resume', action='store_true')
     selected, _ = selector.parse_known_args(tokens)
+    loop_selected = any(t.split('=')[0].startswith('--linearno-loop') for t in tokens)
+    if (selected._loop_eval or selected._loop_resume) and selected._loop_directory is not None:
+        sidecar = selected._loop_directory / 'architecture.json'
+        if sidecar.is_file():
+            loop_selected = loop_selected or json.loads(sidecar.read_text()).get('family') == 'linearno_loop'
+    if loop_selected:
+        try:
+            from cdlno.linearno_loop.standard_entry import intercept as intercept_loop
+        except ModuleNotFoundError as error:
+            if error.name == 'cdlno' or error.name.startswith('cdlno.linearno_loop'):
+                parser.error('linearno_loop selected but its shared cdlno loop package is unavailable')
+            raise
+        loop_args = intercept_loop(parser, task, tokens, selected.model)
+        if loop_args is not None:
+            return loop_args
     if selected.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):
         from cdlno.linearno_history.standard_entry import intercept as intercept_history
         history_args = intercept_history(parser, task, tokens, selected.model)

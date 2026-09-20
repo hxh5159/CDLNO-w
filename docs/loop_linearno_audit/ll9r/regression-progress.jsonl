@@ -1,0 +1,80 @@
+{"module": "test_cdpa", "exit_code": 0, "seconds": 2.571, "tests": 21, "skipped": [["test_gpu_depth_autocast_precision_and_gradients (test_cdpa.CDPACUDAChecks.test_gpu_depth_autocast_precision_and_gradients)", "GPU unavailable; CUDA precision checks not run"], ["test_gpu_fp32_reference_and_fused_sdpa (test_cdpa.CDPACUDAChecks.test_gpu_fp32_reference_and_fused_sdpa)", "GPU unavailable; CUDA precision checks not run"], ["test_gpu_half_bfloat16_outputs_chunks_and_extremes (test_cdpa.CDPACUDAChecks.test_gpu_half_bfloat16_outputs_chunks_and_extremes)", "GPU unavailable; CUDA precision checks not run"]]}
+{"module": "test_core", "exit_code": 0, "seconds": 5.429, "tests": 13, "skipped": [["test_small_core_fp32_and_amp_modes_point_and_grid (test_core.CoreCUDAChecks.test_small_core_fp32_and_amp_modes_point_and_grid)", "GPU unavailable: core CUDA checks not run"]]}
+{"module": "test_airfrans", "exit_code": 0, "seconds": 9.541, "tests": 13, "skipped": []}
+{"module": "test_core_config", "exit_code": 0, "seconds": 8.287, "tests": 6, "skipped": []}
+{"module": "test_front_ablation", "exit_code": 0, "seconds": 3.172, "tests": 13, "skipped": []}
+{"module": "test_experiment_records", "exit_code": 0, "seconds": 57.081, "tests": 9, "skipped": [["test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values (test_experiment_records.ExperimentRecords.test_industrial_real_epoch_observer_preserves_weights_rng_and_original_loss_values) (task='airfrans')", "AirfRANS complete sampled epoch not run: torch_cluster is absent; no dependency was installed"]]}
+{"module": "test_front_training", "exit_code": 0, "seconds": 55.927, "tests": 43, "skipped": [["test_cuda_car_full (test_front_training.FrontTraining.test_cuda_car_full)", "CUDA unavailable: GPU check NOT run"], ["test_cuda_car_identity (test_front_training.FrontTraining.test_cuda_car_identity)", "CUDA unavailable: GPU check NOT run"], ["test_cuda_car_no_sa (test_front_training.FrontTraining.test_cuda_car_no_sa)", "CUDA unavailable: GPU check NOT run"], ["test_cuda_darcy_full (test_front_training.FrontTraining.test_cuda_darcy_full)", "CUDA unavailable: GPU check NOT run"], ["test_cuda_darcy_identity (test_front_training.FrontTraining.test_cuda_darcy_identity)", "CUDA unavailable: GPU check NOT run"], ["test_cuda_darcy_no_sa (test_front_training.FrontTraining.test_cuda_darcy_no_sa)", "CUDA unavailable: GPU check NOT run"], ["test_cuda_ns_full (test_front_training.FrontTraining.test_cuda_ns_full)", "CUDA unavailable: GPU check NOT run"], ["test_cuda_ns_identity (test_front_training.FrontTraining.test_cuda_ns_identity)", "CUDA unavailable: GPU check NOT run"], ["test_cuda_ns_no_sa (test_front_training.FrontTraining.test_cuda_ns_no_sa)", "CUDA unavailable: GPU check NOT run"], ["test_cuda_plasticity_full (test_front_training.FrontTraining.test_cuda_plasticity_full)", "CUDA unavailable: GPU check NOT run"], ["test_cuda_plasticity_identity (test_front_training.FrontTraining.test_cuda_plasticity_identity)", "CUDA unavailable: GPU check NOT run"], ["test_cuda_plasticity_no_sa (test_front_training.FrontTraining.test_cuda_plasticity_no_sa)", "CUDA unavailable: GPU check NOT run"]]}
+{"module": "test_front_task_modes", "exit_code": 0, "seconds": 63.753, "tests": 8, "skipped": []}
+{"module": "test_kcdno_config", "exit_code": 0, "seconds": 0.366, "tests": 13, "skipped": []}
+{"module": "test_kcdno_core", "exit_code": 0, "seconds": 2.923, "tests": 10, "skipped": [["test_limited_gpu_fp32_and_amp_backward (test_kcdno_core.KCDNOCoreTests.test_limited_gpu_fp32_and_amp_backward)", "no actual CUDA GPU"]]}
+{"module": "test_kcdno_airfrans", "exit_code": 0, "seconds": 18.017, "tests": 2, "skipped": []}
+{"module": "test_kcdno_car", "exit_code": 0, "seconds": 14.415, "tests": 2, "skipped": []}
+{"module": "test_kcdno_performance", "exit_code": 0, "seconds": 3.925, "tests": 2, "skipped": []}
+{"module": "test_kcdno_matched", "exit_code": 0, "seconds": 20.373, "tests": 4, "skipped": []}
+{"module": "test_kcdno_delivery", "exit_code": 0, "seconds": 29.398, "tests": 4, "skipped": []}
+{"module": "test_kcdno_seed_suite", "exit_code": 0, "seconds": 25.082, "tests": 6, "skipped": []}
+{"module": "test_kernel_history", "exit_code": 0, "seconds": 4.128, "tests": 16, "skipped": [["test_gpu_autocast_fp32_operations (test_kernel_history.KernelHistoryTests.test_gpu_autocast_fp32_operations)", "CUDA unavailable: K2 GPU AMP not run"]]}
+{"module": "test_lrsa_reference", "exit_code": 0, "seconds": 3.275, "tests": 2, "skipped": []}
+{"module": "test_kcdno_temporal", "exit_code": 0, "seconds": 13.104, "tests": 4, "skipped": []}
+{"module": "test_modules", "exit_code": 0, "seconds": 2.571, "tests": 18, "skipped": [["test_small_cuda_fp32_and_amp (test_modules.CUDAModuleChecks.test_small_cuda_fp32_and_amp)", "CUDA unavailable; GPU module checks not run"]]}
+{"module": "test_msar_config", "exit_code": 0, "seconds": 0.616, "tests": 13, "skipped": []}
+{"module": "test_msar_core", "exit_code": 0, "seconds": 11.901, "tests": 16, "skipped": [["test_cuda_amp_core_aux_and_off_prediction (test_msar_core.MSARCoreTests.test_cuda_amp_core_aux_and_off_prediction)", "CUDA unavailable"]]}
+{"module": "test_kcdno_tasks", "exit_code": 0, "seconds": 37.627, "tests": 6, "skipped": []}
+{"module": "test_msar_integration", "exit_code": 0, "seconds": 20.486, "tests": 18, "skipped": [["test_gpu_explicit_objective_step_and_checkpoint (test_msar_integration.MSARIntegrationTests.test_gpu_explicit_objective_step_and_checkpoint)", "CUDA unavailable: M4 adapter GPU check not run"]]}
+{"module": "test_msar_modules", "exit_code": 0, "seconds": 5.336, "tests": 20, "skipped": [["test_cuda_fp32_and_amp_primitives_finite_and_critical_dtypes (test_msar_modules.MSARPrimitiveTests.test_cuda_fp32_and_amp_primitives_finite_and_critical_dtypes)", "CUDA unavailable; no AMP acceptance"]]}
+{"module": "test_msar_performance", "exit_code": 0, "seconds": 20.03, "tests": 6, "skipped": []}
+{"module": "test_msar_industrial", "exit_code": 0, "seconds": 68.782, "tests": 14, "skipped": [["test_air_original_sampled_epoch_when_extension_available (test_msar_industrial.IndustrialMSAR.test_air_original_sampled_epoch_when_extension_available)", "torch_cluster absent: original sampled epoch/graph rebuild not executed"], ["test_cuda_real_graph_loss_steps (test_msar_industrial.IndustrialMSAR.test_cuda_real_graph_loss_steps)", "real PyG/CUDA unavailable"]]}
+{"module": "test_msar_acceptance", "exit_code": 0, "seconds": 93.481, "tests": 19, "skipped": []}
+{"module": "test_msar_temporal", "exit_code": 0, "seconds": 27.655, "tests": 11, "skipped": [["test_gpu_original_temporal_loss_steps (test_msar_temporal.MSARTemporalTests.test_gpu_original_temporal_loss_steps)", "CUDA unavailable"]]}
+{"module": "test_msar_static", "exit_code": 0, "seconds": 48.765, "tests": 15, "skipped": [["test_four_static_gpu_small_original_loss_steps (test_msar_static.MSARStaticTests.test_four_static_gpu_small_original_loss_steps)", "CUDA unavailable"]]}
+{"module": "test_periodic_visualization", "exit_code": 0, "seconds": 12.36, "tests": 8, "skipped": [["test_air_real_sampling_graph_dependency (test_periodic_visualization.PeriodicChecks.test_air_real_sampling_graph_dependency)", "real torch_cluster missing: AirfRANS sampling/graph integration not executed"]]}
+{"module": "test_shapenet_car", "exit_code": 0, "seconds": 11.106, "tests": 13, "skipped": []}
+{"module": "test_performance", "exit_code": 0, "seconds": 31.632, "tests": 13, "skipped": []}
+{"module": "test_show_reports", "exit_code": 0, "seconds": 4.891, "tests": 14, "skipped": []}
+{"module": "test_temporal_standard", "exit_code": 0, "seconds": 21.533, "tests": 10, "skipped": []}
+{"module": "test_visualization", "exit_code": 0, "seconds": 3.725, "tests": 3, "skipped": []}
+{"module": "test_static_standard", "exit_code": 0, "seconds": 40.187, "tests": 13, "skipped": [["test_static_wrapper_device_and_amp_backward (test_static_standard.StaticGPUChecks.test_static_wrapper_device_and_amp_backward)", "GPU unavailable: wrapper GPU checks not run"]]}
+{"module": "linearno.test_air_objective_decision", "exit_code": 0, "seconds": 2.574, "tests": 4, "skipped": []}
+{"module": "test_training_state", "exit_code": 0, "seconds": 45.861, "tests": 14, "skipped": [["test_gpu_fresh_process_identity_onecycle (test_training_state.TrainingStateChecks.test_gpu_fresh_process_identity_onecycle)", "GPU continuation not run: CUDA unavailable"]]}
+{"module": "linearno.test_airfrans_model", "exit_code": 0, "seconds": 6.033, "tests": 7, "skipped": [["test_native_cuda_full_official_parity (linearno.test_airfrans_model.AirfRANSModelChecks.test_native_cuda_full_official_parity)", "native release get_grid requires CUDA"]]}
+{"module": "linearno.test_attention_parity", "exit_code": 0, "seconds": 3.023, "tests": 4, "skipped": [["test_fixed_official_cuda_fp32_fp16_bfloat16 (linearno.test_attention_parity.AttentionParity.test_fixed_official_cuda_fp32_fp16_bfloat16)", "CUDA not available; GPU FP32/AMP NOT RUN"]]}
+{"module": "linearno.test_attention_structure", "exit_code": 0, "seconds": 10.091, "tests": 10, "skipped": []}
+{"module": "linearno.test_car_metrics", "exit_code": 0, "seconds": 2.824, "tests": 4, "skipped": []}
+{"module": "linearno.test_car_objective_decision", "exit_code": 0, "seconds": 2.824, "tests": 2, "skipped": []}
+{"module": "linearno.test_converter", "exit_code": 0, "seconds": 15.157, "tests": 2, "skipped": []}
+{"module": "linearno.test_history_core", "exit_code": 0, "seconds": 14.152, "tests": 11, "skipped": []}
+{"module": "linearno.test_car_entry", "exit_code": 0, "seconds": 64.818, "tests": 4, "skipped": []}
+{"module": "linearno.test_history_integration", "exit_code": 0, "seconds": 15.807, "tests": 12, "skipped": []}
+{"module": "linearno.test_air_entry", "exit_code": 0, "seconds": 131.769, "tests": 3, "skipped": []}
+{"module": "linearno.test_history_schema", "exit_code": 0, "seconds": 0.114, "tests": 10, "skipped": []}
+{"module": "linearno.test_history_k", "exit_code": 0, "seconds": 13.246, "tests": 13, "skipped": []}
+{"module": "linearno.test_history_temporal", "exit_code": 0, "seconds": 254.815, "tests": 3, "skipped": []}
+{"module": "linearno.test_latent_attnres", "exit_code": 0, "seconds": 12.194, "tests": 13, "skipped": []}
+{"module": "linearno.test_legacy", "exit_code": 0, "seconds": 33.998, "tests": 4, "skipped": []}
+{"module": "linearno.test_profiles", "exit_code": 0, "seconds": 0.114, "tests": 6, "skipped": []}
+{"module": "linearno.test_history_static", "exit_code": 0, "seconds": 319.727, "tests": 4, "skipped": []}
+{"module": "linearno.test_schema", "exit_code": 0, "seconds": 1.317, "tests": 5, "skipped": []}
+{"module": "linearno.test_shapenet_model", "exit_code": 0, "seconds": 6.231, "tests": 6, "skipped": [["test_native_cuda_official_full_parity (linearno.test_shapenet_model.ShapeNetModelChecks.test_native_cuda_official_full_parity)", "CUDA unavailable"]]}
+{"module": "linearno.test_standard_model", "exit_code": 0, "seconds": 3.522, "tests": 5, "skipped": [["test_native_cuda_official_unified_replacement_all_variants (linearno.test_standard_model.StandardModelParity.test_native_cuda_official_unified_replacement_all_variants)", "native official unified Model requires CUDA"]]}
+{"module": "linearno.test_standard_structure", "exit_code": 0, "seconds": 4.976, "tests": 5, "skipped": []}
+{"module": "linearno.test_rng", "exit_code": 0, "seconds": 29.988, "tests": 1, "skipped": []}
+{"module": "linearno.test_temporal_integration", "exit_code": 0, "seconds": 71.195, "tests": 5, "skipped": []}
+{"module": "loop_linearno.test_artifacts", "exit_code": 0, "seconds": 0.516, "tests": 2, "skipped": []}
+{"module": "loop_linearno.test_block_body", "exit_code": 0, "seconds": 3.473, "tests": 5, "skipped": [["test_six_variants_cuda_float32 (loop_linearno.test_block_body.BlockBodyTests.test_six_variants_cuda_float32)", "CUDA unavailable"]]}
+{"module": "loop_linearno.test_config", "exit_code": 0, "seconds": 0.967, "tests": 9, "skipped": []}
+{"module": "linearno.test_static_integration", "exit_code": 0, "seconds": 95.159, "tests": 7, "skipped": []}
+{"module": "loop_linearno.test_industrial", "exit_code": 0, "seconds": 13.249, "tests": 5, "skipped": []}
+{"module": "loop_linearno.test_isolation", "exit_code": 0, "seconds": 3.021, "tests": 3, "skipped": []}
+{"module": "loop_linearno.test_lb_core", "exit_code": 0, "seconds": 5.577, "tests": 6, "skipped": []}
+{"module": "loop_linearno.test_launchers", "exit_code": 1, "seconds": 9.238, "tests": 6, "skipped": []}
+{"module": "loop_linearno.test_point_attnres", "exit_code": 0, "seconds": 2.971, "tests": 12, "skipped": [["test_cuda_float32_oracle (loop_linearno.test_point_attnres.PointAttnResTests.test_cuda_float32_oracle)", "CUDA unavailable"]]}
+{"module": "loop_linearno.test_modes", "exit_code": 0, "seconds": 9.589, "tests": 4, "skipped": []}
+{"module": "loop_linearno.test_schema", "exit_code": 0, "seconds": 1.869, "tests": 10, "skipped": []}
+{"module": "loop_linearno.test_sr_accounting", "exit_code": 0, "seconds": 3.723, "tests": 3, "skipped": []}
+{"module": "loop_linearno.test_rb_core", "exit_code": 0, "seconds": 16.807, "tests": 9, "skipped": []}
+{"module": "loop_linearno.test_standard_entry", "exit_code": 0, "seconds": 6.029, "tests": 4, "skipped": []}
+{"module": "monitor.test_export_linearno_results", "exit_code": 0, "seconds": 1.267, "tests": 7, "skipped": []}
+{"module": "monitor.test_monitor", "exit_code": 0, "seconds": 2.771, "tests": 3, "skipped": []}
+{"module": "loop_linearno.test_sr_core", "exit_code": 0, "seconds": 15.9, "tests": 11, "skipped": []}
+{"module": "linearno.test_history_industrial", "exit_code": 0, "seconds": 636.937, "tests": 5, "skipped": []}

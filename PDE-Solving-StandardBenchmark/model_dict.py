@@ -2,6 +2,9 @@ from model import Transolver_Irregular_Mesh, Transolver_Structured_Mesh_2D, Tran
 
 
 def get_model(args):
+    if hasattr(args, '_linearno_loop_config'):
+        from cdlno.linearno_loop.standard_entry import model_module
+        return model_module(args)
     if hasattr(args, '_linearno_history_config'):
         from cdlno.linearno_history.standard_entry import model_module
         return model_module(args)

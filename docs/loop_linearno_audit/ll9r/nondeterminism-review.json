@@ -1,0 +1,169 @@
+{
+  "unchanged_pre_repair_core": "/home/hwz/CDLNO-artifacts/loop-ll9r-before-j6m5x1a9/source/cdlno/linearno_loop/core.py",
+  "torch": "2.13.0+cu130",
+  "backend": "CUDA/cuDNN nondeterministic vs deterministic; TF32 off, no tolerance relaxation",
+  "rows": [
+    {
+      "deterministic": false,
+      "fields": {
+        "initial": {
+          "exact": true,
+          "max_abs": 0,
+          "nonexact_keys": []
+        },
+        "output": {
+          "exact": true,
+          "max_abs": 0,
+          "nonexact_keys": []
+        },
+        "loss": {
+          "exact": true,
+          "max_abs": 0,
+          "nonexact_keys": []
+        },
+        "input_gradients": {
+          "exact": true,
+          "max_abs": 0,
+          "nonexact_keys": []
+        },
+        "gradients": {
+          "exact": false,
+          "max_abs": 2.3283064365386963e-10,
+          "nonexact_keys": [
+            "preprocess.linear_pre.0.weight",
+            "preprocess.linear_post.weight",
+            "loop.prefix.0.block.ln_1.weight",
+            "loop.prefix.0.block.mlp.linear_pre.0.weight",
+            "loop.prefix.0.block.mlp.linear_post.weight",
+            "loop.core.0.block.ln_1.bias"
+          ]
+        },
+        "step_state": {
+          "exact": true,
+          "max_abs": 0,
+          "nonexact_keys": []
+        }
+      }
+    },
+    {
+      "deterministic": false,
+      "fields": {
+        "initial": {
+          "exact": true,
+          "max_abs": 0,
+          "nonexact_keys": []
+        },
+        "output": {
+          "exact": true,
+          "max_abs": 0,
+          "nonexact_keys": []
+        },
+        "loss": {
+          "exact": true,
+          "max_abs": 0,
+          "nonexact_keys": []
+        },
+        "input_gradients": {
+          "exact": true,
+          "max_abs": 0,
+          "nonexact_keys": []
+        },
+        "gradients": {
+          "exact": false,
+          "max_abs": 9.313225746154785e-10,
+          "nonexact_keys": [
+            "preprocess.linear_post.weight",
+            "loop.prefix.0.block.ln_1.weight",
+            "loop.prefix.0.block.ln_1.bias",
+            "loop.prefix.0.block.Attn.temperature_q",
+            "loop.prefix.0.block.Attn.in_project_x.weight",
+            "loop.prefix.0.block.Attn.to_q.weight",
+            "loop.prefix.0.block.Attn.to_k.weight",
+            "loop.prefix.0.block.Attn.to_out.2.bias",
+            "loop.prefix.0.block.mlp.linear_post.weight",
+            "loop.core.2.block.ln_1.weight"
+          ]
+        },
+        "step_state": {
+          "exact": false,
+          "max_abs": 1.862645149230957e-09,
+          "nonexact_keys": [
+            "loop.prefix.0.block.ln_1.bias",
+            "loop.prefix.0.block.Attn.to_q.weight",
+            "loop.prefix.0.block.Attn.to_k.weight"
+          ]
+        }
+      }
+    },
+    {
+      "deterministic": true,
+      "fields": {
+        "initial": {
+          "exact": true,
+          "max_abs": 0,
+          "nonexact_keys": []
+        },
+        "output": {
+          "exact": true,
+          "max_abs": 0,
+          "nonexact_keys": []
+        },
+        "loss": {
+          "exact": true,
+          "max_abs": 0,
+          "nonexact_keys": []
+        },
+        "input_gradients": {
+          "exact": true,
+          "max_abs": 0,
+          "nonexact_keys": []
+        },
+        "gradients": {
+          "exact": true,
+          "max_abs": 0,
+          "nonexact_keys": []
+        },
+        "step_state": {
+          "exact": true,
+          "max_abs": 0,
+          "nonexact_keys": []
+        }
+      }
+    },
+    {
+      "deterministic": true,
+      "fields": {
+        "initial": {
+          "exact": true,
+          "max_abs": 0,
+          "nonexact_keys": []
+        },
+        "output": {
+          "exact": true,
+          "max_abs": 0,
+          "nonexact_keys": []
+        },
+        "loss": {
+          "exact": true,
+          "max_abs": 0,
+          "nonexact_keys": []
+        },
+        "input_gradients": {
+          "exact": true,
+          "max_abs": 0,
+          "nonexact_keys": []
+        },
+        "gradients": {
+          "exact": true,
+          "max_abs": 0,
+          "nonexact_keys": []
+        },
+        "step_state": {
+          "exact": true,
+          "max_abs": 0,
+          "nonexact_keys": []
+        }
+      }
+    }
+  ]
+}

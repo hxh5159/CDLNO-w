@@ -1,0 +1,68 @@
+{
+  "stage": "LL4",
+  "status": "PASS",
+  "reviewed": {
+    "sources": "Exact source counts, live raw-only partials and completed sums; independent 36-case full-core oracle",
+    "routing": "2CR+1 independent point receivers, shared core operators; singleton identity, uniform zero-query, point-dependent nonzero-query",
+    "gradients": "All active receivers finite/nonzero at nonzero queries; first singleton intentionally unused; isolated second-round branch VJP reaches old sum",
+    "isolation": "No self-attention QK matmul; legal M==d_h context distinguished; no full-core ordinary residual; exception recovery and changed B/N/time/member calls",
+    "compatibility": "16 same-seed SR/RB native constructors equal backbone/RNG; old SR numeric/accounting reports identical to LL3; old outcomes match LL0; all-file freeze"
+  },
+  "tests": {
+    "loop_methods": 64,
+    "passed": 62,
+    "skipped": 2,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 44.342,
+    "new_LL4_methods": 9,
+    "rb_math_oracle_cases": 36,
+    "rb_native_adamw_cases": 24,
+    "sr_math_and_native_cases": 72,
+    "old_LL0": {
+      "methods": 153,
+      "passed": 147,
+      "failed_methods": 2,
+      "failed_assertions": 4,
+      "skipped": 4,
+      "errors": 0
+    }
+  },
+  "syntax_python310": [
+    "cdlno/linearno_loop/__init__.py",
+    "cdlno/linearno_loop/airfrans.py",
+    "cdlno/linearno_loop/attnres.py",
+    "cdlno/linearno_loop/body.py",
+    "cdlno/linearno_loop/construction.py",
+    "cdlno/linearno_loop/core.py",
+    "cdlno/linearno_loop/shapenet.py",
+    "cdlno/linearno_loop/standard.py",
+    "docs/loop_linearno_audit/ll4/finalize_evidence.py",
+    "docs/loop_linearno_audit/ll4/run_existing_regressions.py",
+    "tests/loop_linearno/__init__.py",
+    "tests/loop_linearno/point_attnres_oracle.py",
+    "tests/loop_linearno/rb_oracle.py",
+    "tests/loop_linearno/rb_support.py",
+    "tests/loop_linearno/sr_oracle.py",
+    "tests/loop_linearno/sr_support.py",
+    "tests/loop_linearno/support.py",
+    "tests/loop_linearno/test_artifacts.py",
+    "tests/loop_linearno/test_block_body.py",
+    "tests/loop_linearno/test_config.py",
+    "tests/loop_linearno/test_isolation.py",
+    "tests/loop_linearno/test_point_attnres.py",
+    "tests/loop_linearno/test_rb_core.py",
+    "tests/loop_linearno/test_schema.py",
+    "tests/loop_linearno/test_sr_accounting.py",
+    "tests/loop_linearno/test_sr_core.py"
+  ],
+  "not_run": [
+    "LB residual mode",
+    "production task parser/factory/launcher/monitor integration",
+    "loop full checkpoint/resume archives",
+    "real data/training",
+    "GPU/AMP/compile",
+    "remote Python3.10 target",
+    "timing/accuracy"
+  ]
+}

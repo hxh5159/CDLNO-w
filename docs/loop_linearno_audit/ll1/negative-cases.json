@@ -1,0 +1,72 @@
+{
+  "cases": [
+    {
+      "id": "strict-types",
+      "reject": "bool as int / string number / NaN / unknown fields",
+      "test_module": "tests/loop_linearno/test_config"
+    },
+    {
+      "id": "topology",
+      "reject": "preset+custom / incomplete PCRS / P<0 or C,R,S<1",
+      "test_module": "tests/loop_linearno/test_config"
+    },
+    {
+      "id": "derived",
+      "reject": "rehash cannot legitimize wrong depth/head_dim/rank/counts",
+      "test_module": "tests/loop_linearno/test_config"
+    },
+    {
+      "id": "rank",
+      "reject": "explicit multiplier+actual M / ShapeNet noninteger multiple",
+      "test_module": "tests/loop_linearno/test_config"
+    },
+    {
+      "id": "history-mixing",
+      "reject": "any old A/K/dropout field even false/None",
+      "test_module": "tests/loop_linearno/test_config;test_schema"
+    },
+    {
+      "id": "protocol",
+      "reject": "objective/evaluation/data overrides rejected",
+      "test_module": "tests/loop_linearno/test_config"
+    },
+    {
+      "id": "metadata",
+      "reject": "missing sections / class kwargs / family/schema/protocol mismatch",
+      "test_module": "tests/loop_linearno/test_schema"
+    },
+    {
+      "id": "load",
+      "reject": "strict=False / baseline/history as loop / resume architecture changes",
+      "test_module": "tests/loop_linearno/test_schema"
+    },
+    {
+      "id": "normalizer",
+      "reject": "missing fit/checksum/states / dtype/shape/bytes/hash corruption",
+      "test_module": "tests/loop_linearno/test_schema"
+    },
+    {
+      "id": "resume",
+      "reject": "incomplete optimizer/scheduler/RNG/generator/sampler; test-selected best",
+      "test_module": "tests/loop_linearno/test_schema"
+    },
+    {
+      "id": "ensemble",
+      "reject": "duplicate member / order / unsafe path / whole object",
+      "test_module": "tests/loop_linearno/test_schema"
+    },
+    {
+      "id": "isolation",
+      "reject": "torch/model/task import / old source mutation / RNG advance",
+      "test_module": "tests/loop_linearno/test_isolation"
+    }
+  ],
+  "future_model_only_not_run": [
+    "tensor shapes and gradients",
+    "actual shared module identity",
+    "forward-local history",
+    "state_dict strict loading",
+    "optimizer/RNG backend restore"
+  ],
+  "schema_version": 1
+}

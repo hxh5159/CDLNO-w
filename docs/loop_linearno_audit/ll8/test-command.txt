@@ -1,0 +1,6 @@
+PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 MPLBACKEND=Agg LOOP_LL2_ATTNRES_REPORT=docs/loop_linearno_audit/ll8/attnres-report.json LOOP_LL2_BODY_REPORT=docs/loop_linearno_audit/ll8/body-report.json LOOP_LL3_PARITY_REPORT=docs/loop_linearno_audit/ll8/sr-parity.json LOOP_LL3_ACCOUNTING_REPORT=docs/loop_linearno_audit/ll8/accounting.json LOOP_LL4_REPORT=docs/loop_linearno_audit/ll8/rb-report.json LOOP_LL5_REPORT=docs/loop_linearno_audit/ll8/lb-report.json LOOP_LL5_MODES_REPORT=docs/loop_linearno_audit/ll8/modes-report.json LOOP_LL8_FAIR_REPORT=docs/loop_linearno_audit/ll8/fair-report.json python -B -m unittest discover -s tests/loop_linearno -p 'test_*.py' -v
+
+88 methods: 86 pass, 2 CUDA skip, no failures/errors; 54.950s.
+After adding the bridge-delegation test, targeted final run:
+PYTHONPATH=tests:. PYTHONDONTWRITEBYTECODE=1 CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 python -B -m unittest loop_linearno.test_launchers -v
+6/6 passed; 5.429s. This is not a second full-suite run.

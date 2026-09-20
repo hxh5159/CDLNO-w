@@ -1,0 +1,172 @@
+{
+  "architecture_extension": "loop_linearno_v1",
+  "authoritative_validators": [
+    "linearno_loop.config.validate_config",
+    "linearno_loop.schema.validate_metadata"
+  ],
+  "class_paths": {
+    "airfrans": "cdlno.linearno_loop.airfrans.LoopedAirfRANSModel",
+    "car": "cdlno.linearno_loop.shapenet.LoopedShapeNetModel",
+    "standard": "cdlno.linearno_loop.standard.LoopedStandardModel"
+  },
+  "class_status": "PLANNED_NOT_IMPLEMENTED_NO_PLACEHOLDERS",
+  "cli": {
+    "--linearno-loop": {
+      "field": "linearno_loop",
+      "typed_value": "bool",
+      "wire_value": "0|1"
+    },
+    "--linearno-loop-core-blocks": {
+      "field": "recurrent_core_blocks",
+      "wire_value": "int>=1"
+    },
+    "--linearno-loop-prefix-blocks": {
+      "field": "prefix_blocks",
+      "wire_value": "int>=0"
+    },
+    "--linearno-loop-rank-multiplier": {
+      "field": "rank_multiplier",
+      "wire_value": "1|2"
+    },
+    "--linearno-loop-repeats": {
+      "field": "loop_repeats",
+      "wire_value": "int>=1"
+    },
+    "--linearno-loop-residual-mode": {
+      "field": "residual_mode",
+      "wire_value": "sr_1_over_r|rb_attnres|lb_attnres_1_over_r"
+    },
+    "--linearno-loop-suffix-blocks": {
+      "field": "suffix_blocks",
+      "wire_value": "int>=1"
+    },
+    "--linearno-loop-topology": {
+      "field": "topology_preset",
+      "wire_value": "preset|custom"
+    },
+    "--linearno-rank": {
+      "field": "linearno_rank",
+      "wire_value": "actual M int>=1"
+    }
+  },
+  "cli_status": "PLANNED_NOT_CONNECTED",
+  "config_version": 1,
+  "family": "linearno_loop",
+  "format": "loop-configuration-contract-catalog-v1",
+  "formula_version": "point-loop-residual-v1",
+  "load_policy": {
+    "baseline_as_resume": false,
+    "constructor_validation": "full_explicit_signature",
+    "legacy_fallback": false,
+    "metadata_first": true,
+    "missing_random_weights": false,
+    "strict": true
+  },
+  "nonfinite_json": "reject",
+  "note": "Machine-readable contract catalog, not a replacement JSON Schema engine.",
+  "physical_time": "native task T preserved; loop feature timestep encoding forbidden",
+  "provenance_fields": [
+    "target_sha",
+    "base_commit",
+    "dirty",
+    "transolver_sha",
+    "linearno_sha",
+    "paper_version",
+    "paper_sha256",
+    "attnres_sha",
+    "kimi_k3_sha",
+    "residual_scaling_version",
+    "source_sha256",
+    "normalized_patch_sha256",
+    "code_version",
+    "config_schema_version",
+    "metadata_schema_version",
+    "command",
+    "environment"
+  ],
+  "rank": {
+    "allowed_multipliers": [
+      1,
+      2
+    ],
+    "base_source": "unchanged current task/profile",
+    "conflict": "explicit actual M and explicit multiplier always reject",
+    "default_multiplier": 2,
+    "explicit_actual_policy": "explicit_actual with rank_multiplier=null",
+    "shapenet": "resolved_rank % head_dim == 0"
+  },
+  "reference_pins": {
+    "attnres_sha": "85e22310fe5ee860b4a023de312d791de8a5a5e6",
+    "kimi_k3_sha": "3cb39dfd32e51c3328e2e4b4af21341247d06c43",
+    "linearno_sha": "3f2b80df13c17a09e250f2ebe4d4ecdfd4acf269",
+    "paper_sha256": "637e2953c0e223df7ffe2be92dd3825fccf55232cd73e2c955935a3944a470fd",
+    "transolver_sha": "75e0f67643806a81cd1d3f6adc88dd8c02416fe7"
+  },
+  "residual_mode_default": null,
+  "residual_modes": [
+    "sr_1_over_r",
+    "rb_attnres",
+    "lb_attnres_1_over_r"
+  ],
+  "schema_version": 1,
+  "sections": [
+    "loop_spec",
+    "model_spec",
+    "profile_spec",
+    "data_spec",
+    "objective_spec",
+    "evaluation_spec",
+    "provenance_spec",
+    "normalizer_spec",
+    "resume_state",
+    "ensemble_manifest"
+  ],
+  "sharing": {
+    "core": "same_physical_module_each_round",
+    "core_includes": [
+      "operator",
+      "mlp",
+      "ln_1",
+      "ln_2"
+    ],
+    "core_registration": "once",
+    "cross_forward": false,
+    "cross_member": false,
+    "cross_physical_time": false,
+    "detach": false,
+    "history": "forward_local_raw_points",
+    "output_head": "last_suffix_only_once",
+    "prefix_core_suffix": "disjoint_physical_modules",
+    "recompute_qkv_context_each_visit": true,
+    "routers": "independent_per_logical_receiver"
+  },
+  "topology_default": null,
+  "topology_presets": {
+    "p1_c3_r2_s1": {
+      "loop_repeats": 2,
+      "prefix_blocks": 1,
+      "recurrent_core_blocks": 3,
+      "suffix_blocks": 1
+    },
+    "p2_c2_r2_s2": {
+      "loop_repeats": 2,
+      "prefix_blocks": 2,
+      "recurrent_core_blocks": 2,
+      "suffix_blocks": 2
+    }
+  },
+  "topology_rules": {
+    "custom": "all four integer fields required; no bool/string/coercion",
+    "derived_fields": "read-only",
+    "executed_depth": "P+C*R+S",
+    "minimum": {
+      "loop_repeats": 1,
+      "prefix_blocks": 0,
+      "recurrent_core_blocks": 1,
+      "suffix_blocks": 1
+    },
+    "preset": "no explicit P/C/R/S allowed",
+    "unique_depth": "P+C+S"
+  },
+  "unknown_fields": "reject"
+}

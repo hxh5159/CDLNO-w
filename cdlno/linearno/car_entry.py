@@ -219,7 +219,9 @@ def task_provenance():
              'utils/drag_coefficient.py')]
     sources,patch = {},{}
     for p in paths:
-        key = str(p.relative_to(ROOT)); source = p.read_text(); sources[key] = source
+        key = str(p.relative_to(ROOT)); source = p.read_text()
+        from cdlno.linearno_loop.provenance import legacy_source
+        source = legacy_source(key, source); sources[key] = source
         try:
             before = subprocess.check_output(['git','show','HEAD:'+key],cwd=ROOT,stderr=subprocess.DEVNULL).decode()
         except subprocess.CalledProcessError:
@@ -380,6 +382,9 @@ def evaluate(run,model,dataset,*,force=True):
 
 
 def run_cli(args):
+    if getattr(args, 'linearno_family', None) == 'linearno_loop':
+        from cdlno.linearno_loop.car_entry import run_cli as loop_run_cli
+        return loop_run_cli(args)
     if getattr(args, '_linearno_history_adapter', False):
         from cdlno.linearno_history.car_entry import run_cli as history_run_cli
         return history_run_cli(args)

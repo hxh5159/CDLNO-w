@@ -61,7 +61,10 @@ class HistoryStatic(unittest.TestCase):
             path=f'PDE-Solving-StandardBenchmark/exp_{short}.py'
             self.assertEqual((ROOT/path).read_bytes(),(before/path).read_bytes())
         old=json.loads((ROOT/'docs/linearno_history_audit/r6/baseline-provenance.json').read_text())
-        for key in ('source_sha256','normalized_patch_sha256'):self.assertEqual(provenance()[key],old[key])
+        from historical_git_base import historical_git_base
+        with historical_git_base(old['base_commit']):
+            current = provenance()
+        for key in ('source_sha256','normalized_patch_sha256'):self.assertEqual(current[key],old[key])
 
     def test_sixteen_native_cycles_and_new_process_eval(self):
         artifacts=Path(os.environ.get('LINEARNO_R6_ARTIFACTS',tempfile.mkdtemp(prefix='history-r6-native-')))

@@ -1,0 +1,66 @@
+{
+  "stage": "LL7",
+  "status": "PASS",
+  "tests": {
+    "loop_methods": 83,
+    "pass_": 81,
+    "skip": 2,
+    "errors": 0,
+    "failures": 0,
+    "seconds": 68.67,
+    "saved_metadata_conflicts": 120,
+    "industrial_cases": 12,
+    "industrial_worker_processes": 66,
+    "air_two_member_boundaries": 12,
+    "standard_cases": 36,
+    "standard_worker_processes": 144,
+    "history_industrial_methods": 5,
+    "history_industrial_seconds": 688.606,
+    "history_industrial_pass": 4,
+    "history_industrial_historical_failures": 1,
+    "historical_fingerprint_diagnosis": "Only git HEAD before-AST changed since R8; all pre-LL7 hashes preserved; remaining assertions separately passed; original test/golden unchanged",
+    "legacy": {
+      "methods": 153,
+      "passed": 147,
+      "failed_methods": 2,
+      "failed_assertions": 4,
+      "skipped": 4,
+      "errors": 0
+    },
+    "genuine_pre_edit_checkpoints": 4
+  },
+  "reviewed": {
+    "wrapper": "Native stem/forward and temperature spellings unchanged; same LL6 seven numeric reports",
+    "science": "Air native train, Car same inherited train function; unchanged objective/data/field/drag helpers; only optional checkpoint export at old save sites",
+    "serialization": "Distinct schema/state_dict; metadata-first and120 actual-run conflict checks; strict shared-core/router states and optimizer signatures",
+    "ensemble": "Two members independent params/router/core; within-member and between-member boundaries exact state/RNG/data/output",
+    "legacy": "4 genuine pre-edit pure/history industrial resumes exact; LL6 Standard fingerprint preserved; full36 Standard cycles rerun; complete byte projections"
+  },
+  "syntax_python310": [
+    "Airfoil-Design-AirfRANS/cdlno_entry.py",
+    "Airfoil-Design-AirfRANS/train.py",
+    "Car-Design-ShapeNetCar/models/cdlno_run.py",
+    "cdlno/linearno/air_entry.py",
+    "cdlno/linearno/car_entry.py",
+    "cdlno/linearno_history/car_entry.py",
+    "cdlno/linearno_loop/air_entry.py",
+    "cdlno/linearno_loop/car_entry.py",
+    "cdlno/linearno_loop/industrial_entry.py",
+    "cdlno/linearno_loop/industrial_state.py",
+    "cdlno/linearno_loop/ll7_projection.py",
+    "cdlno/linearno_loop/provenance.py",
+    "tests/loop_entry_projection.py",
+    "tests/loop_linearno/air_worker.py",
+    "tests/loop_linearno/car_worker.py",
+    "tests/loop_linearno/industrial_support.py",
+    "tests/loop_linearno/test_industrial.py",
+    "tests/loop_linearno/test_isolation.py"
+  ],
+  "not_run": [
+    "real training/data/VTK metrics",
+    "remote/GPU/AMP/compile",
+    "full-width industrial training",
+    "new loop launchers/monitor",
+    "LL8 and later"
+  ]
+}

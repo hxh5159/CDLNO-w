@@ -1,0 +1,2153 @@
+{
+  "model_spec": {
+    "class_path": "cdlno.linearno_loop.standard.LoopedStandardModel",
+    "constructor_kwargs": {
+      "space_dim": 2,
+      "n_hidden": 128,
+      "n_head": 8,
+      "dropout": 0.0,
+      "act": "gelu",
+      "mlp_ratio": 1,
+      "fun_dim": 1,
+      "out_dim": 1,
+      "ref": 8,
+      "unified_pos": false,
+      "prefix_blocks": 1,
+      "recurrent_core_blocks": 3,
+      "loop_repeats": 2,
+      "suffix_blocks": 1,
+      "residual_mode": "rb_attnres",
+      "linearno_rank": 64,
+      "Time_Input": false,
+      "H": 85,
+      "W": 85,
+      "linearno_variant": "conv_temp"
+    }
+  },
+  "resolved_arguments": {
+    "task": "darcy",
+    "profile": "paper_table8_on_release_model",
+    "options": {
+      "topology_preset": "p1_c3_r2_s1",
+      "residual_mode": "rb_attnres",
+      "rank_multiplier": 1
+    },
+    "profile_overrides": {
+      "runtime.seed": 2
+    }
+  },
+  "resolved_config": {
+    "family": "linearno_loop",
+    "architecture_extension": "loop_linearno_v1",
+    "config_version": 1,
+    "request": {
+      "task": "darcy",
+      "profile": "paper_table8_on_release_model",
+      "options": {
+        "topology_preset": "p1_c3_r2_s1",
+        "residual_mode": "rb_attnres",
+        "rank_multiplier": 1
+      },
+      "profile_overrides": {
+        "runtime.seed": 2
+      }
+    },
+    "loop_spec": {
+      "schema_version": 1,
+      "config_version": 1,
+      "formula_version": "point-loop-residual-v1",
+      "task": "darcy",
+      "profile": "paper_table8_on_release_model",
+      "topology_preset": "p1_c3_r2_s1",
+      "prefix_blocks": 1,
+      "recurrent_core_blocks": 3,
+      "loop_repeats": 2,
+      "suffix_blocks": 1,
+      "unique_depth": 5,
+      "executed_depth": 8,
+      "residual_mode": "rb_attnres",
+      "base_rank": 64,
+      "rank_multiplier": 1,
+      "resolved_rank": 64,
+      "rank_policy": "profile_multiplier",
+      "hidden": 128,
+      "heads": 8,
+      "head_dim": 16,
+      "variant": "conv_temp",
+      "point_domain_attnres": true,
+      "feature_timestep_encoding": false,
+      "operator_contract": {
+        "rank_mapping": {
+          "original_parameter": "key_ratio",
+          "original_value": 64,
+          "semantics": "absolute",
+          "actual_M": 64
+        },
+        "q_softmax_axis": "M",
+        "k_softmax_axis": "N",
+        "qk_independent": true,
+        "projections_shared_across_heads": true,
+        "qkv_bias": false,
+        "attention_scale": null,
+        "attention_weight_dropout": false,
+        "layernorm_eps": 1e-05,
+        "input_projection": "conv2d_each_block",
+        "kernel_size": 3,
+        "output_projection": "linear_gelu_linear",
+        "temperature": {
+          "initial": 0.5,
+          "clamp": [
+            0.01,
+            1.0
+          ],
+          "used": true,
+          "dead_parameter": false
+        },
+        "grid_range": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "position_mode": "replace_coordinates",
+        "official_unused_flags": {},
+        "initialization": "linear_trunc_normal_0.02;LN_1_0;standard_conv_kaiming_normal;placeholder_after_apply"
+      },
+      "sharing": {
+        "core": "same_physical_module_each_round",
+        "core_includes": [
+          "operator",
+          "mlp",
+          "ln_1",
+          "ln_2"
+        ],
+        "prefix_core_suffix": "disjoint_physical_modules",
+        "core_registration": "once",
+        "recompute_qkv_context_each_visit": true,
+        "output_head": "last_suffix_only_once",
+        "routers": "independent_per_logical_receiver",
+        "history": "forward_local_raw_points",
+        "detach": false,
+        "cross_forward": false,
+        "cross_physical_time": false,
+        "cross_member": false
+      },
+      "residual_contract": {
+        "prefix_suffix": "native_unscaled",
+        "identity": "unscaled",
+        "core_branch_scale": "none_no_additive_residual",
+        "sources": "anchor_completed_raw_round_sums_and_current_raw_partial",
+        "receiver_before_original_layernorm": true,
+        "head_calls": 1
+      },
+      "attnres": {
+        "enabled": true,
+        "domain": "aligned_points_B_N_hidden",
+        "eps": 1e-06,
+        "query_initialization": 0.0,
+        "norm_scale_initialization": 1.0,
+        "norm": "last_axis_RMS_keepdim_scale_only",
+        "source_softmax": true,
+        "value": "raw",
+        "value_projection": false,
+        "bias": false,
+        "sqrt_hidden_scaling": false,
+        "source_count_scaling": false,
+        "output_1_over_r": false,
+        "depth_multihead": false,
+        "receiver_scope": "logical_execution_position",
+        "receiver_count": 13,
+        "router_parameter_count": 3328,
+        "source_visits": 31,
+        "singleton_receiver": "identity_zero_effective_router_gradient",
+        "zero_query_norm_gradient": "zero_expected",
+        "formula_version": "point-loop-residual-v1"
+      }
+    },
+    "model_spec": {
+      "class_path": "cdlno.linearno_loop.standard.LoopedStandardModel",
+      "constructor_kwargs": {
+        "space_dim": 2,
+        "n_hidden": 128,
+        "n_head": 8,
+        "dropout": 0.0,
+        "act": "gelu",
+        "mlp_ratio": 1,
+        "fun_dim": 1,
+        "out_dim": 1,
+        "ref": 8,
+        "unified_pos": false,
+        "prefix_blocks": 1,
+        "recurrent_core_blocks": 3,
+        "loop_repeats": 2,
+        "suffix_blocks": 1,
+        "residual_mode": "rb_attnres",
+        "linearno_rank": 64,
+        "Time_Input": false,
+        "H": 85,
+        "W": 85,
+        "linearno_variant": "conv_temp"
+      }
+    },
+    "profile_spec": {
+      "family": "linearno",
+      "config_version": 1,
+      "task": "darcy",
+      "profile": "paper_table8_on_release_model",
+      "values": {
+        "runtime": {
+          "seed": 2,
+          "device": "cuda",
+          "save_name": null
+        },
+        "model": {
+          "dropout": 0.0,
+          "activation": "gelu",
+          "linearno_variant": "conv_temp",
+          "linearno_rank": 64,
+          "hidden": 128,
+          "heads": 8,
+          "layers": 8,
+          "ffn_ratio": 1,
+          "space_dim": 2,
+          "fun_dim": 1,
+          "out_dim": 1,
+          "time_input": false,
+          "ref": 8,
+          "unified_pos": false,
+          "H": 85,
+          "W": 85
+        },
+        "training": {
+          "epochs": 500,
+          "optimizer": "AdamW",
+          "lr": 0.001,
+          "weight_decay": 1e-06,
+          "batch_size": 4,
+          "betas": [
+            0.9,
+            0.999
+          ],
+          "eps": 1e-08,
+          "gradient_clip": 1.0,
+          "train_shuffle": true,
+          "test_batch_size": 1,
+          "scheduler": "OneCycleLR",
+          "scheduler_step": "one per outer batch",
+          "optimizer_step": "one per outer batch",
+          "validation_cadence": "every epoch",
+          "checkpoint_role": "final",
+          "selection_split": null,
+          "selection_metric": null,
+          "seed_policy": "local declared seeds [0,1,2]; not author seeds; release has no active seed control",
+          "onecycle_defaults": {
+            "pct_start": 0.3,
+            "anneal_strategy": "cos",
+            "cycle_momentum": true,
+            "base_momentum": 0.85,
+            "max_momentum": 0.95,
+            "div_factor": 25,
+            "final_div_factor": 10000,
+            "three_phase": false
+          },
+          "scheduler_epochs": "resolved training.epochs (hxh)"
+        },
+        "objective": {
+          "kind": "relative_L2",
+          "channels": "all task output channels",
+          "region": "all task points",
+          "space": "physical (decode before loss if normalized)",
+          "reduction": "mean sample-wise flattened ratios per batch; no epsilon",
+          "epsilon": 0,
+          "gradient_weight": 0.1,
+          "gradient": "sum dx/dy relative L2; prediction cropped then zero-padded only for derivative branch; central_diff zero padding dx=1/85; l2 computed before crop"
+        },
+        "evaluation": {
+          "prediction_sampling": "full points",
+          "field_metric": "physical sample-wise relative L2",
+          "field_channels": "all output channels",
+          "field_region": "all points",
+          "force_metric": null,
+          "force_input": null,
+          "split": "smooth1 first1000 train; smooth2 first200 test",
+          "aggregation": "sample arithmetic mean; report each local seed and mean/std; never best-test seed",
+          "batch_size": 1,
+          "selection": "final checkpoint only",
+          "normalizer": "saved train-fit numerical states; no eval refit"
+        },
+        "data": {
+          "files": [
+            "piececonst_r421_N1024_smooth1.mat:coeff,sol",
+            "piececonst_r421_N1024_smooth2.mat:coeff,sol"
+          ],
+          "split": "smooth1 first1000 train; smooth2 first200 test",
+          "normalizer": "input coefficient and output UnitTransformer; fit train only; output decoded before loss",
+          "sampling": "stride5 spatial; 421x421->85x85",
+          "checksums": null,
+          "integrity": "NOT RUN: no real data"
+        }
+      },
+      "field_sources": {
+        "runtime.seed": "cli_explicit",
+        "runtime.device": "integration_contract",
+        "runtime.save_name": "family_default",
+        "model.dropout": "profile",
+        "model.activation": "profile",
+        "model.linearno_variant": "profile",
+        "model.linearno_rank": "profile",
+        "model.hidden": "profile",
+        "model.heads": "profile",
+        "model.layers": "profile",
+        "model.ffn_ratio": "profile",
+        "model.space_dim": "profile",
+        "model.fun_dim": "profile",
+        "model.out_dim": "profile",
+        "model.time_input": "profile",
+        "model.ref": "profile",
+        "model.unified_pos": "profile",
+        "model.H": "profile",
+        "model.W": "profile",
+        "training.epochs": "profile",
+        "training.optimizer": "profile",
+        "training.lr": "profile",
+        "training.weight_decay": "profile",
+        "training.batch_size": "profile",
+        "training.betas": "profile",
+        "training.eps": "profile",
+        "training.gradient_clip": "profile",
+        "training.train_shuffle": "profile",
+        "training.test_batch_size": "profile",
+        "training.scheduler": "profile",
+        "training.scheduler_step": "profile",
+        "training.optimizer_step": "profile",
+        "training.validation_cadence": "integration_contract",
+        "training.checkpoint_role": "profile",
+        "training.selection_split": "profile",
+        "training.selection_metric": "profile",
+        "training.seed_policy": "profile",
+        "training.onecycle_defaults.pct_start": "profile",
+        "training.onecycle_defaults.anneal_strategy": "profile",
+        "training.onecycle_defaults.cycle_momentum": "profile",
+        "training.onecycle_defaults.base_momentum": "profile",
+        "training.onecycle_defaults.max_momentum": "profile",
+        "training.onecycle_defaults.div_factor": "profile",
+        "training.onecycle_defaults.final_div_factor": "profile",
+        "training.onecycle_defaults.three_phase": "profile",
+        "training.scheduler_epochs": "integration_contract",
+        "objective.kind": "profile",
+        "objective.channels": "profile",
+        "objective.region": "profile",
+        "objective.space": "profile",
+        "objective.reduction": "integration_contract",
+        "objective.epsilon": "profile",
+        "objective.gradient_weight": "profile",
+        "objective.gradient": "profile",
+        "evaluation.prediction_sampling": "profile",
+        "evaluation.field_metric": "profile",
+        "evaluation.field_channels": "profile",
+        "evaluation.field_region": "profile",
+        "evaluation.force_metric": "profile",
+        "evaluation.force_input": "profile",
+        "evaluation.split": "profile",
+        "evaluation.aggregation": "profile",
+        "evaluation.batch_size": "profile",
+        "evaluation.selection": "profile",
+        "evaluation.normalizer": "profile",
+        "data.files": "profile",
+        "data.split": "profile",
+        "data.normalizer": "profile",
+        "data.sampling": "profile",
+        "data.checksums": "profile",
+        "data.integrity": "profile"
+      },
+      "derived_model": {
+        "rank_mapping": {
+          "original_parameter": "key_ratio",
+          "original_value": 64,
+          "semantics": "absolute",
+          "actual_M": 64
+        },
+        "q_softmax_axis": "M",
+        "k_softmax_axis": "N",
+        "qk_independent": true,
+        "projections_shared_across_heads": true,
+        "qkv_bias": false,
+        "attention_scale": null,
+        "attention_weight_dropout": false,
+        "layernorm_eps": 1e-05,
+        "input_projection": "conv2d_each_block",
+        "kernel_size": 3,
+        "output_projection": "linear_gelu_linear",
+        "temperature": {
+          "initial": 0.5,
+          "clamp": [
+            0.01,
+            1.0
+          ],
+          "used": true,
+          "dead_parameter": false
+        },
+        "grid_range": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "position_mode": "replace_coordinates",
+        "official_unused_flags": {},
+        "initialization": "linear_trunc_normal_0.02;LN_1_0;standard_conv_kaiming_normal;placeholder_after_apply"
+      },
+      "unresolved": [],
+      "ignored_legacy_defaults": {},
+      "integration_contract": "standard_static_l4",
+      "config_hash": "cdcdfdc53b7daa67e08cf49a315da6100b9b9b2bdecb84cb6ffa38a94d7c20b5"
+    },
+    "field_sources": {
+      "loop_spec": {
+        "schema_version": "derived",
+        "config_version": "derived",
+        "formula_version": "derived",
+        "task": "derived",
+        "profile": "derived",
+        "topology_preset": "cli_explicit",
+        "prefix_blocks": "preset",
+        "recurrent_core_blocks": "preset",
+        "loop_repeats": "preset",
+        "suffix_blocks": "preset",
+        "unique_depth": "derived",
+        "executed_depth": "derived",
+        "residual_mode": "cli_explicit",
+        "base_rank": "profile",
+        "rank_multiplier": "cli_explicit",
+        "resolved_rank": "derived",
+        "rank_policy": "derived",
+        "hidden": "profile",
+        "heads": "profile",
+        "head_dim": "derived",
+        "variant": "profile",
+        "point_domain_attnres": "frozen_contract",
+        "feature_timestep_encoding": "frozen_contract",
+        "operator_contract": "derived",
+        "sharing": "derived",
+        "residual_contract": "derived",
+        "attnres": "derived"
+      },
+      "profile_spec": {
+        "runtime.seed": "cli_explicit",
+        "runtime.device": "integration_contract",
+        "runtime.save_name": "family_default",
+        "model.dropout": "profile",
+        "model.activation": "profile",
+        "model.linearno_variant": "profile",
+        "model.linearno_rank": "profile",
+        "model.hidden": "profile",
+        "model.heads": "profile",
+        "model.layers": "profile",
+        "model.ffn_ratio": "profile",
+        "model.space_dim": "profile",
+        "model.fun_dim": "profile",
+        "model.out_dim": "profile",
+        "model.time_input": "profile",
+        "model.ref": "profile",
+        "model.unified_pos": "profile",
+        "model.H": "profile",
+        "model.W": "profile",
+        "training.epochs": "profile",
+        "training.optimizer": "profile",
+        "training.lr": "profile",
+        "training.weight_decay": "profile",
+        "training.batch_size": "profile",
+        "training.betas": "profile",
+        "training.eps": "profile",
+        "training.gradient_clip": "profile",
+        "training.train_shuffle": "profile",
+        "training.test_batch_size": "profile",
+        "training.scheduler": "profile",
+        "training.scheduler_step": "profile",
+        "training.optimizer_step": "profile",
+        "training.validation_cadence": "integration_contract",
+        "training.checkpoint_role": "profile",
+        "training.selection_split": "profile",
+        "training.selection_metric": "profile",
+        "training.seed_policy": "profile",
+        "training.onecycle_defaults.pct_start": "profile",
+        "training.onecycle_defaults.anneal_strategy": "profile",
+        "training.onecycle_defaults.cycle_momentum": "profile",
+        "training.onecycle_defaults.base_momentum": "profile",
+        "training.onecycle_defaults.max_momentum": "profile",
+        "training.onecycle_defaults.div_factor": "profile",
+        "training.onecycle_defaults.final_div_factor": "profile",
+        "training.onecycle_defaults.three_phase": "profile",
+        "training.scheduler_epochs": "integration_contract",
+        "objective.kind": "profile",
+        "objective.channels": "profile",
+        "objective.region": "profile",
+        "objective.space": "profile",
+        "objective.reduction": "integration_contract",
+        "objective.epsilon": "profile",
+        "objective.gradient_weight": "profile",
+        "objective.gradient": "profile",
+        "evaluation.prediction_sampling": "profile",
+        "evaluation.field_metric": "profile",
+        "evaluation.field_channels": "profile",
+        "evaluation.field_region": "profile",
+        "evaluation.force_metric": "profile",
+        "evaluation.force_input": "profile",
+        "evaluation.split": "profile",
+        "evaluation.aggregation": "profile",
+        "evaluation.batch_size": "profile",
+        "evaluation.selection": "profile",
+        "evaluation.normalizer": "profile",
+        "data.files": "profile",
+        "data.split": "profile",
+        "data.normalizer": "profile",
+        "data.sampling": "profile",
+        "data.checksums": "profile",
+        "data.integrity": "profile"
+      }
+    },
+    "fair_comparison": {
+      "protocol": "paired-backbone-loader-v1",
+      "public_backbone_seed": 2,
+      "backbone_pair_id": "75dca9aadaafcad5d99131c93c662d60009fc4e093b575ea135c56b995c68994",
+      "router_seed": 7155412847880663298,
+      "dataloader_generators": {
+        "train": 1501166778247196434,
+        "test": 6044740337015971524
+      },
+      "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+      "topology_pairs_are_parameter_matched": false
+    },
+    "config_hash": "44d137efe4450691ee166fa544bedf8a9a78fb991d5f99210ac49330b927376b"
+  },
+  "hparams": {
+    "training": {
+      "epochs": 500,
+      "optimizer": "AdamW",
+      "lr": 0.001,
+      "weight_decay": 1e-06,
+      "batch_size": 4,
+      "betas": [
+        0.9,
+        0.999
+      ],
+      "eps": 1e-08,
+      "gradient_clip": 1.0,
+      "train_shuffle": true,
+      "test_batch_size": 1,
+      "scheduler": "OneCycleLR",
+      "scheduler_step": "one per outer batch",
+      "optimizer_step": "one per outer batch",
+      "validation_cadence": "every epoch",
+      "checkpoint_role": "final",
+      "selection_split": null,
+      "selection_metric": null,
+      "seed_policy": "local declared seeds [0,1,2]; not author seeds; release has no active seed control",
+      "onecycle_defaults": {
+        "pct_start": 0.3,
+        "anneal_strategy": "cos",
+        "cycle_momentum": true,
+        "base_momentum": 0.85,
+        "max_momentum": 0.95,
+        "div_factor": 25,
+        "final_div_factor": 10000,
+        "three_phase": false
+      },
+      "scheduler_epochs": "resolved training.epochs (hxh)",
+      "resolved_scheduler": {
+        "kind": "OneCycleLR",
+        "epochs": 500,
+        "outer_batches_per_epoch": 250,
+        "optimizer_steps_per_outer_batch": 1,
+        "optimizer_steps_total": 125000,
+        "source": "derived from planned split/batch; no loader constructed",
+        "steps_per_epoch": 250,
+        "total_steps": 125000,
+        "step_cadence": "once per outer batch",
+        "fixed500_release_caveat": "official_release/original Transolver use fixed500; all records here use epochs500; do not silently change epochs"
+      }
+    },
+    "objective": {
+      "kind": "relative_L2",
+      "channels": "all task output channels",
+      "region": "all task points",
+      "space": "physical (decode before loss if normalized)",
+      "reduction": "mean sample-wise flattened ratios per batch; no epsilon",
+      "epsilon": 0,
+      "gradient_weight": 0.1,
+      "gradient": "sum dx/dy relative L2; prediction cropped then zero-padded only for derivative branch; central_diff zero padding dx=1/85; l2 computed before crop"
+    },
+    "evaluation": {
+      "prediction_sampling": "full points",
+      "field_metric": "physical sample-wise relative L2",
+      "field_channels": "all output channels",
+      "field_region": "all points",
+      "force_metric": null,
+      "force_input": null,
+      "split": "smooth1 first1000 train; smooth2 first200 test",
+      "aggregation": "sample arithmetic mean; report each local seed and mean/std; never best-test seed",
+      "batch_size": 1,
+      "selection": "final checkpoint only",
+      "normalizer": "saved train-fit numerical states; no eval refit"
+    },
+    "data": {
+      "files": [
+        "piececonst_r421_N1024_smooth1.mat:coeff,sol",
+        "piececonst_r421_N1024_smooth2.mat:coeff,sol"
+      ],
+      "split": "smooth1 first1000 train; smooth2 first200 test",
+      "normalizer": "input coefficient and output UnitTransformer; fit train only; output decoded before loss",
+      "sampling": "stride5 spatial; 421x421->85x85",
+      "checksums": null,
+      "integrity": "NOT RUN: no real data",
+      "planned_ntrain": 1000,
+      "planned_ntest": 200,
+      "planned_points_per_model_call": 7225,
+      "remote_data_root": "/inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/data/fno"
+    },
+    "runtime": {
+      "seed": 2,
+      "device": "cuda",
+      "save_name": null
+    }
+  },
+  "architecture": {
+    "family": "linearno_loop",
+    "variant": "conv_temp",
+    "hidden": 128,
+    "heads": 8,
+    "head_dim": 16,
+    "unique_depth": 5,
+    "executed_depth": 8,
+    "base_rank": 64,
+    "rank_multiplier": 1,
+    "resolved_rank": 64,
+    "residual_mode": "rb_attnres",
+    "loop_spec": {
+      "schema_version": 1,
+      "config_version": 1,
+      "formula_version": "point-loop-residual-v1",
+      "task": "darcy",
+      "profile": "paper_table8_on_release_model",
+      "topology_preset": "p1_c3_r2_s1",
+      "prefix_blocks": 1,
+      "recurrent_core_blocks": 3,
+      "loop_repeats": 2,
+      "suffix_blocks": 1,
+      "unique_depth": 5,
+      "executed_depth": 8,
+      "residual_mode": "rb_attnres",
+      "base_rank": 64,
+      "rank_multiplier": 1,
+      "resolved_rank": 64,
+      "rank_policy": "profile_multiplier",
+      "hidden": 128,
+      "heads": 8,
+      "head_dim": 16,
+      "variant": "conv_temp",
+      "point_domain_attnres": true,
+      "feature_timestep_encoding": false,
+      "operator_contract": {
+        "rank_mapping": {
+          "original_parameter": "key_ratio",
+          "original_value": 64,
+          "semantics": "absolute",
+          "actual_M": 64
+        },
+        "q_softmax_axis": "M",
+        "k_softmax_axis": "N",
+        "qk_independent": true,
+        "projections_shared_across_heads": true,
+        "qkv_bias": false,
+        "attention_scale": null,
+        "attention_weight_dropout": false,
+        "layernorm_eps": 1e-05,
+        "input_projection": "conv2d_each_block",
+        "kernel_size": 3,
+        "output_projection": "linear_gelu_linear",
+        "temperature": {
+          "initial": 0.5,
+          "clamp": [
+            0.01,
+            1.0
+          ],
+          "used": true,
+          "dead_parameter": false
+        },
+        "grid_range": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "position_mode": "replace_coordinates",
+        "official_unused_flags": {},
+        "initialization": "linear_trunc_normal_0.02;LN_1_0;standard_conv_kaiming_normal;placeholder_after_apply"
+      },
+      "sharing": {
+        "core": "same_physical_module_each_round",
+        "core_includes": [
+          "operator",
+          "mlp",
+          "ln_1",
+          "ln_2"
+        ],
+        "prefix_core_suffix": "disjoint_physical_modules",
+        "core_registration": "once",
+        "recompute_qkv_context_each_visit": true,
+        "output_head": "last_suffix_only_once",
+        "routers": "independent_per_logical_receiver",
+        "history": "forward_local_raw_points",
+        "detach": false,
+        "cross_forward": false,
+        "cross_physical_time": false,
+        "cross_member": false
+      },
+      "residual_contract": {
+        "prefix_suffix": "native_unscaled",
+        "identity": "unscaled",
+        "core_branch_scale": "none_no_additive_residual",
+        "sources": "anchor_completed_raw_round_sums_and_current_raw_partial",
+        "receiver_before_original_layernorm": true,
+        "head_calls": 1
+      },
+      "attnres": {
+        "enabled": true,
+        "domain": "aligned_points_B_N_hidden",
+        "eps": 1e-06,
+        "query_initialization": 0.0,
+        "norm_scale_initialization": 1.0,
+        "norm": "last_axis_RMS_keepdim_scale_only",
+        "source_softmax": true,
+        "value": "raw",
+        "value_projection": false,
+        "bias": false,
+        "sqrt_hidden_scaling": false,
+        "source_count_scaling": false,
+        "output_1_over_r": false,
+        "depth_multihead": false,
+        "receiver_scope": "logical_execution_position",
+        "receiver_count": 13,
+        "router_parameter_count": 3328,
+        "source_visits": 31,
+        "singleton_receiver": "identity_zero_effective_router_gradient",
+        "zero_query_norm_gradient": "zero_expected",
+        "formula_version": "point-loop-residual-v1"
+      }
+    },
+    "depth_extension_policy": "named preset",
+    "topology_lineage": "p1_c3_r2_s1",
+    "current_stage_forward_evidence": null
+  },
+  "parameters": {
+    "total": 1120081,
+    "trainable": 1120081,
+    "non_trainable": 0,
+    "backbone": 1116753,
+    "router": 3328,
+    "by_component": {
+      "stem": 34048,
+      "prefix": 216464,
+      "shared_core": 649392,
+      "suffix_body": 216464,
+      "head": 385,
+      "router": 3328
+    },
+    "inventory": [
+      {
+        "name": "placeholder",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "preprocess.linear_pre.0.weight",
+        "shape": [
+          256,
+          3
+        ],
+        "numel": 768,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "preprocess.linear_pre.0.bias",
+        "shape": [
+          256
+        ],
+        "numel": 256,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "preprocess.linear_post.weight",
+        "shape": [
+          128,
+          256
+        ],
+        "numel": 32768,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "preprocess.linear_post.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.prefix.0.block.ln_1.weight",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.prefix.0.block.ln_1.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.prefix.0.block.Attn.temperature_q",
+        "shape": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "numel": 8,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.prefix.0.block.Attn.temperature_k",
+        "shape": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "numel": 8,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.prefix.0.block.Attn.in_project_x.weight",
+        "shape": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "numel": 147456,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.prefix.0.block.Attn.in_project_x.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.prefix.0.block.Attn.to_q.weight",
+        "shape": [
+          64,
+          16
+        ],
+        "numel": 1024,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.prefix.0.block.Attn.to_k.weight",
+        "shape": [
+          64,
+          16
+        ],
+        "numel": 1024,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.prefix.0.block.Attn.to_v.weight",
+        "shape": [
+          16,
+          16
+        ],
+        "numel": 256,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.prefix.0.block.Attn.to_out.0.weight",
+        "shape": [
+          128,
+          128
+        ],
+        "numel": 16384,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.prefix.0.block.Attn.to_out.0.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.prefix.0.block.Attn.to_out.2.weight",
+        "shape": [
+          128,
+          128
+        ],
+        "numel": 16384,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.prefix.0.block.Attn.to_out.2.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.prefix.0.block.ln_2.weight",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.prefix.0.block.ln_2.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.prefix.0.block.mlp.linear_pre.0.weight",
+        "shape": [
+          128,
+          128
+        ],
+        "numel": 16384,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.prefix.0.block.mlp.linear_pre.0.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.prefix.0.block.mlp.linear_post.weight",
+        "shape": [
+          128,
+          128
+        ],
+        "numel": 16384,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.prefix.0.block.mlp.linear_post.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.0.block.ln_1.weight",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.0.block.ln_1.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.0.block.Attn.temperature_q",
+        "shape": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "numel": 8,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.0.block.Attn.temperature_k",
+        "shape": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "numel": 8,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.0.block.Attn.in_project_x.weight",
+        "shape": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "numel": 147456,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.0.block.Attn.in_project_x.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.0.block.Attn.to_q.weight",
+        "shape": [
+          64,
+          16
+        ],
+        "numel": 1024,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.0.block.Attn.to_k.weight",
+        "shape": [
+          64,
+          16
+        ],
+        "numel": 1024,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.0.block.Attn.to_v.weight",
+        "shape": [
+          16,
+          16
+        ],
+        "numel": 256,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.0.block.Attn.to_out.0.weight",
+        "shape": [
+          128,
+          128
+        ],
+        "numel": 16384,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.0.block.Attn.to_out.0.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.0.block.Attn.to_out.2.weight",
+        "shape": [
+          128,
+          128
+        ],
+        "numel": 16384,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.0.block.Attn.to_out.2.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.0.block.ln_2.weight",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.0.block.ln_2.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.0.block.mlp.linear_pre.0.weight",
+        "shape": [
+          128,
+          128
+        ],
+        "numel": 16384,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.0.block.mlp.linear_pre.0.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.0.block.mlp.linear_post.weight",
+        "shape": [
+          128,
+          128
+        ],
+        "numel": 16384,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.0.block.mlp.linear_post.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.1.block.ln_1.weight",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.1.block.ln_1.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.1.block.Attn.temperature_q",
+        "shape": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "numel": 8,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.1.block.Attn.temperature_k",
+        "shape": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "numel": 8,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.1.block.Attn.in_project_x.weight",
+        "shape": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "numel": 147456,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.1.block.Attn.in_project_x.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.1.block.Attn.to_q.weight",
+        "shape": [
+          64,
+          16
+        ],
+        "numel": 1024,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.1.block.Attn.to_k.weight",
+        "shape": [
+          64,
+          16
+        ],
+        "numel": 1024,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.1.block.Attn.to_v.weight",
+        "shape": [
+          16,
+          16
+        ],
+        "numel": 256,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.1.block.Attn.to_out.0.weight",
+        "shape": [
+          128,
+          128
+        ],
+        "numel": 16384,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.1.block.Attn.to_out.0.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.1.block.Attn.to_out.2.weight",
+        "shape": [
+          128,
+          128
+        ],
+        "numel": 16384,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.1.block.Attn.to_out.2.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.1.block.ln_2.weight",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.1.block.ln_2.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.1.block.mlp.linear_pre.0.weight",
+        "shape": [
+          128,
+          128
+        ],
+        "numel": 16384,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.1.block.mlp.linear_pre.0.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.1.block.mlp.linear_post.weight",
+        "shape": [
+          128,
+          128
+        ],
+        "numel": 16384,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.1.block.mlp.linear_post.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.2.block.ln_1.weight",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.2.block.ln_1.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.2.block.Attn.temperature_q",
+        "shape": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "numel": 8,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.2.block.Attn.temperature_k",
+        "shape": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "numel": 8,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.2.block.Attn.in_project_x.weight",
+        "shape": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "numel": 147456,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.2.block.Attn.in_project_x.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.2.block.Attn.to_q.weight",
+        "shape": [
+          64,
+          16
+        ],
+        "numel": 1024,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.2.block.Attn.to_k.weight",
+        "shape": [
+          64,
+          16
+        ],
+        "numel": 1024,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.2.block.Attn.to_v.weight",
+        "shape": [
+          16,
+          16
+        ],
+        "numel": 256,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.2.block.Attn.to_out.0.weight",
+        "shape": [
+          128,
+          128
+        ],
+        "numel": 16384,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.2.block.Attn.to_out.0.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.2.block.Attn.to_out.2.weight",
+        "shape": [
+          128,
+          128
+        ],
+        "numel": 16384,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.2.block.Attn.to_out.2.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.2.block.ln_2.weight",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.2.block.ln_2.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.2.block.mlp.linear_pre.0.weight",
+        "shape": [
+          128,
+          128
+        ],
+        "numel": 16384,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.2.block.mlp.linear_pre.0.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.2.block.mlp.linear_post.weight",
+        "shape": [
+          128,
+          128
+        ],
+        "numel": 16384,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.core.2.block.mlp.linear_post.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.suffix.0.block.ln_1.weight",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.suffix.0.block.ln_1.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.suffix.0.block.Attn.temperature_q",
+        "shape": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "numel": 8,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.suffix.0.block.Attn.temperature_k",
+        "shape": [
+          1,
+          8,
+          1,
+          1
+        ],
+        "numel": 8,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.suffix.0.block.Attn.in_project_x.weight",
+        "shape": [
+          128,
+          128,
+          3,
+          3
+        ],
+        "numel": 147456,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.suffix.0.block.Attn.in_project_x.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.suffix.0.block.Attn.to_q.weight",
+        "shape": [
+          64,
+          16
+        ],
+        "numel": 1024,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.suffix.0.block.Attn.to_k.weight",
+        "shape": [
+          64,
+          16
+        ],
+        "numel": 1024,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.suffix.0.block.Attn.to_v.weight",
+        "shape": [
+          16,
+          16
+        ],
+        "numel": 256,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.suffix.0.block.Attn.to_out.0.weight",
+        "shape": [
+          128,
+          128
+        ],
+        "numel": 16384,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.suffix.0.block.Attn.to_out.0.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.suffix.0.block.Attn.to_out.2.weight",
+        "shape": [
+          128,
+          128
+        ],
+        "numel": 16384,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.suffix.0.block.Attn.to_out.2.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.suffix.0.block.ln_2.weight",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.suffix.0.block.ln_2.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.suffix.0.block.mlp.linear_pre.0.weight",
+        "shape": [
+          128,
+          128
+        ],
+        "numel": 16384,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.suffix.0.block.mlp.linear_pre.0.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.suffix.0.block.mlp.linear_post.weight",
+        "shape": [
+          128,
+          128
+        ],
+        "numel": 16384,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.suffix.0.block.mlp.linear_post.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.suffix.0.block.ln_3.weight",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.suffix.0.block.ln_3.bias",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.suffix.0.block.mlp2.weight",
+        "shape": [
+          1,
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.suffix.0.block.mlp2.bias",
+        "shape": [
+          1
+        ],
+        "numel": 1,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_receivers.0.0.query",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_receivers.0.0.norm_scale",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_receivers.0.1.query",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_receivers.0.1.norm_scale",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_receivers.0.2.query",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_receivers.0.2.norm_scale",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_receivers.0.3.query",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_receivers.0.3.norm_scale",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_receivers.0.4.query",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_receivers.0.4.norm_scale",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_receivers.0.5.query",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_receivers.0.5.norm_scale",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_receivers.1.0.query",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_receivers.1.0.norm_scale",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_receivers.1.1.query",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_receivers.1.1.norm_scale",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_receivers.1.2.query",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_receivers.1.2.norm_scale",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_receivers.1.3.query",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_receivers.1.3.norm_scale",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_receivers.1.4.query",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_receivers.1.4.norm_scale",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_receivers.1.5.query",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_receivers.1.5.norm_scale",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_output.query",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      },
+      {
+        "name": "loop.rb_output.norm_scale",
+        "shape": [
+          128
+        ],
+        "numel": 128,
+        "dtype": "torch.float32",
+        "requires_grad": true
+      }
+    ],
+    "independent_formula_total": 1120081,
+    "formula_equals_measured": true
+  },
+  "state_dict": {
+    "key_count": 130,
+    "tensor_numel": 1120081,
+    "key_shape_sha256": "c20c8df7e260306ac38d78680b590b34200403795de1f6392344875ae9b60ac4",
+    "initial_state_sha256": "ebb42df8b7ad82335f00e21614aeead538ba1391d3fced6edf0bd6406cc9fc8d",
+    "public_backbone_initial_sha256": "1caa592a7e40066ee3908e0890661435b40317612b9218d216ec339451c35c42"
+  },
+  "loop_run_manifest": {
+    "family": "linearno_loop",
+    "config_hash": "44d137efe4450691ee166fa544bedf8a9a78fb991d5f99210ac49330b927376b",
+    "unique_depth": 5,
+    "executed_depth": 8,
+    "expected_call_schedule": [
+      "loop.prefix.0.operator",
+      "loop.prefix.0.mlp",
+      "loop.rb_receivers.0.0",
+      "loop.core.0.operator",
+      "loop.rb_receivers.0.1",
+      "loop.core.0.mlp",
+      "loop.rb_receivers.0.2",
+      "loop.core.1.operator",
+      "loop.rb_receivers.0.3",
+      "loop.core.1.mlp",
+      "loop.rb_receivers.0.4",
+      "loop.core.2.operator",
+      "loop.rb_receivers.0.5",
+      "loop.core.2.mlp",
+      "loop.rb_receivers.1.0",
+      "loop.core.0.operator",
+      "loop.rb_receivers.1.1",
+      "loop.core.0.mlp",
+      "loop.rb_receivers.1.2",
+      "loop.core.1.operator",
+      "loop.rb_receivers.1.3",
+      "loop.core.1.mlp",
+      "loop.rb_receivers.1.4",
+      "loop.core.2.operator",
+      "loop.rb_receivers.1.5",
+      "loop.core.2.mlp",
+      "loop.rb_output",
+      "loop.suffix.0.operator",
+      "loop.suffix.0.mlp",
+      "loop.suffix.0.final_norm",
+      "loop.suffix.0.head"
+    ],
+    "actual_call_schedule": null,
+    "observation": "construction_only; forward_NOT_RUN",
+    "initialization_seed": 2,
+    "public_backbone_initial_sha256": "1caa592a7e40066ee3908e0890661435b40317612b9218d216ec339451c35c42",
+    "dataloader_generator_seeds": {
+      "train": 1501166778247196434,
+      "test": 6044740337015971524
+    },
+    "router_initialization": "query=zeros; norm=ones; does not consume RNG",
+    "fair_comparison": {
+      "protocol": "paired-backbone-loader-v1",
+      "public_backbone_seed": 2,
+      "backbone_pair_id": "75dca9aadaafcad5d99131c93c662d60009fc4e093b575ea135c56b995c68994",
+      "router_seed": 7155412847880663298,
+      "dataloader_generators": {
+        "train": 1501166778247196434,
+        "test": 6044740337015971524
+      },
+      "rule": "initialize_unique_backbone_once_then_copy_across_modes;router_RNG_isolated",
+      "topology_pairs_are_parameter_matched": false
+    }
+  },
+  "compute": {
+    "B": 1,
+    "N": 7225,
+    "scope": "one model forward call; not an NS rollout/Plasticity batch/epoch",
+    "kind": "analytic_matrix_operations_only_not_timed",
+    "matrix_macs_B1": 14566524800,
+    "matrix_flops_B1": 29133049600,
+    "router_contraction_mac_equivalents": 55488000,
+    "excluded": "softmax, RMSNorm/LayerNorm, GELU/SiLU, bias, residual arithmetic, distance/sin/cos, memory/layout and other scalar ops",
+    "rank_doubling_is_compute_matched": false,
+    "measured_latency": null
+  },
+  "production_directory_id": "darcy__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__rb_attnres__M64__seed2__cfg44d137efe445",
+  "construction_method": "actual unmodified LoopedStandardModel on CPU",
+  "schema_version": 1,
+  "record_kind": "offline_planned_experiment",
+  "experiment_id": "darcy__paper_table8_on_release_model__linearno_loop__p1_c3_r2_s1__rb_attnres__M64__seed2",
+  "task": "darcy",
+  "model": "cdlno.linearno_loop.standard.LoopedStandardModel",
+  "family": "linearno_loop",
+  "protocol_profile": "paper_table8_on_release_model",
+  "seed": 2,
+  "run_directory": "output/planned_standard/darcy__linearno_loop__paper_table8_on_release_model__P1-C3-R2-S1__rb_attnres__M64__seed2__cfg44d137efe445",
+  "parameter_count_status": "measured_cpu_model_construction",
+  "environment": {
+    "python": "3.13.9",
+    "torch": "2.13.0+cu130",
+    "construction_device": "cpu",
+    "dtype": "torch.float32",
+    "torch_threads": 1,
+    "cuda_used": false,
+    "remote_checkout": "/inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/houwenzhe-drivaer/transolver/LinearNO-monitor",
+    "remote_execution_or_training_verified": false
+  },
+  "provenance": {
+    "repository_head": "5b991226c5354af3332b2f7306b370aef0950c79",
+    "remote": "https://github.com/hxh5159/CDLNO-w.git",
+    "current_dirty_checkout_is_truth": true,
+    "source_manifest": "source_snapshot.json",
+    "task_entry": "PDE-Solving-StandardBenchmark/exp_darcy.py",
+    "records_format": "cdlno/experiment.py config.json fields plus loop_run_manifest fields; offline catalogue, not a checkpoint schema",
+    "output_recording_source": "tran_evaluate/linearno_loop/recording.py",
+    "rank_source": "PDE-Solving-StandardBenchmark/scripts/Transolver_Darcy.sh"
+  },
+  "experiment_status": {
+    "config": "RESOLVED",
+    "construction": "PASS",
+    "parameter_count": "MEASURED_AND_FORMULA_CHECKED",
+    "forward": "NOT RUN",
+    "backward": "NOT RUN",
+    "train": "NOT RUN",
+    "eval": "NOT RUN",
+    "checkpoint": "NOT RUN",
+    "dataset": "NOT READ",
+    "gpu": "NOT USED"
+  },
+  "architecture_extension": "loop_linearno_v1",
+  "selection_policy": "predeclared local seeds0/1/2; final checkpoint; report each and mean/std; no test-best seed/checkpoint",
+  "optional_monitor": "not enabled or changed by this inventory",
+  "record_sha256": "d793ba1ebc903b065083b651f7c4d4f4b75ab2be2d393b139fbe2e52cda44124"
+}

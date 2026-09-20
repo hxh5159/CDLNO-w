@@ -1,0 +1,927 @@
+--- LL9R-before/Airfoil-Design-AirfRANS/cdlno_entry.py
++++ current/Airfoil-Design-AirfRANS/cdlno_entry.py
+@@ -48,11 +48,26 @@
+     tokens = sys.argv[1:] if argv is None else argv
+     selector = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
+     selector.add_argument('--model')
++    # Routing-only probe: never changes the legacy parser's actions/defaults.
++    selector.add_argument('--experiment-dir', '--linearno-run-dir', '--run_dir', dest='_loop_directory', type=Path)
++    selector.add_argument('--eval', dest='_loop_eval', type=int, default=0)
++    selector.add_argument('--resume', dest='_loop_resume', action='store_true')
+     selected, _ = selector.parse_known_args(tokens)
+-    from cdlno.linearno_loop.industrial_entry import intercept as intercept_loop
+-    loop_args = intercept_loop(parser, tokens, task='airfrans', evaluation=evaluation, selected_model=selected.model)
+-    if loop_args is not None:
+-        return loop_args
++    loop_selected = any(t.split('=')[0].startswith('--linearno-loop') for t in tokens)
++    if (evaluation or selected._loop_eval or selected._loop_resume) and selected._loop_directory is not None:
++        sidecar = selected._loop_directory / 'architecture.json'
++        if sidecar.is_file():
++            loop_selected = loop_selected or json.loads(sidecar.read_text()).get('family') == 'linearno_loop'
++    if loop_selected:
++        try:
++            from cdlno.linearno_loop.industrial_entry import intercept as intercept_loop
++        except ModuleNotFoundError as error:
++            if error.name == 'cdlno' or error.name.startswith('cdlno.linearno_loop'):
++                parser.error('linearno_loop selected but its shared cdlno loop package is unavailable')
++            raise
++        loop_args = intercept_loop(parser, tokens, task='airfrans', evaluation=evaluation, selected_model=selected.model)
++        if loop_args is not None:
++            return loop_args
+     if selected.model == 'LinearNO':
+         from cdlno.linearno.air_entry import parse_args as parse_linearno_args
+         return parse_linearno_args(parser, tokens, evaluation=evaluation)
+--- LL9R-before/Car-Design-ShapeNetCar/models/cdlno_run.py
++++ current/Car-Design-ShapeNetCar/models/cdlno_run.py
+@@ -39,11 +39,26 @@
+     tokens = sys.argv[1:] if argv is None else argv
+     selector = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
+     selector.add_argument('--cfd_model')
++    # Routing-only probe: never changes the legacy parser's actions/defaults.
++    selector.add_argument('--experiment-dir', '--linearno-run-dir', '--run_dir', dest='_loop_directory', type=Path)
++    selector.add_argument('--eval', dest='_loop_eval', type=int, default=0)
++    selector.add_argument('--resume', dest='_loop_resume', action='store_true')
+     selected, _ = selector.parse_known_args(tokens)
+-    from cdlno.linearno_loop.industrial_entry import intercept as intercept_loop
+-    loop_args = intercept_loop(parser, tokens, task='car', evaluation=evaluation, selected_model=selected.cfd_model)
+-    if loop_args is not None:
+-        return loop_args
++    loop_selected = any(t.split('=')[0].startswith('--linearno-loop') for t in tokens)
++    if (evaluation or selected._loop_eval or selected._loop_resume) and selected._loop_directory is not None:
++        sidecar = selected._loop_directory / 'architecture.json'
++        if sidecar.is_file():
++            loop_selected = loop_selected or json.loads(sidecar.read_text()).get('family') == 'linearno_loop'
++    if loop_selected:
++        try:
++            from cdlno.linearno_loop.industrial_entry import intercept as intercept_loop
++        except ModuleNotFoundError as error:
++            if error.name == 'cdlno' or error.name.startswith('cdlno.linearno_loop'):
++                parser.error('linearno_loop selected but its shared cdlno loop package is unavailable')
++            raise
++        loop_args = intercept_loop(parser, tokens, task='car', evaluation=evaluation, selected_model=selected.cfd_model)
++        if loop_args is not None:
++            return loop_args
+     if selected.cfd_model == 'LinearNO':
+         from cdlno.linearno.car_entry import parse_args as parse_linearno_args
+         return parse_linearno_args(parser, tokens, evaluation=evaluation)
+--- LL9R-before/PDE-Solving-StandardBenchmark/cdlno_entry.py
++++ current/PDE-Solving-StandardBenchmark/cdlno_entry.py
+@@ -33,11 +33,26 @@
+     tokens = sys.argv[1:] if argv is None else list(argv)
+     selector = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
+     selector.add_argument('--model')
++    # Routing-only probe: never changes the legacy parser's actions/defaults.
++    selector.add_argument('--experiment-dir', '--linearno-run-dir', dest='_loop_directory', type=Path)
++    selector.add_argument('--eval', dest='_loop_eval', type=int, default=0)
++    selector.add_argument('--resume', dest='_loop_resume', action='store_true')
+     selected, _ = selector.parse_known_args(tokens)
+-    from cdlno.linearno_loop.standard_entry import intercept as intercept_loop
+-    loop_args = intercept_loop(parser, task, tokens, selected.model)
+-    if loop_args is not None:
+-        return loop_args
++    loop_selected = any(t.split('=')[0].startswith('--linearno-loop') for t in tokens)
++    if (selected._loop_eval or selected._loop_resume) and selected._loop_directory is not None:
++        sidecar = selected._loop_directory / 'architecture.json'
++        if sidecar.is_file():
++            loop_selected = loop_selected or json.loads(sidecar.read_text()).get('family') == 'linearno_loop'
++    if loop_selected:
++        try:
++            from cdlno.linearno_loop.standard_entry import intercept as intercept_loop
++        except ModuleNotFoundError as error:
++            if error.name == 'cdlno' or error.name.startswith('cdlno.linearno_loop'):
++                parser.error('linearno_loop selected but its shared cdlno loop package is unavailable')
++            raise
++        loop_args = intercept_loop(parser, task, tokens, selected.model)
++        if loop_args is not None:
++            return loop_args
+     if selected.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):
+         from cdlno.linearno_history.standard_entry import intercept as intercept_history
+         history_args = intercept_history(parser, task, tokens, selected.model)
+--- LL9R-before/tests/linearno/test_history_industrial.py
++++ current/tests/linearno/test_history_industrial.py
+@@ -98,7 +98,9 @@
+         from cdlno.linearno.car_entry import task_provenance
+         old=json.loads((ROOT/'docs/linearno_history_audit/r8/baseline-provenance.json').read_text())
+         for task,fn in [('standard',provenance),('airfrans',_provenance),('car',task_provenance)]:
+-            now=fn()
++            from historical_git_base import historical_git_base
++            with historical_git_base(old[task]['base_commit']):
++                now=fn()
+             for key in ('source_sha256','normalized_patch_sha256'):self.assertEqual(now[key],old[task][key])
+         before=Path(json.loads((ROOT/'docs/linearno_history_audit/r8/baseline.json').read_text())['snapshot'])/'source'
+         for relative in ('Airfoil-Design-AirfRANS/train.py','cdlno/linearno/air_entry.py','cdlno/linearno/car_entry.py'):
+--- LL9R-before/tests/linearno/test_history_static.py
++++ current/tests/linearno/test_history_static.py
+@@ -61,7 +61,10 @@
+             path=f'PDE-Solving-StandardBenchmark/exp_{short}.py'
+             self.assertEqual((ROOT/path).read_bytes(),(before/path).read_bytes())
+         old=json.loads((ROOT/'docs/linearno_history_audit/r6/baseline-provenance.json').read_text())
+-        for key in ('source_sha256','normalized_patch_sha256'):self.assertEqual(provenance()[key],old[key])
++        from historical_git_base import historical_git_base
++        with historical_git_base(old['base_commit']):
++            current = provenance()
++        for key in ('source_sha256','normalized_patch_sha256'):self.assertEqual(current[key],old[key])
+ 
+     def test_sixteen_native_cycles_and_new_process_eval(self):
+         artifacts=Path(os.environ.get('LINEARNO_R6_ARTIFACTS',tempfile.mkdtemp(prefix='history-r6-native-')))
+--- LL9R-before/tests/linearno/test_legacy.py
++++ current/tests/linearno/test_legacy.py
+@@ -86,10 +86,9 @@
+                 continue
+             with self.subTest(path=row['path']):
+                 if row['path']=='docs/LINEARNO_REPRODUCTION_MATRIX.md':
+-                    old=(Path(baseline['snapshot'])/'source'/row['path']).read_text()
+-                    now=(ROOT/row['path']).read_text()
+-                    self.assertTrue(now.startswith(old.split('\n\n',1)[0]+'\n\n'))
+-                    self.assertTrue(now.endswith(old.split('\n\n',1)[1]))
++                    from frozen_revisions import expected_hash
++                    self.assertEqual(hashlib.sha256((ROOT/row['path']).read_bytes()).hexdigest(),
++                                     expected_hash(row['path'],row['sha256']))
+                     continue
+                 if row['path'] in integrated:
+                     before=(Path(baseline['snapshot'])/'source'/row['path']).read_text()
+@@ -121,7 +120,10 @@
+                             '                self.assertEqual(ast.dump(strip_recording(tree)), ast.dump(ast.parse(before)), name)')
+                     self.assertEqual((ROOT/row['path']).read_text(),expected)
+                     continue
+-                self.assertEqual(hashlib.sha256((ROOT/row['path']).read_bytes()).hexdigest(), row['sha256'])
++                from frozen_revisions import expected_hash
++                from ll9r_test_source_projection import project_test_source
++                raw=project_test_source(row['path'],(ROOT/row['path']).read_bytes())
++                self.assertEqual(hashlib.sha256(raw).hexdigest(), expected_hash(row['path'],row['sha256']))
+         for path in ('LINEARNO','train_and_evaluate','CODEX/train_and_evaluate','evaluate'):
+             self.assertFalse((ROOT/path).exists(), path)
+ 
+--- LL9R-before/tests/linearno/test_static_integration.py
++++ current/tests/linearno/test_static_integration.py
+@@ -225,6 +225,7 @@
+         old_scripts=[r for r in baseline['files'] if r['path'].endswith('.sh') and r['kind']=='tracked']
+         for row in old_scripts:
+             path=ROOT/row['path']
+-            self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),row['sha256'])
++            from frozen_revisions import expected_hash
++            self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),expected_hash(row['path'],row['sha256']))
+             subprocess.run(['bash','-n',str(path)],check=True,capture_output=True)
+         self.rows.append(dict(kind='launchers',new_previews=16,old_shells_byte_equal_and_syntax=len(old_scripts)))
+--- LL9R-before/tests/linearno_entry_projection.py
++++ current/tests/linearno_entry_projection.py
+@@ -13,6 +13,8 @@
+ 
+ 
+ def strip_linearno(tree):
++    from linearno_air_projection import strip_air
++    tree = strip_air(tree)
+     from history_entry_projection import strip_history
+     tree = strip_history(tree)
+     class Strip(ast.NodeTransformer):
+--- LL9R-before/tests/test_kcdno_delivery.py
++++ current/tests/test_kcdno_delivery.py
+@@ -65,7 +65,7 @@
+ print('legacy parser independent:',kind)
+ '''
+         for kind,project in (('standard','PDE-Solving-StandardBenchmark'),('car','Car-Design-ShapeNetCar'),('air','Airfoil-Design-AirfRANS')):
+-            r=subprocess.run([sys.executable,'-I','-c',code,str(ROOT/project),kind],cwd=ROOT/project,capture_output=True,text=True,timeout=30)
++            r=subprocess.run([sys.executable,'-I','-B','-c',code,str(ROOT/project),kind],cwd=ROOT/project,capture_output=True,text=True,timeout=30)
+             self.assertEqual(r.returncode,0,r.stdout+r.stderr)
+         # New-package imports also occur only inside the new-model branch.
+         for project,names in [('PDE-Solving-StandardBenchmark',[f'exp_{x[0]}.py' for x in (TASKS|TEMPORAL).values()]),('Car-Design-ShapeNetCar',['main.py','main_evaluation.py']),('Airfoil-Design-AirfRANS',['main.py','main_evaluation.py'])]:
+--- LL9R-before/cdlno/linearno_loop/core.py
++++ current/cdlno/linearno_loop/core.py
+@@ -118,6 +118,16 @@
+         elif hasattr(self,'lb_boundaries') or hasattr(self,'lb_output'):
+             raise ValueError('only LB may register LB receiver parameters')
+ 
++    @staticmethod
++    def _rb_receive(receiver, sources, anchor):
++        # The core-entry anchor owns RB's point-state dtype. Autocast raw
++        # branches may differ; convert only this call's references, leaving
++        # the authoritative raw sums untouched and their autograd edges live.
++        canonical_dtype = anchor.dtype
++        local_sources = tuple(source if source.dtype == canonical_dtype else
++                              source.to(dtype=canonical_dtype) for source in sources)
++        return receiver(local_sources)
++
+     def _rb_forward(self,anchor):
+         # Authoritative sources are completed *point* raw sums and anchor.
+         # All lists/tensors are forward-local; tuple snapshots prevent mutation
+@@ -129,11 +139,11 @@
+                 body=LinearNOBlockBody(physical.block)
+                 for offset,branch in enumerate((body.operator,body.mlp)):
+                     sources=tuple(completed) if partial is None else (*completed,partial)
+-                    h=receivers[2*index+offset](sources)
++                    h=self._rb_receive(receivers[2*index+offset],sources,anchor)
+                     raw=branch(h)
+                     partial=raw if partial is None else partial+raw
+             completed.append(partial)
+-        return self.rb_output(tuple(completed))
++        return self._rb_receive(self.rb_output,tuple(completed),anchor)
+ 
+     def _lb_forward(self,anchor):
+         # Store true end-minus-entry updates, not a recomputed branch sum.
+--- LL9R-before/cdlno/linearno_loop/industrial_state.py
++++ current/cdlno/linearno_loop/industrial_state.py
+@@ -59,9 +59,11 @@
+            root/'cdlno/linearno_history/car_entry.py',root/project/'main.py',root/project/'main_evaluation.py',
+            root/project/'train.py',*(root/project/'dataset').glob('*.py'),*(root/project/'utils').glob('*.py'),
+            root/project/('cdlno_entry.py' if task=='airfrans' else 'models/cdlno_run.py')}
+-    sources={str(p.relative_to(root)):sha256(p) for p in sorted(paths)}
++    from .ll9r_projection import project as repair_source
++    paths = {p for p in paths if p.name != 'll9r_projection.py'}
++    sources={str(p.relative_to(root)):hashlib.sha256(repair_source(str(p.relative_to(root)), p.read_text()).encode()).hexdigest() for p in sorted(paths)}
+     import ast
+-    normalized={str(p.relative_to(root)):ast.dump(ast.parse(p.read_text())) for p in sorted(paths)}
++    normalized={str(p.relative_to(root)):ast.dump(ast.parse(repair_source(str(p.relative_to(root)), p.read_text()))) for p in sorted(paths)}
+     result.update(source_sha256=digest(dict(standard=result['source_sha256'],industrial=sources)),
+         normalized_patch_sha256=digest(normalized),code_version='loop-linearno-LL7-v1')
+     return result
+--- LL9R-before/cdlno/linearno_loop/ll7_projection.py
++++ current/cdlno/linearno_loop/ll7_projection.py
+@@ -4,6 +4,8 @@
+ REPLACEMENTS = {'Airfoil-Design-AirfRANS/cdlno_entry.py': [{'before': '    selected, _ = selector.parse_known_args(tokens)\n', 'after': "    selected, _ = selector.parse_known_args(tokens)\n    from cdlno.linearno_loop.industrial_entry import intercept as intercept_loop\n    loop_args = intercept_loop(parser, tokens, task='airfrans', evaluation=evaluation, selected_model=selected.model)\n    if loop_args is not None:\n        return loop_args\n", 'count': 1}], 'Car-Design-ShapeNetCar/models/cdlno_run.py': [{'before': '    selected, _ = selector.parse_known_args(tokens)\n', 'after': "    selected, _ = selector.parse_known_args(tokens)\n    from cdlno.linearno_loop.industrial_entry import intercept as intercept_loop\n    loop_args = intercept_loop(parser, tokens, task='car', evaluation=evaluation, selected_model=selected.cfd_model)\n    if loop_args is not None:\n        return loop_args\n", 'count': 1}], 'cdlno/linearno/air_entry.py': [{'before': 'def run_cli(args):\n', 'after': "def run_cli(args):\n    if getattr(args, 'linearno_family', None) == 'linearno_loop':\n        from cdlno.linearno_loop.air_entry import run_cli as loop_run_cli\n        return loop_run_cli(args)\n", 'count': 1}], 'cdlno/linearno/car_entry.py': [{'before': 'def run_cli(args):\n', 'after': "def run_cli(args):\n    if getattr(args, 'linearno_family', None) == 'linearno_loop':\n        from cdlno.linearno_loop.car_entry import run_cli as loop_run_cli\n        return loop_run_cli(args)\n", 'count': 1}, {'before': '        key = str(p.relative_to(ROOT)); source = p.read_text(); sources[key] = source\n', 'after': '        key = str(p.relative_to(ROOT)); source = p.read_text()\n        from cdlno.linearno_loop.provenance import legacy_source\n        source = legacy_source(key, source); sources[key] = source\n', 'count': 1}], 'Airfoil-Design-AirfRANS/train.py': [{'before': "    torch.save(model, osp.join(path, 'model'))\n", 'after': "    if hasattr(linearno_run, 'export_final'):\n        linearno_run.export_final(model)\n    else:\n        torch.save(model, osp.join(path, 'model'))\n", 'count': 1}], 'cdlno/linearno_history/car_entry.py': [{'before': '        torch.save(model,Path(path)/f\'model_{hparams["nb_epochs"]}.pth\')\n', 'after': '        if hasattr(self, \'export_final\'):\n            self.export_final(model)\n        else:\n            torch.save(model,Path(path)/f\'model_{hparams["nb_epochs"]}.pth\')\n', 'count': 1}], 'cdlno/linearno_loop/provenance.py': [{'before': 'def legacy_source(relative,text):\n', 'after': 'def legacy_source(relative,text):\n    from .ll7_projection import project\n    text = project(relative,text)\n', 'count': 1}, {'before': "    paths={*(root/'cdlno/linearno_loop').glob('*.py'),", 'after': "    from .ll7_projection import LL6_FILES, project\n    paths={*(root/'cdlno/linearno_loop'/name for name in LL6_FILES),", 'count': 1}, {'before': 'hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(paths)', 'after': 'hashlib.sha256(project(str(p.relative_to(root)),p.read_text()).encode()).hexdigest() for p in sorted(paths)', 'count': 1}, {'before': 'after=ast.dump(ast.parse(p.read_text())))', 'after': 'after=ast.dump(ast.parse(project(name,p.read_text()))))', 'count': 1}]}
+ 
+ def project(relative,text):
++    from .ll9r_projection import project as repair_source
++    text = repair_source(relative, text)
+     for change in reversed(REPLACEMENTS.get(relative,())):
+         if text.count(change['after'])!=change['count']:
+             raise ValueError('unrecognized LL7 source change: '+relative)
+--- LL9R-before/docs/LOOP_LINEARNO_IMPLEMENTATION_STATUS.md
++++ current/docs/LOOP_LINEARNO_IMPLEMENTATION_STATUS.md
+@@ -1,4 +1,19 @@
+-# LL9 — 2026-09-20
++# LL9R — 2026-09-20
++
++**唯一状态：PASS（RB AMP、入口隔离、历史冻结和完整回归修复完成）。LL10未执行。**
++
++- RB 仅在接收器调用边界以 core-entry anchor dtype 构建本地 source tuple；raw partial cache、autograd、SR/LB、共享 AttnRes、参数量与 state_dict 不变。此前20个 RB AMP dtype 冲突全部恢复。
++- CUDA 小合成矩阵 **144/144通过**：FP32、FP16 AMP、BF16 AMP 各48项。确定性修复前后捕获192项：已有172项逐位一致，20个原RB失败项全部通过，SR/LB 128项逐位一致。
++- Standard/工业 legacy parser 仅在显式 loop 或 saved family 时延迟 import loop；缺共享包的旧 parser 仍可用，显式 loop 给明确错误。固定 Git 基点、AirfRANS 精确 AST projection 与 `.pyc`/pytest runtime cache 边界均已修复，实际源码变异仍会失败。
++- 96个参数/配置核对完全等于LL9；Standard原生合成闭环18/18、工业6/6，旧Darcy/AirfRANS/Car archive 新进程 strict replay 9/9完全一致，档案字节未改。
++- 既有回归最终 **80模块/689项：653通过、36 skip、0失败、0 error**。首次全量运行的唯一 `.pytest_cache` 误报与其后3/3 recheck均保留在审计目录，不覆盖原始记录。`git diff --check`通过。
++- 完整报告、环境、数值和冻结证据见 [LL9R报告](LOOP_LINEARNO_LL9R.md) 与 [审计目录](loop_linearno_audit/ll9r/)。未运行：真实数据/训练/收敛或精度、论文结果、远端Python3.10 Torch2.11/CUDA12.8、compile/distributed与LL10。
++
++**本 LL9R 阶段结束，未执行下一阶段。**
++
++以下 LL9 PARTIAL 为修复前历史记录，其未通过项已由上方 LL9R 处理；原始证据保留。
++
++# LL9 — 2026-09-20（修复前历史）
+ 
+ **唯一状态：PARTIAL（工具、CPU综合验证及原生闭环完成；存在明确未通过项）。LL10未执行。**
+ 
+--- LL9R-before/tests/loop_entry_projection.py
++++ current/tests/loop_entry_projection.py
+@@ -8,6 +8,8 @@
+ 
+ 
+ def strip_loop(tree):
++    from ll9r_projection import strip_repair
++    tree = strip_repair(tree)
+     class Strip(ast.NodeTransformer):
+         def visit_ImportFrom(self,node):
+             if node.module in ('cdlno.linearno_loop.standard_entry','cdlno.linearno_loop.industrial_entry') and [(a.name,a.asname) for a in node.names]==[('intercept','intercept_loop')]:return None
+--- LL9R-before/tests/loop_linearno/test_isolation.py
++++ current/tests/loop_linearno/test_isolation.py
+@@ -69,10 +69,17 @@
+         allowed={'docs/LOOP_LINEARNO_IMPLEMENTATION_STATUS.md'}
+         for row in initial['files']:
+             if row['path'] in allowed:continue
++            # Source inventory includes explicitly frozen untracked files;
++            # interpreter caches are runtime artifacts, never source fixtures.
++            parts=Path(row['path']).parts
++            if ('__pycache__' in parts or '.pytest_cache' in parts or
++                    row['path'].endswith(('.pyc','.pyo'))):continue
+             with self.subTest(path=row['path']):
+                 path=ROOT/row['path']
+                 self.assertTrue(path.is_file())
+                 raw=path.read_bytes()
++                from ll9r_test_source_projection import project_test_source
++                raw=project_test_source(row['path'],raw)
+                 if row['path']=='tests/history_entry_projection.py':
+                     addition=b'    from loop_entry_projection import strip_loop\n    tree = strip_loop(tree)\n'
+                     self.assertEqual(raw.count(addition),1)
+--- LL9R-before/tests/loop_linearno/test_launchers.py
++++ current/tests/loop_linearno/test_launchers.py
+@@ -158,7 +158,13 @@
+         baseline=json.loads((ROOT/'docs/loop_linearno_audit/ll8/start-manifest.json').read_text())
+         for row in baseline['files']:
+             if row['path'].startswith(('cdlno/','linearno_loop/','tran_evaluate/linearno/','tran_evaluate/linearno_history/','monitor/')) or row['path']=='path.sh':
+-                self.assertEqual(hashlib.sha256((ROOT/row['path']).read_bytes()).hexdigest(),row['sha256'],row['path'])
++                from frozen_revisions import expected_hash
++                from cdlno.linearno_loop.ll9r_projection import project, REPLACEMENTS
++                raw = (ROOT/row['path']).read_bytes()
++                if row['path'] in REPLACEMENTS:
++                    raw = project(row['path'], raw.decode()).encode()
++                self.assertEqual(hashlib.sha256(raw).hexdigest(),
++                                 expected_hash(row['path'],row['sha256']),row['path'])
+ 
+     def test_shell_train_then_eval_spaces_and_failure_propagation(self):
+         matrix=json.loads((ROOT/'docs/loop_linearno_audit/ll7/native-matrix.json').read_text())
+--- /dev/null
++++ current/cdlno/linearno_loop/ll9r_projection.py
+@@ -0,0 +1,16 @@
++"""LL9R exact numerical/dispatch repair compatibility view for existing archives.
++
++Only these reviewed hunks normalize to their pre-repair spelling. Any other
++source edit still changes the checksum or fails closed. Runtime code, raw-sum
++storage and checkpoint payload/schema are never substituted. Actual repair
++source hashes/diffs are recorded in the LL9R audit; no user metadata is edited.
++"""
++REPLACEMENTS = {'PDE-Solving-StandardBenchmark/cdlno_entry.py': [{'before': "    selector.add_argument('--model')\n    selected, _ = selector.parse_known_args(tokens)\n    from cdlno.linearno_loop.standard_entry import intercept as intercept_loop\n    loop_args = intercept_loop(parser, task, tokens, selected.model)\n    if loop_args is not None:\n        return loop_args\n    if selected.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):\n", 'after': "    selector.add_argument('--model')\n    # Routing-only probe: never changes the legacy parser's actions/defaults.\n    selector.add_argument('--experiment-dir', '--linearno-run-dir', dest='_loop_directory', type=Path)\n    selector.add_argument('--eval', dest='_loop_eval', type=int, default=0)\n    selector.add_argument('--resume', dest='_loop_resume', action='store_true')\n    selected, _ = selector.parse_known_args(tokens)\n    loop_selected = any(t.split('=')[0].startswith('--linearno-loop') for t in tokens)\n    if (selected._loop_eval or selected._loop_resume) and selected._loop_directory is not None:\n        sidecar = selected._loop_directory / 'architecture.json'\n        if sidecar.is_file():\n            loop_selected = loop_selected or json.loads(sidecar.read_text()).get('family') == 'linearno_loop'\n    if loop_selected:\n        try:\n            from cdlno.linearno_loop.standard_entry import intercept as intercept_loop\n        except ModuleNotFoundError as error:\n            if error.name == 'cdlno' or error.name.startswith('cdlno.linearno_loop'):\n                parser.error('linearno_loop selected but its shared cdlno loop package is unavailable')\n            raise\n        loop_args = intercept_loop(parser, task, tokens, selected.model)\n        if loop_args is not None:\n            return loop_args\n    if selected.model in ('LinearNO_Structured_Mesh_2D', 'LinearNO_Irregular_Mesh'):\n", 'count': 1}], 'Airfoil-Design-AirfRANS/cdlno_entry.py': [{'before': "    selector.add_argument('--model')\n    selected, _ = selector.parse_known_args(tokens)\n    from cdlno.linearno_loop.industrial_entry import intercept as intercept_loop\n    loop_args = intercept_loop(parser, tokens, task='airfrans', evaluation=evaluation, selected_model=selected.model)\n    if loop_args is not None:\n        return loop_args\n    if selected.model == 'LinearNO':\n", 'after': "    selector.add_argument('--model')\n    # Routing-only probe: never changes the legacy parser's actions/defaults.\n    selector.add_argument('--experiment-dir', '--linearno-run-dir', '--run_dir', dest='_loop_directory', type=Path)\n    selector.add_argument('--eval', dest='_loop_eval', type=int, default=0)\n    selector.add_argument('--resume', dest='_loop_resume', action='store_true')\n    selected, _ = selector.parse_known_args(tokens)\n    loop_selected = any(t.split('=')[0].startswith('--linearno-loop') for t in tokens)\n    if (evaluation or selected._loop_eval or selected._loop_resume) and selected._loop_directory is not None:\n        sidecar = selected._loop_directory / 'architecture.json'\n        if sidecar.is_file():\n            loop_selected = loop_selected or json.loads(sidecar.read_text()).get('family') == 'linearno_loop'\n    if loop_selected:\n        try:\n            from cdlno.linearno_loop.industrial_entry import intercept as intercept_loop\n        except ModuleNotFoundError as error:\n            if error.name == 'cdlno' or error.name.startswith('cdlno.linearno_loop'):\n                parser.error('linearno_loop selected but its shared cdlno loop package is unavailable')\n            raise\n        loop_args = intercept_loop(parser, tokens, task='airfrans', evaluation=evaluation, selected_model=selected.model)\n        if loop_args is not None:\n            return loop_args\n    if selected.model == 'LinearNO':\n", 'count': 1}], 'Car-Design-ShapeNetCar/models/cdlno_run.py': [{'before': "    selector.add_argument('--cfd_model')\n    selected, _ = selector.parse_known_args(tokens)\n    from cdlno.linearno_loop.industrial_entry import intercept as intercept_loop\n    loop_args = intercept_loop(parser, tokens, task='car', evaluation=evaluation, selected_model=selected.cfd_model)\n    if loop_args is not None:\n        return loop_args\n    if selected.cfd_model == 'LinearNO':\n", 'after': "    selector.add_argument('--cfd_model')\n    # Routing-only probe: never changes the legacy parser's actions/defaults.\n    selector.add_argument('--experiment-dir', '--linearno-run-dir', '--run_dir', dest='_loop_directory', type=Path)\n    selector.add_argument('--eval', dest='_loop_eval', type=int, default=0)\n    selector.add_argument('--resume', dest='_loop_resume', action='store_true')\n    selected, _ = selector.parse_known_args(tokens)\n    loop_selected = any(t.split('=')[0].startswith('--linearno-loop') for t in tokens)\n    if (evaluation or selected._loop_eval or selected._loop_resume) and selected._loop_directory is not None:\n        sidecar = selected._loop_directory / 'architecture.json'\n        if sidecar.is_file():\n            loop_selected = loop_selected or json.loads(sidecar.read_text()).get('family') == 'linearno_loop'\n    if loop_selected:\n        try:\n            from cdlno.linearno_loop.industrial_entry import intercept as intercept_loop\n        except ModuleNotFoundError as error:\n            if error.name == 'cdlno' or error.name.startswith('cdlno.linearno_loop'):\n                parser.error('linearno_loop selected but its shared cdlno loop package is unavailable')\n            raise\n        loop_args = intercept_loop(parser, tokens, task='car', evaluation=evaluation, selected_model=selected.cfd_model)\n        if loop_args is not None:\n            return loop_args\n    if selected.cfd_model == 'LinearNO':\n", 'count': 1}], 'cdlno/linearno_loop/core.py': [{'before': '\n    def _rb_forward(self,anchor):\n', 'after': "\n    @staticmethod\n    def _rb_receive(receiver, sources, anchor):\n        # The core-entry anchor owns RB's point-state dtype. Autocast raw\n        # branches may differ; convert only this call's references, leaving\n        # the authoritative raw sums untouched and their autograd edges live.\n        canonical_dtype = anchor.dtype\n        local_sources = tuple(source if source.dtype == canonical_dtype else\n                              source.to(dtype=canonical_dtype) for source in sources)\n        return receiver(local_sources)\n\n    def _rb_forward(self,anchor):\n", 'count': 1}, {'before': '                    sources=tuple(completed) if partial is None else (*completed,partial)\n                    h=receivers[2*index+offset](sources)\n                    raw=branch(h)\n', 'after': '                    sources=tuple(completed) if partial is None else (*completed,partial)\n                    h=self._rb_receive(receivers[2*index+offset],sources,anchor)\n                    raw=branch(h)\n', 'count': 1}, {'before': '            completed.append(partial)\n        return self.rb_output(tuple(completed))\n\n', 'after': '            completed.append(partial)\n        return self._rb_receive(self.rb_output,tuple(completed),anchor)\n\n', 'count': 1}], 'cdlno/linearno_loop/ll7_projection.py': [{'before': 'def project(relative,text):\n    for change in reversed(REPLACEMENTS.get(relative,())):\n', 'after': 'def project(relative,text):\n    from .ll9r_projection import project as repair_source\n    text = repair_source(relative, text)\n    for change in reversed(REPLACEMENTS.get(relative,())):\n', 'count': 1}], 'cdlno/linearno_loop/industrial_state.py': [{'before': "           root/project/('cdlno_entry.py' if task=='airfrans' else 'models/cdlno_run.py')}\n    sources={str(p.relative_to(root)):sha256(p) for p in sorted(paths)}\n    import ast\n    normalized={str(p.relative_to(root)):ast.dump(ast.parse(p.read_text())) for p in sorted(paths)}\n    result.update(source_sha256=digest(dict(standard=result['source_sha256'],industrial=sources)),\n", 'after': "           root/project/('cdlno_entry.py' if task=='airfrans' else 'models/cdlno_run.py')}\n    from .ll9r_projection import project as repair_source\n    paths = {p for p in paths if p.name != 'll9r_projection.py'}\n    sources={str(p.relative_to(root)):hashlib.sha256(repair_source(str(p.relative_to(root)), p.read_text()).encode()).hexdigest() for p in sorted(paths)}\n    import ast\n    normalized={str(p.relative_to(root)):ast.dump(ast.parse(repair_source(str(p.relative_to(root)), p.read_text()))) for p in sorted(paths)}\n    result.update(source_sha256=digest(dict(standard=result['source_sha256'],industrial=sources)),\n", 'count': 1}]}
++
++
++def project(relative, text):
++    for change in reversed(REPLACEMENTS.get(relative, ())):
++        if text.count(change['after']) != change['count']:
++            raise ValueError('unrecognized LL9R source repair: ' + relative)
++        text = text.replace(change['after'], change['before'])
++    return text
+--- /dev/null
++++ current/docs/LOOP_LINEARNO_LL9R.md
+@@ -0,0 +1,200 @@
++# LL9R - RB AMP and Regression Repair
++
++**Status: PASS.** This repair completes the bounded LL9R scope only. It does
++not validate real data, convergence, accuracy, or paper results. LL10 was not
++executed.
++
++## Scope and starting state
++
++The repair started from `main@5b991226c5354af3332b2f7306b370aef0950c79`
++with remote `https://github.com/hxh5159/CDLNO-w.git`, preserving the existing
++dirty worktree. The source snapshot is
++`/home/hwz/CDLNO-artifacts/loop-ll9r-before-j6m5x1a9`; no reset, clean, stash,
++checkout, rebase, commit, or push was used. The final freeze is recorded in
++[end-freeze.json](loop_linearno_audit/ll9r/end-freeze.json).
++
++## RB AMP repair
++
++`LinearNOLoopCore._rb_receive` is the sole numerical production change. It
++uses the core-entry RB anchor's dtype as the explicit canonical dtype and
++creates a local tuple for that receiver call:
++
++```python
++local_sources = tuple(
++    source if source.dtype == anchor.dtype else source.to(dtype=anchor.dtype)
++    for source in sources
++)
++```
++
++The authoritative RB raw partial stays in its autocast dtype and keeps its
++autograd edge. The helper does not mutate cached tensors, add buffers or
++parameters, detach gradients, alter source order/count, add identity residuals,
++or add `1/R`. SR and LB do not call this helper. The shared
++`PointDepthAttnRes` remains strict about homogeneous source dtypes.
++
++The pre-repair failing path had FP32 anchors and FP16/BF16 raw partials for
++Airfoil, Elasticity, Pipe, AirfRANS, and Car. The local cast makes receiver
++inputs homogeneous FP32 while the recorded raw cache remains FP16/BF16. LB's
++`Y = H + F(H)/R` and `Delta = Y - H` sources were already homogeneous in the
++same AMP fixtures, so LB production code was not changed. The complete dtype
++records are in [rb-amp-dtype-summary.json](loop_linearno_audit/ll9r/rb-amp-dtype-summary.json)
++and [precision-compatibility.json](loop_linearno_audit/ll9r/precision-compatibility.json).
++
++## Compatibility and isolation
++
++Standard, AirfRANS, and Car entry adapters now import loop support only after
++an explicit loop flag or `family=linearno_loop` sidecar selects it. Legacy
++parsers keep their original actions, defaults, namespace, and selection. If
++the shared loop package is absent, only an explicitly selected loop run fails,
++with a clear parser error.
++
++Historical checks now use their recorded full Git SHA rather than moving
++`HEAD`. AirfRANS AST comparisons remove only the versioned LinearNO/resume
++nodes and reject a mutation to retained training/evaluation calls. The source
++freeze excludes runtime bytecode and pytest caches, while retaining exact
++checks for actual source files. The three reviewed documentation revisions are
++closed by commit-pinned hashes in
++[frozen-revisions-v1.json](loop_linearno_audit/ll9r/frozen-revisions-v1.json);
++unknown hashes fail closed.
++
++## Validation
++
++- CUDA synthetic matrix: 144/144 passed: FP32 48/48, AMP FP16 48/48, AMP BF16
++  48/48. This includes all eight tasks, two presets, and SR/RB/LB. The twenty
++  formerly failing RB AMP cases are all finite through forward, backward, and
++  AdamW; AMP was not disabled or silently retried in FP32.
++- Deterministic pre/post capture: 192 cases. The 172 cases that ran before the
++  repair are bitwise equal for initial state, inputs, output, loss, input and
++  parameter gradients, optimizer-step state, and CPU/CUDA RNG. The 20 former
++  RB failures now pass. SR/LB account for 128 bitwise-equal cases. The separate
++  nondeterminism review attributes non-deterministic CUDA SR roundoff to the
++  backend; deterministic mode restores exact replay without a tolerance change.
++- Parameter and cost audit: all 96 task/preset/mode/rank configurations equal
++  their analytical parameter decomposition and the prior LL9 accounting.
++  State-dict keys/shapes and parameter counts are unchanged.
++- Synthetic native closures: Standard 18/18 and industrial 6/6 completed
++  original-main train, interrupted checkpoint, resume, and fresh-process eval.
++  Old archive replay adds 9/9 exact Darcy/AirfRANS/Car checks across all modes;
++  weights, optimizer/scheduler, RNG, and output hashes match and source archive
++  bytes remain unchanged.
++- Existing regression inventory: 80 modules, 689 tests, 653 passed, 36 skipped,
++  zero failures and errors. The final fresh full pass captured one failure caused by
++  pytest rewriting `.pytest_cache/v/cache/lastfailed`; it is retained in
++  `final-regression/regression-results-before-isolation-fix.json`. The repaired
++  source-boundary test was rerun 3/3, and the final composition is in
++  [summary.json](loop_linearno_audit/ll9r/final-regression/summary.json).
++- LL9R-specific checks plus existing loop performance and launcher checks: 19/19
++  passed. `git diff --check` passed.
++
++The CPU timing/forward matrix uses small synthetic tensors and reports only
++median/p90 module behavior. It does not measure real epochs. No real loader,
++full training, VTK metric, remote Python 3.10/Torch 2.11/CUDA 12.8 run,
++distributed run, compile run, convergence claim, or SOTA claim was made.
++
++## 实际修改与旧失败逐项复核
++
++本阶段相对起点修改的生产文件仅以下六个，另新增一个精确 provenance helper。
++不是相对 HEAD 的累计 diff：此前 LL6–LL9 工作树改动原样保留。
++
++| 文件 | 本阶段改动 |
++|---|---|
++| `cdlno/linearno_loop/core.py` | 新增 RB 专属局部 dtype 边界，两个 RB 调用点改用它 |
++| 三项目 `cdlno_entry.py` / Car `models/cdlno_run.py` | 先判定 loop 意图/metadata，再延迟 import |
++| `cdlno/linearno_loop/ll7_projection.py` | 先精确剥离 LL9R 修复，再使用已有 LL7 projection |
++| `cdlno/linearno_loop/industrial_state.py` | 对同一精确修复作 provenance 兼容投影 |
++| 新 `cdlno/linearno_loop/ll9r_projection.py` | 登记六文件的固定替换和次数；陌生改动不会被任意接受 |
++
++旧 archive 的 provenance 保持原版本，是经过精确投影的兼容视图，不能解读为
++当前源码逐字节未变化。实际修复源码、起止 hash 和 patch 另保存在本阶段证据。
++checkpoint payload/schema、构造 kwargs、参数组及 strict 规则没有放宽。
++
++测试改动包括两项 history fingerprint、旧文档冻结、Air AST projection、
++`-I -B` 子进程、源码缓存边界和 LL8 launcher 冻结适配。新增
++`tests/historical_git_base.py`、`frozen_revisions.py`、`linearno_air_projection.py`、
++`ll9r_projection.py`、`ll9r_test_source_projection.py` 及 `loop_linearno/test_ll9r.py`。
++LL8 冻结对六处已授权生产改动使用相同精确反向 projection，原 hash 不刷新；
++二进制文件仍直接比较字节。完整名单与关键 diff 见
++[source.diff](loop_linearno_audit/ll9r/source.diff)。
++
++| LL9 原失败方法（10 个，15 条断言） | 原因与最终结果 |
++|---|---|
++| `test_experiment_records.test_entries_early_lifecycle_and_complete_observation_only_ast` | Air 的三个后续插入节点未投影；精确剥离后 PASS |
++| `test_kcdno_airfrans.test_defaults_and_exact_frozen_projection` | 同一 Air LinearNO guard；PASS |
++| `test_kcdno_delivery.test_legacy_parser_imports_without_shared_package` | 未选 loop 就 import 共享包；lazy import 后 PASS |
++| `test_msar_industrial.test_frozen_complete_entries_trainers_yaml_and_core` | Air guard/resume 后续插入；PASS |
++| `test_periodic_visualization.test_production_hooks_preserve_complete_AST` | Air main/train 两处后续插入；PASS |
++| `linearno.test_history_industrial.test_old_source_fingerprints_task_bodies_and_launchers` | 漂移的 HEAD 基点；恢复历史固定 SHA 后 PASS |
++| `linearno.test_history_static.test_old_source_fingerprint_and_frozen_task_bodies` | 同一历史 Git 基点问题；PASS |
++| `linearno.test_legacy.test_all_preexisting_files_and_absent_frozen_directories` | README/path/复现矩阵三项已授权变更；逐项 commit/hash/diff 台账后 PASS |
++| `linearno.test_static_integration.test_all_new_launcher_actions_profiles_and_old_scripts_static` | path.sh 已授权远端路径注释；PASS |
++| `loop_linearno.test_isolation.test_preexisting_bytes_after_exact_LL6_routing_projection_and_classifications` | `.pyc` 不是源码；修正枚举和 `-B` 后 PASS |
++
++本阶段额外发现并保留两类基础设施失败：首次完整回归的 LL8 core/provenance
++冻结未识别本阶段修复，以及最终 fresh 回归中 `.pytest_cache/lastfailed` 自动更新。
++前者用精确 projection 修正，后者仅排除 pytest runtime cache，未删缓存、未改旧
++golden、未降低容差。`final-targeted.log` 另保留一次测试投影误读二进制文件的错误；
++`final-targeted-v2.log` 为修正后的 19/19。隔离模块最后 3/3 recheck 与 fresh
++689 方法结果合成最终统计，未声称最后一次整套运行从未发生失败。
++
++36 个 skip 明细见 [skip-inventory.json](loop_linearno_audit/ll9r/skip-inventory.json)：
++33 个是 CPU 回归显式 `CUDA_VISIBLE_DEVICES=''`，3 个是缺 `torch_cluster`。
++没有新增 skip/xfail；本机实际有 GPU，loop GPU 验证由独立 144 项矩阵提供。
++
++## 环境、命令及证据边界
++
++本机 Python 3.13.9、PyTorch 2.13.0+cu130、PyG 2.3.1，Intel Core Ultra 9
++290HX Plus，RTX 5090 Laptop GPU（capability 12.0）。未安装或变更依赖。
++FP32/AMP 合成检查禁用 TF32、cuDNN benchmark 和 compile；GPU 显存采样前后
++同步。CPU 48 组固定单线程、CPU0、warmup 3、测量 12 次，用
++`perf_counter_ns` 记录 forward 与 forward/backward/AdamW 的 median/p90。
++非独占宿主，负载与全部原始样本留在 [cpu.json](loop_linearno_audit/ll9r/cpu.json)。
++
++96 项为全 profile 参数构造/解析计数；48 项 forward/backward/reload 和 CPU 计时
++采用真实空间 N、d8/h2/M8/ref3；144 项 CUDA 使用小空间合成输入。三者的规模
++不同，不能据此声称全宽 GPU 或真实 epoch 效率验收。
++
++以下是本阶段执行的命令入口；证据已存在，不应覆盖历史文件再次运行。
++实际子进程 argv、环境和结果保存在各 JSON/log 中。
++
++```bash
++export PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1
++export PYTHONPATH=tests:.
++python -B tools/linearno_loop_performance.py counts --output docs/loop_linearno_audit/ll9r/counts.json
++CUDA_VISIBLE_DEVICES='' python -B tools/linearno_loop_performance.py matrix --diagnostics --output docs/loop_linearno_audit/ll9r/matrix.json
++CUDA_VISIBLE_DEVICES='' taskset -c 0 python -B tools/linearno_loop_performance.py cpu --warmup 3 --steps 12 --output docs/loop_linearno_audit/ll9r/cpu.json
++CUDA_VISIBLE_DEVICES=0 python -B tools/linearno_loop_performance.py cuda --output docs/loop_linearno_audit/ll9r/cuda.json
++LL9_STANDARD_PRESETS=p2_c2_r2_s2 python -B docs/loop_linearno_audit/ll9r/run_native_matrix.py
++LL9_PRESETS=p1_c3_r2_s1 python -B docs/loop_linearno_audit/ll9r/run_industrial.py
++python -B docs/loop_linearno_audit/ll9r/replay_old_archives.py
++LL9R_REGRESSION_DIR=docs/loop_linearno_audit/ll9r/final-regression python -B docs/loop_linearno_audit/ll9r/run_regressions.py
++CUDA_VISIBLE_DEVICES='' python -B -m unittest loop_linearno.test_ll9r loop_linearno.test_performance_tools loop_linearno.test_launchers.LauncherTests.test_gpu_mapping_shell_syntax_and_no_legacy_edits -v
++CUDA_VISIBLE_DEVICES='' python -B -m unittest loop_linearno.test_isolation -v
++git diff --check
++git status --short --branch --untracked-files=all
++```
++
++确定性前后捕获使用 `capture_numeric.py before/after --deterministic`；before 从
++快照通过 `LL9R_FROZEN_SOURCE` 导入修改前模型，不能把当前模型当作 before。
++前后逐张量档案已保存在快照的 `numeric-deterministic/`，192 项记录包括各 dtype
++轨迹；额外 `review_nondeterminism.py` 用未修改 SR 源码重现 backend 舍入。
++
++冻结自审确认共享 AttnRes/body/wrappers、三套纯 LinearNO、其他模型数学、schema、
++checkpoint、launcher、monitor、任务科学代码和三项旧文档均与本阶段起点相同。
++唯一数值代码改动仅 RB helper。无新增需用户裁定的设计冲突。
++
++## Review points
++
++1. [core.py](../cdlno/linearno_loop/core.py) confines dtype normalization to RB
++   receiver boundaries and leaves raw cache/state-dict behavior intact.
++2. [test_ll9r.py](../tests/loop_linearno/test_ll9r.py) checks local casts,
++   autograd, cache preservation, legacy missing-package behavior, and mutation
++   sensitive AST/source projections.
++3. [precision-compatibility.json](loop_linearno_audit/ll9r/precision-compatibility.json)
++   distinguishes the 172 exact pre-existing runs from the 20 repaired AMP runs.
++4. [old-checkpoint-replay.json](loop_linearno_audit/ll9r/old-checkpoint-replay.json)
++   records exact strict reload and fresh-process replay without modifying old
++   artifacts.
++5. [end-freeze.json](loop_linearno_audit/ll9r/end-freeze.json) records all
++   start-snapshot differences and the final working-tree classification.
++
++**本 LL9R 阶段结束，未执行下一阶段。**
+--- /dev/null
++++ current/memory/2026-09-20-loop-linearno-ll9r.md
+@@ -0,0 +1,10 @@
++# Looped LinearNO LL9R
++
++LL9R PASS；LL10未执行。详见 docs/LOOP_LINEARNO_LL9R.md 和 LOOP_LINEARNO_IMPLEMENTATION_STATUS.md。
++修复只涉及RB接收边界local cast、三个入口lazy import、精确provenance兼容及回归基础设施。
++SR/LB/共享AttnRes/其他模型数学、schema和state_dict不变。起点快照 loop-ll9r-before-j6m5x1a9 必须保留。
++CUDA144/144（FP32/FP16/BF16各48）；原20 RB AMP失败恢复。192确定性捕获：172已有可运行案例逐位一致、20恢复，其中SR/LB128全等。
++96计数不变、48 canonical-N小宽度前反向/reload和48 CPU计时、24原生闭环通过；9套LL9旧archive新进程resume/eval全等且旧字节未改。
++完整689项最终653pass/36skip/0fail：最后fresh全套出现pytest runtime cache误报，修正后仅隔离模块3/3复跑并有独立结果；原始失败不覆盖。
++36skip=33CPU主动屏蔽CUDA+3缺torch_cluster。新11+旧工具7+launcher1共19/19；无容差放宽、skip新增或golden批量更新。
++不宣称真实训练、收敛、精度、论文结果或真实epoch效率；远端Python3.10/Torch2.11/cu128未验收。仅本阶段，不自动进入LL10。
+--- /dev/null
++++ current/tests/frozen_revisions.py
+@@ -0,0 +1,18 @@
++"""Reviewed post-snapshot revisions; all other hashes remain unchanged."""
++import hashlib
++import json
++from pathlib import Path
++
++ROOT = Path(__file__).resolve().parents[1]
++ROWS = {r['path']: r for r in json.loads((ROOT/'docs/loop_linearno_audit/ll9r/frozen-revisions-v1.json').read_text())['rows']}
++
++
++def expected_hash(path, original):
++    if path not in ROWS:
++        return original
++    row = ROWS[path]
++    if original == row['new_sha256']:
++        return row['new_sha256']
++    if original != row['old_sha256']:
++        raise AssertionError('unrecognized historical document revision: ' + path)
++    return row['new_sha256']
+--- /dev/null
++++ current/tests/historical_git_base.py
+@@ -0,0 +1,18 @@
++"""Read-only historical comparison base, never the moving checkout HEAD."""
++from contextlib import contextmanager
++import re
++import subprocess
++from unittest.mock import patch
++
++
++@contextmanager
++def historical_git_base(commit):
++    if not re.fullmatch(r'[0-9a-f]{40}', commit):
++        raise ValueError('historical base must be a full immutable SHA')
++    original = subprocess.check_output
++    def read(command, *args, **kwargs):
++        if command[:2] == ['git', 'show'] and command[2].startswith('HEAD:'):
++            command = [*command[:2], commit + command[2][4:], *command[3:]]
++        return original(command, *args, **kwargs)
++    with patch('subprocess.check_output', side_effect=read):
++        yield
+--- /dev/null
++++ current/tests/linearno_air_projection.py
+@@ -0,0 +1,47 @@
++"""Exact later AirfRANS LinearNO nodes; retain the complete old program."""
++import ast
++import copy
++
++ADDITIONS = (
++    """if args.model == 'LinearNO':
++    from cdlno.linearno.air_entry import run_cli
++    run_cli(args)
++    raise SystemExit(0)""",
++    'linearno_start_epoch = 0',
++    """if linearno_run is not None:
++    linearno_start_epoch, linearno_history = linearno_run.prepare(
++        model, optimizer, lr_scheduler, train_dataset, val_dataset, criterion, reg, val_iter, val_sample)
++    if linearno_history:
++        (train_loss_surf_list, train_loss_vol_list, loss_surf_var_list, loss_vol_var_list,
++         val_surf_list, val_vol_list, val_surf_var_list, val_vol_var_list) = linearno_history['curves']
++        val_loss = linearno_history['val_loss']
++        if val_surf_list:
++            val_surf = val_surf_list[-1]""",
++    """if linearno_run is not None:
++    linearno_run.complete_epoch(epoch + 1, model, dict(curves=[
++        train_loss_surf_list, train_loss_vol_list, loss_surf_var_list, loss_vol_var_list,
++        val_surf_list, val_vol_list, val_surf_var_list, val_vol_var_list],
++        val_loss=val_loss if val_iter is not None else None))""",
++)
++EXACT = {ast.dump(ast.parse(source).body[0]) for source in ADDITIONS}
++
++
++def strip_air(tree):
++    class Strip(ast.NodeTransformer):
++        def visit(self, node):
++            if isinstance(node, ast.stmt) and ast.dump(node) in EXACT:
++                return None
++            return super().visit(node)
++
++        def visit_Call(self, node):
++            node = self.generic_visit(node)
++            if ast.unparse(node) == "range(linearno_start_epoch, hparams['nb_epochs'])":
++                return ast.copy_location(ast.parse("range(hparams['nb_epochs'])", mode='eval').body, node)
++            return node
++
++        def visit_BoolOp(self, node):
++            # Preserve radius_graph body and all unrelated conditions.
++            if ast.dump(node) == ast.dump(ast.parse("name_mod != 'PointNet' and name_mod != 'MLP' and linearno_run is None", mode='eval').body):
++                return ast.copy_location(ast.parse("name_mod != 'PointNet' and name_mod != 'MLP'", mode='eval').body, node)
++            return self.generic_visit(node)
++    return ast.fix_missing_locations(Strip().visit(copy.deepcopy(tree)))
+--- /dev/null
++++ current/tests/ll9r_projection.py
+@@ -0,0 +1,26 @@
++"""Exact LL9R routing AST projection; never discard arbitrary conditionals."""
++import ast
++import copy
++import json
++from pathlib import Path
++
++
++def strip_repair(tree):
++    path = Path(__file__).resolve().parents[1]/'docs/loop_linearno_audit/ll9r/routing-replacements.json'
++    changes = json.loads(path.read_text())
++    pairs = []
++    for rows in changes.values():
++        for row in rows:
++            import textwrap
++            old = ast.parse(textwrap.dedent(row['before'])).body
++            new = ast.parse(textwrap.dedent(row['after'])).body
++            pairs.append((old, new))
++    class Strip(ast.NodeTransformer):
++        def visit_FunctionDef(self, node):
++            for old, new in pairs:
++                for i in range(len(node.body)-len(new)+1):
++                    if [ast.dump(n) for n in node.body[i:i+len(new)]] == [ast.dump(n) for n in new]:
++                        node.body[i:i+len(new)] = copy.deepcopy(old)
++                        break
++            return self.generic_visit(node)
++    return ast.fix_missing_locations(Strip().visit(copy.deepcopy(tree)))
+--- /dev/null
++++ current/tests/ll9r_test_source_projection.py
+@@ -0,0 +1,14 @@
++"""Exact reviewed LL9R test edits, compared back to the immutable LL1 inventory."""
++import json
++from pathlib import Path
++
++
++def project_test_source(relative, raw):
++    path=Path(__file__).resolve().parents[1]/'docs/loop_linearno_audit/ll9r/test-source-repairs.json'
++    changes=json.loads(path.read_text())
++    for row in reversed(changes.get(relative, [])):
++        after=row['after'].encode();before=row['before'].encode()
++        if raw.count(after)!=1:
++            raise AssertionError('unrecognized LL9R test change: '+relative)
++        raw=raw.replace(after,before)
++    return raw
+--- /dev/null
++++ current/tests/loop_linearno/test_ll9r.py
+@@ -0,0 +1,233 @@
++"""LL9R boundary precision, isolation and mutation-sensitive freeze acceptance."""
++import ast
++import copy
++import hashlib
++import importlib.util
++import json
++import os
++from pathlib import Path
++import subprocess
++import sys
++import tempfile
++import unittest
++from unittest.mock import patch
++
++import torch
++from cdlno.linearno_loop.attnres import PointDepthAttnRes
++from cdlno.linearno_loop.core import LinearNOLoopCore
++from cdlno.linearno_loop.construction import build_from_config
++from linearno_loop.config import resolve_config
++from tools.linearno_loop_support import TASKS, PRESETS, MODES, configuration, inputs
++
++ROOT = Path(__file__).resolve().parents[2]
++AUDIT = ROOT/'docs/loop_linearno_audit/ll9r'
++
++
++class RepairTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        torch.set_num_threads(1)
++
++    def test_mixed_boundary_matches_explicit_cast_with_live_gradients(self):
++        for dtype in (torch.float16, torch.bfloat16):
++            for count in (2, 3):
++                with self.subTest(dtype=dtype, count=count):
++                    g=torch.Generator().manual_seed(104)
++                    anchor=torch.randn(2,7,8,generator=g,requires_grad=True)
++                    raw=[torch.randn(2,7,8,generator=g).to(dtype).requires_grad_() for _ in range(count-1)]
++                    sources=(anchor,*raw);saved=[v.detach().clone() for v in sources]
++                    receiver=PointDepthAttnRes(8)
++                    with torch.no_grad():receiver.query.copy_(torch.linspace(-.1,.2,8))
++                    reference=copy.deepcopy(receiver)
++                    ref_sources=[v.detach().clone().requires_grad_() for v in sources]
++                    result=LinearNOLoopCore._rb_receive(receiver,sources,anchor)
++                    expected=reference(tuple(v.to(anchor.dtype) for v in ref_sources))
++                    torch.testing.assert_close(result,expected,atol=0,rtol=0)
++                    loss=result.square().mean();loss.backward();expected.square().mean().backward()
++                    self.assertTrue(torch.isfinite(loss))
++                    for value,old,ref in zip(sources,saved,ref_sources):
++                        self.assertEqual(value.dtype,old.dtype);self.assertTrue(torch.equal(value,old))
++                        self.assertTrue(torch.isfinite(value.grad).all());self.assertGreater(value.grad.abs().sum(),0)
++                        torch.testing.assert_close(value.grad,ref.grad,atol=0,rtol=0)
++                    for p,q in zip(receiver.parameters(),reference.parameters()):
++                        self.assertTrue(torch.isfinite(p.grad).all())
++                        torch.testing.assert_close(p.grad,q.grad,atol=0,rtol=0)
++                    # Canonical dtype is supplied by anchor, never inferred from list order.
++                    reordered=LinearNOLoopCore._rb_receive(receiver,(*raw,anchor),anchor)
++                    self.assertEqual(reordered.dtype,torch.float32)
++                    with self.assertRaisesRegex(TypeError,'dtype must match'):
++                        receiver(sources)  # Shared primitive contract remains strict.
++
++    def test_homogeneous_source_objects_and_no_cast(self):
++        anchor=torch.randn(2,3,8);source=torch.randn_like(anchor)
++        receiver=PointDepthAttnRes(8);seen=[]
++        h=receiver.register_forward_pre_hook(lambda m,a:seen.append(a[0]))
++        try:
++            out=LinearNOLoopCore._rb_receive(receiver,(anchor,source),anchor)
++            self.assertIs(seen[0][0],anchor);self.assertIs(seen[0][1],source)
++            torch.testing.assert_close(out,receiver((anchor,source)),atol=0,rtol=0)
++        finally:h.remove()
++
++    def test_raw_cache_boundary_all_presets_and_custom(self):
++        real=LinearNOLoopCore._rb_receive
++        configs=[configuration('airfoil',p,'rb_attnres',small=True) for p in PRESETS]
++        for repeats in (1,3):
++            configs.append(resolve_config('airfoil',options=dict(topology_preset='custom',prefix_blocks=0,
++                recurrent_core_blocks=2,loop_repeats=repeats,suffix_blocks=1,residual_mode='rb_attnres',linearno_rank=8),
++                profile_overrides={'model.hidden':8,'model.heads':2,'model.H':5,'model.W':7}))
++        for c in configs:
++            model=build_from_config(c);calls=[];saved=[]
++            def observed(receiver,sources,anchor):
++                old=[(id(v),v.dtype,v.detach().clone()) for v in sources]
++                # Keep the original cache references alive for verification.
++                saved.extend(sources[1:]);calls.append(len(sources))
++                out=real(receiver,sources,anchor)
++                for v,(ident,dtype,value) in zip(sources,old):
++                    self.assertEqual(id(v),ident);self.assertEqual(v.dtype,dtype)
++                    self.assertTrue(torch.equal(v,value))
++                return out
++            # Local oneDNN lacks BF16 convolution backward on this CPU. Keep
++            # autocast BF16, using PyTorch's native CPU convolution for this test.
++            with torch.backends.mkldnn.flags(enabled=False), patch.object(LinearNOLoopCore,'_rb_receive',staticmethod(observed)):
++                with torch.autocast('cpu',dtype=torch.bfloat16):out=model(*inputs(c))
++                out.float().square().mean().backward()
++            C=model.loop.recurrent_core_blocks;R=model.loop.loop_repeats
++            expected=[s for r in range(R) for s in [r+1]+[r+2]*(2*C-1)]+[R+1]
++            self.assertEqual(calls,expected)
++            self.assertTrue(saved);self.assertTrue(all(v.dtype==torch.bfloat16 and v.grad_fn is not None for v in saved))
++            self.assertTrue(torch.isfinite(out).all())
++            self.assertTrue(all(torch.isfinite(p.grad).all() for p in model.parameters() if p.grad is not None))
++            clone=build_from_config(c);clone.load_state_dict(model.state_dict(),strict=True)
++            self.assertEqual(list(model.state_dict()),list(clone.state_dict()))
++
++    def test_sr_lb_never_enter_rb_boundary_and_keep_state(self):
++        for task in TASKS:
++            for preset in PRESETS:
++                for mode in (MODES[0],MODES[2]):
++                    c=configuration(task,preset,mode,small=True);m=build_from_config(c)
++                    with patch.object(LinearNOLoopCore,'_rb_receive',side_effect=AssertionError('SR/LB entered RB cast')):
++                        y=m(*inputs(c));y.square().mean().backward()
++                    self.assertTrue(torch.isfinite(y).all())
++
++    def test_shared_primitive_and_sr_lb_source_ast_frozen(self):
++        snapshot=Path(json.loads((AUDIT/'start-manifest.json').read_text())['snapshot'])/'source'
++        for name in ('attnres.py','body.py','standard.py','airfrans.py','shapenet.py','checkpoint.py'):
++            relative='cdlno/linearno_loop/'+name
++            self.assertEqual((ROOT/relative).read_bytes(),(snapshot/relative).read_bytes())
++        def methods(path):
++            tree=ast.parse(path.read_text())
++            return {n.name:ast.dump(n) for n in ast.walk(tree) if isinstance(n,ast.FunctionDef)}
++        old=methods(snapshot/'cdlno/linearno_loop/core.py');new=methods(ROOT/'cdlno/linearno_loop/core.py')
++        for name in old:
++            if name!='_rb_forward':self.assertEqual(old[name],new[name],name)
++
++    def test_legacy_import_parser_namespace_and_missing_loop_dependency(self):
++        code=r'''
++import ast,argparse,importlib.abc,importlib.util,json,sys,subprocess
++from pathlib import Path
++root=Path(sys.argv[1]);kind=sys.argv[2];mode=sys.argv[3]
++project=root/({'standard':'PDE-Solving-StandardBenchmark','air':'Airfoil-Design-AirfRANS','car':'Car-Design-ShapeNetCar'}[kind])
++entry=project/('models/cdlno_run.py' if kind=='car' else 'cdlno_entry.py')
++tree=ast.parse((project/('exp_darcy.py' if kind=='standard' else 'main.py')).read_text())
++nodes=[n for n in tree.body if isinstance(n,ast.Assign) and ast.unparse(n.targets[0])=='parser' or isinstance(n,ast.Expr) and isinstance(n.value,ast.Call) and ast.unparse(n.value.func)=='parser.add_argument']
++def parser():
++ s={'argparse':argparse,'Path':Path};exec(compile(ast.Module(body=nodes,type_ignores=[]),'<parser>','exec'),s);return s['parser']
++class Block(importlib.abc.MetaPathFinder):
++ def find_spec(self,fullname,path=None,target=None):
++  if fullname=='cdlno' or fullname.startswith('cdlno.'):
++   raise ModuleNotFoundError('intentional missing shared package',name=fullname)
++sys.meta_path.insert(0,Block())
++spec=importlib.util.spec_from_file_location('entry',entry);module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
++tokens=['--cfd_model' if kind=='car' else '--model', 'Transolver_Structured_Mesh_2D' if kind=='standard' else 'Transolver']
++if mode=='loop':tokens += ['--linearno-loop','1']
++def parse(mod,p):return mod.parse_args(p,'darcy',argv=tokens) if kind=='standard' else mod.parse_args(p,argv=tokens)
++if mode=='loop':
++ try:parse(module,parser())
++ except SystemExit as e:assert e.code==2
++ else:raise AssertionError('missing loop dependency accepted')
++else:
++ p=parser();args=parse(module,p)
++ old_source=subprocess.check_output(['git','show','5b991226c5354af3332b2f7306b370aef0950c79:'+str(entry.relative_to(root))],cwd=root,text=True)
++ old=type('Entry',(),{})();scope={'__file__':str(entry)};exec(compile(old_source,str(entry),'exec'),scope);old.parse_args=scope['parse_args']
++ q=parser();expected=parse(old,q);assert vars(args)==vars(expected)
++ def actions(p):return [(a.option_strings,a.dest,a.default,a.required,a.nargs,a.choices,a.type) for a in p._actions]
++ assert actions(p)==actions(q)
++ assert not any(k=='cdlno' or k.startswith('cdlno.') for k in sys.modules)
++print('PASS',kind,mode)
++'''
++        for kind in ('standard','air','car'):
++            for mode in ('legacy','loop'):
++                result=subprocess.run([sys.executable,'-I','-B','-c',code,str(ROOT),kind,mode],capture_output=True,text=True)
++                self.assertEqual(result.returncode,0,result.stdout+result.stderr)
++                if mode=='loop':self.assertIn('linearno_loop selected but its shared cdlno loop package is unavailable',result.stderr)
++
++    def test_pure_and_history_do_not_load_loop_adapters(self):
++        code=r'''
++import sys
++sys.path[:0]=[sys.argv[1]+'/tests',sys.argv[1]]
++from linearno.test_static_integration import args_for
++for flags in ((),('--linearno_latent_attnres','1','--linearno_history_k_conditioning','0')):
++ args=args_for('darcy',*flags)
++ assert args.linearno_family in ('linearno','linearno_history')
++ assert 'cdlno.linearno_loop.standard_entry' not in sys.modules
++ assert 'cdlno.linearno_loop.industrial_entry' not in sys.modules
++'''
++        p=subprocess.run([sys.executable,'-B','-c',code,str(ROOT)],capture_output=True,text=True)
++        self.assertEqual(p.returncode,0,p.stdout+p.stderr)
++
++    def test_air_projection_detects_real_training_and_eval_mutations(self):
++        from output_recording_projection import strip_recording
++        from msar_entry_projection import strip_msar
++        from visualization_projection import strip_visualization
++        for file in ('main.py','main_evaluation.py','train.py'):
++            original=ast.parse((ROOT/'Airfoil-Design-AirfRANS'/file).read_text())
++            for projection in (strip_recording,strip_msar,lambda t:strip_visualization(strip_msar(t))):
++                baseline=projection(copy.deepcopy(original));mutated=copy.deepcopy(original)
++                # Alter a surviving native calculation/call, not any new-family guard.
++                target=next(n for n in ast.walk(baseline) if isinstance(n,ast.Call) and
++                            ast.unparse(n.func) in ('train.main','Results_test','metrics.Results_test','optimizer.step','lr_scheduler.step'))
++                needle=ast.dump(target)
++                candidates=[n for n in ast.walk(mutated) if isinstance(n,ast.Call) and ast.dump(n)==needle]
++                if not candidates:
++                    # A native call may have observational kwargs projected out;
++                    # mutate the same function's native callee instead.
++                    candidates=[n for n in ast.walk(mutated) if isinstance(n,ast.Call) and ast.unparse(n.func)==ast.unparse(target.func)]
++                self.assertTrue(candidates)
++                candidates[-1].func=ast.Name(id='BROKEN_NATIVE_CALCULATION',ctx=ast.Load())
++                self.assertNotEqual(ast.dump(baseline),ast.dump(projection(mutated)),file)
++
++    def test_exact_repair_projections_reject_source_mutation(self):
++        from cdlno.linearno_loop.ll9r_projection import project,REPLACEMENTS
++        from ll9r_projection import strip_repair
++        snapshot=Path(json.loads((AUDIT/'start-manifest.json').read_text())['snapshot'])/'source'
++        for name in REPLACEMENTS:
++            current=(ROOT/name).read_text();old=(snapshot/name).read_text()
++            self.assertEqual(project(name,current),old,name)
++            if name.endswith('/core.py'):
++                with self.assertRaises(ValueError):project(name,current.replace('canonical_dtype = anchor.dtype','canonical_dtype = sources[-1].dtype'))
++                self.assertNotEqual(project(name,current.replace('partial+raw','partial-raw')),old)
++        for name in json.loads((AUDIT/'routing-replacements.json').read_text()):
++            current=ast.parse((ROOT/name).read_text())
++            self.assertEqual(ast.dump(strip_repair(current)),ast.dump(ast.parse((snapshot/name).read_text())))
++
++    def test_frozen_document_revisions_exact_committed_bytes_and_old_content(self):
++        from frozen_revisions import ROWS,expected_hash
++        for name,row in ROWS.items():
++            raw=(ROOT/name).read_bytes()
++            self.assertEqual(raw,subprocess.check_output(['git','show',row['commit']+':'+name],cwd=ROOT))
++            self.assertEqual(hashlib.sha256(raw).hexdigest(),expected_hash(name,row['old_sha256']))
++            self.assertNotEqual(hashlib.sha256(raw+b'changed').hexdigest(),expected_hash(name,row['old_sha256']))
++            with self.assertRaises(AssertionError):expected_hash(name,'0'*64)
++
++    def test_freeze_keeps_untracked_source_and_rejects_real_py_change(self):
++        from ll9r_test_source_projection import project_test_source
++        rows=json.loads((ROOT/'docs/loop_linearno_audit/ll1/start-manifest.json').read_text())['files']
++        eligible=[r for r in rows if '__pycache__' not in Path(r['path']).parts and not r['path'].endswith(('.pyc','.pyo'))]
++        self.assertTrue(any(r['classification']=='untracked' for r in eligible))
++        row=next(r for r in eligible if r['path']=='cdlno/linearno/attention.py')
++        raw=project_test_source(row['path'],(ROOT/row['path']).read_bytes())
++        self.assertEqual(hashlib.sha256(raw).hexdigest(),row['sha256'])
++        self.assertNotEqual(hashlib.sha256(project_test_source(row['path'],raw+b'\n# mutation\n')).hexdigest(),row['sha256'])
++
++
++if __name__=='__main__':unittest.main()

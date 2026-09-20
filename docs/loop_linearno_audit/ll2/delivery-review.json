@@ -1,0 +1,49 @@
+{
+  "stage": "LL2",
+  "status": "PASS",
+  "reviewed": {
+    "oracle": "Independent torch equations, scalar hand check, FP64 gradcheck; no production import",
+    "axes": "S-only softmax, B/N/channel/source permutations and isolated perturbation; no matmul in AR trace",
+    "parameters": "2H only, receiver independence, zero query/one scale; initialization consumes no RNG",
+    "body": "60 same-weight cases, raw/native/scaled, identity unscaled, explicit terminal head, no state registration",
+    "compatibility": "LL1 24 checks + exact LL0 test-outcome comparison + full file content/classification freeze"
+  },
+  "tests": {
+    "loop_suite_count": 41,
+    "loop_suite_passed": 41,
+    "seconds": 5.856,
+    "old_LL0": {
+      "methods": 153,
+      "passed": 147,
+      "failed_methods": 2,
+      "failed_assertions": 4,
+      "skipped": 4,
+      "errors": 0
+    }
+  },
+  "syntax_python310": [
+    "cdlno/linearno_loop/__init__.py",
+    "cdlno/linearno_loop/attnres.py",
+    "cdlno/linearno_loop/body.py",
+    "docs/loop_linearno_audit/ll2/finalize_evidence.py",
+    "docs/loop_linearno_audit/ll2/run_existing_regressions.py",
+    "tests/loop_linearno/__init__.py",
+    "tests/loop_linearno/point_attnres_oracle.py",
+    "tests/loop_linearno/support.py",
+    "tests/loop_linearno/test_artifacts.py",
+    "tests/loop_linearno/test_block_body.py",
+    "tests/loop_linearno/test_config.py",
+    "tests/loop_linearno/test_isolation.py",
+    "tests/loop_linearno/test_point_attnres.py",
+    "tests/loop_linearno/test_schema.py"
+  ],
+  "known_test_correction": "source permutation had an initial bitwise equality assertion; observed FP64 1.11e-16; corrected to the already declared FP64 tolerance, no math change",
+  "not_run": [
+    "full loop model",
+    "task integration",
+    "full checkpoint/resume for loop family",
+    "real data/training",
+    "remote environment",
+    "full CUDA AMP model support"
+  ]
+}
