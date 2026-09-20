@@ -1,0 +1,27 @@
+{
+  "name": "cuda",
+  "argv": [
+    "/home/hwz/anaconda3/bin/python",
+    "-B",
+    "tools/linearno_loop_performance.py",
+    "cuda",
+    "--output",
+    "/home/hwz/CDLNO/docs/loop_linearno_audit/ll10/attempt5/cuda.json"
+  ],
+  "cwd": "/home/hwz/CDLNO",
+  "environment": {
+    "PYTHONPATH": "/home/hwz/CDLNO/tests:/home/hwz/CDLNO",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "CUDA_VISIBLE_DEVICES": "0",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MPLBACKEND": "Agg"
+  },
+  "exit_code": 0,
+  "seconds": 140.136,
+  "log": "cuda.log",
+  "evidence_directory": "/home/hwz/CDLNO/docs/loop_linearno_audit/ll10/attempt5",
+  "continued_from_interrupted_attempt": null,
+  "status": "PASS"
+}

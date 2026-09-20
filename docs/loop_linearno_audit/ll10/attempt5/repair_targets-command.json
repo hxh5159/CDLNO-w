@@ -1,0 +1,28 @@
+{
+  "name": "repair_targets",
+  "argv": [
+    "/home/hwz/anaconda3/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "loop_linearno.test_ll9r",
+    "-v"
+  ],
+  "cwd": "/home/hwz/CDLNO",
+  "environment": {
+    "PYTHONPATH": "/home/hwz/CDLNO/tests:/home/hwz/CDLNO",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "CUDA_VISIBLE_DEVICES": "",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MPLBACKEND": "Agg"
+  },
+  "exit_code": 0,
+  "seconds": 26.754,
+  "log": "repair_targets.log",
+  "evidence_directory": "/home/hwz/CDLNO/docs/loop_linearno_audit/ll10/attempt5",
+  "continued_from_interrupted_attempt": null,
+  "tests": 11,
+  "status": "PASS"
+}
