@@ -9,7 +9,7 @@ from cdlno.linearno.schema import unpack_state
 from cdlno.linearno.checkpoint import restore_random_state,strict_load,sha256
 from cdlno.training_state import _optimizer_signature,_atomic
 from linearno_loop.contracts import digest,seal,require_equal
-from linearno_loop.schema import make_metadata,read_metadata,write_metadata,validate_constructor
+from linearno_loop.versioning import make_metadata,read_metadata,write_metadata,validate_constructor
 from .checkpoint import inspect_checkpoint,read_pair,validate_optimizer_state
 
 
@@ -24,14 +24,8 @@ def member_seed(args,member):
 
 
 def construct(args,member=0):
-    config=args._linearno_loop_config;spec=config['model_spec']
-    mod,name=spec['class_path'].rsplit('.',1);cls=getattr(importlib.import_module(mod),name)
-    validate_constructor(spec,cls)
-    with torch.random.fork_rng(devices=[]):
-        torch.random.default_generator.manual_seed(member_seed(args,member))
-        model=cls(**spec['constructor_kwargs'])
-    model.config_hash=config['config_hash'];model.task=args.linearno_task
-    return model
+    from .versioning import construct as versioned_construct
+    return versioned_construct(args._linearno_loop_config,member_seed=member_seed(args,member))
 
 
 def data_contract(config,native):
@@ -59,11 +53,14 @@ def provenance(task):
            root/'cdlno/linearno_history/car_entry.py',root/project/'main.py',root/project/'main_evaluation.py',
            root/project/'train.py',*(root/project/'dataset').glob('*.py'),*(root/project/'utils').glob('*.py'),
            root/project/('cdlno_entry.py' if task=='airfrans' else 'models/cdlno_run.py')}
+    from .v2_projection import project as v2_source
     from .ll9r_projection import project as repair_source
-    paths = {p for p in paths if p.name != 'll9r_projection.py'}
-    sources={str(p.relative_to(root)):hashlib.sha256(repair_source(str(p.relative_to(root)), p.read_text()).encode()).hexdigest() for p in sorted(paths)}
+    paths = {p for p in paths if p.name not in ('ll9r_projection.py','v2_projection.py','versioning.py')}
+    sources={str(p.relative_to(root)):hashlib.sha256(repair_source(str(p.relative_to(root)),
+        v2_source(str(p.relative_to(root)),p.read_text())).encode()).hexdigest() for p in sorted(paths)}
     import ast
-    normalized={str(p.relative_to(root)):ast.dump(ast.parse(repair_source(str(p.relative_to(root)), p.read_text()))) for p in sorted(paths)}
+    normalized={str(p.relative_to(root)):ast.dump(ast.parse(repair_source(str(p.relative_to(root)),
+        v2_source(str(p.relative_to(root)),p.read_text())))) for p in sorted(paths)}
     result.update(source_sha256=digest(dict(standard=result['source_sha256'],industrial=sources)),
         normalized_patch_sha256=digest(normalized),code_version='loop-linearno-LL7-v1')
     return result
@@ -78,17 +75,22 @@ def restore_training(saved,path,model,optimizer,scheduler,*,steps,generators,cur
     expected=saved['data_spec']['runtime']['optimizer_signature']
     require_equal(expected,json.loads(json.dumps(_optimizer_signature(model,optimizer))),'optimizer_signature')
     opt=unpack_state(state['optimizer']);sch=unpack_state(state['scheduler'])
-    validate_optimizer_state(opt,optimizer)
+    from .versioning import checkpoint_api
+    checkpoint=checkpoint_api(saved['resolved_config'])
+    checkpoint.validate_optimizer_state(opt,optimizer)
     if state['global_step']!=epoch*steps or sch['last_epoch']!=epoch*steps or sch['_step_count']!=epoch*steps+1:
         raise ValueError('optimizer/scheduler progress mismatch')
     if sch['total_steps']!=scheduler.total_steps:raise ValueError('scheduler construction mismatch')
-    _,weights=read_pair(path,expected=saved['resolved_config']);strict_load(model,weights)
+    _,weights=checkpoint.read_pair(path,expected=saved['resolved_config']);strict_load(model,weights)
     optimizer.load_state_dict(opt);scheduler.load_state_dict(sch)
     restore_random_state(state,generators)  # LAST: constructor/optimizer work may consume RNG
     return epoch
 
 
-def inspect_members(directory,root,*,evaluation,selector):
+def inspect_members(directory,root,*,evaluation,selector,checkpoint_module=None):
+    if checkpoint_module is None:
+        from .versioning import checkpoint_api
+        checkpoint_module=checkpoint_api(root['resolved_config'])
     directory=Path(directory);count=root['profile_spec']['values']['training']['nmodel'];result=[];unfinished=False
     expected_names={f'member_{i:03d}' for i in range(count)}
     if any(p.name not in expected_names for p in directory.glob('member_*')):raise ValueError('unexpected ensemble member directory')
@@ -100,7 +102,7 @@ def inspect_members(directory,root,*,evaluation,selector):
                 raise ValueError('orphaned member state files require inspection')
             unfinished=True;result.append(None);continue
         if unfinished:raise ValueError('ensemble progress is not sequential')
-        metadata,path=inspect_checkpoint(member,selector,expected=root['resolved_config'])
+        metadata,path=checkpoint_module.inspect_checkpoint(member,selector,expected=root['resolved_config'])
         for key in ('model_spec','profile_spec','loop_spec','data_spec','normalizer_spec','provenance_spec'):
             require_equal(root[key],metadata[key],'member.'+key)
         state=metadata['resume_state'];sampler=unpack_state(state['sampler_state'])

@@ -10,11 +10,11 @@ from cdlno.linearno.checkpoint import resume_state,restore_random_state,strict_l
 from cdlno.linearno.schema import unpack_state
 from cdlno.linearno.profiles import digest
 from cdlno.training_state import _optimizer_signature,_atomic
-from linearno_loop.schema import make_metadata,read_metadata,write_metadata
+from linearno_loop.versioning import make_metadata,read_metadata,write_metadata
 from linearno_loop.contracts import require_equal
-from .checkpoint import inspect_checkpoint,read_pair,save_pair
-from .industrial_state import (construct,generators,data_contract,provenance,restore_training,
+from .industrial_state import (construct,generators,data_contract,restore_training,
                                inspect_members,export_state,member_seed)
+from .versioning import checkpoint_api,provenance
 
 
 class AirRun(pure.AirRun):
@@ -25,7 +25,8 @@ class AirRun(pure.AirRun):
         self.data=copy.deepcopy(_data_spec(self.data_dir,self.manifest,config,args.task))
         checksum=digest(self.data['checksums']);self.data['checksums']['normalizer_fit_dataset']=checksum
         self.normalizers=pure._normalizer_spec(coef_norm,checksum)
-        self.current_provenance=provenance('airfrans');self.provenance=self.current_provenance
+        self.checkpoint=checkpoint_api(args._linearno_loop_config)
+        self.current_provenance=provenance(args._linearno_loop_config,task='airfrans');self.provenance=self.current_provenance
         self.generators=generators(args)
         self.current_member=0;self.completed_epoch=0;self.steps_per_epoch=self.data['steps_per_epoch']
         self.data['ensemble_initialization']=[dict(member=i,seed=member_seed(args,i)) for i in range(args.nmodel)]
@@ -72,7 +73,7 @@ class AirRun(pure.AirRun):
         if not sidecar.exists():write_metadata(sidecar,initial)
         self.completed_epoch=0
         if not self.args.resume or not (self.member_dir/'checkpoints/latest.json').exists():return 0,None
-        saved,path=inspect_checkpoint(self.member_dir,self.args.checkpoint,expected=self.args._linearno_loop_config)
+        saved,path=self.checkpoint.inspect_checkpoint(self.member_dir,self.args.checkpoint,expected=self.args._linearno_loop_config)
         if unpack_state(saved['resume_state']['sampler_state'])['member']!=self.current_member:raise ValueError('wrong member')
         self.completed_epoch=restore_training(saved,path,model,optimizer,scheduler,steps=self.steps_per_epoch,
             generators=self.generators,current_provenance=self.current_provenance)
@@ -85,7 +86,7 @@ class AirRun(pure.AirRun):
             raise ValueError('Air epoch/scheduler cadence mismatch')
         state=resume_state(self.optimizer,self.scheduler,epoch,self.steps_per_epoch,self.args.nb_epochs,self.generators,
             dict(member=self.current_member,epoch_boundary=True,history=pure._json_history(history)))
-        save_pair(self.member_dir,model,self._metadata(state))
+        self.checkpoint.save_pair(self.member_dir,model,self._metadata(state))
         self.completed_epoch=epoch
         _atomic(self.member_dir/'history.json',pure._json_history(history),json_file=True)
 
@@ -93,10 +94,11 @@ class AirRun(pure.AirRun):
 
     def load_models(self):
         root=read_metadata(self.directory/'architecture.json')
-        pairs=inspect_members(self.directory,root,evaluation=True,selector=self.args.checkpoint)
+        pairs=inspect_members(self.directory,root,evaluation=True,selector=self.args.checkpoint,
+                              checkpoint_module=self.checkpoint)
         models=[]
         for index,(metadata,path) in enumerate(pairs):
-            model=construct(self.args,index);_,weights=read_pair(path,expected=self.args._linearno_loop_config)
+            model=construct(self.args,index);_,weights=self.checkpoint.read_pair(path,expected=self.args._linearno_loop_config)
             strict_load(model,weights);models.append(model.to(self.args.device).eval())
         return models
 
@@ -107,8 +109,8 @@ class AirRun(pure.AirRun):
         rows=[]
         for i,model in enumerate(models):
             member=self.directory/f'member_{i:03d}'
-            _,path=inspect_checkpoint(member,'final',expected=self.args._linearno_loop_config)
-            _,weights=read_pair(path);strict_load(model,weights)
+            _,path=self.checkpoint.inspect_checkpoint(member,'final',expected=self.args._linearno_loop_config)
+            _,weights=self.checkpoint.read_pair(path);strict_load(model,weights)
             manifest=json.loads(path.read_text());weight=member/manifest['weights']['path']
             rows.append(dict(member_id=f'member_{i:03d}',order=i,path=str(weight.relative_to(self.directory)),sha256=sha256(weight),format='state_dict'))
         value=dict(family='linearno_loop',config_hash=self.args._linearno_loop_config['config_hash'],checkpoint_role='final',members=rows)
@@ -150,10 +152,10 @@ def run_cli(args):
         run.current_member=index
         model=construct(args,index).to(device)
         if args.resume and (run.member_dir/'checkpoints/latest.json').exists():
-            saved,path=inspect_checkpoint(run.member_dir,'latest',expected=args._linearno_loop_config)
+            saved,path=run.checkpoint.inspect_checkpoint(run.member_dir,'latest',expected=args._linearno_loop_config)
             if saved['provenance_spec']['source_sha256']!=run.current_provenance['source_sha256']:raise ValueError('resume source differs')
             if saved['resume_state']['checkpoint_role']=='final':
-                _,weights=read_pair(path);strict_load(model,weights)
+                _,weights=run.checkpoint.read_pair(path);strict_load(model,weights)
                 run.export_final(model)
                 restore_random_state(saved['resume_state'],run.generators)
                 models.append(model);continue
@@ -166,6 +168,6 @@ def run_cli(args):
         model=air_train.main(str(device),train_dataset,val_dataset,model,hparams,str(run.member_dir),
             criterion='MSE_weighted',reg=args.weight,val_iter=10,name_mod='LinearNO',val_sample=True,
             record=recorder,record_member=index,visualization_norm=coef,linearno_run=run)
-        saved,_=inspect_checkpoint(run.member_dir,'final',expected=args._linearno_loop_config)
+        saved,_=run.checkpoint.inspect_checkpoint(run.member_dir,'final',expected=args._linearno_loop_config)
         restore_random_state(saved['resume_state'],run.generators);models.append(model)
     run.finish_ensemble(models);finish(args);return run.directory

@@ -14,9 +14,10 @@ from cdlno.linearno.standard_entry import (
 )
 from cdlno.linearno.profiles import DEFAULT_PROFILE, PROFILES
 from cdlno.linearno.schema import normalizer_record, unpack_state
-from linearno_loop.config import resolve_config, run_directory_id
 from linearno_loop.contracts import CLI_CONTRACT, HISTORY_FLAGS, OPTIONS, PRESETS, RESIDUAL_MODES, TOPOLOGY_FIELDS
-from linearno_loop.schema import read_metadata, restore_config, make_metadata, write_metadata
+from linearno_loop.v2.contracts import CORE_FFN_MODES
+from linearno_loop.versioning import (OPTIONS as VERSIONED_OPTIONS, make_metadata, read_metadata,
+                                      resolve_config, restore_config, run_directory_id, write_metadata)
 
 
 def _loop_parser():
@@ -29,6 +30,8 @@ def _loop_parser():
         elif spec['field']=='residual_mode':kw['choices']=RESIDUAL_MODES
         else:kw['type']=int
         parser.add_argument(flag,**kw)
+    parser.add_argument('--linearno-loop-core-ffn-mode',dest='core_ffn_mode',
+                        choices=CORE_FFN_MODES,default=argparse.SUPPRESS)
     return parser
 
 
@@ -85,7 +88,7 @@ def parse_loop_args(parser,task,tokens,loop_explicit):
         if {'n_layers','slice_num'} & explicit.keys():raise ValueError('loop topology/rank require PCRS and --linearno-rank; no --n-layers/--slice_num')
         for name,value in dict(downsample=1 if task=='ns' else 5,downsamplex=1,downsampley=1).items():
             if hasattr(args,name) and getattr(args,name)!=value:raise ValueError(f'loop task grid requires {name}={value}')
-        options={k:v for k,v in loop_explicit.items() if k in OPTIONS}
+        options={k:v for k,v in loop_explicit.items() if k in VERSIONED_OPTIONS}
         if 'linearno_rank' in explicit:options['linearno_rank']=explicit['linearno_rank']
         if 'linearno_rank' in options and 'rank_multiplier' in options:raise ValueError('explicit actual rank/multiplier conflict')
         if options.get('topology_preset') in PRESETS and set(options)&set(TOPOLOGY_FIELDS):
@@ -96,19 +99,20 @@ def parse_loop_args(parser,task,tokens,loop_explicit):
             if overrides['model.unified_pos'] not in (0,1):raise ValueError('unified_pos must be 0 or 1')
             overrides['model.unified_pos']=bool(overrides['model.unified_pos'])
         if args.eval or args.resume:
-            from .checkpoint import inspect_checkpoint, immutable_equal
             if args.linearno_run_dir is None:raise ValueError('loop eval/resume requires explicit --experiment-dir')
             initial=read_metadata(args.linearno_run_dir/'architecture.json')
             asserted=dict(options,task=task)
             if 'linearno_loop' in loop_explicit:asserted['linearno_loop']=loop_explicit['linearno_loop']
             if 'linearno_profile' in explicit:asserted['profile']=explicit['linearno_profile']
             config=restore_config(initial,explicit=asserted)['config']
+            from .versioning import checkpoint_api
+            checkpoint_module=checkpoint_api(config)
             for path,value in overrides.items():
                 section,field=path.split('.')
                 if config['profile_spec']['values'][section][field]!=value:
                     raise ValueError(f'explicit {path} conflicts with checkpoint')
-            metadata,checkpoint=inspect_checkpoint(args.linearno_run_dir,args.checkpoint or ('latest' if args.resume else 'final'),expected=config)
-            immutable_equal(initial,metadata)
+            metadata,checkpoint=checkpoint_module.inspect_checkpoint(args.linearno_run_dir,args.checkpoint or ('latest' if args.resume else 'final'),expected=config)
+            checkpoint_module.immutable_equal(initial,metadata)
             if args.resume and metadata['resume_state']['epoch']>=config['profile_spec']['values']['training']['epochs']:
                 raise ValueError('run has completed its resolved epochs')
             args._linearno_metadata=metadata;args._linearno_checkpoint=checkpoint
@@ -141,8 +145,8 @@ def model_module(args):
     config=args._linearno_loop_config
     def construct(**kwargs):
         if kwargs!=config['model_spec']['constructor_kwargs']:raise ValueError('loop factory kwargs mismatch')
-        from .construction import build_from_config
-        return build_from_config(config)
+        from .versioning import construction_api
+        return construction_api(config).build_from_config(config)
     return SimpleNamespace(Model=construct)
 
 
@@ -166,8 +170,10 @@ class LoopStandardRun(PureStandardRun):
     def prepare(self, optimizer, scheduler, train_loader, test_loader):
         prepare_loaders(self.args,train_loader,test_loader)
         from cdlno.linearno.checkpoint import resume_state, strict_load, restore_random_state
-        from .checkpoint import read_pair, inspect_checkpoint
         from cdlno.training_state import _optimizer_signature
+        from .versioning import checkpoint_api,provenance
+        args = self.args; cfg = args._linearno_config
+        loop_checkpoint=checkpoint_api(args._linearno_loop_config)
         self.optimizer, self.scheduler = optimizer, scheduler
         self.steps = len(train_loader)
         self.updates_per_batch = 20 if self.args.linearno_task == 'plasticity' else 1
@@ -176,7 +182,6 @@ class LoopStandardRun(PureStandardRun):
         self.sampler = {name: dict(type=type(loader.sampler).__name__, epoch_boundary=True,
                                   replacement=getattr(loader.sampler,'replacement',False))
                         for name,loader in (('train',train_loader),('test',test_loader))}
-        args = self.args; cfg = args._linearno_config
         self.scheduler_plan = dict(type=type(scheduler).__name__, epochs=args.epochs,
             steps_per_epoch=self.steps if type(scheduler).__name__=='OneCycleLR' else 1,
             total_steps=getattr(scheduler,'total_steps',args.epochs), state_at_construction=scheduler.state_dict())
@@ -196,12 +201,10 @@ class LoopStandardRun(PureStandardRun):
         data = dict(protocol=cfg['values']['data'],split=data['split'],sampling=data['sampling'],
             checksums=data['checksums'],scope='synthetic' if str(data['scope']).lower().startswith('synthetic') else 'real',
             runtime={k:v for k,v in data.items() if k not in ('split','sampling','checksums','scope')})
-        from .provenance import provenance
-        from . import checkpoint as loop_checkpoint
-        prov = provenance()
+        prov = provenance(args._linearno_loop_config)
         if args.eval or args.resume:
-            saved, path = inspect_checkpoint(self.directory,args._linearno_checkpoint.stem,expected=args._linearno_loop_config)
-            _, weights = read_pair(path,expected=args._linearno_loop_config)
+            saved, path = loop_checkpoint.inspect_checkpoint(self.directory,args._linearno_checkpoint.stem,expected=args._linearno_loop_config)
+            _, weights = loop_checkpoint.read_pair(path,expected=args._linearno_loop_config)
             for key,actual in (('data_spec',data),('normalizer_spec',normalizers)):
                 if saved[key] != actual:
                     raise ValueError(f'{key} differs from saved run')
@@ -249,12 +252,15 @@ class LoopStandardRun(PureStandardRun):
 
 
     def load(self, model):
-        from .checkpoint import read_pair, strict_load
-        _,weights=read_pair(self.args._linearno_checkpoint,expected=self.args._linearno_loop_config)
+        from cdlno.linearno.checkpoint import strict_load
+        from .versioning import checkpoint_api
+        _,weights=checkpoint_api(self.args._linearno_loop_config).read_pair(
+            self.args._linearno_checkpoint,expected=self.args._linearno_loop_config)
         strict_load(model,weights)
 
     def save(self, model):
-        from .checkpoint import resume_state,save_pair
+        from cdlno.linearno.checkpoint import resume_state
+        from .versioning import checkpoint_api
         from linearno_loop.contracts import seal
         if self.args.eval:raise ValueError('evaluation cannot save training weights')
         if self.scheduler.last_epoch != self.completed_epoch*self.scheduler_plan['steps_per_epoch']:
@@ -262,4 +268,5 @@ class LoopStandardRun(PureStandardRun):
         metadata=copy.deepcopy(self.metadata)
         metadata['resume_state']=resume_state(self.optimizer,self.scheduler,self.completed_epoch,
             self.optimizer_steps,self.args.epochs,self.generators,self.sampler)
-        return save_pair(self.directory,model,seal(metadata,'metadata_hash'))
+        return checkpoint_api(self.args._linearno_loop_config).save_pair(
+            self.directory,model,seal(metadata,'metadata_hash'))

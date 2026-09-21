@@ -1,0 +1,81 @@
+{
+  "stage": "LF0",
+  "verdict": "PASS",
+  "scope": "Read-only audit, numerical baseline capture, versioned v2 design freeze and delivery evidence only.",
+  "review_points": [
+    {
+      "id": "ownership",
+      "status": "PASS",
+      "finding": "V1 owns complete P+C+S native blocks, so both ln_1+operator and ln_2+MLP share across rounds. V2 requires separate owners and cannot widen the v1 tree safely."
+    },
+    {
+      "id": "context_insertion",
+      "status": "PASS",
+      "finding": "All six variants expose the same K^T V to Q-readout boundary. A separate v2 adapter can insert a tokenwise latent context FFN without editing pure LinearNO."
+    },
+    {
+      "id": "initialization",
+      "status": "PASS",
+      "finding": "Common v2 state must be initialized before isolated latent construction; placeholder timing and final W2 zeroing are explicitly frozen."
+    },
+    {
+      "id": "archive_versioning",
+      "status": "PASS",
+      "finding": "Separate v2 extension, schema, class paths and checkpoint format preserve v1 strict constructors, config hashes and Mx2 default."
+    },
+    {
+      "id": "baseline_evidence",
+      "status": "PASS_WITH_RECORDED_HISTORICAL_FAILURES",
+      "finding": "180/180 fresh numerical fixtures passed. The full 689-method inventory has 8 pre-existing evidence/provenance failures and 36 skips; none is hidden or refreshed."
+    }
+  ],
+  "evidence": {
+    "numeric": {
+      "passed": 180,
+      "failed": 0,
+      "artifact_root": "/home/hwz/CDLNO-artifacts/loop-ffn-lf0-baseline-attempt2",
+      "artifact_size": "65M"
+    },
+    "regression": {
+      "methods": 689,
+      "passed": 644,
+      "failed": 9,
+      "skipped": 36,
+      "elapsed_seconds": 2641.482
+    },
+    "freeze": {
+      "hashed_start_files_checked": 3031,
+      "protected_scope_checked": 1415,
+      "changed": 0,
+      "missing": 0,
+      "unexpected_new": 0,
+      "tracked_diff_empty": true,
+      "staged_diff_empty": true
+    }
+  },
+  "modified_production_files": [],
+  "modified_existing_test_files": [],
+  "allowed_outputs": [
+    "docs/LOOP_LINEARNO_FFN_REFERENCE_AUDIT.md",
+    "docs/LOOP_LINEARNO_FFN_IMPLEMENTATION_STATUS.md",
+    "docs/loop_linearno_ffn_audit/lf0/**"
+  ],
+  "unresolved_nonblocking_baseline_issues": [
+    "Deleted historical CDLNO/KCDNO documentation and kcdno_audit evidence cause seven failed methods.",
+    "One launcher fixture hashes ignored Python bytecode rather than source.",
+    "One LL6 provenance fixture predates later approved routing and observation changes.",
+    "The initial manifest did not hash six non-ASCII paths; five tracked paths were verified against HEAD and one user-untracked path retained its starting classification."
+  ],
+  "not_run": [
+    "real data",
+    "real VTK metrics",
+    "long or full-epoch training",
+    "convergence or accuracy",
+    "SOTA comparison",
+    "real epoch throughput",
+    "remote Python 3.10 / torch 2.11 / CUDA 12.8",
+    "distributed training",
+    "torch.compile"
+  ],
+  "next_stage_executed": false
+}

@@ -1,0 +1,108 @@
+{
+  "stage": "LF0",
+  "status": "PASS",
+  "implemented": false,
+  "current_v1": {
+    "family": "linearno_loop",
+    "architecture_extension": "loop_linearno_v1",
+    "config_version": 1,
+    "schema_version": 1,
+    "checkpoint_format": "linearno-loop-epoch-pair-v1",
+    "rank_multiplier_default": 2,
+    "ownership": {
+      "physical_blocks": "P+C+S complete native blocks",
+      "core_operator": "shared across R visits at each core position",
+      "core_ln2_and_point_ffn": "shared across R visits as part of the complete core block",
+      "head": "last suffix only"
+    }
+  },
+  "proposed_v2": {
+    "family": "linearno_loop",
+    "architecture_extension": "loop_linearno_ffn_v2",
+    "config_version": 2,
+    "schema_version": 2,
+    "checkpoint_format": "linearno-loop-epoch-pair-v2",
+    "selection_field": "core_ffn_mode",
+    "cli": "--linearno-loop-core-ffn-mode",
+    "modes": [
+      "round_specific",
+      "round_specific_latent"
+    ],
+    "rank_multiplier_default": 1,
+    "class_paths": {
+      "standard": "cdlno.linearno_loop.v2.standard.LoopedStandardModelV2",
+      "airfrans": "cdlno.linearno_loop.v2.airfrans.LoopedAirfRANSModelV2",
+      "car": "cdlno.linearno_loop.v2.shapenet.LoopedShapeNetModelV2"
+    },
+    "ownership": {
+      "prefix_suffix": "complete native blocks",
+      "core_operators": "C modules; each owns ln_1 and LinearNO operator and is shared across R",
+      "core_point_ffns": "C*R modules; each owns ln_2 and native point MLP",
+      "latent_ffns": "0 for round_specific; C for round_specific_latent, one per core position shared across R",
+      "point_ffn_total": "P+C*R+S",
+      "head": "last suffix only"
+    },
+    "latent_contract": {
+      "location": "after K^T V and before Q readout",
+      "input_output": "[B,h,M,d_h] via [B,M,H] back to [B,h,M,d_h]",
+      "formula": "Z + W2(GELU(W1(LayerNorm(Z))))",
+      "layer_norm_eps": 1e-05,
+      "layer_norm_affine": true,
+      "linear_bias": true,
+      "activation": "GELU",
+      "dropout": 0.0,
+      "w2_weight_init": 0.0,
+      "w2_bias_init": 0.0,
+      "mixes_latent_axis": false,
+      "prefix_suffix_enabled": false
+    },
+    "initialization": {
+      "common_tree": "Construct and release-initialize common v2 modules in identical order, then draw placeholder.",
+      "round_ffns": "Distinct parameters and independent draws for every (core position, round).",
+      "latent": "Construct and initialize after common state inside fork_rng with a recorded derived feature seed; zero W2 last.",
+      "public_rng_advanced_by_latent": false,
+      "later_whole_tree_apply_allowed": false
+    },
+    "compatibility": {
+      "v1_default_changed": false,
+      "v1_constructor_widened": false,
+      "v1_hash_recomputed_under_v2_defaults": false,
+      "metadata_first": true,
+      "strict_state_dict": true,
+      "cross_version_load": "reject before tensor weight loading",
+      "cross_mode_load": "reject before tensor weight loading"
+    }
+  },
+  "operator_variants": [
+    "plain",
+    "temp",
+    "conv",
+    "conv_temp",
+    "airfrans",
+    "shapenet"
+  ],
+  "tasks": {
+    "airfoil": {"hidden": 128, "heads": 8, "base_rank": 64, "latent_width": 572},
+    "darcy": {"hidden": 128, "heads": 8, "base_rank": 64, "latent_width": 572},
+    "elasticity": {"hidden": 128, "heads": 8, "base_rank": 64, "latent_width": 128},
+    "pipe": {"hidden": 128, "heads": 8, "base_rank": 64, "latent_width": 572},
+    "ns": {"hidden": 256, "heads": 8, "base_rank": 32, "latent_width": 256},
+    "plasticity": {"hidden": 128, "heads": 8, "base_rank": 64, "latent_width": 572},
+    "airfrans": {"hidden": 256, "heads": 8, "base_rank": 32, "latent_width": 256},
+    "car": {"hidden": 256, "heads": 8, "base_rank": 32, "latent_width": 256}
+  },
+  "stages": {
+    "LF1": "Versioned pure config/schema/metadata and matrix; no torch model or production route.",
+    "LF2": "Round-specific point FFN primitive and synthetic core with all three residuals.",
+    "LF3": "Latent context FFN and six-variant context adapter with independent oracle.",
+    "LF4": "Full synthetic Standard/Air/Car v2 wrappers, fair initialization and strict checkpoint closure.",
+    "LF5": "Six Standard production task integrations.",
+    "LF6": "AirfRANS and ShapeNet-Car production task integrations.",
+    "LF7": "Launchers, cost tools, final no-data matrix, regressions and delivery."
+  },
+  "cancelled_values": [
+    "stacked_point_ffn",
+    "hourglass",
+    "two_subblock_ffn_stack"
+  ]
+}

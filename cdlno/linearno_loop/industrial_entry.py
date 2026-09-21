@@ -7,9 +7,9 @@ from pathlib import Path
 import random
 from uuid import uuid4
 
-from linearno_loop.config import resolve_config,run_directory_id
-from linearno_loop.contracts import HISTORY_FLAGS,OPTIONS,PRESETS,TOPOLOGY_FIELDS,read_json
-from linearno_loop.schema import read_metadata,restore_config
+from linearno_loop.contracts import HISTORY_FLAGS,PRESETS,TOPOLOGY_FIELDS,read_json
+from linearno_loop.versioning import (OPTIONS,read_metadata,resolve_config,
+                                      restore_config,run_directory_id)
 from cdlno.linearno.profiles import PROFILES,DEFAULT_PROFILE
 from .standard_entry import _loop_parser
 
@@ -103,16 +103,18 @@ def parse_args(parser,tokens,loop_explicit,*,task,evaluation):
             stored=data['task_variant'] if field=='task' else data[field]
             if field in supplied and supplied[field]!=stored:raise ValueError('explicit '+field+' conflicts with saved data protocol')
             setattr(args,field,stored)
-        from .checkpoint import inspect_checkpoint
+        from .versioning import checkpoint_api
+        checkpoint_module=checkpoint_api(config)
         if task=='car':
-            saved,path=inspect_checkpoint(args.linearno_run_dir,args.checkpoint,expected=config)
+            saved,path=checkpoint_module.inspect_checkpoint(args.linearno_run_dir,args.checkpoint,expected=config)
             args._linearno_metadata=saved;args._linearno_checkpoint=path
         else:
             args._linearno_metadata=root
             if args.checkpoint!='latest' and args.resume:raise ValueError('Air ensemble resume requires latest')
             # Every existing member is checked before ANY model is allocated.
             from .industrial_state import inspect_members
-            members=inspect_members(args.linearno_run_dir,root,evaluation=bool(args.eval),selector=args.checkpoint)
+            members=inspect_members(args.linearno_run_dir,root,evaluation=bool(args.eval),selector=args.checkpoint,
+                                    checkpoint_module=checkpoint_module)
             args._linearno_checkpoint=next(pair[1] for pair in reversed(members) if pair is not None)
     else:
         config=resolve_config(task,getattr(args,'linearno_profile',DEFAULT_PROFILE),options=options,profile_overrides=overrides)

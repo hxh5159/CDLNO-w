@@ -1,0 +1,48 @@
+{
+  "stage": "LF7",
+  "status": "PASS",
+  "base_head": "80ebe42d5755fc58ac6b41e2f6a0512d601ac8a8",
+  "artifacts": {
+    "commands": "command-matrix.json",
+    "full_profile_counts": "counts-final.json",
+    "initial_counts_before_state_key_inventory": "counts.json",
+    "synthetic_matrix": "matrix.json",
+    "cpu_timing": "cpu.json",
+    "cuda_smoke": "cuda.json",
+    "old_regression": "regression-results.json",
+    "old_regression_logs": "regressions/",
+    "requirements": "requirements.json",
+    "final_freeze": "final-freeze.json"
+  },
+  "results": {
+    "planned_primary_commands": 288,
+    "planned_rank_x2_controls": 16,
+    "full_profile_constructors": 192,
+    "full_profile_strict_reloads": 96,
+    "synthetic_cpu_matrix": 96,
+    "cpu_timing_cases": 96,
+    "cuda_fp32": {"passed": 96, "failed": 0},
+    "cuda_amp_fp16": {"passed": 96, "failed": 0},
+    "cuda_amp_bf16": {"passed": 96, "failed": 0},
+    "lf1_through_lf7_tests": {"passed": 34, "failed": 0, "seconds": 53.781},
+    "ll9r_and_v1_performance_tests": {"passed": 18, "failed": 0, "seconds": 9.366},
+    "old_inventory": {"methods": 689, "passed": 644, "failed": 9, "skipped": 36, "new_failures": 0}
+  },
+  "commands": [
+    "PYTHONPATH=tests/loop_linearno_ffn:tests:. CUDA_VISIBLE_DEVICES='' python -B -m unittest discover -v -s tests/loop_linearno_ffn",
+    "PYTHONPATH=tests:. CUDA_VISIBLE_DEVICES='' python -B -m unittest -v loop_linearno.test_ll9r loop_linearno.test_performance_tools",
+    "PYTHONPATH=. python -B tools/linearno_loop_ffn_performance.py counts --output docs/loop_linearno_ffn_audit/lf7/counts-final.json",
+    "PYTHONPATH=. CUDA_VISIBLE_DEVICES='' python -B tools/linearno_loop_ffn_performance.py matrix --diagnostics --output docs/loop_linearno_ffn_audit/lf7/matrix.json",
+    "PYTHONPATH=. CUDA_VISIBLE_DEVICES='' taskset -c 0 python -B tools/linearno_loop_ffn_performance.py cpu --warmup 2 --steps 5 --output docs/loop_linearno_ffn_audit/lf7/cpu.json",
+    "PYTHONPATH=. CUDA_VISIBLE_DEVICES=0 python -B tools/linearno_loop_ffn_performance.py cuda --output docs/loop_linearno_ffn_audit/lf7/cuda.json",
+    "python -m compileall -q cdlno/linearno_loop linearno_loop tools tran_evaluate/linearno_loop tests/loop_linearno_ffn",
+    "bash -n tran_evaluate/linearno_loop/<task>.sh",
+    "git diff --check"
+  ],
+  "notes": [
+    "One initial all-new-suite invocation omitted PYTHONPATH=tests and failed to import linearno.static_worker; the corrected 34-method run passed.",
+    "The first old-regression runner imposed a 1000-second timeout on linearno.test_history_industrial and its exception logger mixed bytes/str. The corrected isolated rerun completed 5/5 in 1551 seconds.",
+    "The nine old failures exactly match LF0 classifications; no golden file or tolerance was changed.",
+    "The final LF0-manifest comparison checked 3031 pre-existing files: 9 authorized source changes, 2 regenerated ignored Python caches, 0 unexpected changes and 0 missing files."
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "stage": "LF1",
+  "status": "PASS",
+  "new_tests": {"passed": 9, "failed": 0, "skipped": 0},
+  "v1_regression": {"passed": 19, "failed": 0, "skipped": 0},
+  "matrix": {"primary": 288, "rank_x2_controls": 16, "custom": 1},
+  "checks": {"compileall": "PASS", "git_diff_check": "PASS"},
+  "not_run": ["torch model construction", "real data", "training", "remote environment"]
+}

@@ -6,6 +6,10 @@ from pathlib import Path
 MANIFEST='loop_run_manifest.json'
 
 
+def _v2(spec):
+    return spec.get('config_version') == 2 or 'core_ffn_mode' in spec
+
+
 def schedule(spec):
     P,C,R,S=(spec[k] for k in ('prefix_blocks','recurrent_core_blocks','loop_repeats','suffix_blocks'))
     mode=spec['residual_mode'];events=[]
@@ -16,7 +20,12 @@ def schedule(spec):
         for c in range(C):
             for j,branch in enumerate(('operator','mlp')):
                 if mode=='rb_attnres':events.append(f'loop.rb_receivers.{r}.{2*c+j}')
-                events.append(f'loop.core.{c}.{branch}')
+                if _v2(spec):
+                    events.append(f'loop.core_operators.{c}.operator' if branch=='operator'
+                                  else f'loop.core_ffns.{c}.{r}.mlp')
+                    if branch=='operator' and spec['core_ffn_mode']=='round_specific_latent':
+                        events.append(f'loop.latent_ffns.{c}')
+                else:events.append(f'loop.core.{c}.{branch}')
         if mode=='lb_attnres_1_over_r':
             events.append(f'loop.lb_boundaries.{r}' if r<R-1 else 'loop.lb_output')
     if mode=='rb_attnres':events.append('loop.rb_output')
@@ -27,6 +36,30 @@ def schedule(spec):
 
 def is_router(name):
     return name.startswith(('loop.rb_receivers.','loop.rb_output.','loop.lb_boundaries.','loop.lb_output.'))
+
+
+def is_latent(name):
+    return name.startswith('loop.latent_ffns.')
+
+
+def parameter_parts(model):
+    """Measured ownership partitions; v1 names and totals remain unchanged."""
+    if not hasattr(model.loop,'core_operators'):
+        return None
+    names=('stem','prefix','shared_operators','round_specific_point_ffns',
+           'suffix_body','head','routers','latent_ffns')
+    result={name:0 for name in names}
+    for name,parameter in model.named_parameters():
+        if is_router(name):part='routers'
+        elif is_latent(name):part='latent_ffns'
+        elif '.ln_3.' in name or '.mlp2.' in name:part='head'
+        elif name.startswith('loop.prefix.'):part='prefix'
+        elif name.startswith('loop.core_operators.'):part='shared_operators'
+        elif name.startswith('loop.core_ffns.'):part='round_specific_point_ffns'
+        elif name.startswith('loop.suffix.'):part='suffix_body'
+        else:part='stem'
+        result[part]+=parameter.numel()
+    return result
 
 
 def state_hash(state):
@@ -47,12 +80,16 @@ def observe(args,model,member=0):
     from cdlno.linearno_loop.attnres import PointDepthAttnRes
     from cdlno.linearno_loop.industrial_state import member_seed
     cfg=args._linearno_loop_config;spec=cfg['loop_spec'];path=Path(args.linearno_run_dir)/MANIFEST
-    base=dict(schema_version=1,family='linearno_loop',config_hash=cfg['config_hash'],task=spec['task'],
+    version=2 if _v2(spec) else 1
+    base=dict(schema_version=version,family='linearno_loop',config_hash=cfg['config_hash'],task=spec['task'],
         profile=spec['profile'],topology=spec['topology_preset'],residual_mode=spec['residual_mode'],
         unique_depth=spec['unique_depth'],executed_depth=spec['executed_depth'],resolved_rank=spec['resolved_rank'],
         expected_call_schedule=schedule(spec),fair_comparison=cfg['fair_comparison'],
         selection_policy='predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection',
         launcher_sources={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in Path(__file__).parent.glob('*.py')})
+    if version==2:
+        base.update(architecture_extension=cfg['architecture_extension'],core_ffn_mode=spec['core_ffn_mode'],
+                    state_partition=spec['state_partition'])
     key=f'member_{member:03d}'
     if path.exists():
         saved=json.loads(path.read_text())
@@ -69,15 +106,21 @@ def observe(args,model,member=0):
     if args.eval:raise ValueError('incomplete ensemble initialization manifest')
     if not path.parent.is_dir():raise ValueError('native recorder must reserve run before initialization recording')
     parameters=dict(model.named_parameters());state=model.state_dict()
-    backbone={k:v for k,v in state.items() if not is_router(k)}
+    backbone={k:v for k,v in state.items() if not is_router(k) and not is_latent(k)}
     total=sum(p.numel() for p in parameters.values());routers=sum(p.numel() for k,p in parameters.items() if is_router(k))
     if routers!=spec['attnres']['router_parameter_count']:raise ValueError('measured router count differs from schema')
+    parts=parameter_parts(model);latent=sum(p.numel() for k,p in parameters.items() if is_latent(k))
     row=dict(public_backbone_initial_sha256=state_hash(backbone),initial_state_sha256=state_hash(state),
         initialization_seed=member_seed(args,member) if spec['task'] in ('car','airfrans') else args.seed,
         dataloader_generator_seeds=cfg['fair_comparison']['dataloader_generators'],
         python_numpy_torch_seed=args.seed,router_initialization='query=zeros; norm=ones; consumes no RNG',
-        parameters=total,backbone_parameters=total-routers,router_parameters=routers,
+        parameters=total,backbone_parameters=total-routers-latent if version==2 else total-routers,
+        router_parameters=routers,
         actual_call_schedule=None,observation='pending_first_successful_forward')
+    if version==2:
+        row.update(latent_parameters=latent,parameter_parts=parts,
+                   point_ffn_instances=spec['point_ffn_instance_count'],
+                   operator_instances=spec['operator_instance_count'])
     saved['members'][key]=row;_atomic(path,saved,json_file=True)
     events=[];handles=[]
     def begin(*unused):events.clear()
@@ -95,7 +138,7 @@ def observe(args,model,member=0):
             for handle in handles:handle.remove()
             handles.clear();events.clear()
     handles.append(model.register_forward_pre_hook(begin))
-    for group in ('prefix','core','suffix'):
+    for group in ('prefix','suffix') if version==2 else ('prefix','core','suffix'):
         for i,physical in enumerate(getattr(model.loop,group)):
             block=physical.block;prefix=f'loop.{group}.{i}'
             handles.append(block.Attn.register_forward_pre_hook(event(prefix+'.operator')))
@@ -103,6 +146,14 @@ def observe(args,model,member=0):
             if block.last_layer:
                 handles.append(block.ln_3.register_forward_pre_hook(event(prefix+'.final_norm')))
                 handles.append(block.mlp2.register_forward_pre_hook(event(prefix+'.head')))
+    if version==2:
+        for i,operator in enumerate(model.loop.core_operators):
+            handles.append(operator.register_forward_pre_hook(event(f'loop.core_operators.{i}.operator')))
+        for i,row in enumerate(model.loop.core_ffns):
+            for r,point_ffn in enumerate(row):
+                handles.append(point_ffn.mlp.register_forward_pre_hook(event(f'loop.core_ffns.{i}.{r}.mlp')))
+        for i,latent_ffn in enumerate(getattr(model.loop,'latent_ffns',())):
+            handles.append(latent_ffn.register_forward_pre_hook(event(f'loop.latent_ffns.{i}')))
     for name,module in model.named_modules():
         if isinstance(module,PointDepthAttnRes):handles.append(module.register_forward_pre_hook(event(name)))
     handles.append(model.register_forward_hook(end,always_call=True))

@@ -6,11 +6,11 @@ from cdlno.linearno import car_entry as pure
 from cdlno.linearno_history.car_entry import CarRun as GeneratorCarRun
 from cdlno.linearno.checkpoint import resume_state,strict_load
 from cdlno.training_state import _optimizer_signature
-from linearno_loop.schema import make_metadata,write_metadata
+from linearno_loop.versioning import make_metadata,write_metadata
 from linearno_loop.contracts import require_equal
-from .checkpoint import read_pair,save_pair
-from .industrial_state import (construct,generators,data_contract,legacy_data_view,provenance,
+from .industrial_state import (construct,generators,data_contract,legacy_data_view,
                                restore_training,export_state)
+from .versioning import checkpoint_api,provenance
 
 restore_coef_norm=pure.restore_coef_norm
 load_data=pure.load_data
@@ -28,7 +28,8 @@ class CarRun(GeneratorCarRun):
         self.args,self.config,self.directory=args,args._linearno_config,Path(args.linearno_run_dir)
         self.data,self.coef,self.recorder=copy.deepcopy(data_spec),coef_norm,recorder
         self.completed_epoch=0;self.generators=generators(args)
-        self.current_provenance=provenance('car');self.provenance=self.current_provenance
+        self.checkpoint=checkpoint_api(args._linearno_loop_config)
+        self.current_provenance=provenance(args._linearno_loop_config,task='car');self.provenance=self.current_provenance
         from cdlno.linearno.schema import normalizer_record
         from cdlno.linearno.profiles import digest
         checksum=digest(self.data['checksums']);self.data['checksums']['normalizer_fit_dataset']=checksum
@@ -62,7 +63,7 @@ class CarRun(GeneratorCarRun):
         self.data['optimizer_signature']=signature
         if self.recorder:self.recorder.record_training_setup(optimizer,scheduler)
         if self.args.resume:
-            saved,_=read_pair(self.args._linearno_checkpoint,expected=self.args._linearno_loop_config)
+            saved,_=self.checkpoint.read_pair(self.args._linearno_checkpoint,expected=self.args._linearno_loop_config)
             self.completed_epoch=restore_training(saved,self.args._linearno_checkpoint,model,optimizer,scheduler,
                 steps=self.steps,generators=self.generators,current_provenance=self.current_provenance)
         else:write_metadata(self.directory/'architecture.json',self.metadata(optimizer,scheduler,0))
@@ -71,12 +72,12 @@ class CarRun(GeneratorCarRun):
     def complete_epoch(self,epoch,model,metrics):
         if epoch!=self.completed_epoch+1 or self.scheduler.last_epoch!=epoch*self.steps:raise ValueError('Car epoch/scheduler mismatch')
         if self.recorder:self.recorder.record_epoch(epoch,metrics)
-        save_pair(self.directory,model,self.metadata(self.optimizer,self.scheduler,epoch));self.completed_epoch=epoch
+        self.checkpoint.save_pair(self.directory,model,self.metadata(self.optimizer,self.scheduler,epoch));self.completed_epoch=epoch
 
     def export_final(self,model):export_state(model,self.directory/f'model_{self.args.nb_epochs}.pth')
 
     def load(self):
-        saved,state=read_pair(self.args._linearno_checkpoint,expected=self.args._linearno_loop_config)
+        saved,state=self.checkpoint.read_pair(self.args._linearno_checkpoint,expected=self.args._linearno_loop_config)
         require_equal(saved['data_spec'],data_contract(self.args._linearno_loop_config,self.data),'data_spec')
         require_equal(saved['normalizer_spec'],self.normalizers,'normalizer_spec')
         model=construct(self.args);strict_load(model,state);return model.to(self.args.device).eval()

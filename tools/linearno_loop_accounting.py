@@ -23,8 +23,70 @@ def router_sources(spec):
     return [s for j in range(r) for s in [j+1]+[j+2]*(2*c-1)]+[r+1]
 
 
+def _linearno_terms(config, B, N):
+    s=config['loop_spec'];m=config['profile_spec']['values']['model'];task=s['task']
+    d,h,M,f=m['hidden'],m['heads'],s['resolved_rank'],m['ffn_ratio'];dh=d//h
+    conv=m['linearno_variant'] in ('conv','conv_temp');kernel=9 if conv else 1
+    outputs=2 if conv or task=='car' else 1
+    tau=2*h if m['linearno_variant'] in ('temp','conv_temp','shapenet') else h if task=='airfrans' else 0
+    attention=kernel*d*d+d+2*dh*M+dh*dh+outputs*(d*d+d)+tau
+    ffn=2*f*d*d+(f+1)*d
+    matrices=dict(input_projection=B*N*kernel*d*d,Q_projection=B*N*d*M,K_projection=B*N*d*M,
+                  V_projection=B*N*d*dh,K_transpose_V=B*N*d*M,QC=B*N*d*M,
+                  output_projection=B*N*outputs*d*d,FFN=B*N*2*f*d*d)
+    return dict(d=d,h=h,M=M,f=f,dh=dh,attention=attention,ffn=ffn,
+                body=attention+4*d+ffn,matrices=matrices,body_mac=sum(matrices.values()))
+
+
+def analytic_v2(config,*,B=1,N=None):
+    """Independent v2 parameter/call/MAC algebra; no module introspection."""
+    s=config['loop_spec'];m=config['profile_spec']['values']['model'];task=s['task']
+    N=point_count(config) if N is None else N
+    if type(B) is not int or type(N) is not int or min(B,N)<1:raise ValueError('B,N must be positive integers')
+    if task in ('airfrans','car') and B!=1:raise ValueError('industrial wrapper is single graph: B=1')
+    terms=_linearno_terms(config,B,N);d,h,M=terms['d'],terms['h'],terms['M']
+    P,C,R,S=(s[k] for k in ('prefix_blocks','recurrent_core_blocks','loop_repeats','suffix_blocks'))
+    operator=terms['attention']+2*d;point_ffn=terms['ffn']+2*d
+    head=2*d+d*m['out_dim']+m['out_dim']
+    pos=m['ref']**2 if m['unified_pos'] else m['space_dim']
+    if task=='airfrans' and m['unified_pos']:pos+=m['space_dim']
+    channels=pos+m['fun_dim'];stem=2*d*channels+2*d+2*d*d+d+d
+    if m['time_input']:stem+=2*(d*d+d)
+    receiver_count=len(router_sources(s));router=2*d*receiver_count
+    latent_enabled=s['core_ffn_mode']=='round_specific_latent'
+    width=s['latent_ffn']['width'];latent_per=2*d*width+width+3*d if latent_enabled else 0
+    parts=dict(stem=stem,prefix=P*terms['body'],shared_operators=C*operator,
+               round_specific_point_ffns=C*R*point_ffn,suffix_body=S*terms['body'],
+               head=head,routers=router,latent_ffns=C*latent_per)
+    stem_mac=B*N*(2*d*channels+2*d*d+(2*d*d if m['time_input'] else 0))
+    head_mac=B*N*d*m['out_dim'];sources=router_sources(s);active=sum(k for k in sources if k>1)
+    latent_visit_mac=2*B*M*d*width if latent_enabled else 0
+    latent_executed_mac=C*R*latent_visit_mac
+    # Every round-specific FFN is a unique module, whereas operators and latent
+    # FFNs are reused. This number calls each registered module exactly once.
+    unique_once=(stem_mac+(P+S)*terms['body_mac']+C*(terms['body_mac']-terms['matrices']['FFN'])
+                 +C*R*terms['matrices']['FFN']+C*latent_visit_mac+head_mac)
+    executed=stem_mac+(P+C*R+S)*terms['body_mac']+latent_executed_mac+head_mac
+    return dict(B=B,N=N,hidden=d,heads=h,head_dim=terms['dh'],M=M,
+        variant=m['linearno_variant'],core_ffn_mode=s['core_ffn_mode'],
+        unique_depth=P+C+S,executed_depth=P+C*R+S,
+        unique_operator_calls=P+C+S,executed_operator_calls=P+C*R+S,
+        unique_point_ffn_modules=P+C*R+S,executed_point_ffn_calls=P+C*R+S,
+        parameter_parts=parts,parameters=sum(parts.values()),state_key_count=None,
+        body_matrix_macs=terms['matrices'],stem_matrix_macs=stem_mac,head_matrix_macs=head_mac,
+        latent_width=width,latent_context_shape=[B,h,M,terms['dh']],
+        latent_matrix_macs_per_visit=latent_visit_mac,
+        latent_matrix_macs=latent_executed_mac,
+        unique_module_once_matrix_macs=unique_once,executed_matrix_macs=executed,
+        executed_matrix_flops=2*executed,router_receivers=receiver_count,
+        router_sources=sources,router_contraction_mac_equivalents=2*B*N*d*active,
+        router_rms_square_elements=B*N*d*active,matrix_flops_are_total_flops=False)
+
+
 def analytic(config,*,B=1,N=None):
     """Only integer algebra from schema; no model construction/module introspection."""
+    if config.get('architecture_extension')=='loop_linearno_ffn_v2':
+        return analytic_v2(config,B=B,N=N)
     s=config['loop_spec'];m=config['profile_spec']['values']['model'];task=s['task']
     d,h,M,f=m['hidden'],m['heads'],s['resolved_rank'],m['ffn_ratio'];dh=d//h
     P,C,R,S=(s[k] for k in ('prefix_blocks','recurrent_core_blocks','loop_repeats','suffix_blocks'))
@@ -66,6 +128,20 @@ def analytic(config,*,B=1,N=None):
 
 
 def measured_parameters(model):
+    if hasattr(model.loop,'core_operators'):
+        parts=Counter({k:0 for k in ('stem','prefix','shared_operators',
+            'round_specific_point_ffns','suffix_body','head','routers','latent_ffns')})
+        for name,p in model.named_parameters():
+            if name.startswith(('loop.rb_','loop.lb_')):part='routers'
+            elif name.startswith('loop.latent_ffns.'):part='latent_ffns'
+            elif '.ln_3.' in name or '.mlp2.' in name:part='head'
+            elif name.startswith('loop.prefix.'):part='prefix'
+            elif name.startswith('loop.core_operators.'):part='shared_operators'
+            elif name.startswith('loop.core_ffns.'):part='round_specific_point_ffns'
+            elif name.startswith('loop.suffix.'):part='suffix_body'
+            else:part='stem'
+            parts[part]+=p.numel()
+        return dict(parts)
     parts=Counter({k:0 for k in ('stem','prefix','shared_core','suffix_body','head','router')})
     for name,p in model.named_parameters():
         if name.startswith(('loop.rb_','loop.lb_')):part='router'
@@ -133,6 +209,15 @@ def audit(model,args,*,B,N):
     """Explicit opt-in forward profiler; no backward/timing hooks survive exit."""
     from cdlno.linearno.attention import LinearNOAttention
     attentions={n:m for n,m in model.named_modules() if isinstance(m,LinearNOAttention)}
+    # The v2 owner deliberately calls ``Attn.forward_with_context`` directly,
+    # so ATen operations are scoped to SharedCoreOperator rather than Attn.
+    # Register that exact outer scope with the same LinearNO signature.
+    try:
+        from cdlno.linearno_loop.v2.core import SharedCoreOperator
+        attentions.update({n:m.Attn for n,m in model.named_modules()
+                           if isinstance(m,SharedCoreOperator)})
+    except ImportError:
+        pass
     training={module:module.training for module in model.modules()};model.eval()
     try:
         with scoped_modules(model) as scope,torch.no_grad():

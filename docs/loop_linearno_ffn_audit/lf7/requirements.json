@@ -1,0 +1,32 @@
+{
+  "stage": "LF7",
+  "status": "PASS",
+  "scope": "authorized data-free implementation and verification",
+  "requirements": [
+    {"id": 1, "requirement": "v1 command/config/metadata/checkpoint semantics remain versioned", "status": "PASS", "evidence": ["regression-results.json", "../../LOOP_LINEARNO_FFN_IMPLEMENTATION_REPORT.md"]},
+    {"id": 2, "requirement": "both v2 modes route across eight tasks", "status": "PASS", "evidence": ["command-matrix.json", "matrix.json"]},
+    {"id": 3, "requirement": "two presets, custom topology and SR/RB/LB", "status": "PASS", "evidence": ["command-matrix.json", "../lf2/results.json", "../lf4/results.json"]},
+    {"id": 4, "requirement": "v2 defaults Mx1 and supports explicit Mx2", "status": "PASS", "evidence": ["counts-final.json", "command-matrix.json"]},
+    {"id": 5, "requirement": "operator/ln1 shared; point FFN/ln2 specific to position and round", "status": "PASS", "evidence": ["../lf2/results.json", "matrix.json"]},
+    {"id": 6, "requirement": "latent FFN is shared per core position after KtV before Q readout", "status": "PASS", "evidence": ["../lf3/results.json", "matrix.json"]},
+    {"id": 7, "requirement": "latent path has no token-axis mixing", "status": "PASS", "evidence": ["../lf3/results.json", "matrix.json"]},
+    {"id": 8, "requirement": "W2-zero identity and fair common initialization/RNG", "status": "PASS", "evidence": ["../lf4/results.json", "matrix.json"]},
+    {"id": 9, "requirement": "nonzero latent path has forward/VJP effect", "status": "PASS", "evidence": ["../lf3/results.json"]},
+    {"id": 10, "requirement": "existing SR/RB/LB formulas and RB AMP boundary retained", "status": "PASS", "evidence": ["cuda.json", "regression-results.json"]},
+    {"id": 11, "requirement": "independent parameter/MAC formulas equal actual modules/ATen", "status": "PASS", "evidence": ["counts-final.json", "matrix.json"]},
+    {"id": 12, "requirement": "cross-mode/version/topology/residual/rank loads fail before forward", "status": "PASS", "evidence": ["../lf4/results.json", "../lf5/results.json", "../lf6/results.json"]},
+    {"id": 13, "requirement": "pure LinearNO, history, Transolver and task protocols are not newly broken", "status": "PASS", "evidence": ["regression-results.json"]},
+    {"id": 14, "requirement": "cancelled stacked/hourglass mode is absent", "status": "PASS", "evidence": ["../../LOOP_LINEARNO_FFN_CONFIGURATION.md"]},
+    {"id": 15, "requirement": "reports distinguish synthetic checks from real experiments", "status": "PASS", "evidence": ["../../LOOP_LINEARNO_FFN_PERFORMANCE.md", "../../LOOP_LINEARNO_FFN_IMPLEMENTATION_REPORT.md"]}
+  ],
+  "not_run": [
+    "real data",
+    "full epochs",
+    "convergence or accuracy",
+    "SOTA comparison",
+    "real epoch throughput",
+    "remote torch 2.11/cu128",
+    "distributed training",
+    "torch.compile"
+  ]
+}

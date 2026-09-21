@@ -1,0 +1,83 @@
+{
+  "stage": "LF0",
+  "inventory": {
+    "modules": 80,
+    "methods": 689,
+    "passed_methods": 644,
+    "failed_methods": 9,
+    "skipped_methods": 36,
+    "elapsed_seconds": 2641.482
+  },
+  "historical_comparison": {
+    "stage": "LL9R",
+    "passed_methods": 653,
+    "failed_methods": 0,
+    "skipped_methods": 36,
+    "explanation": "Historical untracked or ignored evidence was deleted, and two historical provenance/cache fixtures no longer match the current checkout."
+  },
+  "counting_rule": "Count unittest methods. Repeated subtest failures inside one method do not become separate failed methods.",
+  "failed": [
+    {
+      "module": "test_kcdno_airfrans",
+      "method": "AirKCDNO.test_defaults_and_exact_frozen_projection",
+      "kind": "historical_evidence_missing",
+      "detail": "FileNotFoundError: docs/kcdno_audit/k7/before.json"
+    },
+    {
+      "module": "test_kcdno_car",
+      "method": "CarKCDNO.test_factory_defaults_and_frozen_sources",
+      "kind": "historical_evidence_missing",
+      "detail": "FileNotFoundError: docs/kcdno_audit/k6/before.json"
+    },
+    {
+      "module": "test_kcdno_tasks",
+      "method": "StaticKCDNO.test_profiles_explicit_overrides_and_frozen_entries",
+      "kind": "historical_evidence_missing",
+      "detail": "FileNotFoundError: docs/kcdno_audit/k4/before.json"
+    },
+    {
+      "module": "test_kcdno_temporal",
+      "method": "TemporalKCDNO.test_defaults_and_complete_frozen_entries",
+      "kind": "historical_evidence_missing",
+      "detail": "FileNotFoundError: docs/kcdno_audit/k5/before.json"
+    },
+    {
+      "module": "linearno.test_legacy",
+      "method": "LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories",
+      "kind": "historical_inventory_missing",
+      "detail": "One method emitted 218 subtest errors for deleted docs/CDLNO_*, docs/KCDNO_*, docs/kcdno_audit/** and old logs."
+    },
+    {
+      "module": "linearno.test_legacy",
+      "method": "LegacyRegression.test_no_task_parser_factory_imports_from_new_namespace",
+      "kind": "historical_inventory_missing",
+      "detail": "FileNotFoundError: docs/kcdno_audit/audit_static.py before the namespace assertion."
+    },
+    {
+      "module": "loop_linearno.test_isolation",
+      "method": "IsolationTests.test_preexisting_bytes_after_exact_LL6_routing_projection_and_classifications",
+      "kind": "historical_inventory_drift",
+      "detail": "One method emitted 259 subtest failures from deleted historical files and classification drift."
+    },
+    {
+      "module": "loop_linearno.test_launchers",
+      "method": "LauncherTests.test_gpu_mapping_shell_syntax_and_no_legacy_edits",
+      "kind": "ignored_bytecode_hash_drift",
+      "detail": "cdlno/__pycache__/experiment.cpython-313.pyc is e906a418...; historical fixture expects 72f2625a.... The LF0 start manifest already contains the current hash."
+    },
+    {
+      "module": "loop_linearno.test_standard_entry",
+      "method": "EntryTests.test_legacy_parser_factory_no_fields_rng_and_exact_source_projection",
+      "kind": "historical_provenance_mismatch",
+      "detail": "Current normalized_patch_sha256 is 19336fbc...; old LL6 fixture expects a5359e74...."
+    }
+  ],
+  "model_result": {
+    "new_math_failures_found": 0,
+    "fresh_numeric_cases": 180,
+    "fresh_numeric_passed": 180,
+    "statement": "Current core/body/SR/RB/LB/mode, pure LinearNO, history, task model, checkpoint/resume and monitor modules showed no new model calculation failure."
+  },
+  "raw_results": "docs/loop_linearno_ffn_audit/lf0/regressions/regression-results.json",
+  "raw_logs": "docs/loop_linearno_ffn_audit/lf0/regressions/"
+}
