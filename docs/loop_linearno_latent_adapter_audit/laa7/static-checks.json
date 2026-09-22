@@ -1,0 +1,36 @@
+{
+  "phase": "LAA7",
+  "checks": [
+    {
+      "name": "python_compileall_changed_v3_and_industrial",
+      "command": "python -m compileall -q cdlno/linearno_loop/v3 cdlno/linearno_loop/industrial_entry.py cdlno/linearno_loop/air_entry.py cdlno/linearno_loop/car_entry.py cdlno/linearno_loop/versioning.py cdlno/linearno_loop/v2_projection.py tests/loop_linearno_latent_adapter/test_laa7_industrial_entry.py",
+      "status": "passed",
+      "result": "exit 0"
+    },
+    {
+      "name": "git_diff_check",
+      "command": "git diff --check",
+      "status": "passed",
+      "result": "exit 0"
+    },
+    {
+      "name": "user_checkpoint_script_untouched_by_laa7",
+      "command": "git diff -- check_checkpoints/check_pipe_loop_resume.sh",
+      "status": "pre_existing_user_change_only",
+      "evidence": "The file was not edited in this phase; its pre-existing worktree modification remains preserved."
+    },
+    {
+      "name": "torch_cluster_boundary",
+      "command": "import torch_cluster",
+      "status": "skipped",
+      "reason": "ModuleNotFoundError; dependency was not installed or changed"
+    }
+  ],
+  "cost_matrix": {
+    "file": "cost-matrix.json",
+    "rows": 192,
+    "representative_points": {"airfrans": 32000, "car": 32186},
+    "mac_definition": "matrix operations only, 1 MAC = 2 FLOPs",
+    "measured_latency_or_memory": false
+  }
+}

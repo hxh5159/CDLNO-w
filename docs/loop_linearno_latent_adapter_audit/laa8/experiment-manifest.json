@@ -1,0 +1,509 @@
+{
+  "automatic_matrix_execution": false,
+  "default_profile": "matched_v1",
+  "kind": "v3_launcher_experiment_manifest",
+  "output_protocol": "native task output, V3 metadata-first strict pair, current recorder/visualization/eval directories",
+  "path_policy": "run directory resolved by parser and includes profile/depth/residual/flags/M/seed/config_hash; eval/resume require exact RUN",
+  "phase": "LAA8",
+  "profiles": [
+    "matched_v1",
+    "efficient_v1"
+  ],
+  "rows": [
+    {
+      "actions": [
+        "train",
+        "resume",
+        "eval",
+        "train_eval",
+        "dry-run",
+        "preview",
+        "print-run-dir"
+      ],
+      "default": {
+        "actual_M": 64,
+        "adapter_alpha": 4.0,
+        "adapter_mode": "bilateral_qk_lowrank_second_visit",
+        "adapter_rank": 4,
+        "architecture": "loop_linearno_latent_adapter_v3",
+        "depth": 12,
+        "hidden_width": 104,
+        "latent_enabled": true,
+        "latent_width": 704,
+        "residual_mode": "sr_1_over_r",
+        "seed": 0,
+        "topology": "P2-C4-R2-S2"
+      },
+      "profile": "matched_v1",
+      "resolved_config_hash_seed0": "3d9b1c31670914a5d7527663d5152ce2566c1601a2394a0da875d0060a695141",
+      "run_id_seed0_without_timestamp": "airfoil__linearno_loop__v3__matched_v1__P2-C4-R2-S2__sr_1_over_r__H104h8M64Dz704__z1a1r4x4__seed0__3d9b1c31670914a5d7527663d5152ce2566c1601a2394a0da875d0060a695141",
+      "task": "airfoil",
+      "wrapper": "tran_evaluate/linearno_loop_v3/matched_v1/airfoil.sh"
+    },
+    {
+      "actions": [
+        "train",
+        "resume",
+        "eval",
+        "train_eval",
+        "dry-run",
+        "preview",
+        "print-run-dir"
+      ],
+      "default": {
+        "actual_M": 64,
+        "adapter_alpha": 4.0,
+        "adapter_mode": "bilateral_qk_lowrank_second_visit",
+        "adapter_rank": 4,
+        "architecture": "loop_linearno_latent_adapter_v3",
+        "depth": 12,
+        "hidden_width": 104,
+        "latent_enabled": true,
+        "latent_width": 704,
+        "residual_mode": "sr_1_over_r",
+        "seed": 0,
+        "topology": "P2-C4-R2-S2"
+      },
+      "profile": "matched_v1",
+      "resolved_config_hash_seed0": "4e2f4793ff17e3345984c5ef6551c9ffcc4ecfaec66c1ea6d6ef5d8f66e6483a",
+      "run_id_seed0_without_timestamp": "darcy__linearno_loop__v3__matched_v1__P2-C4-R2-S2__sr_1_over_r__H104h8M64Dz704__z1a1r4x4__seed0__4e2f4793ff17e3345984c5ef6551c9ffcc4ecfaec66c1ea6d6ef5d8f66e6483a",
+      "task": "darcy",
+      "wrapper": "tran_evaluate/linearno_loop_v3/matched_v1/darcy.sh"
+    },
+    {
+      "actions": [
+        "train",
+        "resume",
+        "eval",
+        "train_eval",
+        "dry-run",
+        "preview",
+        "print-run-dir"
+      ],
+      "default": {
+        "actual_M": 64,
+        "adapter_alpha": 4.0,
+        "adapter_mode": "bilateral_qk_lowrank_second_visit",
+        "adapter_rank": 4,
+        "architecture": "loop_linearno_latent_adapter_v3",
+        "depth": 12,
+        "hidden_width": 96,
+        "latent_enabled": true,
+        "latent_width": 320,
+        "residual_mode": "sr_1_over_r",
+        "seed": 0,
+        "topology": "P2-C4-R2-S2"
+      },
+      "profile": "matched_v1",
+      "resolved_config_hash_seed0": "1a6bd219d14284e19a811b74164baebe96c839e8c4666202aee7c38ed29fe049",
+      "run_id_seed0_without_timestamp": "elasticity__linearno_loop__v3__matched_v1__P2-C4-R2-S2__sr_1_over_r__H96h8M64Dz320__z1a1r4x4__seed0__1a6bd219d14284e19a811b74164baebe96c839e8c4666202aee7c38ed29fe049",
+      "task": "elasticity",
+      "wrapper": "tran_evaluate/linearno_loop_v3/matched_v1/elasticity.sh"
+    },
+    {
+      "actions": [
+        "train",
+        "resume",
+        "eval",
+        "train_eval",
+        "dry-run",
+        "preview",
+        "print-run-dir"
+      ],
+      "default": {
+        "actual_M": 64,
+        "adapter_alpha": 4.0,
+        "adapter_mode": "bilateral_qk_lowrank_second_visit",
+        "adapter_rank": 4,
+        "architecture": "loop_linearno_latent_adapter_v3",
+        "depth": 12,
+        "hidden_width": 104,
+        "latent_enabled": true,
+        "latent_width": 704,
+        "residual_mode": "sr_1_over_r",
+        "seed": 0,
+        "topology": "P2-C4-R2-S2"
+      },
+      "profile": "matched_v1",
+      "resolved_config_hash_seed0": "03f5d93787f34675d16c2f2dd2a90700a0eab8b3415bace4f2a8693b35ed399b",
+      "run_id_seed0_without_timestamp": "pipe__linearno_loop__v3__matched_v1__P2-C4-R2-S2__sr_1_over_r__H104h8M64Dz704__z1a1r4x4__seed0__03f5d93787f34675d16c2f2dd2a90700a0eab8b3415bace4f2a8693b35ed399b",
+      "task": "pipe",
+      "wrapper": "tran_evaluate/linearno_loop_v3/matched_v1/pipe.sh"
+    },
+    {
+      "actions": [
+        "train",
+        "resume",
+        "eval",
+        "train_eval",
+        "dry-run",
+        "preview",
+        "print-run-dir"
+      ],
+      "default": {
+        "actual_M": 32,
+        "adapter_alpha": 4.0,
+        "adapter_mode": "bilateral_qk_lowrank_second_visit",
+        "adapter_rank": 4,
+        "architecture": "loop_linearno_latent_adapter_v3",
+        "depth": 12,
+        "hidden_width": 208,
+        "latent_enabled": true,
+        "latent_width": 680,
+        "residual_mode": "sr_1_over_r",
+        "seed": 0,
+        "topology": "P2-C4-R2-S2"
+      },
+      "profile": "matched_v1",
+      "resolved_config_hash_seed0": "807be097ad71c1539a91ed37d2ca43740556e2ff5d855b2f4830484bf6e4ffdb",
+      "run_id_seed0_without_timestamp": "ns__linearno_loop__v3__matched_v1__P2-C4-R2-S2__sr_1_over_r__H208h8M32Dz680__z1a1r4x4__seed0__807be097ad71c1539a91ed37d2ca43740556e2ff5d855b2f4830484bf6e4ffdb",
+      "task": "ns",
+      "wrapper": "tran_evaluate/linearno_loop_v3/matched_v1/ns.sh"
+    },
+    {
+      "actions": [
+        "train",
+        "resume",
+        "eval",
+        "train_eval",
+        "dry-run",
+        "preview",
+        "print-run-dir"
+      ],
+      "default": {
+        "actual_M": 64,
+        "adapter_alpha": 4.0,
+        "adapter_mode": "bilateral_qk_lowrank_second_visit",
+        "adapter_rank": 4,
+        "architecture": "loop_linearno_latent_adapter_v3",
+        "depth": 12,
+        "hidden_width": 104,
+        "latent_enabled": true,
+        "latent_width": 720,
+        "residual_mode": "sr_1_over_r",
+        "seed": 0,
+        "topology": "P2-C4-R2-S2"
+      },
+      "profile": "matched_v1",
+      "resolved_config_hash_seed0": "fdba59952a1ec7c46369c2f93a0819ec9551c01e942156ec5ae5ccc4249f6553",
+      "run_id_seed0_without_timestamp": "plasticity__linearno_loop__v3__matched_v1__P2-C4-R2-S2__sr_1_over_r__H104h8M64Dz720__z1a1r4x4__seed0__fdba59952a1ec7c46369c2f93a0819ec9551c01e942156ec5ae5ccc4249f6553",
+      "task": "plasticity",
+      "wrapper": "tran_evaluate/linearno_loop_v3/matched_v1/plasticity.sh"
+    },
+    {
+      "actions": [
+        "train",
+        "resume",
+        "eval",
+        "train_eval",
+        "dry-run",
+        "preview",
+        "print-run-dir"
+      ],
+      "default": {
+        "actual_M": 32,
+        "adapter_alpha": 4.0,
+        "adapter_mode": "bilateral_qk_lowrank_second_visit",
+        "adapter_rank": 4,
+        "architecture": "loop_linearno_latent_adapter_v3",
+        "depth": 12,
+        "hidden_width": 208,
+        "latent_enabled": true,
+        "latent_width": 672,
+        "residual_mode": "sr_1_over_r",
+        "seed": 0,
+        "topology": "P2-C4-R2-S2"
+      },
+      "profile": "matched_v1",
+      "resolved_config_hash_seed0": "876ecc653fd35bb320bb0a85fa20ef9123afa3b948cd442e10740440d898c480",
+      "run_id_seed0_without_timestamp": "airfrans__linearno_loop__v3__matched_v1__P2-C4-R2-S2__sr_1_over_r__H208h8M32Dz672__z1a1r4x4__seed0__876ecc653fd35bb320bb0a85fa20ef9123afa3b948cd442e10740440d898c480",
+      "task": "airfrans",
+      "wrapper": "tran_evaluate/linearno_loop_v3/matched_v1/airfrans.sh"
+    },
+    {
+      "actions": [
+        "train",
+        "resume",
+        "eval",
+        "train_eval",
+        "dry-run",
+        "preview",
+        "print-run-dir"
+      ],
+      "default": {
+        "actual_M": 32,
+        "adapter_alpha": 4.0,
+        "adapter_mode": "bilateral_qk_lowrank_second_visit",
+        "adapter_rank": 4,
+        "architecture": "loop_linearno_latent_adapter_v3",
+        "depth": 12,
+        "hidden_width": 208,
+        "latent_enabled": true,
+        "latent_width": 776,
+        "residual_mode": "sr_1_over_r",
+        "seed": 0,
+        "topology": "P2-C4-R2-S2"
+      },
+      "profile": "matched_v1",
+      "resolved_config_hash_seed0": "522cab5ab67848db7a576b6a5e685f9a48b08dfbb99cde4ed5debc2d22659f9b",
+      "run_id_seed0_without_timestamp": "car__linearno_loop__v3__matched_v1__P2-C4-R2-S2__sr_1_over_r__H208h8M32Dz776__z1a1r4x4__seed0__522cab5ab67848db7a576b6a5e685f9a48b08dfbb99cde4ed5debc2d22659f9b",
+      "task": "car",
+      "wrapper": "tran_evaluate/linearno_loop_v3/matched_v1/car.sh"
+    },
+    {
+      "actions": [
+        "train",
+        "resume",
+        "eval",
+        "train_eval",
+        "dry-run",
+        "preview",
+        "print-run-dir"
+      ],
+      "default": {
+        "actual_M": 64,
+        "adapter_alpha": 4.0,
+        "adapter_mode": "bilateral_qk_lowrank_second_visit",
+        "adapter_rank": 4,
+        "architecture": "loop_linearno_latent_adapter_v3",
+        "depth": 12,
+        "hidden_width": 96,
+        "latent_enabled": true,
+        "latent_width": 512,
+        "residual_mode": "sr_1_over_r",
+        "seed": 0,
+        "topology": "P2-C4-R2-S2"
+      },
+      "profile": "efficient_v1",
+      "resolved_config_hash_seed0": "6e8697a5fb3d9d9d6c51dbb1ba9ef181aac079431fa93d9ea277fd5fe2d48648",
+      "run_id_seed0_without_timestamp": "airfoil__linearno_loop__v3__efficient_v1__P2-C4-R2-S2__sr_1_over_r__H96h8M64Dz512__z1a1r4x4__seed0__6e8697a5fb3d9d9d6c51dbb1ba9ef181aac079431fa93d9ea277fd5fe2d48648",
+      "task": "airfoil",
+      "wrapper": "tran_evaluate/linearno_loop_v3/efficient_v1/airfoil.sh"
+    },
+    {
+      "actions": [
+        "train",
+        "resume",
+        "eval",
+        "train_eval",
+        "dry-run",
+        "preview",
+        "print-run-dir"
+      ],
+      "default": {
+        "actual_M": 64,
+        "adapter_alpha": 4.0,
+        "adapter_mode": "bilateral_qk_lowrank_second_visit",
+        "adapter_rank": 4,
+        "architecture": "loop_linearno_latent_adapter_v3",
+        "depth": 12,
+        "hidden_width": 96,
+        "latent_enabled": true,
+        "latent_width": 512,
+        "residual_mode": "sr_1_over_r",
+        "seed": 0,
+        "topology": "P2-C4-R2-S2"
+      },
+      "profile": "efficient_v1",
+      "resolved_config_hash_seed0": "7a0ca1cb20c624c43a56d7495e4b3966043aed4d6949e887d2d206a11dca2d77",
+      "run_id_seed0_without_timestamp": "darcy__linearno_loop__v3__efficient_v1__P2-C4-R2-S2__sr_1_over_r__H96h8M64Dz512__z1a1r4x4__seed0__7a0ca1cb20c624c43a56d7495e4b3966043aed4d6949e887d2d206a11dca2d77",
+      "task": "darcy",
+      "wrapper": "tran_evaluate/linearno_loop_v3/efficient_v1/darcy.sh"
+    },
+    {
+      "actions": [
+        "train",
+        "resume",
+        "eval",
+        "train_eval",
+        "dry-run",
+        "preview",
+        "print-run-dir"
+      ],
+      "default": {
+        "actual_M": 64,
+        "adapter_alpha": 4.0,
+        "adapter_mode": "bilateral_qk_lowrank_second_visit",
+        "adapter_rank": 4,
+        "architecture": "loop_linearno_latent_adapter_v3",
+        "depth": 12,
+        "hidden_width": 88,
+        "latent_enabled": true,
+        "latent_width": 256,
+        "residual_mode": "sr_1_over_r",
+        "seed": 0,
+        "topology": "P2-C4-R2-S2"
+      },
+      "profile": "efficient_v1",
+      "resolved_config_hash_seed0": "9c26e55b29b9f89161f6c26e1793fb4bbe72b9db2bfa9679b5f48067f2797cba",
+      "run_id_seed0_without_timestamp": "elasticity__linearno_loop__v3__efficient_v1__P2-C4-R2-S2__sr_1_over_r__H88h8M64Dz256__z1a1r4x4__seed0__9c26e55b29b9f89161f6c26e1793fb4bbe72b9db2bfa9679b5f48067f2797cba",
+      "task": "elasticity",
+      "wrapper": "tran_evaluate/linearno_loop_v3/efficient_v1/elasticity.sh"
+    },
+    {
+      "actions": [
+        "train",
+        "resume",
+        "eval",
+        "train_eval",
+        "dry-run",
+        "preview",
+        "print-run-dir"
+      ],
+      "default": {
+        "actual_M": 64,
+        "adapter_alpha": 4.0,
+        "adapter_mode": "bilateral_qk_lowrank_second_visit",
+        "adapter_rank": 4,
+        "architecture": "loop_linearno_latent_adapter_v3",
+        "depth": 12,
+        "hidden_width": 96,
+        "latent_enabled": true,
+        "latent_width": 512,
+        "residual_mode": "sr_1_over_r",
+        "seed": 0,
+        "topology": "P2-C4-R2-S2"
+      },
+      "profile": "efficient_v1",
+      "resolved_config_hash_seed0": "02367cab2cbbf261e755dbfa46a5df4eac19896cd1dbe7dbcea570d06c231eac",
+      "run_id_seed0_without_timestamp": "pipe__linearno_loop__v3__efficient_v1__P2-C4-R2-S2__sr_1_over_r__H96h8M64Dz512__z1a1r4x4__seed0__02367cab2cbbf261e755dbfa46a5df4eac19896cd1dbe7dbcea570d06c231eac",
+      "task": "pipe",
+      "wrapper": "tran_evaluate/linearno_loop_v3/efficient_v1/pipe.sh"
+    },
+    {
+      "actions": [
+        "train",
+        "resume",
+        "eval",
+        "train_eval",
+        "dry-run",
+        "preview",
+        "print-run-dir"
+      ],
+      "default": {
+        "actual_M": 32,
+        "adapter_alpha": 4.0,
+        "adapter_mode": "bilateral_qk_lowrank_second_visit",
+        "adapter_rank": 4,
+        "architecture": "loop_linearno_latent_adapter_v3",
+        "depth": 12,
+        "hidden_width": 192,
+        "latent_enabled": true,
+        "latent_width": 512,
+        "residual_mode": "sr_1_over_r",
+        "seed": 0,
+        "topology": "P2-C4-R2-S2"
+      },
+      "profile": "efficient_v1",
+      "resolved_config_hash_seed0": "aba9ad3425653e96d21005eb820d8714712cf6d32f40cb8d1adfcf77a9ae3447",
+      "run_id_seed0_without_timestamp": "ns__linearno_loop__v3__efficient_v1__P2-C4-R2-S2__sr_1_over_r__H192h8M32Dz512__z1a1r4x4__seed0__aba9ad3425653e96d21005eb820d8714712cf6d32f40cb8d1adfcf77a9ae3447",
+      "task": "ns",
+      "wrapper": "tran_evaluate/linearno_loop_v3/efficient_v1/ns.sh"
+    },
+    {
+      "actions": [
+        "train",
+        "resume",
+        "eval",
+        "train_eval",
+        "dry-run",
+        "preview",
+        "print-run-dir"
+      ],
+      "default": {
+        "actual_M": 64,
+        "adapter_alpha": 4.0,
+        "adapter_mode": "bilateral_qk_lowrank_second_visit",
+        "adapter_rank": 4,
+        "architecture": "loop_linearno_latent_adapter_v3",
+        "depth": 12,
+        "hidden_width": 96,
+        "latent_enabled": true,
+        "latent_width": 512,
+        "residual_mode": "sr_1_over_r",
+        "seed": 0,
+        "topology": "P2-C4-R2-S2"
+      },
+      "profile": "efficient_v1",
+      "resolved_config_hash_seed0": "964f71560fdf403198e8876df815c44d19bf6ba82275aa9752f60dcbadc2db11",
+      "run_id_seed0_without_timestamp": "plasticity__linearno_loop__v3__efficient_v1__P2-C4-R2-S2__sr_1_over_r__H96h8M64Dz512__z1a1r4x4__seed0__964f71560fdf403198e8876df815c44d19bf6ba82275aa9752f60dcbadc2db11",
+      "task": "plasticity",
+      "wrapper": "tran_evaluate/linearno_loop_v3/efficient_v1/plasticity.sh"
+    },
+    {
+      "actions": [
+        "train",
+        "resume",
+        "eval",
+        "train_eval",
+        "dry-run",
+        "preview",
+        "print-run-dir"
+      ],
+      "default": {
+        "actual_M": 32,
+        "adapter_alpha": 4.0,
+        "adapter_mode": "bilateral_qk_lowrank_second_visit",
+        "adapter_rank": 4,
+        "architecture": "loop_linearno_latent_adapter_v3",
+        "depth": 12,
+        "hidden_width": 192,
+        "latent_enabled": true,
+        "latent_width": 512,
+        "residual_mode": "sr_1_over_r",
+        "seed": 0,
+        "topology": "P2-C4-R2-S2"
+      },
+      "profile": "efficient_v1",
+      "resolved_config_hash_seed0": "44d97b5f1aa995fd3e95a4ac90b54234e79b393757c20b91927d356247366a01",
+      "run_id_seed0_without_timestamp": "airfrans__linearno_loop__v3__efficient_v1__P2-C4-R2-S2__sr_1_over_r__H192h8M32Dz512__z1a1r4x4__seed0__44d97b5f1aa995fd3e95a4ac90b54234e79b393757c20b91927d356247366a01",
+      "task": "airfrans",
+      "wrapper": "tran_evaluate/linearno_loop_v3/efficient_v1/airfrans.sh"
+    },
+    {
+      "actions": [
+        "train",
+        "resume",
+        "eval",
+        "train_eval",
+        "dry-run",
+        "preview",
+        "print-run-dir"
+      ],
+      "default": {
+        "actual_M": 32,
+        "adapter_alpha": 4.0,
+        "adapter_mode": "bilateral_qk_lowrank_second_visit",
+        "adapter_rank": 4,
+        "architecture": "loop_linearno_latent_adapter_v3",
+        "depth": 12,
+        "hidden_width": 192,
+        "latent_enabled": true,
+        "latent_width": 512,
+        "residual_mode": "sr_1_over_r",
+        "seed": 0,
+        "topology": "P2-C4-R2-S2"
+      },
+      "profile": "efficient_v1",
+      "resolved_config_hash_seed0": "5a5c6c9309260796f0e60cb6a951dca3009846ff07a83897255e3f7561b0127e",
+      "run_id_seed0_without_timestamp": "car__linearno_loop__v3__efficient_v1__P2-C4-R2-S2__sr_1_over_r__H192h8M32Dz512__z1a1r4x4__seed0__5a5c6c9309260796f0e60cb6a951dca3009846ff07a83897255e3f7561b0127e",
+      "task": "car",
+      "wrapper": "tran_evaluate/linearno_loop_v3/efficient_v1/car.sh"
+    }
+  ],
+  "seed_suite": [
+    0,
+    1,
+    2
+  ],
+  "tasks": [
+    "airfoil",
+    "darcy",
+    "elasticity",
+    "pipe",
+    "ns",
+    "plasticity",
+    "airfrans",
+    "car"
+  ]
+}

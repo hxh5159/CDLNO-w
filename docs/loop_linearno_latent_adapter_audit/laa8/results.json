@@ -1,0 +1,65 @@
+{
+  "phase": "LAA8",
+  "status": "PASS",
+  "environment": {
+    "python": "3.13.9",
+    "torch": "2.13.0+cu130",
+    "torch_geometric": "2.3.1",
+    "cuda_available": true,
+    "scope": "parser/dry-run/synthetic recording only"
+  },
+  "tests": {
+    "laa8_launcher_tests": {
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "elapsed_seconds": 14.780,
+      "coverage": [
+        "16 matched/efficient profile-task real parser previews",
+        "shell syntax for all required wrappers",
+        "unique print-run-dir and quoted output path",
+        "profile conflict and custom explicit-field failures",
+        "saved-config restore/conflict before tensor load",
+        "V3 recording ownership and shared-core call schedule"
+      ]
+    },
+    "legacy_lf7_recording_launcher_regression": {
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "elapsed_seconds": 7.826,
+      "scope": "old v1/v2 command matrix, observation neutrality and projection"
+    },
+    "bash_n_all_entries": {
+      "passed": 25,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "shared helper and 24 profile/custom wrappers"
+    },
+    "python_compileall": {"status": "passed"},
+    "git_diff_check": {"status": "passed"},
+    "manifest_json_validation": {"status": "passed"}
+  },
+  "coverage": {
+    "tasks": ["airfoil", "darcy", "elasticity", "pipe", "ns", "plasticity", "airfrans", "car"],
+    "profiles": ["matched_v1", "efficient_v1"],
+    "actions": ["train", "resume", "eval", "train_eval", "dry-run", "preview", "print-run-dir"],
+    "default_depth": "D12/P2-C4-R2-S2",
+    "future_paired_seeds": [0, 1, 2],
+    "matrix_execution": false,
+    "experiment_manifest_rows": 16
+  },
+  "recording": {
+    "v3_schema": 3,
+    "ownership": "shared_complete_core_block_across_rounds",
+    "v2_round_specific_names_in_v3_schedule": false,
+    "state_partition": ["stem", "prefix", "shared_core", "suffix_body", "head", "routers", "latent_ffns", "adapters"]
+  },
+  "not_run": [
+    "real data loaders",
+    "real or long training",
+    "remote GPU runs",
+    "full 8-task × 2-profile × seed matrix",
+    "accuracy, convergence, latency, memory or SOTA"
+  ]
+}

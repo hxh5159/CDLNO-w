@@ -139,6 +139,15 @@ def parse_args(parser, task, tokens):
 
 
 def model_kwargs(args, **grid):
+    # The unchanged six exp files import this helper directly.  V3 keeps its
+    # own constructor contract and exposes a compatibility bridge only when
+    # that explicit family is selected; v1/v2 continue through the exact
+    # historical branch below.
+    if hasattr(args, '_linearno_loop_config'):
+        from linearno_loop.versioning import is_v3
+        if is_v3(args._linearno_loop_config):
+            from cdlno.linearno_loop.standard_entry import model_kwargs as v3_kwargs
+            return v3_kwargs(args, **grid)
     kwargs = dict(args._linearno_model_spec['constructor_kwargs'])
     for key, value in grid.items():
         if kwargs[key] != value:

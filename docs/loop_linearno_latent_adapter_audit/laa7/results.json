@@ -1,0 +1,81 @@
+{
+  "phase": "LAA7",
+  "status": "PASS_WITH_DEPENDENCY_BOUNDARY_SKIP",
+  "scope": "V3 industrial adapters for AirfRANS and ShapeNet-Car; synthetic/parser acceptance only",
+  "environment": {
+    "python": "3.13.9",
+    "executable": "/home/hwz/anaconda3/bin/python",
+    "torch": "2.13.0+cu130",
+    "torch_geometric": "2.3.1",
+    "cuda_available": true,
+    "cuda_version": "13.0",
+    "device_count": 1,
+    "torch_cluster": "missing"
+  },
+  "tests": {
+    "laa7_industrial_entry": {
+      "command": "PYTHONPATH=tests:.:tests/loop_linearno_latent_adapter python -c 'load LAA7IndustrialTests'",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 1,
+      "elapsed_seconds": 73.332,
+      "skip_reason": "ModuleNotFoundError: No module named 'torch_cluster'; radius-graph dependency boundary only"
+    },
+    "legacy_lf6_industrial_regression": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "elapsed_seconds": 135.284
+    },
+    "legacy_lf7_delivery_regression": {
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "elapsed_seconds": 8.948
+    }
+  },
+  "coverage": {
+    "tasks": ["airfrans", "car"],
+    "cost_profiles": ["matched_v1", "efficient_v1"],
+    "depths": [12, 20, 28, 60],
+    "residual_modes": ["sr_1_over_r", "rb_attnres", "lb_attnres_1_over_r"],
+    "ablations": [
+      "latent_off_adapter_off",
+      "latent_off_adapter_on",
+      "latent_on_adapter_off",
+      "latent_on_adapter_on"
+    ],
+    "parser_rows": 48,
+    "profile_depth_constructor_rows": 16,
+    "analytic_cost_rows": 192,
+    "representative_points": {"airfrans": 32000, "car": 32186},
+    "native_synthetic": {
+      "air_weighted_train_checkpoint_eval": "passed",
+      "car_train_checkpoint_resume_eval": "passed",
+      "strict_v3_pair_fresh_process_load": "passed",
+      "member_parameter_and_activation_isolation": "passed",
+      "car_fold": 3,
+      "car_tuple_input_output_contract": "passed",
+      "air_output_contract": "[N,4]"
+    }
+  },
+  "protocol_evidence": {
+    "airfrans_loss": "native MSE_weighted with reg=args.weight retained",
+    "airfrans_sampling_and_radius_graph": "native code path retained; real radius sampling not run because torch_cluster is unavailable",
+    "airfrans_ensemble": "each member has an independent V3 model, optimizer/checkpoint namespace and RNG seed",
+    "shapenet_fold_surface_drag_tuple": "native fold and surface/drag evaluation boundaries retained; synthetic fold=3 boundary exercised",
+    "checkpoint": "V3 metadata-first strict pair; legacy trusted whole-object/list boundary remains V1/V2 only"
+  },
+  "not_run": [
+    "real AirfRANS data or VTK/radius-graph evaluation",
+    "real ShapeNet-Car data or drag metric evaluation",
+    "long training, convergence, accuracy, latency, peak memory or SOTA",
+    "remote Python 3.10 + Torch 2.11/cu128 acceptance"
+  ],
+  "compatibility": {
+    "old_v2_industrial_tests": "3/3 passed",
+    "old_delivery_tests": "6/6 passed",
+    "user_modified_files_touched": [],
+    "preserved_user_file": "check_checkpoints/check_pipe_loop_resume.sh"
+  }
+}

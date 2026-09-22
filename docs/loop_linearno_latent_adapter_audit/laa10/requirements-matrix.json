@@ -1,0 +1,164 @@
+{
+  "stage": "LAA10",
+  "overall_status": "PARTIAL",
+  "status_scope": "authorized no-real-data implementation and verification",
+  "requirements": [
+    {
+      "id": "F1",
+      "requirement": "V3 is selected only by explicit architecture or saved V3 metadata; V1/V2 defaults and hashes remain versioned",
+      "source": ["linearno_loop/v3/contracts.py", "linearno_loop/versioning.py", "cdlno/linearno_loop/versioning.py", "cdlno/linearno_loop/standard_entry.py", "cdlno/linearno_loop/industrial_entry.py"],
+      "tests": ["test_laa1_config", "test_laa1_isolation", "test_laa6_standard_entry", "test_laa7_industrial_entry", "test_laa8_launchers"],
+      "evidence": ["laa1/legacy-verified.json", "laa6/ast-projection.json", "laa8/results.json"],
+      "status": "PASS"
+    },
+    {
+      "id": "F2",
+      "requirement": "Each physical core position owns one complete block shared across rounds; prefix/suffix are independent and the head runs once",
+      "source": ["cdlno/linearno_loop/v3/core.py:39", "cdlno/linearno_loop/v3/core.py:57", "cdlno/linearno_loop/v3/core.py:171"],
+      "tests": ["test_laa4_core.CoreTests.test_module_identity_visits_features_and_single_head", "test_laa4_core.CoreTests.test_feature_off_v1_exact_output_gradients_adamw_and_dropout_rng"],
+      "evidence": ["laa4/round-traces.json", "laa9/d12-instances.json"],
+      "status": "PASS"
+    },
+    {
+      "id": "F3",
+      "requirement": "D12/D20/D28/D60 resolve to P2/C4,8,12,28/R2/S2; matched and efficient H/Dz tables are exact",
+      "source": ["linearno_loop/v3/contracts.py", "linearno_loop/v3/profiles.py", "linearno_loop/v3/config.py"],
+      "tests": ["test_laa1_costs", "test_laa4_core.CoreTests.test_formal_profiles_d12_d20_actual_widths_and_shapenet_rank", "test_laa7_industrial_entry.LAA7IndustrialTests.test_industrial_profile_depth_constructor_matrix"],
+      "evidence": ["laa1/matrix/matrix-summary.json", "laa9/parsed-matrix.json"],
+      "status": "PASS"
+    },
+    {
+      "id": "F4",
+      "requirement": "SR/RB/LB preserve V1 branch scaling, source timing, real LB delta and RB AMP boundary",
+      "source": ["cdlno/linearno_loop/v3/core.py:147", "cdlno/linearno_loop/v3/core.py:161", "cdlno/linearno_loop/v3/core.py:171", "cdlno/linearno_loop/core.py:121"],
+      "tests": ["test_laa4_oracle", "test_laa4_core.CoreTests.test_oracle_six_variants_three_modes_presets_and_custom_all_gradients", "test_laa4_amp"],
+      "evidence": ["laa4/round-traces.json", "laa9/synthetic-suite.json"],
+      "status": "PASS"
+    },
+    {
+      "id": "F5",
+      "requirement": "One tokenwise latent FFN per core is shared across visits, placed between KtV and Q readout, and absent when disabled",
+      "source": ["cdlno/linearno_loop/v3/latent.py", "cdlno/linearno_loop/v2/latent.py", "cdlno/linearno_loop/v3/attention.py:71", "cdlno/linearno_loop/v3/core.py:76"],
+      "tests": ["test_laa2_latent", "test_laa3_attention", "test_laa4_core"],
+      "evidence": ["laa2/new-final.json", "laa3/new-final.json", "laa9/d12-instances.json"],
+      "status": "PASS"
+    },
+    {
+      "id": "F6",
+      "requirement": "The bilateral Q/K adapter uses per-core A[r,d_h], B[M,r], head sharing, second visit only, and base+delta before temperature/softmax",
+      "source": ["cdlno/linearno_loop/v3/adapter.py", "cdlno/linearno_loop/v3/attention.py:51"],
+      "tests": ["test_laa2_adapter", "test_laa3_attention.AttentionTests.test_nonzero_each_feature_changes_only_intended_visit_and_temperatures", "test_laa4_core"],
+      "evidence": ["laa2/new-final.json", "laa3/new-final.json", "laa4/round-traces.json"],
+      "status": "PASS"
+    },
+    {
+      "id": "F7",
+      "requirement": "Four latent/adapter ablations register only active modules and can train, save, resume and eval synthetically",
+      "source": ["linearno_loop/v3/config.py", "cdlno/linearno_loop/v3/schema.py", "cdlno/linearno_loop/v3/checkpoint.py"],
+      "tests": ["test_laa5_wrappers", "test_laa5_checkpoint", "test_laa6_standard_entry", "test_laa7_industrial_entry", "test_laa9_accounting"],
+      "evidence": ["laa5/full-matrix.log", "laa6/results.json", "laa7/results.json", "laa9/synthetic-suite.json"],
+      "status": "PASS"
+    },
+    {
+      "id": "F8",
+      "requirement": "Official V3 M is 64 for five tasks and 32 for NS/AirfRANS/Car; only V3 ShapeNet decouples M from d_h",
+      "source": ["linearno_loop/v3/config.py:71", "cdlno/linearno_loop/v3/shapenet.py"],
+      "tests": ["test_laa3_attention.AttentionTests.test_shapenet_actual_M_independent_and_legacy_attributes", "test_laa5_wrappers.WrapperTests.test_car_tuple_single_graph_and_h208_m32_without_old_constraint"],
+      "evidence": ["laa7/cost-matrix.json", "laa9/parsed-matrix.json"],
+      "status": "PASS"
+    },
+    {
+      "id": "F9",
+      "requirement": "matched_v1 and efficient_v1 are directly launchable for eight tasks; custom conflicts fail closed",
+      "source": ["tran_evaluate/linearno_loop_v3/launcher.py", "tran_evaluate/linearno_loop_v3/matched_v1", "tran_evaluate/linearno_loop_v3/efficient_v1"],
+      "tests": ["test_laa8_launchers"],
+      "evidence": ["laa8/experiment-manifest.json", "laa8/results.json", "laa10/results.json"],
+      "status": "PASS"
+    },
+    {
+      "id": "F10",
+      "requirement": "Feature initialization is isolated; zero initialization survives tree initialization; common tensors and loader seeds pair across ablations",
+      "source": ["cdlno/linearno_loop/v3/initialization.py", "cdlno/linearno_loop/v3/construction.py", "cdlno/linearno_loop/v3/core.py:76", "linearno_loop/v3/config.py:104"],
+      "tests": ["test_laa1_isolation", "test_laa2_rng_amp", "test_laa4_core.CoreTests.test_constructor_rng_matches_v1_and_post_apply_feature_installation", "test_laa5_wrappers.WrapperTests.test_initialization_order_public_pairing_and_feature_keys"],
+      "evidence": ["laa1/targeted-verified.json", "laa4/new-final.json", "laa5/results.json"],
+      "status": "PASS"
+    },
+    {
+      "id": "F11",
+      "requirement": "V3 checkpoint is metadata-first and strict, restores full continuation state, and reuses current recording/visualization interfaces",
+      "source": ["linearno_loop/v3/schema.py", "cdlno/linearno_loop/v3/checkpoint.py", "cdlno/linearno_loop/v3/output.py", "tran_evaluate/linearno_loop/recording.py"],
+      "tests": ["test_laa5_checkpoint", "test_laa5_output", "test_laa8_launchers.LAA8LauncherTests.test_saved_config_restore_and_conflict_before_tensor_load"],
+      "evidence": ["laa5/results.json", "laa8/results.json"],
+      "status": "PASS",
+      "limit": "Real-data and long-horizon interruption recovery were not run"
+    },
+    {
+      "id": "F12",
+      "requirement": "Independent oracles and failing tests precede production primitives/attention/core",
+      "source": ["tests/loop_linearno_latent_adapter/primitive_oracles.py", "tests/loop_linearno_latent_adapter/attention_oracle.py", "tests/loop_linearno_latent_adapter/core_oracle.py"],
+      "tests": ["test_laa2_oracles", "test_laa3_oracle", "test_laa4_oracle"],
+      "evidence": ["laa2/test-first-manifest.json", "laa3/test-first-manifest.json", "laa4/test-first-manifest.json"],
+      "status": "PASS"
+    },
+    {
+      "id": "F13",
+      "requirement": "Analytic parameters/MACs distinguish unique and executed work, router work and non-matrix operations; 1 MAC equals 2 FLOPs",
+      "source": ["linearno_loop/v3/costs.py", "tools/linearno_loop_accounting.py", "tools/linearno_loop_laa9.py"],
+      "tests": ["test_laa1_costs", "test_laa4_accounting", "test_laa9_accounting"],
+      "evidence": ["laa9/parsed-matrix.json", "laa9/d12-instances.json", "laa9/shape-trace.json", "laa9/table-8-to-12-and-deeper.json"],
+      "status": "PASS",
+      "limit": "The scalar-op list is not a complete runtime FLOP profiler"
+    },
+    {
+      "id": "F14",
+      "requirement": "No N-by-N or M-by-M attention, no cross-forward activation history, and no hidden feature modules when disabled",
+      "source": ["cdlno/linearno_loop/v3/attention.py", "cdlno/linearno_loop/v3/core.py"],
+      "tests": ["test_laa3_attention.AttentionTests.test_module_hooks_and_contractions_two_visits_no_quadratic_attention", "test_laa4_accounting", "test_laa9_accounting"],
+      "evidence": ["laa9/shape-trace.json", "laa9/d12-instances.json"],
+      "status": "PASS"
+    },
+    {
+      "id": "F15",
+      "requirement": "Standard/AirfRANS/Car wrappers preserve native input/output and scientific protocol boundaries",
+      "source": ["cdlno/linearno_loop/v3/standard.py", "cdlno/linearno_loop/v3/airfrans.py", "cdlno/linearno_loop/v3/shapenet.py", "cdlno/linearno_loop/v3/output.py"],
+      "tests": ["test_laa5_wrappers", "test_laa6_standard_entry", "test_laa7_industrial_entry"],
+      "evidence": ["laa6/ast-projection.json", "laa7/results.json"],
+      "status": "PASS",
+      "limit": "Preservation is established by source/AST and synthetic native-function checks; real loaders and metrics are NOT RUN"
+    },
+    {
+      "id": "F16",
+      "requirement": "Old V1/V2/pure/history behavior and archives replay without new regression",
+      "source": ["linearno_loop/versioning.py", "cdlno/linearno_loop/v2_projection.py", "cdlno/linearno_loop/v3/checkpoint.py"],
+      "tests": ["test_laa5_checkpoint.CheckpointTests.test_v1_v2_pairs_fresh_process_replay_without_byte_changes", "tests/loop_linearno_ffn", "tests/loop_linearno", "tests/linearno"],
+      "evidence": ["laa5/results.json", "laa9/report.md", "laa10/results.json"],
+      "status": "PARTIAL",
+      "limit": "V2 passed 34/34 and strict old-pair replay passed, but V1/pure/history suites retain nine historical non-passing methods: five V1 failures plus two pure/history failures and two pure/history error methods (219 missing-file error subcases)"
+    },
+    {
+      "id": "F17",
+      "requirement": "No real data, long training, dependency installation, destructive git action or old golden/tolerance modification occurs",
+      "source": ["docs/loop_linearno_latent_adapter_audit/laa10/start-manifest.json"],
+      "tests": ["git diff --check", "source and command audit"],
+      "evidence": ["laa10/static-checks.json", "laa10/results.json"],
+      "status": "PASS"
+    },
+    {
+      "id": "V1",
+      "requirement": "Real-data convergence, three paired seeds, SOTA, real epoch time and remote target-stack behavior are verified",
+      "source": [],
+      "tests": [],
+      "evidence": [],
+      "status": "NOT RUN",
+      "limit": "Explicitly outside LAA10 authorization"
+    },
+    {
+      "id": "V2",
+      "requirement": "Distributed and torch.compile execution are verified",
+      "source": [],
+      "tests": [],
+      "evidence": [],
+      "status": "NOT RUN"
+    }
+  ]
+}

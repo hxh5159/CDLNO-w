@@ -1,0 +1,35 @@
+{
+  "phase": "LAA6",
+  "status": "PASS",
+  "environment": {
+    "python": "3.13.9",
+    "torch": "2.13.0+cu130",
+    "torch_geometric": "2.3.1",
+    "cuda_available": true,
+    "scope": "synthetic and parser-only; no real data"
+  },
+  "tests": {
+    "laa6_entry_tests": {"passed": 4, "failed": 0, "skipped": 0},
+    "v3_parser_matrix": {"rows": 144, "passed": 144, "failed": 0},
+    "six_task_custom_forward_backward_adamw": {"rows": 72, "passed": 72, "failed": 0},
+    "v3_strict_pair_fresh_construction": {"passed": 1, "failed": 0},
+    "laa1_laa5_regression": {"passed": 97, "failed": 0, "skipped": 0},
+    "legacy_lf5_lf6_regression": {"passed": 6, "failed": 0, "skipped": 0},
+    "legacy_parser_without_v3_import": {"passed": 1, "failed": 0}
+  },
+  "coverage": {
+    "tasks": ["airfoil", "darcy", "elasticity", "pipe", "ns", "plasticity"],
+    "cost_profiles": ["matched_v1", "efficient_v1"],
+    "residual_modes": ["sr_1_over_r", "rb_attnres", "lb_attnres_1_over_r"],
+    "ablations": ["latent_off_adapter_off", "latent_off_adapter_on", "latent_on_adapter_off", "latent_on_adapter_on"],
+    "formal_depth": "D12/P2-C4-R2-S2",
+    "native_scientific_loops": "unchanged; parser/factory/run adapter only"
+  },
+  "not_run": [
+    "real datasets",
+    "full epoch training",
+    "remote Python 3.10/Torch 2.11/cu128",
+    "real task convergence or accuracy",
+    "latency, peak memory, SOTA comparison"
+  ]
+}

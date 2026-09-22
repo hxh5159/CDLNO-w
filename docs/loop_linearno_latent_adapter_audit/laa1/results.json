@@ -1,0 +1,203 @@
+{
+  "stage": "LAA1",
+  "status": "PASS",
+  "scope": "configuration/schema/analytic-cost/preview-only",
+  "head": "c02e671506f706910e0a1d58f03c310abf188345",
+  "commands": {
+    "targeted": {
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "loop_linearno_latent_adapter.test_laa1_config",
+        "loop_linearno_latent_adapter.test_laa1_costs",
+        "loop_linearno_latent_adapter.test_laa1_schema",
+        "loop_linearno_latent_adapter.test_laa1_isolation"
+      ],
+      "cwd": "/home/hwz/CDLNO",
+      "exit_code": 0,
+      "wall_seconds": 3.292898065003101,
+      "log": "targeted-verified.log",
+      "status": "PASS",
+      "tests": 30,
+      "unittest_seconds": 3.193,
+      "environment": {
+        "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+        "executable": "/home/hwz/anaconda3/bin/python",
+        "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+        "packages": {
+          "torch": "2.13.0",
+          "numpy": "2.2.6",
+          "torch-geometric": "2.3.1"
+        },
+        "overrides": {
+          "PYTHONPATH": "/home/hwz/CDLNO/tests:/home/hwz/CDLNO/tests/loop_linearno_ffn:/home/hwz/CDLNO",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "CUDA_VISIBLE_DEVICES": "",
+          "OMP_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1"
+        }
+      }
+    },
+    "legacy": {
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "linearno.test_profiles",
+        "linearno.test_schema",
+        "linearno.test_history_schema",
+        "loop_linearno.test_config",
+        "loop_linearno.test_schema",
+        "loop_linearno_ffn.test_lf1_config",
+        "loop_linearno_ffn.test_lf1_schema"
+      ],
+      "cwd": "/home/hwz/CDLNO",
+      "exit_code": 0,
+      "wall_seconds": 4.151389010999992,
+      "log": "legacy-verified.log",
+      "status": "PASS",
+      "tests": 49,
+      "unittest_seconds": 2.025,
+      "environment": {
+        "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+        "executable": "/home/hwz/anaconda3/bin/python",
+        "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+        "packages": {
+          "torch": "2.13.0",
+          "numpy": "2.2.6",
+          "torch-geometric": "2.3.1"
+        },
+        "overrides": {
+          "PYTHONPATH": "/home/hwz/CDLNO/tests:/home/hwz/CDLNO/tests/loop_linearno_ffn:/home/hwz/CDLNO",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "CUDA_VISIBLE_DEVICES": "",
+          "OMP_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1"
+        }
+      }
+    },
+    "matrix": {
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "-m",
+        "linearno_loop.v3.matrix",
+        "--output-dir",
+        "/home/hwz/CDLNO/docs/loop_linearno_latent_adapter_audit/laa1/matrix"
+      ],
+      "cwd": "/home/hwz/CDLNO",
+      "exit_code": 0,
+      "wall_seconds": 6.7342882909943,
+      "log": "matrix-verified.log",
+      "status": "PASS",
+      "tests": null,
+      "unittest_seconds": null,
+      "environment": {
+        "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+        "executable": "/home/hwz/anaconda3/bin/python",
+        "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+        "packages": {
+          "torch": "2.13.0",
+          "numpy": "2.2.6",
+          "torch-geometric": "2.3.1"
+        },
+        "overrides": {
+          "PYTHONPATH": "/home/hwz/CDLNO/tests:/home/hwz/CDLNO/tests/loop_linearno_ffn:/home/hwz/CDLNO",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "CUDA_VISIBLE_DEVICES": "",
+          "OMP_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1"
+        }
+      }
+    }
+  },
+  "tests": {
+    "new": {
+      "passed": 30,
+      "failed": 0,
+      "skipped": 0
+    },
+    "old_targeted": {
+      "passed": 49,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "preview": {
+    "status": "PASS",
+    "records": 2304,
+    "unique_run_ids": 2304,
+    "unique_hashes": 2304,
+    "task_counts": {
+      "airfoil": 288,
+      "darcy": 288,
+      "elasticity": 288,
+      "pipe": 288,
+      "plasticity": 288,
+      "ns": 288,
+      "airfrans": 288,
+      "car": 288
+    },
+    "paired_backbone_groups": 192,
+    "data_seed_groups": 24,
+    "maximum_run_id_bytes": 176,
+    "independent_integer_parameter_max_error": 0,
+    "independent_integer_mac_max_error": 0,
+    "custom_valid": 3,
+    "custom_expected_rejections": 9,
+    "no_torch_import": true,
+    "no_model_construction": true,
+    "no_training": true,
+    "wall_seconds": 5.476016879998497,
+    "artifacts": {
+      "matrix/configuration-matrix.jsonl": {
+        "bytes": 52541109,
+        "sha256": "1deaf077498b62633972cdc570e68e006624f898686777bdaab6ff6ed669de8d"
+      },
+      "matrix/custom-cases.json": {
+        "bytes": 108045,
+        "sha256": "f358a72e31f08fc87c03cb8b52651953f77de2a6498a601e348bfec5c2567bf4"
+      },
+      "matrix/matrix-summary.json": {
+        "bytes": 635,
+        "sha256": "76713f6902ad68dea2dbb0038df309a4ab20e66508d063e715e24410705932da"
+      }
+    }
+  },
+  "static_checks": {
+    "python": 17,
+    "shell": 130,
+    "status": "PASS"
+  },
+  "prior_failures_preserved": [
+    "initial draft SyntaxError in red-tests.log",
+    "2 missing contract fields in contract-gap-red.log",
+    "2 scope/type defects in cost-scope-red.log",
+    "audit runner wrong cwd; *-final.log are failed initial harness runs, *-verified.log are successful"
+  ],
+  "old_full_regression": {
+    "rerun_in_LAA1": false,
+    "source": "../laa0/regression-summary.json",
+    "passed": 644,
+    "failed": 9,
+    "skipped": 36
+  },
+  "freeze": "end-freeze.json",
+  "report": "report.md",
+  "source_diff": "source-diff.patch",
+  "not_run": [
+    "LAA2 or later",
+    "V3 tensor model construction/forward/backward",
+    "production parser/factory/launcher/checkpoint/resume/eval",
+    "actual V3 parameter/hooks measurement",
+    "CUDA/AMP",
+    "real data/full epochs/three-seed convergence/SOTA",
+    "real speed/memory/epoch time",
+    "remote environment"
+  ]
+}

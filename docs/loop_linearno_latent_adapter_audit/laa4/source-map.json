@@ -1,0 +1,374 @@
+[
+  {
+    "path": "cdlno/linearno_loop/v3/core.py",
+    "sha256": "843038bc95f39e2d1d053e85ce82bdd204bcf23f60ad228c04926851156b802f",
+    "symbols": [
+      {
+        "name": "VisitBody",
+        "line": 22,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "RecurrentPhysicalBlock",
+        "line": 34,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "LinearNOLoopCoreV3",
+        "line": 39,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "__init__",
+        "line": 26,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "operator",
+        "line": 30,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "forward",
+        "line": 35,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "__init__",
+        "line": 48,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "install_features",
+        "line": 76,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "validate_structure",
+        "line": 96,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "_rb_forward",
+        "line": 147,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "_lb_forward",
+        "line": 161,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "forward",
+        "line": 171,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "load_configured_state_dict",
+        "line": 182,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "tests/loop_linearno_latent_adapter/test_laa4_accounting.py",
+    "sha256": "f42779ea6e3a31c6b1581613893054850406bf801cd3f1c46e198c70e09cb30c",
+    "symbols": [
+      {
+        "name": "parameter_group",
+        "line": 11,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "AccountingTests",
+        "line": 19,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "test_eight_tasks_two_presets_modes_ablations_parameters_and_executed_macs",
+        "line": 20,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "matrix",
+        "line": 33,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "linear",
+        "line": 56,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "einsum",
+        "line": 62,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "tests/loop_linearno_latent_adapter/test_laa4_amp.py",
+    "sha256": "e6180dc12bb5d656625c95802545349481695e07a2b455bd63467b1cc6714a0a",
+    "symbols": [
+      {
+        "name": "AMPTests",
+        "line": 11,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "test_cuda_modes_six_variants_fp32_fp16_bf16_raw_history_and_off_parity",
+        "line": 13,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "receive",
+        "line": 23,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "tests/loop_linearno_latent_adapter/test_laa4_core.py",
+    "sha256": "440ce02e80ab7cc4b265f0de21ab0f234f6af37bb3d47564a17449ffbfba2b7d",
+    "symbols": [
+      {
+        "name": "CoreTests",
+        "line": 19,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "test_formal_profiles_d12_d20_actual_widths_and_shapenet_rank",
+        "line": 20,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_constructor_rng_matches_v1_and_post_apply_feature_installation",
+        "line": 40,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_first_round_feature_gradients_and_nonzero_ablation_effects",
+        "line": 60,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_oracle_six_variants_three_modes_presets_and_custom_all_gradients",
+        "line": 79,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_feature_off_v1_exact_output_gradients_adamw_and_dropout_rng",
+        "line": 118,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_zero_features_all_ablations_same_backbone_across_modes",
+        "line": 139,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_module_identity_visits_features_and_single_head",
+        "line": 157,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_gradients_round_sharing_features_and_failure_history",
+        "line": 200,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_strict_reload_metadata_conflicts_before_weight_application",
+        "line": 220,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_structure_rejects_aliasing_or_mismatch_and_install_is_rng_isolated",
+        "line": 257,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "wrong",
+        "line": 266,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "einsum",
+        "line": 184,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "tests/loop_linearno_latent_adapter/test_laa4_oracle.py",
+    "sha256": "fd4348033b674b6d068601b17ceb42c180d3cd324e84c4b2c8162f2728dacd27",
+    "symbols": [
+      {
+        "name": "OracleTests",
+        "line": 6,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "test_sr_rb_lb_small_arithmetic_independently",
+        "line": 7,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_route_singleton_identity_and_source_axis",
+        "line": 21,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "raw",
+        "line": 9,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "receiver",
+        "line": 10,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "tests/loop_linearno_latent_adapter/core_oracle.py",
+    "sha256": "f835d19be92e38197bb0bc6db74c13bb37c239de8564bde3e6f73ada37e251fa",
+    "symbols": [
+      {
+        "name": "route",
+        "line": 10,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "loop_equations",
+        "line": 20,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "full_reference",
+        "line": 60,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "native_visit",
+        "line": 23,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "norm",
+        "line": 62,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "linear",
+        "line": 65,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "point",
+        "line": 66,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "op",
+        "line": 69,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "raw",
+        "line": 75,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "native",
+        "line": 77,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "receiver",
+        "line": 79,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "finalize",
+        "line": 80,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "tests/loop_linearno_latent_adapter/core_support.py",
+    "sha256": "2ae6ac02ac5a9054d118a51a3ddcdec61b05d6a85792733318e850d1bfe33dc6",
+    "symbols": [
+      {
+        "name": "configuration",
+        "line": 17,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "factory",
+        "line": 30,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "make",
+        "line": 46,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "excite",
+        "line": 59,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "inputs",
+        "line": 71,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "close",
+        "line": 76,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "Trace",
+        "line": 82,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "create",
+        "line": 32,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "__init__",
+        "line": 83,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "__enter__",
+        "line": 85,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "__exit__",
+        "line": 102,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "receive",
+        "line": 98,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "pre",
+        "line": 89,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "post",
+        "line": 92,
+        "kind": "FunctionDef"
+      }
+    ]
+  }
+]

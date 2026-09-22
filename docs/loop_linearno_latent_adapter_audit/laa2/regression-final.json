@@ -1,0 +1,54 @@
+{
+  "stage": "LAA2",
+  "suite": "regression",
+  "command": [
+    "/home/hwz/anaconda3/bin/python",
+    "-B",
+    "docs/loop_linearno_latent_adapter_audit/laa2/run_checks.py",
+    "regression"
+  ],
+  "cwd": "/home/hwz/CDLNO",
+  "modules": [
+    "linearno.test_attention_parity",
+    "linearno.test_attention_structure",
+    "loop_linearno.test_point_attnres",
+    "loop_linearno.test_sr_core",
+    "loop_linearno.test_rb_core",
+    "loop_linearno.test_lb_core",
+    "loop_linearno.test_ll9r",
+    "loop_linearno_ffn.test_lf2_core",
+    "loop_linearno_ffn.test_lf3_latent"
+  ],
+  "status": "PASS",
+  "tests": 72,
+  "failed": 0,
+  "errors": 0,
+  "skipped": 0,
+  "skip_details": [],
+  "wall_seconds": 46.25635279400012,
+  "log": "regression-final.log",
+  "environment": {
+    "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+    "executable": "/home/hwz/anaconda3/bin/python",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+    "torch": "2.13.0+cu130",
+    "cuda_build": "13.0",
+    "cuda_available": true,
+    "gpus": [
+      "NVIDIA GeForce RTX 5090 Laptop GPU"
+    ],
+    "packages": {
+      "numpy": "2.2.6",
+      "torch-geometric": "2.3.1",
+      "timm": "1.0.28"
+    },
+    "threads": 1,
+    "env": {
+      "CUDA_VISIBLE_DEVICES": null,
+      "CUBLAS_WORKSPACE_CONFIG": null,
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    }
+  }
+}

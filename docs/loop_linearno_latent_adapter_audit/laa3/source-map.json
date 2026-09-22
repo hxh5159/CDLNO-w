@@ -1,0 +1,208 @@
+[
+  {
+    "path": "cdlno/linearno_loop/v3/attention.py",
+    "sha256": "c64bdfb59ad6632d4774430054a9c980bc267ac84b8e7ca9883240a958f72f9f",
+    "symbols": [
+      {
+        "name": "V3LinearNOAttention",
+        "line": 15,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "install_features",
+        "line": 24,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "forward",
+        "line": 51,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "tests/loop_linearno_latent_adapter/test_laa3_amp.py",
+    "sha256": "4d2bfbc7ce565c688662e8b73bd3735e16b1fa0ce40f2f10cf517ed2f070142f",
+    "symbols": [
+      {
+        "name": "AttentionAMPTests",
+        "line": 11,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "test_cuda_six_variants_four_ablations_two_visits_three_precisions",
+        "line": 13,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_cuda_zero_init_and_native_dropout_rng",
+        "line": 58,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "tests/loop_linearno_latent_adapter/test_laa3_attention.py",
+    "sha256": "ac20bd7aa786f9886bb21f1ea37e7bed97dfdbd85799f4249f548989bece9532",
+    "symbols": [
+      {
+        "name": "ContractionTrace",
+        "line": 19,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "AttentionTests",
+        "line": 32,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "__init__",
+        "line": 20,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "__torch_dispatch__",
+        "line": 23,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_inherited_constructor_and_active_base_ast_exact",
+        "line": 33,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_distinct_positions_own_features_and_processor_contract_failure_is_local",
+        "line": 44,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_six_variants_four_ablations_two_visits_oracle_and_all_vjps",
+        "line": 56,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_off_delegates_native_bitwise_output_gradients_and_dropout_rng",
+        "line": 87,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_zero_init_ablations_preserve_output_common_gradients_and_rng",
+        "line": 110,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_first_visit_never_reads_adapter_and_default_forward_is_native",
+        "line": 129,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_nonzero_each_feature_changes_only_intended_visit_and_temperatures",
+        "line": 144,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_module_hooks_and_contractions_two_visits_no_quadratic_attention",
+        "line": 166,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_constructor_install_isolation_and_atomic_validation",
+        "line": 190,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_shapenet_actual_M_independent_and_legacy_attributes",
+        "line": 214,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_strict_roundtrip_and_invalid_input_no_retained_activations",
+        "line": 231,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_noncontiguous_inputs_and_no_cross_batch_effect",
+        "line": 259,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "observe",
+        "line": 67,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "tests/loop_linearno_latent_adapter/test_laa3_oracle.py",
+    "sha256": "e2cff3f7447955d9302d25bfb096aa03461a0fdd2d70f0c1af69c25525082741",
+    "symbols": [
+      {
+        "name": "AttentionOracleTests",
+        "line": 7,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "test_two_points_two_slots_hand_computed",
+        "line": 8,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_nonzero_latent_hand_computed",
+        "line": 31,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "tests/loop_linearno_latent_adapter/attention_oracle.py",
+    "sha256": "42618212be53546d85d8250353109a9cf30b3245aee295c59653d7fe8b9ba203",
+    "symbols": [
+      {
+        "name": "normalize",
+        "line": 15,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "attention_reference",
+        "line": 20,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "tests/loop_linearno_latent_adapter/attention_support.py",
+    "sha256": "3e2588929aadca9df7e34291ff1489ef8ac472a16e75841f097ab040339145f5",
+    "symbols": [
+      {
+        "name": "kwargs",
+        "line": 9,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "make",
+        "line": 17,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "fill",
+        "line": 31,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "sample",
+        "line": 43,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "compare",
+        "line": 48,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "clone_parameters",
+        "line": 54,
+        "kind": "FunctionDef"
+      }
+    ]
+  }
+]

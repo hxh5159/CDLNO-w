@@ -1,0 +1,124 @@
+{
+  "stage": "LAA10",
+  "status": "PARTIAL",
+  "status_reason": "The V3 no-real-data implementation and synthetic validation pass, but nine historical V1/pure/history regression methods remain non-passing.",
+  "environment": {
+    "python": "3.13.9",
+    "torch": "2.13.0+cu130",
+    "torch_geometric": "2.3.1",
+    "cuda_device": "NVIDIA GeForce RTX 5090 Laptop GPU",
+    "torch_cluster": "missing"
+  },
+  "test_runs": {
+    "v3_laa_isolated_authoritative": {
+      "command_scope": "LAA1-LAA9 tests under their recorded native PYTHONPATH isolation",
+      "passed": 116,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 1,
+      "skip_reason": "torch_cluster is not installed",
+      "status": "PASS_WITH_ENVIRONMENT_SKIP"
+    },
+    "v3_laa_initial_combined_attempt": {
+      "command_scope": "combined LAA collection with the Standard project first on PYTHONPATH",
+      "passed_before_error": 106,
+      "failed": 0,
+      "errors": 1,
+      "skipped": 0,
+      "status": "NON_AUTHORITATIVE_INVOCATION_ERROR",
+      "error": "LAA6/LAA7 unqualified cdlno_entry import resolved to the wrong task-local module; isolated native-path reruns passed"
+    },
+    "v2_ffn_authoritative": {
+      "command_scope": "tests/loop_linearno_ffn with its native test-directory PYTHONPATH",
+      "passed": 34,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "unittest_seconds": 91.368,
+      "wall_seconds": 99.95,
+      "status": "PASS"
+    },
+    "v2_ffn_initial_attempt": {
+      "command_scope": "tests/loop_linearno_ffn without its required local support-module PYTHONPATH",
+      "collected_before_error": 23,
+      "collection_errors": 4,
+      "status": "NON_AUTHORITATIVE_INVOCATION_ERROR"
+    },
+    "v1_loop": {
+      "command_scope": "tests/loop_linearno",
+      "methods_total": 107,
+      "passed": 102,
+      "failed_methods": 5,
+      "errors": 0,
+      "skipped": 0,
+      "unittest_seconds": 175.687,
+      "status": "HISTORICAL_FAILURES_PRESERVED"
+    },
+    "laa8_laa9_targeted": {
+      "command_scope": "LAA8 launcher/recording and LAA9 accounting targeted regression",
+      "passed": 9,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "unittest_seconds": 35.581,
+      "wall_seconds": 39.81,
+      "status": "PASS"
+    },
+    "pure_history_linearno": {
+      "command_scope": "python -m unittest discover -s tests/linearno -t tests -v",
+      "methods_total": 155,
+      "passed": 151,
+      "failed_methods": 2,
+      "error_methods": 2,
+      "error_subcases": 219,
+      "skipped": 0,
+      "unittest_seconds": 4310.054,
+      "wall_seconds": 4323.57,
+      "status": "HISTORICAL_FAILURES_PRESERVED",
+      "raw_log": "linearno-full-regression.log"
+    }
+  },
+  "pure_history_failure_methods": [
+    {
+      "method": "linearno.test_history_industrial.HistoryIndustrial.test_old_source_fingerprints_task_bodies_and_launchers",
+      "kind": "failure",
+      "reason": "stale historical source/normalized-patch fingerprint"
+    },
+    {
+      "method": "linearno.test_history_static.HistoryStatic.test_old_source_fingerprint_and_frozen_task_bodies",
+      "kind": "failure",
+      "reason": "stale historical projection for cdlno/linearno/standard_entry.py"
+    },
+    {
+      "method": "linearno.test_legacy.LegacyRegression.test_all_preexisting_files_and_absent_frozen_directories",
+      "kind": "error",
+      "error_subcases": 218,
+      "reason": "missing user-deleted historical evidence: 30 docs/CDLNO_* files, 15 docs/KCDNO_* files and 173 docs/kcdno_audit/* files"
+    },
+    {
+      "method": "linearno.test_legacy.LegacyRegression.test_no_task_parser_factory_imports_from_new_namespace",
+      "kind": "error",
+      "error_subcases": 1,
+      "reason": "missing user-deleted docs/kcdno_audit/audit_static.py"
+    }
+  ],
+  "static_checks": {
+    "compileall": "PASS",
+    "v3_shell_bash_n_files": 25,
+    "real_parser_previews": 16,
+    "json_validation": "PASS",
+    "git_diff_check": "PASS",
+    "task_project_changed_paths": []
+  },
+  "not_run": [
+    "real datasets",
+    "complete training",
+    "three-seed convergence",
+    "SOTA comparison",
+    "real epoch duration",
+    "remote Python 3.10/Torch 2.11/cu128 stack",
+    "distributed execution",
+    "torch.compile",
+    "real AirfRANS radius-graph/VTK evaluation"
+  ]
+}

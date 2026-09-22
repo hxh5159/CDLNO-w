@@ -1,0 +1,9 @@
+{
+  "phase": "LAA6",
+  "scope": "six Standard tasks only",
+  "tasks": ["airfoil", "darcy", "elasticity", "pipe", "ns", "plasticity"],
+  "architecture_selector": "operator_latent_adapter_v3",
+  "frozen": ["exp scientific loops", "data and normalizers", "loss and metrics", "optimizer/scheduler", "visualization"],
+  "real_data": false,
+  "user_existing_modified_file": "check_checkpoints/check_pipe_loop_resume.sh"
+}

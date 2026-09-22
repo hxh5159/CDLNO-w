@@ -1,0 +1,53 @@
+{
+  "laa0": {
+    "compared": 3377,
+    "unchanged": 3377,
+    "changed": [],
+    "missing": []
+  },
+  "laa3": {
+    "compared": 4164,
+    "unchanged": 4163,
+    "changed": [
+      {
+        "path": "docs/LOOP_LINEARNO_LATENT_ADAPTER_IMPLEMENTATION_STATUS.md",
+        "before": "d6baa10e1aae7fbd8bca530311da2458078af4db9ce8e520214aea7689aa93b2",
+        "after": "08d5e3df50db0b0434fafce770153a07c7dd4147f68a19dbd5792d9437f5d072",
+        "authorized": true
+      }
+    ],
+    "missing": []
+  },
+  "status": "PASS",
+  "user_diff_unchanged": true,
+  "staged_unchanged": true,
+  "head_unchanged": true,
+  "new_files": [
+    "cdlno/linearno_loop/v3/attention.py",
+    "docs/loop_linearno_latent_adapter_audit/laa3/finalize_audit.py",
+    "docs/loop_linearno_latent_adapter_audit/laa3/implementation-attempt1.log",
+    "docs/loop_linearno_latent_adapter_audit/laa3/implementation-attempt2.log",
+    "docs/loop_linearno_latent_adapter_audit/laa3/new-final.json",
+    "docs/loop_linearno_latent_adapter_audit/laa3/new-final.log",
+    "docs/loop_linearno_latent_adapter_audit/laa3/oracle-first.log",
+    "docs/loop_linearno_latent_adapter_audit/laa3/preimplementation-red.log",
+    "docs/loop_linearno_latent_adapter_audit/laa3/previous-final.json",
+    "docs/loop_linearno_latent_adapter_audit/laa3/previous-final.log",
+    "docs/loop_linearno_latent_adapter_audit/laa3/regression-final.json",
+    "docs/loop_linearno_latent_adapter_audit/laa3/regression-final.log",
+    "docs/loop_linearno_latent_adapter_audit/laa3/report.md",
+    "docs/loop_linearno_latent_adapter_audit/laa3/run_checks.py",
+    "docs/loop_linearno_latent_adapter_audit/laa3/start-manifest.json",
+    "docs/loop_linearno_latent_adapter_audit/laa3/static-checks.json",
+    "docs/loop_linearno_latent_adapter_audit/laa3/status-before.md",
+    "docs/loop_linearno_latent_adapter_audit/laa3/test-first-manifest.json",
+    "tests/loop_linearno_latent_adapter/attention_oracle.py",
+    "tests/loop_linearno_latent_adapter/attention_support.py",
+    "tests/loop_linearno_latent_adapter/test_laa3_amp.py",
+    "tests/loop_linearno_latent_adapter/test_laa3_attention.py",
+    "tests/loop_linearno_latent_adapter/test_laa3_oracle.py"
+  ],
+  "allowed_existing_changes": [
+    "docs/LOOP_LINEARNO_LATENT_ADAPTER_IMPLEMENTATION_STATUS.md"
+  ]
+}

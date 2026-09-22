@@ -1,0 +1,27 @@
+{
+  "status": "PREVIEW_ONLY",
+  "count": 2304,
+  "paired_seeds": [
+    0,
+    1,
+    2
+  ],
+  "axes": {
+    "tasks": 8,
+    "profiles": 2,
+    "depths": 4,
+    "residuals": 3,
+    "ablations": 4,
+    "seeds": 3
+  },
+  "configuration_file": "configuration-matrix.jsonl",
+  "custom_valid": 3,
+  "custom_invalid": 9,
+  "no_torch": true,
+  "no_models": true,
+  "no_model_construction": true,
+  "no_training": true,
+  "no_production_parser": true,
+  "aggregation": "all paired seeds and mean/std; final checkpoint; never select by test",
+  "cost_scope": "on/on r4 alpha4 SR approximate matrix match only; all others separately recomputed"
+}

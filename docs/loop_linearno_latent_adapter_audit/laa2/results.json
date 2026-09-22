@@ -1,0 +1,303 @@
+{
+  "stage": "LAA2",
+  "status": "PASS",
+  "scope": "independent primitives only",
+  "head": "c02e671506f706910e0a1d58f03c310abf188345",
+  "test_suites": {
+    "new": {
+      "stage": "LAA2",
+      "suite": "new",
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "docs/loop_linearno_latent_adapter_audit/laa2/run_checks.py",
+        "new"
+      ],
+      "cwd": "/home/hwz/CDLNO",
+      "modules": [
+        "loop_linearno_latent_adapter.test_laa2_oracles",
+        "loop_linearno_latent_adapter.test_laa2_adapter",
+        "loop_linearno_latent_adapter.test_laa2_latent",
+        "loop_linearno_latent_adapter.test_laa2_rng_amp"
+      ],
+      "status": "PASS",
+      "tests": 22,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "skip_details": [],
+      "wall_seconds": 3.317340781999519,
+      "log": "new-final.log",
+      "environment": {
+        "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+        "executable": "/home/hwz/anaconda3/bin/python",
+        "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+        "torch": "2.13.0+cu130",
+        "cuda_build": "13.0",
+        "cuda_available": true,
+        "gpus": [
+          "NVIDIA GeForce RTX 5090 Laptop GPU"
+        ],
+        "packages": {
+          "numpy": "2.2.6",
+          "torch-geometric": "2.3.1",
+          "timm": "1.0.28"
+        },
+        "threads": 1,
+        "env": {
+          "CUDA_VISIBLE_DEVICES": null,
+          "CUBLAS_WORKSPACE_CONFIG": null,
+          "OMP_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        }
+      }
+    },
+    "schema": {
+      "stage": "LAA2",
+      "suite": "schema",
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "docs/loop_linearno_latent_adapter_audit/laa2/run_checks.py",
+        "schema"
+      ],
+      "cwd": "/home/hwz/CDLNO",
+      "modules": [
+        "loop_linearno_latent_adapter.test_laa1_config",
+        "loop_linearno_latent_adapter.test_laa1_costs",
+        "loop_linearno_latent_adapter.test_laa1_schema",
+        "loop_linearno_latent_adapter.test_laa1_isolation"
+      ],
+      "status": "PASS",
+      "tests": 30,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "skip_details": [],
+      "wall_seconds": 3.191884977997688,
+      "log": "schema-final.log",
+      "environment": {
+        "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+        "executable": "/home/hwz/anaconda3/bin/python",
+        "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+        "torch": "2.13.0+cu130",
+        "cuda_build": "13.0",
+        "cuda_available": true,
+        "gpus": [
+          "NVIDIA GeForce RTX 5090 Laptop GPU"
+        ],
+        "packages": {
+          "numpy": "2.2.6",
+          "torch-geometric": "2.3.1",
+          "timm": "1.0.28"
+        },
+        "threads": 1,
+        "env": {
+          "CUDA_VISIBLE_DEVICES": null,
+          "CUBLAS_WORKSPACE_CONFIG": null,
+          "OMP_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        }
+      }
+    },
+    "regression": {
+      "stage": "LAA2",
+      "suite": "regression",
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "docs/loop_linearno_latent_adapter_audit/laa2/run_checks.py",
+        "regression"
+      ],
+      "cwd": "/home/hwz/CDLNO",
+      "modules": [
+        "linearno.test_attention_parity",
+        "linearno.test_attention_structure",
+        "loop_linearno.test_point_attnres",
+        "loop_linearno.test_sr_core",
+        "loop_linearno.test_rb_core",
+        "loop_linearno.test_lb_core",
+        "loop_linearno.test_ll9r",
+        "loop_linearno_ffn.test_lf2_core",
+        "loop_linearno_ffn.test_lf3_latent"
+      ],
+      "status": "PASS",
+      "tests": 72,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "skip_details": [],
+      "wall_seconds": 46.25635279400012,
+      "log": "regression-final.log",
+      "environment": {
+        "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+        "executable": "/home/hwz/anaconda3/bin/python",
+        "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+        "torch": "2.13.0+cu130",
+        "cuda_build": "13.0",
+        "cuda_available": true,
+        "gpus": [
+          "NVIDIA GeForce RTX 5090 Laptop GPU"
+        ],
+        "packages": {
+          "numpy": "2.2.6",
+          "torch-geometric": "2.3.1",
+          "timm": "1.0.28"
+        },
+        "threads": 1,
+        "env": {
+          "CUDA_VISIBLE_DEVICES": null,
+          "CUBLAS_WORKSPACE_CONFIG": null,
+          "OMP_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        }
+      }
+    }
+  },
+  "cuda_cases": [
+    {
+      "kind": "adapter",
+      "dtype": "torch.float32",
+      "status": "PASS",
+      "forward_max_abs": 3.9944685670256774e-08,
+      "vjp_max_abs": 6.260116328093979e-09,
+      "atol": 4e-06,
+      "rtol": 5e-05,
+      "reload_max_abs": 0.0
+    },
+    {
+      "kind": "latent",
+      "dtype": "torch.float32",
+      "status": "PASS",
+      "forward_max_abs": 5.352209209164016e-07,
+      "vjp_max_abs": 5.630069619400047e-07,
+      "atol": 4e-06,
+      "rtol": 5e-05,
+      "reload_max_abs": 0.0
+    },
+    {
+      "kind": "adapter",
+      "dtype": "torch.float16",
+      "status": "PASS",
+      "forward_max_abs": 0.0003914367488775383,
+      "vjp_max_abs": 3.281709100794172e-05,
+      "atol": 0.004,
+      "rtol": 0.03,
+      "reload_max_abs": 0.0
+    },
+    {
+      "kind": "latent",
+      "dtype": "torch.float16",
+      "status": "PASS",
+      "forward_max_abs": 0.002199070635457545,
+      "vjp_max_abs": 0.0008218811850830843,
+      "atol": 0.004,
+      "rtol": 0.03,
+      "reload_max_abs": 0.0
+    },
+    {
+      "kind": "adapter",
+      "dtype": "torch.bfloat16",
+      "status": "PASS",
+      "forward_max_abs": 0.002066461592251101,
+      "vjp_max_abs": 0.0001210654499662761,
+      "atol": 0.04,
+      "rtol": 0.08,
+      "reload_max_abs": 0.0
+    },
+    {
+      "kind": "latent",
+      "dtype": "torch.bfloat16",
+      "status": "PASS",
+      "forward_max_abs": 0.01638583794236048,
+      "vjp_max_abs": 0.007906119594450534,
+      "atol": 0.04,
+      "rtol": 0.08,
+      "reload_max_abs": 0.0
+    }
+  ],
+  "cpu_max_errors": {
+    "torch.float64": 7.105427357601002e-15,
+    "torch.float32": 3.814697265625e-06
+  },
+  "test_first": {
+    "oracle_passed": 2,
+    "expected_missing_implementation_errors": 20,
+    "manifest": "test-first-manifest.json"
+  },
+  "intermediate_failure": {
+    "tests": 22,
+    "passed": 21,
+    "failed": 1,
+    "reason": "new test incorrectly demanded bitwise equality for identical heads across GEMM rows; FP64 difference 6.94e-18",
+    "resolution": "use the predeclared FP64 mathematical tolerance; no production math or old tolerance/golden change",
+    "log": "primitives-attempt1.log"
+  },
+  "static": {
+    "python": 12,
+    "shell": 130,
+    "status": "PASS"
+  },
+  "freeze": "end-freeze.json",
+  "parameter_examples": [
+    {
+      "kind": "adapter",
+      "dh": 3,
+      "M": 5,
+      "r": 4,
+      "parameters": 64
+    },
+    {
+      "kind": "adapter",
+      "dh": 26,
+      "M": 32,
+      "r": 4,
+      "parameters": 464
+    },
+    {
+      "kind": "adapter",
+      "dh": 16,
+      "M": 64,
+      "r": 4,
+      "parameters": 640
+    },
+    {
+      "kind": "latent",
+      "H": 6,
+      "Dz": 7,
+      "parameters": 109
+    },
+    {
+      "kind": "latent",
+      "H": 104,
+      "Dz": 704,
+      "parameters": 147448
+    },
+    {
+      "kind": "latent",
+      "H": 208,
+      "Dz": 776,
+      "parameters": 324216
+    }
+  ],
+  "old_full_regression": {
+    "rerun": false,
+    "source": "../laa0/regression-summary.json",
+    "passed": 644,
+    "failed": 9,
+    "skipped": 36
+  },
+  "not_run": [
+    "LAA3 and later",
+    "V3 complete attention/core/wrapper/task/checkpoint integration",
+    "real datasets and full training",
+    "three-seed convergence/accuracy/SOTA",
+    "real latency/epoch-time/memory performance",
+    "remote target stack",
+    "full task AMP/scaler resume",
+    "compile/distributed"
+  ]
+}

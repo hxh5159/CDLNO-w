@@ -1,0 +1,109 @@
+[
+  {
+    "command": "compile(file bytes, path, exec), no bytecode writes",
+    "files": 497,
+    "errors": [],
+    "seconds": 0.5525059860010515
+  },
+  {
+    "command": [
+      "bash",
+      "-n",
+      "path.sh"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "seconds": 0.0015108489969861694
+  },
+  {
+    "command": [
+      "bash",
+      "-n",
+      "tran_evaluate/linearno_loop/airfoil.sh"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "seconds": 0.0011160930007463321
+  },
+  {
+    "command": [
+      "bash",
+      "-n",
+      "tran_evaluate/linearno_loop/airfrans.sh"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "seconds": 0.0011562670042621903
+  },
+  {
+    "command": [
+      "bash",
+      "-n",
+      "tran_evaluate/linearno_loop/car.sh"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "seconds": 0.0010341379966121167
+  },
+  {
+    "command": [
+      "bash",
+      "-n",
+      "tran_evaluate/linearno_loop/darcy.sh"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "seconds": 0.000993358000414446
+  },
+  {
+    "command": [
+      "bash",
+      "-n",
+      "tran_evaluate/linearno_loop/elasticity.sh"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "seconds": 0.000908674999664072
+  },
+  {
+    "command": [
+      "bash",
+      "-n",
+      "tran_evaluate/linearno_loop/ns.sh"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "seconds": 0.001190138005767949
+  },
+  {
+    "command": [
+      "bash",
+      "-n",
+      "tran_evaluate/linearno_loop/pipe.sh"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "seconds": 0.0009302049948018976
+  },
+  {
+    "command": [
+      "bash",
+      "-n",
+      "tran_evaluate/linearno_loop/plasticity.sh"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "seconds": 0.0008926099981181324
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "seconds": 0.002588672999991104
+  }
+]

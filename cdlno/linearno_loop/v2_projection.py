@@ -11,11 +11,14 @@ import subprocess
 
 BASE_REVISION = "80ebe42d5755fc58ac6b41e2f6a0512d601ac8a8"
 EXPECTED = {
-    "cdlno/linearno_loop/standard_entry.py": "629ce1b8db77b714c89067a541482596c3719eb0ee89aa1e9d8d4d6d843426a1",
-    "cdlno/linearno_loop/industrial_entry.py": "5243e59ac0fe09aa9b9f35c07be8eb0a351fc032646cbea66d5e6e2a4e999352",
+    # LAA6 extends this router with an explicit V3 branch.  The projection
+    # still returns the immutable LF5 source bytes, so v1/v2 fingerprints do
+    # not drift while the V3 hash records the live dispatch separately.
+    "cdlno/linearno_loop/standard_entry.py": "b35c2ea89eff484a39dd1adceaee594cba9245614a18686fdceb6e4744cb70d3",
+    "cdlno/linearno_loop/industrial_entry.py": "9d7d0403105b509ac801e429a95b46b0c906fb872ed3f11bafb8cc8a9fe56823",
     "cdlno/linearno_loop/industrial_state.py": "692019b3bd6e3932df22e45e16d113d2025654bae7edb1b316d33cd378e03acf",
-    "cdlno/linearno_loop/air_entry.py": "a3b12497d0a19a8f745e183dff75361a285ee9618a17786e129571253ddeba83",
-    "cdlno/linearno_loop/car_entry.py": "de0c772c19b10aa51fc17d443ac12e5a65905316c73b2affde6a8f7b941e1828",
+    "cdlno/linearno_loop/air_entry.py": "9571d3603938b6fa3d28126f307e0de9fec6646c078eff5085363118813389a4",
+    "cdlno/linearno_loop/car_entry.py": "8f80b1d96f23173428da8e2344144be3263b31534b5f6ebf97277e635081245e",
     "cdlno/linearno_loop/ll7_projection.py": "9dcf6c19ee1e1a32435f7d6194ba164394d2f8156a1cb56ce8b09fc57381b740",
 }
 

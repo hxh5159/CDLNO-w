@@ -1,0 +1,28 @@
+{
+  "phase": "LAA8",
+  "scope": "V3 matched_v1 and efficient_v1 eight-task launchers; no real training",
+  "source_of_truth": "current working tree",
+  "launcher_layout": {
+    "required_profile_trees": ["tran_evaluate/linearno_loop_v3/matched_v1", "tran_evaluate/linearno_loop_v3/efficient_v1"],
+    "optional_custom_tree": "tran_evaluate/linearno_loop_v3/custom",
+    "shared_parser": "tran_evaluate/linearno_loop_v3/launcher.py",
+    "required_entry_count": 16,
+    "total_shell_entry_count": 24
+  },
+  "default_contract": {
+    "architecture": "operator_latent_adapter_v3",
+    "topology": "P2-C4-R2-S2",
+    "depth": 12,
+    "residual": "sr_1_over_r",
+    "latent": true,
+    "adapter": "bilateral_qk_lowrank_second_visit",
+    "adapter_rank": 4,
+    "adapter_alpha": 4
+  },
+  "frozen_regions": [
+    "native task data/loss/metric/time loops",
+    "old pure LinearNO, V1/V2 loop launchers and checkpoint formats",
+    "existing output and visualization protocol"
+  ],
+  "evidence_capture": "before final documentation/static checks; no matrix command was started"
+}

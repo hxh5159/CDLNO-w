@@ -77,8 +77,17 @@ def parse_args(parser,tokens,loop_explicit,*,task,evaluation):
     args.checkpoint=args.checkpoint or ('latest' if args.resume else 'final')
     args.linearno_run_dir=args.linearno_run_dir or getattr(args,'run_dir',None)
     options={k:v for k,v in loop_explicit.items() if k in OPTIONS}
-    if 'linearno_rank' in supplied:options['linearno_rank']=args.linearno_rank
-    if 'linearno_rank' in options and 'rank_multiplier' in options:raise ValueError('actual rank and multiplier conflict')
+    v3_requested=options.get('architecture') == 'operator_latent_adapter_v3'
+    if 'linearno_rank' in supplied:
+        if 'rank_multiplier' in options:
+            raise ValueError('actual rank and multiplier conflict')
+        # The industrial CLI keeps --linearno-rank for compatibility, while
+        # V3 records the same absolute value under its versioned actual_M key.
+        options['actual_M' if v3_requested else 'linearno_rank']=args.linearno_rank
+    if v3_requested and 'rank_multiplier' in options:
+        raise ValueError('V3 does not accept rank multipliers; use --linearno-rank')
+    if 'latent_enabled' in options:
+        options['latent_enabled']=bool(options['latent_enabled'])
     if options.get('topology_preset') in PRESETS and set(options)&set(TOPOLOGY_FIELDS):raise ValueError('preset/custom conflict')
     mapping=dict(linearno_hidden='model.hidden',linearno_heads='model.heads',linearno_variant='model.linearno_variant',
         linearno_ffn_ratio='model.ffn_ratio',linearno_dropout='model.dropout',linearno_ref='model.ref',
@@ -123,8 +132,25 @@ def parse_args(parser,tokens,loop_explicit,*,task,evaluation):
     if 'weight' in supplied and args.weight!=base['values']['objective']['surface_weight']:
         raise ValueError('loop does not change selected profile objective surface weight')
     if task=='airfrans':
-        from cdlno.linearno.air_entry import _set_resolved_args
-        _set_resolved_args(args,base)
+        if config.get('config_version') == 3:
+            # Industrial V3 owns hidden width/depth/M in loop_spec; the
+            # legacy AirfRANS Namespace still needs the native field names.
+            loop=config['loop_spec']; model=base['values']['model']; training=base['values']['training']
+            args.linearno_profile=base['profile']; args.linearno_variant=loop['variant']
+            args.linearno_rank=loop['actual_M']; args.n_hidden=loop['hidden_width']
+            args.n_layers=loop['unique_depth']; args.n_heads=loop['heads']
+            args.mlp_ratio=model['ffn_ratio']; args.dropout=model['dropout']
+            args.unified_pos=int(model['unified_pos']); args.ref=model['ref']
+            args.nb_epochs=training['epochs']; args.batch_size=training['batch_size']
+            args.lr=training['lr']; args.nmodel=training['nmodel']
+            args.weight=base['values']['objective']['surface_weight']
+            args.subsampling=training['subsampling']; args.r=training['r']
+            args.max_neighbors=training['max_neighbors']; args.debug=training['debug']
+            args.save_name=base['values']['runtime']['save_name']; args.seed=base['values']['runtime']['seed']
+            args.linearno_family='linearno'; args.linearno_task='airfrans'
+        else:
+            from cdlno.linearno.air_entry import _set_resolved_args
+            _set_resolved_args(args,base)
         if args.task not in ('full','scarce','reynolds','aoa'):raise ValueError('invalid Air task')
         args.data_path=args.my_path
     else:
@@ -136,7 +162,9 @@ def parse_args(parser,tokens,loop_explicit,*,task,evaluation):
         args.seed=base['values']['runtime']['seed'];args.weight=base['values']['objective']['surface_weight']
     args.linearno_family='linearno_loop';args.linearno_task=task;args.linearno_profile=base['profile']
     args._linearno_loop_config=config;args._linearno_config=base;args._linearno_model_spec=config['model_spec']
-    args.linearno_rank=config['loop_spec']['resolved_rank'];args.n_layers=config['loop_spec']['unique_depth']
+    loop_spec=config['loop_spec']
+    args.linearno_rank=loop_spec.get('actual_M',loop_spec.get('resolved_rank'))
+    args.n_layers=loop_spec['unique_depth']
     identifier=run_directory_id(config)
     if args.linearno_run_dir is None:
         from cdlno.experiment import timestamp

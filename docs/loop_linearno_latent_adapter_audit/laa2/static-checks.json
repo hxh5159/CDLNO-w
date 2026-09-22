@@ -1,0 +1,812 @@
+{
+  "python": {
+    "count": 12,
+    "seconds": 0.0068134760003886186,
+    "files": [
+      "cdlno/linearno_loop/v3/__init__.py",
+      "cdlno/linearno_loop/v3/adapter.py",
+      "cdlno/linearno_loop/v3/initialization.py",
+      "cdlno/linearno_loop/v3/latent.py",
+      "tests/loop_linearno_latent_adapter/test_laa2_adapter.py",
+      "tests/loop_linearno_latent_adapter/test_laa2_latent.py",
+      "tests/loop_linearno_latent_adapter/test_laa2_oracles.py",
+      "tests/loop_linearno_latent_adapter/test_laa2_rng_amp.py",
+      "tests/loop_linearno_latent_adapter/primitive_oracles.py",
+      "tests/loop_linearno_latent_adapter/primitive_support.py",
+      "docs/loop_linearno_latent_adapter_audit/laa2/finalize_audit.py",
+      "docs/loop_linearno_latent_adapter_audit/laa2/run_checks.py"
+    ],
+    "no_pyc": true
+  },
+  "shell": {
+    "count": 130,
+    "results": [
+      {
+        "path": "Airfoil-Design-AirfRANS/scripts/CDLNO.sh",
+        "exit_code": 0,
+        "seconds": 0.0012374830039334483,
+        "output": ""
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/scripts/CDLNO_Evaluation.sh",
+        "exit_code": 0,
+        "seconds": 0.0009440040012123063,
+        "output": ""
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/scripts/Evaluation.sh",
+        "exit_code": 0,
+        "seconds": 0.00092762999702245,
+        "output": ""
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/scripts/GraphSAGE.sh",
+        "exit_code": 0,
+        "seconds": 0.0007621420008945279,
+        "output": ""
+      },
+      {
+        "path": "Airfoil-Design-AirfRANS/scripts/Transolver.sh",
+        "exit_code": 0,
+        "seconds": 0.0007119779984350316,
+        "output": ""
+      },
+      {
+        "path": "Car-Design-ShapeNetCar/scripts/CDLNO.sh",
+        "exit_code": 0,
+        "seconds": 0.0007452669960912317,
+        "output": ""
+      },
+      {
+        "path": "Car-Design-ShapeNetCar/scripts/CDLNO_Evaluation.sh",
+        "exit_code": 0,
+        "seconds": 0.0007772359967930242,
+        "output": ""
+      },
+      {
+        "path": "Car-Design-ShapeNetCar/scripts/Evaluation.sh",
+        "exit_code": 0,
+        "seconds": 0.0007587520012748428,
+        "output": ""
+      },
+      {
+        "path": "Car-Design-ShapeNetCar/scripts/Transolver.sh",
+        "exit_code": 0,
+        "seconds": 0.0006947419969947077,
+        "output": ""
+      },
+      {
+        "path": "CompMemNO/a1k0_nodrop/_train_eval.sh",
+        "exit_code": 0,
+        "seconds": 0.0008584399984101765,
+        "output": ""
+      },
+      {
+        "path": "CompMemNO/a1k0_nodrop/airfoil.sh",
+        "exit_code": 0,
+        "seconds": 0.000806103998911567,
+        "output": ""
+      },
+      {
+        "path": "CompMemNO/a1k0_nodrop/airfrans.sh",
+        "exit_code": 0,
+        "seconds": 0.0007109619982657023,
+        "output": ""
+      },
+      {
+        "path": "CompMemNO/a1k0_nodrop/car.sh",
+        "exit_code": 0,
+        "seconds": 0.0006994929935899563,
+        "output": ""
+      },
+      {
+        "path": "CompMemNO/a1k0_nodrop/darcy.sh",
+        "exit_code": 0,
+        "seconds": 0.0011562259969650768,
+        "output": ""
+      },
+      {
+        "path": "CompMemNO/a1k0_nodrop/elasticity.sh",
+        "exit_code": 0,
+        "seconds": 0.0007586370047647506,
+        "output": ""
+      },
+      {
+        "path": "CompMemNO/a1k0_nodrop/ns.sh",
+        "exit_code": 0,
+        "seconds": 0.0007760859953123145,
+        "output": ""
+      },
+      {
+        "path": "CompMemNO/a1k0_nodrop/pipe.sh",
+        "exit_code": 0,
+        "seconds": 0.0008928329989430495,
+        "output": ""
+      },
+      {
+        "path": "CompMemNO/a1k0_nodrop/plasticity.sh",
+        "exit_code": 0,
+        "seconds": 0.0011211469973204657,
+        "output": ""
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/scripts/CDLNO_Airfoil.sh",
+        "exit_code": 0,
+        "seconds": 0.0009696339984657243,
+        "output": ""
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/scripts/CDLNO_Airfoil_Eval.sh",
+        "exit_code": 0,
+        "seconds": 0.0007873750000726432,
+        "output": ""
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/scripts/CDLNO_Darcy.sh",
+        "exit_code": 0,
+        "seconds": 0.0007832750052330084,
+        "output": ""
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/scripts/CDLNO_Darcy_Eval.sh",
+        "exit_code": 0,
+        "seconds": 0.0007694480009377003,
+        "output": ""
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/scripts/CDLNO_Elas.sh",
+        "exit_code": 0,
+        "seconds": 0.0007648230021004565,
+        "output": ""
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/scripts/CDLNO_Elas_Eval.sh",
+        "exit_code": 0,
+        "seconds": 0.0007727229967713356,
+        "output": ""
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/scripts/CDLNO_NS.sh",
+        "exit_code": 0,
+        "seconds": 0.0007321649973164313,
+        "output": ""
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/scripts/CDLNO_NS_Eval.sh",
+        "exit_code": 0,
+        "seconds": 0.0008934040015446953,
+        "output": ""
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/scripts/CDLNO_Pipe.sh",
+        "exit_code": 0,
+        "seconds": 0.0006951049945200793,
+        "output": ""
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/scripts/CDLNO_Pipe_Eval.sh",
+        "exit_code": 0,
+        "seconds": 0.0010543470052652992,
+        "output": ""
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/scripts/CDLNO_Plasticity.sh",
+        "exit_code": 0,
+        "seconds": 0.0007617840019520372,
+        "output": ""
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/scripts/CDLNO_Plasticity_Eval.sh",
+        "exit_code": 0,
+        "seconds": 0.0007460300039383583,
+        "output": ""
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/scripts/Transolver_Airfoil.sh",
+        "exit_code": 0,
+        "seconds": 0.0008185269980458543,
+        "output": ""
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/scripts/Transolver_Darcy.sh",
+        "exit_code": 0,
+        "seconds": 0.0007338809955399483,
+        "output": ""
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/scripts/Transolver_Elas.sh",
+        "exit_code": 0,
+        "seconds": 0.0010566639975877479,
+        "output": ""
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/scripts/Transolver_NS.sh",
+        "exit_code": 0,
+        "seconds": 0.0009182260037050582,
+        "output": ""
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/scripts/Transolver_Pipe.sh",
+        "exit_code": 0,
+        "seconds": 0.000697663999744691,
+        "output": ""
+      },
+      {
+        "path": "PDE-Solving-StandardBenchmark/scripts/Transolver_Plas.sh",
+        "exit_code": 0,
+        "seconds": 0.0007513829987146892,
+        "output": ""
+      },
+      {
+        "path": "check_checkpoints/check_pipe_loop_resume.sh",
+        "exit_code": 0,
+        "seconds": 0.0009316480063716881,
+        "output": ""
+      },
+      {
+        "path": "depth_ablation/_depth.sh",
+        "exit_code": 0,
+        "seconds": 0.0010770400040200911,
+        "output": ""
+      },
+      {
+        "path": "depth_ablation/eval.sh",
+        "exit_code": 0,
+        "seconds": 0.0008125699969241396,
+        "output": ""
+      },
+      {
+        "path": "depth_ablation/run_all.sh",
+        "exit_code": 0,
+        "seconds": 0.0009522280015517026,
+        "output": ""
+      },
+      {
+        "path": "depth_ablation/schedule.sh",
+        "exit_code": 0,
+        "seconds": 0.000815291001345031,
+        "output": ""
+      },
+      {
+        "path": "depth_ablation/train.sh",
+        "exit_code": 0,
+        "seconds": 0.000981568002316635,
+        "output": ""
+      },
+      {
+        "path": "depth_ablation/train_eval.sh",
+        "exit_code": 0,
+        "seconds": 0.0007874690054450184,
+        "output": ""
+      },
+      {
+        "path": "path.sh",
+        "exit_code": 0,
+        "seconds": 0.0007514000026276335,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/_common.sh",
+        "exit_code": 0,
+        "seconds": 0.001025645004119724,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/_standard.sh",
+        "exit_code": 0,
+        "seconds": 0.0008592300000600517,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/ablation/identity/eval.sh",
+        "exit_code": 0,
+        "seconds": 0.0007209010000224225,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/ablation/identity/train.sh",
+        "exit_code": 0,
+        "seconds": 0.0007504850000259466,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/ablation/identity/train_eval.sh",
+        "exit_code": 0,
+        "seconds": 0.0006869229982839897,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/ablation/no_sa/eval.sh",
+        "exit_code": 0,
+        "seconds": 0.0007117519999155775,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/ablation/no_sa/train.sh",
+        "exit_code": 0,
+        "seconds": 0.0007489620038541034,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/ablation/no_sa/train_eval.sh",
+        "exit_code": 0,
+        "seconds": 0.0006981650003581308,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/airfoil.sh",
+        "exit_code": 0,
+        "seconds": 0.000819492997834459,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/airfrans.sh",
+        "exit_code": 0,
+        "seconds": 0.0008689569949638098,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/car.sh",
+        "exit_code": 0,
+        "seconds": 0.0007816219949745573,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/darcy.sh",
+        "exit_code": 0,
+        "seconds": 0.0009175200029858388,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/elasticity.sh",
+        "exit_code": 0,
+        "seconds": 0.0010099599967361428,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/inspect_data.sh",
+        "exit_code": 0,
+        "seconds": 0.000801223999587819,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/kcdlno/_task.sh",
+        "exit_code": 0,
+        "seconds": 0.0009598129981895909,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/kcdlno/airfoil.sh",
+        "exit_code": 0,
+        "seconds": 0.0007400100002996624,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/kcdlno/airfrans.sh",
+        "exit_code": 0,
+        "seconds": 0.0008019490051083267,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/kcdlno/car.sh",
+        "exit_code": 0,
+        "seconds": 0.0007127150020096451,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/kcdlno/darcy.sh",
+        "exit_code": 0,
+        "seconds": 0.0008140229983837344,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/kcdlno/elasticity.sh",
+        "exit_code": 0,
+        "seconds": 0.0006932379983481951,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/kcdlno/ns.sh",
+        "exit_code": 0,
+        "seconds": 0.0007513380041928031,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/kcdlno/pipe.sh",
+        "exit_code": 0,
+        "seconds": 0.0007613080015289597,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/kcdlno/plasticity.sh",
+        "exit_code": 0,
+        "seconds": 0.0010628099989844486,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/kcdlno/run_seed.sh",
+        "exit_code": 0,
+        "seconds": 0.000761110000894405,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/kcdno/_dispatch.sh",
+        "exit_code": 0,
+        "seconds": 0.0006903269968461245,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/kcdno/_standard.sh",
+        "exit_code": 0,
+        "seconds": 0.0007824180065654218,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/kcdno/airfoil.sh",
+        "exit_code": 0,
+        "seconds": 0.0007402640039799735,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/kcdno/airfrans.sh",
+        "exit_code": 0,
+        "seconds": 0.0008761349963606335,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/kcdno/car.sh",
+        "exit_code": 0,
+        "seconds": 0.0007730910001555458,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/kcdno/darcy.sh",
+        "exit_code": 0,
+        "seconds": 0.0009339759999420494,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/kcdno/elasticity.sh",
+        "exit_code": 0,
+        "seconds": 0.0007478810002794489,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/kcdno/ns.sh",
+        "exit_code": 0,
+        "seconds": 0.0006819740010541864,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/kcdno/pipe.sh",
+        "exit_code": 0,
+        "seconds": 0.000718253999366425,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/kcdno/plasticity.sh",
+        "exit_code": 0,
+        "seconds": 0.0009276979981223121,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/kcdno/train_eval.sh",
+        "exit_code": 0,
+        "seconds": 0.0009297200012952089,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno/_static.sh",
+        "exit_code": 0,
+        "seconds": 0.0009496949933236465,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno/airfoil_eval.sh",
+        "exit_code": 0,
+        "seconds": 0.0009047630010172725,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno/airfoil_train.sh",
+        "exit_code": 0,
+        "seconds": 0.0007777949940646067,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno/airfrans_eval.sh",
+        "exit_code": 0,
+        "seconds": 0.0008045149952522479,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno/airfrans_train.sh",
+        "exit_code": 0,
+        "seconds": 0.0007020170014584437,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno/car_eval.sh",
+        "exit_code": 0,
+        "seconds": 0.0007139570006984286,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno/car_train.sh",
+        "exit_code": 0,
+        "seconds": 0.0007585529965581372,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno/darcy_eval.sh",
+        "exit_code": 0,
+        "seconds": 0.0010289769998053089,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno/darcy_train.sh",
+        "exit_code": 0,
+        "seconds": 0.0006945460045244545,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno/elasticity_eval.sh",
+        "exit_code": 0,
+        "seconds": 0.0008613370009697974,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno/elasticity_train.sh",
+        "exit_code": 0,
+        "seconds": 0.0007202880005934276,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno/ns_eval.sh",
+        "exit_code": 0,
+        "seconds": 0.0007681919960305095,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno/ns_train.sh",
+        "exit_code": 0,
+        "seconds": 0.0007594170019729063,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno/pipe_eval.sh",
+        "exit_code": 0,
+        "seconds": 0.0007116050037438981,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno/pipe_train.sh",
+        "exit_code": 0,
+        "seconds": 0.0009536419966025278,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno/plasticity_eval.sh",
+        "exit_code": 0,
+        "seconds": 0.0008320940032717772,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno/plasticity_train.sh",
+        "exit_code": 0,
+        "seconds": 0.0008111839997582138,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno_history/airfoil.sh",
+        "exit_code": 0,
+        "seconds": 0.0007288429987966083,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno_history/airfrans.sh",
+        "exit_code": 0,
+        "seconds": 0.0007749280048301443,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno_history/car.sh",
+        "exit_code": 0,
+        "seconds": 0.0008254420026787557,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno_history/darcy.sh",
+        "exit_code": 0,
+        "seconds": 0.0007798610022291541,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno_history/elasticity.sh",
+        "exit_code": 0,
+        "seconds": 0.0007859109973651357,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno_history/ns.sh",
+        "exit_code": 0,
+        "seconds": 0.0007792840042384341,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno_history/pipe.sh",
+        "exit_code": 0,
+        "seconds": 0.0006975790020078421,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno_history/plasticity.sh",
+        "exit_code": 0,
+        "seconds": 0.0007401269976980984,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno_loop/airfoil.sh",
+        "exit_code": 0,
+        "seconds": 0.000686530998791568,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno_loop/airfrans.sh",
+        "exit_code": 0,
+        "seconds": 0.0006744339989381842,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno_loop/car.sh",
+        "exit_code": 0,
+        "seconds": 0.0007258100013132207,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno_loop/darcy.sh",
+        "exit_code": 0,
+        "seconds": 0.000689488006173633,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno_loop/elasticity.sh",
+        "exit_code": 0,
+        "seconds": 0.0007051639986457303,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno_loop/ns.sh",
+        "exit_code": 0,
+        "seconds": 0.0006690449954476207,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno_loop/pipe.sh",
+        "exit_code": 0,
+        "seconds": 0.0006644969980698079,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/linearno_loop/plasticity.sh",
+        "exit_code": 0,
+        "seconds": 0.0006993010028963909,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/msar_lno/_dispatch.sh",
+        "exit_code": 0,
+        "seconds": 0.000802662005298771,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/msar_lno/_static.sh",
+        "exit_code": 0,
+        "seconds": 0.0007885849990998395,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/msar_lno/airfoil.sh",
+        "exit_code": 0,
+        "seconds": 0.0007169960008468479,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/msar_lno/airfrans.sh",
+        "exit_code": 0,
+        "seconds": 0.0007698610061197542,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/msar_lno/car.sh",
+        "exit_code": 0,
+        "seconds": 0.0008469169988529757,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/msar_lno/darcy.sh",
+        "exit_code": 0,
+        "seconds": 0.0010884090006584302,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/msar_lno/elasticity.sh",
+        "exit_code": 0,
+        "seconds": 0.0008089980037766509,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/msar_lno/ns.sh",
+        "exit_code": 0,
+        "seconds": 0.0007458979962393641,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/msar_lno/pipe.sh",
+        "exit_code": 0,
+        "seconds": 0.0010736199983512051,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/msar_lno/plasticity.sh",
+        "exit_code": 0,
+        "seconds": 0.0008866290008882061,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/msar_lno/run_msar.sh",
+        "exit_code": 0,
+        "seconds": 0.0010159550001844764,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/ns.sh",
+        "exit_code": 0,
+        "seconds": 0.000855635000334587,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/pipe.sh",
+        "exit_code": 0,
+        "seconds": 0.0007939890056150034,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/plasticity.sh",
+        "exit_code": 0,
+        "seconds": 0.0007246379973366857,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/show/Airfoil-Design-AirfRANS.sh",
+        "exit_code": 0,
+        "seconds": 0.0007205769943539053,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/show/Car-Design-ShapeNetCar.sh",
+        "exit_code": 0,
+        "seconds": 0.0007001249978202395,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/show/PDE-Solving-StandardBenchmark.sh",
+        "exit_code": 0,
+        "seconds": 0.0007016900053713471,
+        "output": ""
+      },
+      {
+        "path": "tran_evaluate/train_eval.sh",
+        "exit_code": 0,
+        "seconds": 0.0007506890033255331,
+        "output": ""
+      }
+    ]
+  },
+  "diff": {
+    "exit_code": 0,
+    "seconds": 0.0024428949982393533,
+    "output": ""
+  },
+  "status": "PASS"
+}

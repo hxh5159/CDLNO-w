@@ -1,0 +1,59 @@
+{
+  "laa0": {
+    "manifest": "docs/loop_linearno_latent_adapter_audit/laa0/start-manifest.json",
+    "manifest_sha256": "e402320583e6cf4ab2643feba1ccd3353435b54a986e16c1db9a4a88ce49d357",
+    "compared": 3377,
+    "unchanged": 3377,
+    "changed": [],
+    "missing": []
+  },
+  "laa1": {
+    "manifest": "docs/loop_linearno_latent_adapter_audit/laa1/start-manifest.json",
+    "manifest_sha256": "1ab0ece2618e71118758dcb4787ac31c183a829d1fe29e3afd90d3a3cf29cbdc",
+    "compared": 4083,
+    "unchanged": 4082,
+    "changed": [
+      {
+        "path": "docs/LOOP_LINEARNO_LATENT_ADAPTER_IMPLEMENTATION_STATUS.md",
+        "before": "b5fce9df42423a31534885822aff00423a50e6466bc4c2ca0791f17c067097d9",
+        "after": "4bd5273b95c42efc1c934e8a253f70e9b7ccc561a3f59ab24496fb4f9b340b93",
+        "authorized": true
+      }
+    ],
+    "missing": []
+  },
+  "status": "PASS",
+  "user_diff_unchanged": true,
+  "staged_unchanged": true,
+  "head_unchanged": true,
+  "current_file_counts": {
+    "tracked": 2130,
+    "untracked": 646,
+    "ignored": 1352
+  },
+  "current_git_status": " M check_checkpoints/check_pipe_loop_resume.sh\n?? PLAN_Looped_LinearNO/Looped_LinearNO_LatentFFN_BilateralAdapter_CostProfiles_Codex_Staged_Prompts.md\n?? \"PLAN_Looped_LinearNO/\\347\\240\\224\\347\\251\\266\\344\\270\\273\\347\\272\\277\\346\\242\\263\\347\\220\\206 (5).md\"\n?? docs/LOOP_LINEARNO_LATENT_ADAPTER_IMPLEMENTATION_STATUS.md\n?? docs/LOOP_LINEARNO_LATENT_ADAPTER_REFERENCE_AUDIT.md\n?? docs/loop_linearno_latent_adapter_audit/\n?? linearno_loop/v3/\n?? tests/loop_linearno_latent_adapter/\n",
+  "final_diff_check": {
+    "exit_code": 0,
+    "seconds": 0.005965620999631938,
+    "output": ""
+  },
+  "authorized_existing_change": [
+    "docs/LOOP_LINEARNO_LATENT_ADAPTER_IMPLEMENTATION_STATUS.md"
+  ],
+  "new_code": {
+    "linearno_loop/v3/__init__.py": "f64c8c7c102435a44a61a176c5e0efc1146aa6639957d1ea7fe468fc34a069ed",
+    "linearno_loop/v3/config.py": "beb948b43d3d9a3be40fe27d1944eaadcda882e154798854516c8877479f78e5",
+    "linearno_loop/v3/contracts.py": "8336d3865424e471a91840e57bc4184f8c81c9e7ad4decde6ebfe02a8c7a01b2",
+    "linearno_loop/v3/costs.py": "836760e60aa1289759c2771e5391ed0074470a77f10c97bf08ee62d9aad65baf",
+    "linearno_loop/v3/matrix.py": "e18b93ee822eeff4ad259ae7bc239815af0c8e8d9fe5e2c743acc216221b65a3",
+    "linearno_loop/v3/profiles.py": "02f55e7d1ed07595b44babf789044be6602bcf383e31e92556ad70be4db59a8b",
+    "linearno_loop/v3/schema.py": "d77440d4c8c3687e5de1026f35db75929082f4ce53d0c8f3fd546e4fc28ff664",
+    "tests/loop_linearno_latent_adapter/__init__.py": "c5291bcea85a7c81811559cad1dac1768bae1a47d5df1463292a186ff09af970",
+    "tests/loop_linearno_latent_adapter/oracle.py": "1c29bc594dd90bba682c76deb3cee8ab11a6b21247054835dc801b29e8c3041a",
+    "tests/loop_linearno_latent_adapter/support.py": "367079b79bb741544b99cb8c35985c05a419d00e83af6b0f4af8ab0a05f5c298",
+    "tests/loop_linearno_latent_adapter/test_laa1_config.py": "bb0a074f26adac0f53735a4f76a77714850174741ed0c548456095ac5e853366",
+    "tests/loop_linearno_latent_adapter/test_laa1_costs.py": "e0903b1c452f6b5da467619087da41f485539a3059611ba8d321bf95f53ab0a6",
+    "tests/loop_linearno_latent_adapter/test_laa1_isolation.py": "39281b2fc99a930414172d0925461bbbc3ddbf144d8405c8bea13c507bb13df5",
+    "tests/loop_linearno_latent_adapter/test_laa1_schema.py": "91d0578664fb1c36e941ea5ec2c630c0fc6adf0bf233010a62956f264da0da8e"
+  }
+}

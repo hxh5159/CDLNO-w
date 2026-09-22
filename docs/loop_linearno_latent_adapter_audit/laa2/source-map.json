@@ -1,0 +1,306 @@
+[
+  {
+    "path": "cdlno/linearno_loop/v3/__init__.py",
+    "sha256": "a298368d3496e0ccb2237a2d46a5a885e839029f564332f658c2e91763a4159e",
+    "lines": 4,
+    "symbols": []
+  },
+  {
+    "path": "cdlno/linearno_loop/v3/adapter.py",
+    "sha256": "112fcb2beeb337f8e8237766a01f17eccc534e20be4d21c2157102758b1426dc",
+    "lines": 78,
+    "symbols": [
+      {
+        "name": "BilateralQKLowRankAdapter",
+        "line": 15,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "__init__",
+        "line": 28,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "_validate",
+        "line": 53,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "forward",
+        "line": 74,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "cdlno/linearno_loop/v3/initialization.py",
+    "sha256": "9833309670330e8201b4c986adcfdf66913bfbce9d15b55567126a48d210c5e3",
+    "lines": 17,
+    "symbols": [
+      {
+        "name": "feature_options",
+        "line": 8,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "cdlno/linearno_loop/v3/latent.py",
+    "sha256": "e8d431b7e39388729d15353ebefd4b730974fd06a78e54d3e1c11d715aa21c10",
+    "lines": 25,
+    "symbols": [
+      {
+        "name": "build_latent_context_ffn",
+        "line": 12,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "tests/loop_linearno_latent_adapter/test_laa2_adapter.py",
+    "sha256": "ba1744022ff2fc13d8b08435163d46e315cd7e5e1d732fd12d3aedbf581d8bb8",
+    "lines": 146,
+    "symbols": [
+      {
+        "name": "make",
+        "line": 11,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "AdapterTests",
+        "line": 17,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "test_default_initialization_parameter_formula_and_per_position_ownership",
+        "line": 18,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_forward_and_all_parameter_input_vjps_against_independent_oracles",
+        "line": 36,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_finite_difference_all_inputs_and_parameters",
+        "line": 55,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_zero_B_identity_and_two_step_gradient_startup",
+        "line": 61,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_head_sharing_batch_point_isolation_and_noncontiguous_layout",
+        "line": 79,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_validation_types_shape_device_and_nonfinite_propagation",
+        "line": 101,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_strict_reload_no_cached_graph_or_forward_rng",
+        "line": 127,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "f",
+        "line": 58,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "tests/loop_linearno_latent_adapter/test_laa2_latent.py",
+    "sha256": "10e55ac5160c2a26d79aec30f4760fc5f38d25629a72c46db9035e46d96937d5",
+    "lines": 123,
+    "symbols": [
+      {
+        "name": "make",
+        "line": 11,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "LatentTests",
+        "line": 16,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "test_exact_v2_class_keys_initialization_and_outputs",
+        "line": 17,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_parameter_formula_norm_gelu_no_dropout_and_instance_independence",
+        "line": 34,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_expanded_oracle_forward_and_all_vjps",
+        "line": 49,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_finite_difference_all_inputs_and_parameters",
+        "line": 64,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_no_token_mixing_permutation_and_batch_isolation",
+        "line": 70,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_zero_init_then_nonzero_gradients_after_one_adamw_step",
+        "line": 83,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_invalid_shapes_dtype_nonfinite_and_exception_recovery",
+        "line": 98,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_strict_reload_no_graph_history_or_rng_change",
+        "line": 111,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "f",
+        "line": 67,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "tests/loop_linearno_latent_adapter/test_laa2_oracles.py",
+    "sha256": "b8fa69376f6d73cb1b4106b6aab5239a3cd538cfbf41828ab9551c26eedee0e1",
+    "lines": 30,
+    "symbols": [
+      {
+        "name": "OracleTests",
+        "line": 6,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "test_literal_rational_adapter_both_ends_three_independent_orders",
+        "line": 7,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_literal_latent_zero_mean_unit_variance_and_bias",
+        "line": 19,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "tests/loop_linearno_latent_adapter/test_laa2_rng_amp.py",
+    "sha256": "cc162aea8ab272a19db641a34eec1ecd2038da5e372f3e63b82d04182afaf673",
+    "lines": 141,
+    "symbols": [
+      {
+        "name": "snapshot",
+        "line": 13,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "assert_rng",
+        "line": 18,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "FeatureRNGTests",
+        "line": 25,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "CUDAPrimitiveTests",
+        "line": 66,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "test_construct_and_reconstruct_do_not_advance_public_rng",
+        "line": 26,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_all_four_feature_orders_preserve_following_backbone_draw",
+        "line": 40,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_invalid_seed_dtype_and_failed_construction_preserve_rng",
+        "line": 55,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_fp32_fp16_bf16_forward_backward_optimizer_strict_reload",
+        "line": 68,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "test_cross_device_rejection_and_default_device_does_not_consume_cuda_rng",
+        "line": 131,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "tests/loop_linearno_latent_adapter/primitive_oracles.py",
+    "sha256": "59fb13a2a99eb386583716001ab6c58a86e500e890a76cb0a8d0da0ccc5cfbc2",
+    "lines": 42,
+    "symbols": [
+      {
+        "name": "adapter_indexed",
+        "line": 11,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "adapter_einsum",
+        "line": 24,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "adapter_merged_matrix",
+        "line": 28,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "latent_expanded",
+        "line": 33,
+        "kind": "FunctionDef"
+      }
+    ]
+  },
+  {
+    "path": "tests/loop_linearno_latent_adapter/primitive_support.py",
+    "sha256": "b720385bd7d55c4e6ec6db9f5e0b13e93b8dd9595306c423cbde1d979407fdd2",
+    "lines": 27,
+    "symbols": [
+      {
+        "name": "close",
+        "line": 7,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "values",
+        "line": 14,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "nonzero",
+        "line": 19,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "params",
+        "line": 26,
+        "kind": "FunctionDef"
+      }
+    ]
+  }
+]

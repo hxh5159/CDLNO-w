@@ -1,0 +1,23 @@
+{
+  "status": "passed",
+  "task": "elasticity",
+  "profile": "matched_v1",
+  "depth": "d12",
+  "matrix_macs": 36194112,
+  "analytic_matrix_macs": 36194112,
+  "contraction_count": 24,
+  "softmax_count": 24,
+  "forbidden_attention": [],
+  "parameter_parts": {
+    "stem": 19200,
+    "time": 0,
+    "prefix": 78656,
+    "shared_core": 157312,
+    "suffix": 78656,
+    "head": 289,
+    "latent": 248192,
+    "adapter": 2432,
+    "router": 0
+  },
+  "scope": "synthetic B1,N6; no dataset or persistent diagnostic state"
+}

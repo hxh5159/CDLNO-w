@@ -1,0 +1,1086 @@
+{
+  "stage": "LAA2",
+  "suite": "new",
+  "command": [
+    "/home/hwz/anaconda3/bin/python",
+    "-B",
+    "docs/loop_linearno_latent_adapter_audit/laa2/run_checks.py",
+    "new"
+  ],
+  "cwd": "/home/hwz/CDLNO",
+  "modules": [
+    "loop_linearno_latent_adapter.test_laa2_oracles",
+    "loop_linearno_latent_adapter.test_laa2_adapter",
+    "loop_linearno_latent_adapter.test_laa2_latent",
+    "loop_linearno_latent_adapter.test_laa2_rng_amp"
+  ],
+  "status": "PASS",
+  "tests": 22,
+  "failed": 0,
+  "errors": 0,
+  "skipped": 0,
+  "skip_details": [],
+  "wall_seconds": 3.317340781999519,
+  "log": "new-final.log",
+  "environment": {
+    "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+    "executable": "/home/hwz/anaconda3/bin/python",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+    "torch": "2.13.0+cu130",
+    "cuda_build": "13.0",
+    "cuda_available": true,
+    "gpus": [
+      "NVIDIA GeForce RTX 5090 Laptop GPU"
+    ],
+    "packages": {
+      "numpy": "2.2.6",
+      "torch-geometric": "2.3.1",
+      "timm": "1.0.28"
+    },
+    "threads": 1,
+    "env": {
+      "CUDA_VISIBLE_DEVICES": null,
+      "CUBLAS_WORKSPACE_CONFIG": null,
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    }
+  },
+  "cpu_error_rows": [
+    {
+      "label": "adapter-forward-q",
+      "dtype": "torch.float64",
+      "max_absolute": 8.326672684688674e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-index-q",
+      "dtype": "torch.float64",
+      "max_absolute": 8.326672684688674e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-merged-q",
+      "dtype": "torch.float64",
+      "max_absolute": 5.551115123125783e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-forward-k",
+      "dtype": "torch.float64",
+      "max_absolute": 4.85722573273506e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-index-k",
+      "dtype": "torch.float64",
+      "max_absolute": 4.85722573273506e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-merged-k",
+      "dtype": "torch.float64",
+      "max_absolute": 1.1102230246251565e-16,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-vjp-0",
+      "dtype": "torch.float64",
+      "max_absolute": 4.440892098500626e-16,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-vjp-1",
+      "dtype": "torch.float64",
+      "max_absolute": 7.216449660063518e-16,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-vjp-2",
+      "dtype": "torch.float64",
+      "max_absolute": 1.700029006457271e-16,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-vjp-3",
+      "dtype": "torch.float64",
+      "max_absolute": 2.5118795932144167e-15,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-vjp-4",
+      "dtype": "torch.float64",
+      "max_absolute": 6.661338147750939e-16,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-forward-q",
+      "dtype": "torch.float32",
+      "max_absolute": 1.4901161193847656e-08,
+      "atol": 3e-06,
+      "rtol": 3e-05
+    },
+    {
+      "label": "adapter-index-q",
+      "dtype": "torch.float32",
+      "max_absolute": 1.4901161193847656e-08,
+      "atol": 3e-06,
+      "rtol": 3e-05
+    },
+    {
+      "label": "adapter-merged-q",
+      "dtype": "torch.float32",
+      "max_absolute": 2.9802322387695312e-08,
+      "atol": 3e-06,
+      "rtol": 3e-05
+    },
+    {
+      "label": "adapter-forward-k",
+      "dtype": "torch.float32",
+      "max_absolute": 4.470348358154297e-08,
+      "atol": 3e-06,
+      "rtol": 3e-05
+    },
+    {
+      "label": "adapter-index-k",
+      "dtype": "torch.float32",
+      "max_absolute": 4.470348358154297e-08,
+      "atol": 3e-06,
+      "rtol": 3e-05
+    },
+    {
+      "label": "adapter-merged-k",
+      "dtype": "torch.float32",
+      "max_absolute": 5.960464477539063e-08,
+      "atol": 3e-06,
+      "rtol": 3e-05
+    },
+    {
+      "label": "adapter-vjp-0",
+      "dtype": "torch.float32",
+      "max_absolute": 2.384185791015625e-07,
+      "atol": 3e-06,
+      "rtol": 3e-05
+    },
+    {
+      "label": "adapter-vjp-1",
+      "dtype": "torch.float32",
+      "max_absolute": 2.384185791015625e-07,
+      "atol": 3e-06,
+      "rtol": 3e-05
+    },
+    {
+      "label": "adapter-vjp-2",
+      "dtype": "torch.float32",
+      "max_absolute": 6.705522537231445e-08,
+      "atol": 3e-06,
+      "rtol": 3e-05
+    },
+    {
+      "label": "adapter-vjp-3",
+      "dtype": "torch.float32",
+      "max_absolute": 5.960464477539062e-07,
+      "atol": 3e-06,
+      "rtol": 3e-05
+    },
+    {
+      "label": "adapter-vjp-4",
+      "dtype": "torch.float32",
+      "max_absolute": 4.76837158203125e-07,
+      "atol": 3e-06,
+      "rtol": 3e-05
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 1.3877787807814457e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 3.469446951953614e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 2.7755575615628914e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 5.204170427930421e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 1.3877787807814457e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 1.3877787807814457e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 1.3877787807814457e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 1.3877787807814457e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 1.3877787807814457e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 1.3877787807814457e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 3.469446951953614e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 0.0,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 3.469446951953614e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 0.0,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 1.3877787807814457e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 3.469446951953614e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 1.3877787807814457e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 2.7755575615628914e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 1.3877787807814457e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 4.85722573273506e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 1.3877787807814457e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 2.7755575615628914e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 8.673617379884035e-19,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 0.0,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 3.469446951953614e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 0.0,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 2.7755575615628914e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 0.0,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 1.734723475976807e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 6.938893903907228e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 2.7755575615628914e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 6.938893903907228e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 2.7755575615628914e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 3.469446951953614e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 0.0,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 2.7755575615628914e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 1.734723475976807e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 2.7755575615628914e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 1.3877787807814457e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 0.0,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 1.3877787807814457e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 0.0,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 8.326672684688674e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 6.938893903907228e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 1.734723475976807e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 6.938893903907228e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 6.938893903907228e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 1.3877787807814457e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 1.3877787807814457e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 1.3877787807814457e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 1.3877787807814457e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 3.469446951953614e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 0.0,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 3.469446951953614e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 6.938893903907228e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 0.0,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 1.3877787807814457e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 6.938893903907228e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 2.7755575615628914e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 1.0408340855860843e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 1.3877787807814457e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 6.938893903907228e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 5.204170427930421e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 2.7755575615628914e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 3.469446951953614e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 2.7755575615628914e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 3.469446951953614e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 0.0,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 2.7755575615628914e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 0.0,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 3.2526065174565133e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 1.3877787807814457e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 2.7755575615628914e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 5.551115123125783e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 1.3877787807814457e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 0.0,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 6.938893903907228e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 1.3877787807814457e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 1.734723475976807e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 0.0,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 0.0,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 0.0,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-q",
+      "dtype": "torch.float64",
+      "max_absolute": 2.7755575615628914e-17,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-isolation-k",
+      "dtype": "torch.float64",
+      "max_absolute": 0.0,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-identical-heads",
+      "dtype": "torch.float64",
+      "max_absolute": 0.0,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-identical-heads",
+      "dtype": "torch.float64",
+      "max_absolute": 0.0,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-identical-heads",
+      "dtype": "torch.float64",
+      "max_absolute": 0.0,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "adapter-identical-heads",
+      "dtype": "torch.float64",
+      "max_absolute": 6.938893903907228e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "latent-forward",
+      "dtype": "torch.float64",
+      "max_absolute": 8.881784197001252e-16,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "latent-vjp-0",
+      "dtype": "torch.float64",
+      "max_absolute": 3.9968028886505635e-15,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "latent-vjp-1",
+      "dtype": "torch.float64",
+      "max_absolute": 3.552713678800501e-15,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "latent-vjp-2",
+      "dtype": "torch.float64",
+      "max_absolute": 7.105427357601002e-15,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "latent-vjp-3",
+      "dtype": "torch.float64",
+      "max_absolute": 1.7763568394002505e-15,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "latent-vjp-4",
+      "dtype": "torch.float64",
+      "max_absolute": 3.552713678800501e-15,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "latent-vjp-5",
+      "dtype": "torch.float64",
+      "max_absolute": 1.7763568394002505e-15,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "latent-vjp-6",
+      "dtype": "torch.float64",
+      "max_absolute": 0.0,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "latent-forward",
+      "dtype": "torch.float32",
+      "max_absolute": 4.76837158203125e-07,
+      "atol": 3e-06,
+      "rtol": 3e-05
+    },
+    {
+      "label": "latent-vjp-0",
+      "dtype": "torch.float32",
+      "max_absolute": 2.1457672119140625e-06,
+      "atol": 3e-06,
+      "rtol": 3e-05
+    },
+    {
+      "label": "latent-vjp-1",
+      "dtype": "torch.float32",
+      "max_absolute": 3.814697265625e-06,
+      "atol": 3e-06,
+      "rtol": 3e-05
+    },
+    {
+      "label": "latent-vjp-2",
+      "dtype": "torch.float32",
+      "max_absolute": 3.814697265625e-06,
+      "atol": 3e-06,
+      "rtol": 3e-05
+    },
+    {
+      "label": "latent-vjp-3",
+      "dtype": "torch.float32",
+      "max_absolute": 9.5367431640625e-07,
+      "atol": 3e-06,
+      "rtol": 3e-05
+    },
+    {
+      "label": "latent-vjp-4",
+      "dtype": "torch.float32",
+      "max_absolute": 3.814697265625e-06,
+      "atol": 3e-06,
+      "rtol": 3e-05
+    },
+    {
+      "label": "latent-vjp-5",
+      "dtype": "torch.float32",
+      "max_absolute": 1.9073486328125e-06,
+      "atol": 3e-06,
+      "rtol": 3e-05
+    },
+    {
+      "label": "latent-vjp-6",
+      "dtype": "torch.float32",
+      "max_absolute": 0.0,
+      "atol": 3e-06,
+      "rtol": 3e-05
+    },
+    {
+      "label": "latent-token-permutation",
+      "dtype": "torch.float64",
+      "max_absolute": 0.0,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "latent-token-isolation",
+      "dtype": "torch.float64",
+      "max_absolute": 0.0,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "latent-token-isolation",
+      "dtype": "torch.float64",
+      "max_absolute": 4.440892098500626e-16,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "latent-token-isolation",
+      "dtype": "torch.float64",
+      "max_absolute": 8.881784197001252e-16,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "latent-token-isolation",
+      "dtype": "torch.float64",
+      "max_absolute": 4.440892098500626e-16,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "latent-token-isolation",
+      "dtype": "torch.float64",
+      "max_absolute": 4.440892098500626e-16,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "latent-token-isolation",
+      "dtype": "torch.float64",
+      "max_absolute": 4.440892098500626e-16,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "latent-token-isolation",
+      "dtype": "torch.float64",
+      "max_absolute": 4.440892098500626e-16,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "latent-token-isolation",
+      "dtype": "torch.float64",
+      "max_absolute": 4.440892098500626e-16,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "latent-token-isolation",
+      "dtype": "torch.float64",
+      "max_absolute": 8.881784197001252e-16,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "latent-token-isolation",
+      "dtype": "torch.float64",
+      "max_absolute": 4.440892098500626e-16,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "latent-identity-input-gradient",
+      "dtype": "torch.float64",
+      "max_absolute": 3.469446951953614e-18,
+      "atol": 2e-12,
+      "rtol": 2e-11
+    },
+    {
+      "label": "latent-identity-input-gradient",
+      "dtype": "torch.float32",
+      "max_absolute": 1.862645149230957e-09,
+      "atol": 3e-06,
+      "rtol": 3e-05
+    }
+  ],
+  "cuda_cases": [
+    {
+      "kind": "adapter",
+      "dtype": "torch.float32",
+      "status": "PASS",
+      "forward_max_abs": 3.9944685670256774e-08,
+      "vjp_max_abs": 6.260116328093979e-09,
+      "atol": 4e-06,
+      "rtol": 5e-05,
+      "reload_max_abs": 0.0
+    },
+    {
+      "kind": "latent",
+      "dtype": "torch.float32",
+      "status": "PASS",
+      "forward_max_abs": 5.352209209164016e-07,
+      "vjp_max_abs": 5.630069619400047e-07,
+      "atol": 4e-06,
+      "rtol": 5e-05,
+      "reload_max_abs": 0.0
+    },
+    {
+      "kind": "adapter",
+      "dtype": "torch.float16",
+      "status": "PASS",
+      "forward_max_abs": 0.0003914367488775383,
+      "vjp_max_abs": 3.281709100794172e-05,
+      "atol": 0.004,
+      "rtol": 0.03,
+      "reload_max_abs": 0.0
+    },
+    {
+      "kind": "latent",
+      "dtype": "torch.float16",
+      "status": "PASS",
+      "forward_max_abs": 0.002199070635457545,
+      "vjp_max_abs": 0.0008218811850830843,
+      "atol": 0.004,
+      "rtol": 0.03,
+      "reload_max_abs": 0.0
+    },
+    {
+      "kind": "adapter",
+      "dtype": "torch.bfloat16",
+      "status": "PASS",
+      "forward_max_abs": 0.002066461592251101,
+      "vjp_max_abs": 0.0001210654499662761,
+      "atol": 0.04,
+      "rtol": 0.08,
+      "reload_max_abs": 0.0
+    },
+    {
+      "kind": "latent",
+      "dtype": "torch.bfloat16",
+      "status": "PASS",
+      "forward_max_abs": 0.01638583794236048,
+      "vjp_max_abs": 0.007906119594450534,
+      "atol": 0.04,
+      "rtol": 0.08,
+      "reload_max_abs": 0.0
+    }
+  ]
+}

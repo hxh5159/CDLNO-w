@@ -24,6 +24,12 @@ class CarRun(GeneratorCarRun):
     # Reuse the already verified independent-generator native train loop exactly.
     objective=pure.CarRun.objective
 
+    def _resume_state(self, optimizer, scheduler, epoch):
+        fn = self.checkpoint.resume_state if self.args._linearno_loop_config.get('config_version') == 3 else resume_state
+        return fn(optimizer, scheduler, epoch, self.steps, self.args.nb_epochs, self.generators,
+                  dict(train='RandomSampler, drop_last=True, independent generator',
+                       test='SequentialSampler',epoch_boundary=True))
+
     def __init__(self,args,data_spec,coef_norm,recorder=None):
         self.args,self.config,self.directory=args,args._linearno_config,Path(args.linearno_run_dir)
         self.data,self.coef,self.recorder=copy.deepcopy(data_spec),coef_norm,recorder
@@ -49,11 +55,20 @@ class CarRun(GeneratorCarRun):
             require_equal(self.normalizers,saved['normalizer_spec'],'saved.normalizer_spec')
             self.data['optimizer_signature']=saved['data_spec']['runtime']['optimizer_signature']
 
-    def metadata(self,optimizer,scheduler,epoch):
+    def metadata(self,optimizer,scheduler,epoch,model=None):
+        if self.args._linearno_loop_config.get('config_version') != 3:
+            return make_metadata(self.args._linearno_loop_config,
+                data_spec=data_contract(self.args._linearno_loop_config,self.data),
+                normalizer_spec=self.normalizers,provenance_spec=self.provenance,
+                resume_state=self._resume_state(optimizer,scheduler,epoch),
+                ensemble_manifest=[])
+        if model is None:
+            raise ValueError('V3 Car metadata requires a constructed model for parameter measurement')
+        from cdlno.linearno_loop.v3.checkpoint import measure_parameters
         return make_metadata(self.args._linearno_loop_config,data_spec=data_contract(self.args._linearno_loop_config,self.data),
             normalizer_spec=self.normalizers,provenance_spec=self.provenance,
-            resume_state=resume_state(optimizer,scheduler,epoch,self.steps,self.args.nb_epochs,self.generators,
-                dict(train='RandomSampler, drop_last=True, independent generator',test='SequentialSampler',epoch_boundary=True)),ensemble_manifest=[])
+            resume_state=self._resume_state(optimizer,scheduler,epoch),
+            ensemble_manifest=[], parameter_measurement=measure_parameters(model,self.args._linearno_loop_config))
 
     def prepare(self,model,optimizer,scheduler):
         self.optimizer,self.scheduler=optimizer,scheduler
@@ -66,13 +81,13 @@ class CarRun(GeneratorCarRun):
             saved,_=self.checkpoint.read_pair(self.args._linearno_checkpoint,expected=self.args._linearno_loop_config)
             self.completed_epoch=restore_training(saved,self.args._linearno_checkpoint,model,optimizer,scheduler,
                 steps=self.steps,generators=self.generators,current_provenance=self.current_provenance)
-        else:write_metadata(self.directory/'architecture.json',self.metadata(optimizer,scheduler,0))
+        else:write_metadata(self.directory/'architecture.json',self.metadata(optimizer,scheduler,0,model))
         return self.completed_epoch
 
     def complete_epoch(self,epoch,model,metrics):
         if epoch!=self.completed_epoch+1 or self.scheduler.last_epoch!=epoch*self.steps:raise ValueError('Car epoch/scheduler mismatch')
         if self.recorder:self.recorder.record_epoch(epoch,metrics)
-        self.checkpoint.save_pair(self.directory,model,self.metadata(self.optimizer,self.scheduler,epoch));self.completed_epoch=epoch
+        self.checkpoint.save_pair(self.directory,model,self.metadata(self.optimizer,self.scheduler,epoch,model));self.completed_epoch=epoch
 
     def export_final(self,model):export_state(model,self.directory/f'model_{self.args.nb_epochs}.pth')
 

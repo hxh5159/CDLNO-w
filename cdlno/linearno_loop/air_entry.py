@@ -47,9 +47,26 @@ class AirRun(pure.AirRun):
 
     def loader_kwargs(self,split):return dict(generator=self.generators[split])
 
-    def _metadata(self,state):
+    def _resume_state(self, optimizer, scheduler, epoch, sampler):
+        fn = self.checkpoint.resume_state if self.args._linearno_loop_config.get('config_version') == 3 else resume_state
+        return fn(optimizer, scheduler, epoch, self.steps_per_epoch, self.args.nb_epochs,
+                  self.generators, sampler)
+
+    def _metadata(self,state,model=None):
+        if self.args._linearno_loop_config.get('config_version') != 3:
+            return make_metadata(self.args._linearno_loop_config,
+                data_spec=data_contract(self.args._linearno_loop_config,self.data),
+                normalizer_spec=self.normalizers,provenance_spec=self.provenance,
+                resume_state=state,ensemble_manifest=[])
+        measurement = None
+        if model is not None:
+            from cdlno.linearno_loop.v3.checkpoint import measure_parameters
+            measurement = measure_parameters(model, self.args._linearno_loop_config)
+        if measurement is None:
+            raise ValueError('V3 Air metadata requires a constructed model for parameter measurement')
         return make_metadata(self.args._linearno_loop_config,data_spec=data_contract(self.args._linearno_loop_config,self.data),
-            normalizer_spec=self.normalizers,provenance_spec=self.provenance,resume_state=state,ensemble_manifest=[])
+            normalizer_spec=self.normalizers,provenance_spec=self.provenance,resume_state=state,
+            ensemble_manifest=[],parameter_measurement=measurement)
 
     def prepare(self,model,optimizer,scheduler,train_dataset,val_dataset,criterion,reg,val_iter,val_sample):
         objective=self.config['values']['objective']
@@ -61,8 +78,8 @@ class AirRun(pure.AirRun):
         signature=json.loads(json.dumps(_optimizer_signature(model,optimizer)))
         if 'optimizer_signature' in self.data:require_equal(self.data['optimizer_signature'],signature,'optimizer_signature')
         self.data['optimizer_signature']=signature
-        initial=self._metadata(resume_state(optimizer,scheduler,0,self.steps_per_epoch,self.args.nb_epochs,
-            self.generators,dict(member=self.current_member,epoch_boundary=True)))
+        initial=self._metadata(self._resume_state(optimizer,scheduler,0,
+            dict(member=self.current_member,epoch_boundary=True)),model)
         root=self.directory/'architecture.json'
         if not root.exists():write_metadata(root,initial)
         else:
@@ -84,9 +101,9 @@ class AirRun(pure.AirRun):
     def complete_epoch(self,epoch,model,history):
         if epoch!=self.completed_epoch+1 or self.scheduler.last_epoch!=epoch*self.steps_per_epoch:
             raise ValueError('Air epoch/scheduler cadence mismatch')
-        state=resume_state(self.optimizer,self.scheduler,epoch,self.steps_per_epoch,self.args.nb_epochs,self.generators,
+        state=self._resume_state(self.optimizer,self.scheduler,epoch,
             dict(member=self.current_member,epoch_boundary=True,history=pure._json_history(history)))
-        self.checkpoint.save_pair(self.member_dir,model,self._metadata(state))
+        self.checkpoint.save_pair(self.member_dir,model,self._metadata(state,model))
         self.completed_epoch=epoch
         _atomic(self.member_dir/'history.json',pure._json_history(history),json_file=True)
 

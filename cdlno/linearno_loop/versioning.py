@@ -7,15 +7,19 @@ from pathlib import Path
 import torch
 
 from linearno_loop.contracts import digest
-from linearno_loop.versioning import is_v2
+from linearno_loop.versioning import is_v2, is_v3
 
 
 def construction_api(config):
+    if is_v3(config):
+        return importlib.import_module("cdlno.linearno_loop.v3.construction")
     return importlib.import_module("cdlno.linearno_loop.v2.construction" if is_v2(config)
                                    else "cdlno.linearno_loop.construction")
 
 
 def checkpoint_api(config):
+    if is_v3(config):
+        return importlib.import_module("cdlno.linearno_loop.v3.checkpoint")
     return importlib.import_module("cdlno.linearno_loop.v2.checkpoint" if is_v2(config)
                                    else "cdlno.linearno_loop.checkpoint")
 
@@ -23,6 +27,12 @@ def checkpoint_api(config):
 def construct(config, *, member_seed=None):
     if member_seed is None:
         return construction_api(config).build_from_config(config)
+    if is_v3(config):
+        # V3 wrappers validate their complete constructor contract through the
+        # construction context; bypassing it would make industrial member
+        # construction differ from the normal metadata-first path.
+        return construction_api(config).build_from_config(config,
+                                                          initialization_seed=member_seed)
     spec = config["model_spec"]
     module_name, class_name = spec["class_path"].rsplit(".", 1)
     constructor = getattr(importlib.import_module(module_name), class_name)
@@ -37,6 +47,9 @@ def construct(config, *, member_seed=None):
 
 
 def provenance(config, task=None):
+    if is_v3(config):
+        from .v3.provenance import provenance as v3_provenance
+        return v3_provenance(config, task=task)
     if not is_v2(config):
         if task is None:
             from .provenance import provenance as standard
@@ -45,4 +58,3 @@ def provenance(config, task=None):
         return industrial(task)
     from .v2.provenance import provenance as v2_provenance
     return v2_provenance(config, task=task)
-

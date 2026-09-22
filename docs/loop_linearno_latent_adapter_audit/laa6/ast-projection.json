@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "legacy_projection": {
+    "method": "v2 projection maps the exact LAA6 router source back to the immutable LF5 source before legacy provenance hashing",
+    "file": "cdlno/linearno_loop/v2_projection.py",
+    "legacy_entry_modules_unchanged": true
+  },
+  "v3_changes_are_isolated_to": [
+    "linearno_loop/versioning.py",
+    "cdlno/linearno_loop/versioning.py",
+    "cdlno/linearno_loop/standard_entry.py",
+    "cdlno/linearno/standard_entry.py",
+    "cdlno/linearno_loop/v2_projection.py",
+    "cdlno/linearno_loop/v3/provenance.py"
+  ],
+  "user_existing_change_preserved": "check_checkpoints/check_pipe_loop_resume.sh"
+}

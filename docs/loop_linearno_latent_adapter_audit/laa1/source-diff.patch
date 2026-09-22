@@ -1,0 +1,1304 @@
+--- /dev/null
++++ linearno_loop/v3/__init__.py
+@@ -0,0 +1,9 @@
++"""Looped LinearNO V3 configuration-only contracts.
++
++LAA1 deliberately contains no tensor, task-entry, model, or checkpoint backend
++imports.  Construction is reserved for later LAA stages.
++"""
++
++from .config import resolve_config, validate_config, run_directory_id
++
++__all__ = ("resolve_config", "validate_config", "run_directory_id")
+--- /dev/null
++++ linearno_loop/v3/config.py
+@@ -0,0 +1,255 @@
++"""Pure V3 config. Saved resolution is validated without re-resolving profiles."""
++from copy import deepcopy
++import hashlib
++
++from cdlno.linearno.profiles import DEFAULT_PROFILE, PROFILES
++from linearno_loop.config import _profile, _attnres
++from linearno_loop.contracts import PRESETS
++from .profiles import width_for
++from .contracts import (ARCHITECTURE_EXTENSION, ARCHITECTURE_SELECTOR, CLASS_PATHS,
++    CONFIG_VERSION, COST_PROFILES, FAMILY, FORMULA_VERSION, RESIDUAL_MODES,
++    ADAPTER_MODES, SCHEMA_VERSION, CHECKPOINT_VERSION, CHECKPOINT_FORMAT, TASKS, TOPOLOGY_FIELDS,
++    V3SchemaError, exact, finite, integer, json_value, require_equal, seal, digest)
++
++OPTIONS = {'architecture', 'cost_profile', 'topology_preset', 'executed_depth',
++           *TOPOLOGY_FIELDS, 'residual_mode', 'hidden_width', 'latent_width',
++           'actual_M', 'heads', 'latent_enabled', 'adapter_mode', 'adapter_rank', 'adapter_alpha'}
++CONFIG_KEYS = {'family','architecture_extension','schema_version','config_version','checkpoint_version','checkpoint_format',
++               'request','base_profile_spec','resolution','loop_spec','profile_spec','model_spec',
++               'field_sources','fair_comparison','config_hash'}
++
++
++def _seed(label, payload):
++    return int.from_bytes(hashlib.sha256((label+':'+digest(payload)).encode()).digest()[:8], 'big') % 2**63
++
++
++def _request(task, profile, options, overrides):
++    if type(task) is not str or task not in TASKS or type(profile) is not str or profile not in PROFILES:
++        raise V3SchemaError('unknown task/profile')
++    json_value(options, 'options');json_value(overrides,'profile_overrides')
++    if type(options) is not dict or set(options)-OPTIONS:
++        raise V3SchemaError('options: unknown fields or not an object')
++    if options.get('architecture') != ARCHITECTURE_SELECTOR:
++        raise V3SchemaError('explicit architecture=operator_latent_adapter_v3 is required; cost_profile cannot select V3')
++    if type(overrides) is not dict or any(not k.startswith(('training.','runtime.')) for k in overrides):
++        raise V3SchemaError('profile_overrides allow training/runtime only; V3 architecture fields have a single source')
++    cost = options.get('cost_profile','matched_v1')
++    if type(cost) is not str or cost not in COST_PROFILES:
++        raise V3SchemaError('unknown cost_profile')
++    for field in ('hidden_width','latent_width','actual_M','heads','adapter_rank','executed_depth'):
++        if field in options:integer(options[field],field,1)
++    for i,field in enumerate(TOPOLOGY_FIELDS):
++        if field in options:integer(options[field],field,0 if i==0 else 1)
++    if 'adapter_alpha' in options:finite(options['adapter_alpha'],'adapter_alpha',0,True)
++    if 'latent_enabled' in options and type(options['latent_enabled']) is not bool:
++        raise V3SchemaError('latent_enabled must be bool')
++    for field,allowed in [('residual_mode',RESIDUAL_MODES),('adapter_mode',ADAPTER_MODES)]:
++        if field in options and (type(options[field]) is not str or options[field] not in allowed):
++            raise V3SchemaError('unknown '+field)
++    return cost
++
++
++def _topology(options, cost):
++    supplied=set(options)&set(TOPOLOGY_FIELDS)
++    preset=options.get('topology_preset')
++    depth=options.get('executed_depth')
++    if 'topology_preset' in options and (type(preset) is not str or preset not in (*PRESETS,'custom','d12','d20','d28','d60')):
++        raise V3SchemaError('unknown V3 topology_preset')
++    if preset in PRESETS:
++        if supplied or depth is not None:raise V3SchemaError('preset and custom/depth fields are mutually exclusive')
++        values=PRESETS[preset]
++    elif supplied:
++        if preset!='custom' or supplied!=set(TOPOLOGY_FIELDS) or depth is not None:
++            raise V3SchemaError('custom requires all four P/C/R/S and no executed-depth shorthand')
++        values=tuple(options[k] for k in TOPOLOGY_FIELDS)
++    else:
++        if preset=='custom' and depth is None:raise V3SchemaError('custom topology needs four fields or executed_depth')
++        if cost=='custom' and preset is None and depth is None:
++            raise V3SchemaError('custom cost requires explicit topology or executed_depth')
++        if preset and preset.startswith('d'):
++            if depth is not None:raise V3SchemaError('choose depth shorthand or topology name, not both')
++            depth=int(preset[1:])
++        depth=12 if depth is None else depth
++        if depth<6 or depth%2:raise V3SchemaError('executed_depth must be even >=6 for P=S=2,R=2')
++        values=(2,(depth-4)//2,2,2)
++    P,C,R,S=values
++    if cost!='custom' and (P!=2 or S!=2 or R!=2 or P+C*R+S not in (12,20,28,60)):
++        raise V3SchemaError('tabulated profiles require canonical D12/20/28/60 with P=S=2,R=2')
++    return dict(zip(TOPOLOGY_FIELDS,values))
++
++
++def _resolve_facts(task, options, base):
++    cost=options.get('cost_profile','matched_v1');top=_topology(options,cost)
++    m=base['values']['model'];D=top['prefix_blocks']+top['recurrent_core_blocks']*top['loop_repeats']+top['suffix_blocks']
++    if cost=='custom':
++        if not {'hidden_width','latent_width'}<=options.keys():raise V3SchemaError('custom requires explicit hidden_width and latent_width')
++        H,Dz=options['hidden_width'],options['latent_width']
++        heads,M=options.get('heads',m['heads']),options.get('actual_M',m['linearno_rank'])
++    else:
++        widths=width_for(cost,'d'+str(D),task);H,Dz=widths['hidden_width'],widths['latent_width']
++        heads,M=8,32 if task in ('ns','airfrans','car') else 64
++        for field,value in [('hidden_width',H),('latent_width',Dz),('heads',heads),('actual_M',M)]:
++            if field in options:require_equal(value,options[field],'profile conflict: '+field+' (use custom to override)')
++    mode=options.get('adapter_mode',ADAPTER_MODES[1])
++    if H%heads:raise V3SchemaError('hidden_width must be divisible by heads')
++    if m['time_input'] and H%2:raise V3SchemaError('time embedding requires even hidden_width')
++    if mode!='none' and top['loop_repeats']!=2:raise V3SchemaError('adapter-on requires loop_repeats=2')
++    return dict(**top,hidden_width=H,latent_width=Dz,heads=heads,actual_M=M,
++                residual_mode=options.get('residual_mode',RESIDUAL_MODES[0]),
++                latent_enabled=options.get('latent_enabled',True),adapter_mode=mode,
++                adapter_rank=options.get('adapter_rank',4),adapter_alpha=float(options.get('adapter_alpha',4)))
++
++
++def _assemble(request,base,facts):
++    """Use already-resolved saved facts. Never look up a current profile table."""
++    task,profile,options=request['task'],request['profile'],request['options']
++    cost=options.get('cost_profile','matched_v1');b=base['values']['model']
++    P,C,R,S=(facts[k] for k in TOPOLOGY_FIELDS);H=facts['hidden_width'];Dz=facts['latent_width']
++    M,h=facts['actual_M'],facts['heads'];mode=facts['residual_mode']
++    latent=facts['latent_enabled'];adapter=facts['adapter_mode']!='none'
++    U,D=P+C+S,P+C*R+S;seed=base['values']['runtime']['seed']
++    integer(seed,'seed',0)
++    if seed>=2**64:raise V3SchemaError('seed must fit torch uint64')
++    effective={k:deepcopy(v) for k,v in b.items() if k not in ('hidden','H','W','layers','linearno_rank')}
++    effective.update(hidden_width=H,grid_height=b['H'],grid_width=b['W'],actual_M=M,heads=h,
++                     unique_depth=U,executed_depth=D,latent_width=Dz)
++    sources={k:'derived' for k in effective}
++    for k in effective:
++        if k in b:sources[k]=base['field_sources']['model.'+k]
++    for k,old in [('grid_height','H'),('grid_width','W')]:sources[k]=base['field_sources']['model.'+old]
++    for k in ('hidden_width','latent_width','heads','actual_M'):
++        sources[k]='custom_explicit' if cost=='custom' and k in options else 'cost_profile_table' if cost!='custom' else 'task_profile'
++    fields={k:('cli_explicit' if k in options else 'v3_default') for k in facts}
++    fields.update({k:sources[k] for k in ('hidden_width','latent_width','heads','actual_M')})
++    fields.update({k:'cli_explicit' if k in options else 'topology_shorthand' for k in TOPOLOGY_FIELDS})
++    # Feature flags, residual, Dz and cost-profile label do not alter public initialization.
++    common=dict(task=task,profile=profile,seed=seed,topology={k:facts[k] for k in TOPOLOGY_FIELDS},
++                model={k:v for k,v in effective.items() if k!='latent_width'})
++    latent_seed=_seed('v3-latent',dict(common=common,width=Dz))
++    adapter_seed=_seed('v3-adapter',dict(common=common,rank=facts['adapter_rank']))
++    loaders={s:_seed('loader-'+s,dict(task=task,profile=profile,seed=seed)) for s in ('train','test')}
++    init=dict(protocol='v3-isolated-feature-init-v1',public_seed=seed,latent_seed=latent_seed,
++              adapter_seed=adapter_seed,feature_rng_isolated=True,public_rng_advanced_by_features=False,
++              zero_init_after_tree=True,dataloader_generators=loaders)
++    ar=_attnres(mode,C,R,H)
++    latent_spec=dict(enabled=latent,width=Dz,instance_count=C if latent else 0,
++                     parameter_count=C*(2*H*Dz+Dz+3*H) if latent else 0,
++                     position='after_KtV_before_Q_readout',head_merge='B_h_M_dh_to_B_M_H',
++                     norm='LayerNorm_affine',norm_eps=1e-5,activation='GELU',dropout=0.0,
++                     linear_bias=True,token_axis_mixing=False,second_weight_and_bias_zero=True,
++                     sharing='one_per_core_position_across_rounds',registration='enabled_only')
++    rank,alpha=facts['adapter_rank'],facts['adapter_alpha']
++    adapt_spec=dict(mode=facts['adapter_mode'],enabled=adapter,rank=rank,alpha=alpha,scale=alpha/rank,
++                    apply_visit=2 if adapter else None,round_index=1 if adapter else None,
++                    instance_count=C if adapter else 0,parameter_count=C*2*rank*(H//h+M) if adapter else 0,
++                    A_shape=[rank,H//h],B_shape=[M,rank],qk_independent=True,shared_across_heads=True,
++                    value_unchanged=True,position='base_logits_plus_delta_before_temperature_softmax',
++                    A_initialization='kaiming_uniform_isolated_seed',B_initialization='zero',
++                    bias=False,gate=False,registration='enabled_only')
++    loop=dict(schema_version=3,formula_version=FORMULA_VERSION,task=task,profile=profile,cost_profile=cost,
++              topology_preset=options.get('topology_preset','executed_depth'),**deepcopy(facts),
++              unique_depth=U,executed_depth=D,comparator_depth=U if cost!='custom' else None,
++              base_M=b['linearno_rank'],head_dim=H//h,variant=b['linearno_variant'],ffn_ratio=b['ffn_ratio'],
++              grid_height=b['H'],grid_width=b['W'],point_domain_attnres=True,feature_timestep_encoding=False,
++              rank_policy='absolute_M_independent_of_head_dim',latent_ffn=latent_spec,adapter=adapt_spec,
++              sharing=dict(core=['ln_1','operator','ln_2','point_ffn'],core_scope='physical_position_across_rounds',
++                           prefix_core_suffix='disjoint_physical_modules',core_registration='once',
++                           recompute_qkv_context_each_visit=True,head='last_suffix_only_once',
++                           routers='independent_per_logical_receiver',history='forward_local_points',
++                           detach=False,cross_forward=False,cross_physical_time=False,cross_member=False),
++              residual_contract=dict(prefix_suffix='native_unscaled',identity='unscaled',
++                 core_branch_scale='none_no_additive_residual' if mode=='rb_attnres' else '1/loop_repeats',
++                 sources={'sr_1_over_r':'none','rb_attnres':'anchor_completed_raw_round_sums_and_current_raw_partial',
++                          'lb_attnres_1_over_r':'anchor_and_actual_Y_minus_H'}[mode],
++                 rb_amp_boundary='local_source_views_cast_to_anchor_dtype_no_detach',head_calls=1),
++              attnres=ar,initialization=init,state_partition=dict(stem='preprocess,placeholder,time_fc',
++                 prefix='loop.prefix',shared_core='loop.core',suffix='loop.suffix',head='last_suffix.ln_3,mlp2',
++                 latent='per_core.latent_ffn' if latent else None,adapter='per_core.adapter' if adapter else None,
++                 routers=mode if ar['enabled'] else None))
++    fields={**{key:'derived' for key in loop},**fields,
++            'cost_profile':'cli_explicit' if 'cost_profile' in options else 'v3_default',
++            'topology_preset':'cli_explicit' if 'topology_preset' in options else 'executed_depth_shorthand',
++            'grid_height':sources['grid_height'],'grid_width':sources['grid_width'],
++            'base_M':'task_profile','task':'request','profile':'request',
++            'sharing':'frozen_v3_contract','residual_contract':'frozen_residual_v1_contract'}
++    kwargs={k:deepcopy(v) for k,v in effective.items() if k not in ('unique_depth','executed_depth')}
++    kwargs.update({k:deepcopy(v) for k,v in facts.items()})
++    kwargs.update(latent_seed=latent_seed,adapter_seed=adapter_seed)
++    values=deepcopy(base['values']);values['model']=effective
++    resolved_profile=dict(family=FAMILY,config_version=3,task=task,profile=profile,cost_profile=cost,
++                          values=values,field_sources={**{k:v for k,v in base['field_sources'].items() if not k.startswith('model.')},
++                          **{'model.'+k:v for k,v in sources.items()}},base_profile_hash=base['config_hash'])
++    fair=dict(protocol='paired-v3-backbone-loader-v1',public_backbone_seed=seed,backbone_pair_id=digest(common),
++              latent_seed=latent_seed,adapter_seed=adapter_seed,dataloader_generators=loaders,
++              rule='full_core_shared;feature_installation_after_public_tree_in_isolated_rng',
++              mathematical_identity_at_zero_features='same_width_same_topology_baseline_only')
++    return seal(dict(family=FAMILY,architecture_extension=ARCHITECTURE_EXTENSION,schema_version=3,
++        config_version=3,checkpoint_version=CHECKPOINT_VERSION,checkpoint_format=CHECKPOINT_FORMAT,request=deepcopy(request),
++        base_profile_spec=deepcopy(base),resolution=deepcopy(facts),loop_spec=loop,
++        model_spec=dict(class_path=CLASS_PATHS.get(task,CLASS_PATHS['standard']),constructor_kwargs=kwargs),
++        profile_spec=resolved_profile,field_sources=dict(loop_spec=fields,profile_spec=resolved_profile['field_sources'],
++            explicit_profile_assertions={k:options[k] for k in ('hidden_width','latent_width','heads','actual_M')
++                                         if cost!='custom' and k in options}),
++        fair_comparison=fair),'config_hash')
++
++
++def resolve_config(task, profile=DEFAULT_PROFILE, *, options=None, profile_overrides=None):
++    opts=deepcopy({} if options is None else options);overrides=deepcopy({} if profile_overrides is None else profile_overrides)
++    _request(task,profile,opts,overrides)
++    try:base=_profile(task,profile,overrides)
++    except ValueError as e:raise V3SchemaError(str(e)) from e
++    return _assemble(dict(task=task,profile=profile,options=opts,profile_overrides=overrides),base,_resolve_facts(task,opts,base))
++
++
++def validate_config(config):
++    """Replay saved facts, not current task/profile tables; reject structural forgeries.
++
++    Hashes establish integrity, not authenticity. The future pair loader also
++    verifies sidecar/manifest hashes and provenance before any tensor load.
++    """
++    json_value(config);exact(config,CONFIG_KEYS,'config')
++    request=config['request'];exact(request,{'task','profile','options','profile_overrides'},'request')
++    cost=_request(request['task'],request['profile'],request['options'],request['profile_overrides'])
++    opts=request['options'];base=config['base_profile_spec'];facts=config['resolution']
++    # Saved original catalog snapshot has its own checksum and closed structure.
++    base_keys={'family','config_version','task','profile','values','field_sources','derived_model',
++               'unresolved','ignored_legacy_defaults','config_hash','integration_contract'}
++    exact(base,base_keys,'base_profile_spec')
++    require_equal(seal(base,'config_hash')['config_hash'],base['config_hash'],'base_profile_hash')
++    require_equal(request['task'],base['task'],'base_profile.task');require_equal(request['profile'],base['profile'],'base_profile.profile')
++    exact(base['values'],{'model','training','runtime','data','objective','evaluation'},'base.values')
++    exact(facts,{*TOPOLOGY_FIELDS,'hidden_width','latent_width','heads','actual_M','residual_mode',
++                 'latent_enabled','adapter_mode','adapter_rank','adapter_alpha'},'resolution')
++    top=_topology(opts,cost)
++    for k,v in top.items():require_equal(v,facts[k],'resolution.'+k)
++    for k in ('hidden_width','latent_width','heads','actual_M','adapter_rank'):integer(facts[k],k,1)
++    finite(facts['adapter_alpha'],'adapter_alpha',0,True)
++    if type(facts['adapter_alpha']) is not float:raise V3SchemaError('resolved adapter_alpha requires canonical float')
++    for k in ('hidden_width','latent_width','heads','actual_M'):
++        if k in opts:require_equal(opts[k],facts[k],'resolution.'+k)
++    if cost=='custom':
++        if not {'hidden_width','latent_width'}<=opts.keys():raise V3SchemaError('custom requires widths')
++        for k,old in [('heads','heads'),('actual_M','linearno_rank')]:
++            require_equal(opts.get(k,base['values']['model'][old]),facts[k],'resolution.'+k)
++    else:
++        require_equal(8,facts['heads'],'profile heads')
++        require_equal(32 if request['task'] in ('ns','airfrans','car') else 64,facts['actual_M'],'profile actual_M')
++    for k,default in [('residual_mode',RESIDUAL_MODES[0]),('latent_enabled',True),('adapter_mode',ADAPTER_MODES[1]),('adapter_rank',4)]:
++        require_equal(opts.get(k,default),facts[k],'resolution.'+k)
++    require_equal(float(opts.get('adapter_alpha',4)),facts['adapter_alpha'],'resolution.adapter_alpha')
++    if facts['hidden_width']%facts['heads']:raise V3SchemaError('hidden_width must be divisible by heads')
++    if base['values']['model']['time_input'] and facts['hidden_width']%2:raise V3SchemaError('time embedding requires even hidden')
++    if facts['adapter_mode']!='none' and facts['loop_repeats']!=2:raise V3SchemaError('adapter-on requires R=2')
++    expected=_assemble(request,base,facts)
++    require_equal(expected,config,'config')
++    return deepcopy(config)
++
++
++def run_directory_id(config):
++    c=validate_config(config);s=c['loop_spec'];P,C,R,S=(s[k] for k in TOPOLOGY_FIELDS)
++    # Readable fields plus complete hash (all math, ownership, seeds, protocol,
++    # and field-source facts). No timestamp; reservation is a later-stage job.
++    return (f"{s['task']}__linearno_loop__v3__{s['cost_profile']}__P{P}-C{C}-R{R}-S{S}__"
++            f"{s['residual_mode']}__H{s['hidden_width']}h{s['heads']}M{s['actual_M']}Dz{s['latent_width']}__"
++            f"z{int(s['latent_enabled'])}a{int(s['adapter_mode']!='none')}r{s['adapter_rank']}x{s['adapter_alpha']:g}__"
++            f"seed{c['profile_spec']['values']['runtime']['seed']}__{c['config_hash']}")
+--- /dev/null
++++ linearno_loop/v3/contracts.py
+@@ -0,0 +1,149 @@
++"""V3 names and strict JSON helpers (standard library only)."""
++
++from copy import deepcopy
++import hashlib
++import json
++import math
++
++FAMILY = "linearno_loop"
++ARCHITECTURE_SELECTOR = "operator_latent_adapter_v3"
++ARCHITECTURE_SELECTOR_FIELD = "architecture"
++ARCHITECTURE_EXTENSION = "loop_linearno_latent_adapter_v3"
++SCHEMA_VERSION = CONFIG_VERSION = CHECKPOINT_VERSION = 3
++CHECKPOINT_FORMAT = "linearno-loop-epoch-pair-v3"
++FORMULA_VERSION = "loop-linearno-latent-adapter-v3-formula-v1"
++
++TASKS = ("airfoil", "darcy", "elasticity", "pipe", "plasticity", "ns", "airfrans", "car")
++COST_PROFILES = ("matched_v1", "efficient_v1", "custom")
++RESIDUAL_MODES = ("sr_1_over_r", "rb_attnres", "lb_attnres_1_over_r")
++ADAPTER_MODES = ("none", "bilateral_qk_lowrank_second_visit")
++TOPOLOGY_FIELDS = ("prefix_blocks", "recurrent_core_blocks", "loop_repeats", "suffix_blocks")
++DEPTH_TOPOLOGIES = {
++    "d12": (2, 4, 2, 2),
++    "d20": (2, 8, 2, 2),
++    "d28": (2, 12, 2, 2),
++    "d60": (2, 28, 2, 2),
++}
++DEPTHS = tuple(DEPTH_TOPOLOGIES)
++ABLATIONS = ((False, False), (False, True), (True, False), (True, True))
++CLASS_PATHS = {
++    "standard": "cdlno.linearno_loop.v3.standard.LoopedStandardModelV3",
++    "airfrans": "cdlno.linearno_loop.v3.airfrans.LoopedAirfRANSModelV3",
++    "car": "cdlno.linearno_loop.v3.shapenet.LoopedShapeNetModelV3",
++}
++CLI_CONTRACT = {
++    "--linearno-loop-architecture": {"field": ARCHITECTURE_SELECTOR_FIELD, "wire_value": ARCHITECTURE_SELECTOR},
++    "--linearno-loop-cost-profile": {"field": "cost_profile", "wire_value": "|".join(COST_PROFILES)},
++    "--linearno-loop-topology": {"field": "topology_preset", "wire_value": "d12|d20|d28|d60|preset|custom"},
++    "--linearno-loop-executed-depth": {"field": "executed_depth", "wire_value": "int>=6,even"},
++    "--linearno-loop-prefix-blocks": {"field": "prefix_blocks", "wire_value": "int>=0"},
++    "--linearno-loop-core-blocks": {"field": "recurrent_core_blocks", "wire_value": "int>=1"},
++    "--linearno-loop-repeats": {"field": "loop_repeats", "wire_value": "int>=1"},
++    "--linearno-loop-suffix-blocks": {"field": "suffix_blocks", "wire_value": "int>=1"},
++    "--linearno-loop-residual-mode": {"field": "residual_mode", "wire_value": "|".join(RESIDUAL_MODES)},
++    "--linearno-loop-latent": {"field": "latent_enabled", "wire_value": "0|1"},
++    "--linearno-loop-adapter-mode": {"field": "adapter_mode", "wire_value": "|".join(ADAPTER_MODES)},
++    "--linearno-loop-adapter-rank": {"field": "adapter_rank", "wire_value": "int>=1"},
++    "--linearno-loop-adapter-alpha": {"field": "adapter_alpha", "wire_value": "finite>0"},
++    "--linearno-loop-hidden-width": {"field": "hidden_width", "wire_value": "int>=1"},
++    "--linearno-loop-latent-width": {"field": "latent_width", "wire_value": "int>=1"},
++    "--linearno-rank": {"field": "actual_M", "wire_value": "int>=1"},
++    "--linearno-loop-heads": {"field": "heads", "wire_value": "int>=1"},
++}
++HISTORY_FLAGS = ("linearno_latent_attnres", "linearno_history_k_conditioning", "linearno_attnres_history_dropout_p")
++
++
++class V3SchemaError(ValueError):
++    """Raised before any model construction or tensor/weight loading."""
++
++
++def integer(value, name, minimum=0):
++    if type(value) is not int or value < minimum:
++        raise V3SchemaError(f"{name}: expected integer >= {minimum}, got {value!r}")
++    return value
++
++
++def finite(value, name, minimum=None, exclusive=False):
++    if isinstance(value, bool) or type(value) not in (int, float) or not math.isfinite(value):
++        raise V3SchemaError(f"{name}: expected finite number, got {value!r}")
++    if minimum is not None and (value < minimum or (exclusive and value == minimum)):
++        raise V3SchemaError(f"{name}: value is out of range")
++    return value
++
++
++def exact(value, keys, name):
++    if type(value) is not dict or any(type(k) is not str for k in value):
++        raise V3SchemaError(f"{name}: expected JSON object with string keys")
++    missing, extra = set(keys) - value.keys(), value.keys() - set(keys)
++    if missing or extra:
++        raise V3SchemaError(f"{name}: missing={sorted(missing)}, unknown={sorted(extra)}")
++
++
++def json_value(value, path="root"):
++    if value is None or type(value) in (str, bool, int):
++        return
++    if type(value) is float and math.isfinite(value):
++        return
++    if type(value) is list:
++        for i, item in enumerate(value):
++            json_value(item, f"{path}[{i}]")
++        return
++    if type(value) is dict and all(type(k) is str for k in value):
++        for key, item in value.items():
++            json_value(item, f"{path}.{key}")
++        return
++    raise V3SchemaError(f"{path}: expected finite JSON value, got {type(value).__name__}")
++
++
++def canonical_json(value):
++    json_value(value)
++    return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
++
++
++def digest(value):
++    return hashlib.sha256(canonical_json(value).encode()).hexdigest()
++
++
++def differences(expected, actual, path="root"):
++    if type(expected) is not type(actual):
++        return [f"{path}: expected {expected!r}, got {actual!r} (type mismatch)"]
++    if isinstance(expected, dict):
++        result = []
++        for key in sorted(expected.keys() | actual.keys()):
++            if key not in expected or key not in actual:
++                result.append(f"{path}.{key}: missing or unknown field")
++            else:
++                result.extend(differences(expected[key], actual[key], f"{path}.{key}"))
++        return result
++    if isinstance(expected, list):
++        if len(expected) != len(actual):
++            return [f"{path}: list length mismatch"]
++        return [d for i, (a, b) in enumerate(zip(expected, actual)) for d in differences(a, b, f"{path}[{i}]")]
++    return [] if expected == actual else [f"{path}: expected {expected!r}, got {actual!r}"]
++
++
++def require_equal(expected, actual, path):
++    errors = differences(expected, actual, path)
++    if errors:
++        raise V3SchemaError("\n".join(errors))
++
++
++def seal(value, field):
++    result = deepcopy(value)
++    result[field] = digest({k: v for k, v in result.items() if k != field})
++    return result
++
++
++def read_json(path):
++    def pairs(items):
++        result = {}
++        for key, value in items:
++            if key in result:
++                raise V3SchemaError(f"duplicate JSON field: {key}")
++            result[key] = value
++        return result
++    import json as _json
++    with open(path, encoding="utf-8") as stream:
++        result = _json.load(stream, object_pairs_hook=pairs)
++    json_value(result)
++    return result
+--- /dev/null
++++ linearno_loop/v3/costs.py
+@@ -0,0 +1,81 @@
++"""Tensor-free analytic parameter/MAC oracle; no model or accounting imports.
++
++Matrix operations use 1 MAC=2 FLOPs. Scalar/non-matrix work is enumerated,
++never silently counted as zero runtime. Forward only, no backward/optimizer.
++"""
++from .config import validate_config
++from .contracts import integer
++
++COST_VERSION='linearno-v3-matrix-cost-v1'
++POINTS={'airfoil':11271,'darcy':7225,'elasticity':972,'pipe':16641,
++        'plasticity':3131,'ns':4096,'airfrans':32000,'car':32186}
++BATCHES={'airfoil':4,'darcy':4,'elasticity':1,'pipe':4,'plasticity':8,'ns':2,'airfrans':1,'car':1}
++
++
++def source_counts(C,R,mode):
++    if mode=='rb_attnres':
++        return [s for r in range(R) for s in [r+1]+[r+2]*(2*C-1)]+[R+1]
++    if mode=='lb_attnres_1_over_r':return list(range(2,R+2))
++    return []
++
++
++def analytic_cost(config, *, batch=None, points=None):
++    c=validate_config(config);s=c['loop_spec'];m=c['profile_spec']['values']['model'];task=s['task']
++    B=integer(BATCHES[task] if batch is None else batch,'batch',1)
++    N=integer(POINTS[task] if points is None else points,'points',1)
++    H,h,M,Dz=s['hidden_width'],s['heads'],s['actual_M'],s['latent_width'];d=H//h
++    P,C,R,S=(s[k] for k in ('prefix_blocks','recurrent_core_blocks','loop_repeats','suffix_blocks'))
++    U,D=P+C+S,P+C*R+S;f=m['ffn_ratio'];variant=m['linearno_variant'];out=m['out_dim']
++    kernel=9 if variant in ('conv','conv_temp') else 1
++    output_layers=2 if kernel==9 or task=='car' else 1
++    temperature=2*h if variant in ('temp','conv_temp','shapenet') else h if task=='airfrans' else 0
++    channels=(m['ref']**2 if m['unified_pos'] else m['space_dim'])+m['fun_dim']
++    if task=='airfrans' and m['unified_pos']:channels+=m['space_dim']
++    operator=kernel*H*H+H+2*d*M+d*d+output_layers*(H*H+H)+temperature
++    point_ffn=2*f*H*H+(f+1)*H
++    body=dict(operator=operator,operator_norm=2*H,point_ffn=point_ffn,point_ffn_norm=2*H)
++    mac_body=dict(input_projection=B*N*kernel*H*H,q_projection=B*N*H*M,
++        k_projection=B*N*H*M,v_projection=B*N*H*d,KtV=B*N*H*M,
++        Q_readout=B*N*H*M,output_projection=B*N*output_layers*H*H,point_ffn=2*B*N*f*H*H)
++    latent=s['latent_enabled'];adapter=s['adapter_mode']!='none';r=s['adapter_rank']
++    # Disjoint groups: latent/adapter/router outside the shared backbone count.
++    parameters=dict(stem=dict(preprocess=2*channels*H+2*H*H+3*H,placeholder=H),
++        time=dict(projections=2*(H*H+H) if m['time_input'] else 0),
++        prefix={k:P*v for k,v in body.items()},shared_core={k:C*v for k,v in body.items()},
++        suffix={k:S*v for k,v in body.items()},head=dict(norm=2*H,projection=H*out+out),
++        latent=dict(total=C*(2*H*Dz+Dz+3*H) if latent else 0),
++        adapter=dict(total=C*2*r*(d+M) if adapter else 0),
++        router=dict(total=s['attnres']['receiver_count']*2*H))
++    macs=dict(stem=B*N*(2*channels*H+2*H*H),time=2*B*N*H*H if m['time_input'] else 0,
++        prefix={k:P*v for k,v in mac_body.items()},shared_core={k:C*R*v for k,v in mac_body.items()},
++        suffix={k:S*v for k,v in mac_body.items()},head=B*N*H*out,
++        latent=2*B*C*R*M*H*Dz if latent else 0,
++        adapter=2*B*C*h*N*r*(d+M) if adapter else 0)
++    counts=source_counts(C,R,s['residual_mode']);router=2*B*N*H*sum(counts)
++    group_params={k:sum(v.values()) for k,v in parameters.items()}
++    group_macs={k:sum(v.values()) if isinstance(v,dict) else v for k,v in macs.items()}
++    non_matrix=dict(included_in_matrix_macs=False,
++        operations=['Q softmax over M','K softmax over N','temperature/clamp if active',
++                    'LayerNorm/RMSNorm','GELU','bias/residual additions','dropout if active',
++                    'source softmax','elementwise residual scaling','reshape/transpose/indexing',
++                    'position/reference distances','time sin/cos if active'],
++        point_norm_calls=2*D+1,latent_norm_calls=C*R if latent else 0,
++        query_softmax_rows=B*h*N*D,key_softmax_rows=B*h*M*D,
++        source_softmax_rows=B*N*len(counts),router_normalized_scalars=B*N*H*sum(counts),
++        note='Operation inventory/selected element counts only; no latency or complete scalar FLOPs estimate')
++    canonical=(s['cost_profile']!='custom' and s['residual_mode']=='sr_1_over_r'
++               and latent and adapter and r==4 and s['adapter_alpha']==4.0
++               and s['profile']=='paper_table8_on_release_model'
++               and B==BATCHES[task] and N==POINTS[task])
++    return dict(cost_version=COST_VERSION,scope='analytic_forward_only_not_measured',task=task,batch=B,points=N,
++        shape_source='frozen_representative_B_N' if batch is None and points is None else 'explicit_synthetic_B_N',
++        unique_depth=U,executed_depth=D,operator_instances=U,point_ffn_instances=U,
++        operator_visits=D,point_ffn_visits=D,head_visits=1,
++        parameters=parameters,parameter_groups=group_params,total_parameters=sum(group_params.values()),
++        matrix_mac_parts=macs,matrix_mac_groups=group_macs,matrix_macs=sum(group_macs.values()),
++        matrix_flops=2*sum(group_macs.values()),router_contraction_macs=router,
++        forward_macs_including_router=sum(group_macs.values())+router,
++        router_source_counts=counts,non_matrix=non_matrix,
++        profile_match_claim_applies=canonical,
++        profile_match_scope='paper_table8_on_release_model,representative_B_N,on/on,r4,alpha4,SR,matrix_only; approximate, not exact',
++        actual_parameters=None,latency=None,peak_memory=None,epoch_time=None)
+--- /dev/null
++++ linearno_loop/v3/matrix.py
+@@ -0,0 +1,81 @@
++"""Pure V3 study preview. This is not a production launcher or parser."""
++from .config import resolve_config, run_directory_id
++from .contracts import (TASKS, RESIDUAL_MODES, ABLATIONS, ARCHITECTURE_SELECTOR,
++                        ADAPTER_MODES, CLI_CONTRACT, V3SchemaError, integer)
++from .costs import analytic_cost
++
++PAIRED_SEEDS=(0,1,2)
++
++
++def preview(config):
++    opts=config['request']['options'];task=config['request']['task']
++    argv=['bash',f'tran_evaluate/linearno_loop/{task}.sh','train','--linearno-loop','1',
++          '--linearno-profile',config['request']['profile'],'--seed',str(config['profile_spec']['values']['runtime']['seed'])]
++    for flag,spec in CLI_CONTRACT.items():
++        if spec['field'] in opts:
++            value=opts[spec['field']]
++            argv += [flag,str(int(value)) if type(value) is bool else str(value)]
++    return dict(status='SCHEMA_PREVIEW_NOT_RUNNABLE_LAA1',argv=argv,
++                run_id=run_directory_id(config),constructor='NOT IMPLEMENTED',training='NOT RUN')
++
++
++def iter_configurations(seeds=PAIRED_SEEDS):
++    if type(seeds) not in (tuple,list) or not seeds or len(set(seeds))!=len(seeds):
++        raise V3SchemaError('paired seeds must be a nonempty distinct list/tuple')
++    for seed in seeds:integer(seed,'seed',0)
++    for task in TASKS:
++        for profile in ('matched_v1','efficient_v1'):
++            for depth in (12,20,28,60):
++                for residual in RESIDUAL_MODES:
++                    for latent,adapter in ABLATIONS:
++                        for seed in seeds:
++                            c=resolve_config(task,options=dict(architecture=ARCHITECTURE_SELECTOR,cost_profile=profile,
++                                executed_depth=depth,residual_mode=residual,latent_enabled=latent,
++                                adapter_mode=ADAPTER_MODES[1] if adapter else 'none'),profile_overrides={'runtime.seed':seed})
++                            yield dict(config=c,preview=preview(c),cost=analytic_cost(c))
++
++
++def custom_cases():
++    good=dict(architecture=ARCHITECTURE_SELECTOR,cost_profile='custom',hidden_width=200,
++              latent_width=96,actual_M=31,heads=8,topology_preset='custom',
++              prefix_blocks=0,recurrent_core_blocks=2,loop_repeats=3,suffix_blocks=1,adapter_mode='none')
++    positives=[]
++    for residual in RESIDUAL_MODES:
++        c=resolve_config('car',options={**good,'residual_mode':residual})
++        positives.append(dict(config=c,preview=preview(c),cost=analytic_cost(c)))
++    negatives=[]
++    for label,changes in [('H_not_divisible',{'hidden_width':201}),('missing_width',{'latent_width':None}),
++        ('R3_adapter_on',{'adapter_mode':ADAPTER_MODES[1]}),('C0',{'recurrent_core_blocks':0}),
++        ('S0',{'suffix_blocks':0}),('R0',{'loop_repeats':0}),('M_bool',{'actual_M':True}),
++        ('alpha_string',{'adapter_alpha':'4'}),('unknown',{'unknown':0})]:
++        opts={**good,**changes}
++        try:resolve_config('car',options=opts)
++        except ValueError as e:negatives.append(dict(label=label,request=opts,status='EXPECTED_REJECTION',message=str(e)))
++        else:raise AssertionError('invalid custom accepted: '+label)
++    return dict(valid=positives,invalid=negatives)
++
++
++def main():
++    import argparse,json
++    from pathlib import Path
++    parser=argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--output-dir',type=Path,required=True)
++    args=parser.parse_args();args.output_dir.mkdir(parents=True,exist_ok=True)
++    # Exclusive output creation. Re-running cannot overwrite a prior matrix.
++    count=0
++    with (args.output_dir/'configuration-matrix.jsonl').open('x') as stream:
++        for row in iter_configurations():
++            stream.write(json.dumps(row,sort_keys=True,separators=(',',':'))+'\n');count+=1
++    custom=custom_cases()
++    with (args.output_dir/'custom-cases.json').open('x') as stream:json.dump(custom,stream,indent=2)
++    summary=dict(status='PREVIEW_ONLY',count=count,paired_seeds=list(PAIRED_SEEDS),
++        axes=dict(tasks=8,profiles=2,depths=4,residuals=3,ablations=4,seeds=3),
++        configuration_file='configuration-matrix.jsonl',custom_valid=len(custom['valid']),custom_invalid=len(custom['invalid']),
++        no_torch=True,no_models=True,no_model_construction=True,no_training=True,no_production_parser=True,
++        aggregation='all paired seeds and mean/std; final checkpoint; never select by test',
++        cost_scope='on/on r4 alpha4 SR approximate matrix match only; all others separately recomputed')
++    with (args.output_dir/'matrix-summary.json').open('x') as stream:json.dump(summary,stream,indent=2)
++    print(json.dumps(summary))
++
++
++if __name__=='__main__':main()
+--- /dev/null
++++ linearno_loop/v3/profiles.py
+@@ -0,0 +1,43 @@
++"""Frozen V3 cost/profile tables.  This module is pure data plus stdlib checks."""
++
++from .contracts import TASKS, COST_PROFILES, DEPTHS, V3SchemaError, integer
++
++# Columns are TASKS order. Values are hidden_width / latent_width.
++PROFILE_WIDTHS = {
++    "matched_v1": {
++        "d12": ((104, 704), (104, 704), (96, 320), (104, 704), (104, 720), (208, 680), (208, 672), (208, 776)),
++        "d20": ((96, 736), (96, 736), (88, 312), (96, 736), (96, 744), (200, 592), (200, 592), (200, 688)),
++        "d28": ((96, 648), (96, 648), (88, 272), (96, 648), (96, 656), (192, 616), (192, 616), (192, 712)),
++        "d60": ((88, 728), (88, 728), (80, 288), (88, 728), (88, 736), (184, 600), (184, 600), (184, 696)),
++    },
++    "efficient_v1": {
++        "d12": ((96, 512), (96, 512), (88, 256), (96, 512), (96, 512), (192, 512), (192, 512), (192, 512)),
++        "d20": ((88, 512), (88, 512), (80, 256), (88, 512), (88, 512), (184, 512), (184, 512), (184, 512)),
++        "d28": ((88, 512), (88, 512), (80, 224), (88, 512), (88, 512), (176, 512), (176, 512), (176, 512)),
++        "d60": ((80, 512), (80, 512), (72, 256), (80, 512), (80, 512), (168, 512), (168, 512), (168, 512)),
++    },
++}
++
++
++def width_for(profile, depth, task):
++    if profile not in ("matched_v1", "efficient_v1"):
++        raise V3SchemaError(f"unknown tabulated cost profile: {profile}")
++    if depth not in DEPTHS or task not in TASKS:
++        raise V3SchemaError("unknown profile depth/task")
++    return dict(zip(("hidden_width", "latent_width"), PROFILE_WIDTHS[profile][depth][TASKS.index(task)]))
++
++
++def validate_tables():
++    for profile in ("matched_v1", "efficient_v1"):
++        if set(PROFILE_WIDTHS[profile]) != set(DEPTHS):
++            raise AssertionError("V3 profile table depth set drift")
++        for depth in DEPTHS:
++            if len(PROFILE_WIDTHS[profile][depth]) != len(TASKS):
++                raise AssertionError("V3 profile table task count drift")
++            for task in TASKS:
++                hidden, latent = width_for(profile, depth, task).values()
++                integer(hidden, f"{profile}.{depth}.{task}.hidden_width", 1)
++                integer(latent, f"{profile}.{depth}.{task}.latent_width", 1)
++
++
++validate_tables()
+--- /dev/null
++++ linearno_loop/v3/schema.py
+@@ -0,0 +1,184 @@
++"""Metadata-first V3 contract. No tensor loading or construction."""
++
++from copy import deepcopy
++import inspect
++from pathlib import Path, PurePosixPath
++
++from linearno_loop.schema import LOAD_POLICY, PROVENANCE_FIELDS, REFERENCE_PINS
++from linearno_loop.state import hash_string, text, validate_normalizers, validate_resume
++from .config import validate_config
++from .costs import analytic_cost, COST_VERSION
++from linearno_loop.state import inspect_state
++from .contracts import (
++    ARCHITECTURE_EXTENSION, CONFIG_VERSION, CHECKPOINT_VERSION, FAMILY, HISTORY_FLAGS, SCHEMA_VERSION,
++    V3SchemaError as LoopSchemaError, CHECKPOINT_FORMAT, ARCHITECTURE_SELECTOR, exact, integer, json_value, read_json, require_equal, seal, canonical_json,
++)
++
++SECTIONS = ("loop_spec", "model_spec", "profile_spec", "data_spec", "objective_spec",
++            "evaluation_spec", "provenance_spec", "normalizer_spec", "resume_state", "ensemble_manifest", "cost_spec", "parameter_measurement")
++
++
++def validate_constructor(model_spec, constructor):
++    if model_spec["class_path"] != constructor.__module__ + "." + constructor.__qualname__:
++        raise LoopSchemaError("model_spec.class_path: real constructor mismatch")
++    signature = inspect.signature(constructor)
++    if any(parameter.kind in (parameter.VAR_KEYWORD, parameter.VAR_POSITIONAL)
++           for parameter in signature.parameters.values()):
++        raise LoopSchemaError("constructor must expose explicit fields, not *args/**kwargs")
++    fields = {key for key, parameter in signature.parameters.items()
++              if parameter.kind in (parameter.POSITIONAL_OR_KEYWORD, parameter.KEYWORD_ONLY)}
++    require_equal(sorted(fields), sorted(model_spec["constructor_kwargs"]), "constructor_kwargs.fields")
++    try:
++        signature.bind(**model_spec["constructor_kwargs"])
++    except TypeError as error:
++        raise LoopSchemaError(str(error)) from error
++
++
++def validate_metadata(metadata, *, constructor=None):
++    json_value(metadata)
++    if type(metadata) is not dict or metadata.get("family") != FAMILY:
++        raise LoopSchemaError("family: v3 loop loader only")
++    keys = {"family", "architecture_extension", "schema_version", "config_version", "config_hash",
++            "resolved_config", "load_policy", "metadata_hash", "checkpoint_format", "checkpoint_version", *SECTIONS}
++    exact(metadata, keys, "metadata")
++    config = validate_config(metadata["resolved_config"])
++    for name, expected in (("architecture_extension", ARCHITECTURE_EXTENSION),
++                           ("checkpoint_format", CHECKPOINT_FORMAT),
++                           ("checkpoint_version", CHECKPOINT_VERSION),
++                           ("schema_version", SCHEMA_VERSION), ("config_version", CONFIG_VERSION),
++                           ("config_hash", config["config_hash"]), ("load_policy", LOAD_POLICY)):
++        require_equal(expected, metadata[name], name)
++    for name in ("loop_spec", "model_spec", "profile_spec"):
++        require_equal(config[name], metadata[name], name)
++    if constructor is not None:
++        validate_constructor(metadata["model_spec"], constructor)
++    for name in ("objective", "evaluation"):
++        require_equal(config["profile_spec"]["values"][name], metadata[name + "_spec"], name + "_spec")
++    data = metadata["data_spec"]
++    exact(data, {"protocol", "split", "checksums", "sampling", "scope", "runtime"}, "data_spec")
++    require_equal(config["profile_spec"]["values"]["data"], data["protocol"], "data_spec.protocol")
++    if data["scope"] not in ("synthetic", "real"):
++        raise LoopSchemaError("data_spec.scope must label synthetic or real")
++    text(data["split"], "data_spec.split"); text(data["sampling"], "data_spec.sampling")
++    if type(data["checksums"]) is not dict or not data["checksums"] or type(data["runtime"]) is not dict:
++        raise LoopSchemaError("data_spec: actual named checksums/runtime mapping required")
++    for name, checksum in data["checksums"].items():
++        text(name, "data checksum name"); hash_string(checksum, "data checksum")
++    provenance = metadata["provenance_spec"]
++    exact(provenance, PROVENANCE_FIELDS, "provenance_spec")
++    for key in ("target_sha", "base_commit", "transolver_sha", "linearno_sha", "attnres_sha", "kimi_k3_sha"):
++        hash_string(provenance[key], "provenance." + key, 40)
++    for key in ("paper_sha256", "source_sha256", "normalized_patch_sha256"):
++        hash_string(provenance[key], "provenance." + key)
++    for key, expected in REFERENCE_PINS.items():
++        require_equal(expected, provenance[key], "provenance." + key)
++    if type(provenance["dirty"]) is not bool:
++        raise LoopSchemaError("provenance.dirty: bool required")
++    for key, expected in (("paper_version", "2511.06294v3"),
++                          ("residual_scaling_version", "2606.18524v1"),
++                          ("config_schema_version", CONFIG_VERSION),
++                          ("metadata_schema_version", SCHEMA_VERSION)):
++        require_equal(expected, provenance[key], "provenance." + key)
++    text(provenance["code_version"], "provenance.code_version")
++    if type(provenance["command"]) is not list or not provenance["command"] or type(provenance["environment"]) is not dict or not provenance["environment"]:
++        raise LoopSchemaError("provenance: command/environment required")
++    if any(type(argument) is not str for argument in provenance["command"]):
++        raise LoopSchemaError("provenance.command: string argv required")
++    validate_normalizers(metadata["normalizer_spec"], data["checksums"])
++    state = metadata["resume_state"]
++    if type(state) is not dict or 'scaler' not in state:
++        raise LoopSchemaError('resume_state.scaler: required, encoded None when disabled')
++    validate_resume({k:v for k,v in state.items() if k!='scaler'})
++    scaler = inspect_state(state['scaler'], 'scaler')
++    if scaler is not None and (type(scaler) is not dict or not scaler):
++        raise LoopSchemaError('scaler must be encoded None or nonempty state dictionary')
++    expected_cost = analytic_cost(config)
++    require_equal(expected_cost, metadata['cost_spec'], 'cost_spec')
++    measurement = metadata['parameter_measurement']
++    exact(measurement, {'status','total','trainable','groups'}, 'parameter_measurement')
++    if measurement['status']=='pending_model_construction':
++        require_equal(dict(status='pending_model_construction',total=None,trainable=None,groups=None), measurement, 'parameter_measurement')
++        if state['epoch'] != 0 or state['global_step'] != 0:
++            raise LoopSchemaError('trained checkpoint requires actual parameter measurement')
++    elif measurement['status']=='measured':
++        integer(measurement['total'],'measured.total',1);integer(measurement['trainable'],'measured.trainable',1)
++        require_equal(expected_cost['total_parameters'],measurement['total'],'measured.total')
++        require_equal(expected_cost['total_parameters'],measurement['trainable'],'measured.trainable')
++        require_equal(expected_cost['parameter_groups'],measurement['groups'],'measured.groups')
++    else:
++        raise LoopSchemaError('unknown parameter measurement status')
++    members = metadata["ensemble_manifest"]
++    if type(members) is not list:
++        raise LoopSchemaError("ensemble_manifest: ordered list required")
++    identifiers = set()
++    for index, member in enumerate(members):
++        exact(member, {"member_id", "order", "path", "sha256", "format"}, "ensemble member")
++        text(member["member_id"], "member_id"); integer(member["order"], "member order")
++        if member["member_id"] in identifiers or member["order"] != index:
++            raise LoopSchemaError("ensemble id/order conflict")
++        identifiers.add(member["member_id"]); text(member["path"], "ensemble path")
++        path = PurePosixPath(member["path"])
++        if path.is_absolute() or ".." in path.parts or not path.name or "\\" in member["path"]:
++            raise LoopSchemaError("ensemble path must be relative descendant")
++        if member["format"] != "state_dict":
++            raise LoopSchemaError("loop ensemble requires state_dict")
++        hash_string(member["sha256"], "ensemble sha256")
++    require_equal(seal(metadata, "metadata_hash")["metadata_hash"], metadata["metadata_hash"], "metadata_hash")
++    return deepcopy(metadata)
++
++
++def make_metadata(config, **sections):
++    checked = validate_config(config)
++    external = set(SECTIONS) - {"loop_spec", "model_spec", "profile_spec", "objective_spec", "evaluation_spec", "cost_spec"}
++    exact(sections, external, "metadata sections")
++    result = dict(
++        family=FAMILY, architecture_extension=ARCHITECTURE_EXTENSION,
++        schema_version=SCHEMA_VERSION, config_version=CONFIG_VERSION, checkpoint_version=CHECKPOINT_VERSION,
++        config_hash=checked["config_hash"], resolved_config=checked, checkpoint_format=CHECKPOINT_FORMAT,
++        load_policy=deepcopy(LOAD_POLICY), **deepcopy(sections),
++    )
++    for name in ("loop_spec", "model_spec", "profile_spec"):
++        result[name] = deepcopy(checked[name])
++    for name in ("objective", "evaluation"):
++        result[name + "_spec"] = deepcopy(checked["profile_spec"]["values"][name])
++    result["cost_spec"] = analytic_cost(checked)
++    return validate_metadata(seal(result, "metadata_hash"))
++
++
++def read_metadata(path):
++    return validate_metadata(read_json(path))
++
++
++def write_metadata(path, metadata):
++    checked = validate_metadata(metadata)
++    with Path(path).open("x", encoding="utf-8") as stream:
++        stream.write(canonical_json(checked) + "\n")
++
++
++def restore_config(metadata, *, explicit=None, runtime=None, strict=True):
++    if strict is not True:
++        raise LoopSchemaError('strict must be True')
++    checked=validate_metadata(metadata);config=checked['resolved_config'];loop=checked['loop_spec']
++    explicit={} if explicit is None else explicit;runtime={} if runtime is None else runtime
++    json_value(explicit,'explicit');json_value(runtime,'runtime')
++    if type(explicit) is not dict or type(runtime) is not dict:
++        raise LoopSchemaError('explicit/runtime require objects')
++    if set(explicit)&set(HISTORY_FLAGS):raise LoopSchemaError('V3 cannot mix any history flags')
++    expected={**config['resolution'], **{k:loop[k] for k in ('task','profile','cost_profile','topology_preset','unique_depth','executed_depth','comparator_depth','head_dim','variant','grid_height','grid_width')},
++              'architecture':ARCHITECTURE_SELECTOR,'family':FAMILY,'architecture_extension':ARCHITECTURE_EXTENSION,
++              'schema_version':SCHEMA_VERSION,'config_version':CONFIG_VERSION,'checkpoint_version':CHECKPOINT_VERSION,'checkpoint_format':CHECKPOINT_FORMAT,
++              'linearno_loop':True,'linearno_rank':loop['actual_M'],'model_spec':config['model_spec'],
++              'seed':config['profile_spec']['values']['runtime']['seed']}
++    if set(explicit)-expected.keys():raise LoopSchemaError('unknown explicit checkpoint fields: '+str(sorted(set(explicit)-expected.keys())))
++    from .contracts import differences, finite
++    if 'adapter_alpha' in explicit:
++        explicit=dict(explicit);finite(explicit['adapter_alpha'],'adapter_alpha',0,True)
++        explicit['adapter_alpha']=float(explicit['adapter_alpha'])
++    errors=[]
++    for key,value in explicit.items():errors.extend(differences(expected[key],value,'explicit.'+key))
++    if errors:raise LoopSchemaError('\n'.join(errors))
++    if set(runtime)-{'device','experiment_dir'}:raise LoopSchemaError('only device/experiment_dir runtime changes allowed')
++    for key,value in runtime.items():text(value,'runtime.'+key)
++    saved_runtime=config['profile_spec']['values']['runtime']
++    changes={k:dict(saved=saved_runtime.get(k),requested=v) for k,v in runtime.items() if saved_runtime.get(k)!=v}
++    return dict(config=deepcopy(config),runtime_changes=changes,load_policy=deepcopy(LOAD_POLICY))
+--- /dev/null
++++ tests/loop_linearno_latent_adapter/__init__.py
+@@ -0,0 +1 @@
++"""Independent V3 configuration tests; no production tensor model."""
+--- /dev/null
++++ tests/loop_linearno_latent_adapter/oracle.py
+@@ -0,0 +1,44 @@
++"""Independent tensor-shape inventory oracle, written before V3 cost code.
++
++No production cost helper or model import. This enumerates conceptual tensors
++and dense contractions, including repeated visits only on the MAC side.
++"""
++from math import prod
++
++def count(task, H, Dz, M, heads, P, C, R, S, f, B, N, input_channels,
++          outputs, variant, time_input, latent=True, adapter=True, rank=4,
++          residual='sr_1_over_r'):
++    d=H//heads
++    tensors=[(2*H,input_channels),(2*H,),(H,2*H),(H,),(H,)]
++    macs=B*N*(2*H*input_channels+2*H*H)
++    if time_input:
++        tensors += [(H,H),(H,),(H,H),(H,)]
++        macs += 2*B*N*H*H
++    block=[(H,H,3,3) if variant.startswith('conv') else (H,H),(H,),
++           (M,d),(M,d),(d,d),(H,H),(H,),
++           (H,),(H,),(H,),(H,), (f*H,H),(f*H,),(H,f*H),(H,)]
++    if variant in ('conv','conv_temp','shapenet'): block += [(H,H),(H,)]
++    if variant in ('temp','conv_temp','shapenet'):block += [(heads,1,1),(heads,1,1)]
++    if variant=='airfrans':block += [(heads,1,1)]
++    for _ in range(P+C+S):tensors.extend(block)
++    visits=P+C*R+S
++    projection=H*H*(9 if variant.startswith('conv') else 1)
++    out=H*H*(2 if variant in ('conv','conv_temp','shapenet') else 1)
++    macs+=visits*B*N*(projection+2*H*M+H*d+2*H*M+out+2*f*H*H)
++    if latent:
++        for _ in range(C): tensors += [(H,),(H,),(Dz,H),(Dz,),(H,Dz),(H,)]
++        macs+=C*R*B*M*(H*Dz+Dz*H)
++    if adapter:
++        for _ in range(C): tensors += [(rank,d),(M,rank),(rank,d),(M,rank)]
++        macs+=C*B*heads*N*(d*rank+rank*M)*2
++    tensors += [(H,),(H,),(outputs,H),(outputs,)]
++    macs+=B*N*H*outputs
++    receivers=2*C*R+1 if residual=='rb_attnres' else R if residual=='lb_attnres_1_over_r' else 0
++    tensors.extend([(H,),(H,)]*receivers)
++    sources=[]
++    if residual=='rb_attnres':
++        for r in range(R):sources += [r+1]+[r+2]*(2*C-1)
++        sources += [R+1]
++    if residual=='lb_attnres_1_over_r':sources=list(range(2,R+2))
++    return dict(parameters=sum(prod(s) for s in tensors),matrix_macs=macs,
++                router_contraction_macs=2*B*N*H*sum(sources),source_counts=sources)
+--- /dev/null
++++ tests/loop_linearno_latent_adapter/support.py
+@@ -0,0 +1,45 @@
++"""Stdlib-only schema fixtures. Encoded RNG bytes are structural test data.
++
++These fixtures are NOT backend-restorable training checkpoints; LAA1 validates
++JSON structure only. No actual torch model/optimizer/RNG tensor is constructed.
++"""
++import base64
++import random
++from linearno_loop.v3.contracts import seal, ARCHITECTURE_SELECTOR
++from linearno_loop.v3.config import resolve_config
++from linearno_loop.v3.schema import make_metadata, REFERENCE_PINS
++
++
++def config(task='darcy',**options):
++    return resolve_config(task,options={'architecture':ARCHITECTURE_SELECTOR,**options})
++
++
++def packed(value):
++    if isinstance(value,Encoded):return {'type':'numeric','value':value.spec}
++    if isinstance(value,dict):return {'type':'dict','value':[[packed(k),packed(v)] for k,v in value.items()]}
++    if type(value) in (tuple,list):return {'type':type(value).__name__,'value':[packed(v) for v in value]}
++    return {'type':'scalar','value':value}
++
++
++class Encoded:
++    def __init__(self,backend,dtype,shape,size):
++        self.spec=seal(dict(backend=backend,dtype=dtype,shape=shape,encoding='base64',
++                             data=base64.b64encode(bytes(size)).decode()),'sha256')
++
++
++def metadata(c=None):
++    c=config() if c is None else c
++    provenance=dict(target_sha='1'*40,base_commit='1'*40,dirty=True,**REFERENCE_PINS,
++        paper_version='2511.06294v3',residual_scaling_version='2606.18524v1',source_sha256='2'*64,
++        normalized_patch_sha256='3'*64,code_version='LAA1-schema-fixture',config_schema_version=3,
++        metadata_schema_version=3,command=['schema-fixture-only'],environment={'scope':'structural test only'})
++    g=Encoded('torch','uint8',[8],8)
++    rng=dict(python=random.Random(17).getstate(),numpy=('MT19937',Encoded('numpy','<u4',[624],2496),0,0,0.0),torch_cpu=g,torch_cuda=[])
++    return make_metadata(c,
++        data_spec=dict(protocol=c['profile_spec']['values']['data'],split='synthetic fixed split',sampling='synthetic fixed order',
++                       scope='synthetic',checksums={'synthetic':'4'*64},runtime={}),
++        provenance_spec=provenance,normalizer_spec=dict(policy='none',records={}),
++        resume_state=dict(checkpoint_role='epoch',selection_split=None,selection_metric=None,epoch=0,global_step=0,
++            optimizer=packed({'state':{},'param_groups':[]}),scheduler=packed({'last_epoch':0}),scaler=packed(None),
++            rng=packed(rng),dataloader_generators=packed({'train':{'device':'cpu','state':g}}),sampler_state=packed({})),
++        ensemble_manifest=[],parameter_measurement=dict(status='pending_model_construction',total=None,trainable=None,groups=None))
+--- /dev/null
++++ tests/loop_linearno_latent_adapter/test_laa1_config.py
+@@ -0,0 +1,87 @@
++import copy
++import json
++from pathlib import Path
++import unittest
++from linearno_loop.v3.config import resolve_config, validate_config, run_directory_id
++from linearno_loop.v3.contracts import ARCHITECTURE_SELECTOR, V3SchemaError
++
++ROOT=Path(__file__).resolve().parents[2]
++def cfg(task='darcy', **options):
++    return resolve_config(task, options={'architecture':ARCHITECTURE_SELECTOR,**options})
++
++class ConfigurationTests(unittest.TestCase):
++    def test_defaults_and_effective_width_grid(self):
++        c=cfg();s=c['loop_spec'];m=c['profile_spec']['values']['model'];k=c['model_spec']['constructor_kwargs']
++        self.assertEqual([s[x] for x in ('prefix_blocks','recurrent_core_blocks','loop_repeats','suffix_blocks')],[2,4,2,2])
++        self.assertEqual((s['hidden_width'],s['latent_width'],s['actual_M']),(104,704,64))
++        self.assertEqual(m['hidden_width'],104);self.assertEqual(k['hidden_width'],104)
++        self.assertEqual((m['grid_height'],k['grid_height']),(85,85))
++        self.assertNotIn('hidden',m);self.assertNotIn('H',k)
++        self.assertEqual(validate_config(json.loads(json.dumps(c))),c)
++    def test_architecture_is_required(self):
++        for o in ({},{'cost_profile':'matched_v1'},{'architecture':'loop_linearno_v1'}):
++            with self.assertRaises(V3SchemaError):resolve_config('darcy',options=o)
++    def test_profile_conflicts_and_strict_types(self):
++        for o in ({'hidden_width':128},{'latent_width':512},{'actual_M':128},{'heads':4},
++                  {'executed_depth':16},{'executed_depth':True},{'latent_enabled':1},
++                  {'adapter_rank':True},{'adapter_alpha':float('nan')},{'adapter_alpha':'4'},
++                  {'hidden_width':104.0},{'unknown':0},{'linearno_latent_attnres':False}):
++            with self.subTest(o=o),self.assertRaises(V3SchemaError):cfg(**o)
++    def test_custom_car_and_old_validation(self):
++        c=cfg('car',cost_profile='custom',hidden_width=200,latent_width=30,actual_M=31,
++              topology_preset='custom',prefix_blocks=0,recurrent_core_blocks=2,loop_repeats=3,
++              suffix_blocks=1,adapter_mode='none')
++        self.assertEqual(c['loop_spec']['head_dim'],25)
++        self.assertEqual(c['loop_spec']['actual_M'],31)
++        with self.assertRaises(V3SchemaError):cfg('car',cost_profile='custom',hidden_width=201,latent_width=30,actual_M=31,executed_depth=12)
++    def test_resealed_derived_forgery_fails(self):
++        from linearno_loop.v3.contracts import seal
++        c=cfg();c['loop_spec']['unique_depth']=999
++        with self.assertRaises(V3SchemaError):validate_config(seal(c,'config_hash'))
++
++class StrictBoundaryTests(unittest.TestCase):
++    def test_checkpoint_version_explicit(self):
++        from linearno_loop.v3.schema import restore_config
++        from .support import metadata
++        c=cfg();self.assertEqual(c['checkpoint_version'],3)
++        m=metadata(c);self.assertEqual(m['checkpoint_version'],3)
++        with self.assertRaises(ValueError):restore_config(m,explicit={'checkpoint_version':2})
++    def test_profile_conflicts_require_custom_and_do_not_touch_grid(self):
++        for task in ('darcy','airfoil','elasticity','pipe','ns','plasticity','car','airfrans'):
++            c=cfg(task);before=c['base_profile_spec']['values']['model']
++            for key in ('model.hidden','model.H','model.W','model.layers','model.heads','model.linearno_rank','data.sampling'):
++                with self.assertRaises(ValueError):resolve_config(task,options={'architecture':ARCHITECTURE_SELECTOR},profile_overrides={key:17})
++            self.assertEqual(c['loop_spec']['grid_height'],before['H'])
++            self.assertEqual(c['loop_spec']['grid_width'],before['W'])
++    def test_profile_explicit_assertion_provenance(self):
++        c=cfg(hidden_width=104,latent_width=704)
++        self.assertEqual(c['field_sources']['explicit_profile_assertions'],{'hidden_width':104,'latent_width':704})
++    def test_custom_preset_and_even_depth_rules(self):
++        common=dict(cost_profile='custom',hidden_width=96,latent_width=40)
++        for preset,unique,executed in [('p1_c3_r2_s1',5,8),('p2_c2_r2_s2',6,8)]:
++            c=cfg(**common,topology_preset=preset)
++            self.assertEqual((c['loop_spec']['unique_depth'],c['loop_spec']['executed_depth']),(unique,executed))
++        for depth in (6,10,16,40):
++            c=cfg(**common,executed_depth=depth)
++            self.assertEqual(c['loop_spec']['recurrent_core_blocks'],(depth-4)//2)
++        for o in [common,{**common,'executed_depth':5},{**common,'executed_depth':7},
++                  {**common,'topology_preset':'custom','prefix_blocks':2},
++                  {**common,'topology_preset':'p2_c2_r2_s2','prefix_blocks':2},
++                  {**common,'topology_preset':'d12','executed_depth':12}]:
++            with self.assertRaises(ValueError):cfg(**o)
++    def test_derived_fields_cannot_be_supplied(self):
++        for key in ('unique_depth','head_dim','grid_height','grid_width','rank_multiplier','schema_version','config_hash'):
++            with self.assertRaises(ValueError):cfg(**{key:1})
++    def test_explicit_null_topology_is_not_an_omitted_default(self):
++        with self.assertRaisesRegex(ValueError,'topology'):
++            cfg(topology_preset=None)
++    def test_all_structural_integer_fields_reject_nonintegers(self):
++        for key in ('hidden_width','latent_width','actual_M','heads','adapter_rank','executed_depth'):
++            for value in (True,False,1.0,'1',None,0,-1,float('inf')):
++                with self.subTest(key=key,value=value),self.assertRaises(ValueError):cfg(**{key:value})
++        for key in ('prefix_blocks','recurrent_core_blocks','loop_repeats','suffix_blocks'):
++            for value in (True,1.0,'2',None,-1):
++                options=dict(cost_profile='custom',hidden_width=96,latent_width=24,topology_preset='custom',
++                             prefix_blocks=2,recurrent_core_blocks=2,loop_repeats=2,suffix_blocks=2)
++                options[key]=value
++                with self.subTest(key=key,value=value),self.assertRaises(ValueError):cfg(**options)
+--- /dev/null
++++ tests/loop_linearno_latent_adapter/test_laa1_costs.py
+@@ -0,0 +1,74 @@
++import json
++from pathlib import Path
++import re
++import unittest
++from .support import config
++from .oracle import count
++from linearno_loop.v3.costs import analytic_cost,source_counts
++from linearno_loop.v3.profiles import width_for
++from linearno_loop.v3.contracts import TASKS,RESIDUAL_MODES,ADAPTER_MODES
++
++ROOT=Path(__file__).resolve().parents[2]
++PROMPT=ROOT/'PLAN_Looped_LinearNO/Looped_LinearNO_LatentFFN_BilateralAdapter_CostProfiles_Codex_Staged_Prompts.md'
++
++class CostTests(unittest.TestCase):
++    def test_all_64_widths_and_exact_preimplementation_costs(self):
++        text=PROMPT.read_text();tables=[]
++        for line in text.splitlines():
++            cells=[x.strip() for x in line.strip('|').split('|')]
++            if len(cells)==9 and re.fullmatch(r'\d+ → \d+',cells[0]) and all(re.fullmatch(r'\d+/\d+',x) for x in cells[1:]):
++                tables.append((int(cells[0].split(' → ')[1]),[tuple(map(int,x.split('/'))) for x in cells[1:]]))
++        self.assertEqual(len(tables),8)
++        old=json.loads((ROOT/'docs/loop_linearno_latent_adapter_audit/laa0/cost-recalculation.json').read_text())
++        for idx,(depth,widths) in enumerate(tables):
++            profile='matched_v1' if idx<4 else 'efficient_v1'
++            for task,(H,Dz) in zip(TASKS,widths):
++                with self.subTest(task=task,profile=profile,depth=depth):
++                    self.assertEqual(width_for(profile,'d'+str(depth),task),dict(hidden_width=H,latent_width=Dz))
++                    row=next(r for r in old['rows'] if r['task']==task and r['cost_profile']==profile and r['executed_depth']==depth)
++                    cost=analytic_cost(config(task,cost_profile=profile,executed_depth=depth))
++                    self.assertEqual(cost['total_parameters'],row['parameters'])
++                    self.assertEqual(cost['matrix_macs'],row['matrix_macs'])
++                    self.assertEqual(cost['matrix_flops'],2*row['matrix_macs'])
++    def test_independent_tensor_inventory_all_modes_features_tasks(self):
++        for task in TASKS:
++            for mode in RESIDUAL_MODES:
++                for latent in (False,True):
++                    for adapter in (False,True):
++                        c=config(task,residual_mode=mode,latent_enabled=latent,adapter_mode=ADAPTER_MODES[1] if adapter else 'none')
++                        s=c['loop_spec'];m=c['profile_spec']['values']['model'];B,N=2,13
++                        channel=(m['ref']**2 if m['unified_pos'] else m['space_dim'])+m['fun_dim']
++                        if task=='airfrans' and m['unified_pos']:channel+=m['space_dim']
++                        o=count(task,s['hidden_width'],s['latent_width'],s['actual_M'],s['heads'],2,4,2,2,m['ffn_ratio'],B,N,
++                                channel,m['out_dim'],s['variant'],m['time_input'],latent,adapter,residual=mode)
++                        actual=analytic_cost(c,batch=B,points=N)
++                        self.assertEqual((actual['total_parameters'],actual['matrix_macs'],actual['router_contraction_macs']),
++                                         (o['parameters'],o['matrix_macs'],o['router_contraction_macs']))
++                        self.assertEqual(actual['router_source_counts'],o['source_counts'])
++                        self.assertFalse(actual['profile_match_claim_applies'])
++                        self.assertEqual(analytic_cost(c)['profile_match_claim_applies'],mode=='sr_1_over_r' and latent and adapter)
++    def test_physical_parameters_versus_executed_calls_and_custom_R(self):
++        outputs=[]
++        for R in (1,3):
++            c=config('car',cost_profile='custom',hidden_width=200,latent_width=19,actual_M=7,topology_preset='custom',
++                     prefix_blocks=0,recurrent_core_blocks=2,loop_repeats=R,suffix_blocks=1,adapter_mode='none',residual_mode='lb_attnres_1_over_r')
++            a=analytic_cost(c,batch=1,points=17);outputs.append(a)
++            self.assertEqual(a['unique_depth'],3);self.assertEqual(a['executed_depth'],2*R+1)
++            self.assertEqual(a['parameter_groups']['router'],2*200*R)
++            self.assertEqual(a['matrix_mac_groups']['adapter'],0)
++            self.assertEqual(a['head_visits'],1)
++            self.assertFalse(a['profile_match_claim_applies'])
++        self.assertEqual(outputs[0]['parameter_groups']['shared_core'],outputs[1]['parameter_groups']['shared_core'])
++        self.assertEqual(outputs[1]['matrix_mac_groups']['shared_core'],3*outputs[0]['matrix_mac_groups']['shared_core'])
++    def test_source_counts_and_scalar_scope(self):
++        self.assertEqual(source_counts(3,2,'rb_attnres'),[1,2,2,2,2,2,2,3,3,3,3,3,3])
++        c=analytic_cost(config())
++        self.assertFalse(c['non_matrix']['included_in_matrix_macs']);self.assertIsNone(c['latency'])
++        for v in (True,0,-1,'32',1.5):
++            with self.assertRaises(ValueError):analytic_cost(config(),points=v)
++    def test_table_claim_excludes_changed_base_protocol_or_representative_shape(self):
++        from linearno_loop.v3.config import resolve_config
++        from linearno_loop.v3.contracts import ARCHITECTURE_SELECTOR
++        altered=resolve_config('pipe','transolver_matched',options={'architecture':ARCHITECTURE_SELECTOR})
++        self.assertFalse(analytic_cost(altered)['profile_match_claim_applies'])
++        self.assertFalse(analytic_cost(config(),batch=2,points=13)['profile_match_claim_applies'])
+--- /dev/null
++++ tests/loop_linearno_latent_adapter/test_laa1_isolation.py
+@@ -0,0 +1,93 @@
++import json
++import os
++from pathlib import Path
++import subprocess
++import sys
++import unittest
++from linearno_loop.v3.config import resolve_config,run_directory_id
++from linearno_loop.v3.contracts import ARCHITECTURE_SELECTOR,RESIDUAL_MODES
++from .support import config
++
++ROOT=Path(__file__).resolve().parents[2]
++
++class IsolationTests(unittest.TestCase):
++    def test_152_old_config_bytes_and_default_rank_unchanged(self):
++        from cdlno.linearno.profiles import resolve_config as pure
++        from linearno_loop.config import resolve_config as v1
++        from linearno_loop.v2.config import resolve_config as v2
++        from linearno_loop.contracts import canonical_json,PRESETS
++        path=ROOT/'docs/loop_linearno_latent_adapter_audit/laa1/legacy-config-baseline.json'
++        rows=json.loads(path.read_text());self.assertEqual(len(rows),152)
++        for row in rows:
++            family=row['family'];old=row['config']
++            if family=='pure':new=pure(row['task'])
++            else:
++                r=old['request'];new=(v1 if family=='v1' else v2)(row['task'],r['profile'],options=r['options'],profile_overrides=r['profile_overrides'])
++            self.assertEqual(canonical_json(new),canonical_json(old))
++        self.assertEqual(set(PRESETS),{'p1_c3_r2_s1','p2_c2_r2_s2'})
++        opts=dict(topology_preset='p2_c2_r2_s2',residual_mode='sr_1_over_r')
++        self.assertEqual(v1('darcy',options=opts)['loop_spec']['resolved_rank'],128)
++        self.assertEqual(v2('darcy',options={**opts,'core_ffn_mode':'round_specific'})['loop_spec']['resolved_rank'],64)
++        for api,extra in [(v1,{}),(v2,{'core_ffn_mode':'round_specific'})]:
++            with self.assertRaises(ValueError):api('car',options={**opts,**extra,'linearno_rank':31})
++    def test_fresh_process_import_guard_and_python_rng(self):
++        code='''
++import builtins,random,sys,json
++before=random.getstate();old_import=builtins.__import__
++def guarded(name,*args,**kwargs):
++ if name.split('.')[0] in ('torch','numpy') or name.startswith(('cdlno.linearno_loop','tran_evaluate')) or 'exp_' in name:
++  raise AssertionError('forbidden import '+name)
++ return old_import(name,*args,**kwargs)
++builtins.__import__=guarded
++from linearno_loop.v3.config import resolve_config
++from linearno_loop.v3.costs import analytic_cost
++from linearno_loop.v3.matrix import custom_cases
++from loop_linearno_latent_adapter.support import metadata
++from linearno_loop.v3.schema import restore_config
++c=resolve_config('car',options={'architecture':'operator_latent_adapter_v3'})
++restore_config(metadata(c));analytic_cost(c);custom_cases()
++assert before==random.getstate()
++assert not any(n=='torch' or n.startswith('torch.') or n.startswith('cdlno.linearno_loop') for n in sys.modules)
++print('stdlib schema import guard and global RNG PASS')
++'''
++        p=subprocess.run([sys.executable,'-B','-c',code],cwd=ROOT,env={**os.environ,'PYTHONPATH':str(ROOT/'tests')+':'+str(ROOT),'PYTHONDONTWRITEBYTECODE':'1'},capture_output=True,text=True)
++        self.assertEqual(p.returncode,0,p.stdout+p.stderr)
++    def test_preloaded_numpy_torch_rng_zero_effect_and_no_model_import(self):
++        code='''
++import torch,numpy as np,random
++p=random.getstate();n=np.random.get_state();t=torch.get_rng_state().clone()
++from loop_linearno_latent_adapter.support import config,metadata
++from linearno_loop.v3.schema import restore_config
++from linearno_loop.v3.costs import analytic_cost
++for task in ('car','airfrans','darcy'):
++ c=config(task);restore_config(metadata(c));analytic_cost(c)
++assert p==random.getstate()
++b=np.random.get_state();assert n[0]==b[0] and np.array_equal(n[1],b[1]) and n[2:]==b[2:]
++assert torch.equal(t,torch.get_rng_state())
++print('preloaded Python/NumPy/Torch CPU RNG unchanged; no model constructed')
++'''
++        p=subprocess.run([sys.executable,'-B','-c',code],cwd=ROOT,env={**os.environ,'PYTHONPATH':str(ROOT/'tests')+':'+str(ROOT),'PYTHONDONTWRITEBYTECODE':'1','CUDA_VISIBLE_DEVICES':''},capture_output=True,text=True)
++        self.assertEqual(p.returncode,0,p.stdout+p.stderr)
++    def test_paired_init_seeds_independent_of_feature_and_residual(self):
++        for task in ('darcy','car','ns'):
++            baseline=None;ids=set()
++            for mode in RESIDUAL_MODES:
++                for latent in (False,True):
++                    for adapter in ('none','bilateral_qk_lowrank_second_visit'):
++                        c=config(task,residual_mode=mode,latent_enabled=latent,adapter_mode=adapter)
++                        fair=c['fair_comparison']
++                        if baseline is None:baseline=fair
++                        self.assertEqual(fair,baseline)
++                        ids.add(run_directory_id(c))
++            self.assertEqual(len(ids),12)
++            for seed in (1,2):
++                c=resolve_config(task,options={'architecture':ARCHITECTURE_SELECTOR},profile_overrides={'runtime.seed':seed})
++                self.assertNotEqual(c['fair_comparison']['backbone_pair_id'],baseline['backbone_pair_id'])
++                self.assertNotEqual(c['fair_comparison']['dataloader_generators'],baseline['dataloader_generators'])
++    def test_hash_stable_order_independent_and_run_id_bounded(self):
++        opts=dict(architecture=ARCHITECTURE_SELECTOR,cost_profile='efficient_v1',executed_depth=60,residual_mode='lb_attnres_1_over_r')
++        a=resolve_config('plasticity',options=opts)
++        b=resolve_config('plasticity',options=dict(reversed(list(opts.items()))))
++        self.assertEqual(a['config_hash'],b['config_hash']);self.assertEqual(run_directory_id(a),run_directory_id(b))
++        self.assertLess(len(run_directory_id(a).encode()),256)
++        self.assertIn(a['config_hash'],run_directory_id(a))
+--- /dev/null
++++ tests/loop_linearno_latent_adapter/test_laa1_schema.py
+@@ -0,0 +1,91 @@
++import copy
++import json
++from pathlib import Path
++import tempfile
++import unittest
++from unittest.mock import patch
++from .support import config,metadata,packed
++from linearno_loop.v3.contracts import canonical_json,seal,V3SchemaError,ARCHITECTURE_SELECTOR
++from linearno_loop.v3.schema import validate_metadata,restore_config,write_metadata,read_metadata,validate_constructor
++
++class SchemaTests(unittest.TestCase):
++    def test_all_wrappers_features_modes_roundtrip(self):
++        for task in ('darcy','airfrans','car'):
++            for mode in ('sr_1_over_r','rb_attnres','lb_attnres_1_over_r'):
++                for latent in (True,False):
++                    m=metadata(config(task,residual_mode=mode,latent_enabled=latent))
++                    self.assertEqual(validate_metadata(json.loads(canonical_json(m))),m)
++                    self.assertEqual(restore_config(m)['config'],m['resolved_config'])
++                    self.assertEqual(restore_config(m,explicit={'architecture':ARCHITECTURE_SELECTOR,'adapter_alpha':4})['config'],m['resolved_config'])
++    def test_saved_restore_never_resolves_current_profiles(self):
++        m=metadata()
++        with patch('linearno_loop.v3.config.resolve_config',side_effect=AssertionError('resolver called')),\
++             patch('linearno_loop.v3.config._profile',side_effect=AssertionError('profile called')),\
++             patch('linearno_loop.v3.config.width_for',side_effect=AssertionError('table called')):
++            self.assertEqual(restore_config(m)['config'],m['resolved_config'])
++    def test_complete_fields_hash_versions_and_resealed_tampering(self):
++        m=metadata()
++        for k in m:
++            x=copy.deepcopy(m);del x[k]
++            with self.subTest(missing=k),self.assertRaises(ValueError):validate_metadata(x)
++        for section,key,val in [(None,'family','linearno'),(None,'architecture_extension','loop_linearno_ffn_v2'),
++                (None,'schema_version',True),(None,'checkpoint_format','linearno-loop-epoch-pair-v1'),
++                ('loop_spec','hidden_width',128),('loop_spec','residual_mode','rb_attnres'),
++                ('model_spec','class_path','bad.Model'),('load_policy','strict',False),
++                ('data_spec','scope','fake'),('provenance_spec','dirty',1)]:
++            x=copy.deepcopy(m);(x if section is None else x[section])[key]=val
++            with self.subTest(section=section,key=key),self.assertRaises(ValueError):validate_metadata(seal(x,'metadata_hash'))
++    def test_explicit_conflicts_and_runtime_only_changes(self):
++        m=metadata();before=canonical_json(m)
++        invalid=[{'family':'linearno'},{'architecture':'operator_latent_adapter_v2'},{'cost_profile':'efficient_v1'},
++                 {'hidden_width':128},{'latent_width':1},{'actual_M':128},{'heads':4},{'task':'pipe'},
++                 {'residual_mode':'rb_attnres'},{'recurrent_core_blocks':2},{'adapter_mode':'none'},
++                 {'latent_enabled':False},{'adapter_rank':8},{'adapter_alpha':8},{'schema_version':2},
++                 {'core_ffn_mode':'round_specific'},{'linearno_latent_attnres':False},{'unknown':0}]
++        for fields in invalid:
++            with self.subTest(fields=fields),self.assertRaises(ValueError):restore_config(m,explicit=fields)
++        for strict in (False,1,'true',None):
++            with self.assertRaises(ValueError):restore_config(m,strict=strict)
++        with self.assertRaises(ValueError):restore_config(m,runtime={'epochs':1})
++        a=restore_config(m,runtime={'device':'cuda:1','experiment_dir':'run with spaces'})
++        self.assertEqual(set(a['runtime_changes']),{'device','experiment_dir'});self.assertEqual(before,canonical_json(m))
++    def test_measurement_pending_scaler_resume_and_normalizer_contracts(self):
++        m=metadata()
++        x=copy.deepcopy(m);x['resume_state']['epoch']=1
++        with self.assertRaisesRegex(ValueError,'measurement'):validate_metadata(seal(x,'metadata_hash'))
++        for field in m['resume_state']:
++            x=copy.deepcopy(m);del x['resume_state'][field]
++            with self.subTest(field=field),self.assertRaises(ValueError):validate_metadata(seal(x,'metadata_hash'))
++        for key,val in [('optimizer',packed({})),('scheduler',packed({})),('rng',packed({})),('scaler',packed(2)),
++                        ('dataloader_generators',packed({'train':{'device':'cpu','state':None}})),('sampler_state',packed(None))]:
++            x=copy.deepcopy(m);x['resume_state'][key]=val
++            with self.subTest(field=key),self.assertRaises(ValueError):validate_metadata(seal(x,'metadata_hash'))
++        x=copy.deepcopy(m);x['parameter_measurement']['total']=123
++        with self.assertRaises(ValueError):validate_metadata(seal(x,'metadata_hash'))
++        x=copy.deepcopy(m);x['resume_state']['scaler']=packed({'scale':65536.0})
++        validate_metadata(seal(x,'metadata_hash'))
++        x=copy.deepcopy(m);x['normalizer_spec']={'policy':'saved_train_fit','records':{}}
++        with self.assertRaises(ValueError):validate_metadata(seal(x,'metadata_hash'))
++    def test_create_only_files_and_duplicate_nan_json(self):
++        m=metadata()
++        with tempfile.TemporaryDirectory() as d:
++            p=Path(d)/'architecture.json';write_metadata(p,m)
++            self.assertEqual(read_metadata(p),m)
++            with self.assertRaises(FileExistsError):write_metadata(p,m)
++            for raw in ('{"family":1,"family":2}','{"alpha":NaN}'):
++                p.write_text(raw)
++                with self.assertRaises(ValueError):read_metadata(p)
++    def test_constructor_is_inspected_never_invoked(self):
++        c=config()['model_spec'];scope={}
++        args=','.join(c['constructor_kwargs'])
++        exec('def Sentinel(*,'+args+'):\n raise AssertionError("invoked")',scope)
++        fn=scope['Sentinel'];fn.__module__=c['class_path'].rsplit('.',1)[0];fn.__qualname__=c['class_path'].rsplit('.',1)[1]
++        validate_constructor(c,fn)
++        x=copy.deepcopy(c);x['constructor_kwargs']['extra']=1
++        with self.assertRaises(ValueError):validate_constructor(x,fn)
++    def test_ensemble_safe_order_and_state_dict_only(self):
++        m=metadata(config('airfrans'));row={'member_id':'member_000','order':0,'path':'member_000/weights/epoch_0001.pt','sha256':'4'*64,'format':'state_dict'}
++        m['ensemble_manifest']=[row];validate_metadata(seal(m,'metadata_hash'))
++        for key,value in [('path','../a.pt'),('path','/tmp/a.pt'),('order',True),('format','whole_object'),('sha256','bad')]:
++            x=copy.deepcopy(m);x['ensemble_manifest'][0][key]=value
++            with self.assertRaises(ValueError):validate_metadata(seal(x,'metadata_hash'))
+--- docs/LOOP_LINEARNO_LATENT_ADAPTER_IMPLEMENTATION_STATUS.md (LAA1 start)
++++ docs/LOOP_LINEARNO_LATENT_ADAPTER_IMPLEMENTATION_STATUS.md
+@@ -1,4 +1,22 @@
+ # Looped LinearNO Latent FFN + Bilateral Adapter implementation status
++
++## LAA1 — PASS，纯配置与 metadata 合同完成
++
++本轮仅执行LAA1。新增 `linearno_loop/v3/` 纯配置/schema/解析成本与预览，**尚无V3生产tensor模型、生产parser/factory或checkpoint backend接线**。LAA2–LAA10未执行。下方LAA0原文为历史记录。
++
++- 显式 `architecture=operator_latent_adapter_v3`，独立extension与schema/config/checkpoint version3；cost_profile不能选版本。默认matched_v1、D12/P2C4R2S2、SR、任务base M、latent/adapter on、r4/a4。
++- 两profile×四深度×八任务的64格H/Dz逐项一致；有效hidden_width与原grid_height/grid_width分离；custom、Car M独立、三残差、四消融均为纯合同。
++- 新测试30/30通过（3.193s），既有pure/history/v1/v2配置/schema定向回归49/49通过（2.025s），均0失败/0跳过；152旧配置JSON/hash保持。
++- 2304条preview（8×2×4×3×4×3 seeds）与独立参数/MAC oracle完全一致，最大整数误差0；run id唯一；另有3合法custom、9预期拒绝。192公共backbone配对组、24数据seed组一致。
++- metadata-first、strict、完整字段来源/恢复状态/create-only合同成立；实际参数尚pending，不伪称已构造或实测。恢复不重新解析当前profile。
++- 17个新增Python文件内存compile、130个既有shell语法检查通过；LAA0起点3377文件全不变；LAA1起点4083文件仅本状态文档追加，无其他漂移/删除，用户已有diff保持。
++- 成本匹配只针对冻结profile/代表B/N的on/on+r4/a4+SR矩阵口径；RB/LB和消融另算。未构造V3模型、未跑实际速度/GPU/真实数据或训练。
++
++详见 [LAA1报告](loop_linearno_latent_adapter_audit/laa1/report.md)、[结果](loop_linearno_latent_adapter_audit/laa1/results.json)、[矩阵摘要](loop_linearno_latent_adapter_audit/laa1/matrix/matrix-summary.json)、[冻结](loop_linearno_latent_adapter_audit/laa1/end-freeze.json)。初次失败/修正日志均保留；以 `*-verified.*` 为最终验收结果。
++
++旧全仓LAA0结果644通过/9历史失败/36跳过本阶段没有重跑，不改写成全仓全绿。PASS仅限LAA1授权范围。没有commit/push。
++
++本 LAA1 阶段结束，未执行下一阶段。
+ 
+ ## LAA0 — PASS，已完成；等待下一阶段授权
+ 

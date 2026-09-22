@@ -1,0 +1,30 @@
+{
+  "stage": "LAA9",
+  "status": "PARTIAL",
+  "new_scope": {
+    "parsed_matrix": {"passed": 768, "failed": 0, "skipped": 0},
+    "d12_instances": {"passed": 192, "failed": 0, "skipped": 0},
+    "synthetic_optimizer_amp_reload": {"passed": 144, "failed": 0, "skipped": 0},
+    "shape_trace": {"passed": 1, "failed": 0, "skipped": 0},
+    "new_tests": {"passed": 4, "failed": 0, "skipped": 0},
+    "launcher_recording_regression": {"passed": 9, "failed": 0, "skipped": 0},
+    "combined_laa_collection": {"passed": 115, "failed": 1, "skipped": 1,
+      "failure": "unqualified cdlno_entry import order under combined PYTHONPATH"},
+    "laa7_isolated_rerun": {"passed": 6, "failed": 0, "skipped": 1,
+      "skip": "torch_cluster missing"}
+  },
+  "old_regression": {
+    "loop_linearno_ffn": {"passed": 34, "failed": 0, "skipped": 0},
+    "loop_linearno": {"passed": 102, "failed": 5, "skipped": 0,
+      "failures_are_preexisting": true},
+    "linearno": {"passed": 151, "failed": 4, "skipped": 0,
+      "failures_are_preexisting": true, "seconds": 1479.0,
+      "full_baseline": "644 passed, 9 failed, 36 skipped"}
+  },
+  "not_run": [
+    "real datasets", "complete epochs", "remote Python 3.10/Torch 2.11+cu128",
+    "real metrics", "SOTA", "epoch efficiency extrapolation"
+  ],
+  "environment": {"python": "3.13.9", "torch": "2.13.0+cu130",
+    "cuda": "NVIDIA GeForce RTX 5090 Laptop GPU", "torch_cluster": "missing"}
+}

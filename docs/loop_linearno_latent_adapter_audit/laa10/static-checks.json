@@ -1,0 +1,47 @@
+{
+  "python_compileall": {
+    "status": "passed",
+    "scope": [
+      "cdlno/linearno_loop/v3",
+      "linearno_loop/v3",
+      "V3-modified loop entry/version files",
+      "tran_evaluate/linearno_loop_v3",
+      "V3 accounting tools",
+      "tests/loop_linearno_latent_adapter"
+    ]
+  },
+  "shell_syntax": {
+    "status": "passed",
+    "files": 25,
+    "scope": "all matched_v1, efficient_v1, custom and shared V3 shell wrappers"
+  },
+  "real_parser_preview": {
+    "status": "passed",
+    "entries": 16,
+    "profiles": ["matched_v1", "efficient_v1"],
+    "tasks": ["airfoil", "darcy", "elasticity", "pipe", "ns", "plasticity", "airfrans", "car"]
+  },
+  "source_structure": {
+    "status": "passed",
+    "core_ffns_present": false,
+    "activation_or_history_cache_present": false,
+    "attention_einsums": ["bhnm,bhnd->bhmd", "bhnm,bhmd->bhnd"],
+    "dense_n_by_n_or_m_by_m_attention": false
+  },
+  "task_project_diff": {
+    "status": "passed",
+    "changed_paths": [],
+    "scope": ["PDE-Solving-StandardBenchmark", "Airfoil-Design-AirfRANS", "Car-Design-ShapeNetCar"]
+  },
+  "json_validation": {
+    "status": "passed",
+    "files": 126,
+    "scope": "all LAA0-LAA10 machine-readable JSON after final results sealing"
+  },
+  "git_diff_check": {
+    "status": "passed",
+    "note": "run before and after final documentation edits"
+  },
+  "real_data_access": false,
+  "full_epoch_training": false
+}

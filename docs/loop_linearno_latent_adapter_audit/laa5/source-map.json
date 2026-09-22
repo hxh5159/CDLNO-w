@@ -1,0 +1,21 @@
+{
+  "stage": "LAA5",
+  "production": {
+    "cdlno/linearno_loop/v3/construction.py": "validated config-first V3 construction, isolated public/feature initialization",
+    "cdlno/linearno_loop/v3/standard.py": "native Standard forward view over V3 core",
+    "cdlno/linearno_loop/v3/airfrans.py": "native AirfRANS Data forward view and reference buffer",
+    "cdlno/linearno_loop/v3/shapenet.py": "native ShapeNet tuple forward view with V3 M/d_h rule",
+    "cdlno/linearno_loop/v3/checkpoint.py": "metadata-first v3 pair, strict model and resume validation",
+    "cdlno/linearno_loop/v3/output.py": "delegating existing recorder adapter",
+    "cdlno/linearno_loop/v3/provenance.py": "V3 source fingerprint layered on V1 pins"
+  },
+  "contracts": {
+    "linearno_loop/v3/config.py": "resolved V3 profile and constructor facts",
+    "linearno_loop/v3/contracts.py": "V3 family, schema, checkpoint and class constants",
+    "linearno_loop/v3/profiles.py": "matched_v1/efficient_v1 width tables",
+    "linearno_loop/v3/costs.py": "analytic parameter/MAC/non-matrix inventory",
+    "linearno_loop/v3/schema.py": "metadata, sidecar, strict restore contracts",
+    "linearno_loop/v3/matrix.py": "preview/config matrix support"
+  },
+  "frozen_old_routes": ["cdlno/linearno_loop/versioning.py", "cdlno/linearno_loop/standard_entry.py", "cdlno/linearno_loop/air_entry.py", "cdlno/linearno_loop/car_entry.py", "all task parser/factory files"]
+}

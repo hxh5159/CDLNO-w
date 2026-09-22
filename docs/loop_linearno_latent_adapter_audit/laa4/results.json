@@ -1,0 +1,1353 @@
+{
+  "stage": "LAA4",
+  "status": "PASS",
+  "scope": "task-independent core only",
+  "head": "c02e671506f706910e0a1d58f03c310abf188345",
+  "test_suites": {
+    "new": {
+      "stage": "LAA4",
+      "suite": "new",
+      "status": "PASS",
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "docs/loop_linearno_latent_adapter_audit/laa4/run_checks.py",
+        "new"
+      ],
+      "cwd": "/home/hwz/CDLNO",
+      "modules": [
+        "loop_linearno_latent_adapter.test_laa4_oracle",
+        "loop_linearno_latent_adapter.test_laa4_core",
+        "loop_linearno_latent_adapter.test_laa4_accounting",
+        "loop_linearno_latent_adapter.test_laa4_amp"
+      ],
+      "tests": 14,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "skip_details": [],
+      "wall_seconds": 42.49047540299944,
+      "log": "new-final.log",
+      "environment": {
+        "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+        "executable": "/home/hwz/anaconda3/bin/python",
+        "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+        "torch": "2.13.0+cu130",
+        "cuda_build": "13.0",
+        "cuda_available": true,
+        "gpus": [
+          "NVIDIA GeForce RTX 5090 Laptop GPU"
+        ],
+        "packages": {
+          "numpy": "2.2.6",
+          "torch-geometric": "2.3.1",
+          "timm": "1.0.28"
+        },
+        "threads": 1,
+        "env": {
+          "OMP_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        }
+      }
+    },
+    "previous": {
+      "stage": "LAA4",
+      "suite": "previous",
+      "status": "PASS",
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "docs/loop_linearno_latent_adapter_audit/laa4/run_checks.py",
+        "previous"
+      ],
+      "cwd": "/home/hwz/CDLNO",
+      "modules": [
+        "loop_linearno_latent_adapter.test_laa1_config",
+        "loop_linearno_latent_adapter.test_laa1_costs",
+        "loop_linearno_latent_adapter.test_laa1_schema",
+        "loop_linearno_latent_adapter.test_laa1_isolation",
+        "loop_linearno_latent_adapter.test_laa2_oracles",
+        "loop_linearno_latent_adapter.test_laa2_adapter",
+        "loop_linearno_latent_adapter.test_laa2_latent",
+        "loop_linearno_latent_adapter.test_laa2_rng_amp",
+        "loop_linearno_latent_adapter.test_laa3_oracle",
+        "loop_linearno_latent_adapter.test_laa3_attention",
+        "loop_linearno_latent_adapter.test_laa3_amp"
+      ],
+      "tests": 68,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "skip_details": [],
+      "wall_seconds": 23.753593693996663,
+      "log": "previous-final.log",
+      "environment": {
+        "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+        "executable": "/home/hwz/anaconda3/bin/python",
+        "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+        "torch": "2.13.0+cu130",
+        "cuda_build": "13.0",
+        "cuda_available": true,
+        "gpus": [
+          "NVIDIA GeForce RTX 5090 Laptop GPU"
+        ],
+        "packages": {
+          "numpy": "2.2.6",
+          "torch-geometric": "2.3.1",
+          "timm": "1.0.28"
+        },
+        "threads": 1,
+        "env": {
+          "OMP_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        }
+      }
+    },
+    "regression": {
+      "stage": "LAA4",
+      "suite": "regression",
+      "status": "PASS",
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "docs/loop_linearno_latent_adapter_audit/laa4/run_checks.py",
+        "regression"
+      ],
+      "cwd": "/home/hwz/CDLNO",
+      "modules": [
+        "linearno.test_attention_parity",
+        "linearno.test_attention_structure",
+        "loop_linearno.test_point_attnres",
+        "loop_linearno.test_sr_core",
+        "loop_linearno.test_rb_core",
+        "loop_linearno.test_lb_core",
+        "loop_linearno.test_ll9r",
+        "loop_linearno_ffn.test_lf2_core",
+        "loop_linearno_ffn.test_lf3_latent"
+      ],
+      "tests": 72,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "skip_details": [],
+      "wall_seconds": 61.742957160000515,
+      "log": "regression-final.log",
+      "environment": {
+        "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+        "executable": "/home/hwz/anaconda3/bin/python",
+        "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+        "torch": "2.13.0+cu130",
+        "cuda_build": "13.0",
+        "cuda_available": true,
+        "gpus": [
+          "NVIDIA GeForce RTX 5090 Laptop GPU"
+        ],
+        "packages": {
+          "numpy": "2.2.6",
+          "torch-geometric": "2.3.1",
+          "timm": "1.0.28"
+        },
+        "threads": 1,
+        "env": {
+          "OMP_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        }
+      }
+    }
+  },
+  "matrices": {
+    "cpu_oracle": 108,
+    "parameter_mac": 192,
+    "cuda": 54,
+    "formal_profile_core": 24
+  },
+  "cpu_errors": {
+    "torch.float64": {
+      "rows": 54,
+      "output_max_abs": 4.440892098500626e-16,
+      "all_max_abs": 4.440892098500626e-16
+    },
+    "torch.float32": {
+      "rows": 54,
+      "output_max_abs": 2.384185791015625e-07,
+      "all_max_abs": 4.172325134277344e-07
+    }
+  },
+  "cuda_rows": [
+    {
+      "task": "ns",
+      "mode": "sr_1_over_r",
+      "dtype": "torch.float32",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float32"
+      ],
+      "receiver_dtypes": []
+    },
+    {
+      "task": "ns",
+      "mode": "rb_attnres",
+      "dtype": "torch.float32",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float32"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "ns",
+      "mode": "lb_attnres_1_over_r",
+      "dtype": "torch.float32",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float32"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "elasticity",
+      "mode": "sr_1_over_r",
+      "dtype": "torch.float32",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float32"
+      ],
+      "receiver_dtypes": []
+    },
+    {
+      "task": "elasticity",
+      "mode": "rb_attnres",
+      "dtype": "torch.float32",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float32"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "elasticity",
+      "mode": "lb_attnres_1_over_r",
+      "dtype": "torch.float32",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float32"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "plasticity",
+      "mode": "sr_1_over_r",
+      "dtype": "torch.float32",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float32"
+      ],
+      "receiver_dtypes": []
+    },
+    {
+      "task": "plasticity",
+      "mode": "rb_attnres",
+      "dtype": "torch.float32",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float32"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "plasticity",
+      "mode": "lb_attnres_1_over_r",
+      "dtype": "torch.float32",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float32"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "darcy",
+      "mode": "sr_1_over_r",
+      "dtype": "torch.float32",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float32"
+      ],
+      "receiver_dtypes": []
+    },
+    {
+      "task": "darcy",
+      "mode": "rb_attnres",
+      "dtype": "torch.float32",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float32"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "darcy",
+      "mode": "lb_attnres_1_over_r",
+      "dtype": "torch.float32",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float32"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "airfrans",
+      "mode": "sr_1_over_r",
+      "dtype": "torch.float32",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float32"
+      ],
+      "receiver_dtypes": []
+    },
+    {
+      "task": "airfrans",
+      "mode": "rb_attnres",
+      "dtype": "torch.float32",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float32"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "airfrans",
+      "mode": "lb_attnres_1_over_r",
+      "dtype": "torch.float32",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float32"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "car",
+      "mode": "sr_1_over_r",
+      "dtype": "torch.float32",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float32"
+      ],
+      "receiver_dtypes": []
+    },
+    {
+      "task": "car",
+      "mode": "rb_attnres",
+      "dtype": "torch.float32",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float32"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "car",
+      "mode": "lb_attnres_1_over_r",
+      "dtype": "torch.float32",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float32"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "ns",
+      "mode": "sr_1_over_r",
+      "dtype": "torch.float16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float16"
+      ],
+      "receiver_dtypes": []
+    },
+    {
+      "task": "ns",
+      "mode": "rb_attnres",
+      "dtype": "torch.float16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float16"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "ns",
+      "mode": "lb_attnres_1_over_r",
+      "dtype": "torch.float16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float16"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "elasticity",
+      "mode": "sr_1_over_r",
+      "dtype": "torch.float16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float16"
+      ],
+      "receiver_dtypes": []
+    },
+    {
+      "task": "elasticity",
+      "mode": "rb_attnres",
+      "dtype": "torch.float16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float16"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "elasticity",
+      "mode": "lb_attnres_1_over_r",
+      "dtype": "torch.float16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float16"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "plasticity",
+      "mode": "sr_1_over_r",
+      "dtype": "torch.float16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float16"
+      ],
+      "receiver_dtypes": []
+    },
+    {
+      "task": "plasticity",
+      "mode": "rb_attnres",
+      "dtype": "torch.float16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float16"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "plasticity",
+      "mode": "lb_attnres_1_over_r",
+      "dtype": "torch.float16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float16"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "darcy",
+      "mode": "sr_1_over_r",
+      "dtype": "torch.float16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float16"
+      ],
+      "receiver_dtypes": []
+    },
+    {
+      "task": "darcy",
+      "mode": "rb_attnres",
+      "dtype": "torch.float16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float16"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "darcy",
+      "mode": "lb_attnres_1_over_r",
+      "dtype": "torch.float16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float16"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "airfrans",
+      "mode": "sr_1_over_r",
+      "dtype": "torch.float16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float16"
+      ],
+      "receiver_dtypes": []
+    },
+    {
+      "task": "airfrans",
+      "mode": "rb_attnres",
+      "dtype": "torch.float16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float16"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "airfrans",
+      "mode": "lb_attnres_1_over_r",
+      "dtype": "torch.float16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float16"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "car",
+      "mode": "sr_1_over_r",
+      "dtype": "torch.float16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float16"
+      ],
+      "receiver_dtypes": []
+    },
+    {
+      "task": "car",
+      "mode": "rb_attnres",
+      "dtype": "torch.float16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float16"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "car",
+      "mode": "lb_attnres_1_over_r",
+      "dtype": "torch.float16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.float16"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "ns",
+      "mode": "sr_1_over_r",
+      "dtype": "torch.bfloat16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.bfloat16"
+      ],
+      "receiver_dtypes": []
+    },
+    {
+      "task": "ns",
+      "mode": "rb_attnres",
+      "dtype": "torch.bfloat16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.bfloat16"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "ns",
+      "mode": "lb_attnres_1_over_r",
+      "dtype": "torch.bfloat16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.bfloat16"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "elasticity",
+      "mode": "sr_1_over_r",
+      "dtype": "torch.bfloat16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.bfloat16"
+      ],
+      "receiver_dtypes": []
+    },
+    {
+      "task": "elasticity",
+      "mode": "rb_attnres",
+      "dtype": "torch.bfloat16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.bfloat16"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "elasticity",
+      "mode": "lb_attnres_1_over_r",
+      "dtype": "torch.bfloat16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.bfloat16"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "plasticity",
+      "mode": "sr_1_over_r",
+      "dtype": "torch.bfloat16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.bfloat16"
+      ],
+      "receiver_dtypes": []
+    },
+    {
+      "task": "plasticity",
+      "mode": "rb_attnres",
+      "dtype": "torch.bfloat16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.bfloat16"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "plasticity",
+      "mode": "lb_attnres_1_over_r",
+      "dtype": "torch.bfloat16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.bfloat16"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "darcy",
+      "mode": "sr_1_over_r",
+      "dtype": "torch.bfloat16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.bfloat16"
+      ],
+      "receiver_dtypes": []
+    },
+    {
+      "task": "darcy",
+      "mode": "rb_attnres",
+      "dtype": "torch.bfloat16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.bfloat16"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "darcy",
+      "mode": "lb_attnres_1_over_r",
+      "dtype": "torch.bfloat16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.bfloat16"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "airfrans",
+      "mode": "sr_1_over_r",
+      "dtype": "torch.bfloat16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.bfloat16"
+      ],
+      "receiver_dtypes": []
+    },
+    {
+      "task": "airfrans",
+      "mode": "rb_attnres",
+      "dtype": "torch.bfloat16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.bfloat16"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "airfrans",
+      "mode": "lb_attnres_1_over_r",
+      "dtype": "torch.bfloat16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.bfloat16"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "car",
+      "mode": "sr_1_over_r",
+      "dtype": "torch.bfloat16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.bfloat16"
+      ],
+      "receiver_dtypes": []
+    },
+    {
+      "task": "car",
+      "mode": "rb_attnres",
+      "dtype": "torch.bfloat16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.bfloat16"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    },
+    {
+      "task": "car",
+      "mode": "lb_attnres_1_over_r",
+      "dtype": "torch.bfloat16",
+      "status": "PASS",
+      "reload_max_abs": 0.0,
+      "off_max_abs": 0.0,
+      "off_vjp_max_abs": 0.0,
+      "raw_branch_dtypes": [
+        "torch.bfloat16"
+      ],
+      "receiver_dtypes": [
+        "torch.float32"
+      ]
+    }
+  ],
+  "formal_profile_rows": [
+    {
+      "task": "ns",
+      "cost_profile": "matched_v1",
+      "mode": "sr_1_over_r",
+      "executed_depth": 12,
+      "unique_depth": 8,
+      "H": 208,
+      "heads": 8,
+      "M": 32,
+      "Dz": 680,
+      "core_parameters": 3249585,
+      "analytic_error": 0,
+      "status": "PASS",
+      "scope": "core_only_B1_N6_no_stem_or_task_wrapper"
+    },
+    {
+      "task": "ns",
+      "cost_profile": "matched_v1",
+      "mode": "rb_attnres",
+      "executed_depth": 12,
+      "unique_depth": 8,
+      "H": 208,
+      "heads": 8,
+      "M": 32,
+      "Dz": 680,
+      "core_parameters": 3256657,
+      "analytic_error": 0,
+      "status": "PASS",
+      "scope": "core_only_B1_N6_no_stem_or_task_wrapper"
+    },
+    {
+      "task": "ns",
+      "cost_profile": "matched_v1",
+      "mode": "lb_attnres_1_over_r",
+      "executed_depth": 12,
+      "unique_depth": 8,
+      "H": 208,
+      "heads": 8,
+      "M": 32,
+      "Dz": 680,
+      "core_parameters": 3250417,
+      "analytic_error": 0,
+      "status": "PASS",
+      "scope": "core_only_B1_N6_no_stem_or_task_wrapper"
+    },
+    {
+      "task": "ns",
+      "cost_profile": "matched_v1",
+      "mode": "sr_1_over_r",
+      "executed_depth": 20,
+      "unique_depth": 12,
+      "H": 200,
+      "heads": 8,
+      "M": 32,
+      "Dz": 592,
+      "core_parameters": 4836485,
+      "analytic_error": 0,
+      "status": "PASS",
+      "scope": "core_only_B1_N6_no_stem_or_task_wrapper"
+    },
+    {
+      "task": "ns",
+      "cost_profile": "matched_v1",
+      "mode": "rb_attnres",
+      "executed_depth": 20,
+      "unique_depth": 12,
+      "H": 200,
+      "heads": 8,
+      "M": 32,
+      "Dz": 592,
+      "core_parameters": 4849685,
+      "analytic_error": 0,
+      "status": "PASS",
+      "scope": "core_only_B1_N6_no_stem_or_task_wrapper"
+    },
+    {
+      "task": "ns",
+      "cost_profile": "matched_v1",
+      "mode": "lb_attnres_1_over_r",
+      "executed_depth": 20,
+      "unique_depth": 12,
+      "H": 200,
+      "heads": 8,
+      "M": 32,
+      "Dz": 592,
+      "core_parameters": 4837285,
+      "analytic_error": 0,
+      "status": "PASS",
+      "scope": "core_only_B1_N6_no_stem_or_task_wrapper"
+    },
+    {
+      "task": "ns",
+      "cost_profile": "efficient_v1",
+      "mode": "sr_1_over_r",
+      "executed_depth": 12,
+      "unique_depth": 8,
+      "H": 192,
+      "heads": 8,
+      "M": 32,
+      "Dz": 512,
+      "core_parameters": 2593345,
+      "analytic_error": 0,
+      "status": "PASS",
+      "scope": "core_only_B1_N6_no_stem_or_task_wrapper"
+    },
+    {
+      "task": "ns",
+      "cost_profile": "efficient_v1",
+      "mode": "rb_attnres",
+      "executed_depth": 12,
+      "unique_depth": 8,
+      "H": 192,
+      "heads": 8,
+      "M": 32,
+      "Dz": 512,
+      "core_parameters": 2599873,
+      "analytic_error": 0,
+      "status": "PASS",
+      "scope": "core_only_B1_N6_no_stem_or_task_wrapper"
+    },
+    {
+      "task": "ns",
+      "cost_profile": "efficient_v1",
+      "mode": "lb_attnres_1_over_r",
+      "executed_depth": 12,
+      "unique_depth": 8,
+      "H": 192,
+      "heads": 8,
+      "M": 32,
+      "Dz": 512,
+      "core_parameters": 2594113,
+      "analytic_error": 0,
+      "status": "PASS",
+      "scope": "core_only_B1_N6_no_stem_or_task_wrapper"
+    },
+    {
+      "task": "ns",
+      "cost_profile": "efficient_v1",
+      "mode": "sr_1_over_r",
+      "executed_depth": 20,
+      "unique_depth": 12,
+      "H": 184,
+      "heads": 8,
+      "M": 32,
+      "Dz": 512,
+      "core_parameters": 4001429,
+      "analytic_error": 0,
+      "status": "PASS",
+      "scope": "core_only_B1_N6_no_stem_or_task_wrapper"
+    },
+    {
+      "task": "ns",
+      "cost_profile": "efficient_v1",
+      "mode": "rb_attnres",
+      "executed_depth": 20,
+      "unique_depth": 12,
+      "H": 184,
+      "heads": 8,
+      "M": 32,
+      "Dz": 512,
+      "core_parameters": 4013573,
+      "analytic_error": 0,
+      "status": "PASS",
+      "scope": "core_only_B1_N6_no_stem_or_task_wrapper"
+    },
+    {
+      "task": "ns",
+      "cost_profile": "efficient_v1",
+      "mode": "lb_attnres_1_over_r",
+      "executed_depth": 20,
+      "unique_depth": 12,
+      "H": 184,
+      "heads": 8,
+      "M": 32,
+      "Dz": 512,
+      "core_parameters": 4002165,
+      "analytic_error": 0,
+      "status": "PASS",
+      "scope": "core_only_B1_N6_no_stem_or_task_wrapper"
+    },
+    {
+      "task": "car",
+      "cost_profile": "matched_v1",
+      "mode": "sr_1_over_r",
+      "executed_depth": 12,
+      "unique_depth": 8,
+      "H": 208,
+      "heads": 8,
+      "M": 32,
+      "Dz": 776,
+      "core_parameters": 3758244,
+      "analytic_error": 0,
+      "status": "PASS",
+      "scope": "core_only_B1_N6_no_stem_or_task_wrapper"
+    },
+    {
+      "task": "car",
+      "cost_profile": "matched_v1",
+      "mode": "rb_attnres",
+      "executed_depth": 12,
+      "unique_depth": 8,
+      "H": 208,
+      "heads": 8,
+      "M": 32,
+      "Dz": 776,
+      "core_parameters": 3765316,
+      "analytic_error": 0,
+      "status": "PASS",
+      "scope": "core_only_B1_N6_no_stem_or_task_wrapper"
+    },
+    {
+      "task": "car",
+      "cost_profile": "matched_v1",
+      "mode": "lb_attnres_1_over_r",
+      "executed_depth": 12,
+      "unique_depth": 8,
+      "H": 208,
+      "heads": 8,
+      "M": 32,
+      "Dz": 776,
+      "core_parameters": 3759076,
+      "analytic_error": 0,
+      "status": "PASS",
+      "scope": "core_only_B1_N6_no_stem_or_task_wrapper"
+    },
+    {
+      "task": "car",
+      "cost_profile": "matched_v1",
+      "mode": "sr_1_over_r",
+      "executed_depth": 20,
+      "unique_depth": 12,
+      "H": 200,
+      "heads": 8,
+      "M": 32,
+      "Dz": 688,
+      "core_parameters": 5627648,
+      "analytic_error": 0,
+      "status": "PASS",
+      "scope": "core_only_B1_N6_no_stem_or_task_wrapper"
+    },
+    {
+      "task": "car",
+      "cost_profile": "matched_v1",
+      "mode": "rb_attnres",
+      "executed_depth": 20,
+      "unique_depth": 12,
+      "H": 200,
+      "heads": 8,
+      "M": 32,
+      "Dz": 688,
+      "core_parameters": 5640848,
+      "analytic_error": 0,
+      "status": "PASS",
+      "scope": "core_only_B1_N6_no_stem_or_task_wrapper"
+    },
+    {
+      "task": "car",
+      "cost_profile": "matched_v1",
+      "mode": "lb_attnres_1_over_r",
+      "executed_depth": 20,
+      "unique_depth": 12,
+      "H": 200,
+      "heads": 8,
+      "M": 32,
+      "Dz": 688,
+      "core_parameters": 5628448,
+      "analytic_error": 0,
+      "status": "PASS",
+      "scope": "core_only_B1_N6_no_stem_or_task_wrapper"
+    },
+    {
+      "task": "car",
+      "cost_profile": "efficient_v1",
+      "mode": "sr_1_over_r",
+      "executed_depth": 12,
+      "unique_depth": 8,
+      "H": 192,
+      "heads": 8,
+      "M": 32,
+      "Dz": 512,
+      "core_parameters": 2890500,
+      "analytic_error": 0,
+      "status": "PASS",
+      "scope": "core_only_B1_N6_no_stem_or_task_wrapper"
+    },
+    {
+      "task": "car",
+      "cost_profile": "efficient_v1",
+      "mode": "rb_attnres",
+      "executed_depth": 12,
+      "unique_depth": 8,
+      "H": 192,
+      "heads": 8,
+      "M": 32,
+      "Dz": 512,
+      "core_parameters": 2897028,
+      "analytic_error": 0,
+      "status": "PASS",
+      "scope": "core_only_B1_N6_no_stem_or_task_wrapper"
+    },
+    {
+      "task": "car",
+      "cost_profile": "efficient_v1",
+      "mode": "lb_attnres_1_over_r",
+      "executed_depth": 12,
+      "unique_depth": 8,
+      "H": 192,
+      "heads": 8,
+      "M": 32,
+      "Dz": 512,
+      "core_parameters": 2891268,
+      "analytic_error": 0,
+      "status": "PASS",
+      "scope": "core_only_B1_N6_no_stem_or_task_wrapper"
+    },
+    {
+      "task": "car",
+      "cost_profile": "efficient_v1",
+      "mode": "sr_1_over_r",
+      "executed_depth": 20,
+      "unique_depth": 12,
+      "H": 184,
+      "heads": 8,
+      "M": 32,
+      "Dz": 512,
+      "core_parameters": 4410656,
+      "analytic_error": 0,
+      "status": "PASS",
+      "scope": "core_only_B1_N6_no_stem_or_task_wrapper"
+    },
+    {
+      "task": "car",
+      "cost_profile": "efficient_v1",
+      "mode": "rb_attnres",
+      "executed_depth": 20,
+      "unique_depth": 12,
+      "H": 184,
+      "heads": 8,
+      "M": 32,
+      "Dz": 512,
+      "core_parameters": 4422800,
+      "analytic_error": 0,
+      "status": "PASS",
+      "scope": "core_only_B1_N6_no_stem_or_task_wrapper"
+    },
+    {
+      "task": "car",
+      "cost_profile": "efficient_v1",
+      "mode": "lb_attnres_1_over_r",
+      "executed_depth": 20,
+      "unique_depth": 12,
+      "H": 184,
+      "heads": 8,
+      "M": 32,
+      "Dz": 512,
+      "core_parameters": 4411392,
+      "analytic_error": 0,
+      "status": "PASS",
+      "scope": "core_only_B1_N6_no_stem_or_task_wrapper"
+    }
+  ],
+  "round_traces": "round-traces.json",
+  "router_cost_note": "LAA1 logical router formula includes first RB singleton; actual execution saves 2*B*N*H. Both counts and difference verified; old formula untouched.",
+  "first_tests": {
+    "oracle_passed": 2,
+    "missing_implementation_methods": 9,
+    "expected_errors": 360
+  },
+  "initial_failure": {
+    "methods": 11,
+    "failed_subcases": 96,
+    "errors": 0,
+    "reason": "new accounting observer missed functional.linear inside adapter",
+    "correction": "observe actual functional calls within adapter; no formula/tolerance change"
+  },
+  "static": {
+    "python": 10,
+    "shell": 130,
+    "status": "PASS"
+  },
+  "freeze": "end-freeze.json",
+  "old_full_regression": {
+    "rerun": false,
+    "source": "../laa0/regression-summary.json",
+    "passed": 644,
+    "failed": 9,
+    "skipped": 36
+  },
+  "not_run": [
+    "LAA5 and later",
+    "eight-task wrapper/CLI/checkpoint/RNG/DataLoader integration",
+    "real data/full epochs/paired seeds/SOTA",
+    "latency/memory/epoch efficiency",
+    "remote target environment",
+    "full task AMP/scaler resume",
+    "compile/distributed"
+  ]
+}

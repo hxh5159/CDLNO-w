@@ -1,0 +1,15 @@
+{
+  "phase": "LAA8",
+  "checks": [
+    {"name": "bash_syntax", "status": "passed", "count": 25},
+    {"name": "python_compileall", "status": "passed", "files": ["tran_evaluate/linearno_loop_v3/launcher.py", "tran_evaluate/linearno_loop/recording.py", "tests/loop_linearno_latent_adapter/test_laa8_launchers.py"]},
+    {"name": "git_diff_check", "status": "passed"},
+    {"name": "preview_does_not_create_root_run", "status": "passed"},
+    {"name": "profile_conflict", "status": "passed", "failure_before_native_construction": true},
+    {"name": "custom_missing_fields", "status": "passed", "failure_before_native_construction": true},
+    {"name": "old_v1_v2_recording_regression", "status": "passed", "tests": 6},
+    {"name": "saved_config_conflict", "status": "passed", "failure_before_tensor_load": true}
+  ],
+  "manifest": "experiment-manifest.json",
+  "matrix_started": false
+}

@@ -1,0 +1,49 @@
+{
+  "created_at_utc": "2026-09-21T22:13:52.614496Z",
+  "environment": {
+    "cuda_available": true,
+    "cuda_version": "13.0",
+    "device_count": 1,
+    "executable": "/home/hwz/anaconda3/bin/python",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+    "python": "3.13.9",
+    "torch": "2.13.0+cu130",
+    "torch_cluster": "missing: ModuleNotFoundError(\"No module named 'torch_cluster'\")",
+    "torch_geometric": "2.3.1"
+  },
+  "existing_user_modified_file_preserved": "check_checkpoints/check_pipe_loop_resume.sh",
+  "git_status_before_evidence": [
+    " M cdlno/linearno/standard_entry.py",
+    " M cdlno/linearno_loop/air_entry.py",
+    " M cdlno/linearno_loop/car_entry.py",
+    " M cdlno/linearno_loop/industrial_entry.py",
+    " M cdlno/linearno_loop/standard_entry.py",
+    " M cdlno/linearno_loop/v2_projection.py",
+    " M cdlno/linearno_loop/versioning.py",
+    " M check_checkpoints/check_pipe_loop_resume.sh",
+    " M linearno_loop/versioning.py",
+    "?? PLAN_Looped_LinearNO/Looped_LinearNO_LatentFFN_BilateralAdapter_CostProfiles_Codex_Staged_Prompts.md",
+    "?? \"PLAN_Looped_LinearNO/\\347\\240\\224\\347\\251\\266\\344\\270\\273\\347\\272\\277\\346\\242\\263\\347\\220\\206 (5).md\"",
+    "?? cdlno/linearno_loop/v3/",
+    "?? docs/LOOP_LINEARNO_LATENT_ADAPTER_IMPLEMENTATION_STATUS.md",
+    "?? docs/LOOP_LINEARNO_LATENT_ADAPTER_REFERENCE_AUDIT.md",
+    "?? docs/loop_linearno_latent_adapter_audit/",
+    "?? linearno_loop/v3/",
+    "?? tests/loop_linearno_latent_adapter/"
+  ],
+  "phase": "LAA7",
+  "representative_points": {
+    "airfrans": 32000,
+    "car": 32186
+  },
+  "scope": "AirfRANS and ShapeNet-Car V3 industrial adapters; no real data or long training",
+  "source_hashes": {
+    "cdlno/linearno_loop/air_entry.py": "9571d3603938b6fa3d28126f307e0de9fec6646c078eff5085363118813389a4",
+    "cdlno/linearno_loop/car_entry.py": "8f80b1d96f23173428da8e2344144be3263b31534b5f6ebf97277e635081245e",
+    "cdlno/linearno_loop/industrial_entry.py": "9d7d0403105b509ac801e429a95b46b0c906fb872ed3f11bafb8cc8a9fe56823",
+    "cdlno/linearno_loop/v2_projection.py": "98c5f2b6f278bbb4bc3a20bb39ae8e59ddf9cf8675a84073bb9ff2f438d6b435",
+    "cdlno/linearno_loop/versioning.py": "f9f52b32635488129562d978282587c7610ade0b68d0d74c505e18a383055aea",
+    "tests/loop_linearno_latent_adapter/test_laa7_industrial_entry.py": "a95237d8aaa1cf76ed5847bbf3401633de11100dcee00d0815810a61a5918a51"
+  },
+  "source_of_truth": "current working tree"
+}

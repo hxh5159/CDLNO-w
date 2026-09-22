@@ -1,0 +1,671 @@
+--- /dev/null
++++ cdlno/linearno_loop/v3/attention.py
+@@ -0,0 +1,104 @@
++"""V3-only LinearNO attention visits; no loop, task wrapper, or activation cache.
++
++Inherited construction uses actual per-head M (``rank``), including ShapeNet.
++The old task-local ShapeNet constructors/validation are not changed. Construct
++the common backbone and finish its release initialization BEFORE installing
++features. Never recursively initialize the augmented tree afterwards.
++"""
++import torch
++
++from cdlno.linearno.attention import LinearNOAttention
++from .adapter import BilateralQKLowRankAdapter
++from .latent import build_latent_context_ffn
++
++
++class V3LinearNOAttention(LinearNOAttention):
++    """Native forward by default; explicit zero-based round_index for the core.
++
++    A core caller passes round_index=0/1 on each visit of the same instance.
++    The adapter executes only at index 1. With no adapter, arbitrary nonnegative
++    indices support custom repeat counts. Prefix/suffix retain native attention;
++    calling without round_index always delegates to the original forward.
++    """
++
++    def install_features(self, *, latent_enabled=False, latent_width=None,
++                         adapter_mode='none', adapter_rank=4, adapter_alpha=4.,
++                         latent_seed=None, adapter_seed=None):
++        """Install once after common initialization, without advancing its RNG.
++
++        Disabled features have no registered modules or state keys. Build active
++        modules locally first so invalid options cannot leave a partial install.
++        Feature seeds are explicit and supplied by the resolved V3 config.
++        """
++        if getattr(self, '_features_installed', False):
++            raise RuntimeError('V3 attention features already installed')
++        if type(latent_enabled) is not bool:
++            raise TypeError('latent_enabled must be bool')
++        if adapter_mode not in ('none', 'bilateral_qk_lowrank_second_visit'):
++            raise ValueError('unknown V3 adapter_mode')
++        options = dict(device=self.to_q.weight.device, dtype=self.to_q.weight.dtype)
++        processor = (build_latent_context_ffn(self.heads * self.dim_head, latent_width,
++                     feature_seed=latent_seed, **options) if latent_enabled else None)
++        adapter = (BilateralQKLowRankAdapter(self.dim_head, self.rank, adapter_rank,
++                   adapter_alpha, feature_seed=adapter_seed, **options)
++                   if adapter_mode != 'none' else None)
++        if processor is not None:
++            self.latent_processor = processor
++        if adapter is not None:
++            self.adapter = adapter
++        self._features_installed = True
++
++    def forward(self, x, *, round_index=None):
++        if round_index is None:
++            return super().forward(x)
++        if type(round_index) is not int or round_index < 0:
++            raise ValueError('round_index must be a nonnegative integer, not bool')
++        if 'adapter' in self._modules and round_index > 1:
++            raise ValueError('adapter-on supports only round_index 0/1 (R=2)')
++        use_adapter = round_index == 1 and 'adapter' in self._modules
++        use_latent = 'latent_processor' in self._modules
++        if not use_adapter and not use_latent:
++            return super().forward(x)
++
++        if not isinstance(x, torch.Tensor) or x.ndim != 3:
++            raise ValueError('LinearNO attention requires a tensor [B,N,dim]')
++        B, N, channels = x.shape
++        if B < 1 or N < 1 or channels != self.dim:
++            raise ValueError(f'LinearNO attention expected B,N > 0 and dim={self.dim}; got {tuple(x.shape)}')
++        if not x.is_floating_point():
++            raise TypeError('LinearNO attention input must be floating point')
++        if self.variant in ('conv', 'conv_temp'):
++            if N != self.H * self.W:
++                raise ValueError(f'LinearNO conv requires N = H * W = {self.H} * {self.W}; got N={N}')
++            grid = x.transpose(1, 2).reshape(B, channels, self.H, self.W)
++            projected = self.in_project_x(grid)
++            features = projected.reshape(B, self.heads, self.dim_head, N).transpose(-1, -2)
++        else:
++            projected = self.in_project_x(x)
++            features = projected.reshape(B, N, self.heads, self.dim_head).transpose(1, 2)
++            if self.variant == 'airfrans':
++                features = features.contiguous()
++        q_logits, k_logits, values = self.to_q(features), self.to_k(features), self.to_v(features)
++        if use_adapter:
++            delta_q, delta_k = self.adapter(features)
++            q_logits = q_logits + delta_q
++            k_logits = k_logits + delta_k
++        if self.variant in ('temp', 'conv_temp'):
++            q_logits = q_logits / self.temperature_q.clamp(0.01, 1.)
++            k_logits = k_logits / self.temperature_k.clamp(0.01, 1.)
++        elif self.variant == 'shapenet':
++            q_logits = q_logits / self.tempreature_q.clamp(0.1, 2.)
++            k_logits = k_logits / self.tempreature_k.clamp(0.1, 2.)
++        queries = q_logits.softmax(dim=-1)
++        keys = k_logits.softmax(dim=-2)
++        context = torch.einsum('bhnm,bhnd->bhmd', keys, values)
++        if use_latent:
++            processed = self.latent_processor(context)
++            if not isinstance(processed, torch.Tensor) or processed.shape != context.shape:
++                raise ValueError('latent processor must preserve [B,h,M,d_h]')
++            if processed.device != context.device or processed.dtype != context.dtype:
++                raise ValueError('latent processor must preserve context device/dtype')
++            context = processed
++        readout = torch.einsum('bhnm,bhmd->bhnd', queries, context)
++        merged = readout.transpose(1, 2).reshape(B, N, self.heads * self.dim_head)
++        return self.to_out(merged)
+--- /dev/null
++++ tests/loop_linearno_latent_adapter/test_laa3_amp.py
+@@ -0,0 +1,85 @@
++import contextlib
++import unittest
++
++import torch
++
++from cdlno.linearno.attention import LinearNOAttention
++from .attention_oracle import attention_reference
++from .attention_support import CUDA_ROWS, VARIANTS, clone_parameters, compare, fill, kwargs, make, sample
++
++
++class AttentionAMPTests(unittest.TestCase):
++    @unittest.skipUnless(torch.cuda.is_available(),'CUDA unavailable')
++    def test_cuda_six_variants_four_ablations_two_visits_three_precisions(self):
++        old_mm=torch.backends.cuda.matmul.allow_tf32;old_conv=torch.backends.cudnn.allow_tf32
++        torch.backends.cuda.matmul.allow_tf32=False;torch.backends.cudnn.allow_tf32=False
++        try:
++            for amp in (None,torch.float16,torch.bfloat16):
++                if amp==torch.bfloat16 and not torch.cuda.is_bf16_supported():
++                    CUDA_ROWS.append(dict(dtype=str(amp),status='SKIP',reason='BF16 unsupported'));continue
++                cast=lambda:torch.autocast('cuda',dtype=amp) if amp else contextlib.nullcontext()
++                tol=(4e-6,5e-5) if amp is None else (4e-3,3e-2) if amp==torch.float16 else (4e-2,8e-2)
++                for variant in VARIANTS:
++                    for latent,adapter in ((False,False),(False,True),(True,False),(True,True)):
++                        for index in (0,1):
++                            with self.subTest(dtype=amp,variant=variant,z=latent,a=adapter,r=index):
++                                m=fill(make(variant,latent,adapter,device='cuda',dtype=torch.float32))
++                                x=sample(torch.float32,'cuda').requires_grad_();xr=x.detach().double().requires_grad_()
++                                p=clone_parameters(m,torch.float64)
++                                expected,_=attention_reference(xr,p,variant=variant,heads=2,round_index=index,
++                                    latent=latent,adapter=adapter,alpha=3.,grid=(2,3))
++                                with cast():
++                                    actual=m(x,round_index=index);loss=(actual.float()-.37).square().mean()
++                                self.assertEqual(actual.dtype,amp or torch.float32)
++                                compare(actual,expected,'cuda/'+variant,atol=tol[0],rtol=tol[1])
++                                grads=torch.autograd.grad(loss,(x,*m.parameters()),allow_unused=True)
++                                refs=torch.autograd.grad((expected-.37).square().mean(),(xr,*p.values()),allow_unused=True)
++                                maximum=0.
++                                for name,g,r in zip(('input',*p),grads,refs):
++                                    self.assertEqual(g is None,r is None,name)
++                                    if g is not None:
++                                        self.assertTrue(torch.isfinite(g).all(),name)
++                                        compare(g,r,'cuda/vjp/'+name,atol=tol[0],rtol=tol[1])
++                                        maximum=max(maximum,float((g.double()-r).abs().max()))
++                                opt=torch.optim.AdamW(m.parameters(),lr=.001)
++                                for parameter,gradient in zip(m.parameters(),grads[1:]):parameter.grad=gradient
++                                opt.step()
++                                twin=make(variant,latent,adapter,device='cuda',dtype=torch.float32)
++                                twin.load_state_dict(m.state_dict(),strict=True)
++                                with cast():a,b=m(x.detach(),round_index=index),twin(x.detach(),round_index=index)
++                                torch.testing.assert_close(a,b,atol=0,rtol=0)
++                                CUDA_ROWS.append(dict(variant=variant,latent=latent,adapter=adapter,round_index=index,
++                                    dtype=str(amp or torch.float32),status='PASS',forward_max_abs=float((actual.detach().double()-expected.detach()).abs().max()),
++                                    vjp_max_abs=maximum,atol=tol[0],rtol=tol[1],reload_max_abs=0.))
++        finally:
++            torch.backends.cuda.matmul.allow_tf32=old_mm;torch.backends.cudnn.allow_tf32=old_conv
++
++    @unittest.skipUnless(torch.cuda.is_available(),'CUDA unavailable')
++    def test_cuda_zero_init_and_native_dropout_rng(self):
++        for amp in (None,torch.float16,torch.bfloat16):
++            if amp==torch.bfloat16 and not torch.cuda.is_bf16_supported():continue
++            cast=lambda:torch.autocast('cuda',dtype=amp) if amp else contextlib.nullcontext()
++            for variant in VARIANTS:
++                for latent,adapter in ((False,False),(False,True),(True,False),(True,True)):
++                    for index in (0,1):
++                        with self.subTest(dtype=amp,variant=variant,z=latent,a=adapter,r=index):
++                            m=make(variant,latent,adapter,device='cuda',dtype=torch.float32,dropout=.25)
++                            native=LinearNOAttention(**kwargs(variant,.25)).cuda()
++                            native.load_state_dict({k:v for k,v in m.state_dict().items()
++                                if not k.startswith(('adapter.','latent_processor.'))},strict=True)
++                            x=sample(torch.float32,'cuda').requires_grad_();xr=x.detach().clone().requires_grad_()
++                            before=torch.cuda.get_rng_state()
++                            with cast():a=native(x)
++                            after=torch.cuda.get_rng_state();torch.cuda.set_rng_state(before)
++                            with cast():b=m(xr,round_index=index)
++                            self.assertTrue(torch.equal(after,torch.cuda.get_rng_state()))
++                            torch.testing.assert_close(a,b,atol=0,rtol=0)
++                            ga=torch.autograd.grad(a.float().square().sum(),(x,*native.parameters()),allow_unused=True)
++                            gb=torch.autograd.grad(b.float().square().sum(),(xr,*[dict(m.named_parameters())[k] for k in dict(native.named_parameters())]),allow_unused=True)
++                            for l,r in zip(ga,gb):
++                                if l is None:self.assertIsNone(r)
++                                elif not latent and not adapter:torch.testing.assert_close(l,r,atol=0,rtol=0)
++                                else:torch.testing.assert_close(l,r,atol=4e-6 if amp is None else 4e-3,rtol=5e-5 if amp is None else .03)
++
++
++if __name__=='__main__':unittest.main()
+--- /dev/null
++++ tests/loop_linearno_latent_adapter/test_laa3_attention.py
+@@ -0,0 +1,268 @@
++import ast
++import gc
++import inspect
++import io
++import textwrap
++import unittest
++import weakref
++from unittest.mock import patch
++
++import torch
++from torch.utils._python_dispatch import TorchDispatchMode
++
++from cdlno.linearno.attention import LinearNOAttention, initialize_release_weights
++from .attention_oracle import attention_reference
++from .attention_support import VARIANTS, clone_parameters, compare, fill, kwargs, make, sample
++from .test_laa2_rng_amp import snapshot, assert_rng
++
++
++class ContractionTrace(TorchDispatchMode):
++    def __init__(self):
++        super().__init__(); self.bmms=[]; self.softmaxes=[]
++
++    def __torch_dispatch__(self, func, types, args=(), kwargs=None):
++        result=func(*args, **(kwargs or {}))
++        if func==torch.ops.aten.bmm.default:
++            self.bmms.append((tuple(args[0].shape),tuple(args[1].shape),tuple(result.shape)))
++        if func==torch.ops.aten._softmax.default:
++            self.softmaxes.append((tuple(args[0].shape),args[1]))
++        return result
++
++
++class AttentionTests(unittest.TestCase):
++    def test_inherited_constructor_and_active_base_ast_exact(self):
++        from cdlno.linearno_loop.v3.attention import V3LinearNOAttention
++        self.assertIs(V3LinearNOAttention.__init__,LinearNOAttention.__init__)
++        native=ast.parse(textwrap.dedent(inspect.getsource(LinearNOAttention.forward))).body[0]
++        active=ast.parse(textwrap.dedent(inspect.getsource(V3LinearNOAttention.forward))).body[0]
++        first=next(i for i,node in enumerate(active.body) if ast.dump(node)==ast.dump(native.body[0]))
++        projected=[node for node in active.body[first:] if not (isinstance(node,ast.If)
++                   and isinstance(node.test,ast.Name) and node.test.id in ('use_adapter','use_latent'))]
++        self.assertEqual(ast.dump(ast.Module(body=projected,type_ignores=[])),
++                         ast.dump(ast.Module(body=native.body,type_ignores=[])))
++
++    def test_distinct_positions_own_features_and_processor_contract_failure_is_local(self):
++        first=make('plain',True,True);second=make('plain',True,True)
++        for l,r in zip(first.parameters(),second.parameters()):
++            self.assertIsNot(l,r);self.assertNotEqual(l.data_ptr(),r.data_ptr())
++        self.assertIsNot(first.adapter,second.adapter)
++        self.assertIsNot(first.latent_processor,second.latent_processor)
++        expected=first(sample(),round_index=1)
++        for bad in (lambda c:c[:,:,:-1,:],lambda c:c.float()):
++            with patch.object(first.latent_processor,'forward',side_effect=bad):
++                with self.assertRaisesRegex(ValueError,'preserve'):first(sample(),round_index=1)
++        torch.testing.assert_close(first(sample(),round_index=1),expected,atol=0,rtol=0)
++
++    def test_six_variants_four_ablations_two_visits_oracle_and_all_vjps(self):
++        for dtype in (torch.float64,torch.float32):
++            for variant in VARIANTS:
++                for latent,adapter in ((False,False),(False,True),(True,False),(True,True)):
++                    for round_index in (0,1):
++                        with self.subTest(dtype=dtype,variant=variant,z=latent,a=adapter,round=round_index):
++                            m=fill(make(variant,latent,adapter,dtype=dtype)); x=sample(dtype).requires_grad_()
++                            weights=clone_parameters(m); xr=x.detach().clone().requires_grad_()
++                            expected,trace=attention_reference(xr,weights,variant=variant,heads=2,round_index=round_index,
++                                latent=latent,adapter=adapter,alpha=3.,grid=(2,3))
++                            seen=[]; original=torch.einsum
++                            def observe(eq,*args):
++                                result=original(eq,*args);seen.append((eq,args,result));return result
++                            with patch('torch.einsum',side_effect=observe):actual=m(x,round_index=round_index)
++                            label=f'{variant}/z{latent}a{adapter}/r{round_index}'
++                            compare(actual,expected,label)
++                            self.assertEqual([s[0] for s in seen],['bhnm,bhnd->bhmd','bhnm,bhmd->bhnd'])
++                            for a,b,name in ((seen[0][1][0],trace['keys'],'keys'),(seen[0][1][1],trace['values'],'values'),
++                                              (seen[0][2],trace['raw_context'],'KtV'),(seen[1][1][0],trace['queries'],'queries'),
++                                              (seen[1][1][1],trace['context'],'processed'),(seen[1][2],trace['readout'],'QC')):
++                                compare(a,b,label+'/'+name)
++                            probe=torch.cos(torch.arange(actual.numel(),dtype=dtype)).reshape_as(actual)
++                            grads=torch.autograd.grad((actual*probe).sum(),(x,*m.parameters()),allow_unused=True)
++                            refs=torch.autograd.grad((expected*probe).sum(),(xr,*weights.values()),allow_unused=True)
++                            for name,g,r in zip(('input',*weights),grads,refs):
++                                self.assertEqual(g is None,r is None,name)
++                                if g is not None:
++                                    self.assertTrue(torch.isfinite(g).all(),name)
++                                    compare(g,r,label+'/vjp/'+name)
++                                    self.assertGreater(g.abs().max().item(),0,name)
++
++    def test_off_delegates_native_bitwise_output_gradients_and_dropout_rng(self):
++        from cdlno.linearno_loop.v3.attention import V3LinearNOAttention
++        for dtype in (torch.float64,torch.float32):
++            for variant in VARIANTS:
++                with self.subTest(dtype=dtype,variant=variant):
++                    native=LinearNOAttention(**kwargs(variant,.35)).to(dtype=dtype)
++                    m=make(variant,dtype=dtype,dropout=.35);native.load_state_dict(m.state_dict(),strict=True)
++                    self.assertEqual(set(native.state_dict()),set(m.state_dict()))
++                    x=sample(dtype).requires_grad_();xr=x.detach().clone().requires_grad_()
++                    before=torch.get_rng_state();a=native(x);post=torch.get_rng_state()
++                    ga=torch.autograd.grad(a.square().sum(),(x,*native.parameters()),allow_unused=True)
++                    torch.set_rng_state(before)
++                    with patch.object(LinearNOAttention,'forward',autospec=True,side_effect=LinearNOAttention.forward) as forward:
++                        b=m(xr,round_index=1)
++                    self.assertEqual(forward.call_count,1)
++                    self.assertTrue(torch.equal(post,torch.get_rng_state()))
++                    gb=torch.autograd.grad(b.square().sum(),(xr,*m.parameters()),allow_unused=True)
++                    torch.testing.assert_close(a,b,atol=0,rtol=0)
++                    for l,r in zip(ga,gb):
++                        if l is None:self.assertIsNone(r)
++                        else:torch.testing.assert_close(l,r,atol=0,rtol=0)
++                    self.assertFalse(any(k.startswith(('adapter.','latent_processor.')) for k in m.state_dict()))
++
++    def test_zero_init_ablations_preserve_output_common_gradients_and_rng(self):
++        for variant in VARIANTS:
++            for latent,adapter in ((False,True),(True,False),(True,True)):
++                for index in (0,1):
++                    with self.subTest(variant=variant,z=latent,a=adapter,r=index):
++                        off=make(variant,dropout=.3);on=make(variant,latent,adapter,dropout=.3)
++                        common=dict(off.named_parameters())
++                        for name,p in common.items():torch.testing.assert_close(p,on.state_dict()[name],atol=0,rtol=0)
++                        x=sample().requires_grad_();xr=x.detach().clone().requires_grad_()
++                        rng=torch.get_rng_state();a=off(x,round_index=index);post=torch.get_rng_state()
++                        ga=torch.autograd.grad(a.square().sum(),(x,*common.values()),allow_unused=True)
++                        torch.set_rng_state(rng);b=on(xr,round_index=index)
++                        self.assertTrue(torch.equal(post,torch.get_rng_state()))
++                        torch.testing.assert_close(a,b,atol=0,rtol=0)
++                        gb=torch.autograd.grad(b.square().sum(),(xr,*[dict(on.named_parameters())[k] for k in common]),allow_unused=True)
++                        for name,g,r in zip(('input',*common),ga,gb):
++                            if g is None:self.assertIsNone(r)
++                            else:compare(g,r,f'zero/{variant}/{index}/{name}')
++
++    def test_first_visit_never_reads_adapter_and_default_forward_is_native(self):
++        for latent in (False,True):
++            m=fill(make('temp',latent,True));x=sample()
++            reference=make('temp',latent,False)
++            reference.load_state_dict({k:v for k,v in m.state_dict().items() if not k.startswith('adapter.')},strict=True)
++            with patch.object(m.adapter,'forward',side_effect=AssertionError('adapter accessed')):
++                torch.testing.assert_close(m(x,round_index=0),reference(x,round_index=0),atol=0,rtol=0)
++                # Native calls used outside recurrent visits must ignore installed features.
++                native=LinearNOAttention(**kwargs('temp')).double()
++                native.load_state_dict({k:v for k,v in m.state_dict().items() if not k.startswith(('adapter.','latent_processor.'))},strict=True)
++                with patch.object(m.latent_processor,'forward',side_effect=AssertionError('latent accessed')) if latent else patch.dict({},{}):
++                    torch.testing.assert_close(m(x),native(x),atol=0,rtol=0)
++            m(x.requires_grad_(),round_index=0).sum().backward()
++            self.assertTrue(all(p.grad is None for p in m.adapter.parameters()))
++
++    def test_nonzero_each_feature_changes_only_intended_visit_and_temperatures(self):
++        for variant in VARIANTS:
++            base=fill(make(variant,True,True));x=sample()
++            for target in ('adapter.B_q','adapter.B_k','latent_processor.linear2.weight'):
++                m=make(variant,True,True);m.load_state_dict(base.state_dict(),strict=True)
++                with torch.no_grad():dict(m.named_parameters())[target].zero_()
++                for index in (0,1):
++                    a,b=base(x,round_index=index),m(x,round_index=index)
++                    if target.startswith('adapter') and index==0:torch.testing.assert_close(a,b,atol=0,rtol=0)
++                    else:self.assertGreater((a-b).abs().max().item(),1e-9,(variant,target,index))
++        for variant in ('temp','conv_temp','shapenet'):
++            m=fill(make(variant,True,True));x=sample()
++            for temperatures in ((.31,.67),(-.2,3.)):
++                prefix='tempreature' if variant=='shapenet' else 'temperature'
++                with torch.no_grad():
++                    getattr(m,prefix+'_q').fill_(temperatures[0]);getattr(m,prefix+'_k').fill_(temperatures[1])
++                weights=clone_parameters(m)
++                right,_=attention_reference(x,weights,variant=variant,heads=2,round_index=1,adapter=True,latent=True,alpha=3.,grid=(2,3))
++                wrong,_=attention_reference(x,weights,variant=variant,heads=2,round_index=1,adapter=True,latent=True,alpha=3.,grid=(2,3),wrong_temperature_order=True)
++                compare(m(x,round_index=1),right,'temperature/'+variant)
++                self.assertGreater((right-wrong).abs().max().item(),1e-7)
++
++    def test_module_hooks_and_contractions_two_visits_no_quadratic_attention(self):
++        for variant in VARIANTS:
++            for latent,adapter in ((False,False),(False,True),(True,False),(True,True)):
++                m=make(variant,latent,adapter);calls=[];handles=[];layouts=[]
++                for name,mod in m.named_modules():
++                    if name in ('in_project_x','to_q','to_k','to_v','to_out','adapter','latent_processor','dropout','softmax'):
++                        handles.append(mod.register_forward_hook(lambda mod,args,out,name=name:calls.append((name,id(mod)))))
++                handles.append(m.to_q.register_forward_pre_hook(lambda mod,args:layouts.append(args[0].is_contiguous())))
++                try:
++                    for index in (0,1):
++                        start=len(calls)
++                        with ContractionTrace() as trace:m(sample()+index*.2,round_index=index)
++                        names=[n for n,_ in calls[start:]]
++                        for name in ('in_project_x','to_q','to_k','to_v','to_out'):self.assertEqual(names.count(name),1)
++                        self.assertEqual(names.count('adapter'),int(adapter and index==1))
++                        self.assertEqual(names.count('latent_processor'),int(latent))
++                        self.assertNotIn('dropout',names);self.assertNotIn('softmax',names)
++                        self.assertEqual(trace.bmms,[((4,5,6),(4,6,3),(4,5,3)),((4,6,5),(4,5,3),(4,6,3))])
++                        self.assertEqual(trace.softmaxes,[((2,2,6,5),-1),((2,2,6,5),-2)])
++                    if latent:self.assertEqual(len({i for n,i in calls if n=='latent_processor'}),1)
++                    if variant=='airfrans':self.assertTrue(all(layouts))
++                finally:
++                    for h in handles:h.remove()
++
++    def test_constructor_install_isolation_and_atomic_validation(self):
++        from cdlno.linearno_loop.v3.attention import V3LinearNOAttention
++        public=None;following=None
++        for latent,adapter in ((False,False),(False,True),(True,False),(True,True)):
++            with torch.random.fork_rng(devices=[]):
++                torch.random.default_generator.manual_seed(810)
++                m=V3LinearNOAttention(**kwargs('temp'));m.apply(initialize_release_weights)
++                old=snapshot();before={k:v.clone() for k,v in m.state_dict().items()}
++                m.install_features(latent_enabled=latent,latent_width=7,
++                    adapter_mode='bilateral_qk_lowrank_second_visit' if adapter else 'none',
++                    latent_seed=8,adapter_seed=9)
++                assert_rng(self,old,snapshot())
++                after=torch.randn(9)
++                if public is None:public,following=before,after
++                for k,v in public.items():torch.testing.assert_close(m.state_dict()[k],v,atol=0,rtol=0)
++                torch.testing.assert_close(after,following,atol=0,rtol=0)
++                with self.assertRaisesRegex(RuntimeError,'already'):m.install_features()
++        for changes in ({'latent_enabled':1},{'latent_enabled':True,'latent_width':0},
++                        {'adapter_mode':'q_only'},{'adapter_mode':'bilateral_qk_lowrank_second_visit','adapter_seed':-1}):
++            m=V3LinearNOAttention(**kwargs('plain'));old=snapshot();keys=set(m.state_dict())
++            with self.assertRaises((ValueError,TypeError)):m.install_features(**changes)
++            assert_rng(self,old,snapshot());self.assertEqual(set(m.state_dict()),keys)
++            self.assertNotIn('adapter',m._modules);self.assertNotIn('latent_processor',m._modules)
++
++    def test_shapenet_actual_M_independent_and_legacy_attributes(self):
++        from cdlno.linearno_loop.v3.attention import V3LinearNOAttention
++        for rank in (5,32):
++            m=V3LinearNOAttention(208,heads=8,dim_head=26,rank=rank,variant='shapenet')
++            m.install_features(latent_enabled=True,latent_width=11,
++                adapter_mode='bilateral_qk_lowrank_second_visit',latent_seed=1,adapter_seed=2)
++            self.assertEqual(m.to_q.out_features,rank);self.assertEqual(m.to_k.out_features,rank)
++            self.assertIn('tempreature_q',m.state_dict());self.assertNotIn('temperature_q',m.state_dict())
++            x=torch.ones(1,7,208,requires_grad=True)
++            m(x,round_index=1).square().mean().backward();self.assertTrue(torch.isfinite(x.grad).all())
++        air=make('airfrans',True,True);x=sample().requires_grad_()
++        a=air(x,round_index=1)
++        with torch.no_grad():air.temperature.fill_(123.)
++        b=air(x,round_index=1);torch.testing.assert_close(a,b,atol=0,rtol=0)
++        b.sum().backward();self.assertIsNone(air.temperature.grad)
++        self.assertEqual(air.scale,3**-.5);self.assertEqual(air.softmax.dim,-1)
++
++    def test_strict_roundtrip_and_invalid_input_no_retained_activations(self):
++        for variant in VARIANTS:
++            for latent,adapter in ((False,False),(False,True),(True,False),(True,True)):
++                m=fill(make(variant,latent,adapter));before={k:v.clone() for k,v in m.state_dict().items()}
++                stream=io.BytesIO();torch.save(before,stream);stream.seek(0)
++                twin=make(variant,latent,adapter);twin.load_state_dict(torch.load(stream,weights_only=True),strict=True)
++                torch.testing.assert_close(m(sample(),round_index=1),twin(sample(),round_index=1),atol=0,rtol=0)
++                bad=dict(before);bad.pop(next(iter(bad)))
++                with self.assertRaises(RuntimeError):twin.load_state_dict(bad,strict=True)
++                bad=dict(before);bad['round2.to_q.weight']=bad['to_q.weight']
++                with self.assertRaises(RuntimeError):twin.load_state_dict(bad,strict=True)
++                for x in (torch.ones(2,6),torch.ones(1,0,6),torch.ones(1,6,7),torch.ones(1,6,6,dtype=torch.int64)):
++                    with self.assertRaises((ValueError,TypeError)):m(x,round_index=1)
++                if variant in ('conv','conv_temp'):
++                    with self.assertRaisesRegex(ValueError,'H.*W'):m(torch.ones(2,5,6,dtype=torch.float64),round_index=1)
++                for index in (-1,True,1.5):
++                    with self.assertRaises(ValueError):m(sample(),round_index=index)
++                if adapter:
++                    with self.assertRaisesRegex(ValueError,'round'):m(sample(),round_index=2)
++                else:torch.testing.assert_close(m(sample(),round_index=2),m(sample(),round_index=0),atol=0,rtol=0)
++                x=sample(batch=1).requires_grad_();ref=weakref.ref(x)
++                y=m(x,round_index=0);y.sum().backward();del x,y;gc.collect();self.assertIsNone(ref())
++                m(sample().requires_grad_(),round_index=1).sum().backward()
++                self.assertEqual(list(m.buffers()),[])
++                for mod in m.modules():
++                    self.assertFalse(any(isinstance(value,torch.Tensor) for key,value in vars(mod).items() if key not in ('_parameters','_buffers')))
++                for k,v in before.items():torch.testing.assert_close(m.state_dict()[k],v,atol=0,rtol=0)
++
++    def test_noncontiguous_inputs_and_no_cross_batch_effect(self):
++        for variant in VARIANTS:
++            m=fill(make(variant,True,True));x=sample().transpose(0,1).contiguous().transpose(0,1)
++            self.assertFalse(x.is_contiguous())
++            a=m(x,round_index=1);compare(a,m(x.contiguous(),round_index=1),'noncontiguous/'+variant)
++            modified=x.clone();modified[0].add_(.5)
++            b=m(modified,round_index=1);torch.testing.assert_close(a[1],b[1],atol=0,rtol=0)
++
++
++if __name__=='__main__':unittest.main()
+--- /dev/null
++++ tests/loop_linearno_latent_adapter/test_laa3_oracle.py
+@@ -0,0 +1,42 @@
++import math
++import unittest
++import torch
++from .attention_oracle import attention_reference
++
++
++class AttentionOracleTests(unittest.TestCase):
++    def test_two_points_two_slots_hand_computed(self):
++        eye = torch.eye(2, dtype=torch.float64)
++        zero = torch.zeros(2, dtype=torch.float64)
++        weights = {'in_project_x.weight': eye, 'in_project_x.bias': zero,
++                   'to_q.weight': eye*0, 'to_k.weight': eye*0, 'to_v.weight': eye,
++                   'to_out.0.weight': eye, 'to_out.0.bias': zero,
++                   'temperature_q': torch.tensor([[[[.5]]]], dtype=torch.float64),
++                   'temperature_k': torch.tensor([[[[.25]]]], dtype=torch.float64),
++                   'adapter.A_q': eye, 'adapter.A_k': eye,
++                   'adapter.B_q': eye, 'adapter.B_k': eye*.5}
++        x = eye.unsqueeze(0)
++        result, trace = attention_reference(x, weights, variant='temp', heads=1,
++                                           round_index=1, adapter=True, alpha=2.)
++        p = math.exp(2)/(math.exp(2)+1)
++        expected = torch.tensor([[[p*p+(1-p)**2, 2*p*(1-p)],
++                                   [2*p*(1-p), p*p+(1-p)**2]]], dtype=torch.float64)
++        torch.testing.assert_close(result, expected, atol=1e-15, rtol=1e-15)
++        torch.testing.assert_close(trace['queries'].sum(-1), torch.ones(1,1,2,dtype=torch.float64))
++        torch.testing.assert_close(trace['keys'].sum(-2), torch.ones(1,1,2,dtype=torch.float64))
++        wrong, _ = attention_reference(x, weights, variant='temp', heads=1,
++                                       round_index=1, adapter=True, alpha=2., wrong_temperature_order=True)
++        self.assertGreater((result-wrong).abs().max().item(), .1)
++
++    def test_nonzero_latent_hand_computed(self):
++        eye = torch.eye(2,dtype=torch.float64); zero = torch.zeros(2,dtype=torch.float64)
++        weights = {'in_project_x.weight':eye,'in_project_x.bias':zero,
++                   'to_q.weight':eye*0,'to_k.weight':eye*0,'to_v.weight':eye,
++                   'to_out.0.weight':eye,'to_out.0.bias':zero,
++                   'latent_processor.norm.weight':torch.ones(2,dtype=torch.float64),
++                   'latent_processor.norm.bias':zero,
++                   'latent_processor.linear1.weight':eye*0,'latent_processor.linear1.bias':torch.ones(2,dtype=torch.float64),
++                   'latent_processor.linear2.weight':eye,'latent_processor.linear2.bias':zero}
++        output,_ = attention_reference(eye.unsqueeze(0),weights,variant='plain',heads=1,round_index=0,latent=True)
++        expected = .5 + .5*(1+math.erf(1/math.sqrt(2)))
++        torch.testing.assert_close(output,torch.full((1,2,2),expected,dtype=torch.float64),atol=1e-15,rtol=1e-15)
+--- /dev/null
++++ tests/loop_linearno_latent_adapter/attention_oracle.py
+@@ -0,0 +1,76 @@
++"""LAA3 independent equations: no production imports or module forward calls.
++
++Convolution is unfolded patch multiplication; batch/head matrix products and
++explicit exp/sum normalization implement the attention. Only the independently
++audited LAA2 arithmetic oracle is reused for tokenwise LN/erf-GELU.
++"""
++import math
++
++import torch
++from torch.nn import functional as F
++
++from .primitive_oracles import latent_expanded
++
++
++def normalize(x, axis):
++    ex = (x - x.amax(axis, keepdim=True)).exp()
++    return ex / ex.sum(axis, keepdim=True)
++
++
++def attention_reference(x, weights, *, variant, heads, round_index,
++                        latent=False, adapter=False, alpha=4., grid=None,
++                        wrong_temperature_order=False):
++    """Return output and local intermediate tensors, always with dropout off."""
++    batch, points, _ = x.shape
++    w = weights['in_project_x.weight']
++    if variant in ('conv', 'conv_temp'):
++        image = x.transpose(1, 2).reshape(batch, x.shape[-1], *grid)
++        patches = F.unfold(image, kernel_size=w.shape[-1], padding=w.shape[-1] // 2)
++        projected = patches.transpose(1, 2) @ w.flatten(1).T
++    else:
++        projected = x @ w.T
++    projected = projected + weights['in_project_x.bias']
++    dh = projected.shape[-1] // heads
++    q_rows, k_rows, v_rows, feature_rows = [], [], [], []
++    q_log_rows, k_log_rows = [], []
++    for b in range(batch):
++        qs, ks, vs, fs, qls, kls = [], [], [], [], [], []
++        for h in range(heads):
++            f = projected[b, :, h*dh:(h+1)*dh]
++            q = f @ weights['to_q.weight'].T
++            k = f @ weights['to_k.weight'].T
++            v = f @ weights['to_v.weight'].T
++            delta = {}
++            for side in ('q', 'k'):
++                if adapter and round_index == 1:
++                    a, z = weights['adapter.A_'+side], weights['adapter.B_'+side]
++                    # Deliberately premerge BA, unlike the production two-stage projection.
++                    delta[side] = f @ (z @ a).T * (alpha / a.shape[0])
++                else:
++                    delta[side] = torch.zeros_like(q)
++            tq = tk = 1.
++            if variant in ('temp', 'conv_temp', 'shapenet'):
++                prefix = 'tempreature' if variant == 'shapenet' else 'temperature'
++                lower, upper = (.1, 2.) if variant == 'shapenet' else (.01, 1.)
++                tq = weights[prefix+'_q'][0, h, 0, 0].clamp(lower, upper)
++                tk = weights[prefix+'_k'][0, h, 0, 0].clamp(lower, upper)
++            q = q/tq+delta['q'] if wrong_temperature_order else (q+delta['q'])/tq
++            k = k/tk+delta['k'] if wrong_temperature_order else (k+delta['k'])/tk
++            qs.append(normalize(q, 1)); ks.append(normalize(k, 0)); vs.append(v)
++            fs.append(f); qls.append(q); kls.append(k)
++        for destination, source in ((q_rows, qs), (k_rows, ks), (v_rows, vs),
++                                    (feature_rows, fs), (q_log_rows, qls), (k_log_rows, kls)):
++            destination.append(torch.stack(source))
++    q, k, v = (torch.stack(rows) for rows in (q_rows, k_rows, v_rows))
++    raw = torch.stack([torch.stack([k[b,h].T @ v[b,h] for h in range(heads)]) for b in range(batch)])
++    context = latent_expanded(raw, {name.removeprefix('latent_processor.'): value
++                                  for name, value in weights.items() if name.startswith('latent_processor.')}) if latent else raw
++    readout = torch.stack([torch.stack([q[b,h] @ context[b,h] for h in range(heads)]) for b in range(batch)])
++    merged = torch.cat([readout[:, h] for h in range(heads)], dim=-1)
++    output = merged @ weights['to_out.0.weight'].T + weights['to_out.0.bias']
++    if variant in ('conv', 'conv_temp', 'shapenet'):
++        output = .5 * output * (1 + torch.erf(output / math.sqrt(2)))
++        output = output @ weights['to_out.2.weight'].T + weights['to_out.2.bias']
++    return output, dict(features=torch.stack(feature_rows), queries=q, keys=k, values=v,
++                        q_logits=torch.stack(q_log_rows), k_logits=torch.stack(k_log_rows),
++                        raw_context=raw, context=context, readout=readout)
+--- /dev/null
++++ tests/loop_linearno_latent_adapter/attention_support.py
+@@ -0,0 +1,55 @@
++"""LAA3 fixtures and recorded comparisons; expected math lives in the oracle."""
++import torch
++from cdlno.linearno.attention import LinearNOAttention, initialize_release_weights
++
++VARIANTS = ('plain', 'temp', 'conv', 'conv_temp', 'airfrans', 'shapenet')
++ERRORS, CUDA_ROWS = [], []
++
++
++def kwargs(variant, dropout=0., *, dim=6, heads=2, rank=5):
++    result = dict(dim=dim, heads=heads, dim_head=dim//heads, rank=rank,
++                  variant=variant, dropout=dropout)
++    if variant in ('conv', 'conv_temp'):
++        result.update(H=2, W=3)
++    return result
++
++
++def make(variant, latent=False, adapter=False, *, dtype=torch.float64,
++         device='cpu', dropout=0., rank=5, seed=71):
++    from cdlno.linearno_loop.v3.attention import V3LinearNOAttention
++    with torch.random.fork_rng(devices=[]):
++        torch.random.default_generator.manual_seed(seed)
++        m = V3LinearNOAttention(**kwargs(variant, dropout, rank=rank))
++        m.apply(initialize_release_weights)
++    m.to(device=device, dtype=dtype)
++    m.install_features(latent_enabled=latent, latent_width=7,
++                       adapter_mode='bilateral_qk_lowrank_second_visit' if adapter else 'none',
++                       adapter_rank=2, adapter_alpha=3., latent_seed=172, adapter_seed=273)
++    return m
++
++
++def fill(module):
++    # Moderate, asymmetric, nonzero weights exercise temperature and both softmaxes.
++    with torch.no_grad():
++        for i, (name, p) in enumerate(module.named_parameters()):
++            if name.startswith(('temperature', 'tempreature')):
++                p.copy_(torch.linspace(.27, .73, p.numel(), device=p.device, dtype=p.dtype).reshape_as(p))
++            else:
++                p.copy_((torch.sin(torch.arange(p.numel(), device=p.device, dtype=p.dtype)*.73+i)*.19).reshape_as(p))
++                if name.endswith('norm.weight'): p.add_(1.)
++    return module
++
++
++def sample(dtype=torch.float64, device='cpu', batch=2, points=6):
++    t = torch.arange(batch*points*6, dtype=dtype, device=device)
++    return (torch.sin(t*.37)*1.3).reshape(batch, points, 6)
++
++
++def compare(a, b, label, *, atol=None, rtol=None):
++    if atol is None: atol, rtol = (3e-12, 3e-10) if a.dtype==torch.float64 else (4e-6, 5e-5)
++    ERRORS.append(dict(label=label, dtype=str(a.dtype), max_abs=float((a.detach().double()-b.detach().double()).abs().max()), atol=atol, rtol=rtol))
++    torch.testing.assert_close(a, b, atol=atol, rtol=rtol, check_dtype=False)
++
++
++def clone_parameters(module, dtype=None):
++    return {k: p.detach().to(dtype=dtype or p.dtype).clone().requires_grad_() for k,p in module.named_parameters()}
+--- docs/LOOP_LINEARNO_LATENT_ADAPTER_IMPLEMENTATION_STATUS.md (LAA3 start)
++++ docs/LOOP_LINEARNO_LATENT_ADAPTER_IMPLEMENTATION_STATUS.md
+@@ -1,4 +1,20 @@
+ # Looped LinearNO Latent FFN + Bilateral Adapter implementation status
++
++## LAA3 — PASS，独立 V3 attention 路径完成
++
++本轮仅LAA3，未执行LAA4。新增唯一生产文件 `cdlno/linearno_loop/v3/attention.py`，不接完整loop/wrapper/任务入口。详见 [LAA3报告](loop_linearno_latent_adapter_audit/laa3/report.md)。
++
++- 继承原LinearNOAttention构造器；无特性/普通forward直接委托原forward。显式 `round_index=0/1` 选择core visit，只有第二轮调用adapter；latent每轮用同一实例。off不注册专属模块/参数。
++- active路径在base logits后加入delta，再执行原温度/clamp/softmax；KtV后可选latent，再QC。去除这两处特性插入后计算体AST与原forward完全相同。Air contiguous/dead temperature、Car `tempreature_*`、所有dropout与惰性属性保持。
++- v3 ShapeNet实际M可独立于dh，CPU H208/h8/dh26/M32前向反传通过；旧v1/v2约束未改。特性安装在公共初始化之后，复用LAA2隔离seed，不推进公共RNG。
++- 先完成2项独立手算oracle，再记录生产模块不存在时12方法/428个预期缺模块子项；首轮新fixture遗漏reshape的244个错误已修正，原日志保留，无生产数学/旧容差调整。
++- 最终新增16/16（13.843s）、LAA1/LAA2回归52/52（7.084s）、旧定向72/72（51.626s）通过，均0失败/0错误/0跳过。
++- CPU六variant×四消融×两轮×FP64/FP32共96行完整oracle/全部VJP通过；CUDA FP32/FP16/BF16共144行含AdamW/strict reload通过（reload误差0），另144个zero-init/dropout组合通过。无N×N/M×M注意力、无跨forward缓存，Q/K/V/KtV/QC每visit一次。
++- LAA3起点4164已有文件只追加本独立状态文档；旧生产/测试/LL/LF/LAA0–2证据和用户已有修改保持。旧全仓644通过/9历史失败/36跳过仅引用LAA0，本阶段未重跑全量。
++
++证据：[结果](loop_linearno_latent_adapter_audit/laa3/results.json)、[数值](loop_linearno_latent_adapter_audit/laa3/new-final.json)、[冻结](loop_linearno_latent_adapter_audit/laa3/end-freeze.json)。没有真实数据/训练/性能/远端栈验收，没有commit/push。完整v3训练命令尚未接线。
++
++本 LAA3 阶段结束，未执行下一阶段。
+ 
+ ## LAA2 — PASS，独立 latent / bilateral QK adapter 原语完成
+ 

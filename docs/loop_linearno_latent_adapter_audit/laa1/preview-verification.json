@@ -1,0 +1,41 @@
+{
+  "status": "PASS",
+  "records": 2304,
+  "unique_run_ids": 2304,
+  "unique_hashes": 2304,
+  "task_counts": {
+    "airfoil": 288,
+    "darcy": 288,
+    "elasticity": 288,
+    "pipe": 288,
+    "plasticity": 288,
+    "ns": 288,
+    "airfrans": 288,
+    "car": 288
+  },
+  "paired_backbone_groups": 192,
+  "data_seed_groups": 24,
+  "maximum_run_id_bytes": 176,
+  "independent_integer_parameter_max_error": 0,
+  "independent_integer_mac_max_error": 0,
+  "custom_valid": 3,
+  "custom_expected_rejections": 9,
+  "no_torch_import": true,
+  "no_model_construction": true,
+  "no_training": true,
+  "wall_seconds": 5.476016879998497,
+  "artifacts": {
+    "matrix/configuration-matrix.jsonl": {
+      "bytes": 52541109,
+      "sha256": "1deaf077498b62633972cdc570e68e006624f898686777bdaab6ff6ed669de8d"
+    },
+    "matrix/custom-cases.json": {
+      "bytes": 108045,
+      "sha256": "f358a72e31f08fc87c03cb8b52651953f77de2a6498a601e348bfec5c2567bf4"
+    },
+    "matrix/matrix-summary.json": {
+      "bytes": 635,
+      "sha256": "76713f6902ad68dea2dbb0038df309a4ab20e66508d063e715e24410705932da"
+    }
+  }
+}

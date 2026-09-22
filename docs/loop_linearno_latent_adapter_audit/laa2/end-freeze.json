@@ -1,0 +1,59 @@
+{
+  "laa0": {
+    "compared": 3377,
+    "unchanged": 3377,
+    "changed": [],
+    "missing": []
+  },
+  "laa2": {
+    "compared": 4132,
+    "unchanged": 4131,
+    "changed": [
+      {
+        "path": "docs/LOOP_LINEARNO_LATENT_ADAPTER_IMPLEMENTATION_STATUS.md",
+        "before": "4bd5273b95c42efc1c934e8a253f70e9b7ccc561a3f59ab24496fb4f9b340b93",
+        "after": "d6baa10e1aae7fbd8bca530311da2458078af4db9ce8e520214aea7689aa93b2",
+        "authorized": true
+      }
+    ],
+    "missing": []
+  },
+  "status": "PASS",
+  "laa1_code_files_unchanged": 14,
+  "user_diff_unchanged": true,
+  "staged_unchanged": true,
+  "head_unchanged": true,
+  "new_files": [
+    "cdlno/linearno_loop/v3/__init__.py",
+    "cdlno/linearno_loop/v3/adapter.py",
+    "cdlno/linearno_loop/v3/initialization.py",
+    "cdlno/linearno_loop/v3/latent.py",
+    "docs/loop_linearno_latent_adapter_audit/laa2/finalize_audit.py",
+    "docs/loop_linearno_latent_adapter_audit/laa2/head-sharing-recheck.log",
+    "docs/loop_linearno_latent_adapter_audit/laa2/new-final.json",
+    "docs/loop_linearno_latent_adapter_audit/laa2/new-final.log",
+    "docs/loop_linearno_latent_adapter_audit/laa2/oracle-first.log",
+    "docs/loop_linearno_latent_adapter_audit/laa2/preimplementation-red.log",
+    "docs/loop_linearno_latent_adapter_audit/laa2/primitives-attempt1.log",
+    "docs/loop_linearno_latent_adapter_audit/laa2/regression-final.json",
+    "docs/loop_linearno_latent_adapter_audit/laa2/regression-final.log",
+    "docs/loop_linearno_latent_adapter_audit/laa2/report.md",
+    "docs/loop_linearno_latent_adapter_audit/laa2/run_checks.py",
+    "docs/loop_linearno_latent_adapter_audit/laa2/schema-final.json",
+    "docs/loop_linearno_latent_adapter_audit/laa2/schema-final.log",
+    "docs/loop_linearno_latent_adapter_audit/laa2/start-manifest.json",
+    "docs/loop_linearno_latent_adapter_audit/laa2/static-checks.json",
+    "docs/loop_linearno_latent_adapter_audit/laa2/status-before.md",
+    "docs/loop_linearno_latent_adapter_audit/laa2/test-first-manifest.json",
+    "tests/loop_linearno_latent_adapter/primitive_oracles.py",
+    "tests/loop_linearno_latent_adapter/primitive_support.py",
+    "tests/loop_linearno_latent_adapter/test_laa2_adapter.py",
+    "tests/loop_linearno_latent_adapter/test_laa2_latent.py",
+    "tests/loop_linearno_latent_adapter/test_laa2_oracles.py",
+    "tests/loop_linearno_latent_adapter/test_laa2_rng_amp.py"
+  ],
+  "allowed_existing_changes": [
+    "docs/LOOP_LINEARNO_LATENT_ADAPTER_IMPLEMENTATION_STATUS.md"
+  ],
+  "git_status": " M check_checkpoints/check_pipe_loop_resume.sh\n?? PLAN_Looped_LinearNO/Looped_LinearNO_LatentFFN_BilateralAdapter_CostProfiles_Codex_Staged_Prompts.md\n?? \"PLAN_Looped_LinearNO/\\347\\240\\224\\347\\251\\266\\344\\270\\273\\347\\272\\277\\346\\242\\263\\347\\220\\206 (5).md\"\n?? cdlno/linearno_loop/v3/\n?? docs/LOOP_LINEARNO_LATENT_ADAPTER_IMPLEMENTATION_STATUS.md\n?? docs/LOOP_LINEARNO_LATENT_ADAPTER_REFERENCE_AUDIT.md\n?? docs/loop_linearno_latent_adapter_audit/\n?? linearno_loop/v3/\n?? tests/loop_linearno_latent_adapter/\n"
+}

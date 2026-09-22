@@ -1,0 +1,43 @@
+{
+  "status": "passed",
+  "task": "elasticity",
+  "profile": "matched_v1",
+  "depth": "d12",
+  "residual_mode": "sr_1_over_r",
+  "latent_enabled": true,
+  "adapter_enabled": true,
+  "points": 972,
+  "hidden_width": 96,
+  "device": "NVIDIA GeForce RTX 5090 Laptop GPU",
+  "dtype": "torch.float32",
+  "forward_ms": {
+    "median": 5.193677499846672,
+    "p90": 5.650730001434567,
+    "samples": [
+      5.650730001434567,
+      5.079591999674449,
+      4.923423999571241,
+      5.5354630003421335,
+      5.307763000018895,
+      4.947777000779752
+    ]
+  },
+  "train_step_ms": {
+    "median": 20.394598498569394,
+    "p90": 20.981700999982422,
+    "samples": [
+      18.744241000604234,
+      20.690620998720988,
+      20.981700999982422,
+      20.920781998938764,
+      20.0985759984178,
+      18.74687800045649
+    ]
+  },
+  "peak_memory": {
+    "allocated_bytes": 235266560,
+    "reserved_bytes": 262144000
+  },
+  "state_dict_bytes": 2408973,
+  "measurement_scope": "synthetic canonical-N only; no epoch extrapolation"
+}

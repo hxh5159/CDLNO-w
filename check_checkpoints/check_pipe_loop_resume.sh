@@ -25,11 +25,45 @@ from pathlib import Path
 import torch
 
 from cdlno.linearno.schema import unpack_state
-from cdlno.linearno_loop.versioning import (
-    checkpoint_api,
-    construction_api,
-    provenance,
-)
+try:
+    from cdlno.linearno_loop.versioning import (
+        checkpoint_api as resolve_checkpoint_api,
+        construction_api as resolve_construction_api,
+        provenance as resolve_provenance,
+    )
+
+    def checkpoint_api(config):
+        return resolve_checkpoint_api(config)
+
+    def build_model(config):
+        return resolve_construction_api(config).build_from_config(config)
+
+    def current_provenance(config):
+        return resolve_provenance(config)
+
+    repository_layout = "versioned-v1-v2"
+except ModuleNotFoundError as error:
+    # Runs created before the RoundFFN/latent-FFN extension have no versioning
+    # dispatcher. Their authoritative V1 modules expose the same strict pair
+    # checks directly.
+    if error.name != "cdlno.linearno_loop.versioning":
+        raise
+    from cdlno.linearno_loop import checkpoint as v1_checkpoint
+    from cdlno.linearno_loop.construction import build_from_config
+    from cdlno.linearno_loop.provenance import provenance as v1_provenance
+
+    def checkpoint_api(config):
+        if config.get("config_version") != 1:
+            raise ValueError("legacy repository layout supports only Looped LinearNO V1")
+        return v1_checkpoint
+
+    def build_model(config):
+        return build_from_config(config)
+
+    def current_provenance(config):
+        return v1_provenance()
+
+    repository_layout = "legacy-v1-direct"
 
 
 def audit():
@@ -45,6 +79,7 @@ def audit():
 
     print("run =", run)
     print("selector =", selector)
+    print("repository_layout =", repository_layout)
     check("run directory exists", run.is_dir())
     check("architecture.json exists", (run / "architecture.json").is_file())
     if not run.is_dir() or not (run / "architecture.json").is_file():
@@ -139,13 +174,13 @@ def audit():
     check("complete resume fields", required_state <= set(state),
           str(sorted(set(state))))
 
-    current_provenance = provenance(config)
+    current_provenance_value = current_provenance(config)
     saved_source = metadata["provenance_spec"]["source_sha256"]
-    current_source = current_provenance["source_sha256"]
+    current_source = current_provenance_value["source_sha256"]
     check("current source provenance", current_source == saved_source,
           f"saved={saved_source}, current={current_source}")
 
-    model = construction_api(config).build_from_config(config)
+    model = build_model(config)
     api.validate_model(model, metadata)
     check("model structure and state schema", True)
 

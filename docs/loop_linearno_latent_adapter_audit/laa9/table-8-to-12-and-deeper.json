@@ -1,0 +1,770 @@
+[
+  {
+    "task": "airfoil",
+    "comparison": "8->12",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 1762177,
+        "baseline_parameters": 1765889,
+        "parameter_ratio_percent": 99.78979426226677,
+        "v3_matrix_macs": 93392581984,
+        "baseline_matrix_macs": 90883573248,
+        "matrix_mac_ratio_percent": 102.76068451793098,
+        "matrix_flops_reduction_percent": -2.760684517930989
+      },
+      "efficient_v1": {
+        "v3_parameters": 1397281,
+        "baseline_parameters": 1765889,
+        "parameter_ratio_percent": 79.12620781940427,
+        "v3_matrix_macs": 80667249792,
+        "baseline_matrix_macs": 90883573248,
+        "matrix_mac_ratio_percent": 88.75888888289852,
+        "matrix_flops_reduction_percent": 11.241111117101488
+      }
+    }
+  },
+  {
+    "task": "darcy",
+    "comparison": "8->12",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 1762385,
+        "baseline_parameters": 1766145,
+        "parameter_ratio_percent": 99.78710694761754,
+        "v3_matrix_macs": 59980704736,
+        "baseline_matrix_macs": 58266099200,
+        "matrix_mac_ratio_percent": 102.94271550617206,
+        "matrix_flops_reduction_percent": -2.9427155061720667
+      },
+      "efficient_v1": {
+        "v3_parameters": 1397473,
+        "baseline_parameters": 1766145,
+        "parameter_ratio_percent": 79.12560973193028,
+        "v3_matrix_macs": 51787595392,
+        "baseline_matrix_macs": 58266099200,
+        "matrix_mac_ratio_percent": 88.88117808305245,
+        "matrix_flops_reduction_percent": 11.118821916947553
+      }
+    }
+  },
+  {
+    "task": "elasticity",
+    "comparison": "8->12",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 584737,
+        "baseline_parameters": 585217,
+        "parameter_ratio_percent": 99.91797914277952,
+        "v3_matrix_macs": 798824064,
+        "baseline_matrix_macs": 812809728,
+        "matrix_mac_ratio_percent": 98.27934342833062,
+        "matrix_flops_reduction_percent": 1.7206565716693767
+      },
+      "efficient_v1": {
+        "v3_parameters": 466961,
+        "baseline_parameters": 585217,
+        "parameter_ratio_percent": 79.79279480944675,
+        "v3_matrix_macs": 692574496,
+        "baseline_matrix_macs": 812809728,
+        "matrix_mac_ratio_percent": 85.20745657217331,
+        "matrix_flops_reduction_percent": 14.792543427826688
+      }
+    }
+  },
+  {
+    "task": "pipe",
+    "comparison": "8->12",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 1762177,
+        "baseline_parameters": 1765889,
+        "parameter_ratio_percent": 99.78979426226677,
+        "v3_matrix_macs": 137746032544,
+        "baseline_matrix_macs": 134184503808,
+        "matrix_mac_ratio_percent": 102.65420270964826,
+        "matrix_flops_reduction_percent": -2.6542027096482457
+      },
+      "efficient_v1": {
+        "v3_parameters": 1397281,
+        "baseline_parameters": 1765889,
+        "parameter_ratio_percent": 79.12620781940427,
+        "v3_matrix_macs": 119004753792,
+        "baseline_matrix_macs": 134184503808,
+        "matrix_mac_ratio_percent": 88.6874045920234,
+        "matrix_flops_reduction_percent": 11.3125954079766
+      }
+    }
+  },
+  {
+    "task": "plasticity",
+    "comparison": "8->12",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 1797788,
+        "baseline_parameters": 1799428,
+        "parameter_ratio_percent": 99.9088599265989,
+        "v3_matrix_macs": 52889194112,
+        "baseline_matrix_macs": 51330365440,
+        "matrix_mac_ratio_percent": 103.03685481028207,
+        "matrix_flops_reduction_percent": -3.0368548102820636
+      },
+      "efficient_v1": {
+        "v3_parameters": 1416260,
+        "baseline_parameters": 1799428,
+        "parameter_ratio_percent": 78.70612216771107,
+        "v3_matrix_macs": 45582031360,
+        "baseline_matrix_macs": 51330365440,
+        "matrix_mac_ratio_percent": 88.80129913214972,
+        "matrix_flops_reduction_percent": 11.198700867850276
+      }
+    }
+  },
+  {
+    "task": "ns",
+    "comparison": "8->12",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 3382705,
+        "baseline_parameters": 3377921,
+        "parameter_ratio_percent": 100.14162557383669,
+        "v3_matrix_macs": 30018895872,
+        "baseline_matrix_macs": 29991370752,
+        "matrix_mac_ratio_percent": 100.09177679882525,
+        "matrix_flops_reduction_percent": -0.09177679882526046
+      },
+      "efficient_v1": {
+        "v3_parameters": 2710081,
+        "baseline_parameters": 3377921,
+        "parameter_ratio_percent": 80.22925935804894,
+        "v3_matrix_macs": 25781862400,
+        "baseline_matrix_macs": 29991370752,
+        "matrix_mac_ratio_percent": 85.9642682329907,
+        "matrix_flops_reduction_percent": 14.035731767009295
+      }
+    }
+  },
+  {
+    "task": "airfrans",
+    "comparison": "8->12",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 3353828,
+        "baseline_parameters": 3358788,
+        "parameter_ratio_percent": 99.85232768486728,
+        "v3_matrix_macs": 116267917312,
+        "baseline_matrix_macs": 116539392000,
+        "matrix_mac_ratio_percent": 99.76705328272178,
+        "matrix_flops_reduction_percent": 0.23294671727822625
+      },
+      "efficient_v1": {
+        "v3_parameters": 2695748,
+        "baseline_parameters": 3358788,
+        "parameter_ratio_percent": 80.25954600290343,
+        "v3_matrix_macs": 99906715648,
+        "baseline_matrix_macs": 116539392000,
+        "matrix_mac_ratio_percent": 85.72785041473358,
+        "matrix_flops_reduction_percent": 14.272149585266414
+      }
+    }
+  },
+  {
+    "task": "car",
+    "comparison": "8->12",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 3848516,
+        "baseline_parameters": 3852420,
+        "parameter_ratio_percent": 99.8986611013337,
+        "v3_matrix_macs": 132807405376,
+        "baseline_matrix_macs": 133036839936,
+        "matrix_mac_ratio_percent": 99.8275405819092,
+        "matrix_flops_reduction_percent": 0.1724594180907868
+      },
+      "efficient_v1": {
+        "v3_parameters": 2967684,
+        "baseline_parameters": 3852420,
+        "parameter_ratio_percent": 77.03427975142897,
+        "v3_matrix_macs": 113934184192,
+        "baseline_matrix_macs": 133036839936,
+        "matrix_mac_ratio_percent": 85.64107825081405,
+        "matrix_flops_reduction_percent": 14.35892174918595
+      }
+    }
+  },
+  {
+    "task": "airfoil",
+    "comparison": "12->20",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 2631457,
+        "baseline_parameters": 2631745,
+        "parameter_ratio_percent": 99.98905669052283,
+        "v3_matrix_macs": 134412651648,
+        "baseline_matrix_macs": 135572276736,
+        "matrix_mac_ratio_percent": 99.14464438016473,
+        "matrix_flops_reduction_percent": 0.8553556198352741
+      },
+      "efficient_v1": {
+        "v3_parameters": 1984469,
+        "baseline_parameters": 2631745,
+        "parameter_ratio_percent": 75.40506394046535,
+        "v3_matrix_macs": 114778224544,
+        "baseline_matrix_macs": 135572276736,
+        "matrix_mac_ratio_percent": 84.66201741784401,
+        "matrix_flops_reduction_percent": 15.337982582155995
+      }
+    }
+  },
+  {
+    "task": "darcy",
+    "comparison": "12->20",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 2631649,
+        "baseline_parameters": 2632001,
+        "parameter_ratio_percent": 99.98662614489888,
+        "v3_matrix_macs": 86375284352,
+        "baseline_matrix_macs": 86912704000,
+        "matrix_mac_ratio_percent": 99.38165581869366,
+        "matrix_flops_reduction_percent": 0.6183441813063406
+      },
+      "efficient_v1": {
+        "v3_parameters": 1984645,
+        "baseline_parameters": 2632001,
+        "parameter_ratio_percent": 75.40441663965933,
+        "v3_matrix_macs": 73713368352,
+        "baseline_matrix_macs": 86912704000,
+        "matrix_mac_ratio_percent": 84.8131112708218,
+        "matrix_flops_reduction_percent": 15.186888729178182
+      }
+    }
+  },
+  {
+    "task": "elasticity",
+    "comparison": "12->20",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 863861,
+        "baseline_parameters": 860737,
+        "parameter_ratio_percent": 100.3629447787187,
+        "v3_matrix_macs": 1167972384,
+        "baseline_matrix_macs": 1202978304,
+        "matrix_mac_ratio_percent": 97.0900622327433,
+        "matrix_flops_reduction_percent": 2.9099377672566873
+      },
+      "efficient_v1": {
+        "v3_parameters": 681697,
+        "baseline_parameters": 860737,
+        "parameter_ratio_percent": 79.19922113258754,
+        "v3_matrix_macs": 1002947776,
+        "baseline_matrix_macs": 1202978304,
+        "matrix_mac_ratio_percent": 83.37205855376757,
+        "matrix_flops_reduction_percent": 16.62794144623243
+      }
+    }
+  },
+  {
+    "task": "pipe",
+    "comparison": "12->20",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 2631457,
+        "baseline_parameters": 2631745,
+        "parameter_ratio_percent": 99.98905669052283,
+        "v3_matrix_macs": 198176976768,
+        "baseline_matrix_macs": 200164870656,
+        "matrix_mac_ratio_percent": 99.00687174453485,
+        "matrix_flops_reduction_percent": 0.9931282554651477
+      },
+      "efficient_v1": {
+        "v3_parameters": 1984469,
+        "baseline_parameters": 2631745,
+        "parameter_ratio_percent": 75.40506394046535,
+        "v3_matrix_macs": 169287762784,
+        "baseline_matrix_macs": 200164870656,
+        "matrix_mac_ratio_percent": 84.57416240381916,
+        "matrix_flops_reduction_percent": 15.425837596180836
+      }
+    }
+  },
+  {
+    "task": "plasticity",
+    "comparison": "12->20",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 2662724,
+        "baseline_parameters": 2665220,
+        "parameter_ratio_percent": 99.90634919443798,
+        "v3_matrix_macs": 76000008704,
+        "baseline_matrix_macs": 76158744576,
+        "matrix_mac_ratio_percent": 99.79157236259114,
+        "matrix_flops_reduction_percent": 0.20842763740884784
+      },
+      "efficient_v1": {
+        "v3_parameters": 2000384,
+        "baseline_parameters": 2665220,
+        "parameter_ratio_percent": 75.05511740119015,
+        "v3_matrix_macs": 64701171072,
+        "baseline_matrix_macs": 76158744576,
+        "matrix_mac_ratio_percent": 84.95566915160174,
+        "matrix_flops_reduction_percent": 15.044330848398257
+      }
+    }
+  },
+  {
+    "task": "ns",
+    "comparison": "12->20",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 4961285,
+        "baseline_parameters": 4972289,
+        "parameter_ratio_percent": 99.77869347497702,
+        "v3_matrix_macs": 45834108928,
+        "baseline_matrix_macs": 44218449920,
+        "matrix_mac_ratio_percent": 103.65381195162438,
+        "matrix_flops_reduction_percent": -3.653811951624375
+      },
+      "efficient_v1": {
+        "v3_parameters": 4110357,
+        "baseline_parameters": 4972289,
+        "parameter_ratio_percent": 82.66528755669673,
+        "v3_matrix_macs": 39145373696,
+        "baseline_matrix_macs": 44218449920,
+        "matrix_mac_ratio_percent": 88.52724092957078,
+        "matrix_flops_reduction_percent": 11.472759070429216
+      }
+    }
+  },
+  {
+    "task": "airfrans",
+    "comparison": "12->20",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 4946384,
+        "baseline_parameters": 4953188,
+        "parameter_ratio_percent": 99.86263392384863,
+        "v3_matrix_macs": 177733529600,
+        "baseline_matrix_macs": 172113920000,
+        "matrix_mac_ratio_percent": 103.26505235602095,
+        "matrix_flops_reduction_percent": -3.2650523560209477
+      },
+      "efficient_v1": {
+        "v3_parameters": 4096656,
+        "baseline_parameters": 4953188,
+        "parameter_ratio_percent": 82.7074603265614,
+        "v3_matrix_macs": 151812820992,
+        "baseline_matrix_macs": 172113920000,
+        "matrix_mac_ratio_percent": 88.20484769157544,
+        "matrix_flops_reduction_percent": 11.795152308424562
+      }
+    }
+  },
+  {
+    "task": "car",
+    "comparison": "12->20",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 5711248,
+        "baseline_parameters": 5710020,
+        "parameter_ratio_percent": 100.02150605426951,
+        "v3_matrix_macs": 203710400224,
+        "baseline_matrix_macs": 197371761664,
+        "matrix_mac_ratio_percent": 103.211522512927,
+        "matrix_flops_reduction_percent": -3.211522512927001
+      },
+      "efficient_v1": {
+        "v3_parameters": 4481680,
+        "baseline_parameters": 5710020,
+        "parameter_ratio_percent": 78.48799128549462,
+        "v3_matrix_macs": 173730411936,
+        "baseline_matrix_macs": 197371761664,
+        "matrix_mac_ratio_percent": 88.0219188759908,
+        "matrix_flops_reduction_percent": 11.978081124009199
+      }
+    }
+  },
+  {
+    "task": "airfoil",
+    "comparison": "16->28",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 3488897,
+        "baseline_parameters": 3497601,
+        "parameter_ratio_percent": 99.75114371250466,
+        "v3_matrix_macs": 187966164096,
+        "baseline_matrix_macs": 180260980224,
+        "matrix_mac_ratio_percent": 104.27446020898434,
+        "matrix_flops_reduction_percent": -4.274460208984343
+      },
+      "efficient_v1": {
+        "v3_parameters": 2762457,
+        "baseline_parameters": 3497601,
+        "parameter_ratio_percent": 78.9814790194765,
+        "v3_matrix_macs": 160612307616,
+        "baseline_matrix_macs": 180260980224,
+        "matrix_mac_ratio_percent": 89.0998747573747,
+        "matrix_flops_reduction_percent": 10.900125242625291
+      }
+    }
+  },
+  {
+    "task": "darcy",
+    "comparison": "16->28",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 3489089,
+        "baseline_parameters": 3497857,
+        "parameter_ratio_percent": 99.74933223399356,
+        "v3_matrix_macs": 120771083904,
+        "baseline_matrix_macs": 115559308800,
+        "matrix_mac_ratio_percent": 104.51004350763303,
+        "matrix_flops_reduction_percent": -4.510043507633021
+      },
+      "efficient_v1": {
+        "v3_parameters": 2762633,
+        "baseline_parameters": 3497857,
+        "parameter_ratio_percent": 78.98073020137758,
+        "v3_matrix_macs": 103160439328,
+        "baseline_matrix_macs": 115559308800,
+        "matrix_mac_ratio_percent": 89.27055760305828,
+        "matrix_flops_reduction_percent": 10.729442396941714
+      }
+    }
+  },
+  {
+    "task": "elasticity",
+    "comparison": "16->28",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 1136153,
+        "baseline_parameters": 1136257,
+        "parameter_ratio_percent": 99.99084714109571,
+        "v3_matrix_macs": 1627510560,
+        "baseline_matrix_macs": 1593146880,
+        "matrix_mac_ratio_percent": 102.15696872845773,
+        "matrix_flops_reduction_percent": -2.15696872845772
+      },
+      "efficient_v1": {
+        "v3_parameters": 898609,
+        "baseline_parameters": 1136257,
+        "parameter_ratio_percent": 79.0850133376516,
+        "v3_matrix_macs": 1399007424,
+        "baseline_matrix_macs": 1593146880,
+        "matrix_mac_ratio_percent": 87.81408930732111,
+        "matrix_flops_reduction_percent": 12.185910692678881
+      }
+    }
+  },
+  {
+    "task": "pipe",
+    "comparison": "16->28",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 3488897,
+        "baseline_parameters": 3497601,
+        "parameter_ratio_percent": 99.75114371250466,
+        "v3_matrix_macs": 277157310336,
+        "baseline_matrix_macs": 266145237504,
+        "matrix_mac_ratio_percent": 104.13761784177501,
+        "matrix_flops_reduction_percent": -4.137617841775021
+      },
+      "efficient_v1": {
+        "v3_parameters": 2762457,
+        "baseline_parameters": 3497601,
+        "parameter_ratio_percent": 78.9814790194765,
+        "v3_matrix_macs": 236871290976,
+        "baseline_matrix_macs": 266145237504,
+        "matrix_mac_ratio_percent": 89.00076259017784,
+        "matrix_flops_reduction_percent": 10.999237409822161
+      }
+    }
+  },
+  {
+    "task": "plasticity",
+    "comparison": "16->28",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 3526276,
+        "baseline_parameters": 3531012,
+        "parameter_ratio_percent": 99.86587414599553,
+        "v3_matrix_macs": 106027915776,
+        "baseline_matrix_macs": 100987123712,
+        "matrix_mac_ratio_percent": 104.99151959053273,
+        "matrix_flops_reduction_percent": -4.9915195905327225
+      },
+      "efficient_v1": {
+        "v3_parameters": 2778308,
+        "baseline_parameters": 3531012,
+        "parameter_ratio_percent": 78.6830517709937,
+        "v3_matrix_macs": 90432471936,
+        "baseline_matrix_macs": 100987123712,
+        "matrix_mac_ratio_percent": 89.5485172881047,
+        "matrix_flops_reduction_percent": 10.451482711895299
+      }
+    }
+  },
+  {
+    "task": "ns",
+    "comparison": "16->28",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 6575905,
+        "baseline_parameters": 6566657,
+        "parameter_ratio_percent": 100.14083269462681,
+        "v3_matrix_macs": 59095646208,
+        "baseline_matrix_macs": 58445529088,
+        "matrix_mac_ratio_percent": 101.11234705228031,
+        "matrix_flops_reduction_percent": -1.1123470522803158
+      },
+      "efficient_v1": {
+        "v3_parameters": 5311569,
+        "baseline_parameters": 6566657,
+        "parameter_ratio_percent": 80.88695663562144,
+        "v3_matrix_macs": 50129141760,
+        "baseline_matrix_macs": 58445529088,
+        "matrix_mac_ratio_percent": 85.7707040080376,
+        "matrix_flops_reduction_percent": 14.229295991962399
+      }
+    }
+  },
+  {
+    "task": "airfrans",
+    "comparison": "16->28",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 6561636,
+        "baseline_parameters": 6547588,
+        "parameter_ratio_percent": 100.21455229009523,
+        "v3_matrix_macs": 229143969792,
+        "baseline_matrix_macs": 227688448000,
+        "matrix_mac_ratio_percent": 100.63926027200115,
+        "matrix_flops_reduction_percent": -0.6392602720011409
+      },
+      "efficient_v1": {
+        "v3_parameters": 5298500,
+        "baseline_parameters": 6547588,
+        "parameter_ratio_percent": 80.92292917636235,
+        "v3_matrix_macs": 194451628032,
+        "baseline_matrix_macs": 227688448000,
+        "matrix_mac_ratio_percent": 85.40250053968482,
+        "matrix_flops_reduction_percent": 14.597499460315177
+      }
+    }
+  },
+  {
+    "task": "car",
+    "comparison": "16->28",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 7573604,
+        "baseline_parameters": 7567620,
+        "parameter_ratio_percent": 100.07907373784624,
+        "v3_matrix_macs": 262934253312,
+        "baseline_matrix_macs": 261706683392,
+        "matrix_mac_ratio_percent": 100.46906326735312,
+        "matrix_flops_reduction_percent": -0.4690632673531203
+      },
+      "efficient_v1": {
+        "v3_parameters": 5774532,
+        "baseline_parameters": 7567620,
+        "parameter_ratio_percent": 76.3057870241899,
+        "v3_matrix_macs": 222771806400,
+        "baseline_matrix_macs": 261706683392,
+        "matrix_mac_ratio_percent": 85.12270436224168,
+        "matrix_flops_reduction_percent": 14.877295637758326
+      }
+    }
+  },
+  {
+    "task": "airfoil",
+    "comparison": "32->60",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 6944905,
+        "baseline_parameters": 6961025,
+        "parameter_ratio_percent": 99.76842490868802,
+        "v3_matrix_macs": 344493637280,
+        "baseline_matrix_macs": 359015794176,
+        "matrix_mac_ratio_percent": 95.95500890724578,
+        "matrix_flops_reduction_percent": 4.044991092754213
+      },
+      "efficient_v1": {
+        "v3_parameters": 5075185,
+        "baseline_parameters": 6961025,
+        "parameter_ratio_percent": 72.90858745658865,
+        "v3_matrix_macs": 290370592192,
+        "baseline_matrix_macs": 359015794176,
+        "matrix_mac_ratio_percent": 80.87961502040545,
+        "matrix_flops_reduction_percent": 19.12038497959455
+      }
+    }
+  },
+  {
+    "task": "darcy",
+    "comparison": "32->60",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 6945081,
+        "baseline_parameters": 6961281,
+        "parameter_ratio_percent": 99.76728421105254,
+        "v3_matrix_macs": 221493720608,
+        "baseline_matrix_macs": 230145728000,
+        "matrix_mac_ratio_percent": 96.24063958641023,
+        "matrix_flops_reduction_percent": 3.759360413589774
+      },
+      "efficient_v1": {
+        "v3_parameters": 5075345,
+        "baseline_parameters": 6961281,
+        "parameter_ratio_percent": 72.90820468244279,
+        "v3_matrix_macs": 186561200320,
+        "baseline_matrix_macs": 230145728000,
+        "matrix_mac_ratio_percent": 81.06220434384947,
+        "matrix_flops_reduction_percent": 18.937795656150524
+      }
+    }
+  },
+  {
+    "task": "elasticity",
+    "comparison": "32->60",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 2219633,
+        "baseline_parameters": 2238337,
+        "parameter_ratio_percent": 99.16437962648162,
+        "v3_matrix_macs": 3040917696,
+        "baseline_matrix_macs": 3153821184,
+        "matrix_mac_ratio_percent": 96.42010496432762,
+        "matrix_flops_reduction_percent": 3.579895035672387
+      },
+      "efficient_v1": {
+        "v3_parameters": 1794873,
+        "baseline_parameters": 2238337,
+        "parameter_ratio_percent": 80.18779120391612,
+        "v3_matrix_macs": 2591770464,
+        "baseline_matrix_macs": 3153821184,
+        "matrix_mac_ratio_percent": 82.1787385140476,
+        "matrix_flops_reduction_percent": 17.821261485952398
+      }
+    }
+  },
+  {
+    "task": "pipe",
+    "comparison": "32->60",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 6944905,
+        "baseline_parameters": 6961025,
+        "parameter_ratio_percent": 99.76842490868802,
+        "v3_matrix_macs": 507750401120,
+        "baseline_matrix_macs": 530066704896,
+        "matrix_mac_ratio_percent": 95.78990652122198,
+        "matrix_flops_reduction_percent": 4.21009347877801
+      },
+      "efficient_v1": {
+        "v3_parameters": 5075185,
+        "baseline_parameters": 6961025,
+        "parameter_ratio_percent": 72.90858745658865,
+        "v3_matrix_macs": 428156372032,
+        "baseline_matrix_macs": 530066704896,
+        "matrix_mac_ratio_percent": 80.7740550533173,
+        "matrix_flops_reduction_percent": 19.225944946682695
+      }
+    }
+  },
+  {
+    "task": "plasticity",
+    "comparison": "32->60",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 7000148,
+        "baseline_parameters": 6994180,
+        "parameter_ratio_percent": 100.08532808706667,
+        "v3_matrix_macs": 194488040320,
+        "baseline_matrix_macs": 200300640256,
+        "matrix_mac_ratio_percent": 97.09806222857249,
+        "matrix_flops_reduction_percent": 2.9019377714275096
+      },
+      "efficient_v1": {
+        "v3_parameters": 5088036,
+        "baseline_parameters": 6994180,
+        "parameter_ratio_percent": 72.74671226648442,
+        "v3_matrix_macs": 163352545024,
+        "baseline_matrix_macs": 200300640256,
+        "matrix_mac_ratio_percent": 81.55368091446067,
+        "matrix_flops_reduction_percent": 18.44631908553933
+      }
+    }
+  },
+  {
+    "task": "ns",
+    "comparison": "32->60",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 12953833,
+        "baseline_parameters": 12944129,
+        "parameter_ratio_percent": 100.07496835051629,
+        "v3_matrix_macs": 115988365312,
+        "baseline_matrix_macs": 115353845760,
+        "matrix_mac_ratio_percent": 100.55006363057903,
+        "matrix_flops_reduction_percent": -0.5500636305790341
+      },
+      "efficient_v1": {
+        "v3_parameters": 10476313,
+        "baseline_parameters": 12944129,
+        "parameter_ratio_percent": 80.93486243840741,
+        "v3_matrix_macs": 97700872192,
+        "baseline_matrix_macs": 115353845760,
+        "matrix_mac_ratio_percent": 84.69667530224525,
+        "matrix_flops_reduction_percent": 15.30332469775475
+      }
+    }
+  },
+  {
+    "task": "airfrans",
+    "comparison": "32->60",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 12940292,
+        "baseline_parameters": 12925188,
+        "parameter_ratio_percent": 100.11685710103404,
+        "v3_matrix_macs": 449942425600,
+        "baseline_matrix_macs": 449986560000,
+        "matrix_mac_ratio_percent": 99.99019206262516,
+        "matrix_flops_reduction_percent": 0.009807937374839426
+      },
+      "efficient_v1": {
+        "v3_parameters": 10463972,
+        "baseline_parameters": 12925188,
+        "parameter_ratio_percent": 80.95798683934036,
+        "v3_matrix_macs": 379140665344,
+        "baseline_matrix_macs": 449986560000,
+        "matrix_mac_ratio_percent": 84.25599763335154,
+        "matrix_flops_reduction_percent": 15.744002366648457
+      }
+    }
+  },
+  {
+    "task": "car",
+    "comparison": "32->60",
+    "entries": {
+      "matched_v1": {
+        "v3_parameters": 14998148,
+        "baseline_parameters": 14998020,
+        "parameter_ratio_percent": 100.0008534459882,
+        "v3_matrix_macs": 517242032160,
+        "baseline_matrix_macs": 519046370304,
+        "matrix_mac_ratio_percent": 99.65237438363296,
+        "matrix_flops_reduction_percent": 0.34762561636703104
+      },
+      "efficient_v1": {
+        "v3_parameters": 11351268,
+        "baseline_parameters": 14998020,
+        "parameter_ratio_percent": 75.68511043457737,
+        "v3_matrix_macs": 435155560672,
+        "baseline_matrix_macs": 519046370304,
+        "matrix_mac_ratio_percent": 83.83751155356967,
+        "matrix_flops_reduction_percent": 16.162488446430334
+      }
+    }
+  }
+]

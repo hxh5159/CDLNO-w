@@ -1,0 +1,60 @@
+{
+  "stage": "LAA5",
+  "status": "PASS",
+  "scope": "V3 Standard, AirfRANS and ShapeNet-Car synthetic wrappers plus V3 checkpoint/output adapters; production task selection branches remain disconnected",
+  "source_head": "c02e671506f706910e0a1d58f03c310abf188345",
+  "environment": {
+    "python": "3.13.9",
+    "torch": "2.13.0+cu130",
+    "cuda_build": "13.0",
+    "cuda_available": true,
+    "cuda_devices": 1,
+    "numpy": "2.2.6",
+    "torch_geometric": "2.3.1",
+    "timm": "1.0.28",
+    "scope": "local synthetic only"
+  },
+  "tests": {
+    "laa5_new": {"tests": 15, "passed": 15, "failed": 0, "errors": 0, "skipped": 0, "seconds": 26.47, "log": "new-final-after-matrix.log"},
+    "laa5_full_formal_d12_matrix": {"rows": 144, "passed": 144, "failed": 0, "errors": 0, "skipped": 0, "seconds": 12.16, "log": "full-matrix.log"},
+    "legacy_wrapper_checkpoint": {"tests": 33, "passed": 33, "failed": 0, "errors": 0, "skipped": 0, "seconds": 29.24, "log": "wrapper-checkpoint-regression.log"},
+    "laa1_laa4_regression": {"tests": 68, "passed": 68, "failed": 0, "errors": 0, "skipped": 0, "seconds": 23.96, "log": "previous-final.log"},
+    "laa4_new_rerun": {"tests": 14, "passed": 14, "failed": 0, "errors": 0, "skipped": 0, "seconds": 42.27, "log": "laa4-final.log"},
+    "old_targeted_regression": {"tests": 72, "passed": 72, "failed": 0, "errors": 0, "skipped": 0, "seconds": 40.00, "log": "regression-final.log"},
+    "python_ast_compile": {"files": 50, "passed": 50},
+    "shell_syntax": {"files": 1, "passed": 1}
+  },
+  "coverage": {
+    "wrappers": ["standard_irregular", "standard_structured", "standard_temporal", "airfrans", "shapenet_car"],
+    "attention_variants": 6,
+    "cost_profiles": ["matched_v1", "efficient_v1"],
+    "formal_depth": "D12",
+    "residual_modes": ["sr_1_over_r", "rb_attnres", "lb_attnres_1_over_r"],
+    "ablations": ["off_off", "off_on", "on_off", "on_on"],
+    "synthetic_training_step": ["forward", "backward", "AdamW"],
+    "fresh_process_checkpoint": ["strict_eval", "strict_resume", "v1_replay", "v2_replay"]
+  },
+  "checkpoint": {
+    "format": "linearno-loop-epoch-pair-v3",
+    "metadata_first": true,
+    "strict_state_dict": true,
+    "validated_before_weights": ["config", "model schema", "state keys/shapes", "optimizer ownership", "scheduler", "scaler", "normalizer", "sampler", "RNG/generator contract", "ensemble checksums"],
+    "legacy_formats_unchanged": ["linearno-loop-epoch-pair-v1", "linearno-loop-epoch-pair-v2"]
+  },
+  "frozen_boundary": {
+    "production_parser_factory_entry_changes": 0,
+    "real_data_training": "NOT RUN",
+    "real_epoch_or_accuracy": "NOT RUN",
+    "remote_python310_torch211_cu128": "NOT RUN",
+    "latency_memory_epoch_efficiency": "NOT RUN",
+    "full_task_resume_integration": "NOT RUN"
+  },
+  "inherited_full_regression": {
+    "source": "../laa0/regression-summary.json",
+    "passed": 644,
+    "failed": 9,
+    "skipped": 36,
+    "new_failures_in_laa5": 0,
+    "note": "The nine failures and 36 skips are historical/environment records and were not rewritten as green."
+  }
+}

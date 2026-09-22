@@ -1,0 +1,8 @@
+{
+  "compileall": {"status": "passed", "command": "python -m compileall -q tools/linearno_loop_accounting.py tools/linearno_loop_laa9.py tests/loop_linearno_latent_adapter/test_laa9_accounting.py"},
+  "json_validation": {"status": "passed", "files": ["summary.json", "shape-trace.json", "performance-smoke.json", "results.json"]},
+  "diff_check": {"status": "passed", "command": "git diff --check -- <LAA9 files>"},
+  "new_tests": {"status": "passed", "result": "4 passed in 2.80s"},
+  "laa8_regression": {"status": "passed", "result": "9 passed in 11.57s"},
+  "combined_collection_attempt": {"status": "not_authoritative", "result": "4 local-support import errors; isolated PYTHONPATH rerun used"}
+}

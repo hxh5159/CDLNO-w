@@ -83,8 +83,30 @@ def analytic_v2(config,*,B=1,N=None):
         router_rms_square_elements=B*N*d*active,matrix_flops_are_total_flops=False)
 
 
+def analytic_v3(config, *, B=None, N=None):
+    """Dispatch to the independent, tensor-free V3 cost contract.
+
+    V3 keeps its own parameter partitions and matrix/non-matrix accounting;
+    this adapter deliberately does not reuse the V1/V2 algebra below.
+    ``B`` and ``N`` are passed through only when explicitly requested so the
+    frozen representative shapes remain the default.
+    """
+    from linearno_loop.v3.costs import analytic_cost
+    kwargs = {}
+    if B is not None:
+        kwargs['batch'] = B
+    if N is not None:
+        kwargs['points'] = N
+    return analytic_cost(config, **kwargs)
+
+
 def analytic(config,*,B=1,N=None):
     """Only integer algebra from schema; no model construction/module introspection."""
+    if config.get('architecture_extension')=='loop_linearno_latent_adapter_v3':
+        # V3's public default is its frozen representative batch/point shape;
+        # explicit B/N still select a synthetic shape.  V1/V2 keep their
+        # historical B=1 default below.
+        return analytic_v3(config, B=None if B == 1 and N is None else B, N=N)
     if config.get('architecture_extension')=='loop_linearno_ffn_v2':
         return analytic_v2(config,B=B,N=N)
     s=config['loop_spec'];m=config['profile_spec']['values']['model'];task=s['task']
@@ -128,6 +150,27 @@ def analytic(config,*,B=1,N=None):
 
 
 def measured_parameters(model):
+    if getattr(model, 'architecture_extension', None) == 'loop_linearno_latent_adapter_v3':
+        parts=Counter({k:0 for k in ('stem','time','prefix','shared_core','suffix','head','latent','adapter','router')})
+        for name,p in model.named_parameters():
+            if name.startswith(('loop.rb_', 'loop.lb_')):
+                part='router'
+            elif '.latent_processor.' in name:
+                part='latent'
+            elif '.adapter.' in name:
+                part='adapter'
+            elif name.startswith('loop.prefix.'):
+                part='prefix'
+            elif name.startswith('loop.core.'):
+                part='shared_core'
+            elif name.startswith('loop.suffix.'):
+                part='head' if ('.ln_3.' in name or '.mlp2.' in name) else 'suffix'
+            elif name.startswith('time_fc.'):
+                part='time'
+            else:
+                part='stem'
+            parts[part]+=p.numel()
+        return dict(parts)
     if hasattr(model.loop,'core_operators'):
         parts=Counter({k:0 for k in ('stem','prefix','shared_operators',
             'round_specific_point_ffns','suffix_body','head','routers','latent_ffns')})

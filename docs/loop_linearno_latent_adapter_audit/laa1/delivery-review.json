@@ -1,0 +1,55 @@
+{
+  "status": "PASS",
+  "items": [
+    {
+      "point": "explicit V3 selector and old import/hash defaults",
+      "status": "PASS",
+      "evidence": [
+        "test_laa1_config",
+        "test_laa1_isolation",
+        "legacy-config-baseline.json",
+        "end-freeze.json"
+      ]
+    },
+    {
+      "point": "64 H/Dz entries; grid and effective width consistency",
+      "status": "PASS",
+      "evidence": [
+        "test_laa1_costs",
+        "preview-verification.json"
+      ]
+    },
+    {
+      "point": "full-core ownership, inactive features, paired seed contract",
+      "status": "PASS",
+      "evidence": [
+        "config.loop_spec",
+        "test_laa1_isolation",
+        "preview-verification.json"
+      ],
+      "limit": "actual tensors not implemented"
+    },
+    {
+      "point": "strict metadata, saved facts, checkpoint version, no model/tensor loading",
+      "status": "PASS",
+      "evidence": [
+        "test_laa1_schema",
+        "contract-gap-green.log"
+      ],
+      "limit": "no backend training archive yet"
+    },
+    {
+      "point": "independent costs, scope, freeze and failure transparency",
+      "status": "PASS",
+      "evidence": [
+        "oracle.py",
+        "cost-scope-green.log",
+        "preview-verification.json",
+        "end-freeze.json",
+        "report.md"
+      ]
+    }
+  ],
+  "unresolved_semantic_conflicts": [],
+  "next_stage_executed": false
+}

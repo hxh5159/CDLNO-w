@@ -7,14 +7,30 @@ from linearno_loop.v2.contracts import ARCHITECTURE_EXTENSION as V2_EXTENSION, O
 from linearno_loop.v2 import config as v2_config
 from linearno_loop.v2 import schema as v2_schema
 
-OPTIONS = V1_OPTIONS | V2_OPTIONS
+V3_EXTENSION = "loop_linearno_latent_adapter_v3"
+# Keep the legacy parser importable without the optional V3 package. These are
+# wire field names only; the real schema is imported inside V3-selected calls.
+V3_OPTIONS = {'architecture', 'cost_profile', 'topology_preset', 'executed_depth',
+              'prefix_blocks', 'recurrent_core_blocks', 'loop_repeats', 'suffix_blocks',
+              'residual_mode', 'hidden_width', 'latent_width', 'actual_M', 'heads',
+              'latent_enabled', 'adapter_mode', 'adapter_rank', 'adapter_alpha'}
+OPTIONS = V1_OPTIONS | V2_OPTIONS | V3_OPTIONS
 
 
 def is_v2(value):
     return value.get("architecture_extension") == V2_EXTENSION or value.get("config_version") == 2
 
 
+def is_v3(value):
+    return value.get("architecture_extension") == V3_EXTENSION or value.get("config_version") == 3
+
+
 def api(value):
+    if is_v3(value):
+        from linearno_loop.v3 import schema as v3_schema
+        if value.get("architecture_extension") != V3_EXTENSION or value.get("config_version") != 3:
+            raise ValueError("inconsistent v3 architecture/config version")
+        return v3_schema
     if is_v2(value):
         if value.get("architecture_extension") != V2_EXTENSION or value.get("config_version") != 2:
             raise ValueError("inconsistent v2 architecture/config version")
@@ -25,11 +41,18 @@ def api(value):
 
 
 def resolve_config(task, profile, *, options, profile_overrides):
+    if options.get("architecture") == "operator_latent_adapter_v3":
+        from linearno_loop.v3 import config as v3_config
+        return v3_config.resolve_config(task, profile, options=options,
+                                        profile_overrides=profile_overrides)
     resolver = v2_config if "core_ffn_mode" in options else v1_config
     return resolver.resolve_config(task, profile, options=options, profile_overrides=profile_overrides)
 
 
 def run_directory_id(config):
+    if is_v3(config):
+        from linearno_loop.v3 import config as v3_config
+        return v3_config.run_directory_id(config)
     return (v2_config if is_v2(config) else v1_config).run_directory_id(config)
 
 
@@ -47,7 +70,10 @@ def restore_config(metadata, **kwargs):
 
 
 def make_metadata(config, **sections):
-    schema = v2_schema if is_v2(config) else v1_schema
+    v3_schema = None
+    if is_v3(config):
+        from linearno_loop.v3 import schema as v3_schema
+    schema = v3_schema if is_v3(config) else v2_schema if is_v2(config) else v1_schema
     return schema.make_metadata(config, **sections)
 
 
@@ -56,5 +82,8 @@ def write_metadata(path, metadata):
 
 
 def validate_constructor(model_spec, constructor, *, version):
-    return (v2_schema if version == 2 else v1_schema).validate_constructor(model_spec, constructor)
-
+    if version == 3:
+        from linearno_loop.v3 import schema as schema
+    else:
+        schema = v2_schema if version == 2 else v1_schema
+    return schema.validate_constructor(model_spec, constructor)

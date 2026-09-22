@@ -10,6 +10,11 @@ def _v2(spec):
     return spec.get('config_version') == 2 or 'core_ffn_mode' in spec
 
 
+def _v3(spec):
+    return (spec.get('config_version') == 3 or spec.get('schema_version') == 3 or
+            spec.get('architecture_extension') == 'loop_linearno_latent_adapter_v3')
+
+
 def schedule(spec):
     P,C,R,S=(spec[k] for k in ('prefix_blocks','recurrent_core_blocks','loop_repeats','suffix_blocks'))
     mode=spec['residual_mode'];events=[]
@@ -20,7 +25,15 @@ def schedule(spec):
         for c in range(C):
             for j,branch in enumerate(('operator','mlp')):
                 if mode=='rb_attnres':events.append(f'loop.rb_receivers.{r}.{2*c+j}')
-                if _v2(spec):
+                if _v3(spec):
+                    events.append(f'loop.core.{c}.operator' if branch=='operator'
+                                  else f'loop.core.{c}.mlp')
+                    if branch=='operator' and r == 1 and spec.get('adapter_mode','none') != 'none':
+                        events.append(f'loop.core.{c}.adapter')
+                    if branch=='operator' and spec.get('latent_enabled',
+                                                       spec.get('latent_ffn',{}).get('enabled',False)):
+                        events.append(f'loop.core.{c}.latent_ffn')
+                elif _v2(spec):
                     events.append(f'loop.core_operators.{c}.operator' if branch=='operator'
                                   else f'loop.core_ffns.{c}.{r}.mlp')
                     if branch=='operator' and spec['core_ffn_mode']=='round_specific_latent':
@@ -39,11 +52,29 @@ def is_router(name):
 
 
 def is_latent(name):
-    return name.startswith('loop.latent_ffns.')
+    return name.startswith('loop.latent_ffns.') or '.latent_processor.' in name
+
+
+def is_adapter(name):
+    return '.adapter.' in name
 
 
 def parameter_parts(model):
     """Measured ownership partitions; v1 names and totals remain unchanged."""
+    if hasattr(model.loop,'core') and getattr(model, 'architecture_extension', None) == 'loop_linearno_latent_adapter_v3':
+        names=('stem','prefix','shared_core','suffix_body','head','routers','latent_ffns','adapters')
+        result={name:0 for name in names}
+        for name,parameter in model.named_parameters():
+            if is_router(name):part='routers'
+            elif is_latent(name):part='latent_ffns'
+            elif is_adapter(name):part='adapters'
+            elif '.ln_3.' in name or '.mlp2.' in name:part='head'
+            elif name.startswith('loop.prefix.'):part='prefix'
+            elif name.startswith('loop.core.'):part='shared_core'
+            elif name.startswith('loop.suffix.'):part='suffix_body'
+            else:part='stem'
+            result[part]+=parameter.numel()
+        return result
     if not hasattr(model.loop,'core_operators'):
         return None
     names=('stem','prefix','shared_operators','round_specific_point_ffns',
@@ -80,14 +111,24 @@ def observe(args,model,member=0):
     from cdlno.linearno_loop.attnres import PointDepthAttnRes
     from cdlno.linearno_loop.industrial_state import member_seed
     cfg=args._linearno_loop_config;spec=cfg['loop_spec'];path=Path(args.linearno_run_dir)/MANIFEST
-    version=2 if _v2(spec) else 1
+    version=3 if _v3(spec) else 2 if _v2(spec) else 1
+    resolved_rank=spec.get('actual_M',spec.get('resolved_rank'))
     base=dict(schema_version=version,family='linearno_loop',config_hash=cfg['config_hash'],task=spec['task'],
         profile=spec['profile'],topology=spec['topology_preset'],residual_mode=spec['residual_mode'],
-        unique_depth=spec['unique_depth'],executed_depth=spec['executed_depth'],resolved_rank=spec['resolved_rank'],
+        unique_depth=spec['unique_depth'],executed_depth=spec['executed_depth'],resolved_rank=resolved_rank,
         expected_call_schedule=schedule(spec),fair_comparison=cfg['fair_comparison'],
         selection_policy='predeclared paired seeds; final checkpoint; no test-based seed/checkpoint selection',
         launcher_sources={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in Path(__file__).parent.glob('*.py')})
-    if version==2:
+    if version==3:
+        base.update(architecture_extension=cfg['architecture_extension'],
+                    ownership='shared_complete_core_block_across_rounds',
+                    state_partition=spec['state_partition'],
+                    latent_enabled=spec['latent_enabled'],
+                    adapter_mode=spec['adapter_mode'],
+                    adapter_rank=spec['adapter_rank'],
+                    adapter_alpha=spec['adapter_alpha'],
+                    actual_M=spec['actual_M'])
+    elif version==2:
         base.update(architecture_extension=cfg['architecture_extension'],core_ffn_mode=spec['core_ffn_mode'],
                     state_partition=spec['state_partition'])
     key=f'member_{member:03d}'
@@ -106,7 +147,7 @@ def observe(args,model,member=0):
     if args.eval:raise ValueError('incomplete ensemble initialization manifest')
     if not path.parent.is_dir():raise ValueError('native recorder must reserve run before initialization recording')
     parameters=dict(model.named_parameters());state=model.state_dict()
-    backbone={k:v for k,v in state.items() if not is_router(k) and not is_latent(k)}
+    backbone={k:v for k,v in state.items() if not is_router(k) and not is_latent(k) and not is_adapter(k)}
     total=sum(p.numel() for p in parameters.values());routers=sum(p.numel() for k,p in parameters.items() if is_router(k))
     if routers!=spec['attnres']['router_parameter_count']:raise ValueError('measured router count differs from schema')
     parts=parameter_parts(model);latent=sum(p.numel() for k,p in parameters.items() if is_latent(k))
@@ -117,7 +158,14 @@ def observe(args,model,member=0):
         parameters=total,backbone_parameters=total-routers-latent if version==2 else total-routers,
         router_parameters=routers,
         actual_call_schedule=None,observation='pending_first_successful_forward')
-    if version==2:
+    if version==3:
+        adapters=sum(p.numel() for k,p in parameters.items() if is_adapter(k))
+        row.update(backbone_parameters=total-routers-latent-adapters,
+                   latent_parameters=latent,adapter_parameters=adapters,
+                   parameter_parts=parts,operator_instances=spec['recurrent_core_blocks'],
+                   point_ffn_instances=spec['recurrent_core_blocks'],
+                   ownership='shared_complete_core_block_across_rounds')
+    elif version==2:
         row.update(latent_parameters=latent,parameter_parts=parts,
                    point_ffn_instances=spec['point_ffn_instance_count'],
                    operator_instances=spec['operator_instance_count'])
@@ -146,7 +194,14 @@ def observe(args,model,member=0):
             if block.last_layer:
                 handles.append(block.ln_3.register_forward_pre_hook(event(prefix+'.final_norm')))
                 handles.append(block.mlp2.register_forward_pre_hook(event(prefix+'.head')))
-    if version==2:
+    if version==3:
+        for i,physical in enumerate(model.loop.core):
+            attention=physical.block.Attn
+            if hasattr(attention,'latent_processor'):
+                handles.append(attention.latent_processor.register_forward_pre_hook(event(f'loop.core.{i}.latent_ffn')))
+            if hasattr(attention,'adapter'):
+                handles.append(attention.adapter.register_forward_pre_hook(event(f'loop.core.{i}.adapter')))
+    elif version==2:
         for i,operator in enumerate(model.loop.core_operators):
             handles.append(operator.register_forward_pre_hook(event(f'loop.core_operators.{i}.operator')))
         for i,row in enumerate(model.loop.core_ffns):
