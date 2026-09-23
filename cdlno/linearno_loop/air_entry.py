@@ -53,6 +53,12 @@ class AirRun(pure.AirRun):
                   self.generators, sampler)
 
     def _metadata(self,state,model=None):
+        if self.args._linearno_loop_config.get('architecture') == 'resmlp_dual_temp_v4':
+            if model is None:raise ValueError('V4 Air metadata requires constructed model')
+            from cdlno.linearno_loop.v4.checkpoint import measure_parameters
+            return make_metadata(self.args._linearno_loop_config,data_spec=data_contract(self.args._linearno_loop_config,self.data),
+                normalizer_spec=self.normalizers,provenance_spec=self.provenance,resume_state=state,
+                ensemble_manifest=[],parameter_measurement=measure_parameters(model,self.args._linearno_loop_config))
         if self.args._linearno_loop_config.get('config_version') != 3:
             return make_metadata(self.args._linearno_loop_config,
                 data_spec=data_contract(self.args._linearno_loop_config,self.data),

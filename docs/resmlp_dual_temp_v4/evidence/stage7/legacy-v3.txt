@@ -1,0 +1,43 @@
+........................................................................ [ 61%]
+.................................Fs..........                            [100%]
+=================================== FAILURES ===================================
+_ LAA7IndustrialTests.test_parser_matrix_two_profiles_three_residuals_four_ablations _
+
+self = <loop_linearno_latent_adapter.test_laa7_industrial_entry.LAA7IndustrialTests testMethod=test_parser_matrix_two_profiles_three_residuals_four_ablations>
+
+    def test_parser_matrix_two_profiles_three_residuals_four_ablations(self):
+        rows = []
+        for task in ("airfrans", "car"):
+            for cost in ("matched_v1", "efficient_v1"):
+                for mode in MODES:
+                    for latent, adapter in ABLATIONS:
+>                       args = (_air_parser if task == "airfrans" else _car_parser)(
+                            _flags(task, cost, mode, latent, adapter))
+
+tests/loop_linearno_latent_adapter/test_laa7_industrial_entry.py:75: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tokens = ['--model', 'LinearNO', '--linearno-loop', '1', '--linearno-loop-architecture', 'operator_latent_adapter_v3', ...]
+
+    def _air_parser(tokens):
+        sys.path.insert(0, str(ROOT / "Airfoil-Design-AirfRANS"))
+        from cdlno_entry import parse_args
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--model"); parser.add_argument("-n", "--nmodel", default=1, type=int)
+        parser.add_argument("-w", "--weight", default=1., type=float)
+        parser.add_argument("-t", "--task", default="full"); parser.add_argument("-s", "--score", default=0, type=int)
+        parser.add_argument("--my_path", default="/tmp"); parser.add_argument("--save_path", default="/tmp")
+>       return parse_args(parser, argv=list(tokens))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: parse_args() missing 1 required positional argument: 'task'
+
+tests/loop_linearno_latent_adapter/test_laa7_industrial_entry.py:35: TypeError
+=============================== warnings summary ===============================
+../anaconda3/lib/python3.13/site-packages/timm/models/layers/__init__.py:49
+  /home/hwz/anaconda3/lib/python3.13/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+    warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/loop_linearno_latent_adapter/test_laa7_industrial_entry.py::LAA7IndustrialTests::test_parser_matrix_two_profiles_three_residuals_four_ablations
+1 failed, 115 passed, 1 skipped, 1 warning in 213.61s (0:03:33)

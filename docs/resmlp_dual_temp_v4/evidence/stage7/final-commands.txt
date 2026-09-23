@@ -1,0 +1,19 @@
+# v4 component suite
+TMPDIR=/home/hwz/CDLNO-artifacts/v4-validation-20260923/tmp PYTHONPATH=.:cdlno:PDE-Solving-StandardBenchmark pytest -q tests/linearno_loop_v4
+# result: 133 passed, 1 skipped, 1 warning, 16.30s
+
+# eight-task synthetic native matrix (stable source)
+TMPDIR=/home/hwz/CDLNO-artifacts/v4-validation-20260923/tmp PYTHONPATH=.:cdlno:PDE-Solving-StandardBenchmark python tests/linearno_loop_v4/run_task_matrix.py --evidence docs/resmlp_dual_temp_v4/evidence/stage7/native-matrix-final
+# result: 48 action rows (8 tasks x 2 modes x interrupt/resume/eval), 8 uninterrupted rows; all exit 0; exact resume weights for latent-K.
+
+# benchmark (synthetic MSE only)
+TMPDIR=/home/hwz/CDLNO-artifacts/v4-validation-20260923/tmp PYTHONPATH=.:cdlno:tests python tests/linearno_loop_v4/benchmark.py docs/resmlp_dual_temp_v4/evidence/stage7/benchmark-final.json
+
+# static checks
+python -m compileall -q linearno_loop/v4 cdlno/linearno_loop/v4 tests/linearno_loop_v4 tran_evaluate/linearno_loop_v4
+for f in tran_evaluate/linearno_loop_v4/*.sh; do bash -n "$f"; done
+git diff --check
+
+# original pure LinearNO integration
+TMPDIR=/home/hwz/CDLNO-artifacts/v4-validation-20260923/tmp PYTHONPATH=.:cdlno:PDE-Solving-StandardBenchmark pytest -q tests/linearno/test_static_integration.py tests/linearno/test_temporal_integration.py
+# result: 12 passed, 2 warnings, 130.46s

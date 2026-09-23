@@ -1,0 +1,42 @@
+{
+  "task": "pipe",
+  "mode": "latent_k_point_q",
+  "action": "train",
+  "device": "cuda",
+  "scope": "SYNTHETIC original task loops",
+  "counts": {
+    "train_forward": 2,
+    "eval_forward": 3,
+    "backward": 2,
+    "optimizer": 0
+  },
+  "shape_facts": {
+    "task": "pipe",
+    "profile": "paper_table8_on_release_model",
+    "hidden_width": 128,
+    "heads": 8,
+    "actual_M": 64,
+    "head_dim": 16,
+    "variant": "conv_temp",
+    "ffn_ratio": 1,
+    "grid_height": 129,
+    "grid_width": 129,
+    "space_dim": 2,
+    "fun_dim": 0,
+    "out_dim": 1,
+    "ref": 8,
+    "unified_pos": false,
+    "time_input": false,
+    "dropout": 0.0,
+    "activation": "gelu"
+  },
+  "weights_hash": "2021c54b8f9645ca5da0a0af6d66f574f17ffc28a236885780b845e0d1d6cbc2",
+  "completed_epoch": 2,
+  "metadata_unchanged": false,
+  "visualization_files": [
+    "visualizations/member_000/epoch_0002/case_000/field/fields.png"
+  ],
+  "metrics_files": [
+    "train_results.json"
+  ]
+}

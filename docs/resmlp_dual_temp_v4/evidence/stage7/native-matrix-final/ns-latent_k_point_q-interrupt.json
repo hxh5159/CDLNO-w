@@ -1,0 +1,40 @@
+{
+  "task": "ns",
+  "mode": "latent_k_point_q",
+  "action": "interrupt",
+  "device": "cuda",
+  "scope": "SYNTHETIC original task loops",
+  "counts": {
+    "train_forward": 10,
+    "eval_forward": 10,
+    "backward": 1,
+    "optimizer": 0
+  },
+  "shape_facts": {
+    "task": "ns",
+    "profile": "paper_table8_on_release_model",
+    "hidden_width": 256,
+    "heads": 8,
+    "actual_M": 32,
+    "head_dim": 32,
+    "variant": "plain",
+    "ffn_ratio": 2,
+    "grid_height": 64,
+    "grid_width": 64,
+    "space_dim": 2,
+    "fun_dim": 10,
+    "out_dim": 1,
+    "ref": 10,
+    "unified_pos": true,
+    "time_input": false,
+    "dropout": 0.0,
+    "activation": "gelu"
+  },
+  "weights_hash": "76c69552fbf4cc9c56aaf5ccd37d590b9043a6a3cc2d148a34245494fb1c4b83",
+  "completed_epoch": 1,
+  "metadata_unchanged": false,
+  "visualization_files": [],
+  "metrics_files": [
+    "train_results.json"
+  ]
+}

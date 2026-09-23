@@ -1,0 +1,15 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+________________ test_resealed_unknown_config_field_is_rejected ________________
+
+    def test_resealed_unknown_config_field_is_rejected():
+        c=config();c['undeclared_feature']=True
+        c['config_hash']=digest({k:v for k,v in c.items() if k!='config_hash'})
+>       with pytest.raises(ValueError,match='fields'):validate_config(c)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/linearno_loop_v4/test_v4_hardening.py:82: Failed
+=========================== short test summary info ============================
+FAILED tests/linearno_loop_v4/test_v4_hardening.py::test_resealed_unknown_config_field_is_rejected
+1 failed, 6 deselected in 1.90s

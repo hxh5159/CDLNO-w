@@ -1,0 +1,45 @@
+{
+  "task": "ns",
+  "mode": "latent_k_point_q",
+  "action": "train",
+  "device": "cuda",
+  "scope": "SYNTHETIC original task loops",
+  "counts": {
+    "train_forward": 20,
+    "eval_forward": 30,
+    "backward": 2,
+    "optimizer": 0
+  },
+  "shape_facts": {
+    "task": "ns",
+    "profile": "paper_table8_on_release_model",
+    "hidden_width": 256,
+    "heads": 8,
+    "actual_M": 32,
+    "head_dim": 32,
+    "variant": "plain",
+    "ffn_ratio": 2,
+    "grid_height": 64,
+    "grid_width": 64,
+    "space_dim": 2,
+    "fun_dim": 10,
+    "out_dim": 1,
+    "ref": 10,
+    "unified_pos": true,
+    "time_input": false,
+    "dropout": 0.0,
+    "activation": "gelu"
+  },
+  "weights_hash": "286b34ed04ee7023a6ef707b67d497516f6dc2ab976167ebfc13b44233a6338d",
+  "completed_epoch": 2,
+  "metadata_unchanged": false,
+  "visualization_files": [
+    "visualizations/member_000/epoch_0002/case_000/frame_01/fields.png",
+    "visualizations/member_000/epoch_0002/case_000/frame_05/fields.png",
+    "visualizations/member_000/epoch_0002/case_000/frame_10/fields.png",
+    "visualizations/member_000/epoch_0002/case_000/time_error/curve.png"
+  ],
+  "metrics_files": [
+    "train_results.json"
+  ]
+}

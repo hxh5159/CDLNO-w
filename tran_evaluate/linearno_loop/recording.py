@@ -106,6 +106,9 @@ def state_hash(state):
 
 def observe(args,model,member=0):
     """Record before the first optimizer step; then capture one actual forward."""
+    if args._linearno_loop_config.get('architecture') == 'resmlp_dual_temp_v4':
+        from cdlno.linearno_loop.v4.recording import observe as observe_v4
+        return observe_v4(args, model, member)
     import torch
     from cdlno.training_state import _atomic
     from cdlno.linearno_loop.attnres import PointDepthAttnRes

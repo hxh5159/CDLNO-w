@@ -1,0 +1,44 @@
+{
+  "task": "darcy",
+  "mode": "latent_k_point_q",
+  "action": "eval",
+  "device": "cuda",
+  "scope": "SYNTHETIC original task loops",
+  "counts": {
+    "train_forward": 0,
+    "eval_forward": 1,
+    "backward": 0,
+    "optimizer": 0
+  },
+  "shape_facts": {
+    "activation": "gelu",
+    "actual_M": 64,
+    "dropout": 0.0,
+    "ffn_ratio": 1,
+    "fun_dim": 1,
+    "grid_height": 85,
+    "grid_width": 85,
+    "head_dim": 16,
+    "heads": 8,
+    "hidden_width": 128,
+    "out_dim": 1,
+    "profile": "paper_table8_on_release_model",
+    "ref": 8,
+    "space_dim": 2,
+    "task": "darcy",
+    "time_input": false,
+    "unified_pos": false,
+    "variant": "conv_temp"
+  },
+  "weights_hash": "5e21d2e46646a6ddd76d5757eecc5bbc2789fd40b209863415df796fd97bc739",
+  "completed_epoch": 0,
+  "metadata_unchanged": true,
+  "visualization_files": [
+    "visualizations/member_000/epoch_0002/case_000/field/fields.png"
+  ],
+  "metrics_files": [
+    "eval_results.json",
+    "train_results.json",
+    "evaluations/20260923T100742249623Z/results.json"
+  ]
+}

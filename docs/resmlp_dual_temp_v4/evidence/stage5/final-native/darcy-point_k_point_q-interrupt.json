@@ -1,0 +1,40 @@
+{
+  "task": "darcy",
+  "mode": "point_k_point_q",
+  "action": "interrupt",
+  "device": "cuda",
+  "scope": "SYNTHETIC original task loops",
+  "counts": {
+    "train_forward": 1,
+    "eval_forward": 1,
+    "backward": 1,
+    "optimizer": 0
+  },
+  "shape_facts": {
+    "task": "darcy",
+    "profile": "paper_table8_on_release_model",
+    "hidden_width": 128,
+    "heads": 8,
+    "actual_M": 64,
+    "head_dim": 16,
+    "variant": "conv_temp",
+    "ffn_ratio": 1,
+    "grid_height": 85,
+    "grid_width": 85,
+    "space_dim": 2,
+    "fun_dim": 1,
+    "out_dim": 1,
+    "ref": 8,
+    "unified_pos": false,
+    "time_input": false,
+    "dropout": 0.0,
+    "activation": "gelu"
+  },
+  "weights_hash": "10ff374bfa0bd44d38fb53b13f72b750270cfe30f1c01f921d89c1abe5b2aea1",
+  "completed_epoch": 1,
+  "metadata_unchanged": false,
+  "visualization_files": [],
+  "metrics_files": [
+    "train_results.json"
+  ]
+}

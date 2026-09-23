@@ -1,0 +1,165 @@
+{
+  "synthetic_root": "/tmp/v4-native-matrix-2ib3xtab",
+  "rows": [
+    {
+      "task": "airfrans",
+      "mode": "latent_k_point_q",
+      "action": "interrupt",
+      "exit_code": 0,
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno_loop_v4/industrial_worker.py",
+        "airfrans",
+        "latent_k_point_q",
+        "interrupt",
+        "/tmp/v4-native-matrix-2ib3xtab/airfrans-latent_k_point_q",
+        "docs/resmlp_dual_temp_v4/evidence/stage6/stable-native/airfrans-latent_k_point_q-interrupt.json"
+      ]
+    },
+    {
+      "task": "airfrans",
+      "mode": "latent_k_point_q",
+      "action": "resume",
+      "exit_code": 0,
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno_loop_v4/industrial_worker.py",
+        "airfrans",
+        "latent_k_point_q",
+        "resume",
+        "/tmp/v4-native-matrix-2ib3xtab/airfrans-latent_k_point_q",
+        "docs/resmlp_dual_temp_v4/evidence/stage6/stable-native/airfrans-latent_k_point_q-resume.json"
+      ]
+    },
+    {
+      "task": "airfrans",
+      "mode": "latent_k_point_q",
+      "action": "eval",
+      "exit_code": 0,
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno_loop_v4/industrial_worker.py",
+        "airfrans",
+        "latent_k_point_q",
+        "eval",
+        "/tmp/v4-native-matrix-2ib3xtab/airfrans-latent_k_point_q",
+        "docs/resmlp_dual_temp_v4/evidence/stage6/stable-native/airfrans-latent_k_point_q-eval.json"
+      ]
+    },
+    {
+      "task": "airfrans",
+      "mode": "latent_k_point_q",
+      "action": "uninterrupted",
+      "exit_code": 0,
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno_loop_v4/industrial_worker.py",
+        "airfrans",
+        "latent_k_point_q",
+        "train",
+        "/tmp/v4-native-matrix-2ib3xtab/airfrans-latent_k_point_q-uninterrupted",
+        "docs/resmlp_dual_temp_v4/evidence/stage6/stable-native/airfrans-latent_k_point_q-uninterrupted.json"
+      ]
+    },
+    {
+      "task": "airfrans",
+      "mode": "point_k_point_q",
+      "action": "interrupt",
+      "exit_code": 0,
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno_loop_v4/industrial_worker.py",
+        "airfrans",
+        "point_k_point_q",
+        "interrupt",
+        "/tmp/v4-native-matrix-2ib3xtab/airfrans-point_k_point_q",
+        "docs/resmlp_dual_temp_v4/evidence/stage6/stable-native/airfrans-point_k_point_q-interrupt.json"
+      ]
+    },
+    {
+      "task": "airfrans",
+      "mode": "point_k_point_q",
+      "action": "resume",
+      "exit_code": 0,
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno_loop_v4/industrial_worker.py",
+        "airfrans",
+        "point_k_point_q",
+        "resume",
+        "/tmp/v4-native-matrix-2ib3xtab/airfrans-point_k_point_q",
+        "docs/resmlp_dual_temp_v4/evidence/stage6/stable-native/airfrans-point_k_point_q-resume.json"
+      ]
+    },
+    {
+      "task": "airfrans",
+      "mode": "point_k_point_q",
+      "action": "eval",
+      "exit_code": 0,
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno_loop_v4/industrial_worker.py",
+        "airfrans",
+        "point_k_point_q",
+        "eval",
+        "/tmp/v4-native-matrix-2ib3xtab/airfrans-point_k_point_q",
+        "docs/resmlp_dual_temp_v4/evidence/stage6/stable-native/airfrans-point_k_point_q-eval.json"
+      ]
+    },
+    {
+      "task": "car",
+      "mode": "latent_k_point_q",
+      "action": "interrupt",
+      "exit_code": 0,
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno_loop_v4/industrial_worker.py",
+        "car",
+        "latent_k_point_q",
+        "interrupt",
+        "/tmp/v4-native-matrix-2ib3xtab/car-latent_k_point_q",
+        "docs/resmlp_dual_temp_v4/evidence/stage6/stable-native/car-latent_k_point_q-interrupt.json"
+      ]
+    },
+    {
+      "task": "car",
+      "mode": "latent_k_point_q",
+      "action": "resume",
+      "exit_code": 0,
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno_loop_v4/industrial_worker.py",
+        "car",
+        "latent_k_point_q",
+        "resume",
+        "/tmp/v4-native-matrix-2ib3xtab/car-latent_k_point_q",
+        "docs/resmlp_dual_temp_v4/evidence/stage6/stable-native/car-latent_k_point_q-resume.json"
+      ]
+    },
+    {
+      "task": "car",
+      "mode": "latent_k_point_q",
+      "action": "eval",
+      "exit_code": 0,
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno_loop_v4/industrial_worker.py",
+        "car",
+        "latent_k_point_q",
+        "eval",
+        "/tmp/v4-native-matrix-2ib3xtab/car-latent_k_point_q",
+        "docs/resmlp_dual_temp_v4/evidence/stage6/stable-native/car-latent_k_point_q-eval.json"
+      ]
+    }
+  ]
+}

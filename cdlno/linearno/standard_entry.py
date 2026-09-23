@@ -144,8 +144,8 @@ def model_kwargs(args, **grid):
     # that explicit family is selected; v1/v2 continue through the exact
     # historical branch below.
     if hasattr(args, '_linearno_loop_config'):
-        from linearno_loop.versioning import is_v3
-        if is_v3(args._linearno_loop_config):
+        from linearno_loop.versioning import is_v3, is_v4
+        if is_v3(args._linearno_loop_config) or is_v4(args._linearno_loop_config):
             from cdlno.linearno_loop.standard_entry import model_kwargs as v3_kwargs
             return v3_kwargs(args, **grid)
     kwargs = dict(args._linearno_model_spec['constructor_kwargs'])

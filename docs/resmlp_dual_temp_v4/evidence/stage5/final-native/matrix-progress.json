@@ -1,0 +1,213 @@
+{
+  "synthetic_root": "/tmp/v4-native-matrix-n9e0wixw",
+  "rows": [
+    {
+      "task": "airfoil",
+      "mode": "latent_k_point_q",
+      "action": "interrupt",
+      "exit_code": 0,
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno_loop_v4/standard_worker.py",
+        "airfoil",
+        "latent_k_point_q",
+        "interrupt",
+        "/tmp/v4-native-matrix-n9e0wixw/airfoil-latent_k_point_q",
+        "docs/resmlp_dual_temp_v4/evidence/stage5/final-native/airfoil-latent_k_point_q-interrupt.json"
+      ]
+    },
+    {
+      "task": "airfoil",
+      "mode": "latent_k_point_q",
+      "action": "resume",
+      "exit_code": 0,
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno_loop_v4/standard_worker.py",
+        "airfoil",
+        "latent_k_point_q",
+        "resume",
+        "/tmp/v4-native-matrix-n9e0wixw/airfoil-latent_k_point_q",
+        "docs/resmlp_dual_temp_v4/evidence/stage5/final-native/airfoil-latent_k_point_q-resume.json"
+      ]
+    },
+    {
+      "task": "airfoil",
+      "mode": "latent_k_point_q",
+      "action": "eval",
+      "exit_code": 0,
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno_loop_v4/standard_worker.py",
+        "airfoil",
+        "latent_k_point_q",
+        "eval",
+        "/tmp/v4-native-matrix-n9e0wixw/airfoil-latent_k_point_q",
+        "docs/resmlp_dual_temp_v4/evidence/stage5/final-native/airfoil-latent_k_point_q-eval.json"
+      ]
+    },
+    {
+      "task": "airfoil",
+      "mode": "latent_k_point_q",
+      "action": "uninterrupted",
+      "exit_code": 0,
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno_loop_v4/standard_worker.py",
+        "airfoil",
+        "latent_k_point_q",
+        "train",
+        "/tmp/v4-native-matrix-n9e0wixw/airfoil-latent_k_point_q-uninterrupted",
+        "docs/resmlp_dual_temp_v4/evidence/stage5/final-native/airfoil-latent_k_point_q-uninterrupted.json"
+      ]
+    },
+    {
+      "task": "airfoil",
+      "mode": "point_k_point_q",
+      "action": "interrupt",
+      "exit_code": 0,
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno_loop_v4/standard_worker.py",
+        "airfoil",
+        "point_k_point_q",
+        "interrupt",
+        "/tmp/v4-native-matrix-n9e0wixw/airfoil-point_k_point_q",
+        "docs/resmlp_dual_temp_v4/evidence/stage5/final-native/airfoil-point_k_point_q-interrupt.json"
+      ]
+    },
+    {
+      "task": "airfoil",
+      "mode": "point_k_point_q",
+      "action": "resume",
+      "exit_code": 0,
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno_loop_v4/standard_worker.py",
+        "airfoil",
+        "point_k_point_q",
+        "resume",
+        "/tmp/v4-native-matrix-n9e0wixw/airfoil-point_k_point_q",
+        "docs/resmlp_dual_temp_v4/evidence/stage5/final-native/airfoil-point_k_point_q-resume.json"
+      ]
+    },
+    {
+      "task": "airfoil",
+      "mode": "point_k_point_q",
+      "action": "eval",
+      "exit_code": 0,
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno_loop_v4/standard_worker.py",
+        "airfoil",
+        "point_k_point_q",
+        "eval",
+        "/tmp/v4-native-matrix-n9e0wixw/airfoil-point_k_point_q",
+        "docs/resmlp_dual_temp_v4/evidence/stage5/final-native/airfoil-point_k_point_q-eval.json"
+      ]
+    },
+    {
+      "task": "darcy",
+      "mode": "latent_k_point_q",
+      "action": "interrupt",
+      "exit_code": 0,
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno_loop_v4/standard_worker.py",
+        "darcy",
+        "latent_k_point_q",
+        "interrupt",
+        "/tmp/v4-native-matrix-n9e0wixw/darcy-latent_k_point_q",
+        "docs/resmlp_dual_temp_v4/evidence/stage5/final-native/darcy-latent_k_point_q-interrupt.json"
+      ]
+    },
+    {
+      "task": "darcy",
+      "mode": "latent_k_point_q",
+      "action": "resume",
+      "exit_code": 0,
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno_loop_v4/standard_worker.py",
+        "darcy",
+        "latent_k_point_q",
+        "resume",
+        "/tmp/v4-native-matrix-n9e0wixw/darcy-latent_k_point_q",
+        "docs/resmlp_dual_temp_v4/evidence/stage5/final-native/darcy-latent_k_point_q-resume.json"
+      ]
+    },
+    {
+      "task": "darcy",
+      "mode": "latent_k_point_q",
+      "action": "eval",
+      "exit_code": 0,
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno_loop_v4/standard_worker.py",
+        "darcy",
+        "latent_k_point_q",
+        "eval",
+        "/tmp/v4-native-matrix-n9e0wixw/darcy-latent_k_point_q",
+        "docs/resmlp_dual_temp_v4/evidence/stage5/final-native/darcy-latent_k_point_q-eval.json"
+      ]
+    },
+    {
+      "task": "darcy",
+      "mode": "latent_k_point_q",
+      "action": "uninterrupted",
+      "exit_code": 0,
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno_loop_v4/standard_worker.py",
+        "darcy",
+        "latent_k_point_q",
+        "train",
+        "/tmp/v4-native-matrix-n9e0wixw/darcy-latent_k_point_q-uninterrupted",
+        "docs/resmlp_dual_temp_v4/evidence/stage5/final-native/darcy-latent_k_point_q-uninterrupted.json"
+      ]
+    },
+    {
+      "task": "darcy",
+      "mode": "point_k_point_q",
+      "action": "interrupt",
+      "exit_code": 0,
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno_loop_v4/standard_worker.py",
+        "darcy",
+        "point_k_point_q",
+        "interrupt",
+        "/tmp/v4-native-matrix-n9e0wixw/darcy-point_k_point_q",
+        "docs/resmlp_dual_temp_v4/evidence/stage5/final-native/darcy-point_k_point_q-interrupt.json"
+      ]
+    },
+    {
+      "task": "darcy",
+      "mode": "point_k_point_q",
+      "action": "resume",
+      "exit_code": 1,
+      "command": [
+        "/home/hwz/anaconda3/bin/python",
+        "-B",
+        "/home/hwz/CDLNO/tests/linearno_loop_v4/standard_worker.py",
+        "darcy",
+        "point_k_point_q",
+        "resume",
+        "/tmp/v4-native-matrix-n9e0wixw/darcy-point_k_point_q",
+        "docs/resmlp_dual_temp_v4/evidence/stage5/final-native/darcy-point_k_point_q-resume.json"
+      ]
+    }
+  ]
+}

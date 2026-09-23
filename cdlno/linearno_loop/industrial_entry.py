@@ -77,6 +77,13 @@ def parse_args(parser,tokens,loop_explicit,*,task,evaluation):
     args.checkpoint=args.checkpoint or ('latest' if args.resume else 'final')
     args.linearno_run_dir=args.linearno_run_dir or getattr(args,'run_dir',None)
     options={k:v for k,v in loop_explicit.items() if k in OPTIONS}
+    saved_v4 = False
+    if (args.eval or args.resume) and args.linearno_run_dir is not None:
+        from linearno_loop.versioning import is_v4
+        saved_v4 = is_v4(read_metadata(args.linearno_run_dir/'architecture.json'))
+    if loop_explicit.get('architecture')=='resmlp_dual_temp_v4' or saved_v4:
+        from .v4.industrial_entry import parse_v4
+        return parse_v4(parser,args,supplied,loop_explicit,task=task)
     v3_requested=options.get('architecture') == 'operator_latent_adapter_v3'
     if 'linearno_rank' in supplied:
         if 'rank_multiplier' in options:

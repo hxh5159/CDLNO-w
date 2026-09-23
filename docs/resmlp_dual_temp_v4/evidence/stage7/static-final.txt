@@ -1,0 +1,8 @@
+python -m compileall -q [all changed Python] : PASS
+bash -n tran_evaluate/linearno_loop_v4/*.sh : PASS
+git diff --check : PASS
+v4 component suite: 133 passed, 1 skipped, 1 warning
+focused math/checkpoint/entry suite: 74 passed, 1 skipped
+launcher/reference/hardening suite: 39 passed
+stable native matrix: 56/56 rows exit 0
+cost review: 24/24 task-mode rows exact_trace

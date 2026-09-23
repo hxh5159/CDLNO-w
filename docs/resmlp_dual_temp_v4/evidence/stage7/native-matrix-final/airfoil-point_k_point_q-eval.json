@@ -1,0 +1,45 @@
+{
+  "task": "airfoil",
+  "mode": "point_k_point_q",
+  "action": "eval",
+  "device": "cuda",
+  "scope": "SYNTHETIC original task loops",
+  "counts": {
+    "train_forward": 0,
+    "eval_forward": 1,
+    "backward": 0,
+    "optimizer": 0
+  },
+  "shape_facts": {
+    "activation": "gelu",
+    "actual_M": 64,
+    "dropout": 0.0,
+    "ffn_ratio": 1,
+    "fun_dim": 0,
+    "grid_height": 221,
+    "grid_width": 51,
+    "head_dim": 16,
+    "heads": 8,
+    "hidden_width": 128,
+    "out_dim": 1,
+    "profile": "paper_table8_on_release_model",
+    "ref": 8,
+    "space_dim": 2,
+    "task": "airfoil",
+    "time_input": false,
+    "unified_pos": false,
+    "variant": "conv_temp"
+  },
+  "weights_hash": "49f34cdbab19f122f277b4913564c3045f82fbabad7b426667d1bc6787235f80",
+  "completed_epoch": 0,
+  "metadata_unchanged": true,
+  "visualization_files": [
+    "visualizations/member_000/epoch_0002/case_000/near_airfoil/fields.png",
+    "visualizations/member_000/epoch_0002/case_000/field/fields.png"
+  ],
+  "metrics_files": [
+    "eval_results.json",
+    "train_results.json",
+    "evaluations/20260923T114556801611Z/results.json"
+  ]
+}

@@ -99,9 +99,78 @@ def analytic_v3(config, *, B=None, N=None):
         kwargs['points'] = N
     return analytic_cost(config, **kwargs)
 
+def analytic_v4(config, *, B=1, N=None):
+    """Independent v4 parameter/MAC ledger; never imports the v4 model."""
+    from linearno_loop.v4.config import validate_config
+    c=validate_config(config); m=c['model']; task=c['task']; H,heads,M=m['hidden_width'],m['heads'],m['actual_M']; dh=H//heads; ratio=m['ffn_ratio']
+    if N is None:
+        N = 1 if task in ('airfrans','car') else (m['grid_height']*m['grid_width'] if m['variant'] in ('conv','conv_temp') else 32)
+    if B<1 or N<1 or (task in ('airfrans','car') and B!=1): raise ValueError('invalid v4 representative shape')
+    structured=m['variant'] in ('conv','conv_temp'); kernel=9 if structured else 1
+    inproj=kernel*H*H+H
+    outproj=2*H*H+2*H if structured or task=='car' else H*H+H
+    attn=inproj + 2*dh*M+dh*dh + outproj + 4*H
+    if m['variant'] in ('temp','conv_temp','shapenet'): attn += 2*heads
+    if task=='airfrans': attn += heads
+    body=[attn]*8;head_parameters=2*H+H*m['out_dim']+m['out_dim']
+    rmlp={}
+    for owner,L in (('first',2),('A',3),('B',3),('C',3),('last',2)):
+        W=H*ratio; rmlp[owner]=H*W+W+L*(W*W+W)+W*H+H
+    channels=m['fun_dim']+(m['ref']**2 if m['unified_pos'] else m['space_dim'])
+    if task=='airfrans' and m['unified_pos']: channels += m['space_dim']
+    stem=channels*2*H+2*H+2*H*H+H+H # preprocess + placeholder
+    time_parameters=2*(H*H+H) if m['time_input'] else 0
+    predictor=0
+    if c['temperature_mode']!='base':
+        q=dh*M+M+M+1
+        k=(dh*M+M+M*M+M) if c['temperature_mode']=='latent_k_point_q' else q
+        predictor=8*(q+k)
+    output_layers=2 if structured or task=='car' else 1
+    attention_macs=B*N*8*(kernel*H*H+4*H*M+H*dh+output_layers*H*H)
+    W=H*ratio
+    rmlp_macs=B*N*(16*H*W+22*W*W)
+    stem_macs=B*N*(2*H*channels+2*H*H+(2*H*H if m['time_input'] else 0))
+    head_macs=B*N*H*m['out_dim']
+    q_predictor=0;k_predictor=0
+    if c['temperature_mode']!='base':
+        q_predictor=8*B*heads*N*(dh*M+M)
+        k_predictor=(8*B*heads*(dh*M+M*M) if c['temperature_mode']=='latent_k_point_q'
+                     else 8*B*heads*N*(dh*M+M))
+    matrix_per=attention_macs+rmlp_macs+stem_macs+head_macs+q_predictor+k_predictor
+    return dict(version=4,task=task,temperature_mode=c['temperature_mode'],B=B,N=N,hidden=H,heads=heads,head_dim=dh,M=M,
+      unique_depth=8,executed_depth=8,parameter_parts=dict(stem=stem,time=time_parameters,
+        operators=sum(body),rmlp=sum(rmlp.values()),head=head_parameters,temperature_predictors=predictor),rmlp_owners=rmlp,
+      parameters=stem+time_parameters+sum(body)+sum(rmlp.values())+head_parameters+predictor,
+      matrix_mac_parts=dict(stem=stem_macs,operators=attention_macs,rmlp=rmlp_macs,head=head_macs,
+                            q_temperature=q_predictor,k_temperature=k_predictor),
+      matrix_macs=matrix_per, matrix_flops=2*matrix_per,
+      non_matrix_operations='LayerNorm/GELU/softmax/residual/reshape counted separately',router_parameters=0,
+      no_nxn_or_mxm_attention=True)
+
+def analytic_pure_linearno(task, *, B=1, N=None, profile='paper_table8_on_release_model'):
+    """Pure LinearNO reference under the same matrix-MAC convention as v4."""
+    from cdlno.linearno.profiles import resolve_config
+    base=resolve_config(task,profile);m=base['values']['model'];H,heads,M,ratio=m['hidden'],m['heads'],m['linearno_rank'],m['ffn_ratio'];dh=H//heads
+    if N is None:N=1 if task in ('airfrans','car') else (m['H']*m['W'] if m['linearno_variant'] in ('conv','conv_temp') or m['unified_pos'] else 32)
+    structured=m['linearno_variant'] in ('conv','conv_temp');kernel=9 if structured else 1;outputs=2 if structured or task=='car' else 1
+    temperature=2*heads if m['linearno_variant'] in ('temp','conv_temp','shapenet') else heads if task=='airfrans' else 0
+    attention=kernel*H*H+H+2*dh*M+dh*dh+outputs*(H*H+H)+temperature
+    W=H*ratio;point=2*H*W+W+H;body=attention+4*H+point;head=2*H+H*m['out_dim']+m['out_dim']
+    channels=m['fun_dim']+(m['ref']**2 if m['unified_pos'] else m['space_dim'])
+    if task=='airfrans' and m['unified_pos']:channels+=m['space_dim']
+    stem=2*H*channels+2*H+2*H*H+H+H+(2*(H*H+H) if m['time_input'] else 0)
+    params=stem+8*body+head
+    stem_mac=B*N*(2*H*channels+2*H*H+(2*H*H if m['time_input'] else 0))
+    attention_mac=B*N*8*(kernel*H*H+4*H*M+H*dh+outputs*H*H)
+    point_mac=B*N*8*2*H*W;head_mac=B*N*H*m['out_dim'];mac=stem_mac+attention_mac+point_mac+head_mac
+    return dict(task=task,B=B,N=N,parameters=params,matrix_macs=mac,matrix_flops=2*mac,
+      matrix_mac_parts=dict(stem=stem_mac,operators=attention_mac,point_ffn=point_mac,head=head_mac),matrix_flops_are_total_flops=False)
+
 
 def analytic(config,*,B=1,N=None):
     """Only integer algebra from schema; no model construction/module introspection."""
+    if config.get('architecture')=='resmlp_dual_temp_v4':
+        return analytic_v4(config,B=B,N=N)
     if config.get('architecture_extension')=='loop_linearno_latent_adapter_v3':
         # V3's public default is its frozen representative batch/point shape;
         # explicit B/N still select a synthetic shape.  V1/V2 keep their
@@ -150,6 +219,21 @@ def analytic(config,*,B=1,N=None):
 
 
 def measured_parameters(model):
+    if getattr(model, 'architecture', None) == 'resmlp_dual_temp_v4':
+        parts=Counter({k:0 for k in ('stem','time','operators','rmlp','head','temperature_predictors')})
+        for name,p in model.named_parameters():
+            if name.startswith('time_fc.'):
+                part='time'
+            elif name.startswith('loop.blocks.'):
+                part='temperature_predictors' if ('.q_temperature.' in name or '.k_temperature.' in name) else 'operators'
+            elif name.startswith('loop.rmlp.'):
+                part='rmlp'
+            elif name.startswith(('final_norm.','head.')):
+                part='head'
+            else:
+                part='stem'
+            parts[part]+=p.numel()
+        return dict(parts)
     if getattr(model, 'architecture_extension', None) == 'loop_linearno_latent_adapter_v3':
         parts=Counter({k:0 for k in ('stem','time','prefix','shared_core','suffix','head','latent','adapter','router')})
         for name,p in model.named_parameters():

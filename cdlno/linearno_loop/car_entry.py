@@ -56,6 +56,13 @@ class CarRun(GeneratorCarRun):
             self.data['optimizer_signature']=saved['data_spec']['runtime']['optimizer_signature']
 
     def metadata(self,optimizer,scheduler,epoch,model=None):
+        if self.args._linearno_loop_config.get('architecture') == 'resmlp_dual_temp_v4':
+            if model is None:raise ValueError('V4 Car metadata requires constructed model')
+            from cdlno.linearno_loop.v4.checkpoint import measure_parameters
+            return make_metadata(self.args._linearno_loop_config,data_spec=data_contract(self.args._linearno_loop_config,self.data),
+                normalizer_spec=self.normalizers,provenance_spec=self.provenance,
+                resume_state=self._resume_state(optimizer,scheduler,epoch),ensemble_manifest=[],
+                parameter_measurement=measure_parameters(model,self.args._linearno_loop_config))
         if self.args._linearno_loop_config.get('config_version') != 3:
             return make_metadata(self.args._linearno_loop_config,
                 data_spec=data_contract(self.args._linearno_loop_config,self.data),

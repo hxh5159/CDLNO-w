@@ -1,0 +1,21 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_________ test_plasticity_default_is_mat_file_and_environment_override _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x73f7bc3d03e0>
+tmp_path = PosixPath('/tmp/pytest-of-hwz/pytest-31/test_plasticity_default_is_mat0')
+
+    def test_plasticity_default_is_mat_file_and_environment_override(monkeypatch,tmp_path):
+        monkeypatch.setenv('CDLNO_PLASTICITY_FILE',str(tmp_path/'custom plasticity.mat'))
+        _,value=plan_v4(['plasticity','train'])
+        tokens=value['argv'];position=tokens.index('--data_path',tokens.index('--data_path')+1) if tokens.count('--data_path')>1 else tokens.index('--data_path')
+>       assert tokens[position+1]==str(tmp_path/'custom plasticity.mat')
+E       AssertionError: assert '/home/hwz/data/fno' == '/tmp/pytest-...lasticity.mat'
+E         
+E         - /tmp/pytest-of-hwz/pytest-31/test_plasticity_default_is_mat0/custom plasticity.mat
+E         + /home/hwz/data/fno
+
+tests/linearno_loop_v4/test_v4_launchers.py:72: AssertionError
+=========================== short test summary info ============================
+FAILED tests/linearno_loop_v4/test_v4_launchers.py::test_plasticity_default_is_mat_file_and_environment_override
+1 failed, 27 deselected in 2.08s

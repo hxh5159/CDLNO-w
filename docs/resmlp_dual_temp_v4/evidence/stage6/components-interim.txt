@@ -1,0 +1,49 @@
+...............F................................                         [100%]
+=================================== FAILURES ===================================
+_______________ test_standard_v4_uses_versioned_pair_for_resume ________________
+
+tmp_path = PosixPath('/tmp/pytest-of-hwz/pytest-26/test_standard_v4_uses_versione0')
+
+    def test_standard_v4_uses_versioned_pair_for_resume(tmp_path):
+        from linearno_loop.v4.config import run_directory_id
+        expected=cfg('elasticity','latent_k_point_q',seed=19)
+        directory=tmp_path/run_directory_id(expected)
+        args=_parse_standard('elasticity',['--model','LinearNO_Irregular_Mesh','--linearno-loop','1',
+            '--linearno-loop-architecture','resmlp_dual_temp_v4','--linearno-loop-temperature-mode','latent_k_point_q',
+            '--seed','19','--experiment-dir',str(directory)])
+        args._linearno_data=dict(split='SYNTHETIC fixed',sampling='synthetic fixed',
+            checksums={'synthetic':'a'*64},scope='SYNTHETIC')
+        from cdlno.linearno.standard_entry import start,finish
+        from cdlno.linearno_loop.standard_entry import LoopStandardRun
+        from model_dict import get_model
+        from linearno_entry import model_kwargs,StandardRun
+        start(args,'elasticity')
+        try:
+>           model=get_model(args).Model(**model_kwargs(args));run=StandardRun(args,model)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/linearno_loop_v4/test_v4.py:219: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+kwargs = {'activation': 'gelu', 'actual_M': 64, 'architecture': 'resmlp_dual_temp_v4', 'dropout': 0.0, ...}
+
+    def construct(**kwargs):
+        if config.get('architecture')==V4_ARCHITECTURE_SELECTOR:
+            if kwargs != model_kwargs(args):
+>               raise ValueError('V4 constructor kwargs conflict with resolved model')
+E               ValueError: V4 constructor kwargs conflict with resolved model
+
+cdlno/linearno_loop/standard_entry.py:285: ValueError
+----------------------------- Captured stdout call -----------------------------
+linearno_loop experiment: /tmp/pytest-of-hwz/pytest-26/test_standard_v4_uses_versione0/elasticity_resmlp_dual_temp_v4_paper_table8_on_release_model_latent_k_point_q_sr_s19_5a7186591b7d
+linearno_loop phase: training
+linearno_loop seed: 19
+=============================== warnings summary ===============================
+tests/linearno_loop_v4/test_v4.py::test_v4_cli_rejects_old_architecture_fields
+  /home/hwz/anaconda3/lib/python3.13/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+    warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/linearno_loop_v4/test_v4.py::test_standard_v4_uses_versioned_pair_for_resume
+1 failed, 47 passed, 1 warning in 15.22s

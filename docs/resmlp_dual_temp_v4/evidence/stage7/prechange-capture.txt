@@ -1,0 +1,25 @@
+Traceback (most recent call last):
+  File "/home/hwz/CDLNO/tests/linearno_loop_v4/legacy_snapshot.py", line 61, in <module>
+    a=p.parse_args();main(a.action,a.state,a.report)
+                     ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hwz/CDLNO/tests/linearno_loop_v4/legacy_snapshot.py", line 38, in main
+    for name,config in cases():
+                       ~~~~~^^
+  File "/home/hwz/CDLNO/tests/linearno_loop_v4/legacy_snapshot.py", line 27, in cases
+    yield 'v3',v3('elasticity',options=dict(architecture='operator_latent_adapter_v3',cost_profile='custom',
+               ~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        prefix_blocks=1,recurrent_core_blocks=3,loop_repeats=2,suffix_blocks=1,residual_mode='sr_1_over_r',
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        hidden_width=16,heads=2,actual_M=4,latent_width=16,latent_enabled=True,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        adapter_mode='bilateral_qk_lowrank_second_visit',adapter_rank=4,adapter_alpha=4.),profile_overrides={'runtime.seed':17})
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/v4-prechange-source-526mzj05/linearno_loop/v3/config.py", line 201, in resolve_config
+    return _assemble(dict(task=task,profile=profile,options=opts,profile_overrides=overrides),base,_resolve_facts(task,opts,base))
+                                                                                                   ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/tmp/v4-prechange-source-526mzj05/linearno_loop/v3/config.py", line 82, in _resolve_facts
+    cost=options.get('cost_profile','matched_v1');top=_topology(options,cost)
+                                                      ~~~~~~~~~^^^^^^^^^^^^^^
+  File "/tmp/v4-prechange-source-526mzj05/linearno_loop/v3/config.py", line 63, in _topology
+    raise V3SchemaError('custom requires all four P/C/R/S and no executed-depth shorthand')
+linearno_loop.v3.contracts.V3SchemaError: custom requires all four P/C/R/S and no executed-depth shorthand

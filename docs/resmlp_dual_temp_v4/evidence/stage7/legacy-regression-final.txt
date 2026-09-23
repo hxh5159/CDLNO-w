@@ -1,0 +1,12 @@
+Pure LinearNO integration:
+12 passed, 2 warnings in 130.46s.
+
+Legacy loop_linearno:
+102 passed, 5 failed, 2 warnings in 52.27s.
+Failures are pre-existing inventory/provenance projection, exact-float fresh-process strict reload, and old source-hash expectations; see legacy-v1-v2.txt and preexisting-inventory.json. No old test or tolerance was changed.
+
+Historical loop_linearno_ffn collection:
+4 import errors because tests import sibling support modules as top-level names; no production code was changed.
+
+Historical loop_linearno_latent_adapter:
+115 passed, 1 skipped, 1 failure. The failure is the old AirfRANS parser call missing its required task argument; it predates v4 and is preserved in legacy-v3.txt.

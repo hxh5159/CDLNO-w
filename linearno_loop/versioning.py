@@ -8,6 +8,7 @@ from linearno_loop.v2 import config as v2_config
 from linearno_loop.v2 import schema as v2_schema
 
 V3_EXTENSION = "loop_linearno_latent_adapter_v3"
+V4_EXTENSION = "resmlp_dual_temp"
 # Keep the legacy parser importable without the optional V3 package. These are
 # wire field names only; the real schema is imported inside V3-selected calls.
 V3_OPTIONS = {'architecture', 'cost_profile', 'topology_preset', 'executed_depth',
@@ -24,8 +25,14 @@ def is_v2(value):
 def is_v3(value):
     return value.get("architecture_extension") == V3_EXTENSION or value.get("config_version") == 3
 
+def is_v4(value):
+    return value.get("architecture") == "resmlp_dual_temp_v4" and value.get("architecture_extension") == V4_EXTENSION
+
 
 def api(value):
+    if is_v4(value):
+        from linearno_loop.v4 import schema as v4_schema
+        return v4_schema
     if is_v3(value):
         from linearno_loop.v3 import schema as v3_schema
         if value.get("architecture_extension") != V3_EXTENSION or value.get("config_version") != 3:
@@ -41,6 +48,9 @@ def api(value):
 
 
 def resolve_config(task, profile, *, options, profile_overrides):
+    if options.get("architecture") == "resmlp_dual_temp_v4":
+        from linearno_loop.v4.config import resolve_config as resolve_v4
+        return resolve_v4(task, profile=profile, options=options, profile_overrides=profile_overrides)
     if options.get("architecture") == "operator_latent_adapter_v3":
         from linearno_loop.v3 import config as v3_config
         return v3_config.resolve_config(task, profile, options=options,
@@ -50,6 +60,9 @@ def resolve_config(task, profile, *, options, profile_overrides):
 
 
 def run_directory_id(config):
+    if is_v4(config):
+        from linearno_loop.v4.config import run_directory_id as run
+        return run(config)
     if is_v3(config):
         from linearno_loop.v3 import config as v3_config
         return v3_config.run_directory_id(config)
@@ -70,6 +83,9 @@ def restore_config(metadata, **kwargs):
 
 
 def make_metadata(config, **sections):
+    if is_v4(config):
+        from linearno_loop.v4.schema import make_metadata as make
+        return make(config,**sections)
     v3_schema = None
     if is_v3(config):
         from linearno_loop.v3 import schema as v3_schema

@@ -18,12 +18,13 @@ from linearno_loop.contracts import CLI_CONTRACT, HISTORY_FLAGS, OPTIONS, PRESET
 from linearno_loop.v2.contracts import CORE_FFN_MODES
 from linearno_loop.versioning import (OPTIONS as VERSIONED_OPTIONS, make_metadata, read_metadata,
                                       resolve_config, restore_config, run_directory_id, write_metadata,
-                                      is_v3)
+                                      is_v3, is_v4)
 
 # Wire constants are kept local so the old parser has no import dependency on
 # the tensor-bearing V3 package. The selected resolver revalidates them in its
 # own schema after explicit architecture dispatch.
 ARCHITECTURE_SELECTOR = 'operator_latent_adapter_v3'
+V4_ARCHITECTURE_SELECTOR = 'resmlp_dual_temp_v4'
 V3_COST_PROFILES = ('matched_v1', 'efficient_v1', 'custom')
 V3_ADAPTER_MODES = ('none', 'bilateral_qk_lowrank_second_visit')
 V3_CLI_FIELDS = {'architecture', 'cost_profile', 'topology_preset', 'executed_depth',
@@ -48,7 +49,9 @@ def _loop_parser():
     # loop invocation, but the resolver rejects them unless the explicit
     # architecture selector is present, preserving v1/v2 behavior.
     parser.add_argument('--linearno-loop-architecture', dest='architecture',
-                        choices=(ARCHITECTURE_SELECTOR,), default=argparse.SUPPRESS)
+                        choices=(ARCHITECTURE_SELECTOR,V4_ARCHITECTURE_SELECTOR), default=argparse.SUPPRESS)
+    parser.add_argument('--linearno-loop-temperature-mode', dest='temperature_mode',
+                        choices=('base','latent_k_point_q','point_k_point_q'), default=argparse.SUPPRESS)
     parser.add_argument('--linearno-loop-cost-profile', dest='cost_profile',
                         choices=V3_COST_PROFILES, default=argparse.SUPPRESS)
     parser.add_argument('--linearno-loop-executed-depth', dest='executed_depth',
@@ -128,6 +131,8 @@ def parse_loop_args(parser,task,tokens,loop_explicit):
         # versioned option namespace.  Normalize wire values before the pure
         # stdlib resolver sees them.
         v3_requested = loop_explicit.get('architecture') == ARCHITECTURE_SELECTOR
+        if loop_explicit.get('architecture') == V4_ARCHITECTURE_SELECTOR:
+            return _parse_v4(parser,task,args,explicit,loop_explicit)
         if v3_requested:
             v3_fields=V3_CLI_FIELDS
             options={k:v for k,v in loop_explicit.items()
@@ -150,6 +155,10 @@ def parse_loop_args(parser,task,tokens,loop_explicit):
         if args.eval or args.resume:
             if args.linearno_run_dir is None:raise ValueError('loop eval/resume requires explicit --experiment-dir')
             initial=read_metadata(args.linearno_run_dir/'architecture.json')
+            if is_v4(initial):
+                if loop_explicit.get('architecture', V4_ARCHITECTURE_SELECTOR) != V4_ARCHITECTURE_SELECTOR:
+                    raise ValueError('explicit architecture conflicts with saved V4 metadata')
+                return _parse_v4(parser,task,args,explicit,{**loop_explicit,'architecture':V4_ARCHITECTURE_SELECTOR})
             saved_v3=is_v3(initial)
             if saved_v3:
                 v3_requested=True
@@ -220,9 +229,64 @@ def parse_loop_args(parser,task,tokens,loop_explicit):
     except (ValueError,OSError,KeyError,TypeError) as error:parser.error(str(error))
 
 
+def _parse_v4(parser,task,args,explicit,loop_explicit):
+    from linearno_loop.v4.config import resolve_config,run_directory_id
+    from linearno_loop.v4.schema import read_metadata as read_v4_metadata
+    if args.eval and args.resume:raise ValueError('choose train, resume or eval')
+    unsupported=set(loop_explicit)-{'linearno_loop','architecture','temperature_mode'}
+    if unsupported:raise ValueError('V4 does not accept legacy loop fields: '+str(sorted(unsupported)))
+    structural={name for name,path in ARG_FIELDS.items() if path.startswith('model.')}
+    supplied_structural=structural&set(explicit)
+    if supplied_structural:raise ValueError('V4 model fields come from the pure LinearNO profile: '+str(sorted(supplied_structural)))
+    profile=getattr(args,'linearno_profile',DEFAULT_PROFILE)
+    if args.eval or args.resume:
+        if args.linearno_run_dir is None:raise ValueError('V4 eval/resume requires --experiment-dir')
+        metadata=read_v4_metadata(args.linearno_run_dir/'architecture.json')
+        config=metadata['resolved_config']
+        if config['task']!=task:raise ValueError('V4 checkpoint task mismatch')
+        if 'linearno_profile' in explicit and explicit['linearno_profile']!=config['profile']:
+            raise ValueError('V4 checkpoint profile conflict')
+        if 'temperature_mode' in loop_explicit and loop_explicit['temperature_mode']!=config['temperature_mode']:
+            raise ValueError('V4 checkpoint temperature mode conflict')
+        for name,path in ARG_FIELDS.items():
+            if name not in explicit or path.startswith('model.'):continue
+            section,field=path.split('.')
+            expected=config['profile_spec']['values'][section][field]
+            if explicit[name]!=expected:raise ValueError('explicit '+path+' conflicts with V4 metadata')
+        args._linearno_metadata=metadata
+        args._linearno_checkpoint=args.linearno_run_dir/'checkpoints'/((args.checkpoint or ('latest' if args.resume else 'final'))+'.json')
+    else:
+        profile_overrides={path:explicit[name] for name,path in ARG_FIELDS.items()
+                           if name in explicit and not path.startswith('model.') and name!='seed'}
+        config=resolve_config(task,profile=profile,options=dict(architecture=V4_ARCHITECTURE_SELECTOR,
+            temperature_mode=loop_explicit.get('temperature_mode','latent_k_point_q'),seed=explicit.get('seed',0)),
+            profile_overrides=profile_overrides)
+    base=config['profile_spec'];m=config['model']
+    args.linearno_family='linearno_loop';args.linearno_task=task;args._linearno_loop_config=config;args._linearno_config=base
+    args._linearno_model_spec=dict(class_path=config['model_spec']['class_path'],constructor_kwargs=dict(config['model_spec']['constructor_kwargs']))
+    args._linearno_normalizers={};args.linearno_profile=config['profile']
+    for name,path in ARG_FIELDS.items():
+        section,field=path.split('.')
+        if section!='model':setattr(args,name,base['values'][section][field])
+    args.n_hidden=m['hidden_width'];args.n_layers=8;args.n_heads=m['heads'];args.mlp_ratio=m['ffn_ratio']
+    args.dropout=m['dropout'];args.ref=m['ref'];args.unified_pos=m['unified_pos'];args.linearno_variant=m['variant'];args.linearno_rank=m['actual_M']
+    args.seed=config['seed']
+    identifier=run_directory_id(config);args.save_name=args.save_name or identifier
+    if args.linearno_run_dir is None:
+        from cdlno.experiment import timestamp
+        args.linearno_run_dir=Path(os.environ.get('CDLNO_RUNS_ROOT',ROOT/'output'))/task/'resmlp_dual_temp_v4'/(identifier+'__'+timestamp()+'_'+uuid4().hex[:8])
+    args.linearno_run_dir=args.linearno_run_dir.resolve()
+    return args
+
+
 def model_module(args):
     config=args._linearno_loop_config
     def construct(**kwargs):
+        if config.get('architecture')==V4_ARCHITECTURE_SELECTOR:
+            if kwargs != model_kwargs(args):
+                raise ValueError('V4 constructor kwargs conflict with resolved model')
+            from cdlno.linearno_loop.v4.construction import build_from_config
+            return build_from_config(config)
         if is_v3(config):
             expected=model_kwargs(args)
             if kwargs != expected:
@@ -242,6 +306,14 @@ def model_kwargs(args, **grid):
     names while validating those grid facts against the resolved V3 contract.
     """
     config=args._linearno_loop_config
+    if config.get('architecture')==V4_ARCHITECTURE_SELECTOR:
+        m=config['model']
+        for key,value in grid.items():
+            if key=='H' and value!=m['grid_height'] or key=='W' and value!=m['grid_width']:
+                raise ValueError('data grid conflicts with V4 metadata')
+        return dict(space_dim=m['space_dim'],n_layers=8,n_hidden=m['hidden_width'],n_head=m['heads'],dropout=m['dropout'],
+          Time_Input=m['time_input'],act=m['activation'],mlp_ratio=m['ffn_ratio'],fun_dim=m['fun_dim'],out_dim=m['out_dim'],
+          ref=m['ref'],unified_pos=m['unified_pos'],H=m['grid_height'],W=m['grid_width'],linearno_variant=m['variant'],linearno_rank=m['actual_M'])
     if not is_v3(config):
         return _legacy_model_kwargs(args, **grid)
     values=args._linearno_config['values']; m=values['model']; l=config['loop_spec']
@@ -278,9 +350,12 @@ class LoopStandardRun(PureStandardRun):
     def prepare(self, optimizer, scheduler, train_loader, test_loader):
         prepare_loaders(self.args,train_loader,test_loader)
         v3 = is_v3(self.args._linearno_loop_config)
+        v4 = is_v4(self.args._linearno_loop_config)
         from cdlno.linearno.checkpoint import strict_load, restore_random_state
         if v3:
             from cdlno.linearno_loop.v3.checkpoint import resume_state as v3_resume_state, measure_parameters
+        elif v4:
+            from cdlno.linearno_loop.v4.checkpoint import resume_state as v4_resume_state, measure_parameters
         else:
             from cdlno.linearno.checkpoint import resume_state
         from cdlno.training_state import _optimizer_signature
@@ -355,13 +430,14 @@ class LoopStandardRun(PureStandardRun):
             self.metadata = saved
         else:
             state = (v3_resume_state(optimizer,scheduler,0,self.optimizer_steps,args.epochs,
-                                      self.generators,self.sampler,scaler=None)
-                     if v3 else
+                                      self.generators,self.sampler,scaler=None) if v3 else
+                     v4_resume_state(optimizer,scheduler,0,self.optimizer_steps,args.epochs,
+                                      self.generators,self.sampler) if v4 else
                      resume_state(optimizer,scheduler,0,self.optimizer_steps,args.epochs,
                                   self.generators,self.sampler))
             sections = dict(data_spec=data, provenance_spec=prov, normalizer_spec=normalizers,
                             resume_state=state, ensemble_manifest=[])
-            if v3:
+            if v3 or v4:
                 sections['parameter_measurement'] = measure_parameters(self.model, args._linearno_loop_config)
             self.metadata = make_metadata(args._linearno_loop_config, **sections)
             write_metadata(self.directory/'architecture.json',self.metadata)
@@ -379,9 +455,12 @@ class LoopStandardRun(PureStandardRun):
 
     def save(self, model):
         v3 = is_v3(self.args._linearno_loop_config)
+        v4 = is_v4(self.args._linearno_loop_config)
         if v3:
             from cdlno.linearno_loop.v3.checkpoint import resume_state as v3_resume_state
             from linearno_loop.v3.contracts import seal
+        elif v4:
+            from cdlno.linearno_loop.v4.checkpoint import resume_state as v4_resume_state
         else:
             from cdlno.linearno.checkpoint import resume_state
             from linearno_loop.contracts import seal
@@ -391,13 +470,18 @@ class LoopStandardRun(PureStandardRun):
             raise ValueError('actual scheduler cadence differs from metadata')
         metadata=copy.deepcopy(self.metadata)
         metadata['resume_state']=(v3_resume_state(self.optimizer,self.scheduler,self.completed_epoch,
-            self.optimizer_steps,self.args.epochs,self.generators,self.sampler,scaler=None)
-            if v3 else resume_state(self.optimizer,self.scheduler,self.completed_epoch,
+            self.optimizer_steps,self.args.epochs,self.generators,self.sampler,scaler=None) if v3 else
+            v4_resume_state(self.optimizer,self.scheduler,self.completed_epoch,self.optimizer_steps,
+            self.args.epochs,self.generators,self.sampler) if v4 else resume_state(self.optimizer,self.scheduler,self.completed_epoch,
             self.optimizer_steps,self.args.epochs,self.generators,self.sampler))
         if v3:
             # The initial V3 metadata already measured the constructed model;
             # retain that immutable record while only advancing resume state.
             return checkpoint_api(self.args._linearno_loop_config).save_pair(
                 self.directory,model,seal(metadata,'metadata_hash'))
+        if v4:
+            metadata['metadata_hash']=__import__('linearno_loop.v4.contracts',fromlist=['digest']).digest(
+                {k:v for k,v in metadata.items() if k!='metadata_hash'})
+            return checkpoint_api(self.args._linearno_loop_config).save_pair(self.directory,model,metadata)
         return checkpoint_api(self.args._linearno_loop_config).save_pair(
             self.directory,model,seal(metadata,'metadata_hash'))

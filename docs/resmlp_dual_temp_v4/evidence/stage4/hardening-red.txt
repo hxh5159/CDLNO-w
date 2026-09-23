@@ -1,0 +1,75 @@
+FF.F.F                                                                   [100%]
+=================================== FAILURES ===================================
+__________ test_factory_and_predictors_preserve_initialized_cuda_rng ___________
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason='CUDA unavailable')
+    def test_factory_and_predictors_preserve_initialized_cuda_rng():
+        torch.cuda.init()
+        before = [state.clone() for state in torch.cuda.get_rng_state_all()]
+        cpu = torch.get_rng_state().clone()
+        build_from_config(config())
+        assert torch.equal(cpu, torch.get_rng_state())
+>       assert all(torch.equal(a, b) for a, b in zip(before, torch.cuda.get_rng_state_all()))
+E       assert False
+E        +  where False = all(<generator object test_factory_and_predictors_preserve_initialized_cuda_rng.<locals>.<genexpr> at 0x79b154bbe180>)
+
+tests/linearno_loop_v4/test_v4_hardening.py:29: AssertionError
+_________ test_full_tree_initialization_after_installation_is_rejected _________
+
+    def test_full_tree_initialization_after_installation_is_rejected():
+        from cdlno.linearno.attention import initialize_release_weights
+        model = build_from_config(config())
+        state = {key: value.clone() for key, value in model.state_dict().items()}
+>       with pytest.raises(RuntimeError, match='initializ'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'RuntimeError'>
+
+tests/linearno_loop_v4/test_v4_hardening.py:36: Failed
+__________________ test_version_dispatch_resolves_explicit_v4 __________________
+
+    def test_version_dispatch_resolves_explicit_v4():
+        from linearno_loop.versioning import resolve_config as dispatch
+        direct = config()
+>       assert dispatch('elasticity', direct['profile'], options=dict(
+            architecture='resmlp_dual_temp_v4', temperature_mode='latent_k_point_q', seed=19),
+            profile_overrides={}) == direct
+
+tests/linearno_loop_v4/test_v4_hardening.py:54: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+linearno_loop/versioning.py:56: in resolve_config
+    return resolver.resolve_config(task, profile, options=options, profile_overrides=profile_overrides)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+task = 'elasticity', profile = 'paper_table8_on_release_model'
+
+    def resolve_config(task, profile=DEFAULT_PROFILE, *, options=None, profile_overrides=None):
+        """Typed train contract. Topology/mode required; M multiplier defaults to two.
+    
+        This returns JSON only. Future class_path strings are not imported. Original
+        profile_spec is retained byte-for-byte; actual topology/rank live in loop_spec.
+        """
+        if type(task) is not str or task not in TASKS or type(profile) is not str or profile not in PROFILES:
+            raise LoopSchemaError('unknown task/profile')
+        options = deepcopy({} if options is None else options)
+        json_value(options, 'options')
+        if type(options) is not dict or set(options) - OPTIONS:
+>           raise LoopSchemaError('options: unknown fields or not an object')
+E           linearno_loop.contracts.LoopSchemaError: options: unknown fields or not an object
+
+linearno_loop/config.py:153: LoopSchemaError
+______ test_provenance_is_portable_and_covers_configuration_and_dispatch _______
+
+    def test_provenance_is_portable_and_covers_configuration_and_dispatch():
+        from cdlno.linearno_loop.versioning import provenance
+        record = provenance(config(), 'elasticity')
+>       assert 'sources' in record
+E       AssertionError: assert 'sources' in {'code_version': 'resmlp_dual_temp_v4', 'source_sha256': '288e65d69842b15c1a7ddb2b15bc5a10dd6ca0394deb61ab471651879ab6ae14', 'target_sha': '36a2e0be9287949b06006606e4726aa77d4a2a66', 'task': 'elasticity'}
+
+tests/linearno_loop_v4/test_v4_hardening.py:73: AssertionError
+=========================== short test summary info ============================
+FAILED tests/linearno_loop_v4/test_v4_hardening.py::test_factory_and_predictors_preserve_initialized_cuda_rng
+FAILED tests/linearno_loop_v4/test_v4_hardening.py::test_full_tree_initialization_after_installation_is_rejected
+FAILED tests/linearno_loop_v4/test_v4_hardening.py::test_version_dispatch_resolves_explicit_v4
+FAILED tests/linearno_loop_v4/test_v4_hardening.py::test_provenance_is_portable_and_covers_configuration_and_dispatch
+4 failed, 2 passed in 4.76s
