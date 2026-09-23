@@ -86,10 +86,10 @@ def main(argv=None):
     code = execute(value)
     if code or not (args.then_eval or args.action == 'train_eval'):
         return code
-    # Keep train/eval on the GPU explicitly selected by the caller.  The
-    # saved metadata still supplies all model settings; only the runtime
-    # device is carried into the second command.
-    follow = ['--experiment-dir', value['run'], '--gpu', str(args.gpu)]
+    # The training environment already masks to the selected physical GPU.
+    # Select logical index 0 within that one-device mask for evaluation;
+    # applying the caller's original index again would index the mask twice.
+    follow = ['--experiment-dir', value['run'], '--gpu', '0']
     paths = {'--data_path', '--my_path', '--data_dir', '--save_dir', '--device'}
     index = 0
     while index < len(value['argv']):

@@ -55,6 +55,38 @@ def test_then_eval_only_after_training_success():
         assert execute.call_args_list[0].args[0]['run']==execute.call_args_list[1].args[0]['run']
 
 
+@pytest.mark.parametrize('requested,visible,physical', [(1,None,'1'),(1,'4,7','7'),(0,'3','3')])
+def test_then_eval_preserves_selected_physical_gpu(requested,visible,physical,monkeypatch):
+    from tran_evaluate.linearno_loop import launch as native
+    if visible is None:
+        monkeypatch.delenv('CUDA_VISIBLE_DEVICES',raising=False)
+    else:
+        monkeypatch.setenv('CUDA_VISIBLE_DEVICES',visible)
+    _,training=plan_v4(['elasticity','train','--gpu',str(requested)])
+    executed=[]
+
+    def plan_runtime(task,action,tokens,environment=None):
+        if action=='train':
+            return training
+        assert action=='eval'
+        _,env,mapping=native.gpu_environment(tokens,environment)
+        assert mapping['selected_visible']==physical
+        assert env['CUDA_VISIBLE_DEVICES']==physical
+        return {**training,'action':'eval','environment':env,'gpu':mapping}
+
+    def execute_without_training(value):
+        executed.append(value)
+        return 0
+
+    # Only replace execution and saved-run lookup. The GPU resolver itself is
+    # real, and catches indexing the already masked one-GPU environment twice.
+    with patch('tran_evaluate.linearno_loop_v4.launch.plan',side_effect=plan_runtime), \
+         patch('tran_evaluate.linearno_loop_v4.launch.execute',side_effect=execute_without_training):
+        assert main(['elasticity','train_eval','--gpu',str(requested)])==0
+    assert [v['action'] for v in executed]==['train','eval']
+    assert all(v['gpu']['selected_visible']==physical for v in executed)
+
+
 def test_all_shell_syntax_and_actual_bash_preview():
     for path in sorted((ROOT/'tran_evaluate/linearno_loop_v4').glob('*.sh')):
         subprocess.run(['bash','-n',str(path)],check=True)
