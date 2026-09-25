@@ -1,4 +1,10 @@
-# 最新：Loop LinearNO V5 visit-independent LayerNorm 增量完成（2026-09-25）
+# 最新：V5 Standard launcher任务数据路径修正完成（2026-09-25）
+
+用户远端Airfoil日志确认模型构造前的数据校验失败：原生launcher先传正确`fno/airfoil/naca`，V5 launcher随后错误追加通用`fno`，argparse最后值覆盖导致查找`fno/NACA_Cylinder_X.npy`。仅修改`tran_evaluate/linearno_loop_v5/launch.py`：六个Standard任务按既有`CDLNO_*`任务路径解析，并从最终argv去除被遮蔽的早期默认值；显式`--data_path`仍优先，train_eval评估沿用同一唯一正确路径。未改模型/config hash/checkpoint/data/训练数学。
+
+后续八任务审计发现AirfRANS `--my_path`与Car `--data_dir/--save_dir`也有值相同的重复默认项，并且train_eval评估计划会重新引入原生默认；现已按任务/选项分别去重，训练与自动评估都只保留所选路径。失败优先7项Standard、2项工业、8项自动评估均先失败后通过；launcher/parser/checkpoint focused 29通过；V5完整86通过/114.68s；八任务`v5_run`真实parser dry-run、provenance、compileall、shell syntax、diff check通过。证据：`docs/loop_linearno_dense_experts_v5/evidence/visit_norms/launcher_path_fix.txt`。未在远端重试，未读真实数据或训练。**本阶段结束，未执行下一阶段。**
+
+# Loop LinearNO V5 visit-independent LayerNorm 增量完成（2026-09-25）
 
 用户授权的局部修改已完成。`partial_share_feature_gate_v5`公开selector/architecture_version=5保持；默认新增`core_norm_mode=visit_independent`，core每个(position,visit)独立LN1/LN2，显式`shared`保留旧共享语义。其他operator/QK温度/router/稠密专家/残差/拓扑/任务协议均不变。内部config/schema=6，checkpoint pair-v2；旧pair-v1 metadata-first拒绝，无隐式迁移。P1增量12C，P2增量8C；Airfoil P1/K3 1,456,025→1,457,561，矩阵FLOPs不变。
 

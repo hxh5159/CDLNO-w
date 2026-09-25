@@ -82,6 +82,33 @@ GeForce RTX 5090 Laptop GPU.
 - V3 representative parity/checkpoint tests: two passed.
 - `compileall` and `git diff --check`: passed.
 
+### Remote Standard data-path follow-up
+
+A remote Airfoil launch exposed an observation-layer defect after this report:
+the native task launcher supplied the correct `fno/airfoil/naca` directory,
+then the V5 launcher appended the generic `fno` directory. Because argparse
+uses the final repeated option, dataset verification searched for
+`fno/NACA_Cylinder_X.npy` and failed before model construction.
+
+The V5 launcher now resolves each Standard task through its existing path
+contract: Airfoil uses `CDLNO_AIRFOIL_ROOT`, Pipe uses `CDLNO_PIPE_ROOT`,
+Plasticity uses `CDLNO_PLASTICITY_FILE`, and Darcy/Elasticity/NS use their
+task root variables. Shadowed native defaults are removed from the final argv,
+so execution and the automatic evaluation follow-up each receive one effective
+`--data_path`. An explicit user `--data_path` remains authoritative.
+
+The subsequent all-task review found equivalent repeated defaults for
+AirfRANS `--my_path` and ShapeNet-Car `--data_dir`/`--save_dir`. Their values
+were identical in the tested environment, but they are now deduplicated by the
+same task-level helper for both training and automatic evaluation planning.
+
+Failure-first coverage produced 7 Standard path failures, 2 industrial path
+failures and 8 automatic-evaluation path failures. After the correction, all
+17 direct cases, 29 launcher/parser/checkpoint cases, all 8 `v5_run` script
+dry-runs, the complete 86-case V5 suite, provenance checks, compileall, shell
+syntax and `git diff --check` passed. No real dataset was opened and no
+training ran.
+
 The V5 suite covers CPU forward/backward/AdamW, both modes, Standard,
 AirfRANS and ShapeNet wrappers, strict save/load, cross-mode pre-tensor
 rejection, initial output/common-tensor/RNG equality, finite norm gradients,
@@ -110,6 +137,8 @@ compile mode, real epoch time, and production inference latency.
 
 Priority source review passed for norm ownership/storage, unchanged residual
 placement, common initialization/RNG, metadata-first conflict rejection, and
-analytic/live parameter partition agreement.
+analytic/live parameter partition agreement. The path follow-up additionally
+confirmed that the exception occurred before model construction and did not
+change any architecture/config hash/checkpoint field.
 
 本阶段结束，未执行下一阶段。

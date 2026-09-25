@@ -1,0 +1,55 @@
+V5 Standard launcher data-path correction
+Date: 2026-09-25
+HEAD before correction: 6c2069c3ed9807729f09cc3365d943d54afbe0d2
+
+Observed remote command:
+bash v5_run/airfoil.sh train_eval --topology p1_c3_r2_s1 \
+  --core-norm-mode visit_independent --expert-count 1 --seed 0 --gpu 0
+
+Observed argv contained, in order:
+1. <data>/fno/airfoil/naca
+2. <data>/fno
+
+The second argparse value won. verify_linearno_data then attempted
+<data>/fno/NACA_Cylinder_X.npy and raised FileNotFoundError before model
+construction.
+
+Correction:
+- Standard task defaults now use their task-specific CDLNO_* path variables.
+- The final V5 execution argv keeps only the last authoritative data option.
+- Explicit --data_path remains authoritative.
+- AirfRANS and Car repeated native defaults are removed independently for
+  --my_path, --data_dir and --save_dir.
+- Automatic train_eval evaluation planning applies the same task-level rule.
+
+Failure-first command:
+python -m pytest -q tests/loop_linearno_v5/test_v5_integration.py \
+  -k 'standard_launcher_resolves_one_task_specific_data_path or standard_launcher_preserves_one_explicit_data_path'
+Result before correction: 7 failed.
+Result after correction: 7 passed, 28 deselected.
+
+Focused launcher command:
+python -m pytest -q tests/loop_linearno_v5 \
+  -k 'launcher or parser or train_eval or saved_metadata'
+Result: 13 passed, 63 deselected, one existing timm warning.
+
+Industrial failure-first result: 2 failed before the extension, 2 passed after.
+Eight-task automatic-evaluation failure-first result: 8 failed before the
+extension, 8 passed after.
+Focused launcher/parser/checkpoint result: 29 passed, 57 deselected.
+Complete V5 result: 86 passed in 114.68s, one existing timm warning.
+All eight v5_run scripts passed real-parser dry-run with a data root containing
+spaces. compileall, all V5 shell syntax, provenance checks and diff check passed.
+
+Canonical resolved Standard paths:
+airfoil    <data>/fno/airfoil/naca
+darcy      <data>/fno
+elasticity <data>/fno
+pipe       <data>/fno/pipe
+ns         <data>/fno
+plasticity <data>/fno/plas_N987_T20.mat
+airfrans   <data>/AirfRANS/Dataset
+car raw    <data>/mlcfd_data/training_data
+car cache  <data>/mlcfd_data/preprocessed_data
+
+NOT RUN: remote retry, real data access, training, evaluation or convergence.

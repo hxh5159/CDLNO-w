@@ -42,3 +42,25 @@ git diff --check: PASS
 
 NOT RUN: real data, full epochs, convergence, accuracy/SOTA, three seeds,
 remote Python 3.10/torch 2.11, distributed/compile, real epoch or inference timing.
+
+Remote Standard data-path follow-up (2026-09-25):
+- Observed failure: Airfoil received the native task path and then a generic
+  V5 fno root; the latter won and verification failed before model construction.
+- Failure-first: 7/7 new path cases failed before the launcher correction.
+- Direct regression after correction: 7 passed.
+- Launcher/parser/metadata selection: 13 passed, 63 deselected.
+- Complete V5 collection after all-task review: 86 passed in 114.68s; one
+  existing timm deprecation warning.
+- Eight v5_run task scripts: dry-run PASS with a data root containing spaces.
+- Canonical Standard resolution: exactly one path per task; Airfoil ends in
+  fno/airfoil/naca and Pipe ends in fno/pipe.
+- AirfRANS resolves one --my_path; Car resolves one --data_dir and one
+  --save_dir. All eight automatic train_eval follow-ups retain only the
+  selected training paths.
+- Industrial failure-first: 2 path tests failed before the extension and pass
+  after it. Automatic-evaluation failure-first: 8 failed before and pass after.
+- Launcher/parser/checkpoint focused selection: 29 passed, 57 deselected.
+- Provenance and existing Airfoil reference/norm launcher checks: 2 passed.
+- compileall, shell syntax and git diff --check: PASS.
+- Model/config/checkpoint/data protocol files were not modified.
+- NOT RUN: remote retry, real dataset reads, training, evaluation or metrics.

@@ -13,6 +13,19 @@ ARCHITECTURE = "partial_share_feature_gate_v5"
 RESIDUAL = "operator_1_expert_1_over_r"
 PRESETS = ("p1_c3_r2_s1", "p2_c2_r2_s2", "custom")
 CORE_NORM_MODES = ("visit_independent", "shared")
+STANDARD_DATA = {
+    "airfoil": ("CDLNO_AIRFOIL_ROOT", Path("fno/airfoil/naca")),
+    "darcy": ("CDLNO_DARCY_ROOT", Path("fno")),
+    "elasticity": ("CDLNO_ELASTICITY_ROOT", Path("fno")),
+    "pipe": ("CDLNO_PIPE_ROOT", Path("fno/pipe")),
+    "ns": ("CDLNO_NS_ROOT", Path("fno")),
+    "plasticity": ("CDLNO_PLASTICITY_FILE", Path("fno/plas_N987_T20.mat")),
+}
+PATH_OPTION_GROUPS = {
+    **{task: (("--data_path", "--data-path"),) for task in STANDARD_DATA},
+    "airfrans": (("--my_path",),),
+    "car": (("--data_dir",), ("--save_dir",)),
+}
 
 
 def _append_data_defaults(args, tokens, rest):
@@ -23,11 +36,9 @@ def _append_data_defaults(args, tokens, rest):
     def value(environment, fallback):
         return str(fallback if explicit_root else os.environ.get(environment, fallback))
 
-    if args.task not in ("airfrans", "car") and not {"--data_path", "--data-path"} & flags:
-        if args.task == "plasticity":
-            tokens += ["--data_path", value("CDLNO_PLASTICITY_FILE", root / "fno" / "plas_N987_T20.mat")]
-        else:
-            tokens += ["--data_path", value("CDLNO_FNO_ROOT", root / "fno")]
+    if args.task in STANDARD_DATA and not {"--data_path", "--data-path"} & flags:
+        environment, relative_path = STANDARD_DATA[args.task]
+        tokens += ["--data_path", value(environment, root / relative_path)]
     elif args.task == "airfrans" and "--my_path" not in flags:
         tokens += ["--my_path", value("CDLNO_AIRFRANS_DATASET", root / "AirfRANS" / "Dataset")]
     elif args.task == "car":
@@ -35,6 +46,30 @@ def _append_data_defaults(args, tokens, rest):
             tokens += ["--data_dir", value("CDLNO_CAR_RAW_ROOT", root / "mlcfd_data" / "training_data")]
         if "--save_dir" not in flags:
             tokens += ["--save_dir", value("CDLNO_CAR_CACHE_ROOT", root / "mlcfd_data" / "preprocessed_data")]
+
+
+def _keep_last_option(tokens, names):
+    """Remove shadowed launcher defaults after the native parser has accepted them."""
+    spans = []
+    index = 0
+    while index < len(tokens):
+        token = tokens[index]
+        if token.split("=", 1)[0] in names:
+            end = index + (1 if "=" in token else 2)
+            spans.append((index, end))
+            index = end
+        else:
+            index += 1
+    if len(spans) < 2:
+        return tokens
+    removed = {position for start, end in spans[:-1] for position in range(start, end)}
+    return [token for position, token in enumerate(tokens) if position not in removed]
+
+
+def _deduplicate_task_paths(task, result):
+    for names in PATH_OPTION_GROUPS[task]:
+        result["argv"] = _keep_last_option(result["argv"], set(names))
+    return result
 
 
 def plan_v5(argv=None):
@@ -135,6 +170,7 @@ def plan_v5(argv=None):
             os.environ.pop("CDLNO_RUNS_ROOT", None)
         else:
             os.environ["CDLNO_RUNS_ROOT"] = prior
+    _deduplicate_task_paths(args.task, result)
     if result["config"]["architecture"] != ARCHITECTURE:
         parser.error("V5 launcher requires V5 saved metadata")
     return args, result
@@ -165,6 +201,7 @@ def main(argv=None):
                 follow.append(result["argv"][index])
         index += 1
     evaluation = plan(args.task, "eval", follow, result["environment"])
+    _deduplicate_task_paths(args.task, evaluation)
     return execute(evaluation)
 
 

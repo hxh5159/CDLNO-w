@@ -130,6 +130,67 @@ def test_saved_metadata_drives_real_resume_and_eval_parsers(tmp_path):
                  "--expert-count", "3"])
 
 
+@pytest.mark.parametrize("task,relative_path", [
+    ("airfoil", "fno/airfoil/naca"),
+    ("darcy", "fno"),
+    ("elasticity", "fno"),
+    ("pipe", "fno/pipe"),
+    ("ns", "fno"),
+    ("plasticity", "fno/plas_N987_T20.mat"),
+])
+def test_standard_launcher_resolves_one_task_specific_data_path(
+        task, relative_path, tmp_path):
+    from tran_evaluate.linearno_loop_v5.launch import plan_v5
+
+    data_root = tmp_path / "data root"
+    _, planned = plan_v5([
+        task, "train", "--dry-run", "--data-root", str(data_root),
+        "--gpu", "0",
+    ])
+    paths = [planned["argv"][index + 1]
+             for index, token in enumerate(planned["argv"])
+             if token == "--data_path"]
+    assert paths == [str(data_root / relative_path)]
+
+
+def test_standard_launcher_preserves_one_explicit_data_path(tmp_path):
+    from tran_evaluate.linearno_loop_v5.launch import plan_v5
+
+    explicit = tmp_path / "explicit airfoil data"
+    _, planned = plan_v5([
+        "airfoil", "train", "--dry-run", "--data_path", str(explicit),
+        "--gpu", "0",
+    ])
+    paths = [planned["argv"][index + 1]
+             for index, token in enumerate(planned["argv"])
+             if token == "--data_path"]
+    assert paths == [str(explicit)]
+
+
+@pytest.mark.parametrize("task,expected", [
+    ("airfrans", {
+        "--my_path": "AirfRANS/Dataset",
+    }),
+    ("car", {
+        "--data_dir": "mlcfd_data/training_data",
+        "--save_dir": "mlcfd_data/preprocessed_data",
+    }),
+])
+def test_industrial_launcher_resolves_one_path_per_option(task, expected, tmp_path):
+    from tran_evaluate.linearno_loop_v5.launch import plan_v5
+
+    data_root = tmp_path / "industrial data root"
+    _, planned = plan_v5([
+        task, "train", "--dry-run", "--data-root", str(data_root),
+        "--gpu", "0",
+    ])
+    for option, relative_path in expected.items():
+        paths = [planned["argv"][index + 1]
+                 for index, token in enumerate(planned["argv"])
+                 if token == option]
+        assert paths == [str(data_root / relative_path)]
+
+
 @pytest.mark.parametrize("task", ("airfrans", "car"))
 def test_industrial_real_parsers_both_presets_and_independent_k_f(task):
     from tran_evaluate.linearno_loop_v5.launch import plan_v5
@@ -162,15 +223,63 @@ def test_train_eval_preserves_selected_gpu_for_evaluation(monkeypatch, tmp_path)
 
     def plan(task, action, tokens, environment):
         evaluations.append((task, action, tokens, environment))
-        return {"phase": "eval"}
+        return {"phase": "eval", "argv": list(tokens)}
 
     monkeypatch.setattr(launch, "plan", plan)
     assert launch.main([]) == 0
-    assert executions == [training, {"phase": "eval"}]
+    assert executions == [training, {"phase": "eval", "argv": [
+        "--experiment-dir", training["run"], "--gpu", "3",
+        "--data_path", str(tmp_path / "data"),
+    ]}]
     assert evaluations == [("darcy", "eval", [
         "--experiment-dir", training["run"], "--gpu", "3",
         "--data_path", str(tmp_path / "data"),
     ], training["environment"])]
+
+
+@pytest.mark.parametrize("task,selected_paths", [
+    ("airfoil", {"--data_path": "/selected/airfoil"}),
+    ("darcy", {"--data_path": "/selected/fno"}),
+    ("elasticity", {"--data_path": "/selected/fno"}),
+    ("pipe", {"--data_path": "/selected/pipe"}),
+    ("ns", {"--data_path": "/selected/fno"}),
+    ("plasticity", {"--data_path": "/selected/plasticity.mat"}),
+    ("airfrans", {"--my_path": "/selected/AirfRANS/Dataset"}),
+    ("car", {"--data_dir": "/selected/car/raw", "--save_dir": "/selected/car/cache"}),
+])
+def test_train_eval_removes_native_path_defaults_for_every_task(
+        task, selected_paths, monkeypatch, tmp_path):
+    from tran_evaluate.linearno_loop_v5 import launch
+
+    args = SimpleNamespace(task=task, action="train_eval", then_eval=False, gpu=0,
+                           print_run_dir=False, print_config=False, dry_run=False)
+    training_argv = ["entry.py"]
+    for option, path in selected_paths.items():
+        training_argv.extend([option, path])
+    training = {
+        "run": str(tmp_path / "run"),
+        "argv": training_argv,
+        "environment": {"CUDA_VISIBLE_DEVICES": "0"},
+    }
+    executions = []
+    monkeypatch.setattr(launch, "plan_v5", lambda argv=None: (args, training))
+    monkeypatch.setattr(launch, "execute", lambda value: executions.append(value) or 0)
+
+    def plan(task_name, action, tokens, environment):
+        argv = ["evaluation.py"]
+        for option in selected_paths:
+            argv.extend([option, "/native/default"])
+        argv.extend(tokens)
+        return {"task": task_name, "action": action, "argv": argv}
+
+    monkeypatch.setattr(launch, "plan", plan)
+    assert launch.main([]) == 0
+    evaluation = executions[-1]
+    for option, path in selected_paths.items():
+        values = [evaluation["argv"][index + 1]
+                  for index, token in enumerate(evaluation["argv"])
+                  if token == option]
+        assert values == [path]
 
 
 def test_v5_recorder_verifies_real_visit_and_expert_schedule(tmp_path):
