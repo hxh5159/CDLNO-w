@@ -85,14 +85,15 @@ def parse_args(parser,tokens,loop_explicit,*,task,evaluation):
         from .v4.industrial_entry import parse_v4
         return parse_v4(parser,args,supplied,loop_explicit,task=task)
     v3_requested=options.get('architecture') == 'operator_latent_adapter_v3'
+    v5_requested=options.get('architecture') == 'partial_share_feature_gate_v5'
     if 'linearno_rank' in supplied:
         if 'rank_multiplier' in options:
             raise ValueError('actual rank and multiplier conflict')
         # The industrial CLI keeps --linearno-rank for compatibility, while
-        # V3 records the same absolute value under its versioned actual_M key.
-        options['actual_M' if v3_requested else 'linearno_rank']=args.linearno_rank
-    if v3_requested and 'rank_multiplier' in options:
-        raise ValueError('V3 does not accept rank multipliers; use --linearno-rank')
+        # V3/V5 record the same absolute value under the versioned actual_M key.
+        options['actual_M' if v3_requested or v5_requested else 'linearno_rank']=args.linearno_rank
+    if (v3_requested or v5_requested) and 'rank_multiplier' in options:
+        raise ValueError('V3/V5 do not accept rank multipliers; use --linearno-rank')
     if 'latent_enabled' in options:
         options['latent_enabled']=bool(options['latent_enabled'])
     if options.get('topology_preset') in PRESETS and set(options)&set(TOPOLOGY_FIELDS):raise ValueError('preset/custom conflict')
@@ -139,8 +140,8 @@ def parse_args(parser,tokens,loop_explicit,*,task,evaluation):
     if 'weight' in supplied and args.weight!=base['values']['objective']['surface_weight']:
         raise ValueError('loop does not change selected profile objective surface weight')
     if task=='airfrans':
-        if config.get('config_version') == 3:
-            # Industrial V3 owns hidden width/depth/M in loop_spec; the
+        if config.get('config_version') in (3, 5):
+            # Industrial V3/V5 own hidden width/depth/M in loop_spec; the
             # legacy AirfRANS Namespace still needs the native field names.
             loop=config['loop_spec']; model=base['values']['model']; training=base['values']['training']
             args.linearno_profile=base['profile']; args.linearno_variant=loop['variant']
@@ -175,7 +176,10 @@ def parse_args(parser,tokens,loop_explicit,*,task,evaluation):
     identifier=run_directory_id(config)
     if args.linearno_run_dir is None:
         from cdlno.experiment import timestamp
-        args.linearno_run_dir=Path(os.environ.get('CDLNO_RUNS_ROOT',ROOT/'output'))/task/'linearno_loop'/(identifier+'__'+timestamp()+'_'+uuid4().hex[:8])
+        family_dir = ('partial_share_feature_gate_v5'
+                      if config.get('architecture') == 'partial_share_feature_gate_v5'
+                      else 'linearno_loop')
+        args.linearno_run_dir=Path(os.environ.get('CDLNO_RUNS_ROOT',ROOT/'output'))/task/family_dir/(identifier+'__'+timestamp()+'_'+uuid4().hex[:8])
     args.linearno_run_dir=Path(args.linearno_run_dir).resolve()
     if identifier not in args.linearno_run_dir.name:raise ValueError('loop run directory must contain '+identifier)
     if not (args.eval or args.resume) and args.linearno_run_dir.exists():raise ValueError('new loop directory already exists')

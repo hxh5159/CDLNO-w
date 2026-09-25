@@ -1,0 +1,49 @@
+V5 final checks after launcher self-review
+Date: 2026-09-25T08:26:25+08:00
+HEAD: c721ed161f0b94e5293d7e43b7b55ef20ba48167
+Branch: main
+
+Self-review correction:
+- train_eval now passes the user-selected GPU to its automatic eval phase.
+- dedicated regression test added and passed.
+- pure LinearNO provenance now remains stable when the exact reviewed V5
+  routing source is the committed HEAD, while unknown mutations remain visible.
+- committed-source simulation and current LL6 fingerprint regression: 2 passed.
+
+V5 pytest:
+- 53 passed, 1 warning in 87.22s
+- log: v5_full_pytest_final_provenance.log
+- AirfRANS member interrupt/resume/final/eval: PASS
+- AirfRANS/Car P1 and P2 with K/F overrides: PASS
+- six Standard visualization/train-result/independent-eval outputs: PASS
+
+Original Transolver compatibility:
+- command: python -m pytest -q tests/linearno/test_legacy.py::LegacyRegression::test_eight_real_models_same_weights_and_checkpoints_fresh_workdirs
+- final rerun result: 1 passed in 19.04s
+- scope: eight real task selectors, frozen CPU synthetic outputs, strict state reload, local Car/AirfRANS object roundtrip
+
+V2 compatibility after provenance correction:
+- effective command: cd tests/loop_linearno_ffn && PYTHONPATH=/home/hwz/CDLNO python -m pytest -q
+- result: 34 passed, 1 warning in 16.33s
+- two preceding invocations produced collection errors because either the
+  test-local top-level helpers or repository packages were absent from
+  sys.path; no test body ran in those invocations
+- the collection errors were invocation-environment errors, not model failures
+
+Final static/parser checks:
+- compileall for V5 config/runtime/launcher/report/tests: PASS
+- bash -n for 9 V5 shell scripts: PASS
+- eight task real-parser dry-runs: 8/8 PASS
+- git diff --check: PASS
+- trailing-whitespace scan over all V5 source/test/docs: PASS
+
+Cost evidence:
+- 104 exact parameter/matrix-operation rows: PASS
+- 10 bounded CPU/CUDA timing rows: PASS
+
+NOT RUN:
+- real data or complete epochs
+- convergence, benchmark accuracy, SOTA, or three-seed studies
+- real epoch duration or production inference latency
+- remote Python 3.10/Torch 2.11 environment
+- distributed or compile-mode execution

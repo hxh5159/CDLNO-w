@@ -25,7 +25,9 @@ class CarRun(GeneratorCarRun):
     objective=pure.CarRun.objective
 
     def _resume_state(self, optimizer, scheduler, epoch):
-        fn = self.checkpoint.resume_state if self.args._linearno_loop_config.get('config_version') == 3 else resume_state
+        fn = (self.checkpoint.resume_state
+              if self.args._linearno_loop_config.get('config_version') in (3, 5)
+              else resume_state)
         return fn(optimizer, scheduler, epoch, self.steps, self.args.nb_epochs, self.generators,
                   dict(train='RandomSampler, drop_last=True, independent generator',
                        test='SequentialSampler',epoch_boundary=True))
@@ -56,9 +58,10 @@ class CarRun(GeneratorCarRun):
             self.data['optimizer_signature']=saved['data_spec']['runtime']['optimizer_signature']
 
     def metadata(self,optimizer,scheduler,epoch,model=None):
-        if self.args._linearno_loop_config.get('architecture') == 'resmlp_dual_temp_v4':
-            if model is None:raise ValueError('V4 Car metadata requires constructed model')
-            from cdlno.linearno_loop.v4.checkpoint import measure_parameters
+        architecture = self.args._linearno_loop_config.get('architecture')
+        if architecture in ('resmlp_dual_temp_v4', 'partial_share_feature_gate_v5'):
+            if model is None:raise ValueError('versioned Car metadata requires constructed model')
+            measure_parameters = self.checkpoint.measure_parameters
             return make_metadata(self.args._linearno_loop_config,data_spec=data_contract(self.args._linearno_loop_config,self.data),
                 normalizer_spec=self.normalizers,provenance_spec=self.provenance,
                 resume_state=self._resume_state(optimizer,scheduler,epoch),ensemble_manifest=[],

@@ -48,14 +48,17 @@ class AirRun(pure.AirRun):
     def loader_kwargs(self,split):return dict(generator=self.generators[split])
 
     def _resume_state(self, optimizer, scheduler, epoch, sampler):
-        fn = self.checkpoint.resume_state if self.args._linearno_loop_config.get('config_version') == 3 else resume_state
+        fn = (self.checkpoint.resume_state
+              if self.args._linearno_loop_config.get('config_version') in (3, 5)
+              else resume_state)
         return fn(optimizer, scheduler, epoch, self.steps_per_epoch, self.args.nb_epochs,
                   self.generators, sampler)
 
     def _metadata(self,state,model=None):
-        if self.args._linearno_loop_config.get('architecture') == 'resmlp_dual_temp_v4':
-            if model is None:raise ValueError('V4 Air metadata requires constructed model')
-            from cdlno.linearno_loop.v4.checkpoint import measure_parameters
+        architecture = self.args._linearno_loop_config.get('architecture')
+        if architecture in ('resmlp_dual_temp_v4', 'partial_share_feature_gate_v5'):
+            if model is None:raise ValueError('versioned Air metadata requires constructed model')
+            measure_parameters = self.checkpoint.measure_parameters
             return make_metadata(self.args._linearno_loop_config,data_spec=data_contract(self.args._linearno_loop_config,self.data),
                 normalizer_spec=self.normalizers,provenance_spec=self.provenance,resume_state=state,
                 ensemble_manifest=[],parameter_measurement=measure_parameters(model,self.args._linearno_loop_config))

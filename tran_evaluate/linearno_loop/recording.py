@@ -106,6 +106,9 @@ def state_hash(state):
 
 def observe(args,model,member=0):
     """Record before the first optimizer step; then capture one actual forward."""
+    if args._linearno_loop_config.get('architecture') == 'partial_share_feature_gate_v5':
+        from cdlno.linearno_loop.v5.recording import observe as observe_v5
+        return observe_v5(args, model, member)
     if args._linearno_loop_config.get('architecture') == 'resmlp_dual_temp_v4':
         from cdlno.linearno_loop.v4.recording import observe as observe_v4
         return observe_v4(args, model, member)

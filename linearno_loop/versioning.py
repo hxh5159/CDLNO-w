@@ -9,13 +9,17 @@ from linearno_loop.v2 import schema as v2_schema
 
 V3_EXTENSION = "loop_linearno_latent_adapter_v3"
 V4_EXTENSION = "resmlp_dual_temp"
+V5_EXTENSION = "partial_share_feature_gate"
 # Keep the legacy parser importable without the optional V3 package. These are
 # wire field names only; the real schema is imported inside V3-selected calls.
 V3_OPTIONS = {'architecture', 'cost_profile', 'topology_preset', 'executed_depth',
               'prefix_blocks', 'recurrent_core_blocks', 'loop_repeats', 'suffix_blocks',
               'residual_mode', 'hidden_width', 'latent_width', 'actual_M', 'heads',
               'latent_enabled', 'adapter_mode', 'adapter_rank', 'adapter_alpha'}
-OPTIONS = V1_OPTIONS | V2_OPTIONS | V3_OPTIONS
+V5_OPTIONS = {'architecture', 'topology_preset', 'executed_depth',
+              'prefix_blocks', 'recurrent_core_blocks', 'loop_repeats', 'suffix_blocks',
+              'residual_mode', 'expert_count', 'expert_width', 'actual_M'}
+OPTIONS = V1_OPTIONS | V2_OPTIONS | V3_OPTIONS | V5_OPTIONS
 
 
 def is_v2(value):
@@ -28,8 +32,16 @@ def is_v3(value):
 def is_v4(value):
     return value.get("architecture") == "resmlp_dual_temp_v4" and value.get("architecture_extension") == V4_EXTENSION
 
+def is_v5(value):
+    return (value.get("architecture") == "partial_share_feature_gate_v5" and
+            value.get("architecture_extension") == V5_EXTENSION and
+            value.get("architecture_version") == 5)
+
 
 def api(value):
+    if is_v5(value):
+        from linearno_loop.v5 import schema as v5_schema
+        return v5_schema
     if is_v4(value):
         from linearno_loop.v4 import schema as v4_schema
         return v4_schema
@@ -48,6 +60,10 @@ def api(value):
 
 
 def resolve_config(task, profile, *, options, profile_overrides):
+    if options.get("architecture") == "partial_share_feature_gate_v5":
+        from linearno_loop.v5.config import resolve_config as resolve_v5
+        return resolve_v5(task, profile=profile, options=options,
+                          profile_overrides=profile_overrides)
     if options.get("architecture") == "resmlp_dual_temp_v4":
         from linearno_loop.v4.config import resolve_config as resolve_v4
         return resolve_v4(task, profile=profile, options=options, profile_overrides=profile_overrides)
@@ -60,6 +76,9 @@ def resolve_config(task, profile, *, options, profile_overrides):
 
 
 def run_directory_id(config):
+    if is_v5(config):
+        from linearno_loop.v5.config import run_directory_id as run
+        return run(config)
     if is_v4(config):
         from linearno_loop.v4.config import run_directory_id as run
         return run(config)
@@ -83,6 +102,9 @@ def restore_config(metadata, **kwargs):
 
 
 def make_metadata(config, **sections):
+    if is_v5(config):
+        from linearno_loop.v5.schema import make_metadata as make
+        return make(config, **sections)
     if is_v4(config):
         from linearno_loop.v4.schema import make_metadata as make
         return make(config,**sections)
@@ -98,6 +120,9 @@ def write_metadata(path, metadata):
 
 
 def validate_constructor(model_spec, constructor, *, version):
+    if version == 5:
+        import inspect
+        return inspect.signature(constructor).bind(**model_spec['constructor_kwargs'])
     if version == 3:
         from linearno_loop.v3 import schema as schema
     else:

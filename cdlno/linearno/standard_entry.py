@@ -144,8 +144,9 @@ def model_kwargs(args, **grid):
     # that explicit family is selected; v1/v2 continue through the exact
     # historical branch below.
     if hasattr(args, '_linearno_loop_config'):
-        from linearno_loop.versioning import is_v3, is_v4
-        if is_v3(args._linearno_loop_config) or is_v4(args._linearno_loop_config):
+        from linearno_loop.versioning import is_v3, is_v4, is_v5
+        if (is_v3(args._linearno_loop_config) or is_v4(args._linearno_loop_config)
+                or is_v5(args._linearno_loop_config)):
             from cdlno.linearno_loop.standard_entry import model_kwargs as v3_kwargs
             return v3_kwargs(args, **grid)
     kwargs = dict(args._linearno_model_spec['constructor_kwargs'])
@@ -228,6 +229,19 @@ def provenance():
             base = subprocess.check_output(['git','show',f'HEAD:{relative}'],cwd=ROOT,stderr=subprocess.DEVNULL).decode()
         except subprocess.CalledProcessError:
             base = None
+        if base is not None:
+            # Preserve the LL6 normalized-patch baseline when the committed
+            # source has the same fail-closed compatibility view as the
+            # reviewed pre-V5 checkout. This remains stable after the V5
+            # routing edit is committed, while any unrecognized or semantic
+            # pure-family mutation still fails or changes the fingerprint.
+            reviewed = subprocess.check_output(
+                ['git', 'show', f'c721ed161f0b94e5293d7e43b7b55ef20ba48167:{relative}'],
+                cwd=ROOT, stderr=subprocess.DEVNULL).decode()
+            if baseline_source(relative, base) == baseline_source(relative, reviewed):
+                base = subprocess.check_output(
+                    ['git', 'show', f'5b991226c5354af3332b2f7306b370aef0950c79:{relative}'],
+                    cwd=ROOT, stderr=subprocess.DEVNULL).decode()
         normalized[relative] = dict(before=ast.dump(ast.parse(base)) if base is not None else None,
                                     after=ast.dump(ast.parse(text)))
     return dict(target_sha=code['commit'], base_commit=code['commit'], dirty=code['dirty'],

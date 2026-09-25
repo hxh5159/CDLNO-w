@@ -7,10 +7,11 @@ from pathlib import Path
 import torch
 
 from linearno_loop.contracts import digest
-from linearno_loop.versioning import is_v2, is_v3, is_v4
+from linearno_loop.versioning import is_v2, is_v3, is_v4, is_v5
 
 
 def construction_api(config):
+    if is_v5(config):return importlib.import_module("cdlno.linearno_loop.v5.construction")
     if is_v4(config):return importlib.import_module("cdlno.linearno_loop.v4.construction")
     if is_v3(config):
         return importlib.import_module("cdlno.linearno_loop.v3.construction")
@@ -19,6 +20,7 @@ def construction_api(config):
 
 
 def checkpoint_api(config):
+    if is_v5(config):return importlib.import_module("cdlno.linearno_loop.v5.checkpoint")
     if is_v4(config):return importlib.import_module("cdlno.linearno_loop.v4.checkpoint")
     if is_v3(config):
         return importlib.import_module("cdlno.linearno_loop.v3.checkpoint")
@@ -27,6 +29,7 @@ def checkpoint_api(config):
 
 
 def construct(config, *, member_seed=None):
+    if is_v5(config):return construction_api(config).build_from_config(config,initialization_seed=member_seed)
     if is_v4(config):return construction_api(config).build_from_config(config,initialization_seed=member_seed)
     if member_seed is None:
         return construction_api(config).build_from_config(config)
@@ -50,6 +53,9 @@ def construct(config, *, member_seed=None):
 
 
 def provenance(config, task=None):
+    if is_v5(config):
+        from .v5.provenance import provenance as v5_provenance
+        return v5_provenance(config, task=task)
     if is_v4(config):
         from .v4.provenance import provenance as v4_provenance
         return v4_provenance(config, task=task)

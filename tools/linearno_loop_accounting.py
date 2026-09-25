@@ -147,6 +147,76 @@ def analytic_v4(config, *, B=1, N=None):
       non_matrix_operations='LayerNorm/GELU/softmax/residual/reshape counted separately',router_parameters=0,
       no_nxn_or_mxm_attention=True)
 
+
+def analytic_v5(config, *, B=1, N=None):
+    """Independent V5 parameter and matrix-MAC ledger; imports no V5 model."""
+    from linearno_loop.v5.config import validate_config
+    c = validate_config(config); spec = c['loop_spec']; m = c['profile_spec']['values']['model']
+    task = c['task']; H = spec['hidden_width']; heads = spec['heads']; M = spec['actual_M']
+    dh = H // heads; E = spec['expert_count']; F = spec['expert_width']
+    if N is None:
+        N = point_count(c)
+    if type(B) is not int or type(N) is not int or min(B, N) < 1:
+        raise ValueError('B,N must be positive integers')
+    if task in ('airfrans', 'car') and B != 1:
+        raise ValueError('industrial wrapper is single graph: B=1')
+    P, C, R, S = (spec[key] for key in
+                   ('prefix_blocks', 'recurrent_core_blocks', 'loop_repeats', 'suffix_blocks'))
+    unique, executed = P + C + S, P + C * R + S
+    structured = spec['variant'] in ('conv', 'conv_temp')
+    kernel = 9 if structured else 1
+    output_layers = 2 if structured or task == 'car' else 1
+    active_temperature = 2 * heads if spec['variant'] in ('temp', 'conv_temp', 'shapenet') else 0
+    inert_temperature = heads if task == 'airfrans' else 0
+    shared_operator = (kernel * H * H + H + dh * dh +
+                       output_layers * (H * H + H) + inert_temperature)
+    shared_norms = 4 * H
+    shared_body = shared_operator + shared_norms
+    expert_per_position = E * (2 * H * F + F + H)
+    visit_qk_temperature = 2 * dh * M + active_temperature
+    router_per_visit = H * E + E
+    channels = m['fun_dim'] + (m['ref'] ** 2 if m['unified_pos'] else m['space_dim'])
+    if task == 'airfrans' and m['unified_pos']:
+        channels += m['space_dim']
+    stem = 2 * H * channels + 2 * H + 2 * H * H + H + H
+    time = 2 * (H * H + H) if m['time_input'] else 0
+    head = 2 * H + H * m['out_dim'] + m['out_dim']
+    parts = dict(
+        stem=stem, time=time, prefix=P * shared_body, shared_core=C * shared_body,
+        suffix_body=S * shared_body, head=head, experts=unique * expert_per_position,
+        visit_qk_temperature=executed * visit_qk_temperature,
+        routers=executed * router_per_visit,
+    )
+    stem_mac = B * N * (2 * H * channels + 2 * H * H +
+                        (2 * H * H if m['time_input'] else 0))
+    attention_per_visit = B * N * (kernel * H * H + 4 * H * M + H * dh +
+                                   output_layers * H * H)
+    router_per_visit_mac = B * N * H * E
+    experts_per_visit_mac = B * N * 2 * E * H * F
+    head_mac = B * N * H * m['out_dim']
+    matrix_parts = dict(
+        stem=stem_mac,
+        operators=executed * attention_per_visit,
+        routers=executed * router_per_visit_mac,
+        dense_experts=executed * experts_per_visit_mac,
+        head=head_mac,
+    )
+    matrix_macs = sum(matrix_parts.values())
+    return dict(
+        version=5, task=task, profile=c['profile'], topology=c['topology_preset'],
+        B=B, N=N, hidden=H, heads=heads, head_dim=dh, M=M,
+        expert_count=E, expert_width=F, unique_depth=unique,
+        executed_depth=executed, parameter_parts=parts, parameters=sum(parts.values()),
+        matrix_mac_parts=matrix_parts, matrix_macs=matrix_macs,
+        matrix_flops=2 * matrix_macs,
+        expert_mixture_mac_equivalents=executed * B * N * E * H,
+        matrix_flops_are_total_flops=False,
+        non_matrix_operations=(
+            'LayerNorm, GELU, Q/K and expert softmax, temperature clamp/divide, '
+            'expert weighting/sum, bias, residual, reshape and position/time features excluded'),
+        no_nxn_or_mxm_attention=True,
+    )
+
 def analytic_pure_linearno(task, *, B=1, N=None, profile='paper_table8_on_release_model'):
     """Pure LinearNO reference under the same matrix-MAC convention as v4."""
     from cdlno.linearno.profiles import resolve_config
@@ -169,6 +239,8 @@ def analytic_pure_linearno(task, *, B=1, N=None, profile='paper_table8_on_releas
 
 def analytic(config,*,B=1,N=None):
     """Only integer algebra from schema; no model construction/module introspection."""
+    if config.get('architecture')=='partial_share_feature_gate_v5':
+        return analytic_v5(config,B=B,N=N)
     if config.get('architecture')=='resmlp_dual_temp_v4':
         return analytic_v4(config,B=B,N=N)
     if config.get('architecture_extension')=='loop_linearno_latent_adapter_v3':
@@ -219,6 +291,9 @@ def analytic(config,*,B=1,N=None):
 
 
 def measured_parameters(model):
+    if getattr(model, 'architecture', None) == 'partial_share_feature_gate_v5':
+        from cdlno.linearno_loop.v5.checkpoint import _parameter_groups
+        return _parameter_groups(model)
     if getattr(model, 'architecture', None) == 'resmlp_dual_temp_v4':
         parts=Counter({k:0 for k in ('stem','time','operators','rmlp','head','temperature_predictors')})
         for name,p in model.named_parameters():
@@ -282,8 +357,9 @@ def measured_parameters(model):
 
 
 class Ledger(TorchDispatchMode):
-    def __init__(self,scope,attentions,B,N):
+    def __init__(self,scope,attentions,B,N,expert_blocks=None):
         super().__init__();self.scope=scope;self.attentions=attentions;self.B=B;self.N=N
+        self.expert_blocks=expert_blocks or {}
         self.macs=Counter();self.inventory={};self.contractions=[];self.softmax=[];self.violations=[]
         self.attention_bmm=Counter();self.router_contractions=0;self.peak_tensor_elements=0
     def __torch_dispatch__(self,func,types,args=(),kwargs=None):
@@ -313,6 +389,9 @@ class Ledger(TorchDispatchMode):
             if loc in self.attentions:
                 a=self.attentions[loc]
                 if tuple(out.shape)!=(self.B,a.heads,self.N,a.rank) or args[1] not in (-1,-2,2,3):self.violations.append(row)
+            elif loc in self.expert_blocks:
+                if tuple(out.shape)!=(self.B,self.N,self.expert_blocks[loc]) or args[1] not in (-1,2):
+                    self.violations.append(row)
             elif not loc.startswith(('loop.rb_','loop.lb_')):self.violations.append(row)
         # Two contractions: normalized-key/query dot over H, raw-source mix over S.
         if name=='aten.sum.dim_IntList' and loc.startswith(('loop.rb_','loop.lb_')):
@@ -336,6 +415,17 @@ def audit(model,args,*,B,N):
     """Explicit opt-in forward profiler; no backward/timing hooks survive exit."""
     from cdlno.linearno.attention import LinearNOAttention
     attentions={n:m for n,m in model.named_modules() if isinstance(m,LinearNOAttention)}
+    expert_blocks={}
+    try:
+        from cdlno.linearno_loop.v5.operator import PartialSharedLinearNOOperator
+        from cdlno.linearno_loop.v5.core import V5PhysicalBlock
+        attentions.update({n:m for n,m in model.named_modules()
+                           if isinstance(m,PartialSharedLinearNOOperator)})
+        expert_blocks.update({n:m.Attn.visits[0].router.out_features
+                              for n,m in model.named_modules()
+                              if isinstance(m,V5PhysicalBlock)})
+    except ImportError:
+        pass
     # The v2 owner deliberately calls ``Attn.forward_with_context`` directly,
     # so ATen operations are scoped to SharedCoreOperator rather than Attn.
     # Register that exact outer scope with the same LinearNO signature.
@@ -348,7 +438,7 @@ def audit(model,args,*,B,N):
     training={module:module.training for module in model.modules()};model.eval()
     try:
         with scoped_modules(model) as scope,torch.no_grad():
-            ledger=Ledger(scope,attentions,B,N)
+            ledger=Ledger(scope,attentions,B,N,expert_blocks)
             with ledger:model(*args)
     finally:
         for module,state in training.items():module.training=state
