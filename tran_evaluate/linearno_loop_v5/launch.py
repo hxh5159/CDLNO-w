@@ -12,6 +12,7 @@ from tran_evaluate.linearno_loop.launch import TASKS, execute, plan
 ARCHITECTURE = "partial_share_feature_gate_v5"
 RESIDUAL = "operator_1_expert_1_over_r"
 PRESETS = ("p1_c3_r2_s1", "p2_c2_r2_s2", "custom")
+CORE_NORM_MODES = ("visit_independent", "shared")
 
 
 def _append_data_defaults(args, tokens, rest):
@@ -48,6 +49,7 @@ def plan_v5(argv=None):
     parser.add_argument("--suffix-blocks", type=int)
     parser.add_argument("--expert-count", type=int)
     parser.add_argument("--expert-width", type=int)
+    parser.add_argument("--core-norm-mode", choices=CORE_NORM_MODES)
     parser.add_argument("--linearno-rank", type=int)
     parser.add_argument("--linearno-profile", dest="profile")
     parser.add_argument("--seed", type=int)
@@ -74,6 +76,7 @@ def plan_v5(argv=None):
         "--linearno-loop-executed-depth", "--linearno-loop-prefix-blocks",
         "--linearno-loop-core-blocks", "--linearno-loop-repeats",
         "--linearno-loop-suffix-blocks", "--linearno-rank",
+        "--linearno-loop-core-norm-mode",
     }
     if any(token.split("=")[0] in forbidden for token in rest):
         parser.error("use the V5 launcher options instead of raw architecture fields")
@@ -91,11 +94,15 @@ def plan_v5(argv=None):
               "--gpu", str(args.gpu)]
     if action == "train":
         tokens += ["--linearno-loop-residual-mode", RESIDUAL,
-                   "--linearno-loop-dense-expert-count", str(args.expert_count or 2)]
+                   "--linearno-loop-dense-expert-count", str(args.expert_count or 2),
+                   "--linearno-loop-core-norm-mode",
+                   args.core_norm_mode or "visit_independent"]
         if args.executed_depth is None and args.topology is None:
             tokens += ["--linearno-loop-topology", "p2_c2_r2_s2"]
     elif args.expert_count is not None:
         tokens += ["--linearno-loop-dense-expert-count", str(args.expert_count)]
+    if action != "train" and args.core_norm_mode is not None:
+        tokens += ["--linearno-loop-core-norm-mode", args.core_norm_mode]
     if args.topology is not None:
         tokens += ["--linearno-loop-topology", args.topology]
     if args.executed_depth is not None:

@@ -5,13 +5,15 @@ import hashlib
 from cdlno.linearno.profiles import DEFAULT_PROFILE, PROFILES, resolve_config as resolve_base
 from .contracts import (
     ARCHITECTURE, ARCHITECTURE_EXTENSION, ARCHITECTURE_VERSION, CHECKPOINT_SCHEMA,
-    CHECKPOINT_VERSION, CLASS_PATHS, CONFIG_VERSION, DEFAULT_TOPOLOGY, FAMILY,
-    FORMULA_VERSION, PRESETS, RESIDUAL_MODE, SCHEMA_VERSION, TASKS,
+    CHECKPOINT_VERSION, CLASS_PATHS, CONFIG_VERSION, CORE_NORM_MODES,
+    DEFAULT_CORE_NORM_MODE, DEFAULT_TOPOLOGY, FAMILY, FORMULA_VERSION, PRESETS,
+    RESIDUAL_MODE, SCHEMA_VERSION, TASKS,
     TOPOLOGY_FIELDS, V5SchemaError, digest, integer, require_equal, seal,
 )
 
 OPTIONS = {"architecture", "topology_preset", "executed_depth", *TOPOLOGY_FIELDS,
-           "residual_mode", "expert_count", "expert_width", "actual_M", "seed"}
+           "residual_mode", "core_norm_mode", "expert_count", "expert_width",
+           "actual_M", "seed"}
 
 
 def _derived_seed(seed, label):
@@ -75,6 +77,8 @@ def _request(task, profile, options, overrides):
             integer(options[field], field, 1)
     if options.get("residual_mode", RESIDUAL_MODE) != RESIDUAL_MODE:
         raise V5SchemaError("V5 residual rule is fixed to " + RESIDUAL_MODE)
+    if options.get("core_norm_mode", DEFAULT_CORE_NORM_MODE) not in CORE_NORM_MODES:
+        raise V5SchemaError("core_norm_mode must be one of " + str(CORE_NORM_MODES))
 
 
 def _assemble(request, base):
@@ -87,6 +91,7 @@ def _assemble(request, base):
     M = options.get("actual_M", model["linearno_rank"])
     E = options.get("expert_count", 2)
     F = options.get("expert_width", C * model["ffn_ratio"])
+    core_norm_mode = options.get("core_norm_mode", DEFAULT_CORE_NORM_MODE)
     integer(E, "expert_count"); integer(F, "expert_width"); integer(M, "actual_M")
     effective = {**model, "linearno_rank": M}
     from cdlno.linearno.profiles import validate_model
@@ -102,7 +107,7 @@ def _assemble(request, base):
         heads=heads, variant=model["linearno_variant"], dropout=model["dropout"],
         activation=model["activation"], expert_count=E, expert_width=F,
         prefix_blocks=P, recurrent_core_blocks=core, loop_repeats=R, suffix_blocks=S,
-        architecture=ARCHITECTURE,
+        core_norm_mode=core_norm_mode, architecture=ARCHITECTURE,
     )
     seed = base["values"]["runtime"]["seed"]
     loop = dict(
@@ -111,12 +116,19 @@ def _assemble(request, base):
         head_dim=C // heads, actual_M=M, variant=model["linearno_variant"],
         grid_height=model["H"], grid_width=model["W"],
         expert_count=E, expert_width=F, residual_mode=RESIDUAL_MODE,
+        core_norm_mode=core_norm_mode,
         scale_operator=1.0, scale_expert_core=f"1/{R}", scale_expert_value=1.0/R,
         gate_axis="expert", gate_bias=True, gate_multihead=False,
         gate_temperature=None, dense_experts=True,
         state_partition=dict(
-            shared_by_physical_position=["in_project_x", "to_v", "to_out", "ln_1", "ln_2", "experts"],
-            independent_by_visit=["to_q", "to_k", "active_qk_temperature", "router"],
+            shared_by_physical_position=(
+                ["in_project_x", "to_v", "to_out", "experts"] +
+                (["ln_1", "ln_2"] if core_norm_mode == "shared" else [])
+            ),
+            independent_by_visit=(
+                ["to_q", "to_k", "active_qk_temperature", "router"] +
+                (["ln_1", "ln_2"] if core_norm_mode == "visit_independent" else [])
+            ),
             prefix_suffix="independent_complete_single_visit_blocks",
         ),
         initialization=dict(
@@ -124,6 +136,8 @@ def _assemble(request, base):
             k_across_visits="same_values_distinct_storage", q_vs_k="independent",
             active_temperature_across_visits="same_values_distinct_storage",
             router="weight_and_bias_zero", experts="independent_native_initialization",
+            core_norms=("same_values_distinct_storage" if core_norm_mode == "visit_independent"
+                        else "shared_by_physical_position"),
         ),
         formula_version=FORMULA_VERSION,
     )
@@ -133,7 +147,8 @@ def _assemble(request, base):
         schema_version=SCHEMA_VERSION, config_version=CONFIG_VERSION,
         checkpoint_schema=CHECKPOINT_SCHEMA, checkpoint_version=CHECKPOINT_VERSION,
         task=task, profile=profile, topology_preset=topology_name, **top,
-        residual_mode=RESIDUAL_MODE, expert_count=E, expert_width=F, actual_M=M,
+        residual_mode=RESIDUAL_MODE, core_norm_mode=core_norm_mode,
+        expert_count=E, expert_width=F, actual_M=M,
         seed=seed, request=deepcopy(request), profile_spec=deepcopy(base), loop_spec=loop,
         expert_spec=dict(count=E, input_width=C, hidden_width=F, output_width=C,
                          activation="GELU", bias=True, dense=True,
@@ -183,5 +198,6 @@ def run_directory_id(config):
     c = validate_config(config); s = c["loop_spec"]
     topology = f"P{s['prefix_blocks']}-C{s['recurrent_core_blocks']}-R{s['loop_repeats']}-S{s['suffix_blocks']}"
     return (f"{s['task']}__{ARCHITECTURE}__{c['profile']}__{topology}__"
-            f"{RESIDUAL_MODE}__E{s['expert_count']}F{s['expert_width']}__M{s['actual_M']}__"
+            f"{RESIDUAL_MODE}__norm-{s['core_norm_mode']}__"
+            f"E{s['expert_count']}F{s['expert_width']}__M{s['actual_M']}__"
             f"seed{c['seed']}__cfg{c['config_hash'][:12]}")

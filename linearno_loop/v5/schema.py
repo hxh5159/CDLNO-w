@@ -115,6 +115,7 @@ def restore_config(meta, *, explicit=None, runtime=None, strict=True):
     spec = cfg["loop_spec"]
     expected = dict(task=cfg["task"], profile=cfg["profile"], architecture=cfg["architecture"],
         topology_preset=cfg["topology_preset"], residual_mode=cfg["residual_mode"],
+        core_norm_mode=cfg["core_norm_mode"],
         expert_count=cfg["expert_count"], expert_width=cfg["expert_width"],
         actual_M=cfg["actual_M"], linearno_loop=True, seed=cfg["seed"],
         prefix_blocks=spec["prefix_blocks"],

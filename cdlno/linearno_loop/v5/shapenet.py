@@ -12,7 +12,8 @@ class LoopedShapeNetModelV5(LoopForwardViewV5, ShapeNetLinearNO):
     def __init__(self, *, space_dim, fun_dim, out_dim, time_input, ref, unified_pos,
                  hidden_width, grid_height, grid_width, actual_M, heads, variant,
                  dropout, activation, expert_count, expert_width, prefix_blocks,
-                 recurrent_core_blocks, loop_repeats, suffix_blocks, architecture):
+                 recurrent_core_blocks, loop_repeats, suffix_blocks,
+                 core_norm_mode, architecture):
         kwargs = {key: value for key, value in locals().items() if key != "self"}
         constructor_config(kwargs)
         nn.Module.__init__(self)
@@ -34,7 +35,7 @@ class LoopedShapeNetModelV5(LoopForwardViewV5, ShapeNetLinearNO):
             variant=variant, dropout=dropout, H=grid_height, W=grid_width, out_dim=out_dim,
             expert_count=expert_count, expert_width=expert_width, prefix_blocks=prefix_blocks,
             recurrent_core_blocks=recurrent_core_blocks, loop_repeats=loop_repeats,
-            suffix_blocks=suffix_blocks)
+            suffix_blocks=suffix_blocks, core_norm_mode=core_norm_mode)
         self.apply(initialize_release_weights)
         self.placeholder = nn.Parameter(torch.rand(hidden_width, dtype=torch.float32) / hidden_width)
         self.loop.finalize_initialization()

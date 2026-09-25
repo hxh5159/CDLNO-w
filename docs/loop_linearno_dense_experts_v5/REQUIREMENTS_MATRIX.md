@@ -7,7 +7,8 @@ validation scope.
 |---|---|---|---|
 | Explicit isolated V5 selector/schema | `linearno_loop/v5/contracts.py`, `config.py`, `schema.py`; both version dispatchers | config/hash/roundtrip and pre-tensor conflict tests | PASS |
 | P1, P2, custom P/C/R/S and depth shorthand | `linearno_loop/v5/config.py`; `V5LoopCore.visit_schedule` | preset ownership, R1/R2/R3, invalid combinations, eight parser previews | PASS |
-| Core non-Q/K body/LNs/experts shared by physical position | `cdlno/linearno_loop/v5/{operator,core}.py` | module/parameter identity, state-key and recorder schedule checks | PASS |
+| Core non-Q/K operator body/experts shared by physical position | `cdlno/linearno_loop/v5/{operator,core}.py` | module/parameter identity, state-key and recorder schedule checks | PASS |
+| Core LN1/LN2 default to independent `(position,visit)` ownership; explicit shared compatibility mode | `V5PhysicalBlock.norms_for_visit`; V5 config/CLI/checkpoint/recording | storage identity, equal-init output/RNG, R2/R3 gradients, exact parameter delta, strict pair tests | PASS |
 | Q/K, active temperatures, router independent by visit | `VisitRouting`, `PartialSharedLinearNOOperator` | distinct storage/equal initial values, visit gradients and divergence | PASS |
 | Prefix/suffix complete and independent; final head once | `V5LoopCore` construction/forward | owner graph, call schedule, finalization checks | PASS |
 | Native six attention variants and Q/K axes | `PartialSharedLinearNOOperator.forward` | exact output/input-gradient parity for plain/temp/conv/conv_temp/AirfRANS/ShapeNet | PASS |

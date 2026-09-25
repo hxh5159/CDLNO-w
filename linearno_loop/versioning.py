@@ -18,7 +18,7 @@ V3_OPTIONS = {'architecture', 'cost_profile', 'topology_preset', 'executed_depth
               'latent_enabled', 'adapter_mode', 'adapter_rank', 'adapter_alpha'}
 V5_OPTIONS = {'architecture', 'topology_preset', 'executed_depth',
               'prefix_blocks', 'recurrent_core_blocks', 'loop_repeats', 'suffix_blocks',
-              'residual_mode', 'expert_count', 'expert_width', 'actual_M'}
+              'residual_mode', 'core_norm_mode', 'expert_count', 'expert_width', 'actual_M'}
 OPTIONS = V1_OPTIONS | V2_OPTIONS | V3_OPTIONS | V5_OPTIONS
 
 
@@ -120,7 +120,7 @@ def write_metadata(path, metadata):
 
 
 def validate_constructor(model_spec, constructor, *, version):
-    if version == 5:
+    if version in (5, 6):
         import inspect
         return inspect.signature(constructor).bind(**model_spec['constructor_kwargs'])
     if version == 3:

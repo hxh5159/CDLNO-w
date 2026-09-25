@@ -1,0 +1,44 @@
+V5 visit-independent LayerNorm increment evidence
+Date: 2026-09-25
+Pre-edit HEAD: db5394b31a1079d3bb4e9fc29642b1072a4b1544
+Environment: Python 3.13.9; torch 2.13.0+cu130; CUDA available; RTX 5090 Laptop GPU
+
+Failure-first:
+PYTHONPATH=. pytest -q tests/loop_linearno_v5/test_v5_visit_norms.py
+14 failed: core_norm_mode absent from config and V5LoopCore constructor.
+
+Final focused:
+PYTHONPATH=. pytest -q tests/loop_linearno_v5/test_v5_visit_norms.py
+16 passed in 11.79s
+
+Complete V5:
+PYTHONPATH=. pytest -q tests/loop_linearno_v5
+69 passed; one existing timm deprecation warning
+
+Compatibility:
+PYTHONPATH=. pytest -q tests/linearno_loop_v4
+136 passed, 1 skipped
+
+cd tests/loop_linearno_ffn && PYTHONPATH=/home/hwz/CDLNO python -m pytest -q
+34 passed
+
+PYTHONPATH=. pytest -q tests/linearno/test_legacy.py::LegacyRegression::test_eight_real_models_same_weights_and_checkpoints_fresh_workdirs
+1 passed
+
+Representative pure LinearNO: 1 passed
+Representative V1: 2 passed
+Representative V3: 2 passed
+Eight tasks x two norm modes parser dry-run: 16 passed
+
+Exact Airfoil P1-C3-R2-S1, K=3, C=128:
+shared: 1,456,025 parameters
+visit_independent: 1,457,561 parameters
+delta: 1,536 = 4*128*3*(2-1)
+matrix FLOPs for each at B=1,N=11,271: 57,329,535,744
+
+Static:
+python -m compileall: PASS
+git diff --check: PASS
+
+NOT RUN: real data, full epochs, convergence, accuracy/SOTA, three seeds,
+remote Python 3.10/torch 2.11, distributed/compile, real epoch or inference timing.

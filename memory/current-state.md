@@ -1,3 +1,9 @@
+# 最新：Loop LinearNO V5 visit-independent LayerNorm 增量完成（2026-09-25）
+
+用户授权的局部修改已完成。`partial_share_feature_gate_v5`公开selector/architecture_version=5保持；默认新增`core_norm_mode=visit_independent`，core每个(position,visit)独立LN1/LN2，显式`shared`保留旧共享语义。其他operator/QK温度/router/稠密专家/残差/拓扑/任务协议均不变。内部config/schema=6，checkpoint pair-v2；旧pair-v1 metadata-first拒绝，无隐式迁移。P1增量12C，P2增量8C；Airfoil P1/K3 1,456,025→1,457,561，矩阵FLOPs不变。
+
+报告`docs/loop_linearno_dense_experts_v5/VISIT_INDEPENDENT_LAYERNORM.md`，状态/用法/需求矩阵和`evidence/visit_norms/summary.txt`已更新。失败优先14项命中缺口；最终focused16、V5全套69通过。16个八任务×两模式parser、V2 34、V4 136+1skip、原Transolver八任务fixture、纯LinearNO/V1/V3代表测试均通过；compile、shell、diff通过。两次错误使用`pytest`直接调用V2产生4个相对导入collection error，正确`python -m pytest`调用全过，已保留说明。未运行真实数据、完整epoch、收敛/精度/SOTA、三seed、远端2.11/cu128、distributed/compile或真实性能。保留用户未跟踪PLAN_v5和v5_run，无commit/push/reset。**本阶段结束，未执行下一阶段。**
+
 # 最新：MSAR-LNO训练后评估脚本完成（2026-09-17）
 
 用户授权把终端函数写为`tran_evaluate/msar_lno/run_msar.sh`。用法`bash .../run_msar.sh darcy light --gpu 0`，支持八任务、Light/Full、MSAR_GPU默认和--dry-run；从任意cwd定位原checkout/path.sh，时间戳目录由原训练入口创建，训练成功才评估同一run。AirfRANS使用CUDA_VISIBLE_DEVICES。只新增脚本及说明/状态，原模型/训练/数据/依赖/既有启动脚本不变。起点main@3e88166干净；shell语法、32组64次dry-run和临时shell桩的顺序/退出码/GPU/路径检查通过，没有真实训练、commit/push。详见独立MSAR STATUS和脚本README。本阶段结束，未执行下一阶段。

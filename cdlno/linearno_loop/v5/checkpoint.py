@@ -33,7 +33,7 @@ def sha256(path):
 
 def _parameter_groups(model):
     names = ("stem", "time", "prefix", "shared_core", "suffix_body", "head",
-             "experts", "visit_qk_temperature", "routers")
+             "experts", "visit_norms", "visit_qk_temperature", "routers")
     groups = Counter({name: 0 for name in names})
     for name, parameter in model.named_parameters():
         if name.startswith("time_fc."):
@@ -48,6 +48,8 @@ def _parameter_groups(model):
             group = "routers"
         elif ".visits." in name:
             group = "visit_qk_temperature"
+        elif name.startswith("loop.core.") and ".additional_ln_" in name:
+            group = "visit_norms"
         elif name.startswith("loop.prefix."):
             group = "prefix"
         elif name.startswith("loop.core."):

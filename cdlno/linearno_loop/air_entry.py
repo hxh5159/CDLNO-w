@@ -49,7 +49,7 @@ class AirRun(pure.AirRun):
 
     def _resume_state(self, optimizer, scheduler, epoch, sampler):
         fn = (self.checkpoint.resume_state
-              if self.args._linearno_loop_config.get('config_version') in (3, 5)
+              if self.args._linearno_loop_config.get('config_version') in (3, 5, 6)
               else resume_state)
         return fn(optimizer, scheduler, epoch, self.steps_per_epoch, self.args.nb_epochs,
                   self.generators, sampler)

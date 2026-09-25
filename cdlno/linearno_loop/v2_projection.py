@@ -18,11 +18,11 @@ EXPECTED = {
     # LAA6 extends this router with an explicit V3 branch.  The projection
     # still returns the immutable LF5 source bytes, so v1/v2 fingerprints do
     # not drift while the V3 hash records the live dispatch separately.
-    "cdlno/linearno_loop/standard_entry.py": "c9f62c08d450a957179bd6971e2435810dfb4e23d853b8e93c2509cf139a8d0a",
-    "cdlno/linearno_loop/industrial_entry.py": "c9b8ece64df44913bf7c02bb2009a4ecf13bd162f386e57939fcccb6bbbc1ddc",
+    "cdlno/linearno_loop/standard_entry.py": "3a180ea32b44f8dab74a9a30c7a04d375e413526109d38da512585dd7d303181",
+    "cdlno/linearno_loop/industrial_entry.py": "351d5787398009ce05ea02bdb555ac7d7f5a7064479d0ced806ccfcb119a6fec",
     "cdlno/linearno_loop/industrial_state.py": "692019b3bd6e3932df22e45e16d113d2025654bae7edb1b316d33cd378e03acf",
-    "cdlno/linearno_loop/air_entry.py": "2180dbe9e7458b9689a8df72f3ee44eb74e2d9c0de6f1dbed8ef25d59a69e117",
-    "cdlno/linearno_loop/car_entry.py": "6cdcf9db726ad05af006a74c4b11b2f2db1ac18512ffadf04ae18860d26abee1",
+    "cdlno/linearno_loop/air_entry.py": "43dca4a1c30a3b3228b0bd36ee81de1559069fe711b5d5114a24a2fbe41c5d94",
+    "cdlno/linearno_loop/car_entry.py": "a0b6566d85447382d58762c3ee001d67140613e44fbe3bee1f24e40e917cc60b",
     "cdlno/linearno_loop/ll7_projection.py": "9dcf6c19ee1e1a32435f7d6194ba164394d2f8156a1cb56ce8b09fc57381b740",
 }
 

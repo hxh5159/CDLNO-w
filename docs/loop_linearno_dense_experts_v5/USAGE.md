@@ -3,7 +3,9 @@
 The public architecture selector is `partial_share_feature_gate_v5`. Use the
 dedicated launchers from the repository root. The default is
 `p2_c2_r2_s2`, `K=2`, profile-derived `F`, profile-native `M/heads/C`, and
-`operator_1_expert_1_over_r`.
+`operator_1_expert_1_over_r`. The current default is
+`core_norm_mode=visit_independent`: core LN1/LN2 affine parameters are owned by
+`(physical position, visit)`.
 
 ## Environment
 
@@ -57,6 +59,16 @@ bash tran_evaluate/linearno_loop_v5/darcy.sh train_eval \
   --seed 1 --gpu 1
 ```
 
+The dedicated launcher accepts `--core-norm-mode visit_independent|shared`.
+Omitting it for a new run selects `visit_independent`. `shared` retains the
+pre-increment V5 core norm sharing semantics:
+
+```bash
+bash tran_evaluate/linearno_loop_v5/airfoil.sh train_eval \
+  --topology p1_c3_r2_s1 --expert-count 3 \
+  --core-norm-mode shared --seed 0 --gpu 0
+```
+
 K=2 with profile-derived F is selected by omitting `--expert-width`:
 
 ```bash
@@ -82,7 +94,10 @@ bash tran_evaluate/linearno_loop_v5/ns.sh train \
 
 Resume and evaluation require the exact existing run. Saved metadata supplies
 the architecture; explicit conflicting topology/K/F/rank/profile values fail
-before weights are loaded.
+before weights are loaded. An explicit conflicting `--core-norm-mode` also
+fails before tensor loading. Current pair-v2 code intentionally rejects old
+pair-v1 V5 checkpoints; continue those experiments with their original
+checkout. No optimizer/RNG-perfect pair-v1 migration is provided.
 
 ```bash
 bash tran_evaluate/linearno_loop_v5/airfoil.sh resume \

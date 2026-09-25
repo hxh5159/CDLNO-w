@@ -140,7 +140,7 @@ def parse_args(parser,tokens,loop_explicit,*,task,evaluation):
     if 'weight' in supplied and args.weight!=base['values']['objective']['surface_weight']:
         raise ValueError('loop does not change selected profile objective surface weight')
     if task=='airfrans':
-        if config.get('config_version') in (3, 5):
+        if config.get('config_version') in (3, 5, 6):
             # Industrial V3/V5 own hidden width/depth/M in loop_spec; the
             # legacy AirfRANS Namespace still needs the native field names.
             loop=config['loop_spec']; model=base['values']['model']; training=base['values']['training']

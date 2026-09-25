@@ -21,14 +21,20 @@ def expected_schedule(config):
     visits = _visits(config)
     for logical_index, (group, position, visit) in enumerate(visits):
         owner = f"loop.{group}.{position}"
+        if group == "core" and config["core_norm_mode"] == "visit_independent":
+            ln_1_owner = owner + f".visit.{visit}.ln_1"
+            ln_2_owner = owner + f".visit.{visit}.ln_2"
+        else:
+            ln_1_owner = owner + ".ln_1"
+            ln_2_owner = owner + ".ln_2"
         events.extend((
-            owner + ".ln_1",
+            ln_1_owner,
             owner + ".shared.in_project_x",
             owner + f".visit.{visit}.to_q",
             owner + f".visit.{visit}.to_k",
             owner + ".shared.to_v",
             owner + ".shared.to_out",
-            owner + ".ln_2",
+            ln_2_owner,
             owner + f".visit.{visit}.router",
         ))
         events.extend(owner + f".experts.{expert}"
@@ -48,7 +54,7 @@ def observe(args, model, member=0):
     schedule = expected_schedule(config)
     spec = config["loop_spec"]
     base = dict(
-        schema_version=5,
+        schema_version=config["schema_version"],
         architecture=config["architecture"],
         architecture_extension=config["architecture_extension"],
         family="linearno_loop",
@@ -62,7 +68,10 @@ def observe(args, model, member=0):
         expert_count=config["expert_count"],
         expert_width=config["expert_width"],
         actual_M=config["actual_M"],
-        ownership="physical_shared_body_experts_visit_owned_qk_router",
+        core_norm_mode=config["core_norm_mode"],
+        ownership=("physical_shared_body_experts_visit_owned_qk_router_norms"
+                   if config["core_norm_mode"] == "visit_independent" else
+                   "physical_shared_body_norms_experts_visit_owned_qk_router"),
         state_partition=spec["state_partition"],
         expected_call_schedule=schedule,
         fair_comparison=config["fair_comparison"],
@@ -86,7 +95,7 @@ def observe(args, model, member=0):
     state = model.state_dict()
     measurement = measure_parameters(model, config)
     shared = {name: value for name, value in state.items()
-              if ".visits." not in name}
+              if ".visits." not in name and ".additional_ln_" not in name}
     saved["members"][key] = dict(
         initial_state_sha256=state_hash(state),
         shared_owner_initial_sha256=state_hash(shared),
@@ -95,6 +104,9 @@ def observe(args, model, member=0):
         physical_block_owners=spec["unique_depth"],
         logical_block_visits=spec["executed_depth"],
         qk_router_owners=spec["executed_depth"],
+        core_norm_owners=(spec["recurrent_core_blocks"] * spec["loop_repeats"]
+                          if config["core_norm_mode"] == "visit_independent" else
+                          spec["recurrent_core_blocks"]),
         expert_owners=spec["unique_depth"] * config["expert_count"],
         expert_calls=spec["executed_depth"] * config["expert_count"],
         initialization_seed=(member_seed(args, member)
@@ -138,7 +150,14 @@ def observe(args, model, member=0):
     for group in ("prefix", "core", "suffix"):
         for position, block in enumerate(getattr(model.loop, group)):
             owner = f"loop.{group}.{position}"
-            handles.append(block.ln_1.register_forward_pre_hook(event(owner + ".ln_1")))
+            independent_norms = (group == "core" and
+                                 config["core_norm_mode"] == "visit_independent")
+            handles.append(block.ln_1.register_forward_pre_hook(event(
+                owner + (".visit.0.ln_1" if independent_norms else ".ln_1"))))
+            if independent_norms:
+                for visit, norm in enumerate(block.additional_ln_1, start=1):
+                    handles.append(norm.register_forward_pre_hook(
+                        event(owner + f".visit.{visit}.ln_1")))
             attention = block.Attn
             handles.append(attention.in_project_x.register_forward_pre_hook(
                 event(owner + ".shared.in_project_x")))
@@ -153,7 +172,12 @@ def observe(args, model, member=0):
                 event(owner + ".shared.to_v")))
             handles.append(attention.to_out.register_forward_pre_hook(
                 event(owner + ".shared.to_out")))
-            handles.append(block.ln_2.register_forward_pre_hook(event(owner + ".ln_2")))
+            handles.append(block.ln_2.register_forward_pre_hook(event(
+                owner + (".visit.0.ln_2" if independent_norms else ".ln_2"))))
+            if independent_norms:
+                for visit, norm in enumerate(block.additional_ln_2, start=1):
+                    handles.append(norm.register_forward_pre_hook(
+                        event(owner + f".visit.{visit}.ln_2")))
             for expert, module in enumerate(block.experts):
                 handles.append(module.register_forward_pre_hook(
                     event(owner + f".experts.{expert}")))

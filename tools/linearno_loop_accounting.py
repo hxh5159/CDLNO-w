@@ -172,6 +172,8 @@ def analytic_v5(config, *, B=1, N=None):
                        output_layers * (H * H + H) + inert_temperature)
     shared_norms = 4 * H
     shared_body = shared_operator + shared_norms
+    visit_norms = (4 * H * C * (R - 1)
+                   if spec['core_norm_mode'] == 'visit_independent' else 0)
     expert_per_position = E * (2 * H * F + F + H)
     visit_qk_temperature = 2 * dh * M + active_temperature
     router_per_visit = H * E + E
@@ -184,6 +186,7 @@ def analytic_v5(config, *, B=1, N=None):
     parts = dict(
         stem=stem, time=time, prefix=P * shared_body, shared_core=C * shared_body,
         suffix_body=S * shared_body, head=head, experts=unique * expert_per_position,
+        visit_norms=visit_norms,
         visit_qk_temperature=executed * visit_qk_temperature,
         routers=executed * router_per_visit,
     )

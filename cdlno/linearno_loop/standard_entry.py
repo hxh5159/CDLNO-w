@@ -77,6 +77,9 @@ def _loop_parser():
                         type=int, default=argparse.SUPPRESS)
     parser.add_argument('--linearno-loop-dense-expert-width', dest='expert_width',
                         type=int, default=argparse.SUPPRESS)
+    parser.add_argument('--linearno-loop-core-norm-mode', dest='core_norm_mode',
+                        choices=('visit_independent', 'shared'),
+                        default=argparse.SUPPRESS)
     return parser
 
 

@@ -7,6 +7,9 @@ from torch import nn
 from .operator import PartialSharedLinearNOOperator
 
 
+CORE_NORM_MODES = ("visit_independent", "shared")
+
+
 class DensePointExpert(nn.Module):
     """Native two-Linear point FFN key/layout with configurable hidden width."""
     def __init__(self, hidden, expert_width):
@@ -21,9 +24,14 @@ class DensePointExpert(nn.Module):
 
 class V5PhysicalBlock(nn.Module):
     def __init__(self, *, hidden, heads, rank, variant, dropout, H, W, out_dim,
-                 expert_count, expert_width, visit_count, last_layer):
+                 expert_count, expert_width, visit_count, last_layer,
+                 core_norm_mode="visit_independent"):
         super().__init__()
+        if core_norm_mode not in CORE_NORM_MODES:
+            raise ValueError("invalid V5 core_norm_mode")
         self.last_layer = bool(last_layer)
+        self.visit_count = visit_count
+        self.core_norm_mode = core_norm_mode
         self.ln_1 = nn.LayerNorm(hidden)
         self.Attn = PartialSharedLinearNOOperator(
             hidden, heads=heads, rank=rank, variant=variant, dropout=dropout,
@@ -31,6 +39,13 @@ class V5PhysicalBlock(nn.Module):
             W=W if variant in ("conv", "conv_temp") else None,
             visit_count=visit_count, expert_count=expert_count)
         self.ln_2 = nn.LayerNorm(hidden)
+        extra_visits = visit_count - 1 if core_norm_mode == "visit_independent" else 0
+        self.additional_ln_1 = nn.ModuleList(
+            nn.LayerNorm(hidden) for _ in range(extra_visits)
+        )
+        self.additional_ln_2 = nn.ModuleList(
+            nn.LayerNorm(hidden) for _ in range(extra_visits)
+        )
         self.experts = nn.ModuleList([DensePointExpert(hidden, expert_width)
                                       for _ in range(expert_count)])
         if self.last_layer:
@@ -41,9 +56,18 @@ class V5PhysicalBlock(nn.Module):
     def visits(self):
         return self.Attn.visits
 
+    def norms_for_visit(self, visit_index):
+        if type(visit_index) is not int or not 0 <= visit_index < self.visit_count:
+            raise ValueError("visit_index is outside this V5 block")
+        if visit_index == 0 or self.core_norm_mode == "shared":
+            return self.ln_1, self.ln_2
+        return (self.additional_ln_1[visit_index - 1],
+                self.additional_ln_2[visit_index - 1])
+
     def forward(self, x, *, visit_index=0, expert_scale=1., finalize=False):
-        z = x + self.Attn(self.ln_1(x), visit_index=visit_index)
-        u = self.ln_2(z)
+        ln_1, ln_2 = self.norms_for_visit(visit_index)
+        z = x + self.Attn(ln_1(x), visit_index=visit_index)
+        u = ln_2(z)
         probabilities = self.visits[visit_index].router(u).softmax(dim=-1)
         mixed = torch.zeros_like(z)
         for index, expert in enumerate(self.experts):
@@ -59,7 +83,7 @@ class V5PhysicalBlock(nn.Module):
 class V5LoopCore(nn.Module):
     def __init__(self, *, hidden, heads, rank, variant, dropout, H, W, out_dim,
                  expert_count, expert_width, prefix_blocks, recurrent_core_blocks,
-                 loop_repeats, suffix_blocks):
+                 loop_repeats, suffix_blocks, core_norm_mode="visit_independent"):
         super().__init__()
         for name, value in (("hidden", hidden), ("heads", heads), ("rank", rank),
                             ("expert_count", expert_count), ("expert_width", expert_width),
@@ -70,14 +94,22 @@ class V5LoopCore(nn.Module):
                 raise ValueError(name + " must be a positive integer")
         if hidden % heads:
             raise ValueError("hidden must be divisible by heads")
+        if core_norm_mode not in CORE_NORM_MODES:
+            raise ValueError("invalid V5 core_norm_mode")
         common = dict(hidden=hidden, heads=heads, rank=rank, variant=variant,
                       dropout=dropout, H=H, W=W, out_dim=out_dim,
                       expert_count=expert_count, expert_width=expert_width)
-        self.prefix = nn.ModuleList([V5PhysicalBlock(**common, visit_count=1, last_layer=False)
+        self.prefix = nn.ModuleList([V5PhysicalBlock(
+                                     **common, visit_count=1, last_layer=False,
+                                     core_norm_mode=core_norm_mode)
                                      for _ in range(prefix_blocks)])
-        self.core = nn.ModuleList([V5PhysicalBlock(**common, visit_count=loop_repeats, last_layer=False)
+        self.core = nn.ModuleList([V5PhysicalBlock(
+                                   **common, visit_count=loop_repeats, last_layer=False,
+                                   core_norm_mode=core_norm_mode)
                                    for _ in range(recurrent_core_blocks)])
-        self.suffix = nn.ModuleList([V5PhysicalBlock(**common, visit_count=1,
+        self.suffix = nn.ModuleList([V5PhysicalBlock(
+                                      **common, visit_count=1,
+                                      core_norm_mode=core_norm_mode,
                                       last_layer=index == suffix_blocks - 1)
                                      for index in range(suffix_blocks)])
         self.prefix_blocks = prefix_blocks
@@ -86,6 +118,7 @@ class V5LoopCore(nn.Module):
         self.suffix_blocks = suffix_blocks
         self.expert_count = expert_count
         self.expert_width = expert_width
+        self.core_norm_mode = core_norm_mode
         self.residual_mode = "operator_1_expert_1_over_r"
         self.validate_structure()
 
@@ -109,6 +142,11 @@ class V5LoopCore(nn.Module):
             for block in group:
                 if len(block.visits) != count or len(block.experts) != self.expert_count:
                     raise ValueError("V5 visit/expert ownership mismatch")
+                expected_norms = count - 1 if (self.core_norm_mode == "visit_independent"
+                                                and count > 1) else 0
+                if (len(block.additional_ln_1) != expected_norms or
+                        len(block.additional_ln_2) != expected_norms):
+                    raise ValueError("V5 visit norm ownership mismatch")
                 for parameter in block.parameters():
                     if id(parameter) in seen:
                         raise ValueError("V5 parameter registered by more than one owner")
