@@ -1,0 +1,106 @@
+{
+  "scope": "SYNTHETIC coordinates and initialized weights; no dataset, trained weights, loss backward or training",
+  "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+  "torch": "2.13.0+cu130",
+  "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+  "config_hash": "1cba86e1e3242ac93f895dbcdc24190432ecedb4c0e0cf9d3ab373b23a523523",
+  "shape": [
+    8,
+    11271,
+    64
+  ],
+  "architecture": "partial_share_feature_gate_v5",
+  "loop": {
+    "task": "airfoil",
+    "profile": "paper_table8_on_release_model",
+    "topology_preset": "p1_c3_r2_s1",
+    "prefix_blocks": 1,
+    "recurrent_core_blocks": 3,
+    "loop_repeats": 2,
+    "suffix_blocks": 1,
+    "unique_depth": 5,
+    "executed_depth": 8,
+    "hidden_width": 128,
+    "heads": 8,
+    "head_dim": 16,
+    "actual_M": 64,
+    "variant": "conv_temp",
+    "grid_height": 221,
+    "grid_width": 51,
+    "expert_count": 4,
+    "expert_width": 128,
+    "residual_mode": "operator_1_expert_1_over_r",
+    "core_norm_mode": "visit_independent",
+    "scale_operator": 1.0,
+    "scale_expert_core": "1/2",
+    "scale_expert_value": 0.5,
+    "gate_axis": "expert",
+    "gate_bias": true,
+    "gate_multihead": false,
+    "gate_temperature": null,
+    "dense_experts": true,
+    "state_partition": {
+      "shared_by_physical_position": [
+        "in_project_x",
+        "to_v",
+        "to_out",
+        "experts"
+      ],
+      "independent_by_visit": [
+        "to_q",
+        "to_k",
+        "active_qk_temperature",
+        "router",
+        "ln_1",
+        "ln_2"
+      ],
+      "prefix_suffix": "independent_complete_single_visit_blocks"
+    },
+    "initialization": {
+      "whole_model_apply_count": 1,
+      "q_across_visits": "same_values_distinct_storage",
+      "k_across_visits": "same_values_distinct_storage",
+      "q_vs_k": "independent",
+      "active_temperature_across_visits": "same_values_distinct_storage",
+      "router": "weight_and_bias_zero",
+      "experts": "independent_native_initialization",
+      "core_norms": "same_values_distinct_storage"
+    },
+    "formula_version": "operator1-dense-expert-1-over-r-visit-norm-v2"
+  },
+  "trainable_parameters": 1623713,
+  "diagnostics": {
+    "hooks": {
+      "q_logits": 1,
+      "k_logits": 1,
+      "v": 1,
+      "readout": 1
+    },
+    "hooked_prediction_bitwise_equal": true,
+    "parameters_unmodified": true,
+    "torch_rng_unchanged": true,
+    "q_row_sum_max_error": 2.384185791015625e-07,
+    "k_column_sum_max_error": 4.172325134277344e-07,
+    "native_readout_max_error": 0.0,
+    "temperature_q": [
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5
+    ],
+    "temperature_k": [
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5
+    ]
+  }
+}
