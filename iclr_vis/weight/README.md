@@ -148,14 +148,20 @@ x/y/target/prediction为 `[grid_height,grid_width]`；点序与原模型reshape�
 
 ### 字体、图注和最终印刷尺寸
 
-2026-09-26复查纠正了初版4.3–6.3pt小字和7.2英寸导出后再缩图的问题：
+当前版本已按用户要求去掉状态图编号，并在重新核对三篇论文原图及模板后改为Times风格：
 
 - 默认 `--paper iclr`：按ICLR 2026模板正文宽度 **5.5英寸** 导出。
   `--paper icml`：按ICML 2026双栏通栏宽度 **6.75英寸** 导出，LaTeX使用 `figure*`。
   64格总图应使用正文通栏宽度，不建议挤入ICML单栏。
-- 编号、色条刻度、色条说明、场图标签统一为 **9pt DejaVu Sans**；字体嵌入PDF。
-  这是本工具选择的可读性规格，不声称所有会议对图内文字统一要求9pt或统一字体。
-- 可见色条框/刻度线至少 **0.5pt**，编号放在每格上方的独立白色留白中，不遮挡权重分布。
+- **不显示逐状态编号**，也删除编号所占的行间空白；单张导出也不在图内写状态号。
+  原始latent顺序不变，可由NPZ、metadata和单张文件名追溯。
+- 图内默认使用可用的 **Times New Roman → TeX Gyre Termes → Nimbus Roman →
+  Nimbus Roman No9 L → Liberation Serif → STIXGeneral**。最后一项是Matplotlib自带的
+  Times风格衬线字体，不是微软Times New Roman，也不会默默回退到DejaVu Sans。
+  控制台打印实际字体，metadata记录字体家族、文件和SHA-256，PDF嵌入实际字体。
+- **色条刻度8pt、色条说明/场图标签9pt**，按最终印刷宽度计算；避免把所有元素都设为一样大。
+  这属于本工具的版式选择，不冒称是会议对图内字号的统一强制规定。
+- 可见色条框/刻度线至少 **0.5pt**。
   数据图保留等比例、共享色标、viridis默认配色；不用彩虹色或视觉增强掩盖均匀权重。
 - 默认取消图内总标题，由正式图注说明模型、样本和head；`--annotate`仅用于浏览。
   合成检查图始终保留 `SYNTHETIC CHECK` 标记，不应作为实验结果提交。
@@ -163,11 +169,26 @@ x/y/target/prediction为 `[grid_height,grid_width]`；点序与原模型reshape�
   `--width`用于**最终放进论文的宽度**，不要导出大图后再缩小。
   若把5.5英寸PDF缩至3.25英寸，9pt也会缩成约5.32pt，提高DPI不能解决小字问题。
 
-正式**图注**不画进PNG/PDF，也不强制使用图内的DejaVu字体。新增 `paper_figure.tex` 用原生
-`\caption{...}`：ICML模板按其9pt图注规则排版，ICLR按其模板默认规则排版，沿用论文正文字体。
+正式**图注**不画进PNG/PDF。`paper_figure.tex`用原生 `\caption{...}`：
+ICML 2026模板按其**9 TeX pt、Times系**规则排版；ICLR 2026官方示例使用
+`\usepackage{iclr2026_conference,times}`，图注沿用其**默认10 TeX pt、Times系**。
+不得把ICML的9pt硬套到ICLR，也不能把图内8pt刻度或STIX字体强加给正式caption。
 不加载覆盖caption样式的自定义设置。图注位于图下，编号、间距由会议模板处理。
 `paper_figure.tex`默认选择本次第一个head、第一个view的Q peak图；插入其他图时须同步修改
 Q/K与shared/peak图注，不能混用。
+
+所有五任务脚本可在原命令后追加这些选项：
+
+```bash
+# 若远端确实安装了Times New Roman，显式指定；不存在时明确报错，不换别的字体冒充。
+--font-family "Times New Roman"
+
+# 使用Matplotlib自带的Times风格字体，各机器保持一致，无需安装字体。
+--font-family STIXGeneral
+
+# 默认图内字号，可显式调整；不控制LaTeX正式图注。
+--font-size 9 --tick-font-size 8
+```
 
 例如将输出PDF及tex复制到论文的 `figures/airfoil/` 后，在官方模板中使用：
 
@@ -182,6 +203,7 @@ Q/K与shared/peak图注，不能混用。
 规范依据及年份见 [REFERENCE_NOTES.md](REFERENCE_NOTES.md)。会议年份/版式变化时请重新核对。
 本地检查覆盖PDF物理尺寸、文字字号/嵌入、合成图裁切与布局；用户远端真实权重的最终纹理和
 插入完整论文后的页面效果尚未检查，不能据此保证“所有细节均已达投稿终稿水平”。
+最新无编号/Times字体核对见 [TIMES_STYLE_REVIEW.md](TIMES_STYLE_REVIEW.md)；旧验收日志保留原样。
 
 ## 运行核对
 

@@ -65,3 +65,32 @@
 最终经GitHub contents API取得完整2026 tex/sty；ICML官方ZIP成功下载。
 ICML ZIP SHA-256：`8b29290f5828e176debb57ea9cc00252502973d55ea561a2f18a7f0a326bfc6c`。
 以上参考只用于核对，不是脚本远端运行依赖。
+
+## 后续复核：无编号与Times风格（当前实现）
+
+用户明确要求取消编号，并重新检查字体/字号。本次再次打开Transolver PDF p19 Figure10、
+Transolver++官方Figure10 PNG、LinearNO PDF p17 Figure6（另读取p18–19），并读取相关caption。
+这些状态格均没有逐格数字；现已去掉原工具自行加的编号及专用留白，保留原序和元数据索引。
+
+实际PDF字体提取结果见 `evidence/times-reference-review.json`：
+
+- **Transolver Figure10图下注释**：`NimbusRomNo9L-Regu`，PDF字号8.9664pt，
+  对应9 TeX pt；“Figure 10.”斜体为 `NimbusRomNo9L-Regu-Slant`。
+- **LinearNO Figure6图下注释**：`NimbusRomNo9L-Regu`，PDF字号9.9626pt，
+  对应10 TeX pt。图内分组标题实际是 `Consolas-Bold`，不是Times；因此不能声称所有论文
+  图内字体一致，或“只有Times New Roman才符合顶会”。
+- **Transolver++ Figure10**：官方PNG确认无逐格编号，HTML caption确认为最后一层64个
+  eidetic states。此前部分下载PDF无法提供有效页面；本次不由截图猜测其图注字体和字号，
+  该字体识别仍标NOT VERIFIED。
+
+重新读取ICLR2026示例第3–4行 `article`与 `\usepackage{iclr2026_conference,times}`，
+ICLR样式第173行默认正文10 TeX pt，且未自行重设caption字号。
+ICML2026样式加载times，并通过small将caption设为9 TeX pt，figure caption在下方。
+**Times系正式图注由模板排版**，不能用绘图脚本的8pt刻度字号替代；也不能将“图内STIXGeneral”
+当成“整篇论文caption字体已验证”。TeX pt=1/72.27英寸，PDF点=1/72英寸，上述微小数值差异为单位换算。
+
+新默认图内字体优先解析实际存在的Times New Roman/Termes/Nimbus/Liberation Serif，
+全部不存在时使用Matplotlib自带STIXGeneral（Times风格）。本机实际解析为STIXGeneral；
+它不是微软Times New Roman。禁止无提示回退到DejaVu Sans；显式不存在的字体直接报错。
+图内说明9pt、刻度8pt；编号全部删除。正式caption由官方模板决定。
+这里只改呈现，不修改模型、Q/K提取/归一化、state顺序或数据图的颜色数值。

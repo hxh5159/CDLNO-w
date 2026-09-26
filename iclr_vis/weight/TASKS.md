@@ -143,9 +143,12 @@ NS另有每步rL2、十步平均rL2和十步拼接full rL2。**这些只是选�
 --individual
 ```
 
-9pt字体、ICLR5.5英寸/ICML6.75英寸、0.5pt色条线宽、无总标题默认、PDF固定宽度、
+所有状态格均**不标编号**；Times系/Times风格字体、8pt刻度/9pt说明、
+ICLR5.5英寸/ICML6.75英寸、0.5pt色条线宽、无总标题默认、PDF固定宽度、
 正式caption继承模板等与Airfoil完全共用。`paper_figure.tex`默认对应**第一个选定head的Q peak总图**。
 换成K或shared图时必须同步修改caption。实际像素模式由训练权重决定，不用色标制造虚假的物理分区。
+可用 `--font-family "Times New Roman"` 显式选择已安装字体，或用 `--font-family STIXGeneral`
+保证使用Matplotlib自带的Times风格字体。图内字体/字号不会覆盖论文模板的正式图注。
 详见 [README排版说明](README.md#字体图注和最终印刷尺寸) 和 [参考依据](REFERENCE_NOTES.md)。
 
 安装/验证边界：使用原训练环境已有Torch、NumPy、SciPy、Matplotlib及V5模型依赖，无需另装包。

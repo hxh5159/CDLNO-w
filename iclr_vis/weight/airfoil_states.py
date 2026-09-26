@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 from datetime import datetime, timezone
+from functools import lru_cache
 import hashlib
 import json
 import math
@@ -30,7 +31,47 @@ DATA_ROOT = Path("/inspire/hdd/project/urbanlowaltitude/yuanmeilu-253114050257/"
                  "houwenzhe-drivaer/data")
 DATA_FILES = ("NACA_Cylinder_X.npy", "NACA_Cylinder_Y.npy", "NACA_Cylinder_Q.npy")
 PAPER_WIDTHS = {"iclr": 5.5, "icml": 6.75}  # 2026 template textwidth, inches
-FONT_PT = 9.  # Our figure-lettering choice, not a universal conference mandate.
+FONT_PT = 9.  # Figure labels, not the formal LaTeX caption.
+TICK_PT = 8.
+TIMES_FAMILIES = ("Times New Roman", "TeX Gyre Termes", "Nimbus Roman",
+                  "Nimbus Roman No9 L", "Liberation Serif", "STIXGeneral")
+
+
+def add_typography_arguments(p):
+    p.add_argument("--font-family", default="auto",
+                   help="auto: available Times-family face, then bundled Times-style STIXGeneral; explicit names must exist")
+    p.add_argument("--font-size", type=float, default=FONT_PT, help="figure label size in final printed points; not the LaTeX caption")
+    p.add_argument("--tick-font-size", type=float, default=TICK_PT, help="colorbar tick size in final printed points")
+
+
+def validate_typography(args):
+    for name in ("font_size", "tick_font_size"):
+        value = getattr(args, name)
+        if not math.isfinite(value) or not 6 <= value <= 18:
+            raise ValueError(f"--{name.replace('_', '-')} must be finite and between 6 and 18 pt")
+
+
+@lru_cache(maxsize=None)
+def resolve_font(requested="auto"):
+    """Resolve a real installed face; never silently substitute DejaVu Sans."""
+    from matplotlib import font_manager
+    candidates = TIMES_FAMILIES if requested == "auto" else (requested,)
+    for candidate in candidates:
+        try:
+            path = font_manager.findfont(font_manager.FontProperties(family=[candidate]), fallback_to_default=False)
+        except ValueError:
+            continue
+        actual = font_manager.FontProperties(fname=path).get_name()
+        if actual != candidate:
+            continue
+        return dict(requested=requested, family=actual, file=path, sha256=sha256(path),
+                    times_style_fallback=(requested == "auto" and actual == "STIXGeneral"))
+    raise ValueError(f"Requested font {requested!r} is not installed. Use --font-family auto or an installed Times-family font; no silent sans-serif fallback.")
+
+
+def typography(args):
+    return dict(**resolve_font(args.font_family), label_pt=args.font_size, tick_pt=args.tick_font_size,
+                panel_numbers=False, formal_caption="official LaTeX template; Times-family; not rasterized into figure")
 
 
 def sha256(path):
@@ -62,6 +103,7 @@ def parser():
                    help="full-text-width layout (ICML uses a two-column figure*)")
     p.add_argument("--width", type=float, help="final printed width in inches; default: ICLR 5.5, ICML 6.75")
     p.add_argument("--annotate", action="store_true", help="include browsing titles; omit for paper submission")
+    add_typography_arguments(p)
     p.add_argument("--dpi", type=int, default=400)
     p.add_argument("--cmap", choices=("viridis", "cividis", "coolwarm"), default="viridis")
     p.add_argument("--individual", action="store_true", help="also save each near-view, peak-normalized Q/K state as PNG/PDF")
@@ -93,6 +135,7 @@ def validate_request(args, metadata):
         raise ValueError(f"--head must be in 0..{spec['heads'] - 1}, or all")
     if args.width is None:
         args.width = PAPER_WIDTHS[args.paper]
+    validate_typography(args)
     if args.gpu < 0 or args.dpi < 72 or not math.isfinite(args.width) or args.width < 4:
         raise ValueError("gpu>=0, dpi>=72 and width>=4 are required")
     if not 1 <= args.full_columns <= 64 or not 1 <= args.near_columns <= 64:
@@ -258,11 +301,13 @@ def display_values(weights, kind, normalization):
         "Q (shared scale)" if kind == "Q" else "N K (shared scale; uniform = 1)")
 
 
-def style():
-    return {"font.family": "DejaVu Sans", "font.size": FONT_PT,
-            "mathtext.fontset": "dejavusans", "pdf.fonttype": 42, "ps.fonttype": 42,
-            "axes.linewidth": .5, "axes.titlesize": FONT_PT, "axes.labelsize": FONT_PT,
-            "xtick.labelsize": FONT_PT, "ytick.labelsize": FONT_PT,
+def style(args):
+    family = resolve_font(args.font_family)["family"]
+    return {"font.family": [family], "font.size": args.font_size,
+            "mathtext.fontset": "stix", "pdf.fonttype": 42, "ps.fonttype": 42,
+            "axes.linewidth": .5, "axes.titlesize": args.font_size, "axes.labelsize": args.font_size,
+            "xtick.labelsize": args.tick_font_size, "ytick.labelsize": args.tick_font_size,
+            "figure.constrained_layout.h_pad": .07,
             "savefig.facecolor": "white", "figure.facecolor": "white", "savefig.bbox": None,
             "text.usetex": False}
 
@@ -291,37 +336,37 @@ def atlas(mesh, weights, *, kind, normalization, bounds, columns, title, path, a
     count = values.shape[1]
     rows = math.ceil(count / columns)
     ratio = (bounds[1][1] - bounds[1][0]) / (bounds[0][1] - bounds[0][0])
-    margin, gap, bottom, label_space = .055, .025, .66, .19
-    header = .30 if title else .035
+    # No latent numbers or reserved label rows. Font sizes stay independent of
+    # panel count and physical width; the compact grid follows the paper atlases.
+    margin, gap = .055, .025
+    bottom = .27 + (1.4 * args.font_size + 1.4 * args.tick_font_size) / 72
+    header = (1.4 * args.font_size / 72 + .09) if title else .035
     cell_width = (args.width - 2 * margin - (columns - 1) * gap) / columns
-    grid_height = rows * cell_width * ratio + (rows - 1) * (gap + label_space)
-    height = grid_height + bottom + header + label_space
-    with plt.rc_context(style()):
+    grid_height = rows * cell_width * ratio + (rows - 1) * gap
+    height = grid_height + bottom + header
+    with plt.rc_context(style(args)):
         fig, axes = plt.subplots(rows, columns, figsize=(args.width, height), squeeze=False)
         fig.subplots_adjust(left=margin / args.width, right=1 - margin / args.width,
-                            bottom=bottom / height, top=1. - (header + label_space) / height,
-                            wspace=gap / cell_width, hspace=(gap + label_space) / (cell_width * ratio))
+                            bottom=bottom / height, top=1. - header / height,
+                            wspace=gap / cell_width, hspace=gap / (cell_width * ratio))
         norm = Normalize(vmin=0., vmax=vmax)
         for state, ax in enumerate(axes.flat):
             if state >= count:
                 ax.set_axis_off(); continue
             (painter or paint)(ax, mesh, values[:, state], bounds, cmap=args.cmap, norm=norm)
-            # Labels occupy their own white row, never conceal routing weights.
-            ax.annotate(f"{state:02d}", xy=(.5, 1.), xycoords="axes fraction",
-                        xytext=(0., 2.), textcoords="offset points", va="bottom", ha="center",
-                        fontsize=FONT_PT, color="#202020", annotation_clip=False)
         if title:
-            fig.suptitle(title, fontsize=FONT_PT, y=1. - .035 / height)
-        cax = fig.add_axes([.26, .43 / height, .48, .085 / height])
+            fig.suptitle(title, fontsize=args.font_size, y=1. - .07 / height)
+        cax = fig.add_axes([.26, (bottom - .22) / height, .48, .07 / height])
         bar = fig.colorbar(plt.cm.ScalarMappable(norm=norm, cmap=args.cmap), cax=cax,
                            orientation="horizontal", ticks=[0., vmax / 2, vmax], format="%.3g")
         bar.outline.set_linewidth(.5)
-        bar.ax.tick_params(labelsize=FONT_PT, length=2.5, width=.5, pad=2.)
-        bar.set_label(label, fontsize=FONT_PT, labelpad=3.)
+        bar.ax.tick_params(labelsize=args.tick_font_size, length=2.5, width=.5, pad=2.)
+        bar.set_label(label, fontsize=args.font_size, labelpad=3.)
         save_figure(fig, path, args.dpi)
         plt.close(fig)
     return dict(vmin=0., vmax=vmax, transform=label, latent_order=list(range(count)),
-                width_inches=args.width, height_inches=height, minimum_font_pt=FONT_PT,
+                width_inches=args.width, height_inches=height,
+                minimum_font_pt=min(args.font_size, args.tick_font_size), panel_numbers=False,
                 latent_spatial_max=weights.max(axis=0).tolist(),
                 latent_spatial_mean=weights.mean(axis=0).tolist(),
                 latent_spatial_std=weights.std(axis=0).tolist())
@@ -334,7 +379,7 @@ def field_reference(mesh, target, prediction, bounds, path, args, title, *, fiel
     low, high = min(target.min(), prediction.min()), max(target.max(), prediction.max())
     high = max(high, low + 1e-8)
     error = np.abs(prediction - target)
-    with plt.rc_context(style()):
+    with plt.rc_context(style(args)):
         fig, axes = plt.subplots(1, 3, figsize=(args.width, 2.15), layout="constrained")
         for ax, values, label in zip(axes, (target, prediction, error),
                                      (f"Reference {field_name}", f"Predicted {field_name}", "Absolute error")):
@@ -342,13 +387,13 @@ def field_reference(mesh, target, prediction, bounds, path, args, title, *, fiel
             artist = (painter or paint)(ax, mesh, values, bounds,
                            cmap="magma" if label == "Absolute error" else "viridis", norm=norm)
             # These identify distinct field panels; the overall title is in LaTeX.
-            ax.set_title(label, fontsize=FONT_PT)
+            ax.set_title(label, fontsize=args.font_size)
             ticks = [norm.vmin, (norm.vmin + norm.vmax) / 2, norm.vmax]
             bar = fig.colorbar(artist, ax=ax, orientation="horizontal", fraction=.05, pad=.06,
                                ticks=ticks, format="%.3g")
             bar.ax.tick_params(length=2.5, width=.5, pad=2.)
         if title:
-            fig.suptitle(title, fontsize=FONT_PT)
+            fig.suptitle(title, fontsize=args.font_size)
         save_figure(fig, path, args.dpi)
         plt.close(fig)
 
@@ -384,11 +429,15 @@ def export_plots(output, x, y, q, k, target, prediction, heads, args, *, synthet
                 directory.mkdir()
                 values, _, label = display_values(weights, kind, "peak")
                 for state in range(weights.shape[-1]):
-                    with plt.rc_context(style()):
+                    with plt.rc_context(style(args)):
                         fig, ax = plt.subplots(figsize=(3., 2.1), layout="constrained")
                         paint(ax, mesh, values[:, state], near, cmap=args.cmap, norm=Normalize(0, 1))
-                        individual_prefix = "SYNTHETIC CHECK\n" if synthetic else ""
-                        ax.set_title(individual_prefix + f"{kind} | head {head} | latent {state:02d}", fontsize=FONT_PT)
+                        # Identity stays in the filename/NPZ; no state number is
+                        # burned into the panel, including individual exports.
+                        if synthetic:
+                            ax.set_title("SYNTHETIC CHECK", fontsize=args.font_size)
+                        elif args.annotate:
+                            ax.set_title(f"{kind} weights | peak normalized", fontsize=args.font_size)
                         save_figure(fig, directory / f"state_{state:02d}", args.dpi)
                         plt.close(fig)
     field_reference(mesh, target, prediction, near, output / "field_reference", args,
@@ -405,7 +454,7 @@ def write_latex(output, args, heads, *, synthetic):
     caption += (
         "Final-layer reconstruction routing weights on Airfoil "
         f"(test sample {args.sample_index}, head {heads[0]}). "
-        "The 64 latent indices appear in row-major order. "
+        "The 64 states retain their original order, arranged row by row without panel numbers. "
         r"Each panel shows $Q_{i,m}/\max_i Q_{i,m}$, with the maximum taken over "
         "the complete mesh. The common color scale is 0--1; this normalization compares "
         "spatial patterns, not absolute strengths across latent states. "
@@ -415,7 +464,9 @@ def write_latex(output, args, heads, *, synthetic):
     text = (
         "% Use your official conference template and graphicx.\n"
         "% Put this PDF on your graphics search path. Do not override caption styling.\n"
-        f"% Exported width {args.width:g} in; figure lettering {FONT_PT:g} pt at this width.\n"
+        "% ICLR official preamble: \\usepackage{iclr2026_conference,times}; caption is normally 10 TeX pt.\n"
+        "% ICML official style loads Times and sets captions to 9 TeX pt. Do not load another caption font.\n"
+        f"% Exported width {args.width:g} in; labels {args.font_size:g} pt; ticks {args.tick_font_size:g} pt.\n"
         "% If a different width is needed, regenerate with --width; do not shrink the PDF.\n"
         f"\\begin{{{environment}}}[t]\n"
         "  \\centering\n"
@@ -446,6 +497,8 @@ def main(argv=None):
     print(json.dumps(summary, indent=2, ensure_ascii=False), flush=True)
     if args.preview:
         return 0
+    font_info = typography(args)
+    print(f"Figure font: {font_info['family']}; labels {args.font_size:g} pt, ticks {args.tick_font_size:g} pt; no panel numbers", flush=True)
     if args.output_dir is not None and args.output_dir.expanduser().exists():
         raise FileExistsError("--output-dir already exists; choose a new directory")
     import numpy as np
@@ -486,7 +539,7 @@ def main(argv=None):
                       peak="W[i,m]/max_i(W[i,m]); no minimum subtraction; contrast only",
                       k_shared="N*K; uniform spatial distribution = 1"),
         rendering=dict(cmap=args.cmap, dpi=args.dpi, width_inches=args.width,
-                       paper_template=args.paper, font_family="DejaVu Sans", font_pt=FONT_PT,
+                       paper_template=args.paper, typography=font_info,
                        line_width_pt=.5, pdf_fonttype=42, exact_page_width=True,
                        caption_style="controlled by official LaTeX template via paper_figure.tex",
                        browsing_titles=args.annotate,
@@ -513,7 +566,7 @@ def main(argv=None):
     caption = (
         "Spatial routing weights of the final attention layer of V5 on Airfoil, "
         f"test sample {args.sample_index} (raw index {1000 + args.sample_index}), "
-        f"checkpoint epoch {report['epoch']}. All 64 latent indices are shown in their original order. "
+        f"checkpoint epoch {report['epoch']}. All 64 states retain their original row-major order without panel numbers. "
         "Q denotes reconstruction weights (normalized across latents at each point); "
         "K denotes compression weights (normalized across all mesh points for each latent). "
         "Each head is displayed separately. Shared-scale panels show Q or N*K without per-state scaling; "

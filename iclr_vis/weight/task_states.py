@@ -57,6 +57,7 @@ def parser(task):
     p.add_argument("--columns", type=int, default=8, help="64 states: 8x8; 32 states: 4x8")
     p.add_argument("--cmap", choices=("viridis", "cividis", "coolwarm"), default="viridis")
     p.add_argument("--annotate", action="store_true", help="browsing titles; omit for paper figures")
+    vis.add_typography_arguments(p)
     p.add_argument("--individual", action="store_true", help="also export each Q/K state with peak normalization")
     p.add_argument("--preview", action="store_true", help="metadata only; no torch/data/tensor/output creation")
     return p
@@ -111,12 +112,13 @@ def validate_request(task, args, metadata):
     elif args.forecast_step is not None:
         raise ValueError("--forecast-step applies only to NS")
     args.width = vis.PAPER_WIDTHS[args.paper] if args.width is None else args.width
+    vis.validate_typography(args)
     if args.gpu < 0 or args.dpi < 72 or not math.isfinite(args.width) or args.width < 4:
         raise ValueError("Require gpu>=0, dpi>=72, finite width>=4")
     if not 1 <= args.columns <= c["actual_M"]:
         raise ValueError("--columns must be between 1 and the checkpoint's actual M")
     if (args.width - .11 - (args.columns - 1) * .025) / args.columns * 72 < 16:
-        raise ValueError("Too many columns for readable 9pt indices; reduce --columns or increase final --width")
+        raise ValueError("Too many columns for visible spatial detail; reduce --columns or increase final --width")
     return heads
 
 
@@ -296,10 +298,13 @@ def export_plots(task, output, sample, q, k, target, prediction, heads, args, sy
                 directory = output / f"{kind.lower()}_head{head:02d}_individual_peak"; directory.mkdir()
                 values, _, _ = vis.display_values(weights, kind, "peak")
                 for state in range(weights.shape[1]):
-                    with plt.rc_context(vis.style()):
+                    with plt.rc_context(vis.style(args)):
                         fig, ax = plt.subplots(figsize=(3., 3.), layout="constrained")
                         painter(ax, mesh, values[:, state], bounds, cmap=args.cmap, norm=Normalize(0, 1))
-                        ax.set_title(("SYNTHETIC CHECK\n" if synthetic else "") + f"{kind} | head {head} | latent {state:02d}")
+                        if synthetic:
+                            ax.set_title("SYNTHETIC CHECK")
+                        elif args.annotate:
+                            ax.set_title(f"{kind} weights | peak normalized")
                         vis.save_figure(fig, directory / f"state_{state:02d}", args.dpi); plt.close(fig)
     vis.field_reference(mesh, target, prediction, bounds, output / "field_reference", args,
         (prefix + name + temporal) if (args.annotate or synthetic) else "", field_name=FIELDS[task], painter=painter)
@@ -309,7 +314,7 @@ def export_plots(task, output, sample, q, k, target, prediction, heads, args, sy
 def write_caption(task, output, args, heads, rank, synthetic):
     caption = ("SYNTHETIC CHECK; random model and synthetic data. " if synthetic else "")
     caption += (f"Final-layer reconstruction routing weights on {task} "
-        f"(test sample {args.sample_index}, head {heads[0]}). All {rank} latent indices appear in row-major order. "
+        f"(test sample {args.sample_index}, head {heads[0]}). All {rank} states retain their original row-major order without panel numbers. "
         r"Panels show $Q_{i,m}/\max_i Q_{i,m}$ on a common 0--1 scale. "
         "Normalization uses the complete spatial domain and compares patterns, not absolute latent strengths. ")
     caption += ("Only original mesh nodes are drawn; no connectivity or filled surface is inferred. " if task == "elasticity"
@@ -320,7 +325,9 @@ def write_caption(task, output, args, heads, rank, synthetic):
     env = "figure*" if args.paper == "icml" else "figure"
     (output / "paper_figure.tex").write_text(
         "% Official conference template + graphicx; keep the template's caption styling.\n"
-        f"% {vis.FONT_PT:g}pt lettering at {args.width:g}in. Regenerate instead of shrinking.\n"
+        "% ICLR official preamble includes times; caption normally 10 TeX pt.\n"
+        "% ICML official style loads Times; caption 9 TeX pt. Do not override caption font/size.\n"
+        f"% Labels {args.font_size:g}pt, ticks {args.tick_font_size:g}pt at {args.width:g}in. Regenerate instead of shrinking.\n"
         f"\\begin{{{env}}}[t]\n  \\centering\n"
         f"  \\includegraphics[width={args.width:g}in]{{q_head{heads[0]:02d}_full_peak.pdf}}\n"
         f"  \\caption{{{caption}}}\n  \\label{{fig:v5-{task}-routing}}\n\\end{{{env}}}\n", encoding="utf-8")
@@ -360,6 +367,8 @@ def main(argv=None):
     print(json.dumps(summary, indent=2, ensure_ascii=False), flush=True)
     if args.preview:
         return 0
+    font_info = vis.typography(args)
+    print(f"Figure font: {font_info['family']}; labels {args.font_size:g} pt, ticks {args.tick_font_size:g} pt; no panel numbers", flush=True)
     if args.output_dir is not None and args.output_dir.expanduser().exists():
         raise FileExistsError("--output-dir already exists; choose a new directory")
     checksums = verify_files(task, args.data_path, metadata)
@@ -390,8 +399,8 @@ def main(argv=None):
             cuda_visible_devices=os.environ.get("CUDA_VISIBLE_DEVICES"), dtype="float32", amp=False,
             diagnostic=diagnostics, protocol="prediction feedback; 10 steps" if task == "ns" else "native static eval; saved normalization"),
         metrics=metrics, metrics_scope="one test sample only; not the full-test metric",
-        rendering=dict(paper=args.paper, width_inches=args.width, font_pt=vis.FONT_PT,
-            font_family="DejaVu Sans", dpi=args.dpi, cmap=args.cmap, columns=args.columns,
+        rendering=dict(paper=args.paper, width_inches=args.width, typography=font_info,
+            dpi=args.dpi, cmap=args.cmap, columns=args.columns,
             geometry="original nodes only; no inferred triangles" if task == "elasticity" else "native structured cell triangles; Gouraud colors",
             head_aggregation="none", coordinates="raw physical coordinates, not encoded model coordinates",
             peak="divide by each latent's spatial maximum; no minimum subtraction",

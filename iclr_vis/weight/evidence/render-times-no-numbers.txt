@@ -1,0 +1,154 @@
+{
+  "run_dir": "/tmp/v5-weight-visual-review-ofkxm3hw/run with spaces",
+  "data_path": "/tmp/v5-weight-visual-review-ofkxm3hw/data with spaces",
+  "checkpoint": "final",
+  "config_hash": "fead4b276cd717a7b3d688b20a638c1d0dddc84ccd4a84334d797a2683f34d4f",
+  "heads": [
+    0
+  ],
+  "topology": "p1_c3_r2_s1",
+  "executed_depth": 8,
+  "expert_count": 4,
+  "M": 64,
+  "core_norm_mode": "visit_independent",
+  "sample_index": 0,
+  "raw_sample_index": 1000,
+  "attention_path": "loop.suffix.0.Attn",
+  "visit_index": 0,
+  "metadata_scope": "synthetic"
+}
+Figure font: STIXGeneral; labels 9 pt, ticks 8 pt; no panel numbers
+Checking dataset SHA-256: NACA_Cylinder_X.npy
+Checking dataset SHA-256: NACA_Cylinder_Y.npy
+Checking dataset SHA-256: NACA_Cylinder_Q.npy
+Loading verified checkpoint pair (strict=True)...
+Running two evaluation forwards to verify observation transparency...
+Rendering q_head00_full_shared
+Rendering q_head00_full_peak
+Rendering q_head00_near_shared
+Rendering q_head00_near_peak
+Rendering k_head00_full_shared
+Rendering k_head00_full_peak
+Rendering k_head00_near_shared
+Rendering k_head00_near_peak
+Completed. Figures and raw arrays: /tmp/v5-weight-visual-review-ofkxm3hw/figures-times-no-numbers
+Single selected sample relative L2: 0.9768540315737267 (not a full-test metric)
+{
+  "task": "darcy",
+  "run_dir": "/tmp/v5-four-task-vis-7bm9ak0i/darcy/saved run with spaces",
+  "data_path": "/tmp/v5-four-task-vis-7bm9ak0i/darcy/data with spaces",
+  "config_hash": "763d1b9e22b22ceb2c47c1885ebf570a988cb82e7f2e00f255bc434657cb09f9",
+  "checkpoint": "final",
+  "M": 64,
+  "heads": [
+    0
+  ],
+  "expert_count": 1,
+  "topology": "p1_c3_r2_s1",
+  "core_norm_mode": "visit_independent",
+  "sample_index": 0,
+  "forecast_step": null,
+  "metadata_scope": "synthetic",
+  "attention_path": "loop.suffix.0.Attn",
+  "visit_index": 0
+}
+Figure font: STIXGeneral; labels 9 pt, ticks 8 pt; no panel numbers
+Checking dataset SHA-256: piececonst_r421_N1024_smooth1.mat
+Checking dataset SHA-256: piececonst_r421_N1024_smooth2.mat
+Loading strict checkpoint pair and saved normalization...
+Rendering q_head00_full_shared
+Rendering q_head00_full_peak
+Rendering k_head00_full_shared
+Rendering k_head00_full_peak
+Completed. Figures and raw arrays: /tmp/v5-four-task-vis-7bm9ak0i/darcy/figures-times-no-numbers
+Single-sample metrics (not a full-test result): {'selected_sample_relative_l2': 0.6121419069309996}
+{
+  "task": "elasticity",
+  "run_dir": "/tmp/v5-four-task-vis-7bm9ak0i/elasticity/saved run with spaces",
+  "data_path": "/tmp/v5-four-task-vis-7bm9ak0i/elasticity/data with spaces",
+  "config_hash": "546eb905173721d02faa13d4a9afad77eb809675adbdb36ff48d1648fe5f3f55",
+  "checkpoint": "final",
+  "M": 64,
+  "heads": [
+    0
+  ],
+  "expert_count": 4,
+  "topology": "p1_c3_r2_s1",
+  "core_norm_mode": "visit_independent",
+  "sample_index": 0,
+  "forecast_step": null,
+  "metadata_scope": "synthetic",
+  "attention_path": "loop.suffix.0.Attn",
+  "visit_index": 0
+}
+Figure font: STIXGeneral; labels 9 pt, ticks 8 pt; no panel numbers
+Checking dataset SHA-256: elasticity/Meshes/Random_UnitCell_XY_10.npy
+Checking dataset SHA-256: elasticity/Meshes/Random_UnitCell_sigma_10.npy
+Loading strict checkpoint pair and saved normalization...
+Rendering q_head00_full_shared
+Rendering q_head00_full_peak
+Rendering k_head00_full_shared
+Rendering k_head00_full_peak
+Completed. Figures and raw arrays: /tmp/v5-four-task-vis-7bm9ak0i/elasticity/figures-times-no-numbers
+Single-sample metrics (not a full-test result): {'selected_sample_relative_l2': 1.8022461012383841}
+{
+  "task": "ns",
+  "run_dir": "/tmp/v5-four-task-vis-7bm9ak0i/ns/saved run with spaces",
+  "data_path": "/tmp/v5-four-task-vis-7bm9ak0i/ns/data with spaces",
+  "config_hash": "d67dce356c095ed120830a36bfd81dfa68d76541742fead41a5aa3efae56a57c",
+  "checkpoint": "final",
+  "M": 32,
+  "heads": [
+    0
+  ],
+  "expert_count": 3,
+  "topology": "p1_c3_r2_s1",
+  "core_norm_mode": "visit_independent",
+  "sample_index": 0,
+  "forecast_step": 6,
+  "metadata_scope": "synthetic",
+  "attention_path": "loop.suffix.0.Attn",
+  "visit_index": 0
+}
+Figure font: STIXGeneral; labels 9 pt, ticks 8 pt; no panel numbers
+Checking dataset SHA-256: NavierStokes_V1e-5_N1200_T20/NavierStokes_V1e-5_N1200_T20.mat
+Loading strict checkpoint pair and saved normalization...
+Rendering q_head00_full_shared
+Rendering q_head00_full_peak
+Rendering k_head00_full_shared
+Rendering k_head00_full_peak
+Completed. Figures and raw arrays: /tmp/v5-four-task-vis-7bm9ak0i/ns/figures-times-no-numbers
+Single-sample metrics (not a full-test result): {'selected_sample_relative_l2': 1.0130362709945846, 'rollout_full_relative_l2': 1.0067617390170318, 'per_step_relative_l2': [0.9949278070732955, 1.0080707251420744, 1.0114349344383329, 1.0163571587331655, 1.0059393886394918, 1.0130362709945846, 1.0077082708159195, 1.0037280647944373, 1.0067783951592424, 0.9997463688754286], 'mean_step_relative_l2': 1.0067727384665972}
+{
+  "task": "pipe",
+  "run_dir": "/tmp/v5-four-task-vis-7bm9ak0i/pipe/saved run with spaces",
+  "data_path": "/tmp/v5-four-task-vis-7bm9ak0i/pipe/data with spaces",
+  "config_hash": "a44f9c86e595389672466e6fc09e7fd659f758b4630c6fa2d7b43bb9812e3d47",
+  "checkpoint": "final",
+  "M": 64,
+  "heads": [
+    0
+  ],
+  "expert_count": 3,
+  "topology": "p1_c3_r2_s1",
+  "core_norm_mode": "visit_independent",
+  "sample_index": 0,
+  "forecast_step": null,
+  "metadata_scope": "synthetic",
+  "attention_path": "loop.suffix.0.Attn",
+  "visit_index": 0
+}
+Figure font: STIXGeneral; labels 9 pt, ticks 8 pt; no panel numbers
+Checking dataset SHA-256: Pipe_X.npy
+Checking dataset SHA-256: Pipe_Y.npy
+Checking dataset SHA-256: Pipe_Q.npy
+Loading strict checkpoint pair and saved normalization...
+Rendering q_head00_full_shared
+Rendering q_head00_full_peak
+Rendering k_head00_full_shared
+Rendering k_head00_full_peak
+Completed. Figures and raw arrays: /tmp/v5-four-task-vis-7bm9ak0i/pipe/figures-times-no-numbers
+Single-sample metrics (not a full-test result): {'selected_sample_relative_l2': 1.7811466260640285}
+Traceback (most recent call last):
+  File "<stdin>", line 31, in <module>
+AssertionError: ('airfoil', 'field_reference.pdf')
