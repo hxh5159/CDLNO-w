@@ -1,0 +1,35 @@
+test_cuda_capture (test_airfoil_states.AirfoilStatesTests.test_cuda_capture) ... ok
+test_data_sample_channel_checksums_and_request_conflicts (test_airfoil_states.AirfoilStatesTests.test_data_sample_channel_checksums_and_request_conflicts) ... Checking dataset SHA-256: NACA_Cylinder_X.npy
+Checking dataset SHA-256: NACA_Cylinder_Y.npy
+Checking dataset SHA-256: NACA_Cylinder_Q.npy
+Checking dataset SHA-256: NACA_Cylinder_X.npy
+Checking dataset SHA-256: NACA_Cylinder_Y.npy
+Checking dataset SHA-256: NACA_Cylinder_Q.npy
+Checking dataset SHA-256: NACA_Cylinder_X.npy
+ok
+test_mesh_connectivity_does_not_fill_airfoil_hole (test_airfoil_states.AirfoilStatesTests.test_mesh_connectivity_does_not_fill_airfoil_hole) ... ok
+test_native_capture_independent_scalar_oracle_and_transparency (test_airfoil_states.AirfoilStatesTests.test_native_capture_independent_scalar_oracle_and_transparency) ... ok
+test_new_process_strict_checkpoint_and_full_plot_export (test_airfoil_states.AirfoilStatesTests.test_new_process_strict_checkpoint_and_full_plot_export) ... ok
+test_peak_view_does_not_turn_uniform_noise_into_patterns (test_airfoil_states.AirfoilStatesTests.test_peak_view_does_not_turn_uniform_noise_into_patterns) ... ok
+test_conflicts_and_corrupt_data_rejected (test_task_states.TaskStatesTests.test_conflicts_and_corrupt_data_rejected) ... Checking dataset SHA-256: Pipe_X.npy
+ok
+test_elasticity_draws_only_nodes_without_invented_triangles (test_task_states.TaskStatesTests.test_elasticity_draws_only_nodes_without_invented_triangles) ... ok
+test_four_external_runs_fresh_process_preview_and_export (test_task_states.TaskStatesTests.test_four_external_runs_fresh_process_preview_and_export) ... ok
+test_gpu_fx_capture_and_ns_rollout (test_task_states.TaskStatesTests.test_gpu_fx_capture_and_ns_rollout) ... ok
+test_native_data_indices_channels_grid_and_saved_normalizers (test_task_states.TaskStatesTests.test_native_data_indices_channels_grid_and_saved_normalizers) ... Checking dataset SHA-256: piececonst_r421_N1024_smooth1.mat
+Checking dataset SHA-256: piececonst_r421_N1024_smooth2.mat
+Checking dataset SHA-256: elasticity/Meshes/Random_UnitCell_XY_10.npy
+Checking dataset SHA-256: elasticity/Meshes/Random_UnitCell_sigma_10.npy
+Checking dataset SHA-256: NavierStokes_V1e-5_N1200_T20/NavierStokes_V1e-5_N1200_T20.mat
+Checking dataset SHA-256: Pipe_X.npy
+Checking dataset SHA-256: Pipe_Y.npy
+Checking dataset SHA-256: Pipe_Q.npy
+ok
+test_ns_full_prediction_feedback_and_selected_step_match_independent_rollout (test_task_states.TaskStatesTests.test_ns_full_prediction_feedback_and_selected_step_match_independent_rollout) ... ok
+test_ns_parent_listing_never_selects_run (test_task_states.TaskStatesTests.test_ns_parent_listing_never_selects_run) ... ok
+test_static_predictions_match_direct_native_forward_and_decode (test_task_states.TaskStatesTests.test_static_predictions_match_direct_native_forward_and_decode) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 33.209s
+
+OK

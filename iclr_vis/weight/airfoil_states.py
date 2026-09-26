@@ -138,7 +138,7 @@ def load_sample(data_path, metadata, sample_index):
     return xx, yy, target, actual
 
 
-def capture_last_attention(model, positions):
+def capture_last_attention(model, positions, *, fx=None):
     """Observe actual logits/V/native readout; check hook transparency and factor math."""
     import torch
     if model.training:
@@ -166,13 +166,13 @@ def capture_last_attention(model, positions):
     initial_rng = rng()
     versions = {name: value._version for name, value in model.state_dict(keep_vars=True).items()}
     with torch.inference_mode():
-        baseline = model(positions, fx=None)
+        baseline = model(positions, fx=fx)
         try:
             handles.append(route.to_q.register_forward_hook(save("q_logits")))
             handles.append(route.to_k.register_forward_hook(save("k_logits")))
             handles.append(operator.to_v.register_forward_hook(save("v")))
             handles.append(operator.to_out.register_forward_pre_hook(readout_hook))
-            prediction = model(positions, fx=None)
+            prediction = model(positions, fx=fx)
         finally:
             for handle in handles:
                 handle.remove()
@@ -283,7 +283,7 @@ def save_figure(fig, path, dpi):
         fig.savefig(path.with_suffix("." + suffix), dpi=dpi, bbox_inches=None)
 
 
-def atlas(mesh, weights, *, kind, normalization, bounds, columns, title, path, args):
+def atlas(mesh, weights, *, kind, normalization, bounds, columns, title, path, args, painter=None):
     import numpy as np
     import matplotlib.pyplot as plt
     from matplotlib.colors import Normalize
@@ -305,7 +305,7 @@ def atlas(mesh, weights, *, kind, normalization, bounds, columns, title, path, a
         for state, ax in enumerate(axes.flat):
             if state >= count:
                 ax.set_axis_off(); continue
-            paint(ax, mesh, values[:, state], bounds, cmap=args.cmap, norm=norm)
+            (painter or paint)(ax, mesh, values[:, state], bounds, cmap=args.cmap, norm=norm)
             # Labels occupy their own white row, never conceal routing weights.
             ax.annotate(f"{state:02d}", xy=(.5, 1.), xycoords="axes fraction",
                         xytext=(0., 2.), textcoords="offset points", va="bottom", ha="center",
@@ -327,7 +327,7 @@ def atlas(mesh, weights, *, kind, normalization, bounds, columns, title, path, a
                 latent_spatial_std=weights.std(axis=0).tolist())
 
 
-def field_reference(mesh, target, prediction, bounds, path, args, title):
+def field_reference(mesh, target, prediction, bounds, path, args, title, *, field_name="Mach", painter=None):
     import numpy as np
     import matplotlib.pyplot as plt
     from matplotlib.colors import Normalize
@@ -337,9 +337,9 @@ def field_reference(mesh, target, prediction, bounds, path, args, title):
     with plt.rc_context(style()):
         fig, axes = plt.subplots(1, 3, figsize=(args.width, 2.15), layout="constrained")
         for ax, values, label in zip(axes, (target, prediction, error),
-                                     ("Reference Mach", "Predicted Mach", "Absolute error")):
+                                     (f"Reference {field_name}", f"Predicted {field_name}", "Absolute error")):
             norm = Normalize(0., max(float(error.max()), 1e-12)) if label == "Absolute error" else Normalize(low, high)
-            artist = paint(ax, mesh, values, bounds,
+            artist = (painter or paint)(ax, mesh, values, bounds,
                            cmap="magma" if label == "Absolute error" else "viridis", norm=norm)
             # These identify distinct field panels; the overall title is in LaTeX.
             ax.set_title(label, fontsize=FONT_PT)

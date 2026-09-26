@@ -4,6 +4,9 @@
 图形参考及公式区别见 [REFERENCE_NOTES.md](REFERENCE_NOTES.md)；本地验收见
 [VALIDATION.md](VALIDATION.md)。
 
+新增 **Darcy / Elasticity / NS / Pipe** 入口及“脚本在looplin-vis、实验在looplin-v5-final”的
+完整命令见 [TASKS.md](TASKS.md)。Airfoil也可以用显式 `--run-dir` 读取另一checkout的实验。
+
 ## 远端直接运行
 
 把本目录的 `airfoil.sh` 和 `airfoil_states.py` 一起同步到远端对应目录即可。
