@@ -1,0 +1,453 @@
+COMMAND ['bash', '/home/hwz/CDLNO/iclr_vis/ffn/airfoil.sh', '--run-dir', '/tmp/v5-ffn-visual-p55romrh/airfoil/nonuniform saved run', '--data-path', '/tmp/v5-ffn-visual-p55romrh/airfoil/data with spaces', '--output-dir', '/tmp/v5-ffn-visual-p55romrh/airfoil/figures with spaces', '--device', 'cpu', '--font-family', 'STIXGeneral', '--dpi', '100', '--paper', 'iclr']
+{
+  "task": "airfoil",
+  "run_dir": "/tmp/v5-ffn-visual-p55romrh/airfoil/nonuniform saved run",
+  "data_path": "/tmp/v5-ffn-visual-p55romrh/airfoil/data with spaces",
+  "checkpoint": "final",
+  "config_hash": "8afeca3089792c64db6b205aca73a4f9aaceb5959c97d40be9c3f57a7cdf4813",
+  "sample_index": 0,
+  "forecast_step": null,
+  "expert_count": 4,
+  "core_norm_mode": "visit_independent",
+  "topology": "p1_c3_r2_s1",
+  "loop_spec": {
+    "actual_M": 64,
+    "core_norm_mode": "visit_independent",
+    "dense_experts": true,
+    "executed_depth": 8,
+    "expert_count": 4,
+    "expert_width": 8,
+    "formula_version": "operator1-dense-expert-1-over-r-visit-norm-v2",
+    "gate_axis": "expert",
+    "gate_bias": true,
+    "gate_multihead": false,
+    "gate_temperature": null,
+    "grid_height": 17,
+    "grid_width": 7,
+    "head_dim": 4,
+    "heads": 2,
+    "hidden_width": 8,
+    "initialization": {
+      "active_temperature_across_visits": "same_values_distinct_storage",
+      "core_norms": "same_values_distinct_storage",
+      "experts": "independent_native_initialization",
+      "k_across_visits": "same_values_distinct_storage",
+      "q_across_visits": "same_values_distinct_storage",
+      "q_vs_k": "independent",
+      "router": "weight_and_bias_zero",
+      "whole_model_apply_count": 1
+    },
+    "loop_repeats": 2,
+    "prefix_blocks": 1,
+    "profile": "paper_table8_on_release_model",
+    "recurrent_core_blocks": 3,
+    "residual_mode": "operator_1_expert_1_over_r",
+    "scale_expert_core": "1/2",
+    "scale_expert_value": 0.5,
+    "scale_operator": 1.0,
+    "state_partition": {
+      "independent_by_visit": [
+        "to_q",
+        "to_k",
+        "active_qk_temperature",
+        "router",
+        "ln_1",
+        "ln_2"
+      ],
+      "prefix_suffix": "independent_complete_single_visit_blocks",
+      "shared_by_physical_position": [
+        "in_project_x",
+        "to_v",
+        "to_out",
+        "experts"
+      ]
+    },
+    "suffix_blocks": 1,
+    "task": "airfoil",
+    "topology_preset": "p1_c3_r2_s1",
+    "unique_depth": 5,
+    "variant": "conv_temp"
+  },
+  "metadata_scope": "synthetic",
+  "observation": "all logical visits; all dense experts; no attention-head axis"
+}
+Figure font: STIXGeneral; labels 9pt, ticks 8pt
+Loading verified checkpoint pair (strict=True)...
+Checking dataset SHA-256: NACA_Cylinder_X.npy
+Checking dataset SHA-256: NACA_Cylinder_Y.npy
+Checking dataset SHA-256: NACA_Cylinder_Q.npy
+Rendering prefix_00_gate_full
+Rendering prefix_00_update_norm_full
+Rendering prefix_00_gate_near
+Rendering prefix_00_update_norm_near
+Rendering core_00_gate_full
+Rendering core_00_update_norm_full
+Rendering core_00_gate_near
+Rendering core_00_update_norm_near
+Rendering core_01_gate_full
+Rendering core_01_update_norm_full
+Rendering core_01_gate_near
+Rendering core_01_update_norm_near
+Rendering core_02_gate_full
+Rendering core_02_update_norm_full
+Rendering core_02_gate_near
+Rendering core_02_update_norm_near
+Rendering suffix_00_gate_full
+Rendering suffix_00_update_norm_full
+Rendering suffix_00_gate_near
+Rendering suffix_00_update_norm_near
+Completed. Figures and raw expert arrays: /tmp/v5-ffn-visual-p55romrh/airfoil/figures with spaces
+COMMAND ['bash', '/home/hwz/CDLNO/iclr_vis/ffn/darcy.sh', '--run-dir', '/tmp/v5-ffn-visual-p55romrh/darcy/nonuniform saved run', '--data-path', '/tmp/v5-ffn-visual-p55romrh/darcy/data with spaces', '--output-dir', '/tmp/v5-ffn-visual-p55romrh/darcy/figures with spaces', '--device', 'cpu', '--font-family', 'STIXGeneral', '--dpi', '100', '--paper', 'icml']
+{
+  "task": "darcy",
+  "run_dir": "/tmp/v5-ffn-visual-p55romrh/darcy/nonuniform saved run",
+  "data_path": "/tmp/v5-ffn-visual-p55romrh/darcy/data with spaces",
+  "checkpoint": "final",
+  "config_hash": "01987b853f49eb37e25baa0790ec1d7a6e8421a35e1648056ca4cf6457cb8490",
+  "sample_index": 0,
+  "forecast_step": null,
+  "expert_count": 1,
+  "core_norm_mode": "visit_independent",
+  "topology": "p1_c3_r2_s1",
+  "loop_spec": {
+    "actual_M": 64,
+    "core_norm_mode": "visit_independent",
+    "dense_experts": true,
+    "executed_depth": 8,
+    "expert_count": 1,
+    "expert_width": 8,
+    "formula_version": "operator1-dense-expert-1-over-r-visit-norm-v2",
+    "gate_axis": "expert",
+    "gate_bias": true,
+    "gate_multihead": false,
+    "gate_temperature": null,
+    "grid_height": 9,
+    "grid_width": 7,
+    "head_dim": 4,
+    "heads": 2,
+    "hidden_width": 8,
+    "initialization": {
+      "active_temperature_across_visits": "same_values_distinct_storage",
+      "core_norms": "same_values_distinct_storage",
+      "experts": "independent_native_initialization",
+      "k_across_visits": "same_values_distinct_storage",
+      "q_across_visits": "same_values_distinct_storage",
+      "q_vs_k": "independent",
+      "router": "weight_and_bias_zero",
+      "whole_model_apply_count": 1
+    },
+    "loop_repeats": 2,
+    "prefix_blocks": 1,
+    "profile": "paper_table8_on_release_model",
+    "recurrent_core_blocks": 3,
+    "residual_mode": "operator_1_expert_1_over_r",
+    "scale_expert_core": "1/2",
+    "scale_expert_value": 0.5,
+    "scale_operator": 1.0,
+    "state_partition": {
+      "independent_by_visit": [
+        "to_q",
+        "to_k",
+        "active_qk_temperature",
+        "router",
+        "ln_1",
+        "ln_2"
+      ],
+      "prefix_suffix": "independent_complete_single_visit_blocks",
+      "shared_by_physical_position": [
+        "in_project_x",
+        "to_v",
+        "to_out",
+        "experts"
+      ]
+    },
+    "suffix_blocks": 1,
+    "task": "darcy",
+    "topology_preset": "p1_c3_r2_s1",
+    "unique_depth": 5,
+    "variant": "conv_temp"
+  },
+  "metadata_scope": "synthetic",
+  "observation": "all logical visits; all dense experts; no attention-head axis"
+}
+Figure font: STIXGeneral; labels 9pt, ticks 8pt
+Loading verified checkpoint pair (strict=True)...
+Checking dataset SHA-256: piececonst_r421_N1024_smooth1.mat
+Checking dataset SHA-256: piececonst_r421_N1024_smooth2.mat
+E=1: gate weights are identically 1; normalized entropy is undefined and omitted. Update norms remain informative.
+Rendering prefix_00_gate_full
+Rendering prefix_00_update_norm_full
+Rendering core_00_gate_full
+Rendering core_00_update_norm_full
+Rendering core_01_gate_full
+Rendering core_01_update_norm_full
+Rendering core_02_gate_full
+Rendering core_02_update_norm_full
+Rendering suffix_00_gate_full
+Rendering suffix_00_update_norm_full
+Completed. Figures and raw expert arrays: /tmp/v5-ffn-visual-p55romrh/darcy/figures with spaces
+COMMAND ['bash', '/home/hwz/CDLNO/iclr_vis/ffn/elasticity.sh', '--run-dir', '/tmp/v5-ffn-visual-p55romrh/elasticity/nonuniform saved run', '--data-path', '/tmp/v5-ffn-visual-p55romrh/elasticity/data with spaces', '--output-dir', '/tmp/v5-ffn-visual-p55romrh/elasticity/figures with spaces', '--device', 'cpu', '--font-family', 'STIXGeneral', '--dpi', '100', '--paper', 'iclr']
+{
+  "task": "elasticity",
+  "run_dir": "/tmp/v5-ffn-visual-p55romrh/elasticity/nonuniform saved run",
+  "data_path": "/tmp/v5-ffn-visual-p55romrh/elasticity/data with spaces",
+  "checkpoint": "final",
+  "config_hash": "3f34ce76f35370ce3b21a57906dc484a4f4fafa9d21abc38a021d53639bb89e5",
+  "sample_index": 0,
+  "forecast_step": null,
+  "expert_count": 4,
+  "core_norm_mode": "visit_independent",
+  "topology": "p1_c3_r2_s1",
+  "loop_spec": {
+    "actual_M": 64,
+    "core_norm_mode": "visit_independent",
+    "dense_experts": true,
+    "executed_depth": 8,
+    "expert_count": 4,
+    "expert_width": 8,
+    "formula_version": "operator1-dense-expert-1-over-r-visit-norm-v2",
+    "gate_axis": "expert",
+    "gate_bias": true,
+    "gate_multihead": false,
+    "gate_temperature": null,
+    "grid_height": 9,
+    "grid_width": 7,
+    "head_dim": 4,
+    "heads": 2,
+    "hidden_width": 8,
+    "initialization": {
+      "active_temperature_across_visits": "same_values_distinct_storage",
+      "core_norms": "same_values_distinct_storage",
+      "experts": "independent_native_initialization",
+      "k_across_visits": "same_values_distinct_storage",
+      "q_across_visits": "same_values_distinct_storage",
+      "q_vs_k": "independent",
+      "router": "weight_and_bias_zero",
+      "whole_model_apply_count": 1
+    },
+    "loop_repeats": 2,
+    "prefix_blocks": 1,
+    "profile": "paper_table8_on_release_model",
+    "recurrent_core_blocks": 3,
+    "residual_mode": "operator_1_expert_1_over_r",
+    "scale_expert_core": "1/2",
+    "scale_expert_value": 0.5,
+    "scale_operator": 1.0,
+    "state_partition": {
+      "independent_by_visit": [
+        "to_q",
+        "to_k",
+        "active_qk_temperature",
+        "router",
+        "ln_1",
+        "ln_2"
+      ],
+      "prefix_suffix": "independent_complete_single_visit_blocks",
+      "shared_by_physical_position": [
+        "in_project_x",
+        "to_v",
+        "to_out",
+        "experts"
+      ]
+    },
+    "suffix_blocks": 1,
+    "task": "elasticity",
+    "topology_preset": "p1_c3_r2_s1",
+    "unique_depth": 5,
+    "variant": "temp"
+  },
+  "metadata_scope": "synthetic",
+  "observation": "all logical visits; all dense experts; no attention-head axis"
+}
+Figure font: STIXGeneral; labels 9pt, ticks 8pt
+Loading verified checkpoint pair (strict=True)...
+Checking dataset SHA-256: elasticity/Meshes/Random_UnitCell_XY_10.npy
+Checking dataset SHA-256: elasticity/Meshes/Random_UnitCell_sigma_10.npy
+Rendering prefix_00_gate_full
+Rendering prefix_00_update_norm_full
+Rendering core_00_gate_full
+Rendering core_00_update_norm_full
+Rendering core_01_gate_full
+Rendering core_01_update_norm_full
+Rendering core_02_gate_full
+Rendering core_02_update_norm_full
+Rendering suffix_00_gate_full
+Rendering suffix_00_update_norm_full
+Completed. Figures and raw expert arrays: /tmp/v5-ffn-visual-p55romrh/elasticity/figures with spaces
+COMMAND ['bash', '/home/hwz/CDLNO/iclr_vis/ffn/ns.sh', '--run-dir', '/tmp/v5-ffn-visual-p55romrh/ns/nonuniform saved run', '--data-path', '/tmp/v5-ffn-visual-p55romrh/ns/data with spaces', '--output-dir', '/tmp/v5-ffn-visual-p55romrh/ns/figures with spaces', '--device', 'cpu', '--font-family', 'STIXGeneral', '--dpi', '100', '--paper', 'iclr', '--forecast-step', '6']
+{
+  "task": "ns",
+  "run_dir": "/tmp/v5-ffn-visual-p55romrh/ns/nonuniform saved run",
+  "data_path": "/tmp/v5-ffn-visual-p55romrh/ns/data with spaces",
+  "checkpoint": "final",
+  "config_hash": "fc0a568a041a30f41aacc5e151f90bb81fcb97394d228f929f2289f4a06e1ea6",
+  "sample_index": 0,
+  "forecast_step": 6,
+  "expert_count": 3,
+  "core_norm_mode": "visit_independent",
+  "topology": "p1_c3_r2_s1",
+  "loop_spec": {
+    "actual_M": 32,
+    "core_norm_mode": "visit_independent",
+    "dense_experts": true,
+    "executed_depth": 8,
+    "expert_count": 3,
+    "expert_width": 16,
+    "formula_version": "operator1-dense-expert-1-over-r-visit-norm-v2",
+    "gate_axis": "expert",
+    "gate_bias": true,
+    "gate_multihead": false,
+    "gate_temperature": null,
+    "grid_height": 9,
+    "grid_width": 7,
+    "head_dim": 4,
+    "heads": 2,
+    "hidden_width": 8,
+    "initialization": {
+      "active_temperature_across_visits": "same_values_distinct_storage",
+      "core_norms": "same_values_distinct_storage",
+      "experts": "independent_native_initialization",
+      "k_across_visits": "same_values_distinct_storage",
+      "q_across_visits": "same_values_distinct_storage",
+      "q_vs_k": "independent",
+      "router": "weight_and_bias_zero",
+      "whole_model_apply_count": 1
+    },
+    "loop_repeats": 2,
+    "prefix_blocks": 1,
+    "profile": "paper_table8_on_release_model",
+    "recurrent_core_blocks": 3,
+    "residual_mode": "operator_1_expert_1_over_r",
+    "scale_expert_core": "1/2",
+    "scale_expert_value": 0.5,
+    "scale_operator": 1.0,
+    "state_partition": {
+      "independent_by_visit": [
+        "to_q",
+        "to_k",
+        "active_qk_temperature",
+        "router",
+        "ln_1",
+        "ln_2"
+      ],
+      "prefix_suffix": "independent_complete_single_visit_blocks",
+      "shared_by_physical_position": [
+        "in_project_x",
+        "to_v",
+        "to_out",
+        "experts"
+      ]
+    },
+    "suffix_blocks": 1,
+    "task": "ns",
+    "topology_preset": "p1_c3_r2_s1",
+    "unique_depth": 5,
+    "variant": "plain"
+  },
+  "metadata_scope": "synthetic",
+  "observation": "all logical visits; all dense experts; no attention-head axis"
+}
+Figure font: STIXGeneral; labels 9pt, ticks 8pt
+Loading verified checkpoint pair (strict=True)...
+Checking dataset SHA-256: NavierStokes_V1e-5_N1200_T20/NavierStokes_V1e-5_N1200_T20.mat
+Rendering prefix_00_gate_full
+Rendering prefix_00_update_norm_full
+Rendering core_00_gate_full
+Rendering core_00_update_norm_full
+Rendering core_01_gate_full
+Rendering core_01_update_norm_full
+Rendering core_02_gate_full
+Rendering core_02_update_norm_full
+Rendering suffix_00_gate_full
+Rendering suffix_00_update_norm_full
+Completed. Figures and raw expert arrays: /tmp/v5-ffn-visual-p55romrh/ns/figures with spaces
+COMMAND ['bash', '/home/hwz/CDLNO/iclr_vis/ffn/pipe.sh', '--run-dir', '/tmp/v5-ffn-visual-p55romrh/pipe/nonuniform saved run', '--data-path', '/tmp/v5-ffn-visual-p55romrh/pipe/data with spaces', '--output-dir', '/tmp/v5-ffn-visual-p55romrh/pipe/figures with spaces', '--device', 'cpu', '--font-family', 'STIXGeneral', '--dpi', '100', '--paper', 'iclr']
+{
+  "task": "pipe",
+  "run_dir": "/tmp/v5-ffn-visual-p55romrh/pipe/nonuniform saved run",
+  "data_path": "/tmp/v5-ffn-visual-p55romrh/pipe/data with spaces",
+  "checkpoint": "final",
+  "config_hash": "4c7d67d71e290dce7bad4e4eb9dfd2635840f0c17d8bb4ea902e2e65277a54cd",
+  "sample_index": 0,
+  "forecast_step": null,
+  "expert_count": 3,
+  "core_norm_mode": "visit_independent",
+  "topology": "p1_c3_r2_s1",
+  "loop_spec": {
+    "actual_M": 64,
+    "core_norm_mode": "visit_independent",
+    "dense_experts": true,
+    "executed_depth": 8,
+    "expert_count": 3,
+    "expert_width": 8,
+    "formula_version": "operator1-dense-expert-1-over-r-visit-norm-v2",
+    "gate_axis": "expert",
+    "gate_bias": true,
+    "gate_multihead": false,
+    "gate_temperature": null,
+    "grid_height": 9,
+    "grid_width": 7,
+    "head_dim": 4,
+    "heads": 2,
+    "hidden_width": 8,
+    "initialization": {
+      "active_temperature_across_visits": "same_values_distinct_storage",
+      "core_norms": "same_values_distinct_storage",
+      "experts": "independent_native_initialization",
+      "k_across_visits": "same_values_distinct_storage",
+      "q_across_visits": "same_values_distinct_storage",
+      "q_vs_k": "independent",
+      "router": "weight_and_bias_zero",
+      "whole_model_apply_count": 1
+    },
+    "loop_repeats": 2,
+    "prefix_blocks": 1,
+    "profile": "paper_table8_on_release_model",
+    "recurrent_core_blocks": 3,
+    "residual_mode": "operator_1_expert_1_over_r",
+    "scale_expert_core": "1/2",
+    "scale_expert_value": 0.5,
+    "scale_operator": 1.0,
+    "state_partition": {
+      "independent_by_visit": [
+        "to_q",
+        "to_k",
+        "active_qk_temperature",
+        "router",
+        "ln_1",
+        "ln_2"
+      ],
+      "prefix_suffix": "independent_complete_single_visit_blocks",
+      "shared_by_physical_position": [
+        "in_project_x",
+        "to_v",
+        "to_out",
+        "experts"
+      ]
+    },
+    "suffix_blocks": 1,
+    "task": "pipe",
+    "topology_preset": "p1_c3_r2_s1",
+    "unique_depth": 5,
+    "variant": "conv_temp"
+  },
+  "metadata_scope": "synthetic",
+  "observation": "all logical visits; all dense experts; no attention-head axis"
+}
+Figure font: STIXGeneral; labels 9pt, ticks 8pt
+Loading verified checkpoint pair (strict=True)...
+Checking dataset SHA-256: Pipe_X.npy
+Checking dataset SHA-256: Pipe_Y.npy
+Checking dataset SHA-256: Pipe_Q.npy
+Rendering prefix_00_gate_full
+Rendering prefix_00_update_norm_full
+Rendering core_00_gate_full
+Rendering core_00_update_norm_full
+Rendering core_01_gate_full
+Rendering core_01_update_norm_full
+Rendering core_02_gate_full
+Rendering core_02_update_norm_full
+Rendering suffix_00_gate_full
+Rendering suffix_00_update_norm_full
+Completed. Figures and raw expert arrays: /tmp/v5-ffn-visual-p55romrh/pipe/figures with spaces
+PASS: five tasks, 113 PDFs, unchanged checkpoints, same forward predictions.

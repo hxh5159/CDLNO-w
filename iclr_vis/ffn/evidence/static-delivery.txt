@@ -1,0 +1,16 @@
+HEAD: 1191dc67d9ba512483649b78c78f50c659d280f8
+Python: 3.13.9 Torch: 2.13.0+cu130 NumPy: 2.2.6 SciPy: 1.16.3 Matplotlib: 3.10.6 CUDA: True
+COMPILE PASS: iclr_vis/ffn/capture.py
+COMPILE PASS: iclr_vis/ffn/ffn_states.py
+COMPILE PASS: iclr_vis/ffn/render.py
+COMPILE PASS: iclr_vis/ffn/test_ffn_states.py
+COMPILE PASS: iclr_vis/ffn/verify_synthetic.py
+SHELL / PARSER PASS: iclr_vis/ffn/airfoil.sh
+SHELL / PARSER PASS: iclr_vis/ffn/darcy.sh
+SHELL / PARSER PASS: iclr_vis/ffn/elasticity.sh
+SHELL / PARSER PASS: iclr_vis/ffn/ns.sh
+SHELL / PARSER PASS: iclr_vis/ffn/pipe.sh
+FREEZE PASS: every tracked file equals HEAD
+WHITESPACE PASS: new Python/shell/docs (no-index difference exit 1 distinguished from whitespace diagnostics)
+STATUS: ?? iclr_vis/ffn/
+
